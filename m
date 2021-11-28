@@ -2,92 +2,70 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27223C4332F
-	for <linux-pwm@archiver.kernel.org>; Fri, 26 Nov 2021 10:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D568C433F5
+	for <linux-pwm@archiver.kernel.org>; Sun, 28 Nov 2021 05:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbhKZKZW convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 26 Nov 2021 05:25:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232599AbhKZKXW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 26 Nov 2021 05:23:22 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0478BC06179B
-        for <linux-pwm@vger.kernel.org>; Fri, 26 Nov 2021 02:11:12 -0800 (PST)
-Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1mqYBz-000796-FL; Fri, 26 Nov 2021 11:10:55 +0100
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1mqYBw-0005NW-IR; Fri, 26 Nov 2021 11:10:52 +0100
-Message-ID: <727777874f925c0d862887589a868859a95d3649.camel@pengutronix.de>
-Subject: Re: [v12 2/2] pwm: Add Aspeed ast2600 PWM support
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Billy Tsai <billy_tsai@aspeedtech.com>, lee.jones@linaro.org,
-        robh+dt@kernel.org, joel@jms.id.au, andrew@aj.id.au,
-        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Cc:     BMC-SW@aspeedtech.com
-Date:   Fri, 26 Nov 2021 11:10:52 +0100
-In-Reply-To: <20210906024339.21124-3-billy_tsai@aspeedtech.com>
-References: <20210906024339.21124-1-billy_tsai@aspeedtech.com>
-         <20210906024339.21124-3-billy_tsai@aspeedtech.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        id S233173AbhK1FqS (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 28 Nov 2021 00:46:18 -0500
+Received: from rere.qmqm.pl ([91.227.64.183]:49674 "EHLO rere.qmqm.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230230AbhK1FoR (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 28 Nov 2021 00:44:17 -0500
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4J1y561xCxzGX;
+        Sun, 28 Nov 2021 06:40:58 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1638078060; bh=euRkxERs/Vo+Ncwnc6oh+QQPM82cBPQuQuUB2BgzLnk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LY3ChcHhLpC97uysDR/7nppfcxComB2E48G/CSr/GJWMZpY0nUf2Ozt/QdF3bO27D
+         KVVscNOrPrvjDeFDDvD8xGhXTpYyqBgTMYDKLE9wEICL5bDVx6hBtk8ejpU6BrId79
+         vbWsoB/iTmCLm+bLT0tuvFrL4/nVF7nyYWv4tALAyWWX2iU7ISeiyJa/5FSEeoDtm6
+         egb154gg0fV3kqNymh1/NYzbwJKJ0ezYVFUVXr4cbByKt/7l8pm0u2iIP/DReChzc2
+         cj5XNAxcI2vANrMDBXNTTKYQJcaUTS+V2hD4R7+BDKXqWKOMu+D+3chFvhgLVLi9p7
+         Ujd618hPUSMCQ==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.3 at mail
+Date:   Sun, 28 Nov 2021 06:40:56 +0100
+From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Peter De Schrijver <pdeschrijver@nvidia.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Uwe =?iso-8859-2?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Nishanth Menon <nm@ti.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-mmc@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-clk@vger.kernel.org, David Heidelberg <david@ixit.cz>
+Subject: Re: [PATCH v15 00/39] NVIDIA Tegra power management patches for 5.17
+Message-ID: <YaMWaKqQ+c8G08mJ@qmqm.qmqm.pl>
+References: <20211114193435.7705-1-digetx@gmail.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-2
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211114193435.7705-1-digetx@gmail.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Billy,
-
-On Mon, 2021-09-06 at 10:43 +0800, Billy Tsai wrote:
+On Sun, Nov 14, 2021 at 10:33:56PM +0300, Dmitry Osipenko wrote:
+> This series adds runtime PM support to Tegra drivers and enables core
+> voltage scaling for Tegra20/30 SoCs, resolving overheating troubles.
+> 
+> All patches in this series are interdependent and should go via Tegra tree
+> for simplicity.
 [...]
-> +static int aspeed_pwm_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	int ret;
-> +	struct aspeed_pwm_data *priv;
-> +	struct device_node *np;
-> +	struct platform_device *parent_dev;
-> +
-> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	np = pdev->dev.parent->of_node;
-> +	if (!of_device_is_compatible(np, "aspeed,ast2600-pwm-tach"))
-> +		return dev_err_probe(dev, -ENODEV,
-> +				     "Unsupported pwm device binding\n");
-> +
-> +	priv->regmap = syscon_node_to_regmap(np);
-> +	if (IS_ERR(priv->regmap))
-> +		return dev_err_probe(dev, PTR_ERR(priv->regmap),
-> +				     "Couldn't get regmap\n");
-> +
-> +	parent_dev = of_find_device_by_node(np);
-> +	priv->clk = devm_clk_get(&parent_dev->dev, 0);
-> +	if (IS_ERR(priv->clk))
-> +		return dev_err_probe(dev, PTR_ERR(priv->clk),
-> +				     "Couldn't get clock\n");
-> +
-> +	priv->reset = devm_reset_control_get_shared(&parent_dev->dev, NULL);
-> +	if (IS_ERR(priv->reset)) {
-> +		return dev_err_probe(dev, PTR_ERR(priv->reset),
-> +				     "Couldn't get reset control\n");
-> +	}
 
-I'd remove these curly braces for consistency with the code above.
+I would suggest pushing all the fixes to the front of the series (those are
+at least patches 1, 3, 17, 27-31 and 39).
 
-regards
-Philipp
+Best Regards
+Micha³ Miros³aw
