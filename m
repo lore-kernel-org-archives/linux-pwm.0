@@ -2,102 +2,161 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38CB4C4332F
-	for <linux-pwm@archiver.kernel.org>; Sun, 28 Nov 2021 22:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0285C433EF
+	for <linux-pwm@archiver.kernel.org>; Mon, 29 Nov 2021 06:44:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242396AbhK1WIp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 28 Nov 2021 17:08:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231842AbhK1WGp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 28 Nov 2021 17:06:45 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47858C061746;
-        Sun, 28 Nov 2021 14:03:28 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id n12so39510119lfe.1;
-        Sun, 28 Nov 2021 14:03:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BmJDsI1frubqpSHpwgLMDcWP2GRwtD3Aeu0GDNSS4Ao=;
-        b=JqJrLFejdvwG6EFcUaec1471GQnF4o7rWmB6ZJgoVyHzKIkkY8XPck6x3CHTcSe3mr
-         7c3WWIfu0LFTWTIWtfr1xMf1sIz9hSxmJjNmg5EpOoGtRIqQYrl7w/0PM+7DPJe3Nxtk
-         rN6rxwckbCb/tFQBuTom9QWJWe368iYPCHR6SzKZyxcrZavR0Qvz3FBbGQQWlxES0zx3
-         AyGMKx7T8uiK3LGqvY6k4r/pZaiGv/E3eR+VX0o1y8VwEVOx6vlL8inxXaHnS9nNzCHP
-         /sog83T0MTHqC7MSI4QlW3DNzKcOyj4MQKPD+Rgk5qe7wAw3+rNMhs5lE34rRjfMa9d6
-         m5mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BmJDsI1frubqpSHpwgLMDcWP2GRwtD3Aeu0GDNSS4Ao=;
-        b=2IyZfutJKoDVgqLl0NkZ9nNbbLeMeOYzflxGGeJZeU/Nk/wkiRvelTK/KnbHvMUhmY
-         HQVB5hKUlT7BDy2p0ueeoxkDpbmVm0m91JzvvRL5Dr8hk9mVYcDeNuaHI5iiRDPjI+rU
-         FS+9NQfTTCmKdaJscGCTk5m/+HBZM9bh41ZhbZaLm2/iOxwn5hP9EeQ8aIBBX1X/rUUt
-         TfOzH8TIKSdDQLT7+j2dwpQtYVC8Cm4kqT2P1G7jpQzIpEZul+8L2zCojl1DBbVCvAAi
-         UeBfBTTvk157fn9Go7aG+KiiyTmqwOhsHDM5kabyGm7kwpD4N4v5xDUu2DGI5DsHBDaX
-         o4vw==
-X-Gm-Message-State: AOAM532p99SoNYyMqvD0XUfWn1H9VeUXqrvWjaPngyU+cO0DP5GB2+bp
-        +z/C47jDV4HwDwAsbTWlGXI=
-X-Google-Smtp-Source: ABdhPJxrPfjj0n+sgrY4w60/8r91odYTvOOfn9dIP0FlQoVAM5bMvzeBYaBIJ/QlbWNLbD8x9ctRNA==
-X-Received: by 2002:ac2:5fb1:: with SMTP id s17mr6692388lfe.587.1638137006608;
-        Sun, 28 Nov 2021 14:03:26 -0800 (PST)
-Received: from [192.168.2.145] (94-29-46-111.dynamic.spd-mgts.ru. [94.29.46.111])
-        by smtp.googlemail.com with ESMTPSA id s13sm1117685lfg.126.2021.11.28.14.03.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Nov 2021 14:03:26 -0800 (PST)
-Subject: Re: [PATCH v15 00/39] NVIDIA Tegra power management patches for 5.17
-To:     =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Peter De Schrijver <pdeschrijver@nvidia.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Nishanth Menon <nm@ti.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-mmc@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-clk@vger.kernel.org, David Heidelberg <david@ixit.cz>
-References: <20211114193435.7705-1-digetx@gmail.com>
- <YaMWaKqQ+c8G08mJ@qmqm.qmqm.pl>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <6e364419-c4ef-a6d6-6538-9b04f1cfe9c7@gmail.com>
-Date:   Mon, 29 Nov 2021 01:03:18 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S244404AbhK2Gr3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 29 Nov 2021 01:47:29 -0500
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:55499 "EHLO
+        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243963AbhK2Gp3 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Nov 2021 01:45:29 -0500
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 1AT6HcpA024517;
+        Mon, 29 Nov 2021 14:17:38 +0800 (GMT-8)
+        (envelope-from billy_tsai@aspeedtech.com)
+Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 29 Nov
+ 2021 14:42:05 +0800
+From:   Billy Tsai <billy_tsai@aspeedtech.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <joel@jms.id.au>, <andrew@aj.id.au>, <lee.jones@linaro.org>,
+        <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <p.zabel@pengutronix.de>, <billy_tsai@aspeedtech.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [v13 0/2] Support pwm driver for aspeed ast26xx
+Date:   Mon, 29 Nov 2021 14:43:27 +0800
+Message-ID: <20211129064329.27006-1-billy_tsai@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <YaMWaKqQ+c8G08mJ@qmqm.qmqm.pl>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.2.149]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 1AT6HcpA024517
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-28.11.2021 08:40, Michał Mirosław пишет:
-> On Sun, Nov 14, 2021 at 10:33:56PM +0300, Dmitry Osipenko wrote:
->> This series adds runtime PM support to Tegra drivers and enables core
->> voltage scaling for Tegra20/30 SoCs, resolving overheating troubles.
->>
->> All patches in this series are interdependent and should go via Tegra tree
->> for simplicity.
-> [...]
-> 
-> I would suggest pushing all the fixes to the front of the series (those are
-> at least patches 1, 3, 17, 27-31 and 39).
+The legacy driver of aspeed pwm is binding with tach controller and it
+doesn't follow the pwm framworks usage. In addition, the pwm register
+usage of the 6th generation of ast26xx has drastic change. So these
+patch serials add the new aspeed pwm driver to fix up the problem above.
 
-All those patches, apart from 17, should be irrelevant to stable kernel.
-There is no real benefit in reordering them, IMO. The patches are
-grouped logically in this series.
+Change since v12:
+- pwm-aspeed-ast2600.c
+  - Fix the comment about the duty cycle and period of the PWM.
+  - Configured to max period when request period > max period.
+  - Remove unnecessary curly braces.
 
-In the case of patch 17, perhaps won't hurt to add stable tag to it.
-Then the "drm/tegra: submit:" patches could be swapped to prioritize the
-fix, though there is no danger of a merge conflict there.
+Change since v11:
+- pwm-aspeed-ast2600.c
+  - Request reset controller before clock enable.
+
+Change since v10:
+- pwm-aspeed-ast2600.c
+  - Add more comment to explain the feature of PWM
+  - Fix the naming of some parameters.
+  - Set pin_enable and clk_enable at the same time.
+  - Always set fixed divisor to hw register when apply.
+
+Change since v9:
+- dt-bindings:
+  - Change the naming of tach subnode channel setting property to
+  aspeed,tach-ch.
+- pwm-aspeed-ast2600.c
+  - Fix the naming of some parameters.
+  - Capitalise error messages.
+  - Handling potentially mult overflow when .apply
+
+Change since v8:
+- pwm-aspeed-ast2600.c
+  - Replace "* _BITULL(div_h)" to "<< div_h"
+  - Fix duty_cycle precision problem.
+  - Add the comment about the formula of duty_cycle.
+
+Change since v7:
+- pwm-aspeed-g6.c
+  - Rename the driver: pwm-aspeed-g6.c -> pwm-aspeed-ast2600.c.
+  - Macro remove "_CH" part of the register name.
+  - Unroll the aspeed_pwm_get_period and remove it.
+  - Simplify the formula to get duty_pt
+  - Reduce the number of writing register. Organize all the fields and
+    write them at once.
+
+Change since v6:
+- dt-bindings:
+  - Add blank line between each DT property.
+  - Change the sub-node name from fan to tach-ch.
+- pwm-aspeed-g6.c
+  - Merge aspeed_pwm_set_period and aspeed_pwm_set_duty into .apply.
+  - Convert the factor type to u64 when calculating the period value.
+  - Using ROUND_UP strategy to calculate div_h for finer resolution.
+
+Change since v5:
+- pwm-aspeed-g6.c suggested by Uwe Kleine-König
+  - Move the divide at the end of the calculation.
+  - Unified the prefix of the function name.
+  - Use div64_u64 to calculate the divider of frequency.
+
+Change since v4:
+- dt_binding:
+  - pwm/tach yaml: Replace child-node with additionalProperties
+  - pwm-tach yaml: Replace child-node with patternProperties
+- pwm-aspeed-g6.c suggested by Uwe Kleine-König
+  - The bit definitions contained the name of the register.
+  - Remove single caller function and fold it to the caller.
+  - Avoid to divide by the result of a division.
+  - Remove unnecessary condition in .apply().
+  - Use goto for error handling
+
+Changes since v3:
+- Add the dt_binding for aspeed,ast2600-tach.
+- Describe the pwm/tach as child-node of pwm-tach mfd.
+- Complete the properties of pwm node.
+
+Changes since v2:
+- Remove the tach node, #address-cells and #size-cells from pwm-tach.yaml
+- Add clocks and reset properties to pwm-tach.yaml
+- Kconfig/Makfile sorted alphabetically
+- pwm-aspeed-g6.c suggested by Uwe Kleine-König
+  - Add more hardware descriptions at top of the driver.
+  - Remove unused api request and free
+  - Move the initialize settings of all pwm channel to probe.
+  - Change the method of getting the approximate period.
+  - Read the hardware register values to fill the state for .get_state()
+
+Changes since v1:
+- Fix the dt_binding_check fail suggested by Rob Herring
+- Add depends to PWM_ASPEED_G6 configure suggested by Uwe Kleine-Konig
+- pwm-aspeed-g6.c suggested by Uwe Kleine-König
+  - Fix license header
+  - Use bitfiled.h macro to define register fields
+  - Implement .remove device function
+  - Implement .get_state pwm api
+
+Billy Tsai (2):
+  dt-bindings: Add bindings for aspeed pwm-tach.
+  pwm: Add Aspeed ast2600 PWM support
+
+ .../bindings/hwmon/aspeed,ast2600-tach.yaml   |  68 ++++
+ .../bindings/mfd/aspeed,ast2600-pwm-tach.yaml |  76 ++++
+ .../bindings/pwm/aspeed,ast2600-pwm.yaml      |  64 ++++
+ drivers/pwm/Kconfig                           |  10 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-aspeed-ast2600.c              | 327 ++++++++++++++++++
+ 6 files changed, 546 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
+ create mode 100644 Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-aspeed-ast2600.c
+
+-- 
+2.25.1
+
