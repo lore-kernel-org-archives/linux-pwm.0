@@ -2,290 +2,95 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F11C433F5
-	for <linux-pwm@archiver.kernel.org>; Tue, 30 Nov 2021 05:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91DC0C433EF
+	for <linux-pwm@archiver.kernel.org>; Tue, 30 Nov 2021 06:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbhK3GBj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 30 Nov 2021 01:01:39 -0500
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:54633 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbhK3GBi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Nov 2021 01:01:38 -0500
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 1AU5XYo0052410;
-        Tue, 30 Nov 2021 13:33:34 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 30 Nov
- 2021 13:58:05 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <joel@jms.id.au>, <andrew@aj.id.au>, <lee.jones@linaro.org>,
-        <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
-        <p.zabel@pengutronix.de>, <billy_tsai@aspeedtech.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [v14 1/2] dt-bindings: Add bindings for aspeed pwm-tach.
-Date:   Tue, 30 Nov 2021 13:59:32 +0800
-Message-ID: <20211130055933.32708-2-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211130055933.32708-1-billy_tsai@aspeedtech.com>
+        id S238895AbhK3HCp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 30 Nov 2021 02:02:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232051AbhK3HCo (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Nov 2021 02:02:44 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26848C061574
+        for <linux-pwm@vger.kernel.org>; Mon, 29 Nov 2021 22:59:26 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mrx6X-00082P-G4; Tue, 30 Nov 2021 07:59:05 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mrx6L-001sGA-Hp; Tue, 30 Nov 2021 07:58:52 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mrx6K-0002RV-MZ; Tue, 30 Nov 2021 07:58:52 +0100
+Date:   Tue, 30 Nov 2021 07:58:52 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Billy Tsai <billy_tsai@aspeedtech.com>
+Cc:     jdelvare@suse.com, linux@roeck-us.net, robh+dt@kernel.org,
+        joel@jms.id.au, andrew@aj.id.au, lee.jones@linaro.org,
+        thierry.reding@gmail.com, p.zabel@pengutronix.de,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org, BMC-SW@aspeedtech.com
+Subject: Re: [v14 2/2] pwm: Add Aspeed ast2600 PWM support
+Message-ID: <20211130065852.2o3zez5kdymu2meo@pengutronix.de>
 References: <20211130055933.32708-1-billy_tsai@aspeedtech.com>
+ <20211130055933.32708-3-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 1AU5XYo0052410
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="v25c5nweijfvjqpi"
+Content-Disposition: inline
+In-Reply-To: <20211130055933.32708-3-billy_tsai@aspeedtech.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This patch adds device binding for aspeed pwm-tach device which is a
-multi-function device include pwm and tach function and pwm/tach device
-bindings which should be the child-node of pwm-tach device.
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- .../bindings/hwmon/aspeed,ast2600-tach.yaml   | 68 +++++++++++++++++
- .../bindings/mfd/aspeed,ast2600-pwm-tach.yaml | 76 +++++++++++++++++++
- .../bindings/pwm/aspeed,ast2600-pwm.yaml      | 64 ++++++++++++++++
- 3 files changed, 208 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
- create mode 100644 Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
- create mode 100644 Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
+--v25c5nweijfvjqpi
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml b/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
-new file mode 100644
-index 000000000000..dded50a049fb
---- /dev/null
-+++ b/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 Aspeed, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/hwmon/aspeed,ast2600-tach.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Aspeed Ast2600 Tach controller
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+description: |
-+  The Aspeed Tach controller can support upto 16 fan input.
-+  This module is part of the ast2600-pwm-tach multi-function device. For more
-+  details see ../mfd/aspeed,ast2600-pwm-tach.yaml.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2600-tach
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  pinctrl-0: true
-+
-+  pinctrl-names:
-+    const: default
-+
-+required:
-+  - compatible
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+additionalProperties:
-+  type: object
-+  properties:
-+    aspeed,tach-ch:
-+      description:
-+        The tach channel used for this node.
-+      maxItems: 1
-+
-+    aspeed,min-rpm:
-+      description:
-+        define the minimal revolutions per minute of the measure fan
-+        used to calculate the sample period of tach
-+      default: 1000
-+
-+    aspeed,pulse-pr:
-+      description:
-+        Value specifying the number of pulses per revolution of the
-+        monitored FAN.
-+      default: 2
-+
-+    aspeed,tach-div:
-+      description:
-+        define the tachometer clock divider as an integer. Formula of
-+        tach clock = clock source / (2^tach-div)^2
-+      minimum: 0
-+      maximum: 15
-+      default: 5
-+
-+  required:
-+    - reg
-diff --git a/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml b/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
-new file mode 100644
-index 000000000000..1eaf6fab2752
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 Aspeed, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/aspeed,ast2600-pwm-tach.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: PWM Tach controller Device Tree Bindings
-+
-+description: |
-+  The PWM Tach controller is represented as a multi-function device which
-+  includes:
-+    PWM
-+    Tach
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - aspeed,ast2600-pwm-tach
-+      - const: syscon
-+      - const: simple-mfd
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - resets
-+
-+patternProperties:
-+  "^pwm(@[0-9a-f]+)?$":
-+    $ref: ../pwm/aspeed,ast2600-pwm.yaml
-+
-+  "^tach(@[0-9a-f]+)?$":
-+    $ref: ../hwmon/aspeed,ast2600-tach.yaml
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/ast2600-clock.h>
-+    pwm_tach: pwm_tach@1e610000 {
-+      compatible = "aspeed,ast2600-pwm-tach", "syscon", "simple-mfd";
-+      reg = <0x1e610000 0x100>;
-+      clocks = <&syscon ASPEED_CLK_AHB>;
-+      resets = <&syscon ASPEED_RESET_PWM>;
-+
-+      pwm: pwm {
-+        compatible = "aspeed,ast2600-pwm";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        #pwm-cells = <3>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_pwm0_default>;
-+      };
-+
-+      tach: tach {
-+        compatible = "aspeed,ast2600-tach";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_tach0_default>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
-new file mode 100644
-index 000000000000..f501f8a769df
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 Aspeed, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/aspeed,ast2600-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Aspeed Ast2600 PWM controller
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+description: |
-+  The Aspeed PWM controller can support upto 16 PWM outputs.
-+  This module is part of the ast2600-pwm-tach multi-function device. For more
-+  details see ../mfd/aspeed,ast2600-pwm-tach.yaml.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2600-pwm
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  pinctrl-0: true
-+
-+  pinctrl-names:
-+    const: default
-+
-+required:
-+  - compatible
-+  - "#pwm-cells"
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+additionalProperties:
-+  description: Set extend properties for each pwm channel.
-+  type: object
-+  properties:
-+    reg:
-+      description:
-+        The pwm channel index.
-+      maxItems: 1
-+
-+    aspeed,wdt-reload-enable:
-+      type: boolean
-+      description:
-+        Enable the function of wdt reset reload duty point.
-+
-+    aspeed,wdt-reload-duty-point:
-+      description:
-+        Define the duty point after wdt reset, 0 = 100%
-+      minimum: 0
-+      maximum: 255
-+
-+  required:
-+    - reg
--- 
-2.25.1
+Hello Billy,
 
+On Tue, Nov 30, 2021 at 01:59:33PM +0800, Billy Tsai wrote:
+> This patch add the support of PWM controller which can be found at aspeed
+> ast2600 soc. The pwm supoorts up to 16 channels and it's part function
+> of multi-function device "pwm-tach controller".
+>=20
+> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--v25c5nweijfvjqpi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGly6kACgkQwfwUeK3K
+7AkBAQgAmFiWgiLI1T/jQZ62iVsXCI31JeT0xUXbuppZucPF2DaAoNtJKeDRkOpK
+UCDVHW8+ASm0SND1eOdoRjAXJ7HC2mzBSKG2xMnPh2sl1tB44t6iiILDZVg92FYt
+qbGoxZAPG1InfS3YyIQScz6IJ2NOXvWIRmkTVDNfdOehEPrlS18bR3G5IF/jkPt3
+Icidmy5/nmOD3fA5GxBWYG7AGe6M0QBClkZlWv6FPMJ/U2IaGqe21B2UiIGqmtu2
+cH2hjyY7jPEzY9PbzLPKAzqILSGJVfcfi+9UIHYITAu0RqSo6cvCueQtD0qmgBt5
+6OFu2EEYpsIBlVlxpGNwcDd5UEUxCg==
+=r4Sz
+-----END PGP SIGNATURE-----
+
+--v25c5nweijfvjqpi--
