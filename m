@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 602B3C433FE
-	for <linux-pwm@archiver.kernel.org>; Tue, 30 Nov 2021 23:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B20C433FE
+	for <linux-pwm@archiver.kernel.org>; Tue, 30 Nov 2021 23:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345358AbhK3X1h (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 30 Nov 2021 18:27:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
+        id S1345650AbhK3X3h (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 30 Nov 2021 18:29:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345250AbhK3X13 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Nov 2021 18:27:29 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D14C061756;
-        Tue, 30 Nov 2021 15:24:08 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id p8so30795383ljo.5;
-        Tue, 30 Nov 2021 15:24:08 -0800 (PST)
+        with ESMTP id S1345312AbhK3X1e (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Nov 2021 18:27:34 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFB7C061757;
+        Tue, 30 Nov 2021 15:24:13 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id l22so57903520lfg.7;
+        Tue, 30 Nov 2021 15:24:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BUPMWYY4B4RjKlltUXgnFtV9hhuqy47aEg3MTgDplAQ=;
-        b=IQ3EtdM0jdKUmytJHIAa8UHQuvKg3GFTWTgffBbQ6VIdxz7Mp1JidKJf6JoivVWwvM
-         2hJfTQ0PkunPptgLCBBlK2XBNvwqHlkxbaIRzkPJyV8FlxCjsZQwZlCun0IHlPn1rJLr
-         dwlBtOq3xQsKFzcnIIJ4OCHZ1bYMeBhtowdj9k1OY7wr/hXF3Fly/QvCi6VAP8t6B+WG
-         Zy8PigW8k8pp/aMH0P4d92xjr1ptFRZX1a2ZpJJiVlmZFCUU4fptcv/2hIFl2xRWxngY
-         8TpztzKnhecVI9QhRr1Dgf5zXfJjWu4OTP9efC8mIXL3qh6Xev/zG/eG38ulsXuOPXJ+
-         //eg==
+        bh=aMqIRBx8bvkPqXq4sp0s4HdEiF5OdAJboSuvlHkSNzI=;
+        b=IQ1LSQa2l3fz6yR41bKkuciUdRe4P2k8wXpBlg7eku9Ndz4H79S5f/NrETNLfmTx97
+         RQ7G2o3fopgLto0kBSzMo2XifJ9jDu7yvqPOZKf5PyLtr83gMYuMZEFXzNWUGjH7hCH4
+         lRQpJn3rrcQHTUGjiPqCxKDS6gQ5kI9HbD7mQMR2QdX2p4udgvXQd+kqH8A6MKqFjKAO
+         iZ51QRTNwhSQWD0JsbWbNQUU3pOFgLyAWWu6zdYe63m8ZIdbNtn3Za1XGqjnliBdMo2K
+         gnF4w+3q9H6NCcP/EoNdkQQIzPK5ifAoiCSxl4Musc6BMiUSoGNSYgyDB/EUxuJeYBUA
+         ft3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BUPMWYY4B4RjKlltUXgnFtV9hhuqy47aEg3MTgDplAQ=;
-        b=OSCwy5FJMTsYvFC8Jl/eR/tDKIuTdZuhxERBNude8ZayjyYDFRavUExHy0WoSY0P9V
-         D4HmY0CU9z3aYVUsFF4KOBATbCR0wcAhwQaGLt+gyqna6tvGrOKBsRuGKxhWvBAP0v6B
-         cN/E+vxV+elvpkezUDL1E3B9+4v4DXLObTyiVwXwCNzlLCxEAbHyQhmIKjfXVD52zU/d
-         1fKxil8cYJgTjLTjBy8wHXgbQCTurIvpzvhgcBPMdmrqV5n1NEQpzMcFcTObgkcs6HFV
-         +Y9TUiRwKmcf0/qzNVsWbE3o4diWwPqW4H+ZY75AKPF0OIleyaK6OTvZNOW6+0QVEuem
-         gn3A==
-X-Gm-Message-State: AOAM530bFCFZnx8IDxqqx7OpJshJRtnceJ88+j5gxbm6yanq7Se/3Bzn
-        P4WCRXtl85yrmfdsCtj8h44=
-X-Google-Smtp-Source: ABdhPJy1x4JUGPw6jSGGVQPIy/5wvOS7f5XNpYbhYwejSd6jeed3qTaCBAhQIIqpTx20RCDGKcrleg==
-X-Received: by 2002:a2e:b7d2:: with SMTP id p18mr2055862ljo.104.1638314646770;
-        Tue, 30 Nov 2021 15:24:06 -0800 (PST)
+        bh=aMqIRBx8bvkPqXq4sp0s4HdEiF5OdAJboSuvlHkSNzI=;
+        b=LSzbmFxHe3fBA3D4xB0nWFKSaRKmllY9VCFdJcFlxdEr3wY32yF+vur5QQTsyCO915
+         vWl5sDCw8AhgSJ82qY5JCTh2WJdMz36Vu3c+SbbnzyULm0v1jnGLO6FG7mmVvykjj3Co
+         jb2zg97CcVfiX2HqVNqxPcpnpTHUVtptO3LJBb6sjajGBJJYSoJKJoq5IX4V1Yintmpn
+         tjv1kWnHQRfL73jzUkgVbvr6veIToI1N4bmkYCjp4KP+VcZdlkhuMghrCXiSbkXrVbKI
+         VeTa+1+Wv55pZFkvkpZA/82Pide12i0Z7U210JyAn1uwD+PikQrRjsyeUVwnUg+3Z55l
+         c2PA==
+X-Gm-Message-State: AOAM532DvhOO4Bh+WYRkK7uKKF4CmF+wOT2DxK/SYZBP2pCzlhXVFA2G
+        l8KLqauEAezd8/Wgmehr9C4=
+X-Google-Smtp-Source: ABdhPJznxpBclm3/sH8WRVsvo5VSZBSQu2u3rPiZvJGH/S9kgZZYVPAFxr2PhYbtP/VwIQIW5Yf90w==
+X-Received: by 2002:a19:dc51:: with SMTP id f17mr2296160lfj.555.1638314651720;
+        Tue, 30 Nov 2021 15:24:11 -0800 (PST)
 Received: from localhost.localdomain (94-29-46-111.dynamic.spd-mgts.ru. [94.29.46.111])
-        by smtp.gmail.com with ESMTPSA id x199sm1860735lff.284.2021.11.30.15.24.05
+        by smtp.gmail.com with ESMTPSA id x199sm1860735lff.284.2021.11.30.15.24.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 15:24:06 -0800 (PST)
+        Tue, 30 Nov 2021 15:24:11 -0800 (PST)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -64,9 +64,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
         linux-mmc@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-clk@vger.kernel.org, David Heidelberg <david@ixit.cz>
-Subject: [PATCH v16 12/40] drm/tegra: hdmi: Add OPP support
-Date:   Wed,  1 Dec 2021 02:23:19 +0300
-Message-Id: <20211130232347.950-13-digetx@gmail.com>
+Subject: [PATCH v16 17/40] drm/tegra: submit: Remove pm_runtime_enabled() checks
+Date:   Wed,  1 Dec 2021 02:23:24 +0300
+Message-Id: <20211130232347.950-18-digetx@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211130232347.950-1-digetx@gmail.com>
 References: <20211130232347.950-1-digetx@gmail.com>
@@ -76,70 +76,49 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The HDMI on Tegra belongs to the core power domain and we're going to
-enable GENPD support for the core domain. Now HDMI driver must use
-OPP API for driving the controller's clock rate because OPP API takes
-care of reconfiguring the domain's performance state based on HDMI clock
-rate. Add OPP support to the HDMI driver.
+Runtime PM is now universally available, make it mandatory by removing
+the pm_runtime_enabled() checks.
 
 Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/gpu/drm/tegra/hdmi.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/tegra/submit.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/gpu/drm/tegra/hdmi.c b/drivers/gpu/drm/tegra/hdmi.c
-index e5d2a4026028..9a87d351a828 100644
---- a/drivers/gpu/drm/tegra/hdmi.c
-+++ b/drivers/gpu/drm/tegra/hdmi.c
-@@ -11,10 +11,13 @@
- #include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
-+#include <linux/pm_opp.h>
- #include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
+diff --git a/drivers/gpu/drm/tegra/submit.c b/drivers/gpu/drm/tegra/submit.c
+index 1ba4d539da06..6d6dd8c35475 100644
+--- a/drivers/gpu/drm/tegra/submit.c
++++ b/drivers/gpu/drm/tegra/submit.c
+@@ -504,10 +504,8 @@ static void release_job(struct host1x_job *job)
+ 	kfree(job_data->used_mappings);
+ 	kfree(job_data);
  
-+#include <soc/tegra/common.h>
-+
- #include <drm/drm_atomic_helper.h>
- #include <drm/drm_crtc.h>
- #include <drm/drm_debugfs.h>
-@@ -1195,7 +1198,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
- 	h_back_porch = mode->htotal - mode->hsync_end;
- 	h_front_porch = mode->hsync_start - mode->hdisplay;
+-	if (pm_runtime_enabled(client->base.dev)) {
+-		pm_runtime_mark_last_busy(client->base.dev);
+-		pm_runtime_put_autosuspend(client->base.dev);
+-	}
++	pm_runtime_mark_last_busy(client->base.dev);
++	pm_runtime_put_autosuspend(client->base.dev);
+ }
  
--	err = clk_set_rate(hdmi->clk, hdmi->pixel_clock);
-+	err = dev_pm_opp_set_rate(hdmi->dev, hdmi->pixel_clock);
- 	if (err < 0) {
- 		dev_err(hdmi->dev, "failed to set HDMI clock frequency: %d\n",
- 			err);
-@@ -1732,7 +1735,14 @@ static int tegra_hdmi_probe(struct platform_device *pdev)
+ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
+@@ -591,12 +589,10 @@ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
  	}
  
- 	platform_set_drvdata(pdev, hdmi);
--	pm_runtime_enable(&pdev->dev);
-+
-+	err = devm_pm_runtime_enable(&pdev->dev);
-+	if (err)
-+		return err;
-+
-+	err = devm_tegra_core_dev_init_opp_table_common(&pdev->dev);
-+	if (err)
-+		return err;
+ 	/* Boot engine. */
+-	if (pm_runtime_enabled(context->client->base.dev)) {
+-		err = pm_runtime_resume_and_get(context->client->base.dev);
+-		if (err < 0) {
+-			SUBMIT_ERR(context, "could not power up engine: %d", err);
+-			goto unpin_job;
+-		}
++	err = pm_runtime_resume_and_get(context->client->base.dev);
++	if (err < 0) {
++		SUBMIT_ERR(context, "could not power up engine: %d", err);
++		goto unpin_job;
+ 	}
  
- 	INIT_LIST_HEAD(&hdmi->client.list);
- 	hdmi->client.ops = &hdmi_client_ops;
-@@ -1753,8 +1763,6 @@ static int tegra_hdmi_remove(struct platform_device *pdev)
- 	struct tegra_hdmi *hdmi = platform_get_drvdata(pdev);
- 	int err;
- 
--	pm_runtime_disable(&pdev->dev);
--
- 	err = host1x_client_unregister(&hdmi->client);
- 	if (err < 0) {
- 		dev_err(&pdev->dev, "failed to unregister host1x client: %d\n",
+ 	job->user_data = job_data;
 -- 
 2.33.1
 
