@@ -2,527 +2,159 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CEAC4167E
-	for <linux-pwm@archiver.kernel.org>; Tue, 30 Nov 2021 23:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D73CDC433F5
+	for <linux-pwm@archiver.kernel.org>; Wed,  1 Dec 2021 03:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241125AbhK3XeA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 30 Nov 2021 18:34:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345130AbhK3X1Y (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Nov 2021 18:27:24 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92162C061748;
-        Tue, 30 Nov 2021 15:24:04 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id d11so44284665ljg.8;
-        Tue, 30 Nov 2021 15:24:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o339Pud0WFJg4uNnef7+lPggeNBkDNi7xmFw3AiBijg=;
-        b=plF7qXaJRR9S8fb6a/ziGnqTQoR1g8z2pg9/mrNDcq1ivCAT0OxClZtKMh8xC6pzMM
-         HPutHkaOHwcKsKFz/X4R/roG+EZZogM8y4XEsM3XrEgEXXatP1m4BdhaC4kHfJMQrzmI
-         l2ueZLzWEQWtcZr1/0+0loB7Zg/FyalVh6fy6MKu5xgmlvJbZ4F6AyFJ+YtoY/NJ/Iln
-         17WBV5rvKQvIfDFBzJPRIKmuM/SC/zuP3V/GmgprTNiL5J2g+fqOAOeyXNuOj+ERNXoI
-         VBJgSUzkuF4en171t4GpqNt/8sCg6PGC3yLmWsvFJFHw/y0ZjU7ot+U8cm5SJjT2yVvH
-         4Cxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o339Pud0WFJg4uNnef7+lPggeNBkDNi7xmFw3AiBijg=;
-        b=wywp2epWPI2GsDKcyo2EdKZegW374gpIIC6/zOmI+KYyANfLpaYv9dpOJa7lt/LaqL
-         2D+96Nw7WbZEkPDCYdY97Ba0L3GGiA4cvHHCyMVtaU7d4FH38WAP/NmTElIYegIG2RrI
-         IRutuR8VHynIciclHHttgE1hTAo+8MxSW6lvfA81lEcfbSWqMJ5ogDFbZMlVUHIXsq7P
-         +gTwqVbc4TO5BMdgIthGZdT6krGn5O3BPPhQGN71V9iTS+79wfKJf2cFtCNIq+un6h/4
-         oSwhDU9+dlE/awtNO9HfW0nmFUOjwUXhntKP/xoBNwKUHdUliggxZNhUJ7+l+yK2eSmb
-         OT7g==
-X-Gm-Message-State: AOAM532fF3Cxajsrb9Tj1NcusgWtjUmckXQGFyVeEZa1sLecE/+VbgWp
-        pnAm2SWVyVSxPJisGZ/8TbY=
-X-Google-Smtp-Source: ABdhPJz2X+AxLZTO+9sUOUuyMgPhDL5wGCcWkklRPooganG6O4hUuakoaG2dfpbcf2lfYyKjkcAOpg==
-X-Received: by 2002:a2e:8101:: with SMTP id d1mr1877930ljg.379.1638314642894;
-        Tue, 30 Nov 2021 15:24:02 -0800 (PST)
-Received: from localhost.localdomain (94-29-46-111.dynamic.spd-mgts.ru. [94.29.46.111])
-        by smtp.gmail.com with ESMTPSA id x199sm1860735lff.284.2021.11.30.15.24.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 15:24:02 -0800 (PST)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Peter De Schrijver <pdeschrijver@nvidia.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Nishanth Menon <nm@ti.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Michael Turquette <mturquette@baylibre.com>
-Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-mmc@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-clk@vger.kernel.org, David Heidelberg <david@ixit.cz>
-Subject: [PATCH v16 08/40] gpu: host1x: Add initial runtime PM and OPP support
-Date:   Wed,  1 Dec 2021 02:23:15 +0300
-Message-Id: <20211130232347.950-9-digetx@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211130232347.950-1-digetx@gmail.com>
-References: <20211130232347.950-1-digetx@gmail.com>
+        id S1346431AbhLADd1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 30 Nov 2021 22:33:27 -0500
+Received: from mail-eopbgr1300121.outbound.protection.outlook.com ([40.107.130.121]:48733
+        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S245220AbhLADd1 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 30 Nov 2021 22:33:27 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e6oBVPmHj5yC/x4BeKZhWMzBjzIoUwT6BHuiJIE+4qWvrNHg3IbjhQnmb9t+T2ZI24J1ZK151Q4+Zb1PuM5Yu24B9Iy9Bv6XPFxUEaTzDEvtlM1inPvMQJ9hp4tHXqMuvc7wUrmWaWr6J/nlhsaIanu3QAjkeUbyUdv194O1IFK3ImGQ64WPqQKyx5oKvh+1UudZZa1YAUrO+lyO6zIHKkVY4Q4QH+Bkn2oL+7qDA36WihtQ0kaOV0wY9MHFXxB9wDizFeBqg/GLEbbFOHOsDRQbvLauPJXaNSaUo4Kp6gLCGd9785RbzEGpam9e0UnQVfSqlZ+8Ri+MLeBum4LLOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zhn2E5zgNPWe4iBn3QbiHL+sH7qU2oR6LAD0dCxSK0I=;
+ b=U+zCo3kW2MGY8eF5ZiEgt9dkNrCiyCmyR3RgHElmjfhzKpNj2lpAXzUNVR+xhISfne7bWcXr5aFoo8adN+CwH/dUDPALXaYHpPuiKEdKRpLJWazeunC80wMKp0yiIEypMrVyil6mWwhS96yDfh30I36UIGIBK8HBsQNW0CxMxpFB93t/9Ry324DufjMomAcWAuMgamU0KKVp+K1Xst7OMscPVjnyZX7sDm+Fk7xsv6MAdwY8V4OlABb6F+Om7A1RvBrAVZr4ptRnLbNp3o83KwK47nkP4ch/5bFkPgyS2AN6cxveN/fhwdR6h9hoIHFNMhxPeSBnbWSAWidrjrFT7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
+ header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aspeedtech.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zhn2E5zgNPWe4iBn3QbiHL+sH7qU2oR6LAD0dCxSK0I=;
+ b=HxqemZoAuK2sAcn0bttcgvdXYMZmrvvb8UYtORV0UIfNBA4Q41L94K4S4Owrkfxl3c9XzbzNaF275XiICyvk/ZtnSG0IhD2U/3rmFs5T9O0chks0fflYL4Rdhr4hx5YGzG1J7rvFi+2eF+4VxTmJmBncHQTXTGgdyR2GDmkSVhsoWraWVSz6SFLE8MI6mXqICUbX0azVywfAUvMo42TL7eejmGr/8tnv15NjrZgWQJ48RAapQdx89hhKxaFihkCzmn5Gd+GILYk1ntBL1t9xF8QG+2ba1pGcE1fMZhImz/sgr8/7wGkH2cfdxwlTVXlamIj670+zIDKrKjmCDmoh5w==
+Received: from HK0PR06MB3362.apcprd06.prod.outlook.com (2603:1096:203:8b::10)
+ by HK0PR06MB2674.apcprd06.prod.outlook.com (2603:1096:203:54::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.23; Wed, 1 Dec
+ 2021 03:30:01 +0000
+Received: from HK0PR06MB3362.apcprd06.prod.outlook.com
+ ([fe80::7941:2fad:3c82:52eb]) by HK0PR06MB3362.apcprd06.prod.outlook.com
+ ([fe80::7941:2fad:3c82:52eb%3]) with mapi id 15.20.4734.024; Wed, 1 Dec 2021
+ 03:30:00 +0000
+From:   Billy Tsai <billy_tsai@aspeedtech.com>
+To:     Philipp Zabel <p.zabel@pengutronix.de>,
+        "jdelvare@suse.com" <jdelvare@suse.com>,
+        "linux@roeck-us.net" <linux@roeck-us.net>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "joel@jms.id.au" <joel@jms.id.au>,
+        "andrew@aj.id.au" <andrew@aj.id.au>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+CC:     BMC-SW <BMC-SW@aspeedtech.com>
+Subject: Re: [v13 2/2] pwm: Add Aspeed ast2600 PWM support
+Thread-Topic: [v13 2/2] pwm: Add Aspeed ast2600 PWM support
+Thread-Index: AQHX5Ow7hsOaCLIIMEe2C8jlARJZF6wb1hKAgAGtoYA=
+Date:   Wed, 1 Dec 2021 03:30:00 +0000
+Message-ID: <CDB0374F-3835-4501-964E-DB771588114D@aspeedtech.com>
+References: <20211129064329.27006-1-billy_tsai@aspeedtech.com>
+ <20211129064329.27006-3-billy_tsai@aspeedtech.com>
+ <e28a5d5de9b940717e6444f019eab63ab1bb0b75.camel@pengutronix.de>
+In-Reply-To: <e28a5d5de9b940717e6444f019eab63ab1bb0b75.camel@pengutronix.de>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=aspeedtech.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 716d7ee7-be5b-48a7-d1cc-08d9b47adb41
+x-ms-traffictypediagnostic: HK0PR06MB2674:
+x-microsoft-antispam-prvs: <HK0PR06MB2674FC1B7BFEB588050E3BFD8B689@HK0PR06MB2674.apcprd06.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3GmQEam52uFzkH1XGT+4nBXj/cA51Bk7Kj0+F097da+V043y+KXVZDvzkyp3UBWVjKlD2SeHi83hQHx2V9wuV7G5SpYYCwI7FtDy9qEIjxYTBR9newuxgpumFGT/W5KpBzuDMYQ+yaW8WfkksB5al+ZzYCYp8JTKLbqP+zZ/mdBhVTnU1F/6oPK8Fomn0/C9qDqehkw4Ddrkkablp0el+LoVH76Y9LKKkwxU6asVBzOXcQ+Y84u6q8E5+WmxCDFRIbOiC1mMhqh5IwSS+wHg6Ppqhx9QBhUwSog5OC0pSq7Gopy3343Mu8K1og+OEWRCd0ByliE0Z4uekX7eJfdRXimCTODNgpN/IP0aOHvVIX/LhorzhHQkYHHN5SW2Dx9J1t5kjYuXLtrxTwxr1PQPK41USciYFS/6f/Lc+q0uNHjy6XJqA3mqLEzPwRoF16Ed19dhYtVzEepyxvVLVZoF3cby6Kxz26rTRQ3PW2Cd6PJSTh0w8sBHo++7NzJTj6Zp4peIPW3uRlMRMe2P8F/YNIUXevLsKRYeLKXBr+NCGdnkyS918EXUastJJlUDfuhc7d2AVfHsr9Ut9WkX5+Livmd+UA/P8mWMLv8KF90JGmi/qrTrPxmjz7dYGAGILLtIjPws4oz6k9mec7HVBhM8XMvi7TDdckhZ3IINdz3dwmh/C3hl8Z8qDdkSfL6G6RybPDYbh5fGiyrbm0UAsgi5VtrG3xax9qnCxFTxoqlMBEb6caL4agIKs0VjZ5Yhavdp
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR06MB3362.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(346002)(396003)(39850400004)(136003)(4326008)(36756003)(316002)(7416002)(66946007)(186003)(71200400001)(33656002)(107886003)(2616005)(8936002)(6512007)(38070700005)(110136005)(921005)(508600001)(6486002)(76116006)(86362001)(2906002)(83380400001)(6506007)(38100700002)(5660300002)(66446008)(66476007)(122000001)(8676002)(4001150100001)(53546011)(26005)(66556008)(64756008)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?enU5R2h2MkFiaGZ6T01sVmhYMFNHb2ZWT2RuZ3RIbnBCQjIwVHk5enJ4ZGNv?=
+ =?utf-8?B?TkdZR1NLSWZBbXd1QWNnYWZZVkgyUlhtNWkwdnYvNzAvYzhRLzdwc3ZBVU9w?=
+ =?utf-8?B?alhCN3J2YVZMck53UjdiUnBkMS9RSUtJMmk3S01rSEF1Q1FOVHBpWFphVEFp?=
+ =?utf-8?B?elNDU1NkYkFab0c0amRROE14U3NoRThvNkg3UTQzZlBHQk5mMFJhNUZlaDFJ?=
+ =?utf-8?B?VEp6TzdORlVCSWpDaTUrdnpDMFE4SDQ4UFV3Ymc0ckpib3RvbzVxNnpOS1lN?=
+ =?utf-8?B?a0RwUlJ5SU0rUGliRTZFbVowVXFwUWZsTFplaGZPRFhJQ3FNRFFHNXcwNjV3?=
+ =?utf-8?B?dlI0UHBic1lMdnEwYkpoZkE2bC8yZWZxUmlHb2I4RkFZbE1FYkRqc2RPeUly?=
+ =?utf-8?B?b01QOXMwdWJUT052ejdQZjB2aUFUWFpBUGREVHFJOXQ4RnhUZ1ZkLzAvZ2Zq?=
+ =?utf-8?B?dXpIUmE4L3BkbHhJSFlBQXljNHZXSDRHcUJuMm10NURTUkJzYXg3YkpjTjFK?=
+ =?utf-8?B?blR4dW5LKzgzS2hrZ2FtZ1EvL3dYQzJyTU8vMUlmZTNNNlppak1ydWUwNkpG?=
+ =?utf-8?B?cnAyQjFCVXhtRkJVdjJTM01GTnpLZmxZUEpiNHJHNC82UFc1dXhSb1BxS3JN?=
+ =?utf-8?B?RFRzUUZzVmdUTFJtcWJNTDR0Z1JTcE54azlGTWs1L0VSS0xyb2RnWUt5SzZm?=
+ =?utf-8?B?YzZBMEluTDQ4VHpkdldscFVpTU40eGlKYkg2T2RLNFQxRS8wL3E5bFQ5emdv?=
+ =?utf-8?B?T2MyREdvdmRvdWVkTFVvb1A3b1hIMzQ0dGI1MXlXd1hYVFFYdVlPUFRvYXNp?=
+ =?utf-8?B?S3RKNWxobU53S0lPZmRkS1VTWDVRQ1RScmJYMGlneWt1YmRhQ3l6WTc3RmVK?=
+ =?utf-8?B?YjZFRzJkMmVNTkovYjZjQXU5eXN0K3kxV0J0Z3hZY1dUcEVueU9yOSt4M3VK?=
+ =?utf-8?B?RHpZbEJUYmVOc1M1UFFLU1d2M0FEUUVkTk5QSUE5N0lUeGU0V0g4QzNqNjh0?=
+ =?utf-8?B?eG5mQmhDeENOY2FRd2pZcFNDSmxkVkhocmlMYlR5VGhiY2JNQ3paTXorWFFB?=
+ =?utf-8?B?NjBBU2s1MW4yMGNUMGFUeU9LeERrMDI0dmgyUjdYR3VPYVhnOEVsaXJWNmNH?=
+ =?utf-8?B?UWVHcW1zM2RwK1lYckxIZWtQMWt5TmF5M0ZuK3lsYXc5eHhpUG1Gd01uQW15?=
+ =?utf-8?B?TXorZ1dUaU9PN25SalM1U1Y4YXQxRFZsT1IxTUJUaXVFUUlRU29UV2Exdnpr?=
+ =?utf-8?B?QVdkVlR4Zk54aFdVNkJEVkMyT2lJNFgzUmVlYmR4V0Q4aVRQTHdHRGdFS25K?=
+ =?utf-8?B?T3BsK3NNUTBSdkZlTE9uQTUweVFZaTl6bHVUMDk0Zjg5Z2JXRVhMc3JmbVBs?=
+ =?utf-8?B?WEw3NkduSC9NSWRJRzRNM3EzS05kdTdCc0l4cVhmdXUxZjZBK2d0YUFUU1BK?=
+ =?utf-8?B?dUw5TWtLRHNPK0VOT2xwUUpPekU5MXlUbjdwS1dqdDZ2Z2RFeVRoYktqQjFh?=
+ =?utf-8?B?L3N5QzJNVzJMei9aY0Vlay9yOWNXZEFJSUVUUkVCSGFmS1dGT24yZmMyRXZS?=
+ =?utf-8?B?TDkwKzdsM21SNzZER1l5aHEwdlpHL3pWdXJoUXJwNm1GeXFIUktrSndwT3dV?=
+ =?utf-8?B?QWVDU1huMnhqVjNwK0RZaldYcXJDRExHWlVUVitla1ZoQ2Yrd2NQck9GSDVX?=
+ =?utf-8?B?Q0lBTG5lZS9IV1lkeTd1VmowSlBZZTFtWnhnY2gvM0NlV0FhMTVuRm5VeDE4?=
+ =?utf-8?B?cWlKZzI5cU1qRlRHdlBvYXRYblpOWThIb1BpWXdZemwrOVZyTVJsYm84R2ht?=
+ =?utf-8?B?eHpjdUhqakpCN2hET0NCbUNqS2pKbjkrTUtwUy9iVldXbUZpaW5rMGpDVkhr?=
+ =?utf-8?B?UWw1NHFlZllaUU5DYnFVUjhsd2xOVWp1M2ZYZk8vQ0l5MHRvbUIvRnRCRXdl?=
+ =?utf-8?B?NUJVMitCVVpGQmNQN1JkSW9TUldOeW8zRjkwZlRQeUxpUG5zREt2RWRCcERp?=
+ =?utf-8?B?b2kvMzZMVW5KNXpHVUtKOUVCTTFmVGM0RWxZWHc1c0pzaEU4V2Qvem93RUNF?=
+ =?utf-8?B?eEtzdWRJTkhsNEFqN29YZndpcVdIM0dGNjd4NWpXYVkxZXBvVURpWWZITVNr?=
+ =?utf-8?B?b1hFb3F2VzdRNVMwZ3lrZndzVHl5RmlJWjdJTGFUSlEwMGhsSlZKYWwzUDZ1?=
+ =?utf-8?B?NkFLT3ZwYUpGQTBKbTUremNEYU1ETkVUVzRPdTVvdDB2Z2xkV1ZsTVNISXZx?=
+ =?utf-8?Q?apwWM7G7ETah81Vw8Xqbwy1E9UcB5fScq+2j9rJoxs=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0F9F6FCBB3AF334D9135C86EA5702445@apcprd06.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: aspeedtech.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HK0PR06MB3362.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 716d7ee7-be5b-48a7-d1cc-08d9b47adb41
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Dec 2021 03:30:00.5130
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +1ZjTOxBDsFrGpPmBYXziXEDb1/7tU8co1fD4SxfiZRFZrFnOsSmxeRie8fvP7zAkTrkSk9CZOG6jCrkSzZRy9b8KkVwsX57vW3iHeeQgIQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR06MB2674
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add runtime PM and OPP support to the Host1x driver. For the starter we
-will keep host1x always-on because dynamic power management require a major
-refactoring of the driver code since lot's of code paths are missing the
-RPM handling and we're going to remove some of these paths in the future.
-
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Tested-by: Peter Geis <pgwipeout@gmail.com> # Ouya T30
-Tested-by: Paul Fertser <fercerpav@gmail.com> # PAZ00 T20
-Tested-by: Nicolas Chauvet <kwizart@gmail.com> # PAZ00 T20 and TK1 T124
-Tested-by: Matt Merhar <mattmerhar@protonmail.com> # Ouya T30
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
----
- drivers/gpu/host1x/debug.c         |  15 +++
- drivers/gpu/host1x/dev.c           | 150 +++++++++++++++++++++++------
- drivers/gpu/host1x/dev.h           |   3 +-
- drivers/gpu/host1x/hw/channel_hw.c |  44 ++++-----
- drivers/gpu/host1x/intr.c          |   3 -
- drivers/gpu/host1x/syncpt.c        |   5 +-
- 6 files changed, 164 insertions(+), 56 deletions(-)
-
-diff --git a/drivers/gpu/host1x/debug.c b/drivers/gpu/host1x/debug.c
-index 8a14880c61bb..18d9c8d206e3 100644
---- a/drivers/gpu/host1x/debug.c
-+++ b/drivers/gpu/host1x/debug.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <linux/debugfs.h>
-+#include <linux/pm_runtime.h>
- #include <linux/seq_file.h>
- #include <linux/uaccess.h>
- 
-@@ -52,6 +53,11 @@ static int show_channel(struct host1x_channel *ch, void *data, bool show_fifo)
- {
- 	struct host1x *m = dev_get_drvdata(ch->dev->parent);
- 	struct output *o = data;
-+	int err;
-+
-+	err = pm_runtime_resume_and_get(m->dev);
-+	if (err < 0)
-+		return err;
- 
- 	mutex_lock(&ch->cdma.lock);
- 	mutex_lock(&debug_lock);
-@@ -64,6 +70,8 @@ static int show_channel(struct host1x_channel *ch, void *data, bool show_fifo)
- 	mutex_unlock(&debug_lock);
- 	mutex_unlock(&ch->cdma.lock);
- 
-+	pm_runtime_put(m->dev);
-+
- 	return 0;
- }
- 
-@@ -71,9 +79,14 @@ static void show_syncpts(struct host1x *m, struct output *o)
- {
- 	struct list_head *pos;
- 	unsigned int i;
-+	int err;
- 
- 	host1x_debug_output(o, "---- syncpts ----\n");
- 
-+	err = pm_runtime_resume_and_get(m->dev);
-+	if (err < 0)
-+		return;
-+
- 	for (i = 0; i < host1x_syncpt_nb_pts(m); i++) {
- 		u32 max = host1x_syncpt_read_max(m->syncpt + i);
- 		u32 min = host1x_syncpt_load(m->syncpt + i);
-@@ -101,6 +114,8 @@ static void show_syncpts(struct host1x *m, struct output *o)
- 					    base_val);
- 	}
- 
-+	pm_runtime_put(m->dev);
-+
- 	host1x_debug_output(o, "\n");
- }
- 
-diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
-index 3d4cabdbc78d..c42ab78327e7 100644
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -6,14 +6,18 @@
-  */
- 
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/dma-mapping.h>
- #include <linux/io.h>
- #include <linux/list.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/of.h>
-+#include <linux/pm_runtime.h>
- #include <linux/slab.h>
- 
-+#include <soc/tegra/common.h>
-+
- #define CREATE_TRACE_POINTS
- #include <trace/events/host1x.h>
- #undef CREATE_TRACE_POINTS
-@@ -208,6 +212,9 @@ static void host1x_setup_sid_table(struct host1x *host)
- 	const struct host1x_info *info = host->info;
- 	unsigned int i;
- 
-+	if (!info->has_hypervisor)
-+		return;
-+
- 	for (i = 0; i < info->num_sid_entries; i++) {
- 		const struct host1x_sid_entry *entry = &info->sid_table[i];
- 
-@@ -365,6 +372,27 @@ static void host1x_iommu_exit(struct host1x *host)
- 	}
- }
- 
-+static int host1x_get_resets(struct host1x *host)
-+{
-+	int err;
-+
-+	host->resets[0].id = "mc";
-+	host->resets[1].id = "host1x";
-+	host->nresets = ARRAY_SIZE(host->resets);
-+
-+	err = devm_reset_control_bulk_get_optional_exclusive_released(
-+				host->dev, host->nresets, host->resets);
-+	if (err) {
-+		dev_err(host->dev, "failed to get reset: %d\n", err);
-+		return err;
-+	}
-+
-+	if (WARN_ON(!host->resets[1].rstc))
-+		return -ENOENT;
-+
-+	return 0;
-+}
-+
- static int host1x_probe(struct platform_device *pdev)
- {
- 	struct host1x *host;
-@@ -442,12 +470,9 @@ static int host1x_probe(struct platform_device *pdev)
- 		return err;
- 	}
- 
--	host->rst = devm_reset_control_get(&pdev->dev, "host1x");
--	if (IS_ERR(host->rst)) {
--		err = PTR_ERR(host->rst);
--		dev_err(&pdev->dev, "failed to get reset: %d\n", err);
-+	err = host1x_get_resets(host);
-+	if (err)
- 		return err;
--	}
- 
- 	err = host1x_iommu_init(host);
- 	if (err < 0) {
-@@ -462,22 +487,10 @@ static int host1x_probe(struct platform_device *pdev)
- 		goto iommu_exit;
- 	}
- 
--	err = clk_prepare_enable(host->clk);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to enable clock\n");
--		goto free_channels;
--	}
--
--	err = reset_control_deassert(host->rst);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to deassert reset: %d\n", err);
--		goto unprepare_disable;
--	}
--
- 	err = host1x_syncpt_init(host);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to initialize syncpts\n");
--		goto reset_assert;
-+		goto free_channels;
- 	}
- 
- 	err = host1x_intr_init(host, syncpt_irq);
-@@ -486,10 +499,18 @@ static int host1x_probe(struct platform_device *pdev)
- 		goto deinit_syncpt;
- 	}
- 
--	host1x_debug_init(host);
-+	pm_runtime_enable(&pdev->dev);
-+
-+	err = devm_tegra_core_dev_init_opp_table_common(&pdev->dev);
-+	if (err)
-+		goto pm_disable;
- 
--	if (host->info->has_hypervisor)
--		host1x_setup_sid_table(host);
-+	/* the driver's code isn't ready yet for the dynamic RPM */
-+	err = pm_runtime_resume_and_get(&pdev->dev);
-+	if (err)
-+		goto pm_disable;
-+
-+	host1x_debug_init(host);
- 
- 	err = host1x_register(host);
- 	if (err < 0)
-@@ -505,13 +526,14 @@ static int host1x_probe(struct platform_device *pdev)
- 	host1x_unregister(host);
- deinit_debugfs:
- 	host1x_debug_deinit(host);
-+
-+	pm_runtime_put_sync_suspend(&pdev->dev);
-+pm_disable:
-+	pm_runtime_disable(&pdev->dev);
-+
- 	host1x_intr_deinit(host);
- deinit_syncpt:
- 	host1x_syncpt_deinit(host);
--reset_assert:
--	reset_control_assert(host->rst);
--unprepare_disable:
--	clk_disable_unprepare(host->clk);
- free_channels:
- 	host1x_channel_list_free(&host->channel_list);
- iommu_exit:
-@@ -526,20 +548,94 @@ static int host1x_remove(struct platform_device *pdev)
- 
- 	host1x_unregister(host);
- 	host1x_debug_deinit(host);
-+
-+	pm_runtime_force_suspend(&pdev->dev);
-+
- 	host1x_intr_deinit(host);
- 	host1x_syncpt_deinit(host);
--	reset_control_assert(host->rst);
--	clk_disable_unprepare(host->clk);
- 	host1x_iommu_exit(host);
- 	host1x_bo_cache_destroy(&host->cache);
- 
- 	return 0;
- }
- 
-+static int __maybe_unused host1x_runtime_suspend(struct device *dev)
-+{
-+	struct host1x *host = dev_get_drvdata(dev);
-+	int err;
-+
-+	host1x_intr_stop(host);
-+	host1x_syncpt_save(host);
-+
-+	err = reset_control_bulk_assert(host->nresets, host->resets);
-+	if (err) {
-+		dev_err(dev, "failed to assert reset: %d\n", err);
-+		goto resume_host1x;
-+	}
-+
-+	usleep_range(1000, 2000);
-+
-+	clk_disable_unprepare(host->clk);
-+	reset_control_bulk_release(host->nresets, host->resets);
-+
-+	return 0;
-+
-+resume_host1x:
-+	host1x_setup_sid_table(host);
-+	host1x_syncpt_restore(host);
-+	host1x_intr_start(host);
-+
-+	return err;
-+}
-+
-+static int __maybe_unused host1x_runtime_resume(struct device *dev)
-+{
-+	struct host1x *host = dev_get_drvdata(dev);
-+	int err;
-+
-+	err = reset_control_bulk_acquire(host->nresets, host->resets);
-+	if (err) {
-+		dev_err(dev, "failed to acquire reset: %d\n", err);
-+		return err;
-+	}
-+
-+	err = clk_prepare_enable(host->clk);
-+	if (err) {
-+		dev_err(dev, "failed to enable clock: %d\n", err);
-+		goto release_reset;
-+	}
-+
-+	err = reset_control_bulk_deassert(host->nresets, host->resets);
-+	if (err < 0) {
-+		dev_err(dev, "failed to deassert reset: %d\n", err);
-+		goto disable_clk;
-+	}
-+
-+	host1x_setup_sid_table(host);
-+	host1x_syncpt_restore(host);
-+	host1x_intr_start(host);
-+
-+	return 0;
-+
-+disable_clk:
-+	clk_disable_unprepare(host->clk);
-+release_reset:
-+	reset_control_bulk_release(host->nresets, host->resets);
-+
-+	return err;
-+}
-+
-+static const struct dev_pm_ops host1x_pm = {
-+	SET_RUNTIME_PM_OPS(host1x_runtime_suspend, host1x_runtime_resume,
-+			   NULL)
-+	/* TODO: add system suspend-resume once driver will be ready for that */
-+};
-+
- static struct platform_driver tegra_host1x_driver = {
- 	.driver = {
- 		.name = "tegra-host1x",
- 		.of_match_table = host1x_of_match,
-+		.pm = &host1x_pm,
- 	},
- 	.probe = host1x_probe,
- 	.remove = host1x_remove,
-diff --git a/drivers/gpu/host1x/dev.h b/drivers/gpu/host1x/dev.h
-index 5b7fdea5d169..ca4b082f0cd4 100644
---- a/drivers/gpu/host1x/dev.h
-+++ b/drivers/gpu/host1x/dev.h
-@@ -118,7 +118,8 @@ struct host1x {
- 	struct host1x_syncpt_base *bases;
- 	struct device *dev;
- 	struct clk *clk;
--	struct reset_control *rst;
-+	struct reset_control_bulk_data resets[2];
-+	unsigned int nresets;
- 
- 	struct iommu_group *group;
- 	struct iommu_domain *domain;
-diff --git a/drivers/gpu/host1x/hw/channel_hw.c b/drivers/gpu/host1x/hw/channel_hw.c
-index 1999780a7203..6b40e9af1e88 100644
---- a/drivers/gpu/host1x/hw/channel_hw.c
-+++ b/drivers/gpu/host1x/hw/channel_hw.c
-@@ -159,6 +159,27 @@ static void host1x_channel_set_streamid(struct host1x_channel *channel)
- #endif
- }
- 
-+static void host1x_enable_gather_filter(struct host1x_channel *ch)
-+{
-+#if HOST1X_HW >= 6
-+	struct host1x *host = dev_get_drvdata(ch->dev->parent);
-+	u32 val;
-+
-+	if (!host->hv_regs)
-+		return;
-+
-+	val = host1x_hypervisor_readl(
-+		host, HOST1X_HV_CH_KERNEL_FILTER_GBUFFER(ch->id / 32));
-+	val |= BIT(ch->id % 32);
-+	host1x_hypervisor_writel(
-+		host, val, HOST1X_HV_CH_KERNEL_FILTER_GBUFFER(ch->id / 32));
-+#elif HOST1X_HW >= 4
-+	host1x_ch_writel(ch,
-+			 HOST1X_CHANNEL_CHANNELCTRL_KERNEL_FILTER_GBUFFER(1),
-+			 HOST1X_CHANNEL_CHANNELCTRL);
-+#endif
-+}
-+
- static int channel_submit(struct host1x_job *job)
- {
- 	struct host1x_channel *ch = job->channel;
-@@ -190,6 +211,7 @@ static int channel_submit(struct host1x_job *job)
- 	}
- 
- 	host1x_channel_set_streamid(ch);
-+	host1x_enable_gather_filter(ch);
- 
- 	/* begin a CDMA submit */
- 	err = host1x_cdma_begin(&ch->cdma, job);
-@@ -249,27 +271,6 @@ static int channel_submit(struct host1x_job *job)
- 	return err;
- }
- 
--static void enable_gather_filter(struct host1x *host,
--				 struct host1x_channel *ch)
--{
--#if HOST1X_HW >= 6
--	u32 val;
--
--	if (!host->hv_regs)
--		return;
--
--	val = host1x_hypervisor_readl(
--		host, HOST1X_HV_CH_KERNEL_FILTER_GBUFFER(ch->id / 32));
--	val |= BIT(ch->id % 32);
--	host1x_hypervisor_writel(
--		host, val, HOST1X_HV_CH_KERNEL_FILTER_GBUFFER(ch->id / 32));
--#elif HOST1X_HW >= 4
--	host1x_ch_writel(ch,
--			 HOST1X_CHANNEL_CHANNELCTRL_KERNEL_FILTER_GBUFFER(1),
--			 HOST1X_CHANNEL_CHANNELCTRL);
--#endif
--}
--
- static int host1x_channel_init(struct host1x_channel *ch, struct host1x *dev,
- 			       unsigned int index)
- {
-@@ -278,7 +279,6 @@ static int host1x_channel_init(struct host1x_channel *ch, struct host1x *dev,
- #else
- 	ch->regs = dev->regs + index * 0x100;
- #endif
--	enable_gather_filter(dev, ch);
- 	return 0;
- }
- 
-diff --git a/drivers/gpu/host1x/intr.c b/drivers/gpu/host1x/intr.c
-index 45b6be927ec4..965ba21818b1 100644
---- a/drivers/gpu/host1x/intr.c
-+++ b/drivers/gpu/host1x/intr.c
-@@ -297,14 +297,11 @@ int host1x_intr_init(struct host1x *host, unsigned int irq_sync)
- 			 "host1x_sp_%02u", id);
- 	}
- 
--	host1x_intr_start(host);
--
- 	return 0;
- }
- 
- void host1x_intr_deinit(struct host1x *host)
- {
--	host1x_intr_stop(host);
- }
- 
- void host1x_intr_start(struct host1x *host)
-diff --git a/drivers/gpu/host1x/syncpt.c b/drivers/gpu/host1x/syncpt.c
-index d198a10848c6..e08e331e46ae 100644
---- a/drivers/gpu/host1x/syncpt.c
-+++ b/drivers/gpu/host1x/syncpt.c
-@@ -143,6 +143,8 @@ void host1x_syncpt_restore(struct host1x *host)
- 	for (i = 0; i < host1x_syncpt_nb_bases(host); i++)
- 		host1x_hw_syncpt_restore_wait_base(host, sp_base + i);
- 
-+	host1x_hw_syncpt_enable_protection(host);
-+
- 	wmb();
- }
- 
-@@ -366,9 +368,6 @@ int host1x_syncpt_init(struct host1x *host)
- 	host->syncpt = syncpt;
- 	host->bases = bases;
- 
--	host1x_syncpt_restore(host);
--	host1x_hw_syncpt_enable_protection(host);
--
- 	/* Allocate sync point to use for clearing waits for expired fences */
- 	host->nop_sp = host1x_syncpt_alloc(host, 0, "reserved-nop");
- 	if (!host->nop_sp)
--- 
-2.33.1
-
+SGkgUGhpbGlwcCwNCg0KT24gMjAyMS8xMS8zMCwgNTo1MiBQTSwgIlBoaWxpcHAgWmFiZWwiIDxw
+LnphYmVsQHBlbmd1dHJvbml4LmRlPiB3cm90ZToNCg0KICAgIE9uIE1vbiwgMjAyMS0xMS0yOSBh
+dCAxNDo0MyArMDgwMCwgQmlsbHkgVHNhaSB3cm90ZToNCiAgICBbLi4uXQ0KICAgID4gICA+ICsJ
+cmV0ID0gY2xrX3ByZXBhcmVfZW5hYmxlKHByaXYtPmNsayk7DQogICAgPiAgID4gKwlpZiAocmV0
+KQ0KICAgID4gICA+ICsJCXJldHVybiBkZXZfZXJyX3Byb2JlKGRldiwgcmV0LCAiQ291bGRuJ3Qg
+ZW5hYmxlIGNsb2NrXG4iKTsNCiAgICA+ICAgPiArDQogICAgPiAgID4gKwlyZXQgPSByZXNldF9j
+b250cm9sX2RlYXNzZXJ0KHByaXYtPnJlc2V0KTsNCiAgICA+ICAgPiArCWlmIChyZXQpIHsNCiAg
+ICA+ICAgPiArCQlkZXZfZXJyX3Byb2JlKGRldiwgcmV0LCAiQ291bGRuJ3QgZGVhc3NlcnQgcmVz
+ZXQgY29udHJvbFxuIik7DQogICAgPiAgID4gKwkJZ290byBlcnJfZGlzYWJsZV9jbGs7DQogICAg
+PiAgID4gKwl9DQoNCiAgICA+ICAgSXMgdGhlcmUgYW55IHJlYXNvbiB0byBrZWVwIHRoZSBjbG9j
+a3MgcnVubmluZyBhbmQgdGhlIGNvbnRyb2xsZXIgb3V0IG9mDQogICAgPiAgIHJlc2V0IHdoaWxl
+IHRoZSBQV00gb3V0cHV0cyBhcmUgZGlzYWJsZWQ/DQoNCkNhbiB5b3UgdGVsbCBtZSBhYm91dCB5
+b3VyIGNvbmNlcm5zIHdpdGggdGhpcyBwcm9jZXNzPw0KSW4gbXkgb3BpbmlvbiwgdGhleSBhcmUg
+dXNlZCB0byBwcm92aWRlIHRoZSBjbG9jayBhbmQgZGUtYXNzZXJ0IHRoZSByZXNldCBvZiB0aGUg
+UFdNIGVuZ2luZS4gSWYgd2UgZGlkbid0IHJlbGVhc2UNCnRoZW0gaW4gcHJvYmUgc3RhZ2UgdGhl
+IENQVSBjYW4ndCBhbmQgc2hvdWxkbid0IHJlYWQgdGhlIHJlZ2lzdGVyIG9mIHRoZSBQV00gZW5n
+aW5lIHdoZW4gY2FsbCB0aGUgZ2V0X3N0YXRlLg0KQXNzdW1lIHRoYXQgd2Ugd2FudCB0byBhZGp1
+c3QgdGhlbSBkeW5hbWljYWxseSwgdGhlIGRyaXZlciBuZWVkcyB0byBhZGQgbW9yZSBjb25kaXRp
+b25zIHRvIGNoZWNrIGFuZCBrZWVwIHRoZSBzdGF0dXMNCm9mIGVhY2ggUFdNIGNoYW5uZWwsIHdo
+aWNoIGlzIG5vdCBhIGdvb2QgZGVhbCBmb3IgdGhlIHNlcnZlciBwbGF0Zm9ybS4NCg0KVGhhbmtz
+DQoNCkJlc3QgUmVnYXJkcywNCkJpbGx5IFRzYWkNCg0KDQo=
