@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E097C4332F
-	for <linux-pwm@archiver.kernel.org>; Mon,  6 Dec 2021 18:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D77C4C4167E
+	for <linux-pwm@archiver.kernel.org>; Mon,  6 Dec 2021 18:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347562AbhLFSad (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 6 Dec 2021 13:30:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47462 "EHLO
+        id S1347605AbhLFSag (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Dec 2021 13:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347362AbhLFSaO (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Dec 2021 13:30:14 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F65BC061746;
-        Mon,  6 Dec 2021 10:26:45 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id gt5so8393203pjb.1;
-        Mon, 06 Dec 2021 10:26:45 -0800 (PST)
+        with ESMTP id S1347423AbhLFSaS (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Dec 2021 13:30:18 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BAB9C061746;
+        Mon,  6 Dec 2021 10:26:49 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id l64so5744411pgl.9;
+        Mon, 06 Dec 2021 10:26:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=I18/cMLsQhJOofktwki/zSWiGzzVEzrVRJ9sFw5GkOk=;
-        b=nYcOF5vXym3mhpVAYnFbV12nN0McdPMuRRQKLbVmJth1q+Mp+tVHfYO/CScszMCnIS
-         wnTneCF7yjgss9ikFrghR+rzsQNL3gZKerBKx+b7MPG9BpZfR+8WQsydrUwLOSK4UUC9
-         iM4QxWFvpuITmeJzOZxGM/cbOXfy/qbRqakUyHAiDWbiDBLLpInDa576iGdjQQZcNlmq
-         glV7GztKKqlmeqNWi4FGul6HeG5Zh3WYQnJVbTeTdEOzVnjaRyGgEDROHFv3OHbpQ0i2
-         F3cuB4mRKaLN+Nv4Lz6CgCnQhHfuEMaF8Yx/fl6U4bbJlf816/RaO4NkCMpv3BwpFFtN
-         Q2Pw==
+        bh=JUJ+46P2lZKqa9GcjTNExLZ59H82MAk46ZsUw+ykybM=;
+        b=kU99L9Y51Kn0GGffgfdtTjU/trqWSkETe6sPE8NiMvNFQNV2DltAKs5XPjrhg+Jjdu
+         exnXIWjBG2i4J4LI3YfCX6rl84hDrkLokZvi2WeNmCIw2OzDExSBZNa54ZJ14bH+cRe/
+         a2h61/lL/Pcm1Fy2cqut2yGHOOFNKDqyUOsTTucu/ezxcRk8KbWcuDijMq0EuDx7RxvX
+         Wk+Wy+HfxzPlh5PcKFH0qmcbxMVrAmvOvu8AXclMUXKqWG7P2xu0SlzXjmxYYkpmgkj2
+         yU6HRKB/d5Gw+X17XbYZBqwI713hQgUqw8L2s1tyqIhWFfKnzFLRo3eygriopY6SPs1V
+         CJGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=I18/cMLsQhJOofktwki/zSWiGzzVEzrVRJ9sFw5GkOk=;
-        b=78xHj7ZsR4adaAYD0bQiZDepISDs5Ewe/npibi9HoN70p9MVb5xn1EmK7GNY56dgu7
-         b8mauCVjALsV8RXdAUzpth8gueOo4kKdEzAqtN158VMCEtMqGoSJOE83wvnAvTA/9qsX
-         KJYfQlEI+uBDXlgTEv/7gNljvWaaSJtSx29xG0Lt+0blii5vKxW6lgpHe0f6fFmiKdEN
-         N4N4lmWseexIY4Ynhv55jevXRSVeFlQ1M5EsDUh0GXm5MiKY/FvW1/LwCEMefwX0+vKk
-         TYtW6msggdIhgU7biNgpz0+v6dXtsNf9mHvgbInJHo0LG1OCzb9/c0LkJNv1DQOfgQy6
-         K8aQ==
-X-Gm-Message-State: AOAM532fkSTL3qQiN+by3N6W6EhK0pOOhTyhhZ9Rey4IbksRpInn44e3
-        Qzfu8A+SY9AnFZEEcXE7W3YFre8PkSQ=
-X-Google-Smtp-Source: ABdhPJzBy0O21Nc2EF1bYgkBVgbj1vC2wiovbxWRmuqR9Q3XkDy4IsPPsVR2UzVgwg/eFntTN4tNoQ==
-X-Received: by 2002:a17:90a:9a8e:: with SMTP id e14mr198493pjp.231.1638815204680;
-        Mon, 06 Dec 2021 10:26:44 -0800 (PST)
+        bh=JUJ+46P2lZKqa9GcjTNExLZ59H82MAk46ZsUw+ykybM=;
+        b=VBSE6auKRm98cbTtPJeVtdnJ4kthb/4nGfliom7PpaCzXo0Dbou3fQNBeLHNlvfLcf
+         ybdB28r6u5zgPx96BilTJ0DUs94MpTsuvpUvgYmaCGmGEYLJabfW7eBeFpbYdSxSEY+f
+         9iYYen8z31C7/3Yz6BXm7XaHM+DhEeJQdrHtLIiX/DgwzSZOOAPg6V7TRdps735hCZZa
+         2CgGu5SU22EwjqaKE13sP8oaMGWZdLasZSE3H6eAMRDM6c+Rj9fbYNMRPIzvLGKbKf1P
+         S44y2cCPu6JYx+eOtOPeLZ0GVmqhXm8NMwj+ncW7eKwADol0BLAd3H4/L3Dyhnj44GN5
+         M6YQ==
+X-Gm-Message-State: AOAM533sokH1jIbPgKbyVFDla6TFcnAbme73VtHGdbaXaxX4FfQoRHAL
+        YLrvyTZGbaInpzrJEQy8Yn0b78U3Seg=
+X-Google-Smtp-Source: ABdhPJyigbdo9ZoRF96SOLo/9a6fD0t0h/AKLi0RxRvpjjnuQwdBtTHDjlTwh+2xmgk5SXv2yxaa1Q==
+X-Received: by 2002:a05:6a00:1ac9:b0:49f:b38d:fe7 with SMTP id f9-20020a056a001ac900b0049fb38d0fe7mr38788631pfv.63.1638815208600;
+        Mon, 06 Dec 2021 10:26:48 -0800 (PST)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a22sm12773097pfh.111.2021.12.06.10.26.42
+        by smtp.gmail.com with ESMTPSA id a22sm12773097pfh.111.2021.12.06.10.26.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 10:26:44 -0800 (PST)
+        Mon, 06 Dec 2021 10:26:48 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     devicetree@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -89,9 +89,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         linux-rtc@vger.kernel.org (open list:REAL TIME CLOCK (RTC) SUBSYSTEM),
         linux-pm@vger.kernel.org (open list:THERMAL),
         linux-usb@vger.kernel.org (open list:USB SUBSYSTEM)
-Subject: [PATCH v2 12/14] dt-bindings: ata: Convert Broadcom SATA to YAML
-Date:   Mon,  6 Dec 2021 10:26:14 -0800
-Message-Id: <20211206182616.2089677-13-f.fainelli@gmail.com>
+Subject: [PATCH v2 14/14] dt-bindings: usb: Convert BDC to YAML
+Date:   Mon,  6 Dec 2021 10:26:16 -0800
+Message-Id: <20211206182616.2089677-15-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211206182616.2089677-1-f.fainelli@gmail.com>
 References: <20211206182616.2089677-1-f.fainelli@gmail.com>
@@ -101,166 +101,118 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Convert the Broadcom SATA3 AHCI controller Device Tree binding to YAML
+Convert the Broadcom BDC device controller Device Tree binding to YAML
 to help with validation.
 
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../bindings/ata/brcm,sata-brcm.txt           | 45 ---------
- .../bindings/ata/brcm,sata-brcm.yaml          | 91 +++++++++++++++++++
- 2 files changed, 91 insertions(+), 45 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/ata/brcm,sata-brcm.txt
- create mode 100644 Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
+ .../devicetree/bindings/usb/brcm,bdc.txt      | 29 ------------
+ .../devicetree/bindings/usb/brcm,bdc.yaml     | 46 +++++++++++++++++++
+ MAINTAINERS                                   |  2 +-
+ 3 files changed, 47 insertions(+), 30 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/usb/brcm,bdc.txt
+ create mode 100644 Documentation/devicetree/bindings/usb/brcm,bdc.yaml
 
-diff --git a/Documentation/devicetree/bindings/ata/brcm,sata-brcm.txt b/Documentation/devicetree/bindings/ata/brcm,sata-brcm.txt
+diff --git a/Documentation/devicetree/bindings/usb/brcm,bdc.txt b/Documentation/devicetree/bindings/usb/brcm,bdc.txt
 deleted file mode 100644
-index b9ae4ce4a0a0..000000000000
---- a/Documentation/devicetree/bindings/ata/brcm,sata-brcm.txt
+index c9f52b97cef1..000000000000
+--- a/Documentation/devicetree/bindings/usb/brcm,bdc.txt
 +++ /dev/null
-@@ -1,45 +0,0 @@
--* Broadcom SATA3 AHCI Controller
--
--SATA nodes are defined to describe on-chip Serial ATA controllers.
--Each SATA controller should have its own node.
+@@ -1,29 +0,0 @@
+-Broadcom USB Device Controller (BDC)
+-====================================
 -
 -Required properties:
--- compatible         : should be one or more of
--			"brcm,bcm7216-ahci"
--			"brcm,bcm7425-ahci"
--			"brcm,bcm7445-ahci"
--			"brcm,bcm-nsp-ahci"
--			"brcm,sata3-ahci"
--			"brcm,bcm63138-ahci"
--- reg                : register mappings for AHCI and SATA_TOP_CTRL
--- reg-names          : "ahci" and "top-ctrl"
--- interrupts         : interrupt mapping for SATA IRQ
+-
+-- compatible: must be one of:
+-                "brcm,bdc-udc-v2"
+-                "brcm,bdc"
+-- reg: the base register address and length
+-- interrupts: the interrupt line for this controller
 -
 -Optional properties:
 -
--- reset: for "brcm,bcm7216-ahci" must be a valid reset phandle
--  pointing to the RESCAL reset controller provider node.
--- reset-names: for "brcm,bcm7216-ahci", must be "rescal".
+-On Broadcom STB platforms, these properties are required:
 -
--Also see ahci-platform.txt.
+-- phys: phandle to one or two USB PHY blocks
+-        NOTE: Some SoC's have a single phy and some have
+-        USB 2.0 and USB 3.0 phys
+-- clocks: phandle to the functional clock of this block
 -
 -Example:
 -
--	sata@f045a000 {
--		compatible = "brcm,bcm7445-ahci", "brcm,sata3-ahci";
--		reg = <0xf045a000 0xa9c>, <0xf0458040 0x24>;
--		reg-names = "ahci", "top-ctrl";
--		interrupts = <0 30 0>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		sata0: sata-port@0 {
--			reg = <0>;
--			phys = <&sata_phy 0>;
--		};
--
--		sata1: sata-port@1 {
--			reg = <1>;
--			phys = <&sata_phy 1>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml b/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
+-        bdc@f0b02000 {
+-                compatible = "brcm,bdc-udc-v2";
+-                reg = <0xf0b02000 0xfc4>;
+-                interrupts = <0x0 0x60 0x0>;
+-                phys = <&usbphy_0 0x0>;
+-                clocks = <&sw_usbd>;
+-        };
+diff --git a/Documentation/devicetree/bindings/usb/brcm,bdc.yaml b/Documentation/devicetree/bindings/usb/brcm,bdc.yaml
 new file mode 100644
-index 000000000000..4098d56872ae
+index 000000000000..48831b62ab31
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
-@@ -0,0 +1,91 @@
++++ b/Documentation/devicetree/bindings/usb/brcm,bdc.yaml
+@@ -0,0 +1,46 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/ata/brcm,sata-brcm.yaml#
++$id: http://devicetree.org/schemas/usb/brcm,bdc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Broadcom SATA3 AHCI Controller
-+
-+description:
-+  SATA nodes are defined to describe on-chip Serial ATA controllers.
-+  Each SATA controller should have its own node.
++title: Broadcom USB Device Controller (BDC)
 +
 +maintainers:
++  - Al Cooper <alcooperx@gmail.com>
 +  - Florian Fainelli <f.fainelli@gmail.com>
-+
-+allOf:
-+  - $ref: sata-common.yaml#
 +
 +properties:
 +  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - brcm,bcm7216-ahci
-+          - const: brcm,sata3-ahci
-+      - items:
-+          - enum:
-+              - brcm,bcm7445-ahci
-+          - const: brcm,sata3-ahci
-+      - items:
-+          - enum:
-+              - brcm,bcm7425-ahci
-+          - const: brcm,sata3-ahci
-+      - items:
-+          - const: brcm,bcm-nsp-ahci
-+      - items:
-+          - const: brcm,bcm63138-ahci
++    items:
++      - enum:
++          - brcm,bdc-udc-v2
++          - brcm,bdc
 +
 +  reg:
-+    minItems: 2
-+    maxItems: 2
-+
-+  reg-names:
-+    items:
-+      - const: ahci
-+      - const: top-ctrl
++    maxItems: 1
 +
 +  interrupts: true
 +
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - brcm,bcm7216-ahci
-+then:
-+  properties:
-+    resets: true
-+    reset-names:
-+      items:
-+        - const: rescal
++  phys:
++    $ref: "/schemas/types.yaml#/definitions/phandle-array"
++
++  clocks:
++    maxItems: 1
 +
 +required:
 +  - compatible
 +  - reg
 +  - interrupts
-+  - "#address-cells"
-+  - "#size-cells"
 +
-+unevaluatedProperties: false
++additionalProperties: false
 +
 +examples:
 +  - |
-+    sata@f045a000 {
-+        compatible = "brcm,bcm7445-ahci", "brcm,sata3-ahci";
-+        reg = <0xf045a000 0xa9c>, <0xf0458040 0x24>;
-+        reg-names = "ahci", "top-ctrl";
-+        interrupts = <0 30 0>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        sata0: sata-port@0 {
-+            reg = <0>;
-+            phys = <&sata_phy 0>;
++        bdc@f0b02000 {
++                compatible = "brcm,bdc-udc-v2";
++                reg = <0xf0b02000 0xfc4>;
++                interrupts = <0x0 0x60 0x0>;
++                phys = <&usbphy_0 0x0>;
++                clocks = <&sw_usbd>;
 +        };
-+
-+        sata1: sata-port@1 {
-+            reg = <1>;
-+            phys = <&sata_phy 1>;
-+        };
-+    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2109b6fe8ea3..b18c7fa42a4f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3679,7 +3679,7 @@ M:	Al Cooper <alcooperx@gmail.com>
+ L:	linux-usb@vger.kernel.org
+ L:	bcm-kernel-feedback-list@broadcom.com
+ S:	Maintained
+-F:	Documentation/devicetree/bindings/usb/brcm,bdc.txt
++F:	Documentation/devicetree/bindings/usb/brcm,bdc.yaml
+ F:	drivers/usb/gadget/udc/bdc/
+ 
+ BROADCOM BMIPS CPUFREQ DRIVER
 -- 
 2.25.1
 
