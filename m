@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D37EC433FE
-	for <linux-pwm@archiver.kernel.org>; Mon,  6 Dec 2021 18:26:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C50BC433FE
+	for <linux-pwm@archiver.kernel.org>; Mon,  6 Dec 2021 18:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347170AbhLFSaB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 6 Dec 2021 13:30:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47354 "EHLO
+        id S1347586AbhLFSaf (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Dec 2021 13:30:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347059AbhLFS3x (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Dec 2021 13:29:53 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CEEC061746;
-        Mon,  6 Dec 2021 10:26:24 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso562144pjb.2;
-        Mon, 06 Dec 2021 10:26:24 -0800 (PST)
+        with ESMTP id S1347390AbhLFSaQ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Dec 2021 13:30:16 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B06AC061746;
+        Mon,  6 Dec 2021 10:26:47 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id 71so11305321pgb.4;
+        Mon, 06 Dec 2021 10:26:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=22u1YgEGuUE2NUBm4aUIXRHhe1NgL4IlQ7p6nHAEJMg=;
-        b=Zh+U2u/a5Qx3uOWo98Uixyx5LiZdxs452Y1/RvET1RUL7tNPzzTZ3Y4OOkm0b8ie/K
-         foW1LcD7tb6JZbs+kIWgP5LZnk//3T3gZHNNSAFbG01vJNhjAtXS9yhJsN00v3EZNV1U
-         CKc7fS3F+j/Wj+8WVY3UpM2dBT1bZeDIAnhTK/6ZkTJ5xIGWgtc36aqlr6yOYZI2HanH
-         c1lArW+KbzPpLWPNFFsLpcuOZoaVtolS+NcpjHhUC+zKEqAH7mTsvaB3o6o0VajXlS9C
-         +i2oopFItEGl7iwTxUtXO6D7zh8+o3jUEsf7mHA2/k1iODI1rtMVcWnMzBqncSV8Vnwq
-         NsAQ==
+        bh=LJ8xAlI4hSswSbvUfQzU0yk70eEsNl8mqXnileditR0=;
+        b=Mb+XZkBhlvSB/4dndi/OL+x5eRbISEYU+3nFCHNKW6Q0Nz4D60p9FbSbrTv+tbnuW0
+         BwmWmmHDJRY+LSnW/c73+OFJT6Jsx2dgTg8R/fK/N5oGSo17LdGyQh+Ecs5KhrKtkRpC
+         12j+clv57FQGza2xQX2CY4akdsp9CZy7qtIlwMkz3mBGrKXYpNwr5a26BHejCbQ2ruSu
+         N51lAbvUnfq8oZK8MpzhWVE5Ub++UfnSilk6A38J8DJWubm6xJfMecwEScbHwcnRRM0/
+         EGezWBs/WBz1TuL+E0Xc6Mpl29R4cTe3JN2M0zzPApl1nwMpreBjIdRGsD7HncKbRqdm
+         QDvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=22u1YgEGuUE2NUBm4aUIXRHhe1NgL4IlQ7p6nHAEJMg=;
-        b=mzA3lOJnhnuUy6ARx9SCNJ60/TlsFyYUHtSrFl6YVWP5L0HYtr4fwpQHGB85IX47PS
-         ggGtyyaZfzjZuJEO8SyriHdFmEOa0h4jl829NG3QGpiY57I/cvcRMu6NWDoOU5saGMXT
-         j5e5gw0x5yfqjhBWcTyh7d8MxsqIkg9/gQ88MqbsOQRFV28Rft8uf5xvIlFCeq8WsGz+
-         zPfbCNNoG7Xxs7bIqNJYrOobqGML9asR6ZqEgAAw5rz0XsQ6+7GDxhnRnTOkrCBS3YDc
-         4v5oMN4MYCPqXFCO8CCftokI+jsRhN9uUPZ2dJJzsZ9UDW7G5zZZJDAr9vijMNhdmBnL
-         un2w==
-X-Gm-Message-State: AOAM530AYPG4CR8TdjHUOmO+44N4egGk2R87KF3y1I82A5R3bhJZ2/77
-        mitayZGEc6plHWudhmSu0zkHyqx8OPA=
-X-Google-Smtp-Source: ABdhPJwSVbvjR1dpvgyfdF4mNAKyCGmG960Qi+UT5jB5j7oT2D5zmuuwNPilnYXVThDeFf9l4VDShQ==
-X-Received: by 2002:a17:90a:9a8e:: with SMTP id e14mr196284pjp.231.1638815183952;
-        Mon, 06 Dec 2021 10:26:23 -0800 (PST)
+        bh=LJ8xAlI4hSswSbvUfQzU0yk70eEsNl8mqXnileditR0=;
+        b=dwB9JfjkjiZSeiI1Hv8r/qLbK2dJFwOU3kRfIbGFbXwZm+RvN592k17cwhVkt1UORF
+         bG44QLjkeekGRNqxmhn6kEzsnhHf0xm8U6BOAzkqQBMXkLJgvoY5m8stKTS1lkxc66TX
+         w/ZjVwFQjzdxfkBZPC6Y30KEHXGBgMTKfTlRsig3Hp8kgzi4ntUSRZXBxq5tEST7OYjU
+         upcv2CWaT4+LQBtrb56D/h7Gj/OLfMQTNdHE1XiKkbiZR42afaYqSGcvnRWKx5TBYRz6
+         a/czybzsbSxK4o5hFoLHNAcuIS1uGtLEsLwGIe02Aojdh2fV/56sm3ImEL2GGUObOI29
+         UfBA==
+X-Gm-Message-State: AOAM53062ij/aCL2lqMdCpJGlFVDI3U/V2tvRDFPsi751JveaN+f5qey
+        u+CJn2rA71k0wubq8SURuPQYmfjEO9o=
+X-Google-Smtp-Source: ABdhPJyKLLtwgMLERmmLvfwO6DgnggPPLEhlahSahU+ihC/u7YxPMaRm4piU5/WiF3Yi9zuRDm70xA==
+X-Received: by 2002:a62:3888:0:b0:4a9:5e0e:8b99 with SMTP id f130-20020a623888000000b004a95e0e8b99mr32396737pfa.30.1638815206627;
+        Mon, 06 Dec 2021 10:26:46 -0800 (PST)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a22sm12773097pfh.111.2021.12.06.10.26.22
+        by smtp.gmail.com with ESMTPSA id a22sm12773097pfh.111.2021.12.06.10.26.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 10:26:23 -0800 (PST)
+        Mon, 06 Dec 2021 10:26:46 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     devicetree@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -89,9 +89,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         linux-rtc@vger.kernel.org (open list:REAL TIME CLOCK (RTC) SUBSYSTEM),
         linux-pm@vger.kernel.org (open list:THERMAL),
         linux-usb@vger.kernel.org (open list:USB SUBSYSTEM)
-Subject: [PATCH v2 02/14] dt-bindings: reset: Convert Broadcom STB reset to YAML
-Date:   Mon,  6 Dec 2021 10:26:04 -0800
-Message-Id: <20211206182616.2089677-3-f.fainelli@gmail.com>
+Subject: [PATCH v2 13/14] dt-bindings: bus: Convert GISB arbiter to YAML
+Date:   Mon,  6 Dec 2021 10:26:15 -0800
+Message-Id: <20211206182616.2089677-14-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211206182616.2089677-1-f.fainelli@gmail.com>
 References: <20211206182616.2089677-1-f.fainelli@gmail.com>
@@ -101,102 +101,128 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Convert the Broadcom STB SW_INIT style reset controller binding to YAML.
+Convert the Broadcom STB GISB bus arbiter to YAML to help with
+validation.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../bindings/reset/brcm,brcmstb-reset.txt     | 27 -----------
- .../bindings/reset/brcm,brcmstb-reset.yaml    | 48 +++++++++++++++++++
- 2 files changed, 48 insertions(+), 27 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/reset/brcm,brcmstb-reset.txt
- create mode 100644 Documentation/devicetree/bindings/reset/brcm,brcmstb-reset.yaml
+ .../devicetree/bindings/bus/brcm,gisb-arb.txt | 34 ----------
+ .../bindings/bus/brcm,gisb-arb.yaml           | 66 +++++++++++++++++++
+ 2 files changed, 66 insertions(+), 34 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/bus/brcm,gisb-arb.txt
+ create mode 100644 Documentation/devicetree/bindings/bus/brcm,gisb-arb.yaml
 
-diff --git a/Documentation/devicetree/bindings/reset/brcm,brcmstb-reset.txt b/Documentation/devicetree/bindings/reset/brcm,brcmstb-reset.txt
+diff --git a/Documentation/devicetree/bindings/bus/brcm,gisb-arb.txt b/Documentation/devicetree/bindings/bus/brcm,gisb-arb.txt
 deleted file mode 100644
-index ee59409640f2..000000000000
---- a/Documentation/devicetree/bindings/reset/brcm,brcmstb-reset.txt
+index 10f6d0a8159d..000000000000
+--- a/Documentation/devicetree/bindings/bus/brcm,gisb-arb.txt
 +++ /dev/null
-@@ -1,27 +0,0 @@
--Broadcom STB SW_INIT-style reset controller
--===========================================
--
--Broadcom STB SoCs have a SW_INIT-style reset controller with separate
--SET/CLEAR/STATUS registers and possibly multiple banks, each of 32 bit
--reset lines.
--
--Please also refer to reset.txt in this directory for common reset
--controller binding usage.
+@@ -1,34 +0,0 @@
+-Broadcom GISB bus Arbiter controller
 -
 -Required properties:
--- compatible: should be brcm,brcmstb-reset
--- reg: register base and length
--- #reset-cells: must be set to 1
+-
+-- compatible:
+-    "brcm,bcm7278-gisb-arb" for V7 28nm chips
+-    "brcm,gisb-arb" or "brcm,bcm7445-gisb-arb" for other 28nm chips
+-    "brcm,bcm7435-gisb-arb" for newer 40nm chips
+-    "brcm,bcm7400-gisb-arb" for older 40nm chips and all 65nm chips
+-    "brcm,bcm7038-gisb-arb" for 130nm chips
+-- reg: specifies the base physical address and size of the registers
+-- interrupts: specifies the two interrupts (timeout and TEA) to be used from
+-  the parent interrupt controller. A third optional interrupt may be specified
+-  for breakpoints.
+-
+-Optional properties:
+-
+-- brcm,gisb-arb-master-mask: 32-bits wide bitmask used to specify which GISB
+-  masters are valid at the system level
+-- brcm,gisb-arb-master-names: string list of the litteral name of the GISB
+-  masters. Should match the number of bits set in brcm,gisb-master-mask and
+-  the order in which they appear
 -
 -Example:
 -
--	reset: reset-controller@8404318 {
--		compatible = "brcm,brcmstb-reset";
--		reg = <0x8404318 0x30>;
--		#reset-cells = <1>;
--	};
+-gisb-arb@f0400000 {
+-	compatible = "brcm,gisb-arb";
+-	reg = <0xf0400000 0x800>;
+-	interrupts = <0>, <2>;
+-	interrupt-parent = <&sun_l2_intc>;
 -
--	&ethernet_switch {
--		resets = <&reset 26>;
--		reset-names = "switch";
--	};
-diff --git a/Documentation/devicetree/bindings/reset/brcm,brcmstb-reset.yaml b/Documentation/devicetree/bindings/reset/brcm,brcmstb-reset.yaml
+-	brcm,gisb-arb-master-mask = <0x7>;
+-	brcm,gisb-arb-master-names = "bsp_0", "scpu_0", "cpu_0";
+-};
+diff --git a/Documentation/devicetree/bindings/bus/brcm,gisb-arb.yaml b/Documentation/devicetree/bindings/bus/brcm,gisb-arb.yaml
 new file mode 100644
-index 000000000000..e00efa88a198
+index 000000000000..483b019275cd
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/reset/brcm,brcmstb-reset.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++++ b/Documentation/devicetree/bindings/bus/brcm,gisb-arb.yaml
+@@ -0,0 +1,66 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: "http://devicetree.org/schemas/reset/brcm,brcmstb-reset.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/bus/brcm,gisb-arb.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Broadcom STB SW_INIT-style reset controller
-+
-+description:
-+  Broadcom STB SoCs have a SW_INIT-style reset controller with separate
-+  SET/CLEAR/STATUS registers and possibly multiple banks, each of 32 bit
-+  reset lines.
-+
-+  Please also refer to reset.txt in this directory for common reset
-+  controller binding usage.
++title: Broadcom GISB bus Arbiter controller
 +
 +maintainers:
 +  - Florian Fainelli <f.fainelli@gmail.com>
 +
 +properties:
 +  compatible:
-+    const: brcm,brcmstb-reset
++    oneOf:
++      - items:
++          - enum:
++              - brcm,bcm7445-gisb-arb
++          - const: brcm,gisb-arb
++      - items:
++          - const: brcm,bcm7278-gisb-arb
++      - items:
++          - const: brcm,bcm7435-gisb-arb
++      - items:
++          - const: brcm,bcm7400-gisb-arb
++      - items:
++          - const: brcm,bcm7038-gisb-arb
++      - items:
++          - const: brcm,gisb-arb
 +
 +  reg:
 +    maxItems: 1
 +
-+  "#reset-cells":
-+    const: 1
++  interrupts:
++    minItems: 2
++    maxItems: 3
++
++  brcm,gisb-arb-master-mask:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: >
++      32-bits wide bitmask used to specify which GISB masters are valid at the
++      system level
++
++  brcm,gisb-arb-master-names:
++    $ref: /schemas/types.yaml#/definitions/string-array
++    description: >
++      String list of the litteral name of the GISB masters. Should match the
++      number of bits set in brcm,gisb-master-mask and the order in which they
++      appear
 +
 +required:
 +  - compatible
 +  - reg
-+  - "#reset-cells"
++  - interrupts
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    reset: reset-controller@8404318 {
-+      compatible = "brcm,brcmstb-reset";
-+      reg = <0x8404318 0x30>;
-+      #reset-cells = <1>;
-+    };
-+
-+    ethernet_switch {
-+      resets = <&reset 26>;
-+      reset-names = "switch";
++    gisb-arb@f0400000 {
++      compatible = "brcm,gisb-arb";
++      reg = <0xf0400000 0x800>;
++      interrupts = <0>, <2>;
++      interrupt-parent = <&sun_l2_intc>;
++      brcm,gisb-arb-master-mask = <0x7>;
++      brcm,gisb-arb-master-names = "bsp_0", "scpu_0", "cpu_0";
 +    };
 -- 
 2.25.1
