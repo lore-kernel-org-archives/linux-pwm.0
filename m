@@ -2,95 +2,108 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A975C4332F
-	for <linux-pwm@archiver.kernel.org>; Thu,  9 Dec 2021 09:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA830C433F5
+	for <linux-pwm@archiver.kernel.org>; Thu,  9 Dec 2021 16:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230423AbhLIJph convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 9 Dec 2021 04:45:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230525AbhLIJpg (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Dec 2021 04:45:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D35FC061746
-        for <linux-pwm@vger.kernel.org>; Thu,  9 Dec 2021 01:42:03 -0800 (PST)
-Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1mvFvk-0001TL-1T; Thu, 09 Dec 2021 10:41:36 +0100
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1mvFve-0004Ge-0z; Thu, 09 Dec 2021 10:41:30 +0100
-Message-ID: <ab45adc2e305c79286f6b63fa42cfd78983cb757.camel@pengutronix.de>
-Subject: Re: [PATCH v3 02/15] dt-bindings: reset: Convert Broadcom STB reset
- to YAML
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>, devicetree@vger.kernel.org
-Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Gregory Fong <gregory.0xf0@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Al Cooper <alcooperx@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "moderated list:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:MULTIMEDIA CARD (MMC), SECURE DIGITAL (SD) AND..." 
-        <linux-mmc@vger.kernel.org>,
-        "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
-        <linux-rtc@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>
-Date:   Thu, 09 Dec 2021 10:41:29 +0100
-In-Reply-To: <20211208003727.3596577-3-f.fainelli@gmail.com>
-References: <20211208003727.3596577-1-f.fainelli@gmail.com>
-         <20211208003727.3596577-3-f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        id S234599AbhLIQdi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 9 Dec 2021 11:33:38 -0500
+Received: from box.trvn.ru ([194.87.146.52]:49141 "EHLO box.trvn.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234851AbhLIQdi (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 9 Dec 2021 11:33:38 -0500
+X-Greylist: delayed 560 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 Dec 2021 11:33:37 EST
+Received: from authenticated-user (box.trvn.ru [194.87.146.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.trvn.ru (Postfix) with ESMTPSA id 6EDD441F11;
+        Thu,  9 Dec 2021 21:20:36 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+        t=1639066839; bh=BOKVWso91hiNZpvj+AhezAp+AndmxMqwLC0Ey7R760U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cYUalHmKS/SgSXHKoB4dgf2P8Z9h2cPuR/kjcSjd6WhWGpUSoCAWSFc5qHwhJpLJW
+         flCON9hSdq5noiW1MbngkVJBFhTdzTV26bYV68qBSmZ4fGYXdlO5cjb2RVoMixnkvG
+         y+RSSD0GqgJYW/V2iEJrUQK87oIHrKm+k6Y408WPHzXttAcuUUokPg2RZbRb4PFvFJ
+         k6xSxcsDxKbHyk8/8Zj/rJ/ioRglVbh2wVDPONNDkNCRbb3qjrcomanEizHBRtSRSq
+         tzE46ec7E0TfIlL829YXwpEJ/LoZf3PnoKBMSExjOM3tEVHxLYRg72nErhoShTwIra
+         MMfbKhb8Bx1fw==
+From:   Nikita Travkin <nikita@trvn.ru>
+To:     thierry.reding@gmail.com, lee.jones@linaro.org
+Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        sboyd@kernel.org, linus.walleij@linaro.org, masneyb@onstation.org,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Nikita Travkin <nikita@trvn.ru>
+Subject: [PATCH 1/2] dt-bindings: pwm: Document clk based PWM controller
+Date:   Thu,  9 Dec 2021 21:20:19 +0500
+Message-Id: <20211209162020.105255-2-nikita@trvn.ru>
+In-Reply-To: <20211209162020.105255-1-nikita@trvn.ru>
+References: <20211209162020.105255-1-nikita@trvn.ru>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Tue, 2021-12-07 at 16:37 -0800, Florian Fainelli wrote:
-> Convert the Broadcom STB SW_INIT style reset controller binding to YAML.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Add YAML devicetree binding for clk based PWM controller
 
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+---
+ .../devicetree/bindings/pwm/clk-pwm.yaml      | 45 +++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/clk-pwm.yaml
 
-regards
-Philipp
+diff --git a/Documentation/devicetree/bindings/pwm/clk-pwm.yaml b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+new file mode 100644
+index 000000000000..2b2801d0278f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/pwm-clk.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Clock based PWM controller
++
++maintainers:
++  - Nikita Travkin <nikita@trvn.ru>
++
++description: |
++  Some systems have clocks that can be exposed to external devices.
++  (e.g. by muxing them to GPIO pins)
++  It's often possible to control duty-cycle of such clocks which makes them
++  suitable for generating PWM signal.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    const: clk-pwm
++
++  clocks:
++    description: Clock used to generate the signal.
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++unevaluatedProperties: false
++
++required:
++  - clocks
++
++examples:
++  - |
++    pwm-flash {
++      compatible = "clk-pwm";
++      #pwm-cells = <2>;
++      clocks = <&gcc 0>;
++      pinctrl-names = "default";
++      pinctrl-0 = <&pwm_clk_flash_default>;
++    };
+-- 
+2.30.2
+
