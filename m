@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5334C43219
-	for <linux-pwm@archiver.kernel.org>; Fri, 17 Dec 2021 09:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCE0C43219
+	for <linux-pwm@archiver.kernel.org>; Fri, 17 Dec 2021 09:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231704AbhLQJdj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 17 Dec 2021 04:33:39 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:26574 "EHLO
+        id S234426AbhLQJdt (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 17 Dec 2021 04:33:49 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:26609 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234346AbhLQJdd (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Dec 2021 04:33:33 -0500
+        with ESMTP id S234394AbhLQJdm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Dec 2021 04:33:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1639733612; x=1671269612;
+  t=1639733622; x=1671269622;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+4OyQOO2z/EslKlzMr6C+I3gExmtktcq7ncjc8J+Bgs=;
-  b=fImXVkiY7+yqV6zm+yiB1N0UCIqeeK5Y4jawAfCvvC6MytcVk7EPIRbQ
-   ELzljITpqSqCgVzEQ6+t1smsSr8YE8F98CeK4SLEAd7cv3M8PA7f5a08k
-   QckI/FINMco+O616CBiVAeMdOzd55Ipp1zlJt4tCB2KNSBC/BwQ2mkSDS
-   URz5Lk19tMlkAuDcnjMVxnOirxCzGI7oX2GjmsZnSGYlWsa7uzeHdf5dA
-   lOwCGogiL6/M04V/LjK+LMTVHf6PO/+9/vtoeNS945PGYwSHU281ckr3v
-   5FUA1BP6k4mH9DZMrfD4x1qD3JIRoF8R9Q8uM9K7MKpLNxDYVbJoABt7A
+  bh=08O5L+Vs/pfxTkYpw2ToEdxBlp8zXskW7qyLhr7gK4Q=;
+  b=AlcGDm++crhjIO5YWESNOamOB37pFuyJ6VayJYk6ahPMujZkrX+7A1uC
+   Gmk71UWbtNzjQBB4MVLL8EDgCT7i71qyPqRdxc3j2IxzPmKlJfuxZTUZk
+   C3luSLsCPEAcVR2cBZy4pW2G0cS31xGg9Rxs0tIldsBhY4zHsdoz9Jzdr
+   JmCox5H4nvZ6pTEsKH3zpWgeJ2oPpuzgmYNlmJpJWZuiP/88kadWSHBxv
+   +3+sQPvDuxN2Js70J0t1KRTZnF+ax8NPOq3lwkshvWCMT8C4iW9l716BQ
+   47uY/9oa/bKU8rw9Aw2Ie9udhVTo1KrMkTC5uxcxAG6efOjhXJRBsZK0L
    Q==;
-IronPort-SDR: j9YzdyjWy9vzcZPUTClMB8IlqKrR/QpfZGKU4Yk/B65HsAadK6145td29LTU7N1KD0UHmmyGkf
- DjqM7IxJ/mA9eKhX9KsWdsgmqXOJ9AWzmAIUdM5GEztoiZC2hI1n9F1Hsg3x2oe32s3KLmtvuW
- X4lu1jTQAwpmgWok5RsEFkWafifPHxqRV0SDDJTSTOSNabzZ/zMutC++itqr2TjPgj6uu38gop
- UVJuRTA8jYr0ki9Y3EmKRyhfV/gNU++hpmprd1SfxcVmhwaWXFkwrxWBCPRc4VqXKIuB+jsWeI
- JFCeuF5gBdGEKiJ+scOaQeJZ
+IronPort-SDR: OPeD8Xq9K/xtGE+uXgMX8U+Cowx6RTjIOi95eGMaHFWSt7Wgf9vVIsGaww+Bf1UhPXWOpMAeA2
+ C2vpW2xpQD069ptL1LY3zKfb+KnD1bNW7A0N+xYl6Hj1BUHWDaD86RWyK+mG37Y142N4RrKuVX
+ ilXyd9udOzauCTf2J0rV+SX+ImSwnSeVHdS/HaFJ1HFfmhae5cpSYyINua6DFDJmWXyer5i5aZ
+ /fA2Jap3W+v390TG3akXBJT1sjaHvwYBtSnLvWWUIgJlWWlCT3wDGkhuqEhjFjg4J87nBUr7DX
+ xm7buOaMRCaLidPBcR93hn1R
 X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
-   d="scan'208";a="147571134"
+   d="scan'208";a="147571179"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Dec 2021 02:33:31 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Dec 2021 02:33:40 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 17 Dec 2021 02:33:27 -0700
+ 15.1.2375.17; Fri, 17 Dec 2021 02:33:40 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 17 Dec 2021 02:33:22 -0700
+ Transport; Fri, 17 Dec 2021 02:33:35 -0700
 From:   <conor.dooley@microchip.com>
 To:     <linus.walleij@linaro.org>, <bgolaszewski@baylibre.com>,
         <robh+dt@kernel.org>, <jassisinghbrar@gmail.com>,
@@ -58,9 +58,9 @@ CC:     <krzysztof.kozlowski@canonical.com>, <geert@linux-m68k.org>,
         <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
         <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
         <atish.patra@wdc.com>
-Subject: [PATCH v2 12/17] dt-bindings: pwm: add microchip corePWM binding
-Date:   Fri, 17 Dec 2021 09:33:20 +0000
-Message-ID: <20211217093325.30612-13-conor.dooley@microchip.com>
+Subject: [PATCH v2 14/17] riscv: dts: microchip: add fpga fabric section to icicle kit
+Date:   Fri, 17 Dec 2021 09:33:22 +0000
+Message-ID: <20211217093325.30612-15-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211217093325.30612-1-conor.dooley@microchip.com>
 References: <20211217093325.30612-1-conor.dooley@microchip.com>
@@ -73,81 +73,61 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Add device tree bindings for the Microchip fpga fabric based "core" PWM controller.
+Split the device tree for the Microchip MPFS into two sections by adding
+microchip-mpfs-fabric.dtsi, which contains peripherals contained in the
+FPGA fabric.
 
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- .../bindings/pwm/microchip,corepwm.yaml       | 61 +++++++++++++++++++
- 1 file changed, 61 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+ .../boot/dts/microchip/microchip-mpfs-fabric.dtsi   | 13 +++++++++++++
+ .../dts/microchip/microchip-mpfs-icicle-kit.dts     |  4 ++++
+ arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi   |  1 +
+ 3 files changed, 18 insertions(+)
+ create mode 100644 arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
 
-diff --git a/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
 new file mode 100644
-index 000000000000..ed7d0351adc9
+index 000000000000..234c1f9bea40
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
-@@ -0,0 +1,61 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
+@@ -0,0 +1,13 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/* Copyright (c) 2020-2021 Microchip Technology Inc */
 +
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/microchip,corepwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++/ {
++	corePWM0: pwm@41000000 {
++		compatible = "microchip,corepwm";
++		reg = <0x0 0x41000000 0x0 0xF0>;
++		microchip,sync-update = /bits/ 8 <0>;
++		#pwm-cells = <2>;
++		clocks = <&clkcfg CLK_FIC3>;
++		status = "disabled";
++	};
++};
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+index 6d19ba196f12..174f977c164b 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+@@ -86,3 +86,7 @@ phy1: ethernet-phy@9 {
+ 		ti,fifo-depth = <0x01>;
+ 	};
+ };
 +
-+title: Microchip ip core PWM controller bindings
-+
-+maintainers:
-+  - Conor Dooley <conor.dooley@microchip.com>
-+
-+description: |
-+  corePWM is an 16 channel pulse width modulator FPGA IP
-+
-+  https://www.microsemi.com/existing-parts/parts/152118
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: microchip,corepwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+  microchip,sync-update:
-+    description: |
-+      In synchronous mode, all channels are updated at the beginning of the PWM period.
-+      Asynchronous mode is relevant to applications such as LED control, where
-+      synchronous updates are not required. Asynchronous mode lowers the area size,
-+      reducing shadow register requirements. This can be set at run time, provided
-+      SHADOW_REG_EN is asserted. SHADOW_REG_EN is set by the FPGA bitstream programmed
-+      to the device.
-+
-+    $ref: /schemas/types.yaml#/definitions/uint8
-+    default: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - "#pwm-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include "dt-bindings/clock/microchip,mpfs-clock.h"
-+    corePWN1: corePWM@41000000 {
-+      compatible = "microchip,corepwm";
-+      microchip,sync-update = /bits/ 8 <1>;
-+      clocks = <&clkcfg CLK_FIC3>;
-+      reg = <0x41000000 0xF0>;
-+      #pwm-cells = <2>;
-+    };
++&corePWM0 {
++	status = "okay";
++};
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index ce9151edd1b6..808500be26c3 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -4,6 +4,7 @@
+ /dts-v1/;
+ #include "dt-bindings/clock/microchip,mpfs-clock.h"
+ #include "dt-bindings/interrupt-controller/riscv-hart.h"
++#include "microchip-mpfs-fabric.dtsi"
+ 
+ / {
+ 	#address-cells = <2>;
 -- 
 2.33.1
 
