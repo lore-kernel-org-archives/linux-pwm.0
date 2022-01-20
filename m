@@ -2,29 +2,29 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A88C43219
-	for <linux-pwm@archiver.kernel.org>; Thu, 20 Jan 2022 16:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD45C433FE
+	for <linux-pwm@archiver.kernel.org>; Thu, 20 Jan 2022 16:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346641AbiATQPE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 20 Jan 2022 11:15:04 -0500
-Received: from box.trvn.ru ([194.87.146.52]:51099 "EHLO box.trvn.ru"
+        id S1376894AbiATQPD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 20 Jan 2022 11:15:03 -0500
+Received: from box.trvn.ru ([194.87.146.52]:52625 "EHLO box.trvn.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347315AbiATQPD (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        id S233059AbiATQPD (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
         Thu, 20 Jan 2022 11:15:03 -0500
 Received: from authenticated-user (box.trvn.ru [194.87.146.52])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by box.trvn.ru (Postfix) with ESMTPSA id E2A2641A41;
-        Thu, 20 Jan 2022 21:15:00 +0500 (+05)
+        by box.trvn.ru (Postfix) with ESMTPSA id 53F3E40CA6;
+        Thu, 20 Jan 2022 21:14:59 +0500 (+05)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
-        t=1642695301; bh=piWRjtUT3wYbqNm+c4Mr8L9osMBZFVJjWmgW1ZCv6/A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eW8TzQFZBD6TxJqEvibx4E7TBS6PT3euaQYWC0qag2bYIcP1kYKdEwiYIdjogbPcF
-         uiaAy8WXBkEHzedhhFQnFzn/Wl/eKYBvRCjDSkSvrNu+9HZzJobN1vZbI7VBUIV4fg
-         PynclYuMw6H87AGuel3uTAnkQmrPtpMaiKCFTlDQEpZJG3EHiGZY5UhnrlrCp6k2RF
-         8+jINqcW1S6+HZMQjJHiphpSH+/ZnwTZWx69MGcNUT5g4jowtEOcBhFOrRcj+lfeqs
-         LzMvxbXHnh0K16+uSzT4TUyj1OkRaJRvE4MqX07E0xfi8xqi9Gpw3a6rCvd/4Oi49q
-         BKivwhBOzqwJg==
+        t=1642695300; bh=dJkfCt/wf01BgFz4htQDsVYJD+1/n2Njx5/ps0xEzUs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=3OaUOJOeeMsO3xquiajjO5zTAA8+537EFlk1zt1x4SJRhSl+g8IowMQZkCSA/aMql
+         AaarPT65ZyC/U7wKAhbgLlycoxLT4Yv8FF3dRzJtkqVjKo7bY0dGzsmHcehpzgWvuj
+         WiAkfCKRlRx8XNSjJf8MQLSZX2v7OXMtd3PF8SH73lrEQWhHq+JANM5QzewVJMXcQj
+         zwv4wr/N0ZM2lippvBSAiSoPUmem7RmgmsIMI4+av3+oOsw9h4/wGeX24S1BtjRTWs
+         hWK8EHUSHvPJ4Ssvo9n+E67ORCr1GLbPLpJExKpa7EaVjzYYvJb1tHN/sd22m7uyEM
+         mLuGsGayp1s5w==
 From:   Nikita Travkin <nikita@trvn.ru>
 To:     thierry.reding@gmail.com, lee.jones@linaro.org
 Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
@@ -33,79 +33,57 @@ Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht,
         Nikita Travkin <nikita@trvn.ru>
-Subject: [PATCH v3 2/3] dt-bindings: pwm: Document clk based PWM controller
-Date:   Thu, 20 Jan 2022 21:14:41 +0500
-Message-Id: <20220120161442.140800-3-nikita@trvn.ru>
-In-Reply-To: <20220120161442.140800-1-nikita@trvn.ru>
-References: <20220120161442.140800-1-nikita@trvn.ru>
+Subject: [PATCH v3 0/3] Clock based PWM output driver
+Date:   Thu, 20 Jan 2022 21:14:39 +0500
+Message-Id: <20220120161442.140800-1-nikita@trvn.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add YAML devicetree binding for clk based PWM controller
+This series introduces an "adapter" driver that allows PWM consumers
+to control clock outputs with duty-cycle control.
 
-Signed-off-by: Nikita Travkin <nikita@trvn.ru>
---
+Some platforms (e.g. some Qualcomm chipsets) have "General Purpose"
+clocks that can be muxed to GPIO outputs and used as PWM outputs.
+Those outputs may be connected to various peripherals such as
+leds in display backlight or haptic feedback motor driver.
+
+To avoid re-implementing every single PWM consumer driver with clk
+support (like in [1]) and don't put the burden of providing the PWM
+sources on the clock drivers (as was proposed in [2]), clk based
+pwm controller driver is introduced.
+
+There is an existing driver that provides the opposite function
+in drivers/clk/clk-pwm.c with a compatible "pwm-clock" so the new
+driver uses the opposite naming scheme: drivers/pwm/pwm-clk.c
+and compatible "clk-pwm".
+
 Changes in v2:
- - fix the file name.
----
- .../devicetree/bindings/pwm/clk-pwm.yaml      | 45 +++++++++++++++++++
- 1 file changed, 45 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+ - Fix filename in the DT schema.
+ - Address Uwe's review comments.
+Changes in v3:
+ - Fix node pattern in the core pwm schema.
+ - Address Uwe's review comments.
 
-diff --git a/Documentation/devicetree/bindings/pwm/clk-pwm.yaml b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
-new file mode 100644
-index 000000000000..4fb2c1baaad4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
-@@ -0,0 +1,45 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/clk-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Clock based PWM controller
-+
-+maintainers:
-+  - Nikita Travkin <nikita@trvn.ru>
-+
-+description: |
-+  Some systems have clocks that can be exposed to external devices.
-+  (e.g. by muxing them to GPIO pins)
-+  It's often possible to control duty-cycle of such clocks which makes them
-+  suitable for generating PWM signal.
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: clk-pwm
-+
-+  clocks:
-+    description: Clock used to generate the signal.
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+unevaluatedProperties: false
-+
-+required:
-+  - clocks
-+
-+examples:
-+  - |
-+    pwm-flash {
-+      compatible = "clk-pwm";
-+      #pwm-cells = <2>;
-+      clocks = <&gcc 0>;
-+      pinctrl-names = "default";
-+      pinctrl-0 = <&pwm_clk_flash_default>;
-+    };
+[1] https://lore.kernel.org/lkml/20191205002503.13088-1-masneyb@onstation.org/
+[2] https://lore.kernel.org/lkml/CACRpkdZxu1LfK11OHEx5L_4kyjMZ7qERpvDzFj5u3Pk2kD1qRA@mail.gmail.com/
+
+Nikita Travkin (3):
+  dt-bindings: pwm: Fix node name pattern
+  dt-bindings: pwm: Document clk based PWM controller
+  pwm: Add clock based PWM output driver
+
+ .../devicetree/bindings/pwm/clk-pwm.yaml      |  45 ++++++
+ .../devicetree/bindings/pwm/pwm.yaml          |   2 +-
+ drivers/pwm/Kconfig                           |  10 ++
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-clk.c                         | 139 ++++++++++++++++++
+ 5 files changed, 196 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-clk.c
+
 -- 
 2.30.2
 
