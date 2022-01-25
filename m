@@ -2,61 +2,136 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC14C433EF
-	for <linux-pwm@archiver.kernel.org>; Tue, 25 Jan 2022 14:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1568C433EF
+	for <linux-pwm@archiver.kernel.org>; Tue, 25 Jan 2022 15:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580628AbiAYOvV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:51:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1580352AbiAYOsW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Jan 2022 09:48:22 -0500
-X-Greylist: delayed 535 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Jan 2022 06:48:13 PST
-Received: from swift.blarg.de (swift.blarg.de [IPv6:2a01:4f8:c17:52a8::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CBC0C061401;
-        Tue, 25 Jan 2022 06:48:13 -0800 (PST)
-Received: by swift.blarg.de (Postfix, from userid 1000)
-        id D0BE040E4E; Tue, 25 Jan 2022 15:39:16 +0100 (CET)
-Date:   Tue, 25 Jan 2022 15:39:16 +0100
-From:   Max Kellermann <max@blarg.de>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org, thierry.reding@gmail.com,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        andrey@lebedev.lt, stable@vger.kernel.org
-Subject: Re: [PATCH 1/3] pwm-sun4i: convert "next_period" to local variable
-Message-ID: <YfALlLgo3MAcbFrZ@swift.blarg.de>
-Mail-Followup-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-        linux-pwm@vger.kernel.org, thierry.reding@gmail.com,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        andrey@lebedev.lt, stable@vger.kernel.org
-References: <20220125123429.3490883-1-max.kellermann@gmail.com>
- <20220125143158.qbelqvr5mjq33zay@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+        id S1345522AbiAYPPH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 25 Jan 2022 10:15:07 -0500
+Received: from mail.schwermer.no ([49.12.228.226]:55552 "EHLO
+        mail.schwermer.no" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1581761AbiAYPNH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Jan 2022 10:13:07 -0500
+From:   sven@svenschwermer.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
+        s=mail; t=1643123561;
+        bh=xn4v1imwBzu7dBC5S7YAuueOOjuSA0KRe5PsRFU7bfo=;
+        h=From:To:Cc:Subject:In-Reply-To:References;
+        b=MC1giXrhTK+BFxva8JOtg8m3VWaqZFt35OH3EY6v0NSCB/s+tYqmMOz4+3/EYXtdb
+         q2t20VGGojdKgeSXVbsdYFHer/NYtXLI6MPahaI3lfRJNAigKIla8CHdyodRp5FLRT
+         4p1xdPPsvxbVmkNdpJ+GgJD2Zp0sAF26xhBH+lygiLOMA4Miyr39eHfv90J1lLujBV
+         fyWoWfs7VRt1Q001mZ7nBPN9xxMg1XUHJV7sQM3wTNuT5VjdnrAZtAfvzB/6YPQkKd
+         44Q30FOonXMDmBlT2YDWiDLqerJFPENtXFpYgv7LTnmkXf5dN/DJK8JXNt+xniyKsf
+         JL348lcw/J2AA==
+To:     linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
+        pavel@ucw.cz, dmurphy@ti.com, robh+dt@kernel.org,
+        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        lee.jones@linaro.org, post@lespocky.de
+Subject: [RFC PATCH v2 1/2] dt-bindings: leds: Add multicolor PWM LED bindings
+Date:   Tue, 25 Jan 2022 16:12:25 +0100
+Message-Id: <20220125151226.31049-2-sven@svenschwermer.de>
+In-Reply-To: <20220125151226.31049-1-sven@svenschwermer.de>
+References: <20220125151226.31049-1-sven@svenschwermer.de>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220125143158.qbelqvr5mjq33zay@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 2022/01/25 15:31, Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote:
-> I think I'd drop this. This isn't a fix worth on it's own to be
-> backported and if this is needed for one of the next patches, the stable
-> maintainers will notice themselves (and it might be worth to shuffle
-> this series to make the fixes come first).
+From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
 
-The first two patches are preparation for the third patch, which fixes
-the actual bug.
+This allows to group multiple PWM-connected monochrome LEDs into
+multicolor LEDs, e.g. RGB LEDs.
 
-Of course, I could have done everything in one patch, but I thought
-splitting the first two out makes review easier.  This way, every step
-is almost trivial.
+Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+---
+ .../bindings/leds/leds-pwm-multicolor.yaml    | 76 +++++++++++++++++++
+ 1 file changed, 76 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/leds/leds-pwm-multicolor.yaml
 
-If you want me to fold the three patches into one, I can do that.  But
-I can't reorder them (or backport only the bug fix to stable).
-
-Max
-
+diff --git a/Documentation/devicetree/bindings/leds/leds-pwm-multicolor.yaml b/Documentation/devicetree/bindings/leds/leds-pwm-multicolor.yaml
+new file mode 100644
+index 000000000000..b82b26f2e140
+--- /dev/null
++++ b/Documentation/devicetree/bindings/leds/leds-pwm-multicolor.yaml
+@@ -0,0 +1,76 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/leds/leds-pwm-multicolor.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Multi-color LEDs connected to PWM
++
++maintainers:
++  - Sven Schwermer <sven.schwermer@disruptive-technologies.com>
++
++description: |
++  This driver combines several monochrome PWM LEDs into one multi-color
++  LED using the multicolor LED class.
++
++properties:
++  compatible:
++    const: pwm-leds-multicolor
++
++patternProperties:
++  '^multi-led@[0-9a-f]$':
++    type: object
++    allOf:
++      - $ref: leds-class-multicolor.yaml#
++
++    patternProperties:
++      "^led-[0-9a-z]+$":
++        type: object
++        properties:
++          pwms:
++            maxItems: 1
++
++          pwm-names: true
++
++          color:
++            $ref: common.yaml#/properties/color
++
++        required:
++          - pwms
++          - color
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/leds/common.h>
++
++    rgb-led {
++        compatible = "pwm-leds-multicolor";
++
++        multi-led@0 {
++          color = <LED_COLOR_ID_RGB>;
++          function = LED_FUNCTION_INDICATOR;
++          max-brightness = <65535>;
++
++          led-red {
++              pwms = <&pwm1 0 1000000>;
++              color = <LED_COLOR_ID_RED>;
++          };
++
++          led-green {
++              pwms = <&pwm2 0 1000000>;
++              color = <LED_COLOR_ID_GREEN>;
++          };
++
++          led-blue {
++              pwms = <&pwm3 0 1000000>;
++              color = <LED_COLOR_ID_BLUE>;
++          };
++        };
++    };
++
++...
+-- 
+2.35.0
 
