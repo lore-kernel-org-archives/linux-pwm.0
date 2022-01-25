@@ -2,93 +2,100 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FDEC433F5
-	for <linux-pwm@archiver.kernel.org>; Tue, 25 Jan 2022 14:36:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B032DC433F5
+	for <linux-pwm@archiver.kernel.org>; Tue, 25 Jan 2022 14:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387633AbiAYOgA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 25 Jan 2022 09:36:00 -0500
-Received: from mail-ot1-f41.google.com ([209.85.210.41]:42736 "EHLO
-        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456362AbiAYOZ4 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Jan 2022 09:25:56 -0500
-Received: by mail-ot1-f41.google.com with SMTP id z25-20020a0568301db900b005946f536d85so26549331oti.9;
-        Tue, 25 Jan 2022 06:25:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=NMoUwM8BBTLBkP04dan9yDTmthaJAHLTUf/g9SYldSI=;
-        b=enMUSqCfkA/E/zBBODy6o8IUEol4jV1ZxAoivSJITSRLe0x8oWShxhLmxkIWmdM4W4
-         srpwe4/O0ekJ9pIvUYJoJ2XHVff6fC7UX/Li40xOSWRvrUnL3RE0vs43WzgOXUU1kVs5
-         JGMbKkmQ2VSk24l5fJZyIZLqpo3hcvwC2nBqFDj5Uhujcn5TVWw7D++xc1W1BZImgZkb
-         /F0QBFNBqnlkPsgC/hYV7TTGKyPU3x6qVXjZmldY+hE7kOOPwZ6nDs8UYYxhpKfFhbuJ
-         +OAffvASeX66ctJnMYzRAji44jdEfd3v4iiRyem7lb1a/y1u7czAW6hCbnSeo2tbfAnL
-         NwIg==
-X-Gm-Message-State: AOAM5337PeYgw7Dd7korJxclcl7pHLIvg9ifLlUGZ+3SNDlpzzXNlCHL
-        nLGCina++XlNArjGOTomDQsAAlCRtw==
-X-Google-Smtp-Source: ABdhPJxveN4LXBKKxibvyNYmSzU78gq0mvteAN1tf7rCNGjcPC2TMHGSYosKrHGixpsyOyIWv1AzSA==
-X-Received: by 2002:a05:6830:2b22:: with SMTP id l34mr15697377otv.316.1643120751480;
-        Tue, 25 Jan 2022 06:25:51 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id v26sm3536393ooq.20.2022.01.25.06.25.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Jan 2022 06:25:50 -0800 (PST)
-Received: (nullmailer pid 2216641 invoked by uid 1000);
-        Tue, 25 Jan 2022 14:25:49 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     sven@svenschwermer.de
-Cc:     devicetree@vger.kernel.org, thierry.reding@gmail.com,
-        dmurphy@ti.com,
-        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        robh+dt@kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org,
-        lee.jones@linaro.org, pavel@ucw.cz
-In-Reply-To: <20220125092239.2006333-2-sven@svenschwermer.de>
-References: <20220125092239.2006333-1-sven@svenschwermer.de> <20220125092239.2006333-2-sven@svenschwermer.de>
-Subject: Re: [RFC PATCH 1/2] dt-bindings: leds: Add multicolor PWM LED bindings
-Date:   Tue, 25 Jan 2022 08:25:49 -0600
-Message-Id: <1643120749.752659.2216640.nullmailer@robh.at.kernel.org>
+        id S1389174AbiAYOqd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 25 Jan 2022 09:46:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1580236AbiAYOoE (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Jan 2022 09:44:04 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C55FC061401
+        for <linux-pwm@vger.kernel.org>; Tue, 25 Jan 2022 06:44:03 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nCN3B-0000ct-3n; Tue, 25 Jan 2022 15:44:01 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nCN3A-00CMRg-As; Tue, 25 Jan 2022 15:43:59 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nCN39-001Jns-0U; Tue, 25 Jan 2022 15:43:59 +0100
+Date:   Tue, 25 Jan 2022 15:43:56 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     linux-pwm@vger.kernel.org, thierry.reding@gmail.com,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        andrey@lebedev.lt, stable@vger.kernel.org
+Subject: Re: [PATCH 1/3] pwm-sun4i: convert "next_period" to local variable
+Message-ID: <20220125144356.zofft3jd4ov564gd@pengutronix.de>
+References: <20220125123429.3490883-1-max.kellermann@gmail.com>
+ <20220125143158.qbelqvr5mjq33zay@pengutronix.de>
+ <YfALlLgo3MAcbFrZ@swift.blarg.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="2tr2cnvnwymsukbg"
+Content-Disposition: inline
+In-Reply-To: <YfALlLgo3MAcbFrZ@swift.blarg.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Tue, 25 Jan 2022 10:22:38 +0100, sven@svenschwermer.de wrote:
-> From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
-> 
-> This allows to group multiple PWM-connected monochrome LEDs into
-> multicolor LEDs, e.g. RGB LEDs.
-> 
-> Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
-> ---
->  .../bindings/leds/leds-pwm-multicolor.yaml    | 73 +++++++++++++++++++
->  1 file changed, 73 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/leds/leds-pwm-multicolor.yaml
-> 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+--2tr2cnvnwymsukbg
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-yamllint warnings/errors:
+On Tue, Jan 25, 2022 at 03:39:16PM +0100, Max Kellermann wrote:
+> On 2022/01/25 15:31, Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> =
+wrote:
+> > I think I'd drop this. This isn't a fix worth on it's own to be
+> > backported and if this is needed for one of the next patches, the stable
+> > maintainers will notice themselves (and it might be worth to shuffle
+> > this series to make the fixes come first).
+>=20
+> The first two patches are preparation for the third patch, which fixes
+> the actual bug.
+>=20
+> Of course, I could have done everything in one patch, but I thought
+> splitting the first two out makes review easier.  This way, every step
+> is almost trivial.
+>=20
+> If you want me to fold the three patches into one, I can do that.  But
+> I can't reorder them (or backport only the bug fix to stable).
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-pwm-multicolor.yaml: properties:compatible: 'pwm-leds-multicolor' is not of type 'object', 'boolean'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-pwm-multicolor.yaml: ignoring, error in schema: properties: compatible
-Documentation/devicetree/bindings/leds/leds-pwm-multicolor.example.dts:24.25-43.15: Warning (unit_address_vs_reg): /example-0/rgb-led/multi-led@0: node has a unit name, but no reg or ranges property
-Documentation/devicetree/bindings/leds/leds-pwm-multicolor.example.dt.yaml:0:0: /example-0/rgb-led: failed to match any schema with compatible: ['pwm-leds-multicolor']
+That sounds fine. Note my statement "I'd drop this" only refers to the
+Cc: stable line.
 
-doc reference errors (make refcheckdocs):
+Best regards
+Uwe
 
-See https://patchwork.ozlabs.org/patch/1583948
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+--2tr2cnvnwymsukbg
+Content-Type: application/pgp-signature; name="signature.asc"
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+-----BEGIN PGP SIGNATURE-----
 
-pip3 install dtschema --upgrade
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHwDKkACgkQwfwUeK3K
+7An5GggAgauWhA0u9+PUGQow7LIjuLcOmmqR5fZWPNxeM+6iNujkn9jpHGaIcx60
+Ibf7pV4uAB05bXJz08LRNocUBDqvsGk0/o1SpqixiRuZ5l9NOvc1SEwpoiePfzjx
+XmYvy+rjk1DjrAt4f2+jQyEmj7GT/lGkldHBZQXHvP6FQSBvxQbu0rTMYEAjR378
+85qnSKiNKf1R8gixkqTljnLYKjM9KeDyh7H4EkFByLP6e0vbNoysslHxiVGVudpy
+8W+s84Xf08JwoE3EW0vvT4yKXjeSb8x8kZT+MV383F0qQBQh8Fx19baBqUCRb5mk
+8haO/OWNH2t1MDpkmJzYCKr4995mmA==
+=FZEp
+-----END PGP SIGNATURE-----
 
-Please check and re-submit.
-
+--2tr2cnvnwymsukbg--
