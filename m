@@ -2,141 +2,124 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A01C433FE
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Jan 2022 20:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D85FC433EF
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Jan 2022 23:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376681AbiAaUji (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 Jan 2022 15:39:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37656 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343999AbiAaUjh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Jan 2022 15:39:37 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4412614C2;
-        Mon, 31 Jan 2022 20:39:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37D95C340E8;
-        Mon, 31 Jan 2022 20:39:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643661576;
-        bh=LlCWcmjo9XBLXtkZjmaUu+sQAjNy8t3wD356RhDm6+8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dbIvvaZtUtglyEdPJeUXqJeRCSK+nQ6All4q5LCLeHNekPbJGzAd5HBkBDMUdPyEX
-         aLGoz9yVDcpb77joBuHGnfcQ20RTksmJJA8Y7SrJ9Rew6tW4rcMIZRXV5cttCSPQ0D
-         HkEINXYQFrsUCNmd3iD1ToriUf9adNj2trOKs5EHQpQh2ZgYg2jkD+SsyjO4qmwmJU
-         upmD5OlqmrXdrSY7oYrS3dOZxgV98KvJJ3JFZxzIEf0AVbUnMz0iuLBk8UlKNXkBOk
-         lpi4tu/p3npuGwGoPD/pO37vgzqDNONpZMMhn8MfAwiO9zjbATlOiIceIevlZ9aNye
-         Lvr+4f0EY7Kbg==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nEdSX-004Ugn-LI; Mon, 31 Jan 2022 20:39:33 +0000
+        id S238123AbiAaXVr (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 Jan 2022 18:21:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:36555 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237951AbiAaXVr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Jan 2022 18:21:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643671306;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PrT+G3tPg9tF+5XuIAQ32IRnOTQfqMCqOg72JDwqGHg=;
+        b=az5rQSicjcNnkTP+5PCfY0d/hlIeIXcmwsiHxr7eKNMPJLB4Bd/QAE4NpiczzZvNwAYdSA
+        CPp11YGb0aiMdAQOD/no0or3IZ14ouGX8cFTXB6rrSKrnA8WBks3dQM0yYMRMGnpI8tx2U
+        gLzqD1QJv37GPvpOAmjbE37eWDze8O0=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-597-GcYU7kXzOpqIrMq2QCJ-ZA-1; Mon, 31 Jan 2022 18:21:44 -0500
+X-MC-Unique: GcYU7kXzOpqIrMq2QCJ-ZA-1
+Received: by mail-wr1-f72.google.com with SMTP id b3-20020a5d4b83000000b001d676462248so5334090wrt.17
+        for <linux-pwm@vger.kernel.org>; Mon, 31 Jan 2022 15:21:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PrT+G3tPg9tF+5XuIAQ32IRnOTQfqMCqOg72JDwqGHg=;
+        b=FkY0V+huQHwM4Ucy+RBKo+zDbLlYvKHGn9bLyKny6bZjScBee7MgX7GOHDRiR06QUy
+         PUmBNKpRULxIvmzJZEVNeP7yLEfaLTzTN4M/2RDZRjyKxXb54EquX33H3XoSQRTp2Odl
+         +8naCoaL9I38KkeYtHcCjlXbBv+67zVm9FO7I/FHl6Rv5YYsHQkbYEoaX6VBfn4ZKp3A
+         0V35oKAe2KFEgqYnvYzdVZwM87AwrKL+wKOxOVTAUlx615WJjsZZOqYXyNfKU9TrO2Oo
+         9ncOsMnB8TgBSv/bagAbNAvynOqDRmYhWdICFECY+wHeDTFEb4K+QJYJXIui4BrRrnaS
+         uXCQ==
+X-Gm-Message-State: AOAM532BpRcV0zAn3PAfzWsEfBHDzzX+BbCIvdIVwK3UGVUFjVRJz5+d
+        WMefqmGFv4rGiO8/p0GFpNcvNzLYgp0/Rhq3B6UxSh+topxwMX1dGkhznFAPfI0mUX/hNXovk8/
+        JFsQwI0FpmkJSP1X3eDlV
+X-Received: by 2002:a7b:c44d:: with SMTP id l13mr28332789wmi.46.1643671303290;
+        Mon, 31 Jan 2022 15:21:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz+5Kta65CM2LqtBZ8N7f7NRu724ZDFebRcaJ9B9wuQH3sMcUBfk67n6fa4xazee4fo9ruHBg==
+X-Received: by 2002:a7b:c44d:: with SMTP id l13mr28332767wmi.46.1643671303032;
+        Mon, 31 Jan 2022 15:21:43 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id p3sm515814wmq.40.2022.01.31.15.21.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 15:21:42 -0800 (PST)
+Message-ID: <c7818782-ab41-b526-9e81-e769259baa52@redhat.com>
+Date:   Tue, 1 Feb 2022 00:21:41 +0100
 MIME-Version: 1.0
-Date:   Mon, 31 Jan 2022 20:39:33 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     Jon Hunter <jonathanh@nvidia.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED
+ displays
+Content-Language: en-US
+To:     Simon Ser <contact@emersion.fr>
+Cc:     linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-fbdev@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Mark Brown <broonie@kernel.org>,
+        dri-devel@lists.freedesktop.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Peter De Schrijver <pdeschrijver@nvidia.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?Q?U?= =?UTF-8?Q?we_Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Nishanth Menon <nm@ti.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-mmc@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-clk@vger.kernel.org, David Heidelberg <david@ixit.cz>
-Subject: Re: [PATCH v16 08/40] gpu: host1x: Add initial runtime PM and OPP
- support
-In-Reply-To: <40983f6e-92ee-40d4-861f-06faea0113fc@gmail.com>
-References: <20211130232347.950-1-digetx@gmail.com>
- <20211130232347.950-9-digetx@gmail.com>
- <21212ddb-205f-71d6-0199-d75768eaf32c@nvidia.com>
- <41edc53b-5ed1-d524-2546-c3d1ee6cdea4@gmail.com>
- <6652ac84-36f5-0e43-65fa-04786f384f21@nvidia.com>
- <56dce9c7-397d-75b0-b5b8-18ce1084e72b@nvidia.com>
- <6dbc8205-5669-8b08-16b8-fe5e1acdd06f@gmail.com>
- <796eb3f7-80e2-bc55-fd52-43e76220f8c2@nvidia.com>
- <40983f6e-92ee-40d4-861f-06faea0113fc@gmail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <6adda63b4de6b55d11426ecbb08d6c51@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: digetx@gmail.com, jonathanh@nvidia.com, thierry.reding@gmail.com, ulf.hansson@linaro.org, vireshk@kernel.org, sboyd@kernel.org, pdeschrijver@nvidia.com, mperttunen@nvidia.com, lee.jones@linaro.org, u.kleine-koenig@pengutronix.de, nm@ti.com, adrian.hunter@intel.com, mturquette@baylibre.com, linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org, linux-mmc@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-clk@vger.kernel.org, david@ixit.cz
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>
+References: <20220131201225.2324984-1-javierm@redhat.com>
+ <tIMIWqepcZGntnez-1ss4Kn4K8btXnzDRL7EWd19-745WK90YIC19E_4di9RNvB3gtx-PzWEjBEGQLPNJE_x0T1yyyaWFCoFcCiG4StR9RU=@emersion.fr>
+ <wuXPJN-K-rvjoV51c4EBmTBScov8rcJTPoYmlfHe04_-4wD1khVxo9HnUsP7UFd5m4AkzGSw2hXe_c77jbSRhjEJ0JZIYwuvuIkcv_KsR-Y=@emersion.fr>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <wuXPJN-K-rvjoV51c4EBmTBScov8rcJTPoYmlfHe04_-4wD1khVxo9HnUsP7UFd5m4AkzGSw2hXe_c77jbSRhjEJ0JZIYwuvuIkcv_KsR-Y=@emersion.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi all,
+Hello Simon,
 
-On 2021-12-22 19:31, Dmitry Osipenko wrote:
-> 22.12.2021 22:30, Jon Hunter пишет:
->> 
->> On 22/12/2021 19:01, Dmitry Osipenko wrote:
->> 
->> ...
->> 
->>> diff --git a/drivers/gpu/host1x/syncpt.c 
->>> b/drivers/gpu/host1x/syncpt.c
->>> index e08e331e46ae..8194826c9ce3 100644
->>> --- a/drivers/gpu/host1x/syncpt.c
->>> +++ b/drivers/gpu/host1x/syncpt.c
->>> @@ -137,6 +137,15 @@ void host1x_syncpt_restore(struct host1x *host)
->>>       struct host1x_syncpt *sp_base = host->syncpt;
->>>       unsigned int i;
->>> 
->>> +    for (i = 0; i < host->info->nb_pts; i++) {
->>> +        /*
->>> +         * Unassign syncpt from channels for purposes of Tegra186
->>> +         * syncpoint protection. This prevents any channel from
->>> +         * accessing it until it is reassigned.
->>> +         */
->>> +        host1x_hw_syncpt_assign_to_channel(host, sp_base + i, NULL);
->>> +    }
->>> +
->>>       for (i = 0; i < host1x_syncpt_nb_pts(host); i++)
->>>           host1x_hw_syncpt_restore(host, sp_base + i);
->>> 
->>> @@ -352,13 +361,6 @@ int host1x_syncpt_init(struct host1x *host)
->>>       for (i = 0; i < host->info->nb_pts; i++) {
->>>           syncpt[i].id = i;
->>>           syncpt[i].host = host;
->>> -
->>> -        /*
->>> -         * Unassign syncpt from channels for purposes of Tegra186
->>> -         * syncpoint protection. This prevents any channel from
->>> -         * accessing it until it is reassigned.
->>> -         */
->>> -        host1x_hw_syncpt_assign_to_channel(host, &syncpt[i], NULL);
->>>       }
->>> 
->>>       for (i = 0; i < host->info->nb_bases; i++)
->>> 
->> 
->> 
->> Thanks! This fixed it!
+Thanks for your feedback.
+
+On 1/31/22 21:39, Simon Ser wrote:
+> On Monday, January 31st, 2022 at 21:36, Simon Ser <contact@emersion.fr> wrote:
 > 
-> I'll prepare proper patch with yours t-b, thank you.
+>> This driver only advertises XRGB8888 in ssd1307_formats. It would be nice to
+>> expose R8 as well so that user-space can directly produce suitable buffers.
+>> It would also be nice to have some kind of preferred format, so that user-space
+>> knows R8 is preferred over XRGB8888.
+> 
+> Hm, since the format used by the hw is actually R1, adding that to drm_fourcc.h
+> would be even better.
+> 
 
-The fix has been in -next for some time now, but it still hasn't
-made it into Linus' tree (at least not in -rc2).
+Yes, agreed that would be nice. We discussed this already with Thomas and my
+suggestion was to land the driver as is, advertising XRGB8888. Which is also
+what the other driver using monochrome does (drivers/gpu/drm/tiny/repaper.c):
 
-Any hope for this to land -rc3?
+https://www.spinics.net/lists/dri-devel/msg331328.html
 
-Thanks,
+As a follow-up we can wire up al the needed bits to have a DRM/KMS driver that
+could expose a R1 format.
 
-      M.
+> Let me know if you want me to type up any of the user-space bits.
+> 
+
+Thanks! I also could help to add the needed support in the user-space stack.
+
+Best reagards,
 -- 
-Jazz is not dead. It just smells funny...
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
