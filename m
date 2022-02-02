@@ -2,239 +2,140 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CD8C433F5
-	for <linux-pwm@archiver.kernel.org>; Wed,  2 Feb 2022 12:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D40BC433EF
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Feb 2022 13:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233089AbiBBMfM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 2 Feb 2022 07:35:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231748AbiBBMfM (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Feb 2022 07:35:12 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18ACC061714;
-        Wed,  2 Feb 2022 04:35:11 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id jx6so65573847ejb.0;
-        Wed, 02 Feb 2022 04:35:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7/AxST3kZDMpzARyG46hGcn8mCPMME4ss/BsebPInHE=;
-        b=joa8kT/tqwsQO/2H4azBuGuxzy3fkDJg0QsLz3+5px3NLJZAo1pj6VmfM9N+STo5OM
-         UmX4NdP44muyKhO2cT503cdq6v/f/8yMM61zbDV8LMZU1wbXiBK9pIUNcl2TkKETlYcS
-         RuXb/kgSl1DA/OV5NTgYiJx/O+c4CBLPwzYnjtAQxg85277iz9MgyLtDfdTrrU+aIvkU
-         oKMexEhX2Iw2PpeSK/28/XsL35iMy6dydjVymN/IoTrOPYYE5KDT3zSpShaWGTmNXVq4
-         ZDvQAtFfZLsDy5m1y/z8oHc81m7VGJjLfIawY3/4prZh1LgosUUJWqXjEyGLTD+J7O/s
-         UtwQ==
+        id S1344348AbiBBN3C convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 2 Feb 2022 08:29:02 -0500
+Received: from mail-ua1-f44.google.com ([209.85.222.44]:39841 "EHLO
+        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344349AbiBBN3B (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Feb 2022 08:29:01 -0500
+Received: by mail-ua1-f44.google.com with SMTP id p7so19091666uao.6;
+        Wed, 02 Feb 2022 05:29:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7/AxST3kZDMpzARyG46hGcn8mCPMME4ss/BsebPInHE=;
-        b=A4inmkQNz8Ahh4y2ayobh3BoElmDJVviD3y6dGHOLGPSmTgIi1aY8/hYrzXg0XrgNS
-         tpymszk1AqBcReRtMv2SEXjVyWck7hOUd4vMN3lWPsUxMSxwG7iLDlBhVVEOTlsuMcc9
-         Ek6TyXZ4TrXY/jHy7Tyof0eujSUZePb0UA0E2YTE+RUFAwYz5a172/Nc2E+yAaFsW/Gq
-         cC5RxBP40h2CtSNAwlPQVMmvu54VZxUlGIozM3MWzpEJCdgRgAso8XndIu4zTJXQmmM7
-         kHtUYbzx2jfipC0UZTQ4i/3YpF6JLbNCHW62B19XpFnZjD5jkqiuC73/mLBeOYKzV08K
-         UIvg==
-X-Gm-Message-State: AOAM531ZX95f/fAiv1FYbqHOCehXgHoSvFbwJ1ujihJCA+SzX4nQBv9X
-        XAllJ7O+MruwkF26p4St07pxoScstcqpWWJl8h8=
-X-Google-Smtp-Source: ABdhPJyHELkt8dvvT9YrhGvO60hQv1+t5WjXPq5ls2EQRa32m7FIpSxTcGVeBeYKrk5KD2h1vxnrrGIzkYSDS3WDF6I=
-X-Received: by 2002:a17:906:c14d:: with SMTP id dp13mr25365825ejc.132.1643805310171;
- Wed, 02 Feb 2022 04:35:10 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=trhdKZIi8I2pglvejnlK+EON8M6pVXEzurOEfFekmwA=;
+        b=NDIuG5Pi0RdZNClC6AFzmJq+zx47L+ZZZjLB2ZFaV6XrOF3ywZH+eiY2bVFLsGSMrs
+         O4DRqoCyI6KEWdCbmdwUFKch1il2Qtz/HSVlPo3XicEQrluhlmmpug4ldYDTV4kfnrPu
+         QZG9puHGwLxTgxqt/sOxUywruSr79hqJdYFJH3iXkSIvL9wJj80vl3WEUj3ivYCv6Glb
+         FRHYMcTBcQdQZVpkKu11OOm6vCk4wvhbX1Lk431h3fNhG3xivZsuhcptT3yVpbRSzn5V
+         P5D3Ayk4w778vx4y0VJBVMnFfjF3+rPcChOHgmT4e9T9grh1sKXh4+nJQXQwRMUBIVIM
+         X1SA==
+X-Gm-Message-State: AOAM532BgyTnqVM6Dt47WKltyeLBfzEvwaS/0JMdFxymQWjA7MHkS/xh
+        HDF9ssRoQp4g2yPolL6Ciejl3iNtfwAY3g==
+X-Google-Smtp-Source: ABdhPJwOCYEB0n0smzN8MUREPyW9ujuCeDrEIwHTWP/Cw+4jPYq/YplrVxvwMHSN7Ip3AGfOlIuXSQ==
+X-Received: by 2002:a05:6102:2416:: with SMTP id j22mr12057554vsi.8.1643808540650;
+        Wed, 02 Feb 2022 05:29:00 -0800 (PST)
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
+        by smtp.gmail.com with ESMTPSA id 17sm3369288vky.10.2022.02.02.05.28.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 05:29:00 -0800 (PST)
+Received: by mail-ua1-f54.google.com with SMTP id b37so19051548uad.12;
+        Wed, 02 Feb 2022 05:28:59 -0800 (PST)
+X-Received: by 2002:a67:5f83:: with SMTP id t125mr11229610vsb.68.1643808539621;
+ Wed, 02 Feb 2022 05:28:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20220126104844.246068-1-sven@svenschwermer.de> <20220126104844.246068-3-sven@svenschwermer.de>
-In-Reply-To: <20220126104844.246068-3-sven@svenschwermer.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 2 Feb 2022 14:33:34 +0200
-Message-ID: <CAHp75VfMTCvgib__PhnfB_g7xLhyNws5TDRyMVyzuAkT1ydY_w@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] leds: Add PWM multicolor driver
-To:     sven@svenschwermer.de
-Cc:     Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-pwm@vger.kernel.org,
-        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        post@lespocky.de
+References: <20220201075824.aixrvkvmjde2ihxx@pengutronix.de> <20220202123542.3721512-1-conor.dooley@microchip.com>
+In-Reply-To: <20220202123542.3721512-1-conor.dooley@microchip.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 2 Feb 2022 14:28:48 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWrmuY7pwY8U0t9LumEvUTBEA06uV7hNyKFAPMQtE98_A@mail.gmail.com>
+Message-ID: <CAMuHMdWrmuY7pwY8U0t9LumEvUTBEA06uV7hNyKFAPMQtE98_A@mail.gmail.com>
+Subject: Re: [PATCH v5 06/12] dt-bindings: pwm: add microchip corepwm binding
+To:     Conor Dooley <conor.dooley@microchip.com>
+Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@rivosinc.com>,
+        Bin Meng <bin.meng@windriver.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        daire.mcnamara@microchip.com,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+        ivan.griffin@microchip.com, Jassi Brar <jassisinghbrar@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Lewis Hanly <lewis.hanly@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-rtc@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 11:05 PM <sven@svenschwermer.de> wrote:
+Hi Conor,
+
+On Wed, Feb 2, 2022 at 1:33 PM <conor.dooley@microchip.com> wrote:
+> >On 01/02/2022 07:58, Uwe Kleine-König wrote:
+> >> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >> On Mon, Jan 31, 2022 at 11:47:21AM +0000, conor.dooley@microchip.com wrote:
+> >> From: Conor Dooley <conor.dooley@microchip.com>
+> >>
+> >> Add device tree bindings for the Microchip fpga fabric based "core" PWM
+> >> controller.
+> >>
+> >> Reviewed-by: Rob Herring <robh@kernel.org>
+> >>
+> >> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> >> ---
+> >> .../bindings/pwm/microchip,corepwm.yaml       | 75 +++++++++++++++++++
+
+> >> +  microchip,sync-update:
+> >> +    description: |
+> >> +      In synchronous mode, all channels are updated at the beginning of the PWM period.
+> >> +      Asynchronous mode is relevant to applications such as LED control, where
+> >> +      synchronous updates are not required. Asynchronous mode lowers the area size,
+> >> +      reducing shadow register requirements. This can be set at run time, provided
+> >> +      SHADOW_REG_EN is asserted. SHADOW_REG_EN is set by the FPGA bitstream programmed
+> >> +      to the device.
+> >> +      Each bit corresponds to a PWM channel & represents whether synchronous mode is
+> >> +      possible for the PWM channel.
+> >> +
+> >> +    $ref: /schemas/types.yaml#/definitions/uint16
+> >> +    default: 0
+> >
+> >I'm not sure I understand this correctly. This is a soft-core and you
+> >can synthesize it either with or without the ability to do synchronous
+> >updates or not, right? All 16 channels share the same period length and
+> >in the simple implementation changing the duty cycle is done at once
+> >(maybe introducing a glitch) and in the more expensive implementation
+> >there is a register to implement both variants?
 >
-> From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+> Correct. If the IP is instantiated with SHADOW_REG_ENx=1, both
+> registers that control the duty cycle for channel x have a second
+> "shadow reg" synthesised. At runtime a bit wide register exposed to
+> APB can be used to toggle on/off synchronised mode for all channels
+> it has been synthesised for.
 >
-> By allowing to group multiple monochrome PWM LEDs into multicolor LEDs,
-> all involved LEDs can be controlled in-sync. This enables using effects
-> using triggers, etc.
+> I will reword this description since it is not clear.
 
-...
+Shouldn't it use a different compatible value instead?
+Differentiation by properties is not recommended, as it's easy to
+miss a difference.
 
-> +       help
-> +         This option enables support for PWM driven monochrome LEDs that are
-> +         grouped into multicolor LEDs.
+Gr{oetje,eeting}s,
 
-What would be the module name if compiled as a module?
-
-...
-
-> +#include <linux/err.h>
-> +#include <linux/kernel.h>
-> +#include <linux/led-class-multicolor.h>
-> +#include <linux/leds.h>
-
-mod_devicetable.h
-
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/platform_device.h>
-
-property.h
-
-> +#include <linux/pwm.h>
-
-...
-
-> +       int i;
-> +       unsigned long long duty;
-> +       int ret = 0;
-> +       struct led_classdev_mc *mc_cdev = lcdev_to_mccdev(cdev);
-> +       struct pwm_mc_led *priv = container_of(mc_cdev, struct pwm_mc_led, mc_cdev);
-
-Can we order in reversed xmas tree order?
-
-       struct led_classdev_mc *mc_cdev = lcdev_to_mccdev(cdev);
-       struct pwm_mc_led *priv = container_of(mc_cdev, struct
-pwm_mc_led, mc_cdev);
-       unsigned long long duty;
-       int ret = 0;
-       int i;
-
-Same for other functions.
-
-...
-
-> +               dev_err(&pdev->dev, "expected multi-led node\n");
-> +               ret = -ENODEV;
-> +               goto out;
-
-return dev_err_probe(dev, -ENODEV, ...);
-
-...
-
-> +       /* count the nodes inside the multi-led node */
-> +       fwnode_for_each_child_node(mcnode, fwnode)
-> +               ++count;
-
-Postincrement shall work the same way.
-
-...
-
-> +                       ret = PTR_ERR(pwmled->pwm);
-> +                       dev_err(&pdev->dev, "unable to request PWM: %d\n", ret);
-> +                       fwnode_handle_put(fwnode);
-> +                       goto destroy_mutex;
-
-fwnode_handle_put();
-return dev_err_probe(...);
-
-...
-
-> +                       dev_err(&pdev->dev, "cannot read color: %d\n", ret);
-> +                       fwnode_handle_put(fwnode);
-> +                       goto destroy_mutex;
-
-fwnode_handle_put();
-return dev_err_probe();
-
-> +               }
-
-...
-
-> +               ++priv->mc_cdev.num_colors;
-
-Postincrement shall work the same way.
-
-> +       }
-
-...
-
-> +               dev_err(&pdev->dev,
-> +                       "failed to register multicolor PWM led for %s: %d\n",
-> +                       cdev->name, ret);
-> +               goto destroy_mutex;
-
-return dev_err_probe();
-
-...
-
-> +               dev_err(&pdev->dev, "failed to set led PWM value for %s: %d",
-> +                       cdev->name, ret);
-> +               goto destroy_mutex;
-
-return dev_err_probe();
-
-...
-
-> +destroy_mutex:
-> +       mutex_destroy(&priv->lock);
-
-Wrong ordering here and in ->remove().
-
-Don't mix devm_* with non-devm_* calls.
-
-> +release_mcnode:
-> +       fwnode_handle_put(mcnode);
-
-> +out:
-> +       return ret;
-
-Return directly.
-
-> +}
-> +
-> +static int led_pwm_mc_remove(struct platform_device *pdev)
-> +{
-> +       struct pwm_mc_led *priv = platform_get_drvdata(pdev);
-> +
-> +       mutex_destroy(&priv->lock);
-> +       return 0;
-> +}
-
-...
-
-> +static const struct of_device_id of_pwm_leds_mc_match[] = {
-> +       { .compatible = "pwm-leds-multicolor", },
-
-> +       {},
-
-No comma needed for terminator entry.
-
-> +};
-
-...
-
-> +static struct platform_driver led_pwm_mc_driver = {
-> +       .probe          = led_pwm_mc_probe,
-> +       .remove         = led_pwm_mc_remove,
-> +       .driver         = {
-> +               .name   = "leds_pwm_multicolor",
-> +               .of_match_table = of_pwm_leds_mc_match,
-> +       },
-> +};
-
-> +
-
-Redundant blank line.
-
-> +module_platform_driver(led_pwm_mc_driver);
-
+                        Geert
 
 --
-With Best Regards,
-Andy Shevchenko
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
