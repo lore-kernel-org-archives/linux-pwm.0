@@ -2,47 +2,47 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA8EC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C38A8C4321E
 	for <linux-pwm@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236294AbiBGQdO (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:33:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
+        id S236008AbiBGQdN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:33:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377039AbiBGQZK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 11:25:10 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757CFC0401CF;
-        Mon,  7 Feb 2022 08:25:09 -0800 (PST)
+        with ESMTP id S1382016AbiBGQZi (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 11:25:38 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AC85C0401CF;
+        Mon,  7 Feb 2022 08:25:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644251109; x=1675787109;
+  t=1644251137; x=1675787137;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=y9H0vm0uB6r2xnaMXtBb2QcKJondv9+jMqua1OTgIMc=;
-  b=kbBWeUZk2MTVavKRAX5xcqs++U+cPenLfGBRwTnawiG5TK49bugkl8xf
-   WtImQqIOOkqVeAlXriixOQ5gYrGobqtOSX7ld3xhKdM0+vkfwYWJJCoBq
-   sQebUeSV39k51JxkSlHpUQjHL+KRWlpc3x9cty9+WMxaP5R/X7uBRZ0Fv
-   bTXIoFOhKZgbtQqxrQF3w9SzO+3zk4TGOBXVsoofbJzlSCRpY9tsBxBL5
-   +cBPZif1gAz5PLffs4rT0zSLBi/k0C5sH73PJXWPFA49b9Q0HBMmX7aX3
-   U5Iq1QC3QHudiZiOIBkzwmdw9mVN/CnX9r4RxuOm9LZ2CML09htJ1zbjw
+  bh=CuM7K8ToBJ7RKoIFBCQywAvEKq4J6OlP+754BZRgkAU=;
+  b=oItA286EQe7Jkk9QHqdsZfMVlBsFKEjA4CVSHFbFJSk938EKWirt/nUM
+   D4aZ/37drx6CA3xVLCdEMLmc5Sa7UM7Z8cunYuu5qnLtjC1Qok5J83tEu
+   9Nm8hrHbqGJoo0Y+Mucn5htfnvCCmHd6cfQ/omdY1VwOMmwr83OSDEz9+
+   E/Z6SD27XlyrbLMivplLnmOFZyPN8+0/vwEL3+lIVo3HQnATYwl1WnsJ9
+   Xlt9vOBAq0yyY+/HrYS3xpKtjpHfcbmWgDJBz5g01nsAVg4IYUD3iQ8bp
+   VLLbgFxMEfMMcBqk5EINch1QrLH7Q7JJPHda9JNOc4zMRjBW2oiiHYZH1
    A==;
-IronPort-SDR: 0P9xUk3U37cIxnXZPYqVfBjCJJBnnCcC9sCjfJ9EYGuImDXvIo5QsG+jsjfj15o3benLoO+ySm
- dRrH+tS8PIY6UcLqksz0qJlHYioSrFTu3Mxh9tcQbxQwvjbpPOTn6EOQQEbydwuBMG6P9mDhpL
- 9XFTJhfO0yn8O9fZbDdeQ3s8pfhVM4cP/fA/7qISDsAgytegXikVG8dtj5JmWzK9dUVwbAPJUM
- V4xAG63ElgBWU+70kbphe/cmgo4S2UuHq3ZIIf1GJWH3lgD0M9ohEH1hpsTe82XlbD9TkYfryi
- IRDm5EPH/LuPY41lk/KuqqGL
+IronPort-SDR: FarXgVfzZUWJWMuIpZC4lhp+B4sX0634GZiuR7Nh1iyvdXMCMfoH2k/hhIdCFf/PKwAIqJCmKE
+ Fzfk3ZfTKAh5AaryfTKCT+JEQRohJj5Hn71XlkDzQO3VKsHSBnX+zrBiobNW6UEvRgXDE3b27b
+ UtbbyT84FGGREdorJBTyI44rkEp0loGk0Ha4SJYd7zJNMgmzsda5jtIDPr2OBSm3gQZvAJCcg9
+ t0OTqfMrg67LPo5qDhFufz6d7852DGGYYcTcrnECorkV/AlAjC/iwmV6fQL/qRuBigngFtZbMB
+ MzwsqhKvLjWRyAFq6jEidBIo
 X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="152730203"
+   d="scan'208";a="84917904"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:06 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:32 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Feb 2022 09:24:06 -0700
+ 15.1.2375.17; Mon, 7 Feb 2022 09:24:32 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
  (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 7 Feb 2022 09:24:01 -0700
+ Transport; Mon, 7 Feb 2022 09:24:27 -0700
 From:   <conor.dooley@microchip.com>
 To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
         <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
@@ -57,11 +57,10 @@ To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
 CC:     <bin.meng@windriver.com>, <heiko@sntech.de>,
         <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
         <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
-        <atishp@rivosinc.com>, Rob Herring <robh@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v6 03/12] dt-bindings: i2c: add bindings for microchip mpfs i2c
-Date:   Mon, 7 Feb 2022 16:26:29 +0000
-Message-ID: <20220207162637.1658677-4-conor.dooley@microchip.com>
+        <atishp@rivosinc.com>, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH v6 08/12] riscv: dts: microchip: add fpga fabric section to icicle kit
+Date:   Mon, 7 Feb 2022 16:26:34 +0000
+Message-ID: <20220207162637.1658677-9-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207162637.1658677-1-conor.dooley@microchip.com>
 References: <20220207162637.1658677-1-conor.dooley@microchip.com>
@@ -74,80 +73,85 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Add device tree bindings for the i2c controller on
-the Microchip PolarFire SoC.
+Split the device tree for the Microchip MPFS into two sections by adding
+microchip-mpfs-fabric.dtsi, which contains peripherals contained in the
+FPGA fabric.
 
-Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
 ---
- .../bindings/i2c/microchip,corei2c.yaml       | 56 +++++++++++++++++++
- 1 file changed, 56 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
+ .../dts/microchip/microchip-mpfs-fabric.dtsi  | 25 +++++++++++++++++++
+ .../microchip/microchip-mpfs-icicle-kit.dts   |  8 ++++++
+ .../boot/dts/microchip/microchip-mpfs.dtsi    |  1 +
+ 3 files changed, 34 insertions(+)
+ create mode 100644 arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
 
-diff --git a/Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml b/Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
 new file mode 100644
-index 000000000000..c8e605fbb8a6
+index 000000000000..854320e17b28
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/i2c/microchip,corei2c.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
+@@ -0,0 +1,25 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/* Copyright (c) 2020-2021 Microchip Technology Inc */
 +
-+title: Microchip MPFS I2C Controller Device Tree Bindings
++/ {
++	core_pwm0: pwm@41000000 {
++		compatible = "microchip,corepwm-rtl-v4";
++		reg = <0x0 0x41000000 0x0 0xF0>;
++		microchip,sync-update-mask = /bits/ 32 <0>;
++		#pwm-cells = <2>;
++		clocks = <&clkcfg CLK_FIC3>;
++		status = "disabled";
++	};
 +
-+maintainers:
-+  - Daire McNamara <daire.mcnamara@microchip.com>
++	i2c2: i2c@44000000 {
++		compatible = "microchip,corei2c-rtl-v7";
++		reg = <0x0 0x44000000 0x0 0x1000>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		clocks = <&clkcfg CLK_FIC3>;
++		interrupt-parent = <&plic>;
++		interrupts = <122>;
++		clock-frequency = <100000>;
++		status = "disabled";
++	};
++};
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+index 6d19ba196f12..ab803f71626a 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+@@ -68,6 +68,10 @@ &mmc {
+ 	sd-uhs-sdr104;
+ };
+ 
++&i2c2 {
++	status = "okay";
++};
 +
-+allOf:
-+  - $ref: /schemas/i2c/i2c-controller.yaml#
+ &emac0 {
+ 	phy-mode = "sgmii";
+ 	phy-handle = <&phy0>;
+@@ -86,3 +90,7 @@ phy1: ethernet-phy@9 {
+ 		ti,fifo-depth = <0x01>;
+ 	};
+ };
 +
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+        - const: microchip,mpfs-i2c # Microchip PolarFire SoC compatible SoCs
-+        - const: microchip,corei2c-rtl-v7 # Microchip Fabric based i2c IP core
-+      - const: microchip,corei2c-rtl-v7 # Microchip Fabric based i2c IP core
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-frequency:
-+    description: |
-+      Desired I2C bus clock frequency in Hz. As only Standard and Fast
-+      modes are supported, possible values are 100000 and 400000.
-+    enum: [100000, 400000]
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    i2c@2010a000 {
-+      compatible = "microchip,mpfs-i2c", "microchip,corei2c-rtl-v7";
-+      reg = <0x2010a000 0x1000>;
-+      clocks = <&clkcfg 15>;
-+      interrupt-parent = <&plic>;
-+      interrupts = <58>;
-+      clock-frequency = <100000>;
-+    };
-+...
++&core_pwm0 {
++	status = "okay";
++};
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index 717e39b30a15..c7d73756c9b8 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -3,6 +3,7 @@
+ 
+ /dts-v1/;
+ #include "dt-bindings/clock/microchip,mpfs-clock.h"
++#include "microchip-mpfs-fabric.dtsi"
+ 
+ / {
+ 	#address-cells = <2>;
 -- 
 2.35.1
 
