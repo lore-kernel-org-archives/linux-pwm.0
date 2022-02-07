@@ -2,47 +2,47 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 249D9C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 362D0C43217
 	for <linux-pwm@archiver.kernel.org>; Mon,  7 Feb 2022 16:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349322AbiBGQdS (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:33:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60604 "EHLO
+        id S1380292AbiBGQdV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:33:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381748AbiBGQZX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 11:25:23 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7B0C0401CE;
-        Mon,  7 Feb 2022 08:25:22 -0800 (PST)
+        with ESMTP id S1345777AbiBGQZA (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 11:25:00 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9ABC0401CE;
+        Mon,  7 Feb 2022 08:24:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644251122; x=1675787122;
+  t=1644251100; x=1675787100;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Rxh3lnlcB1zCcRgGY291RlhwNrjqpS946Rqo4347BqM=;
-  b=NdcS57RyJVrFxCPkuzNjJgPKObvYIR5ocN26ZgPU1YltJEoy+XP5MfAf
-   BaACUv0ej/zfk4oof39Koe0pYbV4fIhMscOVnum3mqOxT2ktNM0kuVVQc
-   EfYGTncma6cydBO1/rcG7vcQhDog01IBQHY4zRpLAUFOuWSnD0URCMOlq
-   weTzO+Dsd/I1COsB76HXW7TKx+BKZHGZAIrBLg7bbPRWBz934lZofYPhW
-   uWofHtM1um1uFqIGVGlgatfGUSj6l4APttQfsjmSJ3flp8vYRJyNoXO4G
-   wmsSSkcgZHYLv92ocdaB/aemJ8jZWrd/ZXGNVDwunmDF3+O5B+5Rz7RwO
-   g==;
-IronPort-SDR: GNuxJEJcHOzFX3vNKpSQIqOtj6boPfa+hCd9WcCCWCjWYvOWumIH96G/fFHxL8SWXpOhrZ/VhL
- H2aTJSqvc+L+sbJsrBnsU6x+kZKUf1elQNnIsLBG0gO6m2IAkFIxMYhUVsO2e1Z6XXEHUEx7Ps
- t6HZhTyxoqg/N9Y5wl6mfP3XR3q75kFTFMD1h2yQW0fKfH3o11Hc/xRt1B8uR1/tp7zfyDvPy4
- ZKrcglqJjuFGbwKpJ37PPj+DdhvsKjGYE7A9H0tfiJuusx8Sj1TnNessC1fycn2HSKVVpfa9lM
- zF20h9WUMygOZksu3itVeILu
+  bh=Az3RA6+hovCiv6ooXMrh50hd2AKqnttWpCfcnA51fdM=;
+  b=F6mUlshGm3V+r60/UUCHigmI/cn8Newy7Tx/a83D6Gn8eMWNn/Ob3l+E
+   hUbyImUTyxRtWQxAM+0nLzPeaH2IbjLIYXaJswbOrXpveU/f3Ud+cuIAY
+   X+H/nXo4KlVz3YpYJzu/aZ0/HlBf6YNsT/b7mJY2xyXR+0b0VFi/qv3ek
+   mqGFdrJ+AqPRvTIZoqSB+x1GX7RSV3v7EjEVwdX85usIeLoHlfBNykGak
+   olHlWKeOoPsZzuHbY1jybK7eKRSvTziYUnJQJmyAz2ZeiB3lPmfYqTqfI
+   4rtExWgpKQe0NYRIibYLA5ZwaCuoaHNTiX0ksnK3Nq1pd12cu2uabfWPv
+   w==;
+IronPort-SDR: bbEO6zOe+VTOQxvo5M7T19/mhqVbQP3v2rakpC+R0+YxrAiLhNaR1rFjof1OTSP4LAWEu8JwrA
+ tAbwWsO4bAhFPWfITx06HNNtPVqyEAKvNJoLJxtQzRNjRr3I9pdSJnxVNuO1YLc5+dBlg0MVP/
+ TuiHwlGlWIt1Lz4Uw8I5OfMQVa7mvjct9HljxSoi+GjaPCplx1C4lRPZxA4V9vtpaD44nSJpE7
+ qjTD0t4WmavkycCDT2orFE932QCZ11livFn/qI2wm7Rfd5ClJKtKzrDVD5r6ab3Hb+Dee8aqTj
+ vABxx3Par82iX386OPNx+nOl
 X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="145139993"
+   d="scan'208";a="152200230"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:17 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:59 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Feb 2022 09:24:17 -0700
+ 15.1.2375.17; Mon, 7 Feb 2022 09:24:48 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
  (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 7 Feb 2022 09:24:12 -0700
+ Transport; Mon, 7 Feb 2022 09:24:43 -0700
 From:   <conor.dooley@microchip.com>
 To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
         <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
@@ -57,11 +57,10 @@ To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
 CC:     <bin.meng@windriver.com>, <heiko@sntech.de>,
         <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
         <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
-        <atishp@rivosinc.com>, Rob Herring <robh@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v6 05/12] dt-bindings: gpio: add bindings for microchip mpfs gpio
-Date:   Mon, 7 Feb 2022 16:26:31 +0000
-Message-ID: <20220207162637.1658677-6-conor.dooley@microchip.com>
+        <atishp@rivosinc.com>, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH v6 11/12] riscv: dts: microchip: add new peripherals to icicle kit device tree
+Date:   Mon, 7 Feb 2022 16:26:37 +0000
+Message-ID: <20220207162637.1658677-12-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207162637.1658677-1-conor.dooley@microchip.com>
 References: <20220207162637.1658677-1-conor.dooley@microchip.com>
@@ -74,102 +73,267 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Add device tree bindings for the gpio controller on
-the Microchip PolarFire SoC.
+Add new peripherals to the MPFS, and enable them in the Icicle kit
+device tree:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+2x SPI, QSPI, 3x GPIO, 2x I2C, Real Time Counter, PCIE controller,
+USB host & system controller.
+
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
 ---
- .../bindings/gpio/microchip,mpfs-gpio.yaml    | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
+ .../microchip/microchip-mpfs-icicle-kit.dts   |  53 ++++++
+ .../boot/dts/microchip/microchip-mpfs.dtsi    | 160 ++++++++++++++++++
+ 2 files changed, 213 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml b/Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
-new file mode 100644
-index 000000000000..110651eafa70
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gpio/microchip,mpfs-gpio.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+index dc5f351b10c4..cd2fe80fa81a 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+@@ -80,6 +80,26 @@ &mmc {
+ 	sd-uhs-sdr104;
+ };
+ 
++&spi0 {
++	status = "okay";
++};
 +
-+title: Microchip MPFS GPIO Controller Device Tree Bindings
++&spi1 {
++	status = "okay";
++};
 +
-+maintainers:
-+  - Conor Dooley <conor.dooley@microchip.com>
++&qspi {
++	status = "okay";
++};
 +
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - microchip,mpfs-gpio
++&i2c0 {
++	status = "okay";
++};
 +
-+  reg:
-+    maxItems: 1
++&i2c1 {
++	status = "okay";
++};
 +
-+  interrupts:
-+    description:
-+      Interrupt mapping, one per GPIO. Maximum 32 GPIOs.
-+    minItems: 1
-+    maxItems: 32
+ &i2c2 {
+ 	status = "okay";
+ };
+@@ -103,6 +123,39 @@ phy0: ethernet-phy@8 {
+ 	};
+ };
+ 
++&gpio2 {
++	interrupts = <53>, <53>, <53>, <53>,
++		     <53>, <53>, <53>, <53>,
++		     <53>, <53>, <53>, <53>,
++		     <53>, <53>, <53>, <53>,
++		     <53>, <53>, <53>, <53>,
++		     <53>, <53>, <53>, <53>,
++		     <53>, <53>, <53>, <53>,
++		     <53>, <53>, <53>, <53>;
++	status = "okay";
++};
 +
-+  interrupt-controller: true
++&rtc {
++	status = "okay";
++};
 +
-+  clocks:
-+    maxItems: 1
++&usb {
++	status = "okay";
++	dr_mode = "host";
++};
 +
-+  "#gpio-cells":
-+    const: 2
++&mbox {
++	status = "okay";
++};
 +
-+  "#interrupt-cells":
-+    const: 1
++&syscontroller {
++	status = "okay";
++};
 +
-+  ngpios:
-+    description:
-+      The number of GPIOs available.
-+    minimum: 1
-+    maximum: 32
-+    default: 32
++&pcie {
++	status = "okay";
++};
 +
-+  gpio-controller: true
+ &core_pwm0 {
+ 	status = "okay";
+ };
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index 5e7aaaf42cde..c5c9d1360de0 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -266,6 +266,66 @@ mmc: mmc@20008000 {
+ 			status = "disabled";
+ 		};
+ 
++		spi0: spi@20108000 {
++			compatible = "microchip,mpfs-spi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x0 0x20108000 0x0 0x1000>;
++			interrupt-parent = <&plic>;
++			interrupts = <54>;
++			clocks = <&clkcfg CLK_SPI0>;
++			spi-max-frequency = <25000000>;
++			status = "disabled";
++		};
 +
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - "#interrupt-cells"
-+  - interrupt-controller
-+  - "#gpio-cells"
-+  - gpio-controller
-+  - clocks
++		spi1: spi@20109000 {
++			compatible = "microchip,mpfs-spi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x0 0x20109000 0x0 0x1000>;
++			interrupt-parent = <&plic>;
++			interrupts = <55>;
++			clocks = <&clkcfg CLK_SPI1>;
++			spi-max-frequency = <25000000>;
++			status = "disabled";
++		};
 +
-+additionalProperties: false
++		qspi: spi@21000000 {
++			compatible = "microchip,mpfs-qspi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x0 0x21000000 0x0 0x1000>;
++			interrupt-parent = <&plic>;
++			interrupts = <85>;
++			clocks = <&clkcfg CLK_QSPI>;
++			spi-max-frequency = <25000000>;
++			status = "disabled";
++		};
 +
-+examples:
-+  - |
-+    gpio@20122000 {
-+        compatible = "microchip,mpfs-gpio";
-+        reg = <0x20122000 0x1000>;
-+        clocks = <&clkcfg 25>;
-+        interrupt-parent = <&plic>;
-+        gpio-controller;
-+        #gpio-cells = <2>;
-+        interrupt-controller;
-+        #interrupt-cells = <1>;
-+        interrupts = <53>, <53>, <53>, <53>,
-+                     <53>, <53>, <53>, <53>,
-+                     <53>, <53>, <53>, <53>,
-+                     <53>, <53>, <53>, <53>,
-+                     <53>, <53>, <53>, <53>,
-+                     <53>, <53>, <53>, <53>,
-+                     <53>, <53>, <53>, <53>,
-+                     <53>, <53>, <53>, <53>;
-+    };
-+...
++		i2c0: i2c@2010a000 {
++			compatible = "microchip,mpfs-i2c", "microchip,corei2c-rtl-v7";
++			reg = <0x0 0x2010a000 0x0 0x1000>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			interrupt-parent = <&plic>;
++			interrupts = <58>;
++			clocks = <&clkcfg CLK_I2C0>;
++			clock-frequency = <100000>;
++			status = "disabled";
++		};
++
++		i2c1: i2c@2010b000 {
++			compatible = "microchip,mpfs-i2c", "microchip,corei2c-rtl-v7";
++			reg = <0x0 0x2010b000 0x0 0x1000>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			interrupt-parent = <&plic>;
++			interrupts = <61>;
++			clocks = <&clkcfg CLK_I2C1>;
++			clock-frequency = <100000>;
++			status = "disabled";
++		};
++
+ 		mac0: ethernet@20110000 {
+ 			compatible = "cdns,macb";
+ 			reg = <0x0 0x20110000 0x0 0x2000>;
+@@ -291,5 +351,105 @@ mac1: ethernet@20112000 {
+ 			clock-names = "pclk", "hclk";
+ 			status = "disabled";
+ 		};
++
++		gpio0: gpio@20120000 {
++			compatible = "microchip,mpfs-gpio";
++			reg = <0x0 0x20120000 0x0 0x1000>;
++			interrupt-parent = <&plic>;
++			interrupt-controller;
++			#interrupt-cells = <1>;
++			clocks = <&clkcfg CLK_GPIO0>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio1: gpio@20121000 {
++			compatible = "microchip,mpfs-gpio";
++			reg = <000 0x20121000 0x0 0x1000>;
++			interrupt-parent = <&plic>;
++			interrupt-controller;
++			#interrupt-cells = <1>;
++			clocks = <&clkcfg CLK_GPIO1>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio2: gpio@20122000 {
++			compatible = "microchip,mpfs-gpio";
++			reg = <0x0 0x20122000 0x0 0x1000>;
++			interrupt-parent = <&plic>;
++			interrupt-controller;
++			#interrupt-cells = <1>;
++			clocks = <&clkcfg CLK_GPIO2>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			status = "disabled";
++		};
++
++		rtc: rtc@20124000 {
++			compatible = "microchip,mpfs-rtc";
++			reg = <0x0 0x20124000 0x0 0x1000>;
++			interrupt-parent = <&plic>;
++			interrupts = <80>, <81>;
++			clocks = <&clkcfg CLK_RTC>;
++			clock-names = "rtc";
++			status = "disabled";
++		};
++
++		usb: usb@20201000 {
++			compatible = "microchip,mpfs-musb";
++			reg = <0x0 0x20201000 0x0 0x1000>;
++			interrupt-parent = <&plic>;
++			interrupts = <86>, <87>;
++			clocks = <&clkcfg CLK_USB>;
++			interrupt-names = "dma","mc";
++			status = "disabled";
++		};
++
++		pcie: pcie@2000000000 {
++			compatible = "microchip,pcie-host-1.0";
++			#address-cells = <0x3>;
++			#interrupt-cells = <0x1>;
++			#size-cells = <0x2>;
++			device_type = "pci";
++			reg = <0x20 0x0 0x0 0x8000000>, <0x0 0x43000000 0x0 0x10000>;
++			reg-names = "cfg", "apb";
++			bus-range = <0x0 0x7f>;
++			interrupt-parent = <&plic>;
++			interrupts = <119>;
++			interrupt-map = <0 0 0 1 &pcie_intc 0>,
++					<0 0 0 2 &pcie_intc 1>,
++					<0 0 0 3 &pcie_intc 2>,
++					<0 0 0 4 &pcie_intc 3>;
++			interrupt-map-mask = <0 0 0 7>;
++			clocks = <&clkcfg CLK_FIC0>, <&clkcfg CLK_FIC1>, <&clkcfg CLK_FIC3>;
++			clock-names = "fic0", "fic1", "fic3";
++			ranges = <0x3000000 0x0 0x8000000 0x20 0x8000000 0x0 0x80000000>;
++			msi-parent = <&pcie>;
++			msi-controller;
++			microchip,axi-m-atr0 = <0x10 0x0>;
++			status = "disabled";
++			pcie_intc: legacy-interrupt-controller {
++				#address-cells = <0>;
++				#interrupt-cells = <1>;
++				interrupt-controller;
++			};
++		};
++
++		mbox: mailbox@37020000 {
++			compatible = "microchip,mpfs-mailbox";
++			reg = <0x0 0x37020000 0x0 0x1000>, <0x0 0x2000318C 0x0 0x40>;
++			interrupt-parent = <&plic>;
++			interrupts = <96>;
++			#mbox-cells = <1>;
++			status = "disabled";
++		};
++
++		syscontroller: syscontroller {
++			compatible = "microchip,mpfs-sys-controller";
++			mboxes = <&mbox 0>;
++		};
+ 	};
+ };
 -- 
 2.35.1
 
