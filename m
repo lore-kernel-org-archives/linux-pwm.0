@@ -2,47 +2,47 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6068DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF53C43219
 	for <linux-pwm@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230369AbiBGQcW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:32:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
+        id S232695AbiBGQdN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:33:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381968AbiBGQZe (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 11:25:34 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3775BC0401CE;
-        Mon,  7 Feb 2022 08:25:33 -0800 (PST)
+        with ESMTP id S1344497AbiBGQY5 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 11:24:57 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9EFC0401CF;
+        Mon,  7 Feb 2022 08:24:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644251133; x=1675787133;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UgAsg9TlIrDzEqjVIYSY7g9vpEQeRY9RvW+oM1/ooF0=;
-  b=Li8lWxKOgYsYSr/18YuGQ02YKB7FQPWGJ7sPSo/5Uk0R9g2T0ezaXu1+
-   9/jLoTxOQbGob6SMr3pjMt8Y3rF1Ea0+K4/bue/vIYsEQGiEKeM188TnS
-   lo8lGvphP48gbty+idDAqSO6VHsoKgjxxahQmuYZ8cyiwkOl3RVGAeQHc
-   giL1EYbga6PUMMICUKzsI9rtEBiaXsBxBAgXJ9cyZXadBYVUoYs8EfZEQ
-   i0SRvbylx7kMnrsZual9BD4U+yTZ+95wqRxxNy9BJ1KFROBSoFpLeYcQ+
-   0SsQlN22A4evncYp504TtzHOYNmuMcHN7nQ64WuLXTWaZQuda8P3vcjoz
+  t=1644251097; x=1675787097;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ad3vvcjmo72FEXpL/WUH4Bm8CDxa6BTmpj9AaGDiqa0=;
+  b=J3iSpKVW7DzxiDw+IQz2aqqgPsfcuW4VYFzgWYfIOrdR7FyrLzl2RC23
+   YMIF1gsZ1+V996NUgaOO4Y2YAgO4mOVRFl9kqH3pi30yFoz9nvQPNp/9C
+   PqkMLSbitwBqQWLk0outJR/TOqB9IQB5pcvg1ySTqjaM8nIV7Y3X4SZdJ
+   wvNBy48/9ikVgwnXxtoyediYg/7CuWW54yNxL+XQb9t6WYDoXTsAEJykt
+   CDIAMEs3StiyfnVPfLx4dv6LAJBz66iU4taiLqjeqHYQNVRtze+EDNIYS
+   dg+v2WmGKPyE0i5W6Y5/Vp6Cyz3Pl3ZDkfKGvAtPdgc6YWyIr4aubW+rt
    g==;
-IronPort-SDR: a5kwyl98BaeJDDdVDl5yUbw7rcuwyz/E9FtbOJijPgB9dt43zfaMptiY3NIHux370393lzmFLU
- lzWz2ZEqSQH/HZ1VfAY8nqH5lXPP3+LCjLuzIWQQUnOq+LbNCiLbIAbjkkHMrJqOt9joT9Unk7
- YJ/bfwhQjZXo5sAEDz5hJSqdcwZCClNOiHqx0yaQMyGtVaVpTfLWLhw8eh0GvO+h5Qu/4xJCB/
- I5TYpZlnOnLtZf15L/GmvsWalzfssFDfTE3+P7MBfH0yoj71s2cawwSQ6ZpxD+DOhQDRcD07g/
- MR2ujyQQJQOB9peCG1uyptaR
+IronPort-SDR: DLrFGEXvXjnqXj5ikuFvRRPbczwUI/BBckPswC9ZTFj2GxNwih7v1QF7aqa3RLY5RSvRhs7u/s
+ WLEY2PihOpmyPslvWW5+Z1dnlVz5w38I8WQ7AKxQGkm3gG9XKYTzbPsaCQ607t6+QbOmk4MEpR
+ N76iwFYhc5Z1U4gUeboc/ODDfnqhUyy6JYPBY2cDuec4/9dZNC0Z5UCAT+mkWcVl3izsaapdyb
+ v6obvMg9sAujHMR8WDc3x4Im4on/gFq93kRjeZOjQ9PCjf6OrdLBOhPRRJBJbK93Gb4qG3/3B9
+ 2Crg6uEJ2MJ2AvfHLFwtFsCg
 X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="145140011"
+   d="scan'208";a="152200109"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:30 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:23:52 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Feb 2022 09:24:22 -0700
+ 15.1.2375.17; Mon, 7 Feb 2022 09:23:50 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
  (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 7 Feb 2022 09:24:17 -0700
+ Transport; Mon, 7 Feb 2022 09:23:46 -0700
 From:   <conor.dooley@microchip.com>
 To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
         <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
@@ -57,14 +57,11 @@ To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
 CC:     <bin.meng@windriver.com>, <heiko@sntech.de>,
         <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
         <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
-        <atishp@rivosinc.com>, Rob Herring <robh@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v6 06/12] dt-bindings: pwm: add microchip corepwm binding
-Date:   Mon, 7 Feb 2022 16:26:32 +0000
-Message-ID: <20220207162637.1658677-7-conor.dooley@microchip.com>
+        <atishp@rivosinc.com>
+Subject: [PATCH v6 00/12] Update the Icicle Kit device tree
+Date:   Mon, 7 Feb 2022 16:26:26 +0000
+Message-ID: <20220207162637.1658677-1-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207162637.1658677-1-conor.dooley@microchip.com>
-References: <20220207162637.1658677-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -74,102 +71,99 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Add device tree bindings for the Microchip fpga fabric based "core" PWM
-controller.
+This series updates the Microchip Icicle Kit device tree by adding a
+host of peripherals, and some updates to the memory map. In addition,
+the device tree has been split into a third part, which contains "soft"
+peripherals that are in the fpga fabric.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
----
- .../bindings/pwm/microchip,corepwm.yaml       | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
+Several of the entries are for peripherals that have not get had their
+drivers upstreamed, so in those cases the dt bindings are included where
+appropriate in order to avoid the many "DT compatible string <x> appears
+un-documented" errors.
+
+Depends on mpfs clock driver binding (on clk/next) to provide 
+dt-bindings/clock/microchip,mpfs-clock.h for the device tree
+and on the other changes to the icicle/mpfs device tree from geert
+that are already in linux/riscv/for-next.
+
+Additionally, the interrupt-extended warnings on the plic/clint are 
+cleared by [1] & [2].
+
+[1] https://lore.kernel.org/linux-riscv/cover.1639744468.git.geert@linux-m68k.org/
+[2] https://lore.kernel.org/linux-riscv/cover.1639744106.git.geert@linux-m68k.org/
+
+Changes from v5:
+- reworded the descriptions in the pwm binding to (hopefully) add
+  clarity
+- added -mask to the custom properties and made them 32 bit
+- renamed the i2c binding to corei2c, since it is not mpfs specific
+- removed the child nodes of the system controller in example/dts &
+  will create them in the driver.
+  @Rob, I assume keeping them documented is the correct thing to do?
+- removed the dependancy on the clock binding from the examples
+- reformatted rtc interrupts as per Rob's suggestion
+
+Changes from v4:
+- dont include icicle_kit_defconfig, accidentally added in v3
+- drop prescaler from mpfs-rtc & calculate the value instead
+- use corei2c as a fallback device for mpfs-i2c
+- drop spi dt-binding (on spi-next)
+  commit 2da187304e556ac59cf2dacb323cc78ded988169
+- drop usb dt-binding (on usb-next)
+
+Changes from v3:
+- drop "mailbox: change mailbox-mpfs compatible string", already upstream:
+  commit f10b1fc0161cd99e ("mailbox: change mailbox-mpfs compatible string")
+- fix copy paste error in microchip,mpfs-mailbox dt-binding
+- remove whitespace in syscontroller dt entry
+
+Changes from v2:
+- dropped plic int header & corresponding defines in dts{,i}
+- use $ref to drmode in mpfs-musb binding
+- split changes to dts{,i} again: functional changes to existing
+  elements now are in a new patch
+- drop num-cs property in mpfs-spi binding
+- dont make the system controller a simple-mfd
+- move the separate bindings for rng/generic system services into the 
+  system controller binding
+- added an instance corei2c as i2c2 in the fabric dtsi
+- add version numbering to corepwm and corei2c compat string (-rtl-vN)
+
+Conor Dooley (12):
+  dt-bindings: soc/microchip: update syscontroller compatibles
+  dt-bindings: soc/microchip: add services as sub devs of sys ctrlr
+  dt-bindings: i2c: add bindings for microchip mpfs i2c
+  dt-bindings: rtc: add bindings for microchip mpfs rtc
+  dt-bindings: gpio: add bindings for microchip mpfs gpio
+  dt-bindings: pwm: add microchip corepwm binding
+  riscv: dts: microchip: use clk defines for icicle kit
+  riscv: dts: microchip: add fpga fabric section to icicle kit
+  riscv: dts: microchip: refactor icicle kit device tree
+  riscv: dts: microchip: update peripherals in icicle kit device tree
+  riscv: dts: microchip: add new peripherals to icicle kit device tree
+  MAINTAINERS: update riscv/microchip entry
+
+ .../bindings/gpio/microchip,mpfs-gpio.yaml    |  79 ++++++
+ .../bindings/i2c/microchip,corei2c.yaml       |  56 ++++
+ ...ilbox.yaml => microchip,mpfs-mailbox.yaml} |   6 +-
+ .../bindings/pwm/microchip,corepwm.yaml       |  79 ++++++
+ .../bindings/rtc/microchip,mfps-rtc.yaml      |  58 ++++
+ .../microchip,mpfs-sys-controller.yaml        |  66 +++++
+ ...icrochip,polarfire-soc-sys-controller.yaml |  35 ---
+ MAINTAINERS                                   |   2 +
+ .../dts/microchip/microchip-mpfs-fabric.dtsi  |  25 ++
+ .../microchip/microchip-mpfs-icicle-kit.dts   | 115 ++++++--
+ .../boot/dts/microchip/microchip-mpfs.dtsi    | 254 ++++++++++++++----
+ 11 files changed, 671 insertions(+), 104 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
+ create mode 100644 Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
+ rename Documentation/devicetree/bindings/mailbox/{microchip,polarfire-soc-mailbox.yaml => microchip,mpfs-mailbox.yaml} (82%)
  create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+ create mode 100644 Documentation/devicetree/bindings/rtc/microchip,mfps-rtc.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
+ delete mode 100644 Documentation/devicetree/bindings/soc/microchip/microchip,polarfire-soc-sys-controller.yaml
+ create mode 100644 arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
 
-diff --git a/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
-new file mode 100644
-index 000000000000..30ec70ac5c44
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/microchip,corepwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microchip IP corePWM controller bindings
-+
-+maintainers:
-+  - Conor Dooley <conor.dooley@microchip.com>
-+
-+description: |
-+  corePWM is an 16 channel pulse width modulator FPGA IP
-+
-+  https://www.microsemi.com/existing-parts/parts/152118
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: microchip,corepwm-rtl-v4
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+  microchip,sync-update-mask:
-+    description: |
-+      Depending on how the IP is instantiated, there are two modes of operation.
-+      In synchronous mode, all channels are updated at the beginning of the PWM period,
-+      and in asynchronous mode updates happen as the control registers are written.
-+      A 16 bit wide "SHADOW_REG_EN" parameter of the IP core controls whether synchronous
-+      mode is possible for each channel, and is set by the bitstream programmed to the
-+      FPGA. If the IP core is instantiated with SHADOW_REG_ENx=1, both registers that
-+      control the duty cycle for channel x have a second "shadow"/buffer reg synthesised.
-+      At runtime a bit wide register exposed to APB can be used to toggle on/off
-+      synchronised mode for all channels it has been synthesised for.
-+      Each bit of "microchip,sync-update-mask" corresponds to a PWM channel & represents
-+      whether synchronous mode is possible for the PWM channel.
-+
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    default: 0
-+
-+  microchip,dac-mode-mask:
-+    description: |
-+      Optional, per-channel Low Ripple DAC mode is possible on this IP core. It creates
-+      a minimum period pulse train whose High/Low average is that of the chosen duty
-+      cycle. This "DAC" will have far better bandwidth and ripple performance than the
-+      standard PWM algorithm can achieve. A 16 bit DAC_MODE module parameter of the IP
-+      core, set at instantiation and by the bitstream programmed to the FPGA, determines
-+      whether a given channel operates in regular PWM or DAC mode.
-+      Each bit corresponds to a PWM channel & represents whether DAC mode is enabled
-+      for that channel.
-+
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    default: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - "#pwm-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pwm@41000000 {
-+      compatible = "microchip,corepwm-rtl-v4";
-+      microchip,sync-update-mask = /bits/ 32 <0>;
-+      clocks = <&clkcfg 30>;
-+      reg = <0x41000000 0xF0>;
-+      #pwm-cells = <2>;
-+    };
 -- 
 2.35.1
 
