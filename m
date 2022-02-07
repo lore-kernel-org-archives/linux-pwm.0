@@ -2,47 +2,47 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF53C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ACFC433FE
 	for <linux-pwm@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232695AbiBGQdN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:33:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60368 "EHLO
+        id S231322AbiBGQdM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:33:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344497AbiBGQY5 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 11:24:57 -0500
+        with ESMTP id S1384260AbiBGQZz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 11:25:55 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9EFC0401CF;
-        Mon,  7 Feb 2022 08:24:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F499C0401CF;
+        Mon,  7 Feb 2022 08:25:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644251097; x=1675787097;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ad3vvcjmo72FEXpL/WUH4Bm8CDxa6BTmpj9AaGDiqa0=;
-  b=J3iSpKVW7DzxiDw+IQz2aqqgPsfcuW4VYFzgWYfIOrdR7FyrLzl2RC23
-   YMIF1gsZ1+V996NUgaOO4Y2YAgO4mOVRFl9kqH3pi30yFoz9nvQPNp/9C
-   PqkMLSbitwBqQWLk0outJR/TOqB9IQB5pcvg1ySTqjaM8nIV7Y3X4SZdJ
-   wvNBy48/9ikVgwnXxtoyediYg/7CuWW54yNxL+XQb9t6WYDoXTsAEJykt
-   CDIAMEs3StiyfnVPfLx4dv6LAJBz66iU4taiLqjeqHYQNVRtze+EDNIYS
-   dg+v2WmGKPyE0i5W6Y5/Vp6Cyz3Pl3ZDkfKGvAtPdgc6YWyIr4aubW+rt
+  t=1644251155; x=1675787155;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=v+naBJJ9gW5tTTYZDC+I9qkLd9zec9eUkonkP5epmmQ=;
+  b=cpLbEXjZjJKYK78hHtp/KATNBFAowkdggTQAIgNNGfVeE+Q++5uCG+UA
+   Ju/EyixJYlAt6xZuFsU8PdkD5oLBXxMeSLlt0eFu5Wcr/uJA3coShE/NH
+   +A9SZP4MaxAZ5+PbmRklUlK2M6Og+9UJen0wcdKuQU+58TTZ9e4bPv+AQ
+   VuVjW9XKgTmVZaPqyBKMPLNLXoS4DGL9Q5J/wRxaJQ5Rsu6gB/fG+NFFw
+   kgnVe+RqLIMq7LVPexvnEbNpBQxKFrx5AAQmGT/rNRMWWGwM5VSwSjKtn
+   DzXh65ASCVuSdqmT+bReeTzU0Z2iufLHKft1gOvutd+Kg0r+bxZKEORxs
    g==;
-IronPort-SDR: DLrFGEXvXjnqXj5ikuFvRRPbczwUI/BBckPswC9ZTFj2GxNwih7v1QF7aqa3RLY5RSvRhs7u/s
- WLEY2PihOpmyPslvWW5+Z1dnlVz5w38I8WQ7AKxQGkm3gG9XKYTzbPsaCQ607t6+QbOmk4MEpR
- N76iwFYhc5Z1U4gUeboc/ODDfnqhUyy6JYPBY2cDuec4/9dZNC0Z5UCAT+mkWcVl3izsaapdyb
- v6obvMg9sAujHMR8WDc3x4Im4on/gFq93kRjeZOjQ9PCjf6OrdLBOhPRRJBJbK93Gb4qG3/3B9
- 2Crg6uEJ2MJ2AvfHLFwtFsCg
+IronPort-SDR: 8Q16iknH/9eGetjtjo7XEfrp8P5RwO43A6Wr5IwqBhMeWOOZuuzo1ISd4b8Je3GXbM1wX1MYt2
+ 4iGorDZMt9o2K3WySeldxrYAvWgkZeseYQC+GtOghpAMaEHywy+6+QZc/UHQ1DwjY9ZmMy7LGp
+ LQJlXkPu6ziLd/Lphu5CEEODSqRVBs+Z0nHVtZe9c2rYgJYiVrdj+0fAqEJ9rW8p7yFDj5roav
+ ErD5n3X9n3rMhROpzD01bAHRiaaaRjWMFpx/DmRB7si1r41wqOKZ63Febb6fjBOkjNeddIxggf
+ EQWmS9q4mMa1cKq8kAPHq4Da
 X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="152200109"
+   d="scan'208";a="152200207"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:23:52 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:52 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Feb 2022 09:23:50 -0700
+ 15.1.2375.17; Mon, 7 Feb 2022 09:24:38 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
  (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 7 Feb 2022 09:23:46 -0700
+ Transport; Mon, 7 Feb 2022 09:24:32 -0700
 From:   <conor.dooley@microchip.com>
 To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
         <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
@@ -57,11 +57,13 @@ To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
 CC:     <bin.meng@windriver.com>, <heiko@sntech.de>,
         <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
         <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
-        <atishp@rivosinc.com>
-Subject: [PATCH v6 00/12] Update the Icicle Kit device tree
-Date:   Mon, 7 Feb 2022 16:26:26 +0000
-Message-ID: <20220207162637.1658677-1-conor.dooley@microchip.com>
+        <atishp@rivosinc.com>, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH v6 09/12] riscv: dts: microchip: refactor icicle kit device tree
+Date:   Mon, 7 Feb 2022 16:26:35 +0000
+Message-ID: <20220207162637.1658677-10-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207162637.1658677-1-conor.dooley@microchip.com>
+References: <20220207162637.1658677-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -71,99 +73,308 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-This series updates the Microchip Icicle Kit device tree by adding a
-host of peripherals, and some updates to the memory map. In addition,
-the device tree has been split into a third part, which contains "soft"
-peripherals that are in the fpga fabric.
+Assorted minor changes to the MPFS/Icicle kit device tree:
 
-Several of the entries are for peripherals that have not get had their
-drivers upstreamed, so in those cases the dt bindings are included where
-appropriate in order to avoid the many "DT compatible string <x> appears
-un-documented" errors.
+- rename serial to mmuart to match microchip documentation
+- move phy0 inside mac1 node to match phy configuration
+- add labels where missing (cpus, cache controller)
+- add missing address cells & interrupts to MACs
 
-Depends on mpfs clock driver binding (on clk/next) to provide 
-dt-bindings/clock/microchip,mpfs-clock.h for the device tree
-and on the other changes to the icicle/mpfs device tree from geert
-that are already in linux/riscv/for-next.
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ .../microchip/microchip-mpfs-icicle-kit.dts   | 37 ++++++-----
+ .../boot/dts/microchip/microchip-mpfs.dtsi    | 65 +++++++++----------
+ 2 files changed, 52 insertions(+), 50 deletions(-)
 
-Additionally, the interrupt-extended warnings on the plic/clint are 
-cleared by [1] & [2].
-
-[1] https://lore.kernel.org/linux-riscv/cover.1639744468.git.geert@linux-m68k.org/
-[2] https://lore.kernel.org/linux-riscv/cover.1639744106.git.geert@linux-m68k.org/
-
-Changes from v5:
-- reworded the descriptions in the pwm binding to (hopefully) add
-  clarity
-- added -mask to the custom properties and made them 32 bit
-- renamed the i2c binding to corei2c, since it is not mpfs specific
-- removed the child nodes of the system controller in example/dts &
-  will create them in the driver.
-  @Rob, I assume keeping them documented is the correct thing to do?
-- removed the dependancy on the clock binding from the examples
-- reformatted rtc interrupts as per Rob's suggestion
-
-Changes from v4:
-- dont include icicle_kit_defconfig, accidentally added in v3
-- drop prescaler from mpfs-rtc & calculate the value instead
-- use corei2c as a fallback device for mpfs-i2c
-- drop spi dt-binding (on spi-next)
-  commit 2da187304e556ac59cf2dacb323cc78ded988169
-- drop usb dt-binding (on usb-next)
-
-Changes from v3:
-- drop "mailbox: change mailbox-mpfs compatible string", already upstream:
-  commit f10b1fc0161cd99e ("mailbox: change mailbox-mpfs compatible string")
-- fix copy paste error in microchip,mpfs-mailbox dt-binding
-- remove whitespace in syscontroller dt entry
-
-Changes from v2:
-- dropped plic int header & corresponding defines in dts{,i}
-- use $ref to drmode in mpfs-musb binding
-- split changes to dts{,i} again: functional changes to existing
-  elements now are in a new patch
-- drop num-cs property in mpfs-spi binding
-- dont make the system controller a simple-mfd
-- move the separate bindings for rng/generic system services into the 
-  system controller binding
-- added an instance corei2c as i2c2 in the fabric dtsi
-- add version numbering to corepwm and corei2c compat string (-rtl-vN)
-
-Conor Dooley (12):
-  dt-bindings: soc/microchip: update syscontroller compatibles
-  dt-bindings: soc/microchip: add services as sub devs of sys ctrlr
-  dt-bindings: i2c: add bindings for microchip mpfs i2c
-  dt-bindings: rtc: add bindings for microchip mpfs rtc
-  dt-bindings: gpio: add bindings for microchip mpfs gpio
-  dt-bindings: pwm: add microchip corepwm binding
-  riscv: dts: microchip: use clk defines for icicle kit
-  riscv: dts: microchip: add fpga fabric section to icicle kit
-  riscv: dts: microchip: refactor icicle kit device tree
-  riscv: dts: microchip: update peripherals in icicle kit device tree
-  riscv: dts: microchip: add new peripherals to icicle kit device tree
-  MAINTAINERS: update riscv/microchip entry
-
- .../bindings/gpio/microchip,mpfs-gpio.yaml    |  79 ++++++
- .../bindings/i2c/microchip,corei2c.yaml       |  56 ++++
- ...ilbox.yaml => microchip,mpfs-mailbox.yaml} |   6 +-
- .../bindings/pwm/microchip,corepwm.yaml       |  79 ++++++
- .../bindings/rtc/microchip,mfps-rtc.yaml      |  58 ++++
- .../microchip,mpfs-sys-controller.yaml        |  66 +++++
- ...icrochip,polarfire-soc-sys-controller.yaml |  35 ---
- MAINTAINERS                                   |   2 +
- .../dts/microchip/microchip-mpfs-fabric.dtsi  |  25 ++
- .../microchip/microchip-mpfs-icicle-kit.dts   | 115 ++++++--
- .../boot/dts/microchip/microchip-mpfs.dtsi    | 254 ++++++++++++++----
- 11 files changed, 671 insertions(+), 104 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
- create mode 100644 Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
- rename Documentation/devicetree/bindings/mailbox/{microchip,polarfire-soc-mailbox.yaml => microchip,mpfs-mailbox.yaml} (82%)
- create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
- create mode 100644 Documentation/devicetree/bindings/rtc/microchip,mfps-rtc.yaml
- create mode 100644 Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
- delete mode 100644 Documentation/devicetree/bindings/soc/microchip/microchip,polarfire-soc-sys-controller.yaml
- create mode 100644 arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
-
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+index ab803f71626a..c51bd7cf500f 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: (GPL-2.0 OR MIT)
+-/* Copyright (c) 2020 Microchip Technology Inc */
++/* Copyright (c) 2020-2021 Microchip Technology Inc */
+ 
+ /dts-v1/;
+ 
+@@ -13,11 +13,11 @@ / {
+ 	compatible = "microchip,mpfs-icicle-kit", "microchip,mpfs";
+ 
+ 	aliases {
+-		ethernet0 = &emac1;
+-		serial0 = &serial0;
+-		serial1 = &serial1;
+-		serial2 = &serial2;
+-		serial3 = &serial3;
++		ethernet0 = &mac1;
++		serial0 = &mmuart0;
++		serial1 = &mmuart1;
++		serial2 = &mmuart2;
++		serial3 = &mmuart3;
+ 	};
+ 
+ 	chosen {
+@@ -39,19 +39,19 @@ &refclk {
+ 	clock-frequency = <600000000>;
+ };
+ 
+-&serial0 {
++&mmuart0 {
+ 	status = "okay";
+ };
+ 
+-&serial1 {
++&mmuart1 {
+ 	status = "okay";
+ };
+ 
+-&serial2 {
++&mmuart2 {
+ 	status = "okay";
+ };
+ 
+-&serial3 {
++&mmuart3 {
+ 	status = "okay";
+ };
+ 
+@@ -61,7 +61,10 @@ &mmc {
+ 	bus-width = <4>;
+ 	disable-wp;
+ 	cap-sd-highspeed;
++	cap-mmc-highspeed;
+ 	card-detect-delay = <200>;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;
+ 	sd-uhs-sdr12;
+ 	sd-uhs-sdr25;
+ 	sd-uhs-sdr50;
+@@ -72,22 +75,22 @@ &i2c2 {
+ 	status = "okay";
+ };
+ 
+-&emac0 {
++&mac0 {
+ 	phy-mode = "sgmii";
+ 	phy-handle = <&phy0>;
+-	phy0: ethernet-phy@8 {
+-		reg = <8>;
+-		ti,fifo-depth = <0x01>;
+-	};
+ };
+ 
+-&emac1 {
++&mac1 {
+ 	status = "okay";
+ 	phy-mode = "sgmii";
+ 	phy-handle = <&phy1>;
+ 	phy1: ethernet-phy@9 {
+ 		reg = <9>;
+-		ti,fifo-depth = <0x01>;
++		ti,fifo-depth = <0x1>;
++	};
++	phy0: ethernet-phy@8 {
++		reg = <8>;
++		ti,fifo-depth = <0x1>;
+ 	};
+ };
+ 
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index c7d73756c9b8..62bd00092bcc 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: (GPL-2.0 OR MIT)
+-/* Copyright (c) 2020 Microchip Technology Inc */
++/* Copyright (c) 2020-2021 Microchip Technology Inc */
+ 
+ /dts-v1/;
+ #include "dt-bindings/clock/microchip,mpfs-clock.h"
+@@ -15,7 +15,7 @@ cpus {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		cpu@0 {
++		cpu0: cpu@0 {
+ 			compatible = "sifive,e51", "sifive,rocket0", "riscv";
+ 			device_type = "cpu";
+ 			i-cache-block-size = <64>;
+@@ -33,7 +33,7 @@ cpu0_intc: interrupt-controller {
+ 			};
+ 		};
+ 
+-		cpu@1 {
++		cpu1: cpu@1 {
+ 			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+ 			d-cache-block-size = <64>;
+ 			d-cache-sets = <64>;
+@@ -60,7 +60,7 @@ cpu1_intc: interrupt-controller {
+ 			};
+ 		};
+ 
+-		cpu@2 {
++		cpu2: cpu@2 {
+ 			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+ 			d-cache-block-size = <64>;
+ 			d-cache-sets = <64>;
+@@ -87,7 +87,7 @@ cpu2_intc: interrupt-controller {
+ 			};
+ 		};
+ 
+-		cpu@3 {
++		cpu3: cpu@3 {
+ 			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+ 			d-cache-block-size = <64>;
+ 			d-cache-sets = <64>;
+@@ -114,7 +114,7 @@ cpu3_intc: interrupt-controller {
+ 			};
+ 		};
+ 
+-		cpu@4 {
++		cpu4: cpu@4 {
+ 			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+ 			d-cache-block-size = <64>;
+ 			d-cache-sets = <64>;
+@@ -152,8 +152,9 @@ soc {
+ 		compatible = "simple-bus";
+ 		ranges;
+ 
+-		cache-controller@2010000 {
++		cctrllr: cache-controller@2010000 {
+ 			compatible = "sifive,fu540-c000-ccache", "cache";
++			reg = <0x0 0x2010000 0x0 0x1000>;
+ 			cache-block-size = <64>;
+ 			cache-level = <2>;
+ 			cache-sets = <1024>;
+@@ -161,10 +162,9 @@ cache-controller@2010000 {
+ 			cache-unified;
+ 			interrupt-parent = <&plic>;
+ 			interrupts = <1>, <2>, <3>;
+-			reg = <0x0 0x2010000 0x0 0x1000>;
+ 		};
+ 
+-		clint@2000000 {
++		clint: clint@2000000 {
+ 			compatible = "sifive,fu540-c000-clint", "sifive,clint0";
+ 			reg = <0x0 0x2000000 0x0 0xC000>;
+ 			interrupts-extended = <&cpu0_intc 3>, <&cpu0_intc 7>,
+@@ -174,6 +174,15 @@ clint@2000000 {
+ 					      <&cpu4_intc 3>, <&cpu4_intc 7>;
+ 		};
+ 
++		dma@3000000 {
++			compatible = "sifive,fu540-c000-pdma";
++			reg = <0x0 0x3000000 0x0 0x8000>;
++			interrupt-parent = <&plic>;
++			interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>,
++				     <30>;
++			#dma-cells = <1>;
++		};
++
+ 		plic: interrupt-controller@c000000 {
+ 			compatible = "sifive,fu540-c000-plic", "sifive,plic-1.0.0";
+ 			reg = <0x0 0xc000000 0x0 0x4000000>;
+@@ -188,15 +197,6 @@ plic: interrupt-controller@c000000 {
+ 			riscv,ndev = <186>;
+ 		};
+ 
+-		dma@3000000 {
+-			compatible = "sifive,fu540-c000-pdma";
+-			reg = <0x0 0x3000000 0x0 0x8000>;
+-			interrupt-parent = <&plic>;
+-			interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>,
+-				     <30>;
+-			#dma-cells = <1>;
+-		};
+-
+ 		clkcfg: clkcfg@20002000 {
+ 			compatible = "microchip,mpfs-clkcfg";
+ 			reg = <0x0 0x20002000 0x0 0x1000>;
+@@ -204,7 +204,7 @@ clkcfg: clkcfg@20002000 {
+ 			#clock-cells = <1>;
+ 		};
+ 
+-		serial0: serial@20000000 {
++		mmuart0: serial@20000000 {
+ 			compatible = "ns16550a";
+ 			reg = <0x0 0x20000000 0x0 0x400>;
+ 			reg-io-width = <4>;
+@@ -216,7 +216,7 @@ serial0: serial@20000000 {
+ 			status = "disabled";
+ 		};
+ 
+-		serial1: serial@20100000 {
++		mmuart1: serial@20100000 {
+ 			compatible = "ns16550a";
+ 			reg = <0x0 0x20100000 0x0 0x400>;
+ 			reg-io-width = <4>;
+@@ -228,7 +228,7 @@ serial1: serial@20100000 {
+ 			status = "disabled";
+ 		};
+ 
+-		serial2: serial@20102000 {
++		mmuart2: serial@20102000 {
+ 			compatible = "ns16550a";
+ 			reg = <0x0 0x20102000 0x0 0x400>;
+ 			reg-io-width = <4>;
+@@ -240,7 +240,7 @@ serial2: serial@20102000 {
+ 			status = "disabled";
+ 		};
+ 
+-		serial3: serial@20104000 {
++		mmuart3: serial@20104000 {
+ 			compatible = "ns16550a";
+ 			reg = <0x0 0x20104000 0x0 0x400>;
+ 			reg-io-width = <4>;
+@@ -257,37 +257,36 @@ mmc: mmc@20008000 {
+ 			compatible = "microchip,mpfs-sd4hc", "cdns,sd4hc";
+ 			reg = <0x0 0x20008000 0x0 0x1000>;
+ 			interrupt-parent = <&plic>;
+-			interrupts = <88>, <89>;
++			interrupts = <88>;
+ 			clocks = <&clkcfg CLK_MMC>;
+ 			max-frequency = <200000000>;
+ 			status = "disabled";
+ 		};
+ 
+-		emac0: ethernet@20110000 {
++		mac0: ethernet@20110000 {
+ 			compatible = "cdns,macb";
+ 			reg = <0x0 0x20110000 0x0 0x2000>;
++			#address-cells = <1>;
++			#size-cells = <0>;
+ 			interrupt-parent = <&plic>;
+-			interrupts = <64>, <65>, <66>, <67>;
++			interrupts = <64>, <65>, <66>, <67>, <68>, <69>;
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clocks = <&clkcfg CLK_MAC0>, <&clkcfg CLK_AHB>;
+ 			clock-names = "pclk", "hclk";
+ 			status = "disabled";
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+ 		};
+ 
+-		emac1: ethernet@20112000 {
++		mac1: ethernet@20112000 {
+ 			compatible = "cdns,macb";
+ 			reg = <0x0 0x20112000 0x0 0x2000>;
++			#address-cells = <1>;
++			#size-cells = <0>;
+ 			interrupt-parent = <&plic>;
+-			interrupts = <70>, <71>, <72>, <73>;
++			interrupts = <70>, <71>, <72>, <73>, <74>, <75>;
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clocks = <&clkcfg CLK_MAC1>, <&clkcfg CLK_AHB>;
+-			status = "disabled";
+ 			clock-names = "pclk", "hclk";
+-			#address-cells = <1>;
+-			#size-cells = <0>;
++			status = "disabled";
+ 		};
+-
+ 	};
+ };
 -- 
 2.35.1
 
