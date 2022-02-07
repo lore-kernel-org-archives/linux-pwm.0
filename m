@@ -2,98 +2,177 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A867C433F5
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Feb 2022 09:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1057C433FE
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Feb 2022 09:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbiBGJjP (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:39:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59248 "EHLO
+        id S233729AbiBGJkD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:40:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354787AbiBGJbI (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 04:31:08 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DEDC043185
-        for <linux-pwm@vger.kernel.org>; Mon,  7 Feb 2022 01:31:03 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id k18so23532354wrg.11
-        for <linux-pwm@vger.kernel.org>; Mon, 07 Feb 2022 01:31:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=e71qr5cQmHNfaTvqFdZSatwMnOkMecpoZmeynQAfXfU=;
-        b=IipD0Md8PLGqTRc8YbhUGW9RZUZYMQMHks4wT414D4MJkTvXaIaxCLgX7q7EqqZkkE
-         RniraUcxZGQqnV/BLhI8fR3OhKUqDYUBLkiKkwsuJN/ZNCuhQa9etjVpPPbBQ9jyOrwx
-         MGb+BBECiHqPAOCpL/b5+NFypnEjgPgL0Rb5qKUiTSwuyDcdtYMjQxjnCr4gVMsnv1db
-         4Li8Ccoityy3n7nCqgyhw562KdbA+9+AlCO3h6k33jebIUk0d7GU1cLOM5H73yN+w4Xf
-         YMhAHQA5StGpYsrAUVc3HUB89o5DXP0IdN5Syh15D5UZS0wH6QYVpbsbWtyqGxNwNZ4L
-         OgFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=e71qr5cQmHNfaTvqFdZSatwMnOkMecpoZmeynQAfXfU=;
-        b=mBgMJHdiNa6hu2+GOaSvCrURg99DrCLAE/QyGtK2iFj9BOG+KWFICfvSFX6p98+0EV
-         xXdYpLxpHVOBt9J6aIA8iQWDePl/YZX1eZB7cNU8d22jJiMsqSE4EZMp122RK2SmC4P+
-         TboO4OWu1L8HAnR/HKF5XbLcVI6+6ttgO7ye7vzqn6SXn0BB2mO019OD2/XL/udpzNCi
-         objB9V8tXSIMcVtGb0abyYXZtL+4uQU94RwYsBBkgkBRt6OSNJqwxB3oy4xwdQuqYRJm
-         Y2aXZ/BRBYR9hH5PqwBaLOSAQtTTl1iTtLpFJ080Ijgkl+H04LaZ0CwVtoQAF4EYJ5SG
-         PefQ==
-X-Gm-Message-State: AOAM532bTZ2yMHXzHX7Bd0x9K9dTK2S12t8wzvHV6sA4/gB6ZyOR64wM
-        /xHJ1VeW1ZsyL1rzdOkJAoQb8w==
-X-Google-Smtp-Source: ABdhPJxyfEhDPaQTrpIwF3s8f+P5EuB6O3syjtuhYC4gv/uXtG6GnEb8OsVA43hN5ymF4KDaQpvKuQ==
-X-Received: by 2002:a05:6000:385:: with SMTP id u5mr3350003wrf.105.1644226262555;
-        Mon, 07 Feb 2022 01:31:02 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id n15sm10497806wrf.37.2022.02.07.01.31.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 01:31:01 -0800 (PST)
-Date:   Mon, 7 Feb 2022 09:31:00 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-pwm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH] backlight: pwm_bl: Avoid open coded arithmetic in memory
- allocation
-Message-ID: <YgDm1FWtlneMLCTS@google.com>
-References: <bd3d74acfa58d59f6f5f81fc5a9fb409edb8d747.1644046817.git.christophe.jaillet@wanadoo.fr>
- <20220207080128.xmvommcddjfgz7ey@pengutronix.de>
+        with ESMTP id S1352869AbiBGJim (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Feb 2022 04:38:42 -0500
+X-Greylist: delayed 458 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 01:38:40 PST
+Received: from mx.tkos.co.il (guitar.tcltek.co.il [84.110.109.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F335BC043188;
+        Mon,  7 Feb 2022 01:38:40 -0800 (PST)
+Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 9C64B440883;
+        Mon,  7 Feb 2022 11:30:37 +0200 (IST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+        s=default; t=1644226238;
+        bh=LG1R2ibEhTcQ8x9dNJ4eYSWnaeIYekcQQHT0CEdyRZU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gI0ya3JNUqByCXZ+cvm21SUnGCYkfFvaPSmUiazlGd13B1OxQdxdjhUUuG8x84MjL
+         qpTQEWb2uC2wldRSn1FJjfogqxGN+PTeX4kCnQ8PByMjoUDaShJzQX/ysq7SxdCg9F
+         nvEPaDj8naW1uR493Q5CJR0j/L1JOl5Jq+kNx8EXQIA43URdZykPYJiAItYTdxEkEk
+         6L4VztofVcv1qpNbRqwoq1OOFonbsrChgTHITM6zoSWw21wDgRsmBK7qSxOhV5kU4n
+         Pm5NWNBaPOi8pCfDR73/PkvdXEojOyBrtCR6Tut2gh0ZRS0/rhUXsyJNyqNnfjz+AM
+         ZkEOHF8fRTIRw==
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Baruch Siach <baruch.siach@siklu.com>,
+        Balaji Prakash J <bjagadee@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Kathiravan T <kathirav@codeaurora.org>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 2/3] dt-bindings: pwm: add IPQ6018 binding
+Date:   Mon,  7 Feb 2022 11:30:44 +0200
+Message-Id: <dee024e7add1b2c919b23472c90391239a0a2572.1644226245.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <17dd231f496d09ed8502bdd505eaa77bb6637e4b.1644226245.git.baruch@tkos.co.il>
+References: <17dd231f496d09ed8502bdd505eaa77bb6637e4b.1644226245.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220207080128.xmvommcddjfgz7ey@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Mon, 07 Feb 2022, Uwe Kleine-König wrote:
+From: Baruch Siach <baruch.siach@siklu.com>
 
-> On Sat, Feb 05, 2022 at 08:40:48AM +0100, Christophe JAILLET wrote:
-> > kmalloc_array()/kcalloc() should be used to avoid potential overflow when
-> > a multiplication is needed to compute the size of the requested memory.
-> > 
-> > So turn a kzalloc()+explicit size computation into an equivalent kcalloc().
-> > 
-> > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> 
-> LGTM
-> 
-> Acked-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> 
-> Thanks
-> Uwe
+DT binding for the PWM block in Qualcomm IPQ6018 SoC.
 
-I am totally confused!
+Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+---
+This series does not convert the TCSR binding documentation to YAML. As
+a result, this commit adds a new dt_binding_check warning:
 
+/example-0/syscon@1937000: failed to match any schema with compatible: ['qcom,tcsr-ipq 6018', 'syscon', 'simple-mfd']
+
+If that is a blocker to IPQ6018 PWM support, so be it. Patches will wait
+for someone else to push them further.
+
+v10:
+
+  No change
+
+v9:
+
+  Add 'ranges' property to example (Rob)
+
+  Drop label in example (Rob)
+
+v8:
+
+  Add size cell to 'reg' (Rob)
+
+v7:
+
+  Use 'reg' instead of 'offset' (Rob)
+
+  Drop 'clock-names' and 'assigned-clock*' (Bjorn)
+
+  Use single cell address/size in example node (Bjorn)
+
+  Move '#pwm-cells' lower in example node (Bjorn)
+
+  List 'reg' as required
+
+v6:
+
+  Device node is child of TCSR; remove phandle (Rob Herring)
+
+  Add assigned-clocks/assigned-clock-rates (Uwe Kleine-König)
+
+v5: Use qcom,pwm-regs for phandle instead of direct regs (Bjorn
+    Andersson, Kathiravan T)
+
+v4: Update the binding example node as well (Rob Herring's bot)
+
+v3: s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
+
+v2: Make #pwm-cells const (Rob Herring)
+---
+ .../devicetree/bindings/pwm/ipq-pwm.yaml      | 53 +++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+
+diff --git a/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+new file mode 100644
+index 000000000000..857086ad539e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+@@ -0,0 +1,53 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/ipq-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm IPQ6018 PWM controller
++
++maintainers:
++  - Baruch Siach <baruch@tkos.co.il>
++
++properties:
++  "#pwm-cells":
++    const: 2
++
++  compatible:
++    const: qcom,ipq6018-pwm
++
++  reg:
++    description: Offset of PWM register in the TCSR block.
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - "#pwm-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-ipq6018.h>
++
++    syscon@1937000 {
++        compatible = "qcom,tcsr-ipq6018", "syscon", "simple-mfd";
++        reg = <0x01937000 0x21000>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0 0x1937000 0x21000>;
++
++        pwm: pwm@a010 {
++            compatible = "qcom,ipq6018-pwm";
++            reg = <0xa010 0x20>;
++            clocks = <&gcc GCC_ADSS_PWM_CLK>;
++            assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
++            assigned-clock-rates = <100000000>;
++            #pwm-cells = <2>;
++        };
++    };
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.34.1
+
