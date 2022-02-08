@@ -2,119 +2,119 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BA8C433F5
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Feb 2022 13:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB03FC4332F
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Feb 2022 14:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244907AbiBHNPi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:15:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
+        id S1377976AbiBHOUO (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Feb 2022 09:20:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350409AbiBHMSf (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Feb 2022 07:18:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6D2C03FEC0;
-        Tue,  8 Feb 2022 04:18:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B073B61572;
-        Tue,  8 Feb 2022 12:18:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58648C340E9;
-        Tue,  8 Feb 2022 12:18:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644322714;
-        bh=+jhBmsQwTJRGwAwlQW6FTGpVyZorlTh6XXyLTNZaKtM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jGFn+QhLelOPYfhz2FlG8XDs13dxBkoE4Sze6DbEgt+XrSfcByVQnWMlOj75yGkhi
-         3yPz6zATvF1nsQbiYOJx9JZa2NZ5oH9zkLywt6bbgEiZb+iH3nDH4YfdjnAGdwVNIf
-         BbsdjCtUVoGVyuXLer7OHfpeFRRx1A4ktMyRfNKQ8Ru0eEEcLfs5JvY94yhUP4G6Qr
-         au2zYAK55xnxMVNnfI/MFnvs5YceUHT17Jq0jB9WZb5gFKtUruw4i8fnZNNWgLPBxp
-         6Xo6/B0qhxeh0wgKvEX9chUI+ldjJ1TDtT4wxmeAgjCGuRG+wmItthm/7gIaYe9OpV
-         gBy8l5vbATDMA==
-Date:   Tue, 8 Feb 2022 13:18:31 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     conor.dooley@microchip.com
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        jassisinghbrar@gmail.com, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, geert@linux-m68k.org,
-        krzysztof.kozlowski@canonical.com, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        bin.meng@windriver.com, heiko@sntech.de, lewis.hanly@microchip.com,
-        daire.mcnamara@microchip.com, ivan.griffin@microchip.com,
-        atishp@rivosinc.com, Rob Herring <robh@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: Re: [PATCH v6 03/12] dt-bindings: i2c: add bindings for microchip
- mpfs i2c
-Message-ID: <YgJfl5CmepRMb5He@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>, conor.dooley@microchip.com,
-        linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        jassisinghbrar@gmail.com, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
-        paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-        geert@linux-m68k.org, krzysztof.kozlowski@canonical.com,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, bin.meng@windriver.com,
-        heiko@sntech.de, lewis.hanly@microchip.com,
-        daire.mcnamara@microchip.com, ivan.griffin@microchip.com,
-        atishp@rivosinc.com, Rob Herring <robh@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-References: <20220207162637.1658677-1-conor.dooley@microchip.com>
- <20220207162637.1658677-4-conor.dooley@microchip.com>
+        with ESMTP id S1351022AbiBHOUM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Feb 2022 09:20:12 -0500
+Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com [209.85.221.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA71CC03FECE;
+        Tue,  8 Feb 2022 06:20:11 -0800 (PST)
+Received: by mail-vk1-f177.google.com with SMTP id v192so9856109vkv.4;
+        Tue, 08 Feb 2022 06:20:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tWsUC/Af6ywp4UcAlxa6QvBdBkZWz95sQEwSbu3EUOM=;
+        b=qviQxYjbeOWp0843ZcdnIo+y4ui8xr8+d5RFlZ4vO9LqvLY7aNgrAEuF0Pu9k2+LkX
+         aVMNog5c/XBMA2IEu32h8mknAoBQucFoDgXUg5eVqbp7hCbR5bgt66RiwwiHwQFs6xkn
+         ESSp/noBgZdE0QMgCCxyo4SS5JlmEoK3Fikbqji4pwLqS+Ddlwy1EnweXmJFMOp2jJK3
+         s9/AvTEv0mlxt+42A2Juqg6N1el6fQ89rDnsXIk5gu1ri04Jg2UaDmJhUQntEa0tIzsu
+         cBq+y2sSVZtwEL1S9LuhFmFO2rMBvbkLOHbINI7oK3MtUyf6MRY1xYTfT8C6i/k1LttM
+         fQhw==
+X-Gm-Message-State: AOAM532ARZjYISPgZ5mHK75hvuuNW2UBWe3ooav1uLWrcI7nL3HwwFEf
+        XkdYHv7OAYnh3VMzNPWvq5m/QGItcX04uw==
+X-Google-Smtp-Source: ABdhPJwNVJpS74KdYjuNT/DdBWlEgfiEbsLZQCTpCOvWFLt0cuyphOK9myV6EqAiLwQhdzAsX2qn7g==
+X-Received: by 2002:a05:6122:17a5:: with SMTP id o37mr1656708vkf.25.1644330010672;
+        Tue, 08 Feb 2022 06:20:10 -0800 (PST)
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
+        by smtp.gmail.com with ESMTPSA id g22sm2823278vsk.26.2022.02.08.06.20.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 06:20:09 -0800 (PST)
+Received: by mail-vs1-f44.google.com with SMTP id a19so3513768vsi.2;
+        Tue, 08 Feb 2022 06:20:09 -0800 (PST)
+X-Received: by 2002:a05:6102:34d9:: with SMTP id a25mr223540vst.68.1644330009205;
+ Tue, 08 Feb 2022 06:20:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="sdYSIm6VkoPV0MiH"
-Content-Disposition: inline
-In-Reply-To: <20220207162637.1658677-4-conor.dooley@microchip.com>
+References: <20220204134347.1187749-1-javierm@redhat.com>
+In-Reply-To: <20220204134347.1187749-1-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 8 Feb 2022 15:19:58 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVTVX7LFay-rfv=oW96dMA24duMUVGRE62jQSNkrKtyMg@mail.gmail.com>
+Message-ID: <CAMuHMdVTVX7LFay-rfv=oW96dMA24duMUVGRE62jQSNkrKtyMg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED displays
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Hi Javier,
 
---sdYSIm6VkoPV0MiH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Fri, Feb 4, 2022 at 2:43 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> This patch series adds a DRM driver for the Solomon OLED SSD1305, SSD1306,
+> SSD1307 and SSD1309 displays. It is a port of the ssd1307fb fbdev driver.
 
-On Mon, Feb 07, 2022 at 04:26:29PM +0000, conor.dooley@microchip.com wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
->=20
-> Add device tree bindings for the i2c controller on
-> the Microchip PolarFire SoC.
->=20
-> Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+I gave it a try on an Adafruit FeatherWing 128x32 OLED, connected to an
+OrangeCrab ECP5 FPGA board running a 64 MHz VexRiscv RISC-V softcore.
 
-Shall this go via DT (Rob) or I2C (me) or some riscv tree?
+Findings:
+  - Kernel size increased by 349 KiB,
+  - The "Memory:" line reports 412 KiB less memory,
+  - On top of that, "free" shows ca. 92 KiB more memory in use after
+    bootup.
+  - The logo (I have a custom monochrome logo enabled) is no longer shown.
+  - The screen is empty, with a (very very slow) flashing cursor in the
+    middle of the screen, with a bogus long line next to it, which I can
+    see being redrawn.
+  - Writing text (e.g. hello) to /dev/tty0, I first see the text,
+    followed by an enlargement of some of the characters.
+  - "time ls" on the serial console (no files in the current directory,
+    so nothing to print) increases from 0.86s to 1.92s, so the system is
+    more loaded.  As ssd1307fb relied on deferred I/O too, the slowdown
+    might be (partly) due to redrawing of the visual artefacts
+    mentioned above.
 
+So while the displays seems to be initialized correctly, it looks like
+there are some serious bugs in the conversion from xrgb8888 to
+monochrome.
 
---sdYSIm6VkoPV0MiH
-Content-Type: application/pgp-signature; name="signature.asc"
+Gr{oetje,eeting}s,
 
------BEGIN PGP SIGNATURE-----
+                        Geert
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmICX5MACgkQFA3kzBSg
-KbZzxhAArSdMKMsyP4zt6H3heN8FNENRNOKYegpVuGgnCzbtLbitNEQvjx0Z9HdF
-BUbaytztYIVoDstV1SxiWczUikuOQ7pQ2TB585jhzhF7FATjt0zqIr22/ATEBmN5
-nUNlnWMt5s05zgcppQyksrVddYYvgs+HqtTCNXCk6LOz0qC54dxze8766ageQYPz
-1gBy5cDmJrUMJ+X8JnveuPgKv4BrZgGKZsrNgHy5dOAdF0B0WyI4i/uv2YTq2y+o
-XIOA/B60tgZtIWkWWcFNPIE+TQQIDVY93O2R3i4gAvCfwYVqyRdtG5i5p3eK74RM
-LwpTEv6SJE5KJ0pxYmo5SP4AKsMaN7Z6ePga6LQz2tPETjhKNZixntc/KsoIPXQJ
-sQ025iG+3stSKxpnpWg/VjqM6ugoDQOX+VvsxFe34KjtmbgRYTROfxHY173+TfVb
-hZb+CYNHbDxl7/gGHkXlsbcNC6sSZq7qvu0ZeCXPvq4nzk1V0KwKPGLocQaTrGVo
-qNHIjEnA5CeIu8y5fF7r26769safY0B9chLwsxXWujW3WSHY3FYPmRDMtX89sVhr
-WxlPZDxBvIv16LQjg4lXWLrTsgkUaVU2xiHe8gd+gulSVMgKeeePSkiU4fKgonRj
-+KJRlq7MvI0G5Mdb0F3PNIHoq4R/P8FYBNmGgRmjvIxBNzggd2M=
-=TDLj
------END PGP SIGNATURE-----
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
---sdYSIm6VkoPV0MiH--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
