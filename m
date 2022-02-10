@@ -2,85 +2,101 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB75C4332F
-	for <linux-pwm@archiver.kernel.org>; Wed,  9 Feb 2022 23:11:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75108C433F5
+	for <linux-pwm@archiver.kernel.org>; Thu, 10 Feb 2022 07:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237015AbiBIXLa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 9 Feb 2022 18:11:30 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39276 "EHLO
+        id S236291AbiBJHk4 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 10 Feb 2022 02:40:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236886AbiBIXLZ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Feb 2022 18:11:25 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F229E00D0E1;
-        Wed,  9 Feb 2022 15:11:27 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id u18so8016874edt.6;
-        Wed, 09 Feb 2022 15:11:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mqzfmkNh5SdTGhwtfqhQO3tmrLYbeg43rOPOZKAzkHE=;
-        b=PgTCnWJ3ZUZTNbfDOsNntOLGQrnCH7pkLtUQan5RM/J6wUxg7UqmMP1ojvHR/HS02X
-         Qc8ucTboFVjfJrbrtlCwgcb9FCMTyp5E+gNVYA6Jiwu5oOHQXBcKuXohqfk2lQ1gReVv
-         orIffH9trbyFykgGpDXJN324QuFAKLBsKinFb+9+AiCS1LxxxvA9SM7nTirbvPtJzcR+
-         jmpPEU+NHFhTm3x0DOc/LT4dvSC0QVuFOcsTu0eQfHE4CjR8+ijb3zI5MP10MAHUHJg6
-         IjBAqsQ99t4Lnmg0ylVy5UeeZrfq0a8Ps4M7FLQr4s8zc+z96gXAzttudvVJjbDi5T5F
-         EjfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mqzfmkNh5SdTGhwtfqhQO3tmrLYbeg43rOPOZKAzkHE=;
-        b=QnQhUkgw9lFuhqpX5Cz4+6urKmf46ncdUuj6MzpKyBC0+FaeR6LWG3N3mGq3xo0mEu
-         LcisAql/T7qxrDMRi62k2OeB/GevZ549mvBG+RP7vDSw9wHgDaA8WLQzWCLVAbYzCK5a
-         AiJfcKtmrAGFabSn0yw4nlUoDGijYMqzDHS6MVjfPZlNL213qS1FiobURmi3DA8EKjxQ
-         ugxMJ29ugTD5HnaV+oo6yB+eERaPR0PJuQQptOaE9mT5JPN4nbZWRXRxvYgc4jj9/ZyC
-         Vh4rvtQ86+hu+QKJKLrpZdA+qDJmDC2XnXsaorSbzeIxJ15RDK9uKVhWPEz9knb4S52o
-         b7+Q==
-X-Gm-Message-State: AOAM533QSNIpNO3ShGQlCwzoPRzmIGI66uwGcO5FBcSo1LIXF49CZbwh
-        hQG3f/clsorBwdE2F30Mhw31qZ4BdeWJ5g==
-X-Google-Smtp-Source: ABdhPJwSNp0qmBebgyh16OF4VOhO56NwwK5Hxoan+UJHH0AOxvcbPLEysUXAv0cpq7ktmXf4XRpR8w==
-X-Received: by 2002:a05:6402:27d0:: with SMTP id c16mr5412714ede.276.1644448285958;
-        Wed, 09 Feb 2022 15:11:25 -0800 (PST)
-Received: from localhost (92.40.202.147.threembb.co.uk. [92.40.202.147])
-        by smtp.gmail.com with ESMTPSA id qw28sm5268188ejb.0.2022.02.09.15.11.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 15:11:25 -0800 (PST)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     paul@crapouillou.net, robh+dt@kernel.org
-Cc:     linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: timer: Add PWM compatible for X1000 SoC
-Date:   Wed,  9 Feb 2022 23:11:41 +0000
-Message-Id: <20220209231141.20184-1-aidanmacdonald.0x0@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S234737AbiBJHk4 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 10 Feb 2022 02:40:56 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDD6C58
+        for <linux-pwm@vger.kernel.org>; Wed,  9 Feb 2022 23:40:57 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nI44S-0000X2-8R; Thu, 10 Feb 2022 08:40:52 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nI44Q-00FfMG-KB; Thu, 10 Feb 2022 08:40:49 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nI44P-00EEQc-7S; Thu, 10 Feb 2022 08:40:49 +0100
+Date:   Thu, 10 Feb 2022 08:40:46 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     zhaoxiao <zhaoxiao@uniontech.com>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pwm: vt8500: Rename variable pointing to driver private
+ data
+Message-ID: <20220210074046.vxskduecvgiehvnl@pengutronix.de>
+References: <20220209064755.7287-1-zhaoxiao@uniontech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="fyuwep3g3kqdbwyv"
+Content-Disposition: inline
+In-Reply-To: <20220209064755.7287-1-zhaoxiao@uniontech.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The PWM hardware on the X1000 SoC is almost identical to other
-Ingenic SoCs, so it can be used with only minor driver changes.
 
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
- Documentation/devicetree/bindings/timer/ingenic,tcu.yaml | 1 +
- 1 file changed, 1 insertion(+)
+--fyuwep3g3kqdbwyv
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml b/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-index 7fb37eae9da7..d541cf2067bc 100644
---- a/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-+++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-@@ -152,6 +152,7 @@ patternProperties:
-           - enum:
-               - ingenic,jz4740-pwm
-               - ingenic,jz4725b-pwm
-+              - ingenic,x1000-pwm
-           - items:
-               - enum:
-                   - ingenic,jz4760-pwm
--- 
-2.34.1
+On Wed, Feb 09, 2022 at 02:47:55PM +0800, zhaoxiao wrote:
+> Status quo is that variables of type struct vt8500_chip * are named
+> "pwm", "chip" or "pc". The two formers are all not optimal because
 
+There are no variables named "pwm" or "pc".
+
+> usually only struct pwm_device * variables are named "pwm" and "chip" is
+> usually used for variabled of type struct pwm_chip *.
+>=20
+> So consistently use the same and non-conflicting name "pc".
+
+The intention is fine, but you missed a few instances that are named
+"vt8500". The statistic in mainline looks as follows:
+
+	$ git grep -o -h -E 'struct vt8500_chip \*[a-zA-Z0-9_]*' linus/master driv=
+ers/pwm/pwm-vt8500.c | sort | uniq -c
+	      2 struct vt8500_chip *chip
+	      5 struct vt8500_chip *vt8500
+
+(So there 2 variabled named "chip" (that you renamed to "pc") and 5 that
+are named "vt8500". I prefer to rename the "chip"s to "vt8500".
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--fyuwep3g3kqdbwyv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEyBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIEwXsACgkQwfwUeK3K
+7AmJmwf4pLI+xky/sNclDRJg2Ypliqo7er293BmkpQULSlxeCTscd0Cl5DAuPzu5
+EqieGUMK5TWQXrCzmByT4/DZMdAVZKD/MS562QMmt31ZO+qyGFiT52iFAShqqDbv
+KHE48UL7Qx3z3lTl3BLW/kDAanm24DtzQA5q6jT3EWko1HGbmM94Lk6xOfj0CgG1
+I0seC3QwNugGJ79qjwkbb+bHCcMo2JGkMTFPPy7mibkfx5l5MnbPWLYU7uJHdR5w
+A7ynb5iknN/OxjrbVv0/r8B9+PWN0uOWRVOCNGiK6ZIIeN8YvhDxHVke1hNYnowP
+S41JpAYy9TdGGvSTYBy56A1KPeBh
+=EHRm
+-----END PGP SIGNATURE-----
+
+--fyuwep3g3kqdbwyv--
