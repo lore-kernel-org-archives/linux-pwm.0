@@ -2,110 +2,120 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE894C433F5
-	for <linux-pwm@archiver.kernel.org>; Sat, 12 Feb 2022 12:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1FCC433F5
+	for <linux-pwm@archiver.kernel.org>; Sat, 12 Feb 2022 16:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbiBLMAu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 12 Feb 2022 07:00:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52416 "EHLO
+        id S237241AbiBLQaW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 12 Feb 2022 11:30:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234711AbiBLMAu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 12 Feb 2022 07:00:50 -0500
-X-Greylist: delayed 366 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 12 Feb 2022 04:00:47 PST
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491082613A
-        for <linux-pwm@vger.kernel.org>; Sat, 12 Feb 2022 04:00:47 -0800 (PST)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id BB8191C0B7A; Sat, 12 Feb 2022 12:54:39 +0100 (CET)
-Date:   Sat, 12 Feb 2022 12:54:38 +0100
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>,
-        sven@svenschwermer.de, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        robh+dt@kernel.org, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        post@lespocky.de
-Subject: Re: [PATCH v3 1/2] dt-bindings: leds: Add multicolor PWM LED bindings
-Message-ID: <20220212115438.GG20866@duo.ucw.cz>
-References: <20220126104844.246068-1-sven@svenschwermer.de>
- <20220126104844.246068-2-sven@svenschwermer.de>
- <00d8de09-360e-4e0f-1496-642ba1cbf863@gmail.com>
- <20220128213609.7a60e9fe@thinkpad>
- <09b46d05-5dd0-a585-2ca3-0bc04e613343@gmail.com>
+        with ESMTP id S237218AbiBLQaW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 12 Feb 2022 11:30:22 -0500
+X-Greylist: delayed 362 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 12 Feb 2022 08:30:18 PST
+Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D5B197;
+        Sat, 12 Feb 2022 08:30:18 -0800 (PST)
+Received: from authenticated-user (box.trvn.ru [194.87.146.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.trvn.ru (Postfix) with ESMTPSA id BEE5B41B85;
+        Sat, 12 Feb 2022 21:24:04 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+        t=1644683045; bh=YZh74Ep/rbXxqRaArZoWzEhtJ3cUdMXlZKcu5yktXXc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ygIY/kab3JGglPg0I7EetqqcFtaMERVwLiN1uBxFNcjhvRe+BOXPfRdbCuPeMRP3C
+         aJkLjUFScTmhXsYlBswht3wwLbCSTPlGpQeOQ1MrsdX9d2oPP9fk3t5nDHL6Oue80D
+         gYXZr72U0joxC/pZmnzPJ2XDIFuRCtoWPy3LdiZNhCHNemDFJHCn9HiCFuS6Nd6275
+         S/b3tY1zp1oCeOsL913W/c/qFwZFoo1I3SUC4fnyBVfI9awjLs3CCUM+DA2RbTXQlY
+         pVZpxAWgiz/YN1AmGSmTiqn/9TAugChL2grF5M5vOFYEGCDc4pxV6nEMWmCSuVhmqj
+         DhBZlHbeBz59A==
+From:   Nikita Travkin <nikita@trvn.ru>
+To:     thierry.reding@gmail.com, lee.jones@linaro.org
+Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
+        masneyb@onstation.org, sean.anderson@seco.com,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Nikita Travkin <nikita@trvn.ru>
+Subject: [PATCH v5 1/2] dt-bindings: pwm: Document clk based PWM controller
+Date:   Sat, 12 Feb 2022 21:23:41 +0500
+Message-Id: <20220212162342.72646-2-nikita@trvn.ru>
+In-Reply-To: <20220212162342.72646-1-nikita@trvn.ru>
+References: <20220212162342.72646-1-nikita@trvn.ru>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="RMedoP2+Pr6Rq0N2"
-Content-Disposition: inline
-In-Reply-To: <09b46d05-5dd0-a585-2ca3-0bc04e613343@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Add YAML devicetree binding for clk based PWM controller
 
---RMedoP2+Pr6Rq0N2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+--
+Changes in v2:
+ - fix the file name.
+Changes in v4:
+ - Use generic node name in the dt bindings example.
+Changes in v5:
+ - make compatible required
+---
+ .../devicetree/bindings/pwm/clk-pwm.yaml      | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/clk-pwm.yaml
 
-Hi!
+diff --git a/Documentation/devicetree/bindings/pwm/clk-pwm.yaml b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+new file mode 100644
+index 000000000000..ec1768291503
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/clk-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Clock based PWM controller
++
++maintainers:
++  - Nikita Travkin <nikita@trvn.ru>
++
++description: |
++  Some systems have clocks that can be exposed to external devices.
++  (e.g. by muxing them to GPIO pins)
++  It's often possible to control duty-cycle of such clocks which makes them
++  suitable for generating PWM signal.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    const: clk-pwm
++
++  clocks:
++    description: Clock used to generate the signal.
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++unevaluatedProperties: false
++
++required:
++  - compatible
++  - clocks
++
++examples:
++  - |
++    pwm {
++      compatible = "clk-pwm";
++      #pwm-cells = <2>;
++      clocks = <&gcc 0>;
++      pinctrl-names = "default";
++      pinctrl-0 = <&pwm_clk_flash_default>;
++    };
+-- 
+2.34.1
 
-> > > > Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologi=
-es.com>
-> > > > ---
-> > > [...]
-> > > > +
-> > > > +additionalProperties: false
-> > > > +
-> > > > +examples:
-> > > > +  - |
-> > > > +    #include <dt-bindings/leds/common.h>
-> > > > +
-> > > > +    rgb-led {
-> > > > +        compatible =3D "pwm-leds-multicolor";
-> > > > +
-> > > > +        multi-led {
-> > > > +          color =3D <LED_COLOR_ID_RGB>;
-> > > > +          function =3D LED_FUNCTION_INDICATOR;
-> > > > +          max-brightness =3D <65535>;
-> > >=20
-> > > It doesn't make much sense to have such a big resolution of global
-> > > multi color brightness. 255 will be sufficient.
-> >=20
-> > If the PWM supports it, why not?
-> > On Omnia the default is 255, and since it is PWM, the change from 0/255
-> > to 1/255 is much bigger then from, say, 15/255 to 16/255. So if 1/255
-> > is too bright, you are then unable to set it less bright. I think 1024
-> > or ever 65535 makes sense with PWMs.
->=20
-> With values other than 255 we will not achieve 24-bit RGB, which is one
-> problem, and the other one is non-linear brightness that can be achieved
-> with PWM. So probably we would need to add an additional note in the
-> documentation [0], saying that changing global brightness allows to
-> preserve combined LED hue only when all sub-leds are linear, and that it
-> will not be the case for PWM LEDs.
-
-I have yet to see a LED that was anything but linear. If we'll want to
-match colorspace of RGB displays, we'll need to do more work. (Often,
-255/255/255 is not white with RGB LEDs, for example).
-
-So 16-bit pwm makes sense to me.
-
-Best regards,
-								Pavel
---=20
-http://www.livejournal.com/~pavelmachek
-
---RMedoP2+Pr6Rq0N2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYgef/gAKCRAw5/Bqldv6
-8mxaAJ9Huuordp8TZqDmLJtJHl/NWt/PIwCgvwg5KEPKBErrbU2khVMFNF0MsCc=
-=oYPN
------END PGP SIGNATURE-----
-
---RMedoP2+Pr6Rq0N2--
