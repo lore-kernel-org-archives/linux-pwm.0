@@ -2,114 +2,105 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE65C433FE
-	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E17FC433FE
+	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 12:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352204AbiBNLrK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:47:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42338 "EHLO
+        id S1343719AbiBNMCo convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 14 Feb 2022 07:02:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352218AbiBNLjp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 06:39:45 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0043C51;
-        Mon, 14 Feb 2022 03:30:45 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id E338D1F437F7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644838244;
-        bh=QaLaTj9ziNtqxf12oz66KYW1D7p03OX8Bk66flIHsxs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ggZon2tzhy2Vqc9LmMHVOVLHNWSS7LUED7MTJYersNyW0PsnvLKnLdtvJtCUxt5Bw
-         qIpDJmh9DzTonS45VhdVbnFEXOWOuCYIImcW9l18+iuCLiPeGi5lf43gC0fLIm04dR
-         3d9F5v7UI37CBTZiQnq4QmmGdHxu8t7PNOX4k2yYZHkgSWiJOID55Pnyx4wOa4RmXf
-         F+Y8lg+bfeeuBe+gU0GBFK3P+RoWPoZQLIn10DOtQfU6fsaRoPI1GnhID32s488D3P
-         anaw2Ro3+yCn0mJwvTWrAmm7gkZmDSdI3A4KhQqvONpnmIavSdnfb2zmYD+JwwH3tf
-         Fi4Pk3cQn8faQ==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     thierry.reding@gmail.com
-Cc:     u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        matthias.bgg@gmail.com, linux-pwm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 1/2] pwm: pwm-mediatek: Simplify error handling with dev_err_probe()
-Date:   Mon, 14 Feb 2022 12:30:37 +0100
-Message-Id: <20220214113038.79130-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.33.1
+        with ESMTP id S234179AbiBNMCo (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 07:02:44 -0500
+X-Greylist: delayed 97 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 04:02:36 PST
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C31D41;
+        Mon, 14 Feb 2022 04:02:36 -0800 (PST)
+Date:   Mon, 14 Feb 2022 12:02:26 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 2/2] pwm: jz4740: Add support for X1000 SoC
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     robh+dt@kernel.org, linux-mips@vger.kernel.org,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Message-Id: <2SMA7R.9OBQWV0ONR102@crapouillou.net>
+In-Reply-To: <20220209231141.20184-2-aidanmacdonald.0x0@gmail.com>
+References: <20220209231141.20184-1-aidanmacdonald.0x0@gmail.com>
+        <20220209231141.20184-2-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Use dev_err_probe() to simplify handling errors in pwm_mediatek_probe().
+Hi Aidan,
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/pwm/pwm-mediatek.c | 30 +++++++++++-------------------
- 1 file changed, 11 insertions(+), 19 deletions(-)
+Le mer., févr. 9 2022 at 23:11:42 +0000, Aidan MacDonald 
+<aidanmacdonald.0x0@gmail.com> a écrit :
+> The X1000 has the same TCU / PWM hardware as other Ingenic SoCs,
+> but it has only 5 channels.
+> 
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
+>  arch/mips/boot/dts/ingenic/x1000.dtsi | 13 +++++++++++++
+>  drivers/pwm/pwm-jz4740.c              |  5 +++++
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index 0d4dd80e9f07..c7d5ca09a684 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -227,18 +227,14 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	pc->clk_top = devm_clk_get(&pdev->dev, "top");
--	if (IS_ERR(pc->clk_top)) {
--		dev_err(&pdev->dev, "clock: top fail: %ld\n",
--			PTR_ERR(pc->clk_top));
--		return PTR_ERR(pc->clk_top);
--	}
-+	if (IS_ERR(pc->clk_top))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk_top),
-+				     "clock: top failed\n");
- 
- 	pc->clk_main = devm_clk_get(&pdev->dev, "main");
--	if (IS_ERR(pc->clk_main)) {
--		dev_err(&pdev->dev, "clock: main fail: %ld\n",
--			PTR_ERR(pc->clk_main));
--		return PTR_ERR(pc->clk_main);
--	}
-+	if (IS_ERR(pc->clk_main))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk_main),
-+				     "clock: main failed\n");
- 
- 	for (i = 0; i < pc->soc->num_pwms; i++) {
- 		char name[8];
-@@ -246,11 +242,9 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 		snprintf(name, sizeof(name), "pwm%d", i + 1);
- 
- 		pc->clk_pwms[i] = devm_clk_get(&pdev->dev, name);
--		if (IS_ERR(pc->clk_pwms[i])) {
--			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
--				name, PTR_ERR(pc->clk_pwms[i]));
--			return PTR_ERR(pc->clk_pwms[i]);
--		}
-+		if (IS_ERR(pc->clk_pwms[i]))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk_pwms[i]),
-+					     "clock: %s failed\n", name);
- 	}
- 
- 	pc->chip.dev = &pdev->dev;
-@@ -258,10 +252,8 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 	pc->chip.npwm = pc->soc->num_pwms;
- 
- 	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
- 
- 	return 0;
- }
--- 
-2.33.1
+Please put the driver and device tree changes into separate patches.
+
+Cheers,
+-Paul
+
+>  2 files changed, 18 insertions(+)
+> 
+> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi 
+> b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> index 8bd27edef216..0dcf37527c8e 100644
+> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
+> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> @@ -127,6 +127,19 @@ wdt: watchdog@0 {
+>  			clocks = <&tcu TCU_CLK_WDT>;
+>  			clock-names = "wdt";
+>  		};
+> +
+> +		pwm: pwm@40 {
+> +			compatible = "ingenic,x1000-pwm";
+> +			reg = <0x40 0x80>;
+> +
+> +			#pwm-cells = <3>;
+> +
+> +			clocks = <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>,
+> +				 <&tcu TCU_CLK_TIMER2>, <&tcu TCU_CLK_TIMER3>,
+> +				 <&tcu TCU_CLK_TIMER4>;
+> +			clock-names = "timer0", "timer1", "timer2",
+> +				      "timer3", "timer4";
+> +		};
+>  	};
+> 
+>  	rtc: rtc@10003000 {
+> diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+> index 23dc1fb770e2..a5fdf97c0d2e 100644
+> --- a/drivers/pwm/pwm-jz4740.c
+> +++ b/drivers/pwm/pwm-jz4740.c
+> @@ -256,10 +256,15 @@ static const struct soc_info __maybe_unused 
+> jz4725b_soc_info = {
+>  	.num_pwms = 6,
+>  };
+> 
+> +static const struct soc_info __maybe_unused x1000_soc_info = {
+> +	.num_pwms = 5,
+> +};
+> +
+>  #ifdef CONFIG_OF
+>  static const struct of_device_id jz4740_pwm_dt_ids[] = {
+>  	{ .compatible = "ingenic,jz4740-pwm", .data = &jz4740_soc_info },
+>  	{ .compatible = "ingenic,jz4725b-pwm", .data = &jz4725b_soc_info },
+> +	{ .compatible = "ingenic,x1000-pwm", .data = &x1000_soc_info },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, jz4740_pwm_dt_ids);
+> --
+> 2.34.1
+> 
+
 
