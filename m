@@ -2,118 +2,149 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACE4C433FE
-	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 08:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE21C433FE
+	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 08:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232671AbiBNIYM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 14 Feb 2022 03:24:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50586 "EHLO
+        id S232778AbiBNIYi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 14 Feb 2022 03:24:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232778AbiBNIYK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 03:24:10 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326F225C4A
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:24:03 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJWeO-0007jy-Da; Mon, 14 Feb 2022 09:24:00 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJWeN-00GVbZ-Al; Mon, 14 Feb 2022 09:23:58 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJWeL-002szU-RM; Mon, 14 Feb 2022 09:23:57 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
-Subject: [PATCH 2/2] pwm: brcmstb: Remove useless locking
-Date:   Mon, 14 Feb 2022 09:23:54 +0100
-Message-Id: <20220214082354.295451-3-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214082354.295451-1-u.kleine-koenig@pengutronix.de>
-References: <20220214082354.295451-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S235519AbiBNIYh (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 03:24:37 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3BA25C4E
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:24:29 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 14D5C3F1E8
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 08:24:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644827068;
+        bh=Y1pkt7sh1u4nhMjpCSj85kjYF7GKoQX1FycUfW16GNg=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=mScKK/mCUmuBw3TQsDa2EQjwhB70X6bevcnHegI//cO29kumstvg/70sK1SQgNVxu
+         1roFI99Gjyg8ww2eYrPPrEXMuFqUdsyHIn3kaXVyhn3fRztzgGDfN4DxGks7gb8fYy
+         i0TX/c9vhm9f+uRArp0WYTkFSYiXiVwpnJXiD1xC89Ytst1o+/KYQ8o4jqgtITq7Do
+         chYEM/B6M2RLhcqsQyX5usgGFVxyZr/3D+mjryDylT4zD/4Bu4qd17YGnnYOjrAd/w
+         FjInkhqGV/fXb13G4tUANo7HySe/l4KZa+2ppvYZp4ygyNdCrSE7sJ1x1PC3SogCU4
+         uiDS5vHjSP08g==
+Received: by mail-ed1-f69.google.com with SMTP id en7-20020a056402528700b00404aba0a6ffso9803670edb.5
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:24:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y1pkt7sh1u4nhMjpCSj85kjYF7GKoQX1FycUfW16GNg=;
+        b=OcE41QuCt+8AKuOi24zBmsBf3G6voE+eZGnZd83b4ePRpeTtPPtyQ3U3+az0c3jPqN
+         tLxlf9WyVjgm6XCI40nLW20UmwfYdmeE7Fa2+fpze77vguiBLPxnDJZzjgZ+wqXn5ohO
+         9JDTIdFq1V+RxlrD2T1tzYRJURf12JZfkyEqd0EyE+OHbRDovd5AhjYzl/mm3MWhBV2B
+         zGhn/vPLg9TRQRZwiFA+VN4BMUUXGlZW6Q9h2Mmcg2dXKfXrvVeH2sEqFtmwZ2OA5PzJ
+         t7bV88RTAI+88+BDUUBYi7lM6lF6hL6pzSssDXlnuC0XAEOG9tFulygEeg1K6ndz9snT
+         6aQA==
+X-Gm-Message-State: AOAM532UqjLnF9mUETl3RgovuepulIBJTGJnmggcTlDwjo2LW7BZKyGI
+        tGo/bh1W+1HzOe9hkfj4y5mRdU9H63niewfSdzSqPISnmWajLcT0ijArO9cvG+JjM2NNEMoV05f
+        +Xx9tpYANfi/UbT6ME8hlrpVDBRRN59d8U0mxpQ==
+X-Received: by 2002:aa7:c3d8:: with SMTP id l24mr9023389edr.63.1644827065919;
+        Mon, 14 Feb 2022 00:24:25 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy3sWIkomqniJbHGA9USzgWbkd0+vKt73BSCiBXKwRHhK2HxngI2g+YQq0rzs3pSOItOjbAow==
+X-Received: by 2002:aa7:c3d8:: with SMTP id l24mr9023363edr.63.1644827065698;
+        Mon, 14 Feb 2022 00:24:25 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id fn5sm1363850ejc.179.2022.02.14.00.24.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 00:24:25 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: sifive: drop Yash Shah
+Date:   Mon, 14 Feb 2022 09:23:49 +0100
+Message-Id: <20220214082349.162973-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2096; h=from:subject; bh=9e9X/ZgWkLK7WwJIknJxvnOaJ1EGWaD9VMR1/QBP288=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBiChGWiobZXxfhx0UVMWdZAS/EQa7xjfNuLKwYy81D lBzSp/WJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYgoRlgAKCRDB/BR4rcrsCdhbB/ 9utfiU1VSLd3NcX3qAIHVMtkcfq0SehAgPnRnBPZ4mFvp+ea/9h59G6IYVHbPOOyH7uOEYsvxW/jG+ J0h5iT5URGWFJ16ugPtISGlokcIyjFmfYxriREiFG9iye/cirg9GnsdO3EhTYcCJakEOtATtNdJHfP 2v2VSM17SK3wsZklowiGvm7txo5NLYqu1YS6oIu10CrAqL+cVEYEeVk0v45Miu8CN6ItoEZ6uRpAJg 9+2ztN+p3LkvxrU1H/sn2las4V5sVivI5M93SmMablx/uEDs0cZAuGC9NYOQqkqbNH/CgRMK9Oltqu Sfav8rZ/VcgLpu9mGaGQYKW4Ag7ODw
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The lock only protects against concurrent users of the PWM API. This is not
-expected to be necessary. And if there was such an issue, this is better
-handled in the pwm core instead as it affects all drivers in the same way.
+Emails to Yash Shah bounce with "The email account that you tried to
+reach does not exist.", so drop him from all maintainer entries.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- drivers/pwm/pwm-brcmstb.c | 7 -------
- 1 file changed, 7 deletions(-)
+ Documentation/devicetree/bindings/gpio/sifive,gpio.yaml     | 1 -
+ Documentation/devicetree/bindings/pwm/pwm-sifive.yaml       | 1 -
+ .../devicetree/bindings/riscv/sifive-l2-cache.yaml          | 1 -
+ MAINTAINERS                                                 | 6 ------
+ 4 files changed, 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
-index 99974390aa38..3db3f96edf78 100644
---- a/drivers/pwm/pwm-brcmstb.c
-+++ b/drivers/pwm/pwm-brcmstb.c
-@@ -53,7 +53,6 @@
+diff --git a/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml b/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
+index e04349567eeb..427c5873f96a 100644
+--- a/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
++++ b/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
+@@ -7,7 +7,6 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: SiFive GPIO controller
  
- struct brcmstb_pwm {
- 	void __iomem *base;
--	spinlock_t lock;
- 	struct clk *clk;
- 	struct pwm_chip chip;
- };
-@@ -159,7 +158,6 @@ static int brcmstb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * generator output a base frequency for the constant frequency
- 	 * generator to derive from.
- 	 */
--	spin_lock(&p->lock);
- 	brcmstb_pwm_writel(p, cword >> 8, PWM_CWORD_MSB(channel));
- 	brcmstb_pwm_writel(p, cword & 0xff, PWM_CWORD_LSB(channel));
+ maintainers:
+-  - Yash Shah <yash.shah@sifive.com>
+   - Paul Walmsley <paul.walmsley@sifive.com>
  
-@@ -171,7 +169,6 @@ static int brcmstb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* Configure on and period value */
- 	brcmstb_pwm_writel(p, pc, PWM_PERIOD(channel));
- 	brcmstb_pwm_writel(p, dc, PWM_ON(channel));
--	spin_unlock(&p->lock);
+ properties:
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml b/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
+index 676b2160bada..605c1766dba8 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
++++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
+@@ -8,7 +8,6 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: SiFive PWM controller
  
- 	return 0;
- }
-@@ -182,7 +179,6 @@ static inline void brcmstb_pwm_enable_set(struct brcmstb_pwm *p,
- 	unsigned int shift = channel * CTRL_CHAN_OFFS;
- 	u32 value;
+ maintainers:
+-  - Yash Shah <yash.shah@sifive.com>
+   - Sagar Kadam <sagar.kadam@sifive.com>
+   - Paul Walmsley <paul.walmsley@sifive.com>
  
--	spin_lock(&p->lock);
- 	value = brcmstb_pwm_readl(p, PWM_CTRL);
+diff --git a/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml b/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
+index 2b1f91603897..e2d330bd4608 100644
+--- a/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
++++ b/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
+@@ -9,7 +9,6 @@ title: SiFive L2 Cache Controller
  
- 	if (enable) {
-@@ -194,7 +190,6 @@ static inline void brcmstb_pwm_enable_set(struct brcmstb_pwm *p,
- 	}
+ maintainers:
+   - Sagar Kadam <sagar.kadam@sifive.com>
+-  - Yash Shah <yash.shah@sifive.com>
+   - Paul Walmsley  <paul.walmsley@sifive.com>
  
- 	brcmstb_pwm_writel(p, value, PWM_CTRL);
--	spin_unlock(&p->lock);
- }
+ description:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ebf7a75a6bec..87eeac970ca2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7090,12 +7090,6 @@ L:	linux-edac@vger.kernel.org
+ S:	Maintained
+ F:	drivers/edac/sb_edac.c
  
- static int brcmstb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -243,8 +238,6 @@ static int brcmstb_pwm_probe(struct platform_device *pdev)
- 	if (!p)
- 		return -ENOMEM;
- 
--	spin_lock_init(&p->lock);
+-EDAC-SIFIVE
+-M:	Yash Shah <yash.shah@sifive.com>
+-L:	linux-edac@vger.kernel.org
+-S:	Supported
+-F:	drivers/edac/sifive_edac.c
 -
- 	p->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(p->clk)) {
- 		dev_err(&pdev->dev, "failed to obtain clock\n");
+ EDAC-SKYLAKE
+ M:	Tony Luck <tony.luck@intel.com>
+ L:	linux-edac@vger.kernel.org
 -- 
-2.34.1
+2.32.0
 
