@@ -2,60 +2,60 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AFB7C433FE
-	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 21:22:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1462FC433F5
+	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 21:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbiBNVWU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:22:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48936 "EHLO
+        id S231208AbiBNVWo (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:22:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230508AbiBNVWS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 16:22:18 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3FB118610
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 13:22:09 -0800 (PST)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        with ESMTP id S231167AbiBNVWk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 16:22:40 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E0E134DD3
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 13:22:16 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 5B68E40338
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 21:22:08 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id EE352407BA
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 21:22:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644873728;
-        bh=1xNmK//HjGNaIQp8eaYbachy53dRAmEobraHrPxOQCQ=;
+        s=20210705; t=1644873734;
+        bh=fQGwcHi8/nTW0SMwp6SpOvSaCBhZUIuzRLgVqfnHG+w=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=cyfDDj0QyhfE9wY/rL/p54nhFVQtItBOU4Bh1dntQKkiHLilCCB4aA+rcNqYk/hya
-         ovIGaYGYQZnJG4B7YRrnWFwQZYUcejFRkg1FNkPvD2O5GMVjiINjDgHPpstpoyf+sy
-         OxRlQO51UNtnzklZb/WBLYm2kp/5OcPXpHrg0WUDDU2JJm0+wbv8oV+dJBzImYrfZF
-         0p0l1A3v7ijEp8D1v6dCBMjIiuChC/wXDIpDwq8gFzjU5kiUFC8sDGmXsJAMyM4f1u
-         3fRJhUk76Vy8HjfHO5LTCOfW9pNsh7lGpq4LyyDFGb2f/5GWFWlq4chdX2tCQcBjzZ
-         B3u3SNosJh6lQ==
-Received: by mail-ed1-f70.google.com with SMTP id t3-20020a056402524300b0041010127313so8876164edd.16
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 13:22:08 -0800 (PST)
+        b=n2obywNmOGpTMTG2HfjPWcgXb6sTpAm8+cO5KnCp0Y+WUrspNAFw7FQj4Q+KXX5y0
+         q5AHP1rV7nWu86j8I84AX8MRcmsfwMr83TMC8GvU1EZZl+z7FzwXRfgjiCqTBawSpp
+         UJwweiUKvsXBkIkCuFVjsJKEXvMbxMQNtMrHqSdn7nbfc6u/TSVaNGQabPvCZtehXB
+         NjW7jm6eadz6zjESVlO7NMtHIvcF2hnnXdcC20mTveBU1b8jba34MEddpUB5mIkPMi
+         /jTn8YfOGGQwYfzpfj3CJsbXECx0YgEIXN1MDT2S3lVHlQVRPzowvbzFCcYv8kSmak
+         /HZFx4NOHbGxg==
+Received: by mail-ej1-f72.google.com with SMTP id k16-20020a17090632d000b006ae1cdb0f07so6384430ejk.16
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 13:22:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1xNmK//HjGNaIQp8eaYbachy53dRAmEobraHrPxOQCQ=;
-        b=TR5675U5HoHNQOTu9iqRyiYEUml11zz4h0Go0NdGZJ81avH1zp4aLownKfm0ve19az
-         mBMi559X/NWETE8FgGML2T1VwF3O0BHKQ6itIr0s40mmUSlVOieBLORlyfPdyAV/DvL8
-         5SBQEkTc2xk9PLtD/dlIueKj1di9FSWZtsYp74H0PdU1Rq/fS7wzH5PCS/Kl1Wui+pvM
-         5W223U+/eVV9LXYiL30G6AUGJrHuuTGzoPzSpbz6rhCP1a404uYfUBn6criwg0PpTCry
-         kQEHppyZB7YMJiav4vU3BCqf86iH2xfk04AFAk4GQnmdUspkrYVNerHTvxlIPTctI8Qj
-         UgpQ==
-X-Gm-Message-State: AOAM530izDr02v6UrtBpAq+E8eIGBv94ucDVM77GLHHzKrcbrHj/wly+
-        okmqwy0godmFSgPmOKTSi1Y6DA2shj+07gFM93apsPNDwd9wx7YFAKCfj+ASEKzcKuFeZnmxO6E
-        40H819Jb7ntL/tPcQ2AQ+uvey+0QKdCR3SDuXKg==
-X-Received: by 2002:a05:6402:2203:: with SMTP id cq3mr756172edb.185.1644873727722;
-        Mon, 14 Feb 2022 13:22:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy49BfL0PgnMrV38zW/ZrNuMHV/5GZGb+TKlaJ5NvG8aoL2ex2m6POK5VS+J5aobKGKcLFIQQ==
-X-Received: by 2002:a05:6402:2203:: with SMTP id cq3mr756128edb.185.1644873727584;
-        Mon, 14 Feb 2022 13:22:07 -0800 (PST)
+        bh=fQGwcHi8/nTW0SMwp6SpOvSaCBhZUIuzRLgVqfnHG+w=;
+        b=jBvaGR/PE6uhJOiovGQlWVXcq5eTivcppWDV4m4+jDoYb06QNFl/+LFcUD9cjZb+0M
+         EDYqnnnKDWMdXRUaOHiIjvFP/wC9s2933dbQ5KrfLqb1l5swSF1UEUVa7Td93Fiq/4fi
+         4Mt0mK+uomn8wWzp55IyJU019yfUOzQrCILeZCcZMJ/NxCLhmcoBcAAkbZC2Ng74LQRx
+         T6tkkZbb6PvQJft/gYDWFLhWltd3re0V9IJWqQgdGIcvDpYYX9FvjlPFkOvQoVlO2ftI
+         a+3PekdqHnWxPLXn0Zd/3Xkmtlle7rUh5kZPftmLnxbqcOJSuR2+7ujhQnmJalXEQXHv
+         uk/A==
+X-Gm-Message-State: AOAM531jBeiopSqDxuSChUDqNMXA+c/eTX8cQLIfVWip8XpA1vmjND7b
+        rtJyjBouUEhldCD7S8e/cCATZ8RlddEBLn54J5zT8Rnup1SXRiyoumfrdmZt3aQp5rFCbmhVQWM
+        rdlEaFaDuVBAsGNEyQDhDy65kHlYxUykiElBclg==
+X-Received: by 2002:a05:6402:3687:: with SMTP id ej7mr784126edb.335.1644873734557;
+        Mon, 14 Feb 2022 13:22:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxIpInfMiZOfc9K2mvopmHJpGq7HGo1U79elFbaK9u9/4kmAeiVck7Mp6uIQadoSXhIA1gAlg==
+X-Received: by 2002:a05:6402:3687:: with SMTP id ej7mr784084edb.335.1644873734367;
+        Mon, 14 Feb 2022 13:22:14 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id v24sm2327203ejf.7.2022.02.14.13.22.05
+        by smtp.gmail.com with ESMTPSA id v24sm2327203ejf.7.2022.02.14.13.22.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 13:22:07 -0800 (PST)
+        Mon, 14 Feb 2022 13:22:13 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -90,9 +90,9 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
         linux-riscv@lists.infradead.org
-Subject: [PATCH v2 05/15] dt-bindings: pwm: mxs: Include generic pwm schema
-Date:   Mon, 14 Feb 2022 22:21:44 +0100
-Message-Id: <20220214212154.8853-6-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 09/15] dt-bindings: pwm: toshiba,visconti: Include generic pwm schema
+Date:   Mon, 14 Feb 2022 22:21:48 +0100
+Message-Id: <20220214212154.8853-10-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220214212154.8853-1-krzysztof.kozlowski@canonical.com>
 References: <20220214212154.8853-1-krzysztof.kozlowski@canonical.com>
@@ -106,32 +106,33 @@ Include generic pwm.yaml schema, which enforces PWM node naming and
 brings pwm-cells requirement.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
 ---
- Documentation/devicetree/bindings/pwm/mxs-pwm.yaml | 4 +++-
+ .../devicetree/bindings/pwm/toshiba,pwm-visconti.yaml         | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml b/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
-index 8740e076061e..a34cbc13f691 100644
---- a/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
-@@ -10,6 +10,9 @@ maintainers:
-   - Shawn Guo <shawnguo@kernel.org>
-   - Anson Huang <anson.huang@nxp.com>
+diff --git a/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml b/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
+index d350f5edfb67..46622661e5fb 100644
+--- a/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
++++ b/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
+@@ -9,6 +9,9 @@ title: Toshiba Visconti PWM Controller
+ maintainers:
+   - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
  
 +allOf:
 +  - $ref: pwm.yaml#
 +
  properties:
    compatible:
-     enum:
-@@ -28,7 +31,6 @@ properties:
+     items:
+@@ -23,7 +26,6 @@ properties:
  required:
    - compatible
    - reg
--  - "#pwm-cells"
-   - fsl,pwm-number
+-  - '#pwm-cells'
  
  additionalProperties: false
+ 
 -- 
 2.32.0
 
