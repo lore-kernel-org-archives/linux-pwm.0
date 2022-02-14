@@ -2,60 +2,60 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB80C4332F
-	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 08:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F980C433F5
+	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 08:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241800AbiBNIRM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 14 Feb 2022 03:17:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44236 "EHLO
+        id S231839AbiBNIRP (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 14 Feb 2022 03:17:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241767AbiBNIRI (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 03:17:08 -0500
+        with ESMTP id S241852AbiBNIRN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 03:17:13 -0500
 Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7378B4EA14
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:17:01 -0800 (PST)
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D645F8F8
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:17:06 -0800 (PST)
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com [209.85.208.197])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 422BF407C2
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 08:17:00 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 69D7E407EF
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 08:17:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644826620;
-        bh=RUrvha3jd75o7xb7qinVq9MRNe4Hz0+UgFNjZM5U/KA=;
+        s=20210705; t=1644826625;
+        bh=DkqOnedmg2q9ShhWATftW6XUUTgR2TrUisQLyEAw/GA=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=EbPGgT4nIi4oxCdfXrlb8FX6kXWF5nP2y0OwC8UTabgebpo+b7vPaNptWGGPullR3
-         yIFl7m3WGYx1Nu/4FsxHVlJrr+vJKrbBQnYfawKvHPkZsQ0xGmu9VSocf9+m5ljXxt
-         0OM0+PHSy0gx6CJBVNiwAQDUF4KSAG6dfzzkBA49sQf3dxKsz4UOXXtzMH9SMdC3Z4
-         7ZItfYgoWbq9HlQUfX4rbO2JOM8LbelKPR8cuL2yMhb38Z5NlMtiNNvT+IkRrno2SQ
-         Wummmbb20McJbyafbuSuXEssFlSzdXsSwtaP4jYnELwivlU36uxTpYM4Ole9jy0co+
-         NqgijGr0wSFFA==
-Received: by mail-ej1-f71.google.com with SMTP id v2-20020a170906292200b006a94a27f903so5508660ejd.8
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:17:00 -0800 (PST)
+        b=lbzSXtyWxGEMzioNGDvUFUDsXQmmhgDfbCc8gePq4BFqV2v+9xR6zX29YFaV/w5Zl
+         67bou4eXQR54ex2qZk0cwVZy1WsexMybY1VBSrI0nC7eITaQpVd0jtIAUPviRbBSOv
+         Fs3oknj/03ZmWDa7EXjl9KC6ztEKOzO6iXiPtiMT99/uSykN8luP8SudJ8NQRlfxgM
+         OttCOhqj2u/atDjua/WAla7/wE7KJedrNID5ySkWkv0q+R7itGpKsWqA9FPdnphuPI
+         klJIVLONhvTvNSsGbE3w19B6YS3TLFca1529Igqt78GGln1DsevUabiszwj1XrJUOi
+         DYLNEzW39id9Q==
+Received: by mail-lj1-f197.google.com with SMTP id b17-20020a05651c0b1100b00244b873c6easo1259087ljr.4
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:17:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RUrvha3jd75o7xb7qinVq9MRNe4Hz0+UgFNjZM5U/KA=;
-        b=wxJQVlWZGcwHyC2H71RFuYUjSL0jC1/JXpsZ6BYT17bJBphlX6E7Zt0Ld7bNMjLVe3
-         D5le1NTZZUzjZNe1wWiH/Si3MzhYz0CsXGjK/9at+DiJKp+wJODxOpDImFDjuAHaQoEc
-         LdCtrUOZvetxoiPd9b5gad4wZGQaGGJ1l4JW6XapK1KBgQFNfoBMKVd4aZJJ5MREQHSH
-         5f0ViOaUCyXw+MToqvh0HNYbMU7f5LOqJbChqMYsSbMZ39RCkp8IA47upKvb6vPNgoT9
-         BpCCMK3+1VQGZC5XoeR6PkT+VCh6d55DKdIpHseFA/dPaQjJdiDC0zvYdwdGPjqe7rfk
-         eCAA==
-X-Gm-Message-State: AOAM532L3uv81slg1IW1Bk016IzphkdT6tzdzHGrjgJG9MYih6kuOcyz
-        6VO8QZRn/v5L7QjtZhlcRTtVoxbd7yVK7uYugdaoF8I22Hbdj7BuU2EeehiKhVrQn5EWnlq0LQX
-        Wp0NrlxqmKAUdlBBQl9jPkkY8ZwKL/u1OXhN28g==
-X-Received: by 2002:a05:6402:2683:: with SMTP id w3mr14323046edd.405.1644826609100;
-        Mon, 14 Feb 2022 00:16:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyzkuxNo1QP+7t12yVjZD9t3Y/Itl5ApNf4frcHdZJDQgI3MTIUIYVP/fV2AVsdZ2EHF8ILcQ==
-X-Received: by 2002:a05:6402:2683:: with SMTP id w3mr14323005edd.405.1644826608899;
-        Mon, 14 Feb 2022 00:16:48 -0800 (PST)
+        bh=DkqOnedmg2q9ShhWATftW6XUUTgR2TrUisQLyEAw/GA=;
+        b=JPcrF+Fs1SJp8M0YAiVopRlG9I0rMNYYhXYs9mxeKwXxpQDHmjNUopB+HBqPWDCTx7
+         8TUC20429MGf8AafL/pchWr2VeebRGI2gjeydx+nTmbJcyn0Av0sQo2/ue5XuKjfAYLg
+         Scuw5G2kmgHDv4OEny9YXzeG/SgR/EyZjplh1baNmQA9J2NuPYsCap438vHgQCQTRBmX
+         V50IYMPb4WHH7z0dSGehBJ6O45Kv+Muik0/hFOJJl8nniKCEcKfFvbM2MROGQLwF8616
+         ToVRMmZ4SBERhM9+SXEhu7hE14/Qqhw009RACnD8JuH7XMKsZZOH7BxIR1/LZXyebN1M
+         m+EQ==
+X-Gm-Message-State: AOAM530LKGivDGkr3Nhv0PrQs6SGi9VPK17Xx7r8XcTcOUlJT0cUk8rp
+        X9BTh7SC0ZFOg/rxzePx5iYCUSt4DOyOPc0AX6sFWdNEhrT5hd9aI0pKhtOFNFarSPhuj35lhhR
+        Z1D7cXhnf5LWSclenULpHKdXkCW66zl3vVcMrNw==
+X-Received: by 2002:a17:907:86a0:: with SMTP id qa32mr1461146ejc.23.1644826614011;
+        Mon, 14 Feb 2022 00:16:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxDJTIba5Olc1DBbdAqq71XRQ9UAPJIT4SQ1cNLOsvgwe2lpelu0Q6nUssQgmN6E/2sLjNFyg==
+X-Received: by 2002:a17:907:86a0:: with SMTP id qa32mr1461109ejc.23.1644826613791;
+        Mon, 14 Feb 2022 00:16:53 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id t21sm3363642edd.74.2022.02.14.00.16.47
+        by smtp.gmail.com with ESMTPSA id t21sm3363642edd.74.2022.02.14.00.16.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 00:16:48 -0800 (PST)
+        Mon, 14 Feb 2022 00:16:53 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -90,9 +90,9 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
         linux-riscv@lists.infradead.org
-Subject: [PATCH 06/15] dt-bindings: pwm: rockchip: include generic pwm schema
-Date:   Mon, 14 Feb 2022 09:15:56 +0100
-Message-Id: <20220214081605.161394-6-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 09/15] dt-bindings: pwm: toshiba,visconti: include generic pwm schema
+Date:   Mon, 14 Feb 2022 09:15:59 +0100
+Message-Id: <20220214081605.161394-9-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220214081605.161394-1-krzysztof.kozlowski@canonical.com>
 References: <20220214081605.161394-1-krzysztof.kozlowski@canonical.com>
@@ -107,91 +107,28 @@ brings pwm-cells requirement.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../devicetree/bindings/pwm/pwm-rockchip.yaml | 74 ++++++++++---------
- 1 file changed, 38 insertions(+), 36 deletions(-)
+ .../devicetree/bindings/pwm/toshiba,pwm-visconti.yaml         | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-index 81a54a4e8e3e..a336ff9364a9 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-+++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-@@ -51,42 +51,44 @@ properties:
- required:
-   - compatible
-   - reg
--  - "#pwm-cells"
--
--if:
--  properties:
--    compatible:
--      contains:
--        enum:
--          - rockchip,rk3328-pwm
--          - rockchip,rv1108-pwm
--
--then:
--  properties:
--    clocks:
--      items:
--        - description: Used to derive the functional clock for the device.
--        - description: Used as the APB bus clock.
--
--    clock-names:
--      items:
--        - const: pwm
--        - const: pclk
--
--  required:
--    - clocks
--    - clock-names
--
--else:
--  properties:
--    clocks:
--      maxItems: 1
--      description:
--        Used both to derive the functional clock
--        for the device and as the bus clock.
--
--  required:
--    - clocks
-+
+diff --git a/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml b/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
+index d350f5edfb67..46622661e5fb 100644
+--- a/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
++++ b/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
+@@ -9,6 +9,9 @@ title: Toshiba Visconti PWM Controller
+ maintainers:
+   - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+ 
 +allOf:
 +  - $ref: pwm.yaml#
 +
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - rockchip,rk3328-pwm
-+              - rockchip,rv1108-pwm
-+
-+    then:
-+      properties:
-+        clocks:
-+          items:
-+            - description: Used to derive the functional clock for the device.
-+            - description: Used as the APB bus clock.
-+
-+        clock-names:
-+          items:
-+            - const: pwm
-+            - const: pclk
-+
-+      required:
-+        - clocks
-+        - clock-names
-+
-+    else:
-+      properties:
-+        clocks:
-+          maxItems: 1
-+          description:
-+            Used both to derive the functional clock
-+            for the device and as the bus clock.
-+
-+      required:
-+        - clocks
+ properties:
+   compatible:
+     items:
+@@ -23,7 +26,6 @@ properties:
+ required:
+   - compatible
+   - reg
+-  - '#pwm-cells'
  
  additionalProperties: false
  
