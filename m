@@ -2,60 +2,60 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA60C4167B
-	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 21:22:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF042C433F5
+	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 21:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231301AbiBNVWw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:22:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50204 "EHLO
+        id S231126AbiBNVXA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:23:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231216AbiBNVWo (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 16:22:44 -0500
+        with ESMTP id S231177AbiBNVWq (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 16:22:46 -0500
 Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94EC13D564
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 13:22:25 -0800 (PST)
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com [209.85.208.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1687413C9D1
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 13:22:33 -0800 (PST)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 60A2540340
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 21:22:24 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 1145740337
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 21:22:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644873744;
-        bh=rXTrjGyqcJ3i7iMn5DJq5QR/kPtoX00uoKdkO1EvWnA=;
+        s=20210705; t=1644873752;
+        bh=BTa+7+hPQApQrGc3LBEa/6uh1gwW5m1A+xf1VQ/CZYQ=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=Zqz7MgTVbdVyNvbnsoHSas4wE7LTxrPVTViPN3I/zc7QTZgQnG9v4sUc99M5ySEWZ
-         ty+Vtmt0MdCZdFHgxW8TOswMj7j7pd+iNgAwRjcAwpJKUEvW4kvQD/2D45Zv1uxd8s
-         HMEG5aDaS4NpYmY0ai83+ZGhZ4Cx3idQ8g3DNn/pZOe3giVge3XOtv2notWPL+yAvD
-         CIqurwcLO4qU5sU9atPEszqydUdzpL5eP1aU+9rK8dkxQSRwgqVs5a5Vkf6QkEdFdD
-         yCxH8IlCRV1lxXon+6cC0mWeymap/OWtHXAnftVGGmI31VI5rm8NlnPtZKTCre+dpN
-         WDLNmV5FtXWxg==
-Received: by mail-lj1-f197.google.com with SMTP id v1-20020a2e9601000000b002446a7310a1so6244247ljh.3
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 13:22:24 -0800 (PST)
+        b=m5LuTzYQhKCn4516HLJutI01n/W0xAVFTrwWFOyJZoPVFtQ4ovZgnYez9Rp893ddk
+         cdorNEsFMKGnUzq/Ei2Seaqhuz5Wjj210YlyUA3MlL2b1m6APpj4wtfqYFMjtZqpU8
+         4YG8merGQz84b7JRH5qfHQNktRYeKBSasWwYngJayic5Og1FwWLvo2JJ6PK2UMNHk5
+         chgTw1qOOV/RKrcOt+NEzUS7iOyBFUlFffY9TK42oe692Z/8J7ginuITLqLrAPrdcN
+         vaAszuSdX3fmQ4ntfk0h2TIsavvjXbt639k1OOmLzHJhTB6rVFIID4vB4boRu6406b
+         mu3A7lbMbrFrg==
+Received: by mail-ej1-f69.google.com with SMTP id kw5-20020a170907770500b006ba314a753eso6370091ejc.21
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 13:22:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rXTrjGyqcJ3i7iMn5DJq5QR/kPtoX00uoKdkO1EvWnA=;
-        b=KIstM/nskWTYq9yQlwG36E2RQogvhFgL6qh4w/fNLqbdN8YmUGziMH/gq6uWaiELA9
-         lH47wPlLeli7KzmEqYfFDpguzW2c1pGhr86ljWVQ8kmkzmBYNv4tPZiJ5qGZo739siZt
-         uKuSHnQ5NQjjCN98XZ2cbgSPe4w6VhD8wn7RunNoHLyoXBfualy5ZjH/ZWWH9QDCz2YB
-         dpObgR8h1ttw8Bn4gpQGMvhEoUxHzdMMZwNXoSOw7qDs4nMvlmzMNaPw3eOBnZMu+3Dy
-         r6f7hhEon+igO3RMhg1QW0TPq+roixS9EihZ/osJSCb9bsi/y40THt1zcmAEWBRS6M6Z
-         9AbQ==
-X-Gm-Message-State: AOAM530h6O+sCIF0Qsawjk0pEQVOI++q51O5Ygy0sR9YJFobKwnRYmmP
-        3Fryt7qJT7H9208FAiZwZQUriq+5IJgUJipbYK2Aonb0+JBZSVP1mF7zz8CpUUw74Z3+4o6zCHw
-        SLubDIQ0dr4+cTz9Dej2ZlEZtLQbv6GJ9KwneLQ==
-X-Received: by 2002:a05:6402:34c7:: with SMTP id w7mr750385edc.397.1644873733097;
-        Mon, 14 Feb 2022 13:22:13 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxhpmbRreV1af3l7NRnMOVACbyZVoBFnimePwQQgpSt+JN3lhtVVBwqSExQGXUXAJA1H+Jnfw==
-X-Received: by 2002:a05:6402:34c7:: with SMTP id w7mr750338edc.397.1644873732938;
-        Mon, 14 Feb 2022 13:22:12 -0800 (PST)
+        bh=BTa+7+hPQApQrGc3LBEa/6uh1gwW5m1A+xf1VQ/CZYQ=;
+        b=JQUr6IDo8dC+ZUQPsxNYTsy61WrsDn9yCNFI/HTX69wbV5oXG/rkAdzJftpf7uV3cn
+         NkjoDdAsgguHiis6uY+ACPVgGd9JEmHRgel4i++MrLkcmSkS6Z8GsEepdDfT2yL3jykS
+         VQftg6aR+6YexwzkF2twyeCynjnmvprnPd6/Ep8PO5+2vLWs3+Nm6saqCxhV6Ek4c0gf
+         hH/V+OT/MtjvXgx5P4Kqt7Qjf5bMjngc9iTNxLERN3KlDAayE17KWeQtOFwKjo2cgUk3
+         DVJe4m7e8DdANEkCxVQzb8qaLVLTA8EatCTcysUsx8geIQ8yUX9gk2J7K3NJjVE2gKmO
+         oCtg==
+X-Gm-Message-State: AOAM532zK8VKxJ86awHtwn2JQLnMOncfwEFJRBeUg0AE/0ah8cbMRzjR
+        IvHR5LUMWj7QlttlYa9xuVrtZcY2g9YEoSWlD5rsNb0v6fmUVFd/0Fo5cVOFQhK7jI1fqdHzuVn
+        ei4u8Pe66AycsvtyIwpRxetbniSKJ2pvpEURiyA==
+X-Received: by 2002:a05:6402:f1b:: with SMTP id i27mr797182eda.275.1644873740821;
+        Mon, 14 Feb 2022 13:22:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxI0exot3yoiNzuz9PwDF81XbTxvVVt2KMAZVFpKvmztfJkcydX4q8g7gpBrGY0uRI8V9/sXA==
+X-Received: by 2002:a05:6402:f1b:: with SMTP id i27mr797171eda.275.1644873740690;
+        Mon, 14 Feb 2022 13:22:20 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id v24sm2327203ejf.7.2022.02.14.13.22.11
+        by smtp.gmail.com with ESMTPSA id v24sm2327203ejf.7.2022.02.14.13.22.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 13:22:12 -0800 (PST)
+        Mon, 14 Feb 2022 13:22:20 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -90,9 +90,9 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
         linux-riscv@lists.infradead.org
-Subject: [PATCH v2 08/15] dt-bindings: pwm: renesas,pwm: Include generic pwm schema
-Date:   Mon, 14 Feb 2022 22:21:47 +0100
-Message-Id: <20220214212154.8853-9-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 12/15] dt-bindings: pwm: samsung: Do not require pwm-cells twice
+Date:   Mon, 14 Feb 2022 22:21:51 +0100
+Message-Id: <20220214212154.8853-13-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220214212154.8853-1-krzysztof.kozlowski@canonical.com>
 References: <20220214212154.8853-1-krzysztof.kozlowski@canonical.com>
@@ -102,54 +102,25 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Include generic pwm.yaml schema, which enforces PWM node naming and
-brings pwm-cells requirement.
+pwm-cells property is already required by pwm.yaml schema.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../bindings/pwm/renesas,pwm-rcar.yaml        | 26 ++++++++++---------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ Documentation/devicetree/bindings/pwm/pwm-samsung.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-index 7ea1070b4b3a..1c94acbc2b4a 100644
---- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-+++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-@@ -59,21 +59,23 @@ properties:
- required:
-   - compatible
-   - reg
--  - '#pwm-cells'
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+index 188679cb8b8c..fe603fb1b2cc 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
++++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+@@ -86,7 +86,6 @@ required:
    - clocks
-   - power-domains
- 
--if:
--  not:
--    properties:
--      compatible:
--        contains:
--          enum:
--            - renesas,pwm-r8a7778
--            - renesas,pwm-r8a7779
--then:
--  required:
--    - resets
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+  - if:
-+      not:
-+        properties:
-+          compatible:
-+            contains:
-+              enum:
-+                - renesas,pwm-r8a7778
-+                - renesas,pwm-r8a7779
-+    then:
-+      required:
-+        - resets
+   - clock-names
+   - compatible
+-  - "#pwm-cells"
+   - reg
  
  additionalProperties: false
- 
 -- 
 2.32.0
 
