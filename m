@@ -2,111 +2,98 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 651A8C433F5
-	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 08:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F1FC433EF
+	for <linux-pwm@archiver.kernel.org>; Mon, 14 Feb 2022 08:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241829AbiBNIUK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 14 Feb 2022 03:20:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48236 "EHLO
+        id S233504AbiBNIYL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 14 Feb 2022 03:24:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241941AbiBNIUG (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 03:20:06 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C070D25C51
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:19:58 -0800 (PST)
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A282D40524
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 08:19:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644826797;
-        bh=o/YgTPBdxwkk76YIPJfDwO9KLR8OIlu6EoGrWBDU/GQ=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=EwTyN5N67UAQHLpprepPlAdArEoxH9FHAtFV+b2v/8mCpJO9jzmVzcILyPM1QfAbE
-         mcYvaKAxFLktyuhN6d8z+h5Ije00wbvaMxqdQcusXQUlfOszPBuuMobs1BrXaKaANb
-         9dlfmVgYjSoQt2dKnfeJ/ZSY+y1qzxVO9Fjhv7VR++Dy8m0dWIbJnuE5jhsBzkGIA1
-         n+qAYg2y5g/hq71m0WQZbiuHAxmVjasQzBlAgOptKuU9jy81ta9rak5q4puZxmImiQ
-         QzRXART7ckrtwQCvBQSSU96TSsvUzC9xC0sKw2KEQYTwjoP0Ah9DwcJioZJ7+YEa0R
-         8mDjyxKbwq3Dg==
-Received: by mail-ej1-f70.google.com with SMTP id ga31-20020a1709070c1f00b006cec400422fso510976ejc.22
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:19:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o/YgTPBdxwkk76YIPJfDwO9KLR8OIlu6EoGrWBDU/GQ=;
-        b=ivUohlnO5EQtHQJns7TEKXgNGwCnP6aHc03xxcPDcHskG/fiHT95qCW83Kv6w9hk6a
-         0R4JAmKo+1Y7np4PD7SCQY7j/+vwb9bT8/uzboChvVlPQEzEXVOueO9W4vI2iPngsagr
-         UBDVMZhDMesy40BVnCLz8BkzETOinGLDNoQqiIPt87AT8hvQTi2gUjA0tsHyppXb1e6g
-         JP8LW5yKTodiokze5ATW7z9UgiR01bW9BT71ZlBULJ2ZfQO8PhBEig/21dxWR7X1clpN
-         v03pmWBqzBys2Eb0LyJTIEheetvBtDar5AZ3lnxdLSJQLRJQm/ovECfYhTmdyklNUoln
-         t9rA==
-X-Gm-Message-State: AOAM532EtmXIbBEyvYCOlUuIYa4ZdBj4or1YmHwTVI+j6LsBbXk7KAqx
-        scAfCoDnzjvZVBhf26FK9HeNn9hvNnmCHolLHw6YJ1ySVR8DXH/gAcIjUJxbvbSgwWXSXWCR4x0
-        Lfp6gUbQK8tbOf7FXMAj/h+FhmLeoMt/kDvAYqw==
-X-Received: by 2002:a17:907:6091:: with SMTP id ht17mr10718090ejc.607.1644826797392;
-        Mon, 14 Feb 2022 00:19:57 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwkFPJeiJWjmWYMYKnbVg1bBwxgaPTZV+oh4RSUxGNA67GTozBuexvPDdoyT1VdY/d6fUhgGw==
-X-Received: by 2002:a17:907:6091:: with SMTP id ht17mr10718069ejc.607.1644826797215;
-        Mon, 14 Feb 2022 00:19:57 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id b20sm2022941ede.23.2022.02.14.00.19.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 00:19:56 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Douglas Anderson <dianders@chromium.org>,
-        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH 4/4] arm64: dts: rk3399: align Google CROS EC PWM node name with dtschema
-Date:   Mon, 14 Feb 2022 09:19:16 +0100
-Message-Id: <20220214081916.162014-5-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
-References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
+        with ESMTP id S229824AbiBNIYK (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Feb 2022 03:24:10 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA3425C41
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Feb 2022 00:24:02 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJWeO-0007jv-Da; Mon, 14 Feb 2022 09:24:00 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJWeM-00GVbS-OO; Mon, 14 Feb 2022 09:23:58 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJWeL-002szO-EQ; Mon, 14 Feb 2022 09:23:57 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Subject: [PATCH 0/2] pwm: brcmstb: Some cleanups
+Date:   Mon, 14 Feb 2022 09:23:52 +0100
+Message-Id: <20220214082354.295451-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1622; h=from:subject; bh=fto84kaKHKYtGjBgA68m5nVML9akH99Winy3n+Av3kI=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBiChGPJ1trYkbjABiuYTY4qV6gqO0y5jdSleIa2RXI 5jWAinSJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYgoRjwAKCRDB/BR4rcrsCUifCA CY6FSI2H4lMZgqAJpE7To2pQLdmR5tels7nUB88S5F030TXoHrwAx+TIyPFhEpDzTYa+o4e5UnhX8g c6dT3rI94p7iJ0r2xUl7DfY1V6UVK2Cei2oucow/UFSyXJb/WwiTsSUhdMFGVX/Jn/q9Xi/xRiy81l J3luy7DNFYvwdbcXiG1Sir2xgDeq32rivVFNlwEqDVJe0lqn6bA7Vs4SFObVJmdgn7qAAj4Qum5deO rIBDl0AOdn/G1kqZ/QuE4uwHTENiDqLFfcvnag4hvzVmtAj7654ptAeYmqiGh/5jGKvtgm30sqcrUT sHJE0le+mdoI5TvX8jgaUF6Tt6xf5z
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-dtschema expects PWM node name to be a generic "pwm".  This also matches
-Devicetree specification requirements about generic node names.
+Hello,
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+here are a few cleanups for the brcmstb PWM driver. There are a few
+issues left with it, that I'm not addressing for now. Just mention it in
+case someone wants to work on this driver:
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-index 9b2c679f5eca..3355fb90fa54 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-@@ -462,7 +462,7 @@ ap_i2c_tp: &i2c5 {
- };
- 
- &cros_ec {
--	cros_ec_pwm: ec-pwm {
-+	cros_ec_pwm: pwm {
- 		compatible = "google,cros-ec-pwm";
- 		#pwm-cells = <1>;
- 	};
+ - There is no .get_state() callback
+   (That needs to be implemented by some with hardware and
+   documentation)
+
+ - There are a few places where an overflow can happen in
+   brcmstb_pwm_config() that are not handled
+
+ - The loop in brcmstb_pwm_config() to calculate cword is ineffective,
+   cword could be calculated ad hoc.
+
+ - I don't understand
+
+                /*
+                 * We can be called with separate duty and period updates,
+                 * so do not reject dc == 0 right away
+                 */
+                if (pc == PWM_PERIOD_MIN || (dc < PWM_ON_MIN && duty_ns))
+                        return -EINVAL;
+
+   The usual policy is "With the selected period, pick the biggest
+   possible duty_cycle that isn't bigger thatn the requested duty_cycle.
+   So should this case be handled using dc = 0 instead?
+   But as I don't understand the real issue here (is this about changing
+   period and duty at the same time?), I don't want to touch that.
+
+ - The driver uses SIMPLE_DEV_PM_OPS which is deprecated.
+
+ - The driver defines pr_fmt(fmt) but doesn't use it.
+
+Uwe Kleine-König (2):
+  pwm: brcmstb: Implement .apply() callback
+  pwm: brcmstb: Remove useless locking
+
+ drivers/pwm/pwm-brcmstb.c | 52 ++++++++++++++++++---------------------
+ 1 file changed, 24 insertions(+), 28 deletions(-)
+
+
+base-commit: 657e54e54ba5b3859848e0ea78d6384ebb7479d6
 -- 
-2.32.0
+2.34.1
 
