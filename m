@@ -2,103 +2,191 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88863C433F5
-	for <linux-pwm@archiver.kernel.org>; Tue,  1 Mar 2022 23:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44923C433F5
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Mar 2022 05:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232039AbiCAXXr (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 1 Mar 2022 18:23:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
+        id S239169AbiCBFct (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 2 Mar 2022 00:32:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiCAXXr (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Mar 2022 18:23:47 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BE332071
-        for <linux-pwm@vger.kernel.org>; Tue,  1 Mar 2022 15:23:04 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id l25so197848oic.13
-        for <linux-pwm@vger.kernel.org>; Tue, 01 Mar 2022 15:23:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=B0gHl0FY6TKEqOe5dLt6k+4Sn54m7FTDQTv9BgJSJmY=;
-        b=w0vaAwCSOgyqV35VqOvdvCY5g5lLUapGsVPxGHCUGkyNVEZZ6/kdXXdorDxIWT537G
-         MUzstVRDZ3xYnf+Y9IFCbWdyvIkckOkma3wtDXYzlDYyytWeVjj9Odjlj5+D9r8fwvj2
-         HBlTjilOI+nEJdz3FhwuFG3VKC9KGwVOZ7O2hrV6heTO5iRov7z0PDXH3z4BPlRzYKTv
-         5/jrfCYiWgnu5huDJykK1R+/WVA38iPh2c4glxVQ1n0YucaZOGhzKvcC+t97UFVrBEib
-         t7csV3GYm681yeV9UhUvLQCbzuULjwq6xD1qPDdr/pvZDlEKMFcqLg3bq07rx6Y7Y6Ia
-         G1fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B0gHl0FY6TKEqOe5dLt6k+4Sn54m7FTDQTv9BgJSJmY=;
-        b=6aQ+o/iuqTQBfOdg5GxOKM6JccWPnLeOSmgDibMWnVjbTlSiESrXDXQ00G4vw3eUUX
-         6J9g6lmdemG13QzWFbXhhn7WrDtHvXSBOJW0m2UI33wIf8HjovROp/oQFQSTojYZsQNd
-         vCV0G7j6RP+R/CwnGg+w4rlFazdF6Exl0hZUv2ai2FYcGdc0Xp6Ivik1wgKh9xyM6tXQ
-         NVdvQPEsOmlsMfXYuJq5OZkoddRQwPwvjyQ7c7qZlx7jpihgRdKsV9+takizWRlET/UA
-         aFRGiJ7pnZf4n3NkqFK3vHYR8+yZ/yEJlEZgLZ8tQgxCoZSrAp+JBhSzyjHFYTiDK0C3
-         oX3A==
-X-Gm-Message-State: AOAM531IU6AKhQKGDtffz0lPC74CQeisucosXrp4tzcrUHm6BSl8kFtD
-        KNrj4ckvz4nbpm/HivO09L3BeQ==
-X-Google-Smtp-Source: ABdhPJxEJ64Gn/cTmYTu3qBhsOi969AzEkmMsQpBT2a/tPl/ZeLLMLvf5SzTIPzDYBU8Q9JQ6K3z1w==
-X-Received: by 2002:a05:6808:1183:b0:2d4:5eeb:1ca3 with SMTP id j3-20020a056808118300b002d45eeb1ca3mr14925434oil.8.1646176983843;
-        Tue, 01 Mar 2022 15:23:03 -0800 (PST)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id 16-20020a9d0490000000b005ad3c83e927sm7091173otm.60.2022.03.01.15.23.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 15:23:03 -0800 (PST)
-Date:   Tue, 1 Mar 2022 15:24:54 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
-        Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v13 2/2] leds: Add driver for Qualcomm LPG
-Message-ID: <Yh6rRuAcyiF6QnFi@ripper>
-References: <20220218183116.2261770-1-bjorn.andersson@linaro.org>
- <20220218183116.2261770-2-bjorn.andersson@linaro.org>
- <20220224165939.4275x7mzp7qpl2kj@pengutronix.de>
+        with ESMTP id S235176AbiCBFcs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Mar 2022 00:32:48 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F230517E3A;
+        Tue,  1 Mar 2022 21:32:01 -0800 (PST)
+X-UUID: 92ac1503dd904715a2f934bc4ad0522d-20220302
+X-UUID: 92ac1503dd904715a2f934bc4ad0522d-20220302
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1169053540; Wed, 02 Mar 2022 13:31:56 +0800
+Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 2 Mar 2022 13:31:55 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
+ (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 2 Mar
+ 2022 13:31:54 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Wed, 2 Mar 2022 13:31:53 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <lee.jones@linaro.org>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <jitao.shi@mediatek.com>, <allen-kh.cheng@mediatek.com>,
+        <rex-bc.chen@mediatek.com>, Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH v3,1/6] dt-bindings: pwm: Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format
+Date:   Wed, 2 Mar 2022 13:31:41 +0800
+Message-ID: <1646199106-26879-2-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
+In-Reply-To: <1646199106-26879-1-git-send-email-xinlei.lee@mediatek.com>
+References: <1646199106-26879-1-git-send-email-xinlei.lee@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224165939.4275x7mzp7qpl2kj@pengutronix.de>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Thu 24 Feb 08:59 PST 2022, Uwe Kleine-K?nig wrote:
-> On Fri, Feb 18, 2022 at 10:31:16AM -0800, Bjorn Andersson wrote:
-[..]
-> > diff --git a/Documentation/leds/leds-qcom-lpg.rst b/Documentation/leds/leds-qcom-lpg.rst
-[..]
-> > +Simple pattern::
-> > +
-> > +    "255 500 0 500"
-> > +
-> > +        ^
-> > +        |
-> > +    255 +----+    +----+
-> > +	|    |    |    |      ...
-> > +      0 |    +----+    +----
-> > +        +---------------------->
-> > +	0    5   10   15     time (100ms)
-> 
-> you're mixing tabs and spaces here, I suggest to use spaces only. Not
-> sure you want to respin for that.
-> 
-> (I didn't look into the rest of the driver, but assume it's fine.)
-> 
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-Pavel, would yo like me to fix this up and send out v14 or would you be
-okay replacing the tab with spaces while applying the patches?
+Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format.
 
-Do you see any other blockers for merging this?
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+---
+ .../bindings/pwm/mediatek,pwm-disp.yaml       | 65 +++++++++++++++++++
+ .../devicetree/bindings/pwm/pwm-mtk-disp.txt  | 44 -------------
+ 2 files changed, 65 insertions(+), 44 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+ delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
 
-Thanks,
-Bjorn
+diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+new file mode 100644
+index 000000000000..f844695d605a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/mediatek,pwm-disp.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek DISP_PWM Controller Device Tree Bindings
++
++maintainers:
++  - Jitao Shi <jitao.shi@mediatek.com>
++  - Xinlei Lee <xinlei.lee@mediatek.com>
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - mediatek,mt2701-disp-pwm
++          - mediatek,mt6595-disp-pwm
++          - mediatek,mt8173-disp-pwm
++      - items:
++          - const: mediatek,mt8167-disp-pwm
++          - const: mediatek,mt8173-disp-pwm
++
++  reg:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++  clocks:
++    items:
++      - description: Main Clock
++      - description: Mm Clock
++
++  clock-names:
++    items:
++      - const: main
++      - const: mm
++
++required:
++  - compatible
++  - reg
++  - "#pwm-cells"
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/mt8173-clk.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    pwm0: pwm@1401e000 {
++        compatible = "mediatek,mt8173-disp-pwm";
++        reg = <0x1401e000 0x1000>;
++        #pwm-cells = <2>;
++        clocks = <&mmsys CLK_MM_DISP_PWM026M>,
++                 <&mmsys CLK_MM_DISP_PWM0MM>;
++        clock-names = "main", "mm";
++    };
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+deleted file mode 100644
+index 902b271891ae..000000000000
+--- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
++++ /dev/null
+@@ -1,44 +0,0 @@
+-MediaTek display PWM controller
+-
+-Required properties:
+- - compatible: should be "mediatek,<name>-disp-pwm":
+-   - "mediatek,mt2701-disp-pwm": found on mt2701 SoC.
+-   - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
+-   - "mediatek,mt8167-disp-pwm", "mediatek,mt8173-disp-pwm": found on mt8167 SoC.
+-   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+- - reg: physical base address and length of the controller's registers.
+- - #pwm-cells: must be 2. See pwm.yaml in this directory for a description of
+-   the cell format.
+- - clocks: phandle and clock specifier of the PWM reference clock.
+- - clock-names: must contain the following:
+-   - "main": clock used to generate PWM signals.
+-   - "mm": sync signals from the modules of mmsys.
+- - pinctrl-names: Must contain a "default" entry.
+- - pinctrl-0: One property must exist for each entry in pinctrl-names.
+-   See pinctrl/pinctrl-bindings.txt for details of the property values.
+-
+-Example:
+-	pwm0: pwm@1401e000 {
+-		compatible = "mediatek,mt8173-disp-pwm",
+-			     "mediatek,mt6595-disp-pwm";
+-		reg = <0 0x1401e000 0 0x1000>;
+-		#pwm-cells = <2>;
+-		clocks = <&mmsys CLK_MM_DISP_PWM026M>,
+-			 <&mmsys CLK_MM_DISP_PWM0MM>;
+-		clock-names = "main", "mm";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&disp_pwm0_pins>;
+-	};
+-
+-	backlight_lcd: backlight_lcd {
+-		compatible = "pwm-backlight";
+-		pwms = <&pwm0 0 1000000>;
+-		brightness-levels = <
+-			  0  16  32  48  64  80  96 112
+-			128 144 160 176 192 208 224 240
+-			255
+-		>;
+-		default-brightness-level = <9>;
+-		power-supply = <&mt6397_vio18_reg>;
+-		enable-gpios = <&pio 95 GPIO_ACTIVE_HIGH>;
+-	};
+-- 
+2.18.0
+
