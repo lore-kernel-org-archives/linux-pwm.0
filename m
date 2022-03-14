@@ -2,143 +2,121 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A298C4332F
-	for <linux-pwm@archiver.kernel.org>; Mon, 14 Mar 2022 05:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D66C43217
+	for <linux-pwm@archiver.kernel.org>; Mon, 14 Mar 2022 14:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236224AbiCNFwk (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 14 Mar 2022 01:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
+        id S242241AbiCNOSZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 14 Mar 2022 10:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236220AbiCNFwi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Mar 2022 01:52:38 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEBC3FBFF;
-        Sun, 13 Mar 2022 22:51:23 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id q19so12835998pgm.6;
-        Sun, 13 Mar 2022 22:51:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Ok63ibqhQr0VYYi+54LHwL4GBcWoRtMufsgDu+h2rCE=;
-        b=fP36lqnEuVspDIchzbbmofPO5erDkZv3S5B8qg8QC63iDlfbzTMcM+CPtAqNJ6xmXj
-         YFQcHG91odGTT8/zs/eIxkypL4z4IXpOM+7df11hEzK+BWk/sEM0TUl+Xp4KPQSYZ7DQ
-         DFJLqR6LbVFQeso7yF8vWl6xjsrH5L4fMlumGcZTy7ovvY29NL0xrkru+yZUerKkcwJm
-         oyn5xFoTRNsL7tvtgVXmViWN3ZbdLPanG32zZ6H3fL5ZqkG9+lZNJ9kqPy1GN3EiwrHu
-         Ip0DkHAboWp2DSYTzbv6ouYsWlVvNKo9hpxH5hz+XsMMZSQuqmN9YYJPiROz4loU1aly
-         H+pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Ok63ibqhQr0VYYi+54LHwL4GBcWoRtMufsgDu+h2rCE=;
-        b=Mkfm718wQ42J1fIriRQV/N6FKctd9tDifDiWcuvuomYyGe7+n8jG9gzZ4QzwEWVm8Q
-         qH5NRrr3iGE0hVHPzlVt9hHRe89GpqbrAgHS7cwD2eqse1Sa+CiDE5fiQjdxVYYVmROW
-         wBCCOm3sbzdYgna3zrpOxGmMljLas4jgiZzwirdf7DT949lyy3iwVbAPAPEnT/okS2Vp
-         x8JrCxUrdJkyYmlCtjYKQbqShUGP1K597kYBN7szBZZ/Vxkm63TMFkNWFP/IFDz5uGAV
-         QYffElIhcGZCb1ZfS92kffbrHV4A7MJnYGNWJPoryQ0nPUPAk516+ZK2vDNjghHdm+ol
-         N/Mg==
-X-Gm-Message-State: AOAM533nPy/yRrdHpc6J9Wul88fh26q8WFhNq59J/lLH5FVtcwTq1vpq
-        y8bWOtPU/lneG8BGE0sQaTA=
-X-Google-Smtp-Source: ABdhPJw2nXmy2mg5dZf9AGWbOFePXCIY9WiNi3kvqsM9ayfpY4AIIIhi9OO76smRLHvP69PQMAk9Ow==
-X-Received: by 2002:a63:d74f:0:b0:374:5bda:909d with SMTP id w15-20020a63d74f000000b003745bda909dmr18750453pgi.215.1647237082510;
-        Sun, 13 Mar 2022 22:51:22 -0700 (PDT)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id h17-20020a63df51000000b0036b9776ae5bsm15238115pgj.85.2022.03.13.22.51.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 13 Mar 2022 22:51:22 -0700 (PDT)
-From:   Hammer Hsieh <hammerh0314@gmail.com>
-To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        lee.jones@linaro.org, robh+dt@kernel.org,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     wells.lu@sunplus.com, hammer.hsieh@sunplus.com,
-        Hammer Hsieh <hammerh0314@gmail.com>
-Subject: [PATCH v3 1/2] dt-bindings: pwm: Add bindings doc for Sunplus SoC SP7021 PWM Driver
-Date:   Mon, 14 Mar 2022 13:51:36 +0800
-Message-Id: <1647237097-29172-2-git-send-email-hammerh0314@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1647237097-29172-1-git-send-email-hammerh0314@gmail.com>
-References: <1647237097-29172-1-git-send-email-hammerh0314@gmail.com>
+        with ESMTP id S242228AbiCNOSY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Mar 2022 10:18:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6DB1A395
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Mar 2022 07:17:13 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nTlVN-00053b-JU; Mon, 14 Mar 2022 15:17:01 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nTlVN-000f3Y-UA; Mon, 14 Mar 2022 15:17:00 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nTlVL-0097bI-CW; Mon, 14 Mar 2022 15:16:59 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     linux-clk@vger.kernel.org, kernel@pengutronix.de,
+        linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
+        Alexandru Ardelean <aardelean@deviqon.com>
+Subject: [PATCH v8 12/16] pwm: atmel: Simplify using devm_clk_get_prepared()
+Date:   Mon, 14 Mar 2022 15:16:39 +0100
+Message-Id: <20220314141643.22184-13-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314141643.22184-1-u.kleine-koenig@pengutronix.de>
+References: <20220314141643.22184-1-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1792; i=uwe@kleine-koenig.org; h=from:subject; bh=F+lsIvR0WcqPrEshBFzqfFli6sCNnJ0t7gDZjmtwGG8=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBiL04SR1DLwD9vJWqdeT3nSamG8lGxE8Z3d01WVuU8 78E3QAGJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYi9OEgAKCRDB/BR4rcrsCeFkB/ 99NpD4xxD2/hFjxLXsJvKVGQ+7cs5yDxyA5fWIr9CNNtbv/AcvwVKKSbsQ5n4Jgjmw7tokU00WPTpd 8hXrue8l3CF5SxbummHWudih7SVy1B0iYSrfffGotlAhWHpnhMEBeZiUuWyMTyESwhfh5TE1gFtmY4 C184Vio6aO1yzTeU04D2D3xA7VTtE60QB/TH4+fjrtsc0UhPvRhvIIDOMHdPRmHsLQgqT1bx9L6qo9 +7WDab4j9Q0QTRvjNfJQYzBMyDgxadfcjaFpQIAgKEXjORS/YFbycq3LyWHuI4DHoZD/lmekGB4IBQ duX7GR/SNQO9hv1LUoZMbcP73wXF9A
+X-Developer-Key: i=uwe@kleine-koenig.org; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add bindings doc for Sunplus SoC SP7021 PWM Driver
+With devm_clk_get_prepared() caring to unprepare the clock the error
+path and remove callback can be simplified accordingly.
 
-Signed-off-by: Hammer Hsieh <hammerh0314@gmail.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Reviewed-by: Alexandru Ardelean <aardelean@deviqon.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
-Changes in v3:
- - Addressed all comments from Krzysztof Kozlowski.
+ drivers/pwm/pwm-atmel.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
- .../bindings/pwm/sunplus,sp7021-pwm.yaml           | 42 ++++++++++++++++++++++
- MAINTAINERS                                        |  5 +++
- 2 files changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
-
-diff --git a/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml b/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
-new file mode 100644
-index 0000000..d4fc9e8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
-@@ -0,0 +1,42 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Co., Ltd. 2021
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/sunplus,sp7021-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sunplus SoC SP7021 PWM Controller
-+
-+maintainers:
-+  - Hammer Hsieh <hammerh0314@gmail.com>
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: sunplus,sp7021-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  '#pwm-cells':
-+    const: 2
-+
-+unevaluatedProperties: false
-+
-+required:
-+  - reg
-+  - clocks
-+
-+examples:
-+  - |
-+    pwm: pwm@9c007a00 {
-+      compatible = "sunplus,sp7021-pwm";
-+      reg = <0x9c007a00 0x80>;
-+      clocks = <&clkc 0xa2>;
-+      #pwm-cells = <2>;
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2524b75..e1cb7eb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18531,6 +18531,11 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/dlink/sundance.c
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 98b34ea9f38e..309c31e40ce4 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -480,16 +480,10 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(atmel_pwm->base))
+ 		return PTR_ERR(atmel_pwm->base);
  
-+SUNPLUS PWM DRIVER
-+M:	Hammer Hsieh <hammerh0314@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
-+
- SUNPLUS RTC DRIVER
- M:	Vincent Shih <vincent.sunplus@gmail.com>
- L:	linux-rtc@vger.kernel.org
+-	atmel_pwm->clk = devm_clk_get(&pdev->dev, NULL);
++	atmel_pwm->clk = devm_clk_get_prepared(&pdev->dev, NULL);
+ 	if (IS_ERR(atmel_pwm->clk))
+ 		return PTR_ERR(atmel_pwm->clk);
+ 
+-	ret = clk_prepare(atmel_pwm->clk);
+-	if (ret) {
+-		dev_err(&pdev->dev, "failed to prepare PWM clock\n");
+-		return ret;
+-	}
+-
+ 	atmel_pwm->chip.dev = &pdev->dev;
+ 	atmel_pwm->chip.ops = &atmel_pwm_ops;
+ 	atmel_pwm->chip.npwm = 4;
+@@ -497,16 +491,12 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 	ret = pwmchip_add(&atmel_pwm->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to add PWM chip %d\n", ret);
+-		goto unprepare_clk;
++		return ret;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, atmel_pwm);
+ 
+ 	return ret;
+-
+-unprepare_clk:
+-	clk_unprepare(atmel_pwm->clk);
+-	return ret;
+ }
+ 
+ static int atmel_pwm_remove(struct platform_device *pdev)
+@@ -515,8 +505,6 @@ static int atmel_pwm_remove(struct platform_device *pdev)
+ 
+ 	pwmchip_remove(&atmel_pwm->chip);
+ 
+-	clk_unprepare(atmel_pwm->clk);
+-
+ 	return 0;
+ }
+ 
 -- 
-2.7.4
+2.35.1
 
