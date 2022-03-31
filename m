@@ -2,38 +2,38 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EA8C43219
-	for <linux-pwm@archiver.kernel.org>; Thu, 31 Mar 2022 14:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA708C4332F
+	for <linux-pwm@archiver.kernel.org>; Thu, 31 Mar 2022 14:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237196AbiCaOFs (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35154 "EHLO
+        id S237180AbiCaOFr (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237185AbiCaOFr (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Mar 2022 10:05:47 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51FA5A165;
-        Thu, 31 Mar 2022 07:04:00 -0700 (PDT)
+        with ESMTP id S237165AbiCaOFo (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Mar 2022 10:05:44 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA45056C23;
+        Thu, 31 Mar 2022 07:03:56 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id CB68B1F468F8
+        with ESMTPSA id DC55C1F468AD
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648735439;
-        bh=fy1+tUPoPcfNztYimOdywPSnGkPWW1wOSSxIBddwBMk=;
+        s=mail; t=1648735434;
+        bh=sivL6T4oFKnuk83kIObvJYCqlfog9aKpWYyLs3NeVcA=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Fcy9oxZuRcaE2Du88OXSRaLsSYrgbXGi1xhLjwvbeSaDdEkjq5OAo0IxZ62G53HpV
-         A7PvowXg2nFGtVmaE/bXeK95t6J1CxpH6p8aRYmC5PnOMJk2VzdPjEysFI1Tu5KkiV
-         fG7+D/ujjUYeEPKDFhYjUHIMvybGnXhJ4VjEF1BGJ9/Qj2G2dZTbZ5b8LYvTwZBFPd
-         ze9QZq5VNtNS0Q/zayrS1TNfiBMFPZgeadEaZtIhQyhq0k/Ub4DqKG2WDQMdhwd9TG
-         /m0qqVssG6trma9b0dk4On0DQuecu6Xp9ZK43MvmBrzcre9nGbcaLBvrpMYyME+LBv
-         yyCK30O6TVRMA==
-Message-ID: <bd7c2c10-aacb-1d7f-7f60-71265ab80fe1@collabora.com>
-Date:   Thu, 31 Mar 2022 16:03:56 +0200
+        b=BWYjqZter5P3ZUkhRWSZ7OewhqABcvUBRcH9UPnE8rWtT4+bc0U6BhwBVwh5b1vQq
+         5jc/31tnq6AHvwgbIDDEQPdPqzHIfb+DFiUFGZfDCe9Zo+07voiLw8LKtvvaBn55HU
+         PcSf28Bue1KM67juNGvjvJO8gO59KdK/ATAvBpxunPRxZNejHVb13b1Qc82OirkHzY
+         ygTr6lVLS1Q54RXknXUQG6NQPIrVEsuNhHM1DQ+zwi1mdGLHWN4UzmH9apDNFM6pD9
+         3m8cIMZDLPSKsRsMzd9o0ukW2/lBb8IW9mw75tsWmq6GvcArAdEoP//+bHfsk/ew8u
+         77yt4E1RS0QbA==
+Message-ID: <b2d5d1a5-9b0e-1a70-a18e-819ae1354e0c@collabora.com>
+Date:   Thu, 31 Mar 2022 16:03:51 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v5, 1/4] dt-bindings: pwm: Convert pwm-mtk-disp.txt to
- mediatek, pwm-disp.yaml format
+Subject: Re: [PATCH v5 4/4] dt-bindings: pwm: Add compatible for MediaTek
+ MT8186
 Content-Language: en-US
 To:     xinlei.lee@mediatek.com, thierry.reding@gmail.com,
         u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
@@ -44,10 +44,10 @@ Cc:     linux-pwm@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Project_Global_Chrome_Upstream_Group@mediatek.com,
         rex-bc.chen@mediatek.com, jitao.shi@mediatek.com
 References: <1648730873-18505-1-git-send-email-xinlei.lee@mediatek.com>
- <1648730873-18505-2-git-send-email-xinlei.lee@mediatek.com>
+ <1648730873-18505-5-git-send-email-xinlei.lee@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <1648730873-18505-2-git-send-email-xinlei.lee@mediatek.com>
+In-Reply-To: <1648730873-18505-5-git-send-email-xinlei.lee@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -57,10 +57,9 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 Il 31/03/22 14:47, xinlei.lee@mediatek.com ha scritto:
 > From: Xinlei Lee <xinlei.lee@mediatek.com>
 > 
-> Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format as suggested by maintainer
+> Add dt-binding documentation of pwm for MediaTek MT8186 SoC.
 > 
 > Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-
 
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
