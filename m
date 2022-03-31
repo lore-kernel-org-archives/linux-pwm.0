@@ -2,77 +2,103 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 991A2C433F5
-	for <linux-pwm@archiver.kernel.org>; Thu, 31 Mar 2022 12:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5848FC433EF
+	for <linux-pwm@archiver.kernel.org>; Thu, 31 Mar 2022 12:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236346AbiCaMus (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 31 Mar 2022 08:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
+        id S236464AbiCaNAN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 31 Mar 2022 09:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236367AbiCaMuq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Mar 2022 08:50:46 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3C13BBFC;
-        Thu, 31 Mar 2022 05:48:59 -0700 (PDT)
-X-UUID: 4ccc5e66205145a4b06b9a67e9c8fd67-20220331
-X-UUID: 4ccc5e66205145a4b06b9a67e9c8fd67-20220331
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 576965627; Thu, 31 Mar 2022 20:48:54 +0800
-Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 31 Mar 2022 20:48:52 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
- (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 31 Mar
- 2022 20:48:51 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 31 Mar 2022 20:48:42 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
-        <lee.jones@linaro.org>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <linux-pwm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v5 4/4] dt-bindings: pwm: Add compatible for MediaTek MT8186
-Date:   Thu, 31 Mar 2022 20:47:53 +0800
-Message-ID: <1648730873-18505-5-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1648730873-18505-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1648730873-18505-1-git-send-email-xinlei.lee@mediatek.com>
+        with ESMTP id S233011AbiCaNAM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Mar 2022 09:00:12 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146E44BB9B
+        for <linux-pwm@vger.kernel.org>; Thu, 31 Mar 2022 05:58:24 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id q20so14234198wmq.1
+        for <linux-pwm@vger.kernel.org>; Thu, 31 Mar 2022 05:58:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9w3ZU2FP1Rv3cljPhXS0CpszxfyekTzsqMLGoLCCSm8=;
+        b=llpzdZ2QoUIy9Tl0HxXnxvtUoVjm9IgVG5PX86hpKe72UlB1I5Lq+qPkd3R+eHJoA2
+         EhH3UJig8Z4xLiD+fmzidq5eoc0HkacxizCfKsEm2oLn90plB55zQ7pVM2DNmlvkKDI8
+         RcyFXcCbhcSlE+Rq0X68yBVT3e6e2TbkzwYts=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9w3ZU2FP1Rv3cljPhXS0CpszxfyekTzsqMLGoLCCSm8=;
+        b=hTOgT7fBrYp6PdF1L7KHtLyxPSvWJ838SceVrbCf8UuyTTDeSMLL9Syv92JfGmkwcH
+         jbiNpsE2/2SXub0G1c11WHxvBhPZXpv1/jghlp0wAJBj0HKdotRNsA10PMEItKUruBh7
+         Dpvauu2TyYXbv0+oMGV1Lc/uV7QgCpQp/SQ10/tdh4ad+k6MhtQMViFKJ0P9p4QSG6fO
+         42DTNTJqFjpu2TvSSLNSSmVhGFBlkr4mb/4EKytKCtqDmlANpaUGZUY5K/GaaJBkEM5E
+         BX+Kndt13D1w5L2zSs91ZRIFGkj86It7u1JeijCSsjqYFvVhvNC8Ik9G9zYsceh0QJqe
+         bmIg==
+X-Gm-Message-State: AOAM533HANtzivNU6vC8Zps3L5VF3vw87ZlPrZomSIbRh/eohdNZVhJz
+        Keit2M0WMpwZ+OuQoK+Uq2I67Q==
+X-Google-Smtp-Source: ABdhPJw/bvvxGSAdxaxfDR7i8xQQgyJ4xG4agDhOyHyIbNnyenaBkh8+NJdEuQEXlJHU37EUBxUwZQ==
+X-Received: by 2002:a05:600c:378d:b0:38b:e12f:edde with SMTP id o13-20020a05600c378d00b0038be12feddemr4636148wmr.69.1648731502654;
+        Thu, 31 Mar 2022 05:58:22 -0700 (PDT)
+Received: from fabiobaltieri-linux.lan ([37.228.205.1])
+        by smtp.gmail.com with ESMTPSA id j16-20020a05600c191000b0038c9249ffdesm8230695wmq.9.2022.03.31.05.58.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 05:58:22 -0700 (PDT)
+From:   Fabio Baltieri <fabiobaltieri@chromium.org>
+To:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fabio Baltieri <fabiobaltieri@chromium.org>
+Subject: [PATCH v2 1/4] dt-bindings: add mfd/cros_ec definitions
+Date:   Thu, 31 Mar 2022 12:58:15 +0000
+Message-Id: <20220331125818.3776912-2-fabiobaltieri@chromium.org>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+In-Reply-To: <20220331125818.3776912-1-fabiobaltieri@chromium.org>
+References: <20220331125818.3776912-1-fabiobaltieri@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+Add a dt-bindings include file for cros_ec devicetree definition, define
+a pair of special purpose PWM channels in it.
 
-Add dt-binding documentation of pwm for MediaTek MT8186 SoC.
-
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
 ---
- Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ include/dt-bindings/mfd/cros_ec.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 include/dt-bindings/mfd/cros_ec.h
 
-diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-index e5da918eaa33..4b71bd668d33 100644
---- a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-+++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-@@ -26,6 +26,7 @@ properties:
-           - const: mediatek,mt8173-disp-pwm
-       - items:
-           - enum:
-+              - mediatek,mt8186-disp-pwm
-               - mediatek,mt8192-disp-pwm
-               - mediatek,mt8195-disp-pwm
-           - const: mediatek,mt8183-disp-pwm
+diff --git a/include/dt-bindings/mfd/cros_ec.h b/include/dt-bindings/mfd/cros_ec.h
+new file mode 100644
+index 000000000000..3b29cd049578
+--- /dev/null
++++ b/include/dt-bindings/mfd/cros_ec.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * DTS binding definitions used for the Chromium OS Embedded Controller.
++ *
++ * Copyright (c) 2022 The Chromium OS Authors. All rights reserved.
++ */
++
++#ifndef _DT_BINDINGS_MFD_CROS_EC_H
++#define _DT_BINDINGS_MFD_CROS_EC_H
++
++/* Typed channel for keyboard backlight. */
++#define CROS_EC_PWM_DT_KB_LIGHT		0
++/* Typed channel for display backlight. */
++#define CROS_EC_PWM_DT_DISPLAY_LIGHT	1
++/* Number of typed channels. */
++#define CROS_EC_PWM_DT_COUNT		2
++
++#endif
 -- 
-2.18.0
+2.35.1.1021.g381101b075-goog
 
