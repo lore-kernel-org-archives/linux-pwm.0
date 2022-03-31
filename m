@@ -2,69 +2,88 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5132C433FE
-	for <linux-pwm@archiver.kernel.org>; Wed, 30 Mar 2022 18:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A09BC433EF
+	for <linux-pwm@archiver.kernel.org>; Thu, 31 Mar 2022 12:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348134AbiC3SZF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
+        id S232982AbiCaMt7 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 31 Mar 2022 08:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350161AbiC3SWe (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Mar 2022 14:22:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC0B43389;
-        Wed, 30 Mar 2022 11:20:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AFB660F7A;
-        Wed, 30 Mar 2022 18:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D2C0C3410F;
-        Wed, 30 Mar 2022 18:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648664415;
-        bh=gkRDVE6LkxSPuULuqgJvUbXpedgPjLwSs+GPeyx3h80=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=H2+L4wtZYie8ldHiS1gGZeTDITbd0KV1rKI9XjG/YRY4e+egz1cfLTKwVy1iNYKeI
-         523WbhliRgYoLKk6kSolDgUIZDfJfNFVZIgxVNLZOD4HgxMZZxdeg2/PFGjit9O7MR
-         5ofkIZztkyAAEJYZFf/67U0Djof8NhLz7uW27DLGTN9EQBoKOvO01XYbqvTHo4BcYM
-         79/hKnZZzb5madrLBN9NW7tRptA1bfG9ZS3FyXsGKvCEum/XCaKW5w3CmNuh9Y6g27
-         t2WvkfhRplJCwAi5brVqTFDARkF7a+MVzh7DkOudRxFVLKoSsC6Mhhmy7HTQPRSBFp
-         C6zsBJd/NCa2w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 08308F03849;
-        Wed, 30 Mar 2022 18:20:15 +0000 (UTC)
-Subject: Re: [GIT PULL] pwm: Changes for v5.18-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220330121924.2715661-1-thierry.reding@gmail.com>
-References: <20220330121924.2715661-1-thierry.reding@gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220330121924.2715661-1-thierry.reding@gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.18-rc1
-X-PR-Tracked-Commit-Id: ed14d36498c8d15be098df4af9ca324f96e9de74
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 74164d284b2909de0ba13518cc063e9ea9334749
-Message-Id: <164866441502.5472.8717728544583216308.pr-tracker-bot@kernel.org>
-Date:   Wed, 30 Mar 2022 18:20:15 +0000
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+        with ESMTP id S232954AbiCaMt7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Mar 2022 08:49:59 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7088A211EE1;
+        Thu, 31 Mar 2022 05:48:11 -0700 (PDT)
+X-UUID: 7f17dc530e79479e9a02a0189fc8c2de-20220331
+X-UUID: 7f17dc530e79479e9a02a0189fc8c2de-20220331
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 569259805; Thu, 31 Mar 2022 20:48:07 +0800
+Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 31 Mar 2022 20:48:05 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
+ (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 31 Mar
+ 2022 20:48:04 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Thu, 31 Mar 2022 20:47:57 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <lee.jones@linaro.org>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <linux-pwm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH v5,0/4] Convert pwm-mtk-disp.txt to mediatek, pwm-disp.yaml format
+Date:   Thu, 31 Mar 2022 20:47:49 +0800
+Message-ID: <1648730873-18505-1-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The pull request you sent on Wed, 30 Mar 2022 14:19:24 +0200:
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.18-rc1
+Changes since v4:
+1.Base on Linux-next.
+2.Cancel removal of mt8167 compatiable patch.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/74164d284b2909de0ba13518cc063e9ea9334749
+Changes since v3:
+1. Combine multiplexed socs into one entry
 
-Thank you!
+Changes since v2:
+1. Modify the PWM name to DISP_PWM.
+2. Include pwm.yaml.
+3. Separate conversion files and add/remove operations.
+
+Changes since v1:
+1. Fixed formatting issues mentioned in the v1.
+2. Delete pwm-mtk-disp.txt.
+3. Add mtk_pwm dt_maintainers.
+4. Add "#pwm-cells" & power-domains properties.
+5. Make dt_checking successful.
+
+Xinlei Lee (4):
+  dt-bindings: pwm: Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml
+    format
+  dt-bindings: pwm: Add compatible for MediaTek MT8192
+  dt-bindings: pwm: Add compatible for MediaTek MT8195
+  dt-bindings: pwm: Add compatible for MediaTek MT8186
+
+ .../bindings/pwm/mediatek,pwm-disp.yaml       | 72 +++++++++++++++++++
+ .../devicetree/bindings/pwm/pwm-mtk-disp.txt  | 45 ------------
+ 2 files changed, 72 insertions(+), 45 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+ delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.18.0
+
