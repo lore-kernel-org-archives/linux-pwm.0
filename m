@@ -2,199 +2,91 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76EAC433EF
-	for <linux-pwm@archiver.kernel.org>; Sat,  2 Apr 2022 07:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF019C433FE
+	for <linux-pwm@archiver.kernel.org>; Mon,  4 Apr 2022 21:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234717AbiDBHHP (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 2 Apr 2022 03:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
+        id S1379839AbiDDV3m (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbiDBHHO (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 2 Apr 2022 03:07:14 -0400
-X-Greylist: delayed 359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Apr 2022 00:05:21 PDT
-Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF5B10241F;
-        Sat,  2 Apr 2022 00:05:21 -0700 (PDT)
-Received: from authenticated-user (box.trvn.ru [194.87.146.52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        with ESMTP id S1379494AbiDDRQT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 4 Apr 2022 13:16:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1056914019;
+        Mon,  4 Apr 2022 10:14:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by box.trvn.ru (Postfix) with ESMTPSA id B31FE403F2;
-        Sat,  2 Apr 2022 11:59:16 +0500 (+05)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
-        t=1648882757; bh=g3dd49ZLEvD3b7UkZq09nzJLTrDcbZhjuvyIkuyxUww=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rOhlGsQO/HTUiVU8OGWlJGCELzbuJLDlRNa5zJWC64lw2R6V66Vfo4vQg90/aWOM4
-         ptqXOjnOMgkSH236j+4w+8n5Co2yiCluXvASZKsMm7RGMaegx7OqCArSywud4CzGyC
-         fy2f5OFuN+er3HLk8tigyOkhM0/UZXdA57bL1C1A9Fq6aRNdBPD3BaiROs8vK0+j94
-         XJUVBBGhqHkCT0kscg/JSsO9oNw32bVDRM9JI5VnVT0x66RYA9LLP2gbh76oGZ+839
-         RAMeC6r8pcUNXPR/7HvfGHZxGZCVtrkItwCi4vMPx1sBg6Gn01y/TSEryhdP2nLZ6h
-         3TWDX5lPmP2wg==
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CF5C60DDD;
+        Mon,  4 Apr 2022 17:14:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E3919C3410F;
+        Mon,  4 Apr 2022 17:14:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649092462;
+        bh=RvGj2Q18LJfQT9XlPp3IkvaWjSaTqyvITK0kRJD8u9Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=UXPYPaMHgSRwaVFvCkHj2vb20E9SLLRr7qYSmd1t2Pp64ld5EJLNs6jp6f6syeEJ3
+         O2tjaIF+Jles/YBIhjLBLdjEHvDwg4bv9Q/1++Ro5JHPWrdlOA3yx6U+Mta/6YtM5t
+         oA8Fs2sopE/LDLB0XfZUsrXovAv9VDP334L6x0PtooO3iE42BCnKpFrlvwj5g5ZLSa
+         OVQXxQTJwDHuME0PD3rRb8Kt27OOvFoVEjchpbQQOuUJU8obz4vaJ8dFFKckzVjDuL
+         bBLZZ2Rq89wtyoMtfekJ6zngldJQVsYtOmg1jjOuhlzaaPMny1ZgKR0kmYxUFYbhTT
+         ZjYkpjbHMRh7g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C68F5E85AE7;
+        Mon,  4 Apr 2022 17:14:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Date:   Sat, 02 Apr 2022 11:59:15 +0500
-From:   Nikita Travkin <nikita@trvn.ru>
-To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
-        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
-        masneyb@onstation.org, sean.anderson@seco.com,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, kernel@pengutronix.de
-Subject: Re: [PATCH v6 2/2] pwm: Add clock based PWM output driver
-In-Reply-To: <20220328105659.mg3pxbqynlufaq6z@pengutronix.de>
-References: <20220220115030.23772-1-nikita@trvn.ru>
- <20220220115030.23772-3-nikita@trvn.ru>
- <20220328105659.mg3pxbqynlufaq6z@pengutronix.de>
-Message-ID: <ce9a8bab61485ba06933cdb7fdea50ac@trvn.ru>
-X-Sender: nikita@trvn.ru
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/4] mfd/pwm: dt-bindings: google,cros-ec: include generic pwm
+ schema
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <164909246180.14329.3397709419938843373.git-patchwork-notify@kernel.org>
+Date:   Mon, 04 Apr 2022 17:14:21 +0000
+References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     lee.jones@linaro.org, robh+dt@kernel.org, bleung@chromium.org,
+        groeck@chromium.org, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, matthias.bgg@gmail.com,
+        agross@kernel.org, bjorn.andersson@linaro.org, heiko@sntech.de,
+        dianders@chromium.org, devicetree@vger.kernel.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi,
+Hello:
 
-Uwe Kleine-König писал(а) 28.03.2022 15:56:
-> Hello,
-> 
-> just a few minor things left to criticize, see below.
-> 
-> On Sun, Feb 20, 2022 at 04:50:30PM +0500, Nikita Travkin wrote:
->> Some systems have clocks exposed to external devices. If the clock
->> controller supports duty-cycle configuration, such clocks can be used as
->> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
->> similar way and an "opposite" driver already exists (clk-pwm). Add a
->> driver that would enable pwm devices to be used via clk subsystem.
->>
->> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
->> --
->>
->> Changes in v2:
->>  - Address Uwe's review comments:
->>    - Round set clk rate up
->>    - Add a description with limitations of the driver
->>    - Disable and unprepare clock before removing pwmchip
->> Changes in v3:
->>  - Use 64bit version of div round up
->>  - Address Uwe's review comments:
->>    - Reword the limitations to avoid incorrect claims
->>    - Move the clk_enabled flag assignment
->>    - Drop unnecessary statements
->> Changes in v5:
->>  - add missed returns
->> Changes in v6:
->>  - Unprepare the clock on error
->>  - Drop redundant limitations points
->> ---
->>  drivers/pwm/Kconfig   |  10 +++
->>  drivers/pwm/Makefile  |   1 +
->>  drivers/pwm/pwm-clk.c | 139 ++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 150 insertions(+)
->>  create mode 100644 drivers/pwm/pwm-clk.c
->>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index 21e3b05a5153..daa2491a4054 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -140,6 +140,16 @@ config PWM_BRCMSTB
->>  	  To compile this driver as a module, choose M Here: the module
->>  	  will be called pwm-brcmstb.c.
->>
->> +config PWM_CLK
->> +	tristate "Clock based PWM support"
->> +	depends on HAVE_CLK || COMPILE_TEST
-> 
-> Can you really compile this driver if HAVE_CLK isn't available?
-> 
+This series was applied to chrome-platform/linux.git (for-next)
+by Heiko Stuebner <heiko@sntech.de>:
 
-As I can see, clk.h has all the methods stubbed out if CONFIG_HAVE_CLK
-is not set. (And I think that all other headers like that do as well)
-
-I've tried to build it without clk right now and it builds with no
-errors, neither test robots complained about that.
-
->> +	help
->> +	  Generic PWM framework driver for outputs that can be
->> +	  muxed to clocks.
->> +
->> +	  To compile this driver as a module, choose M here: the module
->> +	  will be called pwm-clk.
->> +
->>  config PWM_CLPS711X
->>  	tristate "CLPS711X PWM support"
->>  	depends on ARCH_CLPS711X || COMPILE_TEST
->> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
->> index 708840b7fba8..4a860103c470 100644
->> --- a/drivers/pwm/Makefile
->> +++ b/drivers/pwm/Makefile
->> @@ -10,6 +10,7 @@ obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
->>  obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
->>  obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
->>  obj-$(CONFIG_PWM_BRCMSTB)	+= pwm-brcmstb.o
->> +obj-$(CONFIG_PWM_CLK)		+= pwm-clk.o
->>  obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
->>  obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
->>  obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
->> diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
->> new file mode 100644
->> index 000000000000..52c9923368cb
->> --- /dev/null
->> +++ b/drivers/pwm/pwm-clk.c
->> @@ -0,0 +1,139 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Clock based PWM controller
->> + *
->> + * Copyright (c) 2021 Nikita Travkin <nikita@trvn.ru>
->> + *
->> + * This is an "adapter" driver that allows PWM consumers to use
->> + * system clocks with duty cycle control as PWM outputs.
->> + *
->> + * Limitations:
->> + * - Due to the fact that exact behavior depends on the underlying
->> + *   clock driver, various limitations are possible.
->> + * - Underlying clock may not be able to give 0% or 100% duty cycle
->> + *   (constant off or on), exact behavior will depend on the clock.
->> + * - When the PWM is disabled, the clock will be disabled as well,
->> + *   line state will depend on the clock.
+On Mon, 14 Feb 2022 09:19:12 +0100 you wrote:
+> Hi,
 > 
->  - The clk API doesn't expose the necessary calls to implement
->    .get_state().
+> DTS patches are independent. Not tested, but I really hope no downstream kernel
+> depends on pwm node naming... If it does, please change it to compatible. :)
 > 
->> + */
->> +
->> +#include <linux/kernel.h>
->> +#include <linux/math64.h>
->> +#include <linux/err.h>
->> +#include <linux/module.h>
->> +#include <linux/of.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/clk.h>
->> +#include <linux/pwm.h>
->> +
->> +struct pwm_clk_chip {
->> +	struct pwm_chip chip;
->> +	struct clk *clk;
->> +	bool clk_enabled;
->> +};
->> +
->> +#define to_pwm_clk_chip(_chip) container_of(_chip, struct pwm_clk_chip, chip)
->> +
->> +static int pwm_clk_apply(struct pwm_chip *pwm_chip, struct pwm_device *pwm,
->> +			 const struct pwm_state *state)
->> +{
->> +	struct pwm_clk_chip *chip = to_pwm_clk_chip(pwm_chip);
+> Best regards,
+> Krzysztof
 > 
-> I'd prefer this was not called chip, as this is how struct pwm_chip
-> variables are called usually. My suggestion is:
-> 
-> 	chip -> pcchip
-> 	pwm_chip -> chip
-> 
+> [...]
 
-Thanks for the suggestion, I'll use the common naming then.
+Here is the summary with links:
+  - [1/4] dt-bindings: pwm: google,cros-ec: include generic pwm schema
+    https://git.kernel.org/chrome-platform/c/6b94ee669e8a
+  - [2/4] arm64: dts: mt8183: align Google CROS EC PWM node name with dtschema
+    (no matching commit)
+  - [3/4] arm64: dts: qcom: align Google CROS EC PWM node name with dtschema
+    https://git.kernel.org/chrome-platform/c/1e49defb8636
+  - [4/4] arm64: dts: rk3399: align Google CROS EC PWM node name with dtschema
+    https://git.kernel.org/chrome-platform/c/a0024f55eb5b
 
-Nikita
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> Best regards
-> Uwe
+
