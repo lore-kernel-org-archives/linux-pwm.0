@@ -2,48 +2,48 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC56C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC97C4332F
 	for <linux-pwm@archiver.kernel.org>; Mon, 11 Apr 2022 15:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347800AbiDKPXj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43544 "EHLO
+        id S1347819AbiDKPXh (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 11 Apr 2022 11:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347791AbiDKPXf (ORCPT
+        with ESMTP id S1347797AbiDKPXf (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Apr 2022 11:23:35 -0400
 Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A543B568
-        for <linux-pwm@vger.kernel.org>; Mon, 11 Apr 2022 08:21:21 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id w4so23486617wrg.12
-        for <linux-pwm@vger.kernel.org>; Mon, 11 Apr 2022 08:21:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9834E3B2BC
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Apr 2022 08:21:19 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id i20so10433999wrb.13
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Apr 2022 08:21:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nO+ziw2+OwYKXZ9RD5bVom+jjKT6xZaKn0PGeE1P/J8=;
-        b=X10M8i6LqgkLpnirkFuFhbGWDEdgC6SKSLtESuIZawzrbGK3IDi546aieNd097BY2z
-         ay+i5c19JkFEsDx2AbdtprOjDQ0AEpDVdiNfXTuAyrem2TmGeMfY1L482Da59y67A6Us
-         0ti9J5oHo+26Eahn4ebySPoEQsoQR8nfqcDQU=
+        bh=Av8EzP8d6KVoQi/yXwkBOAZabP9Xc8kXclRu9dT4+Lw=;
+        b=MSW2higryDgsOhw0ZJDq4mbqycpFHp4ZK/5IKr30dVw+TG88282lZo+8u8kF2+sS/8
+         t7IICscSNVmaDq9/jbHn0OPrQNhH/FUIc99pHP882qHAHVm/kjNMO4jfZ8UpZnnCK8yK
+         7z+7lovGGpwh2g0cUNRsIxYVVn8En0/LjjELY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nO+ziw2+OwYKXZ9RD5bVom+jjKT6xZaKn0PGeE1P/J8=;
-        b=xFRYuj0JL7mjHXFT8yo5NWIDIlSyPlutDNTZSyZUDeITHh+LzcYkh6ze7F2vX/wKpx
-         JEcARfwbG6tm18SyQw7vGhg8ggDtLQEv4mUiAlkmiZM64PsS+TO1bzJTvis1ptub6FWH
-         bmfQMnXj9R6xyC7LkpCwCsznEvddE1hW+nudz98XXJGw+zKUtv7TCqFgqQ1WoPHod7ck
-         qKaSTV60UyOfgFU57IMqyF4fglYx4S4mjUlsGZ6hJ0Db4+xEUbhljh6Z+fA7I4y8hKuW
-         zT5QsCo2h3i2Bxz522C9Y7FjRVILyVbJAYWGY/ZW67725x9WtqKWaxhY5ecBWNzBY26V
-         WWxA==
-X-Gm-Message-State: AOAM530loBR+FNKF6nbEozDDCKe+RfdyPNosufTSD0Ai2QrKM/XQPOpw
-        zP5dJBKmDzO8MijSpmRfaTYqJdKngXPTnQ==
-X-Google-Smtp-Source: ABdhPJyRgPtc/mqqSqMNepmVZKr82ZTqK/aUu8qj5by+Cy6OCHkYZF3ZdUnVzvPcFirBMDbg7iJKuw==
-X-Received: by 2002:a05:6000:1848:b0:204:e92:5af6 with SMTP id c8-20020a056000184800b002040e925af6mr24963556wri.180.1649690479797;
-        Mon, 11 Apr 2022 08:21:19 -0700 (PDT)
+        bh=Av8EzP8d6KVoQi/yXwkBOAZabP9Xc8kXclRu9dT4+Lw=;
+        b=SyreSRxXZWGoJLTdJGyyyGoB1jKrl5hsJIe9GMMKKSINHcRwBo5IjSPXV7w3+X2uk7
+         69Jx/dptObAlTv7yGwu/b4UbVCbdQ8Tl67ji41o/rm0/p2G3pH13h5P0/Gjx4aGzGUlX
+         NVRZqAwB3HcQskwEoSIm2KH1J12N6WcRS1zXFPklF62GvX0KW5Zyw7wX4fSG9/zYWDw1
+         eZoRWxHpiS9S2Qi93pjRERTPOxLzY59TkrlnxyEeYMNcx+yrxZvgLiYo/FPIwjNrBtVl
+         VLKGrDKe+xAgQRvbDlvc7uDqhurZwXc6gCm+CuNlSx+Zmw98KB28Vfv7ENTZd5K80vDV
+         nImA==
+X-Gm-Message-State: AOAM533RkwDDGXYJWpJwat6K1IsCloFd5DStGBxccTVCeRPSfRNRqSf8
+        0dtICplLeIH9IgY0WGs+P3WbIw==
+X-Google-Smtp-Source: ABdhPJxPthidGCKrnPvf9IHSua1gxQPSnNJCQzeeFUq0J9nt1iiyJPKPkuaIafZ/E669DST2+ymPrA==
+X-Received: by 2002:a05:6000:3ca:b0:207:a389:ca09 with SMTP id b10-20020a05600003ca00b00207a389ca09mr6481526wrg.628.1649690477827;
+        Mon, 11 Apr 2022 08:21:17 -0700 (PDT)
 Received: from fabiobaltieri-linux.lan ([37.228.205.1])
-        by smtp.gmail.com with ESMTPSA id bk1-20020a0560001d8100b002061d6bdfd0sm19512832wrb.63.2022.04.11.08.21.18
+        by smtp.gmail.com with ESMTPSA id bk1-20020a0560001d8100b002061d6bdfd0sm19512832wrb.63.2022.04.11.08.21.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 08:21:19 -0700 (PDT)
+        Mon, 11 Apr 2022 08:21:17 -0700 (PDT)
 From:   Fabio Baltieri <fabiobaltieri@chromium.org>
 To:     Benson Leung <bleung@chromium.org>,
         Guenter Roeck <groeck@chromium.org>
@@ -54,9 +54,9 @@ Cc:     Thierry Reding <thierry.reding@gmail.com>,
         chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Fabio Baltieri <fabiobaltieri@chromium.org>
-Subject: [PATCH v3 3/4] dt-bindings: update google,cros-ec-pwm documentation
-Date:   Mon, 11 Apr 2022 15:21:13 +0000
-Message-Id: <20220411152114.2165933-4-fabiobaltieri@chromium.org>
+Subject: [PATCH v3 1/4] dt-bindings: add mfd/cros_ec definitions
+Date:   Mon, 11 Apr 2022 15:21:11 +0000
+Message-Id: <20220411152114.2165933-2-fabiobaltieri@chromium.org>
 X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
 In-Reply-To: <20220411152114.2165933-1-fabiobaltieri@chromium.org>
 References: <20220411152114.2165933-1-fabiobaltieri@chromium.org>
@@ -66,34 +66,39 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Update google,cros-ec-pwm node documentation to mention the
-google,cros-ec-pwm-type compatible.
+Add a dt-bindings include file for cros_ec devicetree definition, define
+a pair of special purpose PWM channels in it.
 
 Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
 ---
- .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml      | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ include/dt-bindings/mfd/cros_ec.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 include/dt-bindings/mfd/cros_ec.h
 
-diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-index 7ab6912a845f..deb9e4488773 100644
---- a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-@@ -21,7 +21,14 @@ allOf:
- 
- properties:
-   compatible:
--    const: google,cros-ec-pwm
-+    oneOf:
-+      - description: PWM controlled using EC_PWM_TYPE_GENERIC channels.
-+        items:
-+        - const: google,cros-ec-pwm
-+      - description: PWM controlled using CROS_EC_PWM_DT_<...> types.
-+        items:
-+        - const: google,cros-ec-pwm-type
+diff --git a/include/dt-bindings/mfd/cros_ec.h b/include/dt-bindings/mfd/cros_ec.h
+new file mode 100644
+index 000000000000..3b29cd049578
+--- /dev/null
++++ b/include/dt-bindings/mfd/cros_ec.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * DTS binding definitions used for the Chromium OS Embedded Controller.
++ *
++ * Copyright (c) 2022 The Chromium OS Authors. All rights reserved.
++ */
 +
-   "#pwm-cells":
-     description: The cell specifies the PWM index.
-     const: 1
++#ifndef _DT_BINDINGS_MFD_CROS_EC_H
++#define _DT_BINDINGS_MFD_CROS_EC_H
++
++/* Typed channel for keyboard backlight. */
++#define CROS_EC_PWM_DT_KB_LIGHT		0
++/* Typed channel for display backlight. */
++#define CROS_EC_PWM_DT_DISPLAY_LIGHT	1
++/* Number of typed channels. */
++#define CROS_EC_PWM_DT_COUNT		2
++
++#endif
 -- 
 2.35.1.1178.g4f1659d476-goog
 
