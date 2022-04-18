@@ -2,114 +2,83 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 162C3C433EF
-	for <linux-pwm@archiver.kernel.org>; Thu, 14 Apr 2022 19:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61BF0C433FE
+	for <linux-pwm@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244181AbiDNT05 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57634 "EHLO
+        id S236262AbiDRM3l (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233374AbiDNT0z (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 14 Apr 2022 15:26:55 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46F665E1
-        for <linux-pwm@vger.kernel.org>; Thu, 14 Apr 2022 12:24:29 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id x3so3767730wmj.5
-        for <linux-pwm@vger.kernel.org>; Thu, 14 Apr 2022 12:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TzIdGf0orlPzlsnGm4d1/wOp9Ug675hNbMOMT58Ay5o=;
-        b=anV+lLXHdPoCvNvo4uqR9yVnraezCiI/gR7f3+/73+6+e/d+CvXkykdbFlf45Cak9p
-         yT/StOCyPW9e06boapRmdlJRlJoo9WnJYC5nAZfit00iz+WieHSZA23/C1Ws48LVJH7I
-         o3k9PJAs5zpKNhfC1/M859nQEVYjTW6pQhAYA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TzIdGf0orlPzlsnGm4d1/wOp9Ug675hNbMOMT58Ay5o=;
-        b=0LpPUrBZrvwmaICE0+uwtunDptxtdNTdhvUZVDb0z14fCsVk25shBIxSJL7rW5GPuU
-         6AxFTxJWkdPpCaN7Rh7UwloYGdpsT19x9oho47UZrXf6JMfmzo0dfen/hrxPwzufKCU0
-         Waw9Ew+OKMhnqJWPxcezozYiC+L5/kLQ0g65ppf3cr+bc5CfrTo52mR8Y7qzX1nrtZCR
-         IOT6T/UnRHHYut031ZL6pCwcJx4fPdL11XP+G5gnDDxuO47fdbQzZt8LHcQssAI7rPlG
-         A2o6gWUFlka/+HS2PvsNkasOmSPOadKjGenGyCxjQVumd6hs/MNpKt1uNRBL2k+9W57Y
-         hCKA==
-X-Gm-Message-State: AOAM531fgHloEMBexAnpc/nFMN4rMbDLpiJP90aOMCKQWzH6nWxAjIuE
-        36mpn9f+OhgmvolnK5hyD3D5nw==
-X-Google-Smtp-Source: ABdhPJxgazeepxjQX/HIuYCUv+KWXKHE1HKC70Rms9bSy5mDaYHGosh9IMV8XRSLBN/aN4BdLq7q8w==
-X-Received: by 2002:a05:600c:1e85:b0:38c:ef05:ba5d with SMTP id be5-20020a05600c1e8500b0038cef05ba5dmr74515wmb.119.1649964268274;
-        Thu, 14 Apr 2022 12:24:28 -0700 (PDT)
-Received: from google.com ([37.228.205.1])
-        by smtp.gmail.com with ESMTPSA id v13-20020adfe28d000000b0020375f27a5asm2608680wri.4.2022.04.14.12.24.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 12:24:27 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 19:24:25 +0000
-From:   Fabio Baltieri <fabiobaltieri@chromium.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Benson Leung <bleung@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Guenter Roeck <groeck@chromium.org>, linux-pwm@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Subject: Re: [PATCH v4 3/4] dt-bindings: update google,cros-ec-pwm
- documentation
-Message-ID: <Ylh06cG7bII6rG77@google.com>
-References: <20220414092831.3717684-1-fabiobaltieri@chromium.org>
- <20220414092831.3717684-4-fabiobaltieri@chromium.org>
- <1649938809.993469.1698375.nullmailer@robh.at.kernel.org>
+        with ESMTP id S239053AbiDRM1l (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Apr 2022 08:27:41 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871D21E3F2;
+        Mon, 18 Apr 2022 05:21:11 -0700 (PDT)
+X-UUID: 2b6f2e1c06304c79ac37a9d7f641e8ac-20220418
+X-UUID: 2b6f2e1c06304c79ac37a9d7f641e8ac-20220418
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1687767525; Mon, 18 Apr 2022 20:21:07 +0800
+Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 18 Apr 2022 20:21:06 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
+ (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
+ 2022 20:21:04 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Mon, 18 Apr 2022 20:21:04 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <lee.jones@linaro.org>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <rex-bc.chen@mediatek.com>,
+        <jitao.shi@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH v6,2/5] dt-bindings: pwm: Add compatible for MediaTek MT8192
+Date:   Mon, 18 Apr 2022 20:20:53 +0800
+Message-ID: <1650284456-16407-3-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
+In-Reply-To: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
+References: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649938809.993469.1698375.nullmailer@robh.at.kernel.org>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 07:20:09AM -0500, Rob Herring wrote:
-> On Thu, 14 Apr 2022 09:28:30 +0000, Fabio Baltieri wrote:
-> > Update google,cros-ec-pwm node documentation to mention the
-> > google,cros-ec-pwm-type compatible.
-> > 
-> > Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
-> > ---
-> >  .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml      | 9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> > 
-> 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> ./Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml:27:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
-> ./Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml:30:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
-> 
-> dtschema/dtc warnings/errors:
-> 
-> doc reference errors (make refcheckdocs):
-> 
-> See https://patchwork.ozlabs.org/patch/
-> 
-> This check can fail if there are any dependencies. The base for a patch
-> series is generally the most recent rc1.
-> 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-Missed out on that, will fix and resend.
+Add dt-binding documentation of pwm for MediaTek MT8192 SoC.
 
-Thanks!
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> 
-> pip3 install dtschema --upgrade
-> 
-> Please check and re-submit.
-> 
-
+diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+index 36f877f819fa..4bfa8eb42186 100644
+--- a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
++++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+@@ -24,6 +24,10 @@ properties:
+       - items:
+           - const: mediatek,mt8167-disp-pwm
+           - const: mediatek,mt8173-disp-pwm
++      - items:
++          - enum:
++              - mediatek,mt8192-disp-pwm
++          - const: mediatek,mt8183-disp-pwm
+ 
+   reg:
+     maxItems: 1
 -- 
-Fabio Baltieri
+2.18.0
+
