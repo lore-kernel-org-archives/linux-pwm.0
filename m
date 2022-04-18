@@ -2,33 +2,40 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D93BC43217
-	for <linux-pwm@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13EA8C433FE
+	for <linux-pwm@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238739AbiDRM3m (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38576 "EHLO
+        id S238821AbiDRM3o (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239056AbiDRM1m (ORCPT
+        with ESMTP id S239065AbiDRM1m (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Apr 2022 08:27:42 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B7C1E3F8;
-        Mon, 18 Apr 2022 05:21:11 -0700 (PDT)
-X-UUID: 6b33d04162dd43738323c979e9a14343-20220418
-X-UUID: 6b33d04162dd43738323c979e9a14343-20220418
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5661EAE2;
+        Mon, 18 Apr 2022 05:21:15 -0700 (PDT)
+X-UUID: b811c212176d458ba2304f238765a734-20220418
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:4aca5b84-e3fb-43f0-8bad-9a3a070ef629,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:bfcb40ef-06b0-4305-bfbf-554bfc9d151a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: b811c212176d458ba2304f238765a734-20220418
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <xinlei.lee@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 765837620; Mon, 18 Apr 2022 20:21:05 +0800
+        with ESMTP id 1993276974; Mon, 18 Apr 2022 20:21:09 +0800
 Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 18 Apr 2022 20:21:03 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 18 Apr 2022 20:21:08 +0800
 Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
  (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
- 2022 20:21:02 +0800
+ 2022 20:21:07 +0800
 Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
  MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Mon, 18 Apr 2022 20:21:01 +0800
+ 15.0.1497.2 via Frontend Transport; Mon, 18 Apr 2022 20:21:06 +0800
 From:   <xinlei.lee@mediatek.com>
 To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
         <lee.jones@linaro.org>, <robh+dt@kernel.org>,
@@ -40,9 +47,9 @@ CC:     <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <jitao.shi@mediatek.com>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v6,1/5] dt-bindings: pwm: Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format
-Date:   Mon, 18 Apr 2022 20:20:52 +0800
-Message-ID: <1650284456-16407-2-git-send-email-xinlei.lee@mediatek.com>
+Subject: [PATCH v6,3/5] dt-bindings: pwm: Add compatible for MediaTek MT8195
+Date:   Mon, 18 Apr 2022 20:20:54 +0800
+Message-ID: <1650284456-16407-4-git-send-email-xinlei.lee@mediatek.com>
 X-Mailer: git-send-email 2.6.4
 In-Reply-To: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
 References: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
@@ -55,143 +62,27 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format as suggested
-by maintainer.
+Add dt-binding documentation of pwm for MediaTek MT8195 SoC.
 
 Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../bindings/pwm/mediatek,pwm-disp.yaml       | 66 +++++++++++++++++++
- .../devicetree/bindings/pwm/pwm-mtk-disp.txt  | 45 -------------
- 2 files changed, 66 insertions(+), 45 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+ Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-new file mode 100644
-index 000000000000..36f877f819fa
---- /dev/null
+index 4bfa8eb42186..e5da918eaa33 100644
+--- a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
 +++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/mediatek,pwm-disp.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek DISP_PWM Controller Device Tree Bindings
-+
-+maintainers:
-+  - Jitao Shi <jitao.shi@mediatek.com>
-+  - Xinlei Lee <xinlei.lee@mediatek.com>
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - mediatek,mt2701-disp-pwm
-+          - mediatek,mt6595-disp-pwm
-+          - mediatek,mt8173-disp-pwm
-+          - mediatek,mt8183-disp-pwm
-+      - items:
-+          - const: mediatek,mt8167-disp-pwm
-+          - const: mediatek,mt8173-disp-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+  clocks:
-+    items:
-+      - description: Main Clock
-+      - description: Mm Clock
-+
-+  clock-names:
-+    items:
-+      - const: main
-+      - const: mm
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#pwm-cells"
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/mt8173-clk.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    pwm0: pwm@1401e000 {
-+        compatible = "mediatek,mt8173-disp-pwm";
-+        reg = <0x1401e000 0x1000>;
-+        #pwm-cells = <2>;
-+        clocks = <&mmsys CLK_MM_DISP_PWM026M>,
-+                 <&mmsys CLK_MM_DISP_PWM0MM>;
-+        clock-names = "main", "mm";
-+    };
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-deleted file mode 100644
-index 691e58b6c223..000000000000
---- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-+++ /dev/null
-@@ -1,45 +0,0 @@
--MediaTek display PWM controller
--
--Required properties:
-- - compatible: should be "mediatek,<name>-disp-pwm":
--   - "mediatek,mt2701-disp-pwm": found on mt2701 SoC.
--   - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
--   - "mediatek,mt8167-disp-pwm", "mediatek,mt8173-disp-pwm": found on mt8167 SoC.
--   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
--   - "mediatek,mt8183-disp-pwm": found on mt8183 SoC.$
-- - reg: physical base address and length of the controller's registers.
-- - #pwm-cells: must be 2. See pwm.yaml in this directory for a description of
--   the cell format.
-- - clocks: phandle and clock specifier of the PWM reference clock.
-- - clock-names: must contain the following:
--   - "main": clock used to generate PWM signals.
--   - "mm": sync signals from the modules of mmsys.
-- - pinctrl-names: Must contain a "default" entry.
-- - pinctrl-0: One property must exist for each entry in pinctrl-names.
--   See pinctrl/pinctrl-bindings.txt for details of the property values.
--
--Example:
--	pwm0: pwm@1401e000 {
--		compatible = "mediatek,mt8173-disp-pwm",
--			     "mediatek,mt6595-disp-pwm";
--		reg = <0 0x1401e000 0 0x1000>;
--		#pwm-cells = <2>;
--		clocks = <&mmsys CLK_MM_DISP_PWM026M>,
--			 <&mmsys CLK_MM_DISP_PWM0MM>;
--		clock-names = "main", "mm";
--		pinctrl-names = "default";
--		pinctrl-0 = <&disp_pwm0_pins>;
--	};
--
--	backlight_lcd: backlight_lcd {
--		compatible = "pwm-backlight";
--		pwms = <&pwm0 0 1000000>;
--		brightness-levels = <
--			  0  16  32  48  64  80  96 112
--			128 144 160 176 192 208 224 240
--			255
--		>;
--		default-brightness-level = <9>;
--		power-supply = <&mt6397_vio18_reg>;
--		enable-gpios = <&pio 95 GPIO_ACTIVE_HIGH>;
--	};
+@@ -27,6 +27,7 @@ properties:
+       - items:
+           - enum:
+               - mediatek,mt8192-disp-pwm
++              - mediatek,mt8195-disp-pwm
+           - const: mediatek,mt8183-disp-pwm
+ 
+   reg:
 -- 
 2.18.0
 
