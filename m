@@ -2,91 +2,105 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B62C433EF
-	for <linux-pwm@archiver.kernel.org>; Wed, 20 Apr 2022 12:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 073B3C4332F
+	for <linux-pwm@archiver.kernel.org>; Wed, 20 Apr 2022 14:16:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbiDTM2I convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 20 Apr 2022 08:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
+        id S1379332AbiDTOTM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 20 Apr 2022 10:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244115AbiDTM2F (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Apr 2022 08:28:05 -0400
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A6F1C91D;
-        Wed, 20 Apr 2022 05:25:19 -0700 (PDT)
-Received: by mail-qt1-f169.google.com with SMTP id d9so781480qty.12;
-        Wed, 20 Apr 2022 05:25:19 -0700 (PDT)
+        with ESMTP id S1380277AbiDTOSs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Apr 2022 10:18:48 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A7143AE5
+        for <linux-pwm@vger.kernel.org>; Wed, 20 Apr 2022 07:16:01 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id e21so2455305wrc.8
+        for <linux-pwm@vger.kernel.org>; Wed, 20 Apr 2022 07:16:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=buTOea5hGyKVMycb2UNLHy/CmUKsfopnU76jMCLf+w0=;
+        b=DiPpygcsv1FE9XrikGyg1icYH8Svlo4wHN7c1tle/5MzbK5V7gZZJq5zEs1zm+Tr0m
+         hbQ7xTlZD3c3aGUWxVlvLu5rAiJ4fk64EfvWmQNbi2CZyH/3Eoq4iWQGbzXnWCaNJoUY
+         vLauIkmYNo/D2ewIjUpwRwG4OF3kyDl7X8CP4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=HJ0UgcnIkbA6AHJznojilX0imBhr1YXT1/wXEX6agp8=;
-        b=ERcgKjTmfByXW50/gpFaNTWx7PR0nre43oGaE87nYkGF1fEHKSPQgXp5UYSmkLysEq
-         A0P5Al7qr2nK23lulNKiqEYxrJo7kWixJCMUtoAv/P+Akk4L8ZboxbHSe5bMQs6Aisxw
-         M69j9tQT6EuSiFUs0JA2rKxW6ejil/SC0BWeMnzFihpohaPFDTjT5FFaovmZxBNKJsiP
-         xuV3WROwTBQqwq0IgGCrPd/UZgXhQxv+C2PZE30XA/daVmDCSuONtNIXzCSt/yuGf4y6
-         IQfVj9WLX8s52M+mgs4juriL9G0Cy0PF+FB4ZEQz2uecdENwEw6eHHZGr8tM0id3aCr1
-         GZoQ==
-X-Gm-Message-State: AOAM531JBd8YIe+mb+UHFu2L8fwGH0K1Z7Z/+tfq8Cy5NsbzJW+TiUQG
-        QYy7suafhnuZDdUc53iQmrCqatszqxC66Q==
-X-Google-Smtp-Source: ABdhPJz7YvsmU6e5Mnn8UBcVu4TIsQAuOA0HX2HrsBFef5VslNevWSY7L5M6CAM4YIHWVXL2ZkZDfg==
-X-Received: by 2002:ac8:5c42:0:b0:2f1:e7f8:3e62 with SMTP id j2-20020ac85c42000000b002f1e7f83e62mr13669785qtj.41.1650457518149;
-        Wed, 20 Apr 2022 05:25:18 -0700 (PDT)
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
-        by smtp.gmail.com with ESMTPSA id v65-20020a376144000000b0069e7842f2f5sm1385235qkb.52.2022.04.20.05.25.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 05:25:17 -0700 (PDT)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2ec05db3dfbso15966597b3.7;
-        Wed, 20 Apr 2022 05:25:17 -0700 (PDT)
-X-Received: by 2002:a81:6ccb:0:b0:2f1:68f1:d90e with SMTP id
- h194-20020a816ccb000000b002f168f1d90emr18381119ywc.62.1650457516831; Wed, 20
- Apr 2022 05:25:16 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=buTOea5hGyKVMycb2UNLHy/CmUKsfopnU76jMCLf+w0=;
+        b=ztef9s/PPN36O+2NgXNsC+81x+6QZ1A+CY3/T+Ubs/PIyZHYuJDRi8f8cyvMJd/PTE
+         nmW+zMMaELqcOd8yckzTt3OWla5GRQdcCT+y/LsDSmczZTrvMPT2hawoJElQV3u40/71
+         yUmbEJQzwTrsWXOJrvAy96q7n5GGhMM4HudVEMktbePLdviIYPqcuJEinZxrGalETl95
+         k9s7C0sh4YHN6IW4N4FM4wBbDXw4DhBJ4pzaz4CoqNZlJWINzJ7QMv82uVpxD8V3/gc4
+         FbQHFkG3fANNfujXo1/QK2FSvsk5UNolRR2pTA2cqS2SMyVibeiF+GXecCKdi+Q/dEhb
+         gbYA==
+X-Gm-Message-State: AOAM530Xy+KFu7upAUrU/z5toGTZzXUOZQAa0xXSCiivGjiWZ3NO7wFr
+        2KlPN5bR7MxKs86VNUH9MlwJlg==
+X-Google-Smtp-Source: ABdhPJyYIA6x9+f8e47TwQBEyU5CfA6Jc7fDHnsVuiVEE4Gn+yDN22VKV/egJHJ1ZcL3RtVt3ILCkg==
+X-Received: by 2002:a5d:6e85:0:b0:207:a435:d9a7 with SMTP id k5-20020a5d6e85000000b00207a435d9a7mr15785389wrz.217.1650464159946;
+        Wed, 20 Apr 2022 07:15:59 -0700 (PDT)
+Received: from localhost.localdomain ([37.228.205.1])
+        by smtp.gmail.com with ESMTPSA id v2-20020adf8b42000000b0020aa790a258sm12447wra.8.2022.04.20.07.15.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 07:15:59 -0700 (PDT)
+From:   Fabio Baltieri <fabiobaltieri@chromium.org>
+To:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fabio Baltieri <fabiobaltieri@chromium.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v5 1/4] dt-bindings: add mfd/cros_ec definitions
+Date:   Wed, 20 Apr 2022 14:15:53 +0000
+Message-Id: <20220420141556.681212-2-fabiobaltieri@chromium.org>
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+In-Reply-To: <20220420141556.681212-1-fabiobaltieri@chromium.org>
+References: <20220420141556.681212-1-fabiobaltieri@chromium.org>
 MIME-Version: 1.0
-References: <20220420121240.67781-1-u.kleine-koenig@pengutronix.de> <20220420121240.67781-5-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20220420121240.67781-5-u.kleine-koenig@pengutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 20 Apr 2022 14:25:05 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV90BHjyjfU=MLkG2yPa1oFFF7ADrpKsEAp9s83DGBkow@mail.gmail.com>
-Message-ID: <CAMuHMdV90BHjyjfU=MLkG2yPa1oFFF7ADrpKsEAp9s83DGBkow@mail.gmail.com>
-Subject: Re: [PATCH v2 4/6] pwm: renesas-tpu: Rename variables to match the
- usual naming
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 2:12 PM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> The driver used "pwm" for struct tpu_pwm_device pointers. This name is
-> usually only used for struct pwm_device pointers which this driver calls
-> "_pwm". So rename to the driver data pointers to "tpd" which then allows
-> to drop the underscore from "_pwm".
->
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Add a dt-bindings include file for cros_ec devicetree definition, define
+a pair of special purpose PWM channels in it.
 
-This patch didn't change (compared to v1), so
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ include/dt-bindings/mfd/cros_ec.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 include/dt-bindings/mfd/cros_ec.h
 
-Gr{oetje,eeting}s,
+diff --git a/include/dt-bindings/mfd/cros_ec.h b/include/dt-bindings/mfd/cros_ec.h
+new file mode 100644
+index 000000000000..3b29cd049578
+--- /dev/null
++++ b/include/dt-bindings/mfd/cros_ec.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * DTS binding definitions used for the Chromium OS Embedded Controller.
++ *
++ * Copyright (c) 2022 The Chromium OS Authors. All rights reserved.
++ */
++
++#ifndef _DT_BINDINGS_MFD_CROS_EC_H
++#define _DT_BINDINGS_MFD_CROS_EC_H
++
++/* Typed channel for keyboard backlight. */
++#define CROS_EC_PWM_DT_KB_LIGHT		0
++/* Typed channel for display backlight. */
++#define CROS_EC_PWM_DT_DISPLAY_LIGHT	1
++/* Number of typed channels. */
++#define CROS_EC_PWM_DT_COUNT		2
++
++#endif
+-- 
+2.36.0.rc0.470.gd361397f0d-goog
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
