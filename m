@@ -2,99 +2,115 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A19ADC43219
-	for <linux-pwm@archiver.kernel.org>; Tue, 10 May 2022 15:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8117C43219
+	for <linux-pwm@archiver.kernel.org>; Tue, 10 May 2022 16:05:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239369AbiEJP17 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 10 May 2022 11:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52116 "EHLO
+        id S1347027AbiEJQJE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 10 May 2022 12:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345651AbiEJPZx (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 10 May 2022 11:25:53 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A06DAC07E;
-        Tue, 10 May 2022 08:11:20 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.91,214,1647270000"; 
-   d="scan'208";a="120533845"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 11 May 2022 00:11:19 +0900
-Received: from localhost.localdomain (unknown [10.226.92.112])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 81E3C400A11D;
-        Wed, 11 May 2022 00:11:15 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
+        with ESMTP id S1348445AbiEJQIO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 10 May 2022 12:08:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675074C794
+        for <linux-pwm@vger.kernel.org>; Tue, 10 May 2022 09:01:01 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1noSI6-0004bX-A3; Tue, 10 May 2022 18:00:50 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1noSI6-001W9r-2j; Tue, 10 May 2022 18:00:48 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1noSI4-008q4u-4j; Tue, 10 May 2022 18:00:48 +0200
+Date:   Tue, 10 May 2022 18:00:45 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [RFC 0/8] Add RZ/G2L POEG support
-Date:   Tue, 10 May 2022 16:11:04 +0100
-Message-Id: <20220510151112.16249-1-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
+Subject: Re: [RFC 0/8] Add RZ/G2L POEG support
+Message-ID: <20220510160045.4d3pgvjlbea2jwy5@pengutronix.de>
+References: <20220510151112.16249-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tjk46zng4p3czgo2"
+Content-Disposition: inline
+In-Reply-To: <20220510151112.16249-1-biju.das.jz@bp.renesas.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The output pins of the general PWM timer (GPT) can be disabled by using
-the port output enabling function for the GPT (POEG). Specifically,
-either of the following ways can be used.
-  * Input level detection of the GTETRGA to GTETRGD pins.
-  * Output-disable request from the GPT.
-  * Register settings.
 
-Added RZ/G2L POEG support under driver/soc/renesas, as currently I am not sure about
-the framework to be used for POEG.
+--tjk46zng4p3czgo2
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch series add support for controlling output disable function using sysfs.
+On Tue, May 10, 2022 at 04:11:04PM +0100, Biju Das wrote:
+> The output pins of the general PWM timer (GPT) can be disabled by using
+> the port output enabling function for the GPT (POEG). Specifically,
+> either of the following ways can be used.
+>   * Input level detection of the GTETRGA to GTETRGD pins.
+>   * Output-disable request from the GPT.
+>   * Register settings.
+>=20
+> Added RZ/G2L POEG support under driver/soc/renesas, as currently I am not=
+ sure about
+> the framework to be used for POEG.
+>=20
+> This patch series add support for controlling output disable function usi=
+ng sysfs.
+>=20
+> For output disable operation, POEG group needs to be linked with
+> GPT. So introduced renesas,poeg-group property in pwm for linking both GP=
+T and
+> POEG devices.
+>=20
+> Please share your valuable comments.
+>=20
+> patch#3 and #4 depend upon [1]
+> [1] https://lore.kernel.org/linux-renesas-soc/20220510144259.9908-1-biju.=
+das.jz@bp.renesas.com/T/#t
 
-For output disable operation, POEG group needs to be linked with
-GPT. So introduced renesas,poeg-group property in pwm for linking both GPT and
-POEG devices.
+I suggest to use the --base switch to git-format-patch for the next
+submission round. This way the built robots can parse this information,
+too.
 
-Please share your valuable comments.
+Best regards
+Uwe
 
-patch#3 and #4 depend upon [1]
-[1] https://lore.kernel.org/linux-renesas-soc/20220510144259.9908-1-biju.das.jz@bp.renesas.com/T/#t
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-Biju Das (8):
-  dt-bindings: soc: renesas: Add RZ/G2L POEG binding
-  drivers: soc: renesas: Add POEG driver support
-  dt-bindings: pwm: rzg2l-gpt: Document renesas,poeg-group property
-  pwm: rzg2l-gpt: Add support for linking with POEG
-  arm64: dts: renesas: r9a07g044: Add POEG nodes
-  arm64: dts: renesas: r9a07g054: Add POEG nodes
-  arm64: dts: renesas: rzg2l-smarc: Enable POEGG{A,B,C,D} on carrier
-    board
-  arm64: dts: renesas: rzg2l-smarc: Link GPT4 with POEGGD on carrier
-    board
+--tjk46zng4p3czgo2
+Content-Type: application/pgp-signature; name="signature.asc"
 
- .../bindings/pwm/renesas,rzg2l-gpt.yaml       |   8 +
- .../soc/renesas/renesas,rzg2l-poeg.yaml       |  65 ++++++++
- arch/arm64/boot/dts/renesas/r9a07g044.dtsi    |  44 ++++++
- arch/arm64/boot/dts/renesas/r9a07g054.dtsi    |  44 ++++++
- arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi  |  17 ++
- drivers/pwm/pwm-rzg2l-gpt.c                   |  59 +++++++
- drivers/soc/renesas/Kconfig                   |   2 +
- drivers/soc/renesas/Makefile                  |   2 +
- drivers/soc/renesas/poeg/Kconfig              |  12 ++
- drivers/soc/renesas/poeg/Makefile             |   2 +
- drivers/soc/renesas/poeg/poeg-rzg2l.c         | 148 ++++++++++++++++++
- 11 files changed, 403 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/soc/renesas/renesas,rzg2l-poeg.yaml
- create mode 100644 drivers/soc/renesas/poeg/Kconfig
- create mode 100644 drivers/soc/renesas/poeg/Makefile
- create mode 100644 drivers/soc/renesas/poeg/poeg-rzg2l.c
+-----BEGIN PGP SIGNATURE-----
 
--- 
-2.25.1
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJ6jCoACgkQwfwUeK3K
+7AnJtgf/X2Qug9zfJKeDXJOUlIhTIoaDddPmGFP5jtb+zLMXec3ZPmkSedfiQaKu
+Hgt2zSAeYZfSTu6/rnRnJqnA3/zVBc5mND3z1XkAPxsVhRydLMGHhVEQNU1iFzce
+BEDp3lDrsDF45MlTMiZQg4j0R3e8xkKqB26+0be63h6Ro8zdZhOkyRJD8+wEThpu
+ifVnm/AzVgzaXLyNhqfaJwp6eMjnYTEBiId5QUfZmvpotSrnUjChjdnUuta7/RQ/
+fgh4OZIa12b2UPtmbFuStTATb1n07AkjT9nXeGQRqeFuZo0ixLhHEBThoKe3qZ6B
+MIW6NooQ8r9f5nmne2dD6lNi2U7VOg==
+=4n1b
+-----END PGP SIGNATURE-----
 
+--tjk46zng4p3czgo2--
