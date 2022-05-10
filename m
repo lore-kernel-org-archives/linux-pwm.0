@@ -2,25 +2,25 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2554C433FE
-	for <linux-pwm@archiver.kernel.org>; Tue, 10 May 2022 15:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D94C433EF
+	for <linux-pwm@archiver.kernel.org>; Tue, 10 May 2022 15:23:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345775AbiEJP1W (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 10 May 2022 11:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59006 "EHLO
+        id S1345875AbiEJP1X (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 10 May 2022 11:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345855AbiEJP0K (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 10 May 2022 11:26:10 -0400
+        with ESMTP id S1345825AbiEJP0J (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 10 May 2022 11:26:09 -0400
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 724AB14038;
-        Tue, 10 May 2022 08:11:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB24E154FA4;
+        Tue, 10 May 2022 08:11:47 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.91,214,1647270000"; 
-   d="scan'208";a="120533877"
+   d="scan'208";a="120533869"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 11 May 2022 00:11:55 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 11 May 2022 00:11:47 +0900
 Received: from localhost.localdomain (unknown [10.226.92.112])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 0D32F400A11D;
-        Wed, 11 May 2022 00:11:51 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 1E7A0400A0E7;
+        Wed, 11 May 2022 00:11:42 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -34,9 +34,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [RFC 8/8] arm64: dts: renesas: rzg2l-smarc: Link GPT4 with POEGGD on carrier board
-Date:   Tue, 10 May 2022 16:11:12 +0100
-Message-Id: <20220510151112.16249-9-biju.das.jz@bp.renesas.com>
+Subject: [RFC 6/8] arm64: dts: renesas: r9a07g054: Add POEG nodes
+Date:   Tue, 10 May 2022 16:11:10 +0100
+Message-Id: <20220510151112.16249-7-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220510151112.16249-1-biju.das.jz@bp.renesas.com>
 References: <20220510151112.16249-1-biju.das.jz@bp.renesas.com>
@@ -46,25 +46,68 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This patch links GPT4 with POEGGD on RZ/G2L SMARC EVK.
+Add POEGG{A,B,C,D} nodes to RZ/V2L SoC DTSI.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
- arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/renesas/r9a07g054.dtsi | 44 ++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi b/arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi
-index f1fb9cecc49b..d7cc3897ee61 100644
---- a/arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi
-+++ b/arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi
-@@ -25,6 +25,7 @@ &cpu_dai {
- &gpt4 {
- 	pinctrl-0 = <&gpt4_pins>;
- 	pinctrl-names = "default";
-+	renesas,poeg-group = <&poeggd>;
- 	status = "okay";
- };
+diff --git a/arch/arm64/boot/dts/renesas/r9a07g054.dtsi b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
+index 755c92d92e8b..659f0eb11d2b 100644
+--- a/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
++++ b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
+@@ -360,6 +360,50 @@ gpt7: pwm@10048700 {
+ 			status = "disabled";
+ 		};
  
++		poegga: poeg@10048800 {
++			compatible = "renesas,r9a07g054-poeg",
++				     "renesas,rzg2l-poeg";
++			reg = <0 0x10048800 0 0x04>;
++			interrupts = <GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cpg CPG_MOD R9A07G054_POEG_A_CLKP>;
++			power-domains = <&cpg>;
++			resets =  <&cpg R9A07G054_POEG_A_RST>;
++			status = "disabled";
++		};
++
++		poeggb: poeg@10048C00 {
++			compatible = "renesas,r9a07g054-poeg",
++				     "renesas,rzg2l-poeg";
++			reg = <0 0x10048C00 0 0x04>;
++			interrupts = <GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cpg CPG_MOD R9A07G054_POEG_B_CLKP>;
++			power-domains = <&cpg>;
++			resets =  <&cpg R9A07G054_POEG_B_RST>;
++			status = "disabled";
++		};
++
++		poeggc: poeg@10049000 {
++			compatible = "renesas,r9a07g054-poeg",
++				     "renesas,rzg2l-poeg";
++			reg = <0 0x10049000 0 0x04>;
++			interrupts = <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cpg CPG_MOD R9A07G054_POEG_C_CLKP>;
++			power-domains = <&cpg>;
++			resets =  <&cpg R9A07G054_POEG_C_RST>;
++			status = "disabled";
++		};
++
++		poeggd: poeg@10049400 {
++			compatible = "renesas,r9a07g054-poeg",
++				     "renesas,rzg2l-poeg";
++			reg = <0 0x10049400 0 0x04>;
++			interrupts = <GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cpg CPG_MOD R9A07G054_POEG_D_CLKP>;
++			power-domains = <&cpg>;
++			resets =  <&cpg R9A07G054_POEG_D_RST>;
++			status = "disabled";
++		};
++
+ 		ssi0: ssi@10049c00 {
+ 			compatible = "renesas,r9a07g054-ssi",
+ 				     "renesas,rz-ssi";
 -- 
 2.25.1
 
