@@ -2,136 +2,109 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A013C43219
-	for <linux-pwm@archiver.kernel.org>; Wed, 11 May 2022 16:15:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A304C433F5
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 May 2022 09:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344440AbiEKQPA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 11 May 2022 12:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57880 "EHLO
+        id S1352191AbiELJlf (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 May 2022 05:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344451AbiEKQO6 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 11 May 2022 12:14:58 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242C76D872
-        for <linux-pwm@vger.kernel.org>; Wed, 11 May 2022 09:14:56 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id m25so3298400oih.2
-        for <linux-pwm@vger.kernel.org>; Wed, 11 May 2022 09:14:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Cf09Je3CtRN58q8NVoc2nPVu33QjMHj88UB5fSrOla4=;
-        b=CTG8yoxyViVJG9wmGrm6SLhEgFT0WuEvMoQXyZI5Kx6YkRB5j28pASLSwuZICqn0Cn
-         WUe9JQtUluE5n2n2m1EPa+FISLLmw74zubXRkCQO7+cPFnDb7SH7eHHvsAv5UmyVzyUV
-         Yg4qwAYNHpV19CvN9+QaSJdKAjMOYPnzZCA3hYz+C9nugper2Z4G1e1AGj+1SszRkaQo
-         moGjWWVVce7nK2CR/KrFugqD3XC1mwkzPeFT8lqC0rXm5ECEPIDRHLahArrblpkSEeOi
-         oarjMZfY1Bm/srauvkhyBWogv1HqzCKX1WkOEQx8b1IIsfASQoQDyYqMHU0Z+3n8xztv
-         Iymw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Cf09Je3CtRN58q8NVoc2nPVu33QjMHj88UB5fSrOla4=;
-        b=Obh0VDCzcWBtbdON5DWparPRn2c/SQaJfAm9TzPRbNb35bXP/xvELyVncrthj6Tth4
-         /ER1+jXLg+FXuh20qRopN5aIjYmYI32B373mMFFX0NEvH1j+WlTPm2+AJmK4P7gtvrHC
-         rVZi+Z5TgOUl9bYrzB3rc8ZZc+zXR7776eu5ol/LSdN4cZJjlea6NgMHOqWGmIAOe27S
-         asG/RF/RUaY1TaBDFDB76Zu5RRWIMXmUsa5QXQUSIQg7cvpSbrXCx4C/q60fzr5C7brr
-         1QWgdsNXS6UU8Dqd3LSyLZ5i2TvTh3ZIQsKBAl3pWdnXBS0XYucbxag1pkb2zahXJg1V
-         OvHw==
-X-Gm-Message-State: AOAM532ZudsIkygRHhIAYwtLDpFdMkqCCAeCOHZHMFwrry8pqYvySzNj
-        oliKRBpof+Fh9qTXkPV2yBInvQ==
-X-Google-Smtp-Source: ABdhPJz8wvQ3CXsSwZJgwMBRizoEDzOcZERxCvR6YfvQLmBZIZFLmiRHdvM6kGdBrvW6hOVawnGctg==
-X-Received: by 2002:a05:6808:2199:b0:326:90e2:754b with SMTP id be25-20020a056808219900b0032690e2754bmr2876267oib.227.1652285695478;
-        Wed, 11 May 2022 09:14:55 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id z18-20020a056808065200b00325cda1ffacsm861218oih.43.2022.05.11.09.14.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 09:14:54 -0700 (PDT)
-Date:   Wed, 11 May 2022 09:17:25 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
-        Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>,
-        Doug Anderson <dianders@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v14 2/2] leds: Add driver for Qualcomm LPG
-Message-ID: <YnvhleAI5RW0ZvkV@ripper>
-References: <20220303214300.59468-1-bjorn.andersson@linaro.org>
- <20220303214300.59468-2-bjorn.andersson@linaro.org>
- <20220504073009.GC8204@duo.ucw.cz>
- <YnKTAvQc6eDxTl14@ripper>
- <20220506160901.GA1199@bug>
- <YnVMcaRV86jZslhd@ripper>
- <20220507063659.GA6968@amd>
+        with ESMTP id S1352170AbiELJle (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 May 2022 05:41:34 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9331769703
+        for <linux-pwm@vger.kernel.org>; Thu, 12 May 2022 02:41:32 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 7DB4C2C0719;
+        Thu, 12 May 2022 09:41:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1652348489;
+        bh=CCea1k7mwJq3WEXEcbjXo1IM6THw8sWAL42OOl5qT/U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vEcEskj7ddPr0p5sbPQTfSQCvbw9vD2jNmdcb17n8EQQQJRNZv9UykGNV74723pr0
+         o9d5sxzUR+cSoHuCIFnKhs5v1XBN4OQHDfq/MZXNoeNIvwO5pexfOnM0DJQrUNvn8L
+         96PtSj0Sb1m4JWfyfjzURl4ZeSJhj8OUTemZA/BgdCMkujflQ044uS40QeTimfv48c
+         0g8/de4AUf6nsD9g1ocXpxxsWAI4AfVRGXarm0pqmp84Q5+Qv3i8DiZNwPw/uMAMp0
+         YrZLJnLY6niGuBKQS/GVbL1Rmb8Kn4DUmbtV5dLSh7mpzm/38VNUygDwo3qT68uJQ6
+         gA/2qlP5luz8w==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B627cd6490001>; Thu, 12 May 2022 21:41:29 +1200
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+        by pat.atlnz.lc (Postfix) with ESMTP id 4225F13EE41;
+        Thu, 12 May 2022 21:41:29 +1200 (NZST)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id 3F3562A00D3; Thu, 12 May 2022 21:41:29 +1200 (NZST)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
+        andrew@lunn.ch
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v3 2/2] dt-bindings: gpio: gpio-mvebu: document offset and marvell,pwm-offset
+Date:   Thu, 12 May 2022 21:41:25 +1200
+Message-Id: <20220512094125.3748197-2-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220512094125.3748197-1-chris.packham@alliedtelesis.co.nz>
+References: <20220512094125.3748197-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220507063659.GA6968@amd>
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=U+Hs8tju c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=oZkIemNP1mAA:10 a=9OvEkFhTLsvuW6oDEM0A:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Fri 06 May 23:36 PDT 2022, Pavel Machek wrote:
+The offset and marvell,pwm-offset properties weren't in the old binding.
+Add them based on the existing usage when the marvell,armada-8k-gpio
+compatible is used.
 
-> Hi!
-> 
-> > > > As such the pattern sequence provided to hw_pattern looks to be the
-> > > > smae, but I don't see that it can be made compatible.
-> > > > 
-> > > > > Can I get either patch to disable pattern infrastructure for now or to
-> > > > > get it compatible?
-> > > > > 
-> > > > 
-> > > > I'd be happy to get this updated to your liking, but this was one of the
-> > > > drivers we discussed when we introduced the pattern trigger and led to
-> > > > the conclusion that we need the ability to do hw-specific patterns.
-> > > > 
-> > > > As such this document provides the hardware specific documentation, as
-> > > > we describe under "hw_pattern" in
-> > > > Documentation/ABI/testing/sysfs-class-led-trigger-pattern.
-> > > > 
-> > > > Please advice on what you would like me to do.
-> > > 
-> > > I'd like you to use same format leds-trigger-pattern describes.
-> > > 
-> > > If someone passes "255 500 0 500", that's requesting gradual transitions and
-> > > your hw can not do that. You return -EINVAL.
-> > > 
-> > > If someone wants that kind of blinking, they need to pass "255 0 255 500 0 0 0 500".
-> > > 
-> > 
-> > So the section under hw_pattern in sysfs-class-led-trigger-pattern that
-> > says:
-> > 
-> > "Since different LED hardware can have different semantics of
-> > hardware patterns, each driver is expected to provide its own
-> > description for the hardware patterns in their documentation
-> > file at Documentation/leds/."
-> > 
-> > That doesn't apply to this piece of hardware & driver?
-> 
-> It applies: since your hardware can not do arbitrary patterns, you
-> need description of what kinds of patterns it can do.
-> 
-> But you should still use compatible format, so that pattern that is
-> valid for hw_pattern file is valid for pattern file, too, and produces
-> same result.
-> 
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+---
 
-Okay, I didn't understand that the hw_pattern needs to be a subset of
-the pattern. I will prepare a patch to require the pattern to include
-the zero-time entries as well.
+Notes:
+    Changes in v3:
+    - Split off from 1:1 conversion patch
 
-> If you believe documentation implies something else, it may need to be
-> clarified.
-> 
+ Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-I'll read it again and if needed I'll try to clarify the expectations.
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml b/Doc=
+umentation/devicetree/bindings/gpio/gpio-mvebu.yaml
+index 2d95ef707f53..790a17af7c59 100644
+--- a/Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml
++++ b/Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml
+@@ -41,6 +41,10 @@ properties:
+       - const: pwm
+     minItems: 1
+=20
++  offset:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Offset in the register map for the gpio registers (in b=
+ytes)
++
+   interrupts:
+     description: |
+       The list of interrupts that are used for all the pins managed by t=
+his
+@@ -64,6 +68,10 @@ properties:
+   "#gpio-cells":
+     const: 2
+=20
++  marvell,pwm-offset:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Offset in the register map for the pwm registers (in by=
+tes)
++
+   "#pwm-cells":
+     description:
+       The first cell is the GPIO line number. The second cell is the per=
+iod
+--=20
+2.36.0
 
-Thanks,
-Bjorn
