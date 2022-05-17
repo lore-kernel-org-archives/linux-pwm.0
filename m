@@ -2,62 +2,62 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC619C4167E
-	for <linux-pwm@archiver.kernel.org>; Tue, 17 May 2022 14:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE11C433EF
+	for <linux-pwm@archiver.kernel.org>; Tue, 17 May 2022 14:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348855AbiEQO0y (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 17 May 2022 10:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
+        id S1348868AbiEQO2I (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 17 May 2022 10:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348868AbiEQO0u (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2022 10:26:50 -0400
+        with ESMTP id S1348891AbiEQO0l (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2022 10:26:41 -0400
 Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C800D42A3D;
-        Tue, 17 May 2022 07:26:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E250642A27;
+        Tue, 17 May 2022 07:26:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1652797609; x=1684333609;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=s9Y16Fi0agI4kORhbSwpsI13j5cDz6fUFfAn4VgiYiQ=;
-  b=pA0RU4nNtmkwCDVxaZfhxREJnmJoJHxBNNwt6kUAHS7DPRC7/jybMA24
-   fI7igQ+Sr8mrKJmKWleC7J206CiM73eE200qA85W9oMd7NweYaij98zzk
-   CUAN0Zp8FZo4zrvJvw8Wm13wVDIv0zvnVP+KqmxmcMSRi06SEB66MOzFv
-   5UESbb8zAVW7b0cOEKmaPi4CcXIKWSLDunTZeDq+96MnUOeUv2Z5vPTIb
-   rEAaGFIac17dp/CvQSxJ5Bl9o9JLU9wOoCsL+C4nmAO8t1BVJVtk31opG
-   d9EsungJ+/fMuepFIoU213f++1SsRSDcqu3e8vR/cu+phnkeSgwoSUhUf
+  t=1652797600; x=1684333600;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mankCJOGPKu8Xonfwp415Ga9O1GdXTSLMS2WtVwqIAY=;
+  b=pS3xZM0rLPSjPs26Ury3+fx4+uUo+YJRgKtwFGnKn+3dpiPlAcqRMO9L
+   ENJv3XCZ+gUU1/0jwvtpWAFFnTuKxbg8wc+MlKkwV4O5G2ZNm6ivbKeTZ
+   S2hfpCjzcZD5zgFZHNdNYcP4/JHCWc/9IRbORxtqpO/DIRfqepkbVP9PA
+   xjLTm2evtIV/0mL1Deqrt5sHCIqaBaBVmtYJzvpaaf+GzAgQioCUN2xqa
+   gqv7x4MgytGnzYHE3dmdPhHvvs/lD7z710gj//rC/U2/G1WRvwLABUlc/
+   TMx7M1IOUYAiDmA2Joqvfjeq7jDvx2uikdXtYYx63mbunrHuKI3TgGMcZ
    g==;
 X-IronPort-AV: E=Sophos;i="5.91,233,1647298800"; 
-   d="scan'208";a="23925941"
+   d="scan'208";a="23925930"
 Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 17 May 2022 16:26:35 +0200
+  by mx1-pgp.tq-group.com with ESMTP; 17 May 2022 16:26:25 +0200
 Received: from mx1.tq-group.com ([192.168.6.7])
   by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 17 May 2022 16:26:35 +0200
+  Tue, 17 May 2022 16:26:26 +0200
 X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Tue, 17 May 2022 16:26:35 +0200
+        by tq-pgp-pr1.tq-net.de on Tue, 17 May 2022 16:26:26 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1652797595; x=1684333595;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=s9Y16Fi0agI4kORhbSwpsI13j5cDz6fUFfAn4VgiYiQ=;
-  b=i4C8OLJpEuYalziNKXFZjd7WEAuHcOJO22cxfmvTT1YJoAHaLkqtG3Te
-   aYlKaHCckYdZDoI8jHdDr/U5IdRY4AKdkLSJkii5BmFER6q026Yuduir2
-   HqJZ3TePRosJgSftNp4BDV+M4MxtBOoFvTxIyV06HuAhnqfT1/I+nliwZ
-   h+Qvp5PqGHOgp3AwO78vni9FYmdM+M4vi7skd5DRdO9D99APiwJFBnaql
-   VRvrJMqzySw9TnED0u7es/FFPhhDXYCUm/rm+7t0HQbeYjVBxXjSxB3+D
-   gaGt6kEOJ7kvnKw80ALeMKFs4AsKmt+gZ535ARlGhT/zwMHQZxMb/vm1q
+  t=1652797585; x=1684333585;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mankCJOGPKu8Xonfwp415Ga9O1GdXTSLMS2WtVwqIAY=;
+  b=HbyjGxwPNBRChpucPMj+nSy0awJcWWyRq5v03WFpVW0xRfbFFgaHcoiz
+   EgzgplgggDGHFXZfhxAHZb9umL3/pM+6W1z0Ys4Mz9FJndr+GFSg8yi/K
+   otjWGqGXPbWi9dETZF4TGHXk4uuXb8SUAqv87dRU/L+ONhRg0+toFNh6F
+   o/Rsitl/25GavoMhcUanDAiAy9GeaYQW1aWbI2pjLKoV6cnDao+SYhdK4
+   HUymFhXlT6U5iTYnkv/M4I9Iq/c0Y6/h7KOuVAVYixryKU9oBBAiB1yZ4
+   bLhQbXTA9hGPwYx3wGNDtJzcHvONekhPXyvQwTdGxy6gMR8SawwYcMDgp
    Q==;
 X-IronPort-AV: E=Sophos;i="5.91,233,1647298800"; 
-   d="scan'208";a="23925934"
+   d="scan'208";a="23925927"
 Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 17 May 2022 16:26:26 +0200
+  by mx1.tq-group.com with ESMTP; 17 May 2022 16:26:25 +0200
 Received: from steina-w.tq-net.de (unknown [10.123.49.12])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 1EFAE280075;
-        Tue, 17 May 2022 16:26:26 +0200 (CEST)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id F238D280070;
+        Tue, 17 May 2022 16:26:24 +0200 (CEST)
 From:   Alexander Stein <alexander.stein@ew.tq-group.com>
 To:     Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
         Jean Delvare <jdelvare@suse.com>,
@@ -69,59 +69,45 @@ To:     Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
 Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
         linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org,
         Markus Niebel <Markus.Niebel@ew.tq-group.com>
-Subject: [PATCH v3 5/6] hwmon: pwm-fan: Move PWM enable into separate function
-Date:   Tue, 17 May 2022 16:26:19 +0200
-Message-Id: <20220517142620.1523143-6-alexander.stein@ew.tq-group.com>
+Subject: [PATCH v3 0/6] hwmon: pwm-fan: switch regulator dynamically
+Date:   Tue, 17 May 2022 16:26:14 +0200
+Message-Id: <20220517142620.1523143-1-alexander.stein@ew.tq-group.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220517142620.1523143-1-alexander.stein@ew.tq-group.com>
-References: <20220517142620.1523143-1-alexander.stein@ew.tq-group.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This allows reusage in other code paths.
+Hello everyone,
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
- drivers/hwmon/pwm-fan.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+this is a new version for supporting switching off the pwm-fan regulator.
+This time it is split into several smaller patches for ease of review.
+Some organizational changes are inspired/copied by/from pwm_bl.
 
-diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-index 21bfd0e931ba..9ebe958cc908 100644
---- a/drivers/hwmon/pwm-fan.c
-+++ b/drivers/hwmon/pwm-fan.c
-@@ -84,9 +84,17 @@ static void sample_timer(struct timer_list *t)
- 	mod_timer(&ctx->rpm_timer, jiffies + HZ);
- }
- 
--static int pwm_fan_power_on(struct pwm_fan_ctx *ctx)
-+static int pwm_fan_enable_pwm(struct pwm_fan_ctx *ctx)
- {
- 	struct pwm_state state;
-+
-+	pwm_get_state(ctx->pwm, &state);
-+	state.enabled = true;
-+	return pwm_apply_state(ctx->pwm, &state);
-+}
-+
-+static int pwm_fan_power_on(struct pwm_fan_ctx *ctx)
-+{
- 	int ret;
- 
- 	if (ctx->enabled)
-@@ -98,9 +106,7 @@ static int pwm_fan_power_on(struct pwm_fan_ctx *ctx)
- 		return ret;
- 	}
- 
--	pwm_get_state(ctx->pwm, &state);
--	state.enabled = true;
--	ret = pwm_apply_state(ctx->pwm, &state);
-+	ret = pwm_fan_enable_pwm(ctx);
- 	if (ret) {
- 		dev_err(ctx->dev, "failed to enable PWM\n");
- 		goto disable_regulator;
+One big drawback form v2 was that there was no distinction bewteen when
+PWM duty == 0:
+* keep PWM on inactive level enabled (regulator as well)
+* disable PWM and regulator
+
+This is accomplished by using HWMON_PWM_ENABLE attribute. Documentation is
+added accordingly.
+
+Best regards,
+Alexander
+
+Alexander Stein (6):
+  hwmon: pwm-fan: Refactor fan power on/off
+  hwmon: pwm-fan: Simplify enable/disable check
+  hwmon: pwm-fan: Dynamically switch off regulator if PWM duty is 0
+  hwmon: pwm-fan: Remove internal duplicated pwm_state
+  hwmon: pwm-fan: Move PWM enable into separate function
+  hwmon: pwm-fan: Add hwmon_pwm_enable attribute
+
+ Documentation/hwmon/pwm-fan.rst |  10 ++
+ drivers/hwmon/pwm-fan.c         | 263 ++++++++++++++++++++++----------
+ 2 files changed, 191 insertions(+), 82 deletions(-)
+
 -- 
 2.25.1
 
