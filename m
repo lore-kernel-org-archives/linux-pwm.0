@@ -2,112 +2,126 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE11C433EF
-	for <linux-pwm@archiver.kernel.org>; Tue, 17 May 2022 14:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A70C433EF
+	for <linux-pwm@archiver.kernel.org>; Tue, 17 May 2022 14:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348868AbiEQO2I (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 17 May 2022 10:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
+        id S1349411AbiEQOyA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 17 May 2022 10:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348891AbiEQO0l (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2022 10:26:41 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E250642A27;
-        Tue, 17 May 2022 07:26:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1652797600; x=1684333600;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mankCJOGPKu8Xonfwp415Ga9O1GdXTSLMS2WtVwqIAY=;
-  b=pS3xZM0rLPSjPs26Ury3+fx4+uUo+YJRgKtwFGnKn+3dpiPlAcqRMO9L
-   ENJv3XCZ+gUU1/0jwvtpWAFFnTuKxbg8wc+MlKkwV4O5G2ZNm6ivbKeTZ
-   S2hfpCjzcZD5zgFZHNdNYcP4/JHCWc/9IRbORxtqpO/DIRfqepkbVP9PA
-   xjLTm2evtIV/0mL1Deqrt5sHCIqaBaBVmtYJzvpaaf+GzAgQioCUN2xqa
-   gqv7x4MgytGnzYHE3dmdPhHvvs/lD7z710gj//rC/U2/G1WRvwLABUlc/
-   TMx7M1IOUYAiDmA2Joqvfjeq7jDvx2uikdXtYYx63mbunrHuKI3TgGMcZ
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,233,1647298800"; 
-   d="scan'208";a="23925930"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 17 May 2022 16:26:25 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 17 May 2022 16:26:26 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Tue, 17 May 2022 16:26:26 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1652797585; x=1684333585;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mankCJOGPKu8Xonfwp415Ga9O1GdXTSLMS2WtVwqIAY=;
-  b=HbyjGxwPNBRChpucPMj+nSy0awJcWWyRq5v03WFpVW0xRfbFFgaHcoiz
-   EgzgplgggDGHFXZfhxAHZb9umL3/pM+6W1z0Ys4Mz9FJndr+GFSg8yi/K
-   otjWGqGXPbWi9dETZF4TGHXk4uuXb8SUAqv87dRU/L+ONhRg0+toFNh6F
-   o/Rsitl/25GavoMhcUanDAiAy9GeaYQW1aWbI2pjLKoV6cnDao+SYhdK4
-   HUymFhXlT6U5iTYnkv/M4I9Iq/c0Y6/h7KOuVAVYixryKU9oBBAiB1yZ4
-   bLhQbXTA9hGPwYx3wGNDtJzcHvONekhPXyvQwTdGxy6gMR8SawwYcMDgp
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,233,1647298800"; 
-   d="scan'208";a="23925927"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 17 May 2022 16:26:25 +0200
-Received: from steina-w.tq-net.de (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id F238D280070;
-        Tue, 17 May 2022 16:26:24 +0200 (CEST)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        with ESMTP id S1349504AbiEQOx5 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2022 10:53:57 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5BB25EBC
+        for <linux-pwm@vger.kernel.org>; Tue, 17 May 2022 07:53:54 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nqyZt-0003hT-Iv; Tue, 17 May 2022 16:53:37 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nqyZs-002tOA-IM; Tue, 17 May 2022 16:53:35 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nqyZq-00AK4E-AN; Tue, 17 May 2022 16:53:34 +0200
+Date:   Tue, 17 May 2022 16:53:31 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
         Jean Delvare <jdelvare@suse.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Jonathan Corbet <corbet@lwn.net>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>, linux-hwmon@vger.kernel.org,
+        linux-pwm@vger.kernel.org,
         Markus Niebel <Markus.Niebel@ew.tq-group.com>
-Subject: [PATCH v3 0/6] hwmon: pwm-fan: switch regulator dynamically
-Date:   Tue, 17 May 2022 16:26:14 +0200
-Message-Id: <20220517142620.1523143-1-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
+Subject: Re: [PATCH v3 6/6] hwmon: pwm-fan: Add hwmon_pwm_enable attribute
+Message-ID: <20220517145331.7ffab4pyjwrh5lkg@pengutronix.de>
+References: <20220517142620.1523143-1-alexander.stein@ew.tq-group.com>
+ <20220517142620.1523143-7-alexander.stein@ew.tq-group.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lzgyb2mlekugipiz"
+Content-Disposition: inline
+In-Reply-To: <20220517142620.1523143-7-alexander.stein@ew.tq-group.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hello everyone,
 
-this is a new version for supporting switching off the pwm-fan regulator.
-This time it is split into several smaller patches for ease of review.
-Some organizational changes are inspired/copied by/from pwm_bl.
+--lzgyb2mlekugipiz
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-One big drawback form v2 was that there was no distinction bewteen when
-PWM duty == 0:
-* keep PWM on inactive level enabled (regulator as well)
-* disable PWM and regulator
+Hello,
 
-This is accomplished by using HWMON_PWM_ENABLE attribute. Documentation is
-added accordingly.
+On Tue, May 17, 2022 at 04:26:20PM +0200, Alexander Stein wrote:
+> This adds the enable attribute which is used to differentiate if PWM duty
+> means to switch off regulator and PWM or to keep them enabled but
+> at inactive PWM output level.
+>=20
+> Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+> ---
+>  Documentation/hwmon/pwm-fan.rst | 10 ++++
+>  drivers/hwmon/pwm-fan.c         | 95 +++++++++++++++++++++++++++++----
+>  2 files changed, 95 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/Documentation/hwmon/pwm-fan.rst b/Documentation/hwmon/pwm-fa=
+n.rst
+> index 82fe96742fee..0083480068d1 100644
+> --- a/Documentation/hwmon/pwm-fan.rst
+> +++ b/Documentation/hwmon/pwm-fan.rst
+> @@ -18,3 +18,13 @@ the hwmon's sysfs interface.
+> =20
+>  The fan rotation speed returned via the optional 'fan1_input' is extrapo=
+lated
+>  from the sampled interrupts from the tachometer signal within 1 second.
+> +
+> +The driver provides the following sensor accesses in sysfs:
+> +
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D =3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+> +fan1_input	ro	fan tachometer speed in RPM
+> +pwm1_enable	rw	keep enable mode, defines behaviour when pwm1=3D0
+> +			0=3Dswitch off regulator and disable PWM
+> +			1=3Dkeep regulator enabled and set PWM to inactive level
 
-Best regards,
-Alexander
+Is the pwm1_enable supposed to be set to 0 if that only does the right
+thing if the PWM emits low after pwm_disable()? The question I raised in
+v2 about "what is the meaning of disable?" hasn't evolved, has it?
 
-Alexander Stein (6):
-  hwmon: pwm-fan: Refactor fan power on/off
-  hwmon: pwm-fan: Simplify enable/disable check
-  hwmon: pwm-fan: Dynamically switch off regulator if PWM duty is 0
-  hwmon: pwm-fan: Remove internal duplicated pwm_state
-  hwmon: pwm-fan: Move PWM enable into separate function
-  hwmon: pwm-fan: Add hwmon_pwm_enable attribute
+I still think it's unfortunate, that "pwm1_enable" has an effect on the
+regulator.
 
- Documentation/hwmon/pwm-fan.rst |  10 ++
- drivers/hwmon/pwm-fan.c         | 263 ++++++++++++++++++++++----------
- 2 files changed, 191 insertions(+), 82 deletions(-)
+Best regards
+Uwe
 
--- 
-2.25.1
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
+--lzgyb2mlekugipiz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKDtugACgkQwfwUeK3K
+7AmkAAf+Jg/NaHTE6D0cI+VGke8kConLhaiJOsAMqb3AXb4VV0yf/CA2gfogVhP9
+d1RXpe/g5iy70RWHoDnmLmIB7dHZgek/KglAiJBBYK+6CvNFC6NhvL3roX+itqg/
+Nq0LLZwyJsbpcHVyMnfVq1xckPDwv1NLGsffPQWRJO8ume2VaHkCvcZQ/ujr7ODA
+Uqw6s4N3D73vGIQm7WICurWuV+ITu9I7uLtCFK22REET614NEkFxKZgG2n01ogbF
+q7QdWe4Y1l+IjDtxf5Jf21pWM3VXsyzk+LNU40h+gzOjMxkwmQGJXmP/tsMH0Rbi
+aiT7lAub/OJwffO8MFX32QC3mXWx/A==
+=MXzg
+-----END PGP SIGNATURE-----
+
+--lzgyb2mlekugipiz--
