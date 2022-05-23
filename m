@@ -2,477 +2,144 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C02C43217
-	for <linux-pwm@archiver.kernel.org>; Mon, 23 May 2022 11:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AB8C433FE
+	for <linux-pwm@archiver.kernel.org>; Mon, 23 May 2022 12:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234450AbiEWLFe (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 23 May 2022 07:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35068 "EHLO
+        id S235704AbiEWMqd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 23 May 2022 08:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234264AbiEWLFb (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 May 2022 07:05:31 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C26D17E33;
-        Mon, 23 May 2022 04:05:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1653303929; x=1684839929;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ecSMPA6CEeNkEL0oD+cFhQMJsVmMfYhT1VOqZf+Zi4E=;
-  b=lJiYDdPVUAxNYw9ujngzctfo6RzSaLbq1496/Kw9yntWey2q0Ewjmh5a
-   29FKGsfxmJEm8N8DpDIq7f4LvPyfNYU4OcXEvILViHZhL9IyuG5x3X9lF
-   vl5EOC4UrUkvqNxHFg87ModYILBtfW8dDcyMnnVur1PVMGbOtblnXaHbH
-   zHIHmXB5V/bCM3ONVZDlu4I56GQ/rJtpO0dbxtt1bpBy3nAdcjZ2xuirh
-   RICxOHze7kvsPZ57nuDeAjre5tnhBnJwIETpyjCduQJdkFPhKDm+PEnKq
-   n5Ke2dWAy9tG38TY1I2X3GCOf8+AZNueahx6YyH/8pMU5Jj4zpZv+UDf/
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,246,1647298800"; 
-   d="scan'208";a="24031376"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 23 May 2022 13:05:19 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 23 May 2022 13:05:19 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 23 May 2022 13:05:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1653303919; x=1684839919;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ecSMPA6CEeNkEL0oD+cFhQMJsVmMfYhT1VOqZf+Zi4E=;
-  b=P7sDnV8IxY8+RCQZrWLt6mrTj39OBojiejncGHAxccf34y/0EtQHIlWT
-   nNjKTGEUTHiJjFD92tR41AWbg7crwKu2xteFvrpjbUoJnjTV8L9bpYNnx
-   qi6h9Q7UOiz48zDEan9G6LT5MK1Zol/e1MvQDXwvRiZODAqwtRwz1oXkX
-   atCc2eORHmuphbrK/r6jeICLJacVYin0yBXv0otYQTNb9+9MiucWWLIVj
-   7PfeoX12WaeeURxLmYrZwbt+8D5INB3N4fNmQr/3j75f1FmfdFaLkb7HH
-   GG3UrVjaumBGz5CvKXNOKgxAgKi05Ds1h0Rx57LsSiOIIejJczy/7ioUe
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,246,1647298800"; 
-   d="scan'208";a="24031375"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 23 May 2022 13:05:19 +0200
-Received: from steina-w.tq-net.de (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 09F3E280078;
-        Mon, 23 May 2022 13:05:19 +0200 (CEST)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Jean Delvare <jdelvare@suse.com>,
+        with ESMTP id S235661AbiEWMqc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 May 2022 08:46:32 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47FD4D247
+        for <linux-pwm@vger.kernel.org>; Mon, 23 May 2022 05:46:30 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nt7S0-0007bF-33; Mon, 23 May 2022 14:46:20 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nt7Rz-0045Ef-Ua; Mon, 23 May 2022 14:46:18 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nt7Rx-00BbLl-RG; Mon, 23 May 2022 14:46:17 +0200
+Date:   Mon, 23 May 2022 14:46:14 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Jean Delvare <jdelvare@suse.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Jonathan Corbet <corbet@lwn.net>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>, linux-hwmon@vger.kernel.org,
+        linux-pwm@vger.kernel.org,
         Markus Niebel <Markus.Niebel@ew.tq-group.com>
-Subject: [PATCH v4 5/6] hwmon: pwm-fan: Switch regulator dynamically
-Date:   Mon, 23 May 2022 13:05:12 +0200
-Message-Id: <20220523110513.407516-6-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220523110513.407516-1-alexander.stein@ew.tq-group.com>
+Subject: Re: [PATCH v4 6/6] hwmon: pwm-fan: Remove internal duplicated
+ pwm_state
+Message-ID: <20220523124614.74hwex5a4eedpitl@pengutronix.de>
 References: <20220523110513.407516-1-alexander.stein@ew.tq-group.com>
+ <20220523110513.407516-7-alexander.stein@ew.tq-group.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="fw6upfswezr6qibg"
+Content-Disposition: inline
+In-Reply-To: <20220523110513.407516-7-alexander.stein@ew.tq-group.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This adds the enable attribute which is used to select if zero PWM duty
-means to switch off regulator and PWM or to keep them enabled but
-at inactive PWM output level.
-Depending on the select enable mode, turn off the regulator and PWM if
-the PWM duty is zero, or keep them enabled.
-This is especially important for fan using inverted PWM signal polarity.
-Having regulator supplied and PWM disabled, some PWM controllers provide
-the active, rather than inactive signal.
 
-With this change the shutdown as well as suspend/resume paths require
-modifcations as well.
+--fw6upfswezr6qibg
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
- Documentation/hwmon/pwm-fan.rst |  12 ++
- drivers/hwmon/pwm-fan.c         | 213 +++++++++++++++++++++-----------
- 2 files changed, 154 insertions(+), 71 deletions(-)
+Hello,
 
-diff --git a/Documentation/hwmon/pwm-fan.rst b/Documentation/hwmon/pwm-fan.rst
-index 82fe96742fee..f77998b204ef 100644
---- a/Documentation/hwmon/pwm-fan.rst
-+++ b/Documentation/hwmon/pwm-fan.rst
-@@ -18,3 +18,15 @@ the hwmon's sysfs interface.
- 
- The fan rotation speed returned via the optional 'fan1_input' is extrapolated
- from the sampled interrupts from the tachometer signal within 1 second.
-+
-+The driver provides the following sensor accesses in sysfs:
-+
-+=============== ======= =======================================================
-+fan1_input	ro	fan tachometer speed in RPM
-+pwm1_enable	rw	keep enable mode, defines behaviour when pwm1=0
-+			0 -> disable pwm and regulator
-+			1 -> enable pwm; if pwm==0, disable pwm, keep regulator enabled
-+			2 -> enable pwm; if pwm==0, keep pwm and regulator enabled
-+			3 -> enable pwm; if pwm==0, disable pwm and regulator
-+pwm1		rw	relative speed (0-255), 255=max. speed.
-+=============== ======= =======================================================
-diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-index fcc1b7b55a65..e5d4b3b1cc49 100644
---- a/drivers/hwmon/pwm-fan.c
-+++ b/drivers/hwmon/pwm-fan.c
-@@ -28,6 +28,13 @@ struct pwm_fan_tach {
- 	u8 pulses_per_revolution;
- };
- 
-+enum pwm_fan_enable_mode {
-+	pwm_off_reg_off,
-+	pwm_disable_reg_enable,
-+	pwm_enable_reg_enable,
-+	pwm_disable_reg_disable,
-+};
-+
- struct pwm_fan_ctx {
- 	struct device *dev;
- 
-@@ -35,6 +42,7 @@ struct pwm_fan_ctx {
- 	struct pwm_device *pwm;
- 	struct pwm_state pwm_state;
- 	struct regulator *reg_en;
-+	enum pwm_fan_enable_mode enable_mode;
- 	bool regulator_enabled;
- 	bool enabled;
- 
-@@ -86,6 +94,29 @@ static void sample_timer(struct timer_list *t)
- 	mod_timer(&ctx->rpm_timer, jiffies + HZ);
- }
- 
-+static void pwm_fan_enable_mode_2_state(int enable_mode,
-+					struct pwm_state *state,
-+					bool *enable_regulator)
-+{
-+	switch (enable_mode) {
-+	case pwm_disable_reg_enable:
-+		/* disable pwm, keep regulator enabled */
-+		state->enabled = false;
-+		*enable_regulator = true;
-+		break;
-+	case pwm_enable_reg_enable:
-+		/* keep pwm and regulator enabled */
-+		state->enabled = true;
-+		*enable_regulator = true;
-+		break;
-+	case pwm_off_reg_off:
-+	case pwm_disable_reg_disable:
-+		/* disable pwm and regulator */
-+		state->enabled = false;
-+		*enable_regulator = false;
-+	}
-+}
-+
- static int pwm_fan_switch_power(struct pwm_fan_ctx *ctx, bool on)
- {
- 	int ret = 0;
-@@ -117,30 +148,46 @@ static int pwm_fan_power_on(struct pwm_fan_ctx *ctx)
- 	if (ctx->enabled)
- 		return 0;
- 
-+	ret = pwm_fan_switch_power(ctx, true);
-+	if (ret < 0) {
-+		dev_err(ctx->dev, "failed to enable power supply\n");
-+		return ret;
-+	}
-+
- 	state->enabled = true;
- 	ret = pwm_apply_state(ctx->pwm, state);
- 	if (ret) {
- 		dev_err(ctx->dev, "failed to enable PWM\n");
--		goto err;
-+		goto disable_regulator;
- 	}
- 
- 	ctx->enabled = true;
- 
--err:
-+	return 0;
-+
-+disable_regulator:
-+	pwm_fan_switch_power(ctx, false);
- 	return ret;
- }
- 
- static int pwm_fan_power_off(struct pwm_fan_ctx *ctx)
- {
- 	struct pwm_state *state = &ctx->pwm_state;
-+	bool enable_regulator = false;
- 
- 	if (!ctx->enabled)
- 		return 0;
- 
-+	pwm_fan_enable_mode_2_state(ctx->enable_mode,
-+				    state,
-+				    &enable_regulator);
-+
- 	state->enabled = false;
- 	state->duty_cycle = 0;
- 	pwm_apply_state(ctx->pwm, state);
- 
-+	pwm_fan_switch_power(ctx, enable_regulator);
-+
- 	ctx->enabled = false;
- 
- 	return 0;
-@@ -153,6 +200,10 @@ static int  __set_pwm(struct pwm_fan_ctx *ctx, unsigned long pwm)
- 	int ret = 0;
- 
- 	if (pwm > 0) {
-+		if (ctx->enable_mode == pwm_off_reg_off)
-+			/* pwm-fan hard disabled */
-+			return 0;
-+
- 		period = state->period;
- 		state->duty_cycle = DIV_ROUND_UP(pwm * (period - 1), MAX_PWM);
- 		ret = pwm_apply_state(ctx->pwm, state);
-@@ -190,20 +241,76 @@ static void pwm_fan_update_state(struct pwm_fan_ctx *ctx, unsigned long pwm)
- 	ctx->pwm_fan_state = i;
- }
- 
-+static int pwm_fan_update_enable(struct pwm_fan_ctx *ctx, long val)
-+{
-+	int ret = 0;
-+	int old_val;
-+
-+	mutex_lock(&ctx->lock);
-+
-+	if (ctx->enable_mode == val)
-+		goto out;
-+
-+	old_val = ctx->enable_mode;
-+	ctx->enable_mode = val;
-+
-+	if (val == 0) {
-+		/* Disable pwm-fan unconditionally */
-+		ret = __set_pwm(ctx, 0);
-+		if (ret)
-+			ctx->enable_mode = old_val;
-+		pwm_fan_update_state(ctx, 0);
-+	} else {
-+		/*
-+		 * Change PWM and/or regulator state if currently disabled
-+		 * Nothing to do if currently enabled
-+		 */
-+		if (!ctx->enabled) {
-+			struct pwm_state *state = &ctx->pwm_state;
-+			bool enable_regulator = false;
-+
-+			state->duty_cycle = 0;
-+			pwm_fan_enable_mode_2_state(val,
-+						    state,
-+						    &enable_regulator);
-+
-+			pwm_apply_state(ctx->pwm, state);
-+			pwm_fan_switch_power(ctx, enable_regulator);
-+			pwm_fan_update_state(ctx, 0);
-+		}
-+	}
-+out:
-+	mutex_unlock(&ctx->lock);
-+
-+	return ret;
-+}
-+
- static int pwm_fan_write(struct device *dev, enum hwmon_sensor_types type,
- 			 u32 attr, int channel, long val)
- {
- 	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
- 	int ret;
- 
--	if (val < 0 || val > MAX_PWM)
--		return -EINVAL;
-+	switch (attr) {
-+	case hwmon_pwm_input:
-+		if (val < 0 || val > MAX_PWM)
-+			return -EINVAL;
-+		ret = set_pwm(ctx, val);
-+		if (ret)
-+			return ret;
-+		pwm_fan_update_state(ctx, val);
-+		break;
-+	case hwmon_pwm_enable:
-+		if (val < 0 || val > 3)
-+			ret = -EINVAL;
-+		else
-+			ret = pwm_fan_update_enable(ctx, val);
- 
--	ret = set_pwm(ctx, val);
--	if (ret)
- 		return ret;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
- 
--	pwm_fan_update_state(ctx, val);
- 	return 0;
- }
- 
-@@ -214,9 +321,15 @@ static int pwm_fan_read(struct device *dev, enum hwmon_sensor_types type,
- 
- 	switch (type) {
- 	case hwmon_pwm:
--		*val = ctx->pwm_value;
--		return 0;
--
-+		switch (attr) {
-+		case hwmon_pwm_input:
-+			*val = ctx->pwm_value;
-+			return 0;
-+		case hwmon_pwm_enable:
-+			*val = ctx->enable_mode;
-+			return 0;
-+		}
-+		return -EOPNOTSUPP;
- 	case hwmon_fan:
- 		*val = ctx->tachs[channel].rpm;
- 		return 0;
-@@ -345,20 +458,14 @@ static int pwm_fan_of_get_cooling_data(struct device *dev,
- 	return 0;
- }
- 
--static void pwm_fan_regulator_disable(void *data)
--{
--	struct pwm_fan_ctx *ctx = data;
--
--	pwm_fan_switch_power(ctx, false);
--}
--
--static void pwm_fan_pwm_disable(void *__ctx)
-+static void pwm_fan_cleanup(void *__ctx)
- {
- 	struct pwm_fan_ctx *ctx = __ctx;
- 
--	ctx->pwm_state.enabled = false;
--	pwm_apply_state(ctx->pwm, &ctx->pwm_state);
- 	del_timer_sync(&ctx->rpm_timer);
-+	/* Switch off everything */
-+	ctx->enable_mode = pwm_disable_reg_disable;
-+	pwm_fan_power_off(ctx);
- }
- 
- static int pwm_fan_probe(struct platform_device *pdev)
-@@ -392,16 +499,6 @@ static int pwm_fan_probe(struct platform_device *pdev)
- 			return PTR_ERR(ctx->reg_en);
- 
- 		ctx->reg_en = NULL;
--	} else {
--		ret = pwm_fan_switch_power(ctx, true);
--		if (ret) {
--			dev_err(dev, "Failed to enable fan supply: %d\n", ret);
--			return ret;
--		}
--		ret = devm_add_action_or_reset(dev, pwm_fan_regulator_disable,
--					       ctx);
--		if (ret)
--			return ret;
- 	}
- 
- 	pwm_init_state(ctx->pwm, &ctx->pwm_state);
-@@ -416,14 +513,19 @@ static int pwm_fan_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	/* Set duty cycle to maximum allowed and enable PWM output */
-+	ctx->enable_mode = pwm_disable_reg_enable;
-+
-+	/*
-+	 * Set duty cycle to maximum allowed and enable PWM output as well as
-+	 * the regulator. In case of error nothing is changed
-+	 */
- 	ret = set_pwm(ctx, MAX_PWM);
- 	if (ret) {
- 		dev_err(dev, "Failed to configure PWM: %d\n", ret);
- 		return ret;
- 	}
- 	timer_setup(&ctx->rpm_timer, sample_timer, 0);
--	ret = devm_add_action_or_reset(dev, pwm_fan_pwm_disable, ctx);
-+	ret = devm_add_action_or_reset(dev, pwm_fan_cleanup, ctx);
- 	if (ret)
- 		return ret;
- 
-@@ -455,7 +557,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
- 	if (!channels)
- 		return -ENOMEM;
- 
--	channels[0] = HWMON_CHANNEL_INFO(pwm, HWMON_PWM_INPUT);
-+	channels[0] = HWMON_CHANNEL_INFO(pwm, HWMON_PWM_INPUT | HWMON_PWM_ENABLE);
- 
- 	for (i = 0; i < ctx->tach_count; i++) {
- 		struct pwm_fan_tach *tach = &ctx->tachs[i];
-@@ -529,57 +631,26 @@ static int pwm_fan_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
--static int pwm_fan_disable(struct device *dev)
--{
--	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
--	int ret;
--
--	if (ctx->pwm_value) {
--		/* keep ctx->pwm_state unmodified for pwm_fan_resume() */
--		struct pwm_state state = ctx->pwm_state;
--
--		state.duty_cycle = 0;
--		state.enabled = false;
--		ret = pwm_apply_state(ctx->pwm, &state);
--		if (ret < 0)
--			return ret;
--	}
--
--	ret = pwm_fan_switch_power(ctx, false);
--	if (ret) {
--		dev_err(dev, "Failed to disable fan supply: %d\n", ret);
--		return ret;
--	}
--
--	return 0;
--}
--
- static void pwm_fan_shutdown(struct platform_device *pdev)
- {
--	pwm_fan_disable(&pdev->dev);
-+	struct pwm_fan_ctx *ctx = platform_get_drvdata(pdev);
-+
-+	pwm_fan_cleanup(ctx);
- }
- 
- #ifdef CONFIG_PM_SLEEP
- static int pwm_fan_suspend(struct device *dev)
- {
--	return pwm_fan_disable(dev);
-+	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
-+
-+	return pwm_fan_power_off(ctx);
- }
- 
- static int pwm_fan_resume(struct device *dev)
- {
- 	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
--	int ret;
--
--	ret = pwm_fan_switch_power(ctx, true);
--	if (ret) {
--		dev_err(dev, "Failed to enable fan supply: %d\n", ret);
--		return ret;
--	}
--
--	if (ctx->pwm_value == 0)
--		return 0;
- 
--	return pwm_apply_state(ctx->pwm, &ctx->pwm_state);
-+	return set_pwm(ctx, ctx->pwm_value);
- }
- #endif
- 
--- 
-2.25.1
+On Mon, May 23, 2022 at 01:05:13PM +0200, Alexander Stein wrote:
+> Each pwm device has already a pwm_state. Use this one instead of
+> managing an own copy of it.
+>=20
+> Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+> ---
+>  drivers/hwmon/pwm-fan.c | 49 +++++++++++++++++++++++++----------------
+>  1 file changed, 30 insertions(+), 19 deletions(-)
+>=20
+> diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
+> index e5d4b3b1cc49..e0ce81cdf5e0 100644
+> --- a/drivers/hwmon/pwm-fan.c
+> +++ b/drivers/hwmon/pwm-fan.c
+> @@ -40,7 +40,6 @@ struct pwm_fan_ctx {
+> =20
+>  	struct mutex lock;
+>  	struct pwm_device *pwm;
+> -	struct pwm_state pwm_state;
+>  	struct regulator *reg_en;
+>  	enum pwm_fan_enable_mode enable_mode;
+>  	bool regulator_enabled;
+> @@ -142,7 +141,7 @@ static int pwm_fan_switch_power(struct pwm_fan_ctx *c=
+tx, bool on)
+> =20
+>  static int pwm_fan_power_on(struct pwm_fan_ctx *ctx)
+>  {
+> -	struct pwm_state *state =3D &ctx->pwm_state;
+> +	struct pwm_state state;
+>  	int ret;
+> =20
+>  	if (ctx->enabled)
+> @@ -154,8 +153,9 @@ static int pwm_fan_power_on(struct pwm_fan_ctx *ctx)
+>  		return ret;
+>  	}
+> =20
+> -	state->enabled =3D true;
+> -	ret =3D pwm_apply_state(ctx->pwm, state);
+> +	pwm_get_state(ctx->pwm, &state);
+> +	state.enabled =3D true;
+> +	ret =3D pwm_apply_state(ctx->pwm, &state);
+>  	if (ret) {
+>  		dev_err(ctx->dev, "failed to enable PWM\n");
+>  		goto disable_regulator;
 
+IMHO this isn't a net win. You trade the overhead of pwm_get_state
+against some memory savings. I personally am not a big fan of the
+get_state + modify + apply codeflow. The PWM framework does internal
+caching of the last applied state, but the details are a bit ugly. (i.e.
+pwm_get_state returns the last applied state, unless there was no state
+applied before. In that case it returns what .get_state returned during
+request time, unless there is no .get_state callback ... not sure if the
+device tree stuff somehow goes into that, didn't find it on a quick
+glance)
+
+Also there is a (small) danger, that pwm_state contains something that
+isn't intended by the driver, e.g. a wrong polarity. So I like the
+consumer to fully specify what they intend and not use pwm_get_state().
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--fw6upfswezr6qibg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKLghMACgkQwfwUeK3K
+7AmQswf/dBN4fTeXUIyuivX51ViWGSOoj7SBV6WmVknwIwT55TCOSgqpz+Wbs+2T
+7AZvO/fVnNioMt4461OfS0pUNeeifKk8yTCDMr6EdzTZZNhrnPdnHxWxd7zUwmjF
+RYqAkflCUVVXG20xETVdG2ywnP47YMw9CnTsRO5iQB7aBnWuGDTl1cHUQTDgODub
+WUiLuQpjV173FAVOCoXMy37+yhhbIqH4uVhCUP9QJKHm1hxuJTwXQ8LP4vqHMwRe
+PJbVoq4UqZTFujr/1Bks5tA0h/OGUZh0f/y5Spff3R+S0Zz7BmOjykiAXnpQ6L0K
+dW4OI9i93eM4kiSnlc8hNpWhMRBi2w==
+=XdT6
+-----END PGP SIGNATURE-----
+
+--fw6upfswezr6qibg--
