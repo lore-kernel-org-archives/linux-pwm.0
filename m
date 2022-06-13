@@ -2,189 +2,88 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB31ACCA47B
-	for <linux-pwm@archiver.kernel.org>; Mon, 13 Jun 2022 14:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5881CCA47F
+	for <linux-pwm@archiver.kernel.org>; Mon, 13 Jun 2022 15:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385719AbiFMOzC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45480 "EHLO
+        id S1345091AbiFMPRf (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 13 Jun 2022 11:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386616AbiFMOyC (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Jun 2022 10:54:02 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F439CA3D1;
-        Mon, 13 Jun 2022 04:56:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655121393; x=1686657393;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=8Q5Vi8/J5qbKKRMZA691TAPtHySSM6q/h6jOv0RQgGw=;
-  b=nVm7hUuG2MoXbslsDfqagkKlqXgn7y6xEjvDU61oRh/w36Wm+ffQKdjt
-   73JXwDsWOSBtt6R/meyygwPLFCNOSraZF+SE3Z+BOKa312PWiJCQohOHQ
-   5filSKdqWeUCDWS20p+Md2n82VZeVPvsJIZbdvcgkfXveKYpqLlHHuh/M
-   lqmDaQBCr3rTFQgi3EHaR/Qul0Y2PxDF1U5T2tvWbvHDbGHAM6gU+mtGf
-   KzLK2Oj5YHEkYikdyGu5QPRaMLOGgfegmgTGFnp3SKwtyASPaqvmRJUAW
-   JwcBblUpr+hzUbfPzX4hU3pp7MNNhwkohTzQNOHd7CRGLv7iwSm2gXlTJ
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="99743306"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jun 2022 04:56:15 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 13 Jun 2022 04:56:09 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
- Transport; Mon, 13 Jun 2022 04:56:09 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VQW58vAI/qZT1/kCap8DC0puMEf/94LS6esakgTCJqqG5mrrLQDsR/XQvLH5iPv+Ao8+dRRpq01EwcvlUxPiwFm1Y3Qa+UAVGCpvIUfKOTHZYKxqoK4lR5CogSZsTuMfpqEUbEHE73upPJltsfXnRbb5oCWM1HmQwEV4N8CZ3xaqFZt4Nu1OL2USBHkRgbadWbFij8Dw4f7sAds596TQBbTqjVEt7mwzcRmMHrrsUbKykwjAG09wXAx8g25It4OpY340eqrDubar0xOPKHWZMudTylWbX8HPW9DxI+hgYSg1/vxkd8M9RgJit/rPWW2fqnOUYsxMjkuLbwXMHWjImQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8Q5Vi8/J5qbKKRMZA691TAPtHySSM6q/h6jOv0RQgGw=;
- b=oLOULw3ivfugL2Ign4WCS8yvP+AV6vxGv+2Fm3tkqKBTBaMiKzHmx9AOBx4I65FADI/ruOQCzowZ7/aCi9dUpAuR8mC2USqlC1W3yowPK8NGnAd8wU5hEaaXFj4skb8QZYpWs6RGxNjm9mqZrguXDAP6ZpVpgtaQUvo81cGxLVw3DLhmY32shhACWkKgkfkGCW3aYovTy/Jnm3x+GDcnOzGE4UC1uPCnBzbQ9ypc+YvUQwjSK2n6xIIzA7JSGGKhkDolKhfVwKSqUHUty3U5YJ2H1sUe/Ys4gvFOroQLaCJAPSdmqlzXHRNEFJ8Rfo6rHgsTpFYq30F2Ga1/5N55pw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        with ESMTP id S1387598AbiFMPPM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Jun 2022 11:15:12 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908BF12088B;
+        Mon, 13 Jun 2022 05:33:32 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id s12so10903814ejx.3;
+        Mon, 13 Jun 2022 05:33:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Q5Vi8/J5qbKKRMZA691TAPtHySSM6q/h6jOv0RQgGw=;
- b=apq6iz936rC/t+f4dsOyA6sCZ4RpzAFnDQJlUfWqPtJlHuVQnLCxPi57VuBwhHUyeHkGJ+1Y2kPPaCFn6Jt+NFYrRLPJhaK1KBTo/WcbOar5LEWYO5SG6VKGnY2VvyCfxSyoCwzxKsGweflhEKsYCNc7Trt5t/INFtP71GHRPSE=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
- by DM6PR11MB3755.namprd11.prod.outlook.com (2603:10b6:5:140::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.15; Mon, 13 Jun
- 2022 11:56:07 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::699b:5c23:de4f:2bfa]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::699b:5c23:de4f:2bfa%4]) with mapi id 15.20.5332.022; Mon, 13 Jun 2022
- 11:56:07 +0000
-From:   <Conor.Dooley@microchip.com>
-To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
-        <lee.jones@linaro.org>
-CC:     <Daire.McNamara@microchip.com>, <linux-kernel@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <Conor.Dooley@microchip.com>
-Subject: Re: [PATCH v2 0/2] Add support for Microchip's pwm fpga core
-Thread-Topic: [PATCH v2 0/2] Add support for Microchip's pwm fpga core
-Thread-Index: AQHYfxeOm1EkCb4F8E6fiUEwN3NvnK1NOoMA
-Date:   Mon, 13 Jun 2022 11:56:07 +0000
-Message-ID: <4593d704-7f7f-83f9-8fce-2e691d8ba580@microchip.com>
-References: <20220613111759.1550578-1-conor.dooley@microchip.com>
-In-Reply-To: <20220613111759.1550578-1-conor.dooley@microchip.com>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ff1356bc-f070-4077-97f0-08da4d33b36a
-x-ms-traffictypediagnostic: DM6PR11MB3755:EE_
-x-microsoft-antispam-prvs: <DM6PR11MB375565324FB288E303583C5498AB9@DM6PR11MB3755.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 73JImKjLN4PpDJzAfH8O8nT6v77IQXN9AtK/++sCyG1zdWN5MBmg/MLfv4sVtIgAEeX6oMzyloKq/HiGOcVYsCB0QK/JzBRmxlGrGf/IYyPDD2CFOwGbtv3wpPcJtRh+mGWfb+6r8aBqA4FmjfoUrp/UZ+pEvomASUMo9Kkbs6ln3lSJu6xG+tZIUY6pv+z/YjontzTx1n4aa0LGE1G6GMkzznSJmo0Jryk0L1km6O/6dfKibEXFYftzet72ipIQnkJLqHQD16OY1D0KNrCV66C9x1Kgwho52mAUe+r9R2L4jD4ctZUHGQr/remP2WPUVqVHdfKgpmN1Wj/8rknZOroFWw+SIQ6ske2xHwJ+ZW/DIMl2psWmhQpSZrN0R4TrGOqDJE3YIBFctu7z8W9RrTWNoBqk0kv/TmN0218mAiHLWOkBrQDcONIkou+tZx2xss1lhvRbPXCS8/6GCbXYGgZYp/M2uueeTaCV4Kzduj7T8hCvWjohTcxXgT3sYHERLAKbzQN1g7f19g3OePJMeLk8/rrK1kUc65jDgeOEHhDqWO1qz3pMp7Lqjkh78YpnxY5aFzfEpxWc0Sb+Y2D5Vv/LdIg86TCrkSVuhTUIEdP9awwVlIJnNHVjn7tOO0V8T722r0pHduCsbCWSC8ajlot72jPCxoVoQxDZqbrQqx+H/R5F37YNCHiZ/iZUcyjnqUBhY/q4UDb7nDaKBzQ73eybDJUt/FL1sT0kWg2lwbghG6Ie9na/f/GxrPA1r5/73m9i9mG6FS8zJZnRBgMhwQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(186003)(31696002)(86362001)(83380400001)(71200400001)(31686004)(4326008)(8676002)(66476007)(64756008)(91956017)(54906003)(66946007)(36756003)(316002)(110136005)(76116006)(53546011)(6506007)(66556008)(66446008)(5660300002)(2616005)(8936002)(6486002)(38070700005)(38100700002)(6512007)(26005)(122000001)(2906002)(508600001)(107886003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?anJ5bzdMNlpWS1RCTHFQeHFScHcvV3RFV2dkTzdiRkp2a1R4ZVFaVGw2dEIx?=
- =?utf-8?B?UW5aZGoyZTIrU3BlYUo0UHZBaXlQM2E2a3RaeHNOaGJISHhXSnNldWVsY3FU?=
- =?utf-8?B?ZW1zeTZYKzFNd2VUS3F1SmZRWnBEaE1Ic3I3UmVNMDlMa3k3NjFlRnp2ZURy?=
- =?utf-8?B?OHB5REcwRG9NL3lweHpxcnpaK283WHBETFNLRHQ0N3NsNHVPa29SZkpoZ1dU?=
- =?utf-8?B?RzdVRW94cDFmNnlBdVgyMEV6WFF3bVgvMEdydGV2VzVLMUV2UjliZU9uZG5o?=
- =?utf-8?B?QytTZDA2VUlhY2FqTXhYLytZNlhhelFzRUFJN0xCMDcwVHJpTkRjZ1JvQTla?=
- =?utf-8?B?TFdkUTI3TkZZWnFrWm00bDlyY0ljcEZ4TlVPb2g1d25XSXdHaWZHSjJkK3pJ?=
- =?utf-8?B?TitJSHcwalZPdXJEblVaeW5qRjFPdzBnWHM5NHM5c3ZuU2toUnRXU3FCWDNv?=
- =?utf-8?B?OW9UVkF6b3haNU5jYjNUcVd1aFoxOVJ5c0JIOXhZL2FSMUZKK2Z6SUhZWklK?=
- =?utf-8?B?UW1TalhmTlZzcGo5OC90M2NJQWtFL2svSlZXeHF0cFU1SjQxd1gyMnV6cWla?=
- =?utf-8?B?MVFzVURJSHlaTy9Eb0ZzV3UrR1JRS2JSeEdocnpIdERYZmZ0WlF6VVE0K2RZ?=
- =?utf-8?B?VTJWWEtXdXYzTUNGR0RvL2ZTaXZFbmZIenZXcFVLSVhFOU1UQ1lQV3RyTUNK?=
- =?utf-8?B?YTRDbGNhbFIxbi9YYThNS3NSdXdyVXdWNE9QVVFNK3lSTTk2SndiS00xZTBz?=
- =?utf-8?B?NEV5dHF0QTAxd3pwYkhFak1oWTVIVXpqQmhLOFh1WHZ4TzhxWU01eWtNNzVk?=
- =?utf-8?B?OU1NU2lPOHZyWGVyMGR5R3lvRkkvckxES0NzMUVtaFkxK3k1bFBGSEN6Tjls?=
- =?utf-8?B?Q21aV3QxVUQwR2xmWmg4Mm5EdXRMckxobUdTR0RYamU4WUVFV1RITFRMbDZG?=
- =?utf-8?B?ZndNVEpMa0tTMTNjOVRQblQ5TGs3NllFS2xqbXV2Smp3RTUzUU5KakZGVE9t?=
- =?utf-8?B?aVgxZ3BFR2NENzlxMUlTZENiQTdMQ012T3hjZW9BdkhaKzY5WUczQmtMaTFG?=
- =?utf-8?B?M2ltc3pPanM1NGN3UWNPdW5TaWtHWGRmemZhd2dyc3hMbWlzTmk3RFlsbVla?=
- =?utf-8?B?cnQvTkR1YUtqYVcxbzNtL2VuVzRLbGt2a0ZMUTZrMkt4eEF0ZXJsT3ZmU0tr?=
- =?utf-8?B?TUdvdWlYeWVnT2FTUk41VW41RjRzWnRHNzV5REdvcjVuTkpYa3NFdkhERnhM?=
- =?utf-8?B?MUFwZUZyVDd2VElGVURFb3UvWkNpaWs1cm1oaG5mVVBjUnRoeUxNMkVxY3Ny?=
- =?utf-8?B?eEYxLzBObnZFUXgraGlteXczRVVzTUxDdDV0ZjM3UmlqbExNTUs3Tml2ejV4?=
- =?utf-8?B?Nk14ZDF5UjFiblI5U0J1UEphSnRjQkhxY011eHFzeStZNmpMR3hTRFFtZFIy?=
- =?utf-8?B?Z2x0dm5sV1gvTWptdUJMUElBOEdLMHlhYWRLUmFjYnJXcTROUFZHN1VXS0c3?=
- =?utf-8?B?YXExaXppSHNNblNBNXBoTFBVWGZjZnFMVXlINXZkMGszVzFYTlltT3I3SENa?=
- =?utf-8?B?Uzd6UmJKVGp3NXpGL1ZSaEJURlAvVmZoSVJmQ1AxU2N1RDE3UkJhMWFxYnNr?=
- =?utf-8?B?ZVU4T0JMU3VsRDU5RjJsVy84R201VVF4czFYSGE1R0JxejlDRGo4MjRTSmd6?=
- =?utf-8?B?SW1qMGRNUllnaFlWSTJPN3dqUEhrWEs2TWFwUkRNN3g5QWlOdGYvNlRpTlI3?=
- =?utf-8?B?bmh2bnNDUCt1ejZsbUZNR1E5cHY0ZHZFRSs1bk9Vdm5iUFQwejlhYk9RQjhn?=
- =?utf-8?B?YVU0OGpSRTYxUVBmK1ZtMzRnNjVSYVFZNDAxdnp0MTQ1Uzl1OFV5aFVEOGhx?=
- =?utf-8?B?Q05manIwcjhkNUQ0UWRza2FkS0k4S1lhbnNBUFBheEZDYWhWS2E5NXJXTDJp?=
- =?utf-8?B?b2E2Wlo3Q2JSOERLSVR0OEpmcGxKQ0ZRTlRKVnVmOGJxQ1VsYkwzS05hSCtD?=
- =?utf-8?B?K2VWN3Q3Z2I5TmZNY20wRjlFcXNEbWxadWZ4MTZrRUlzRERiYUh0eXdLcE5j?=
- =?utf-8?B?aTRsa0t0Qm9yRUNMa3pLeFYwYUxKM0JCZnFxQkxGYjZtYnBTQ2ZzZUxOQUFZ?=
- =?utf-8?B?cjg5Rm1jTzlqMVNaeFNNVWxablBnQnlxNHpwdEM4SFBTNStNbEI4THRtemNI?=
- =?utf-8?B?TGJ2ZzA3c1BXVmVJYTV5YjZWNW1BT0hyZmxwUFJZTVdETHkwQnc0aXZ3NkZa?=
- =?utf-8?B?dHRMa2lIMktrZktPRFdmSkp1dmxpRFFtdWtGOEUxcG9oS2FPZ3FWODhGM1RL?=
- =?utf-8?B?ZU44R1RIT2ZUUldxMlU3SlJmQ0lDZ0dkRlhlL1cvK2x6MFhnZXNGUT09?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <79D8A338D847A2468C38A1C7541B46BC@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff1356bc-f070-4077-97f0-08da4d33b36a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2022 11:56:07.4486
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5YyaEMgGW8W63WF/dxVLbwd6ECd+l9FsJHNwjTklD9ICjS8OKn4EZJJc9vLx2CmKNP8n5Ea4DPxOAMgjvFDyVsBy60XTmpMI3kQXOb9dJfU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3755
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=VD9AusQPhhsv19ZmDVVBkmiyTKW+gPW1C2iR/TqV7/0=;
+        b=JZ6X4CGWWDBszUZ2NwNsM/JYojtlM1KcmH82DN3FVl/69G92+oG5fclDS3btw4+lSI
+         LwERbGexHq/RDZf/i4sBGW/rIElyWn8Oz3PkD29Y4GwWJsy4H1Sdsy7UfGoL8naaKU4+
+         +8SvZ84keSSSu/Y/9C1ARkwEv7T738bPkLlfLK/Fvzfyg5fEJXbMP+33uC9OPq4KgcRk
+         4V2bTougmnYBIwsbs3parJK07RlBy7rwedbOMsAQf99byX7JEutvjGqiVBDwXbNV8/Eg
+         jhWdJsGkv3Ca1Czv3gUXGZn5nd5+GlA0adEBBlxrejZ5x33evj8P59dV3Eb3gWPY0YCs
+         RWfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=VD9AusQPhhsv19ZmDVVBkmiyTKW+gPW1C2iR/TqV7/0=;
+        b=nDBuV62CEf7MoUCuDl0uSiGy00eB/+YlTEnOm9DQIR6jWrfFSV0XPWCr80OMNLC13r
+         BoCsNRhRGb8dEXgVyAPAOyHr/fRY1m4Kc28xy8kG1EB01dgxPnFKheTk1ZkQ5y/oibGp
+         J5xs+zQqGroWtfALAKaGGzhIRmQTJXPyYLkjcr/Hppi8QQwC1IXgaWCQpyh+q6tKrc9k
+         1S5gqxus8G7c2c+xqRDoUeBXhLJhWMaZ4Ee1oWy8NSRJCa1bDOfW6sxsK1ElXMHWQEv8
+         iAugY2AUD24Dr6UDIhKAPVTj4Fsf/N4+uyb7OgC9ykujE74uyQ+Lxx1SdD1efH+J80GD
+         CDWw==
+X-Gm-Message-State: AOAM531BzPKbI6FBbT9/65exDH+aQGTQWPLfaTJUgVjkfR3VjT2DqfDD
+        flmOF6zL8AVmU9VOTaxgX8c=
+X-Google-Smtp-Source: ABdhPJw+RBhp5AwXRhr0zcDILCY+/pwvYIjbhjLDFxY3Qpacux2pQUqlC+Xrr++nZCJw0+2YDJ/vjQ==
+X-Received: by 2002:a17:906:b788:b0:711:fc54:e55e with SMTP id dt8-20020a170906b78800b00711fc54e55emr22200025ejb.270.1655123610787;
+        Mon, 13 Jun 2022 05:33:30 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
+        by smtp.gmail.com with ESMTPSA id p14-20020a170906a00e00b007101f6f0720sm3782221ejy.120.2022.06.13.05.33.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 05:33:30 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/pwm to PWM SUBSYSTEM
+Date:   Mon, 13 Jun 2022 14:33:19 +0200
+Message-Id: <20220613123319.22964-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDEzLzA2LzIwMjIgMTI6MTcsIENvbm9yIERvb2xleSB3cm90ZToNCj4gSGV5IFV3ZSwN
-Cj4gR290IGEgdjIgZm9yIHlvdS4uLg0KPiBJIGFkZGVkIHNvbWUgY29tbWVudHMgZXhwbGFpbmlu
-ZyB0aGUgY2FsY3VsYXRpb25zIGFuZCBhIGRvY3VtZW50YXRpb24gbGluaw0KPiBzbyBob3BlZnVs
-bHkgdGhpbmdzIGFyZSBhIGJpdCBlYXNpZXIgdG8gZm9sbG93Lg0KPiANCj4gQ29kZSB3aXNlLCBJ
-IHdlbnQgdGhyb3VnaCBhbmQgc29ydGVkIG91dCBhIGJ1bmNoIG9mIGlzc3VlcyB0aGF0IGN5Y2xp
-bmcNCj4gdGhyb3VnaCB0aGUgZGlmZmVyZW50IHBlcmlvZHMvZHV0aWVzIHRocmV3IHVwLiBBbG9u
-ZyB0aGUgd2F5IEkgZm91bmQNCj4gc29tZSBvdGhlciBwcm9ibGVtcyAtIGVzcGVjaWFsbHkgd2l0
-aCB0aGUgbG9uZ2VyIHBlcmlvZHMgd2hpY2ggSSBoYXZlDQo+IGZpeGVkLiBJIGFsc28gYWRkZWQg
-YSB3cml0ZSB0byB0aGUgc3luYyByZWdpc3RlciBpbiB0aGUgYXBwbHkgZnVuY3Rpb24sDQo+IHdo
-aWNoIHdpbGwgcmVzb2x2ZSB0byBhIE5PUCBmb3IgY2hhbm5lbHMgd2l0aG91dCAic2hhZG93IHJl
-Z2lzdGVycyIuDQo+IA0KPiBPdGhlciB0aGFuIHRoYXQsIEkgbWFuYWdlZCB0byBkaXRjaCB0aGUg
-bWNocF9jb3JlX3B3bV9yZWdpc3RlcnMgc3RydWN0DQo+IGVudGlyZWx5IGJ1dCBoYWQgdG8gYWRk
-IGEgc2hvcnQgZGVsYXkgYmVmb3JlIHJlYWRpbmcgYmFjayB0aGUgcmVnaXN0ZXJzDQo+IGluIG9y
-ZGVyIHRvIGNvbXB1dGUgdGhlIGR1dHkuDQo+IA0KPiBUaGFua3MsDQo+IENvbm9yLg0KDQpBaCwg
-ZGFtbiAtIGZvcmdvdCB0byBtZW50aW9uIHRoZSAzIHNldHMgb2YgY2hhbmdlcyB0byB0aGUgTUFJ
-TlRBSU5FUlMgZW50cnkNCmFnYWluLi4gVGhlcmUncyBhIGNoYW5nZSBhbHJlYWR5IGluIHNwaS1u
-ZXh0ICYgYW5vdGhlciBjaGFuZ2UgaW4gbXkgcGF0Y2hzZXQNCnNlbnQgZm9yIHVzYi4NCg0KPiAN
-Cj4gQ2hhbmdlcyBmcm9tIHYxOg0KPiAtIGFjY291bnQgZm9yIGVkZ2UgInF1aXJrIiB3aGlsZSBp
-bnZlcnRlZA0KPiAtIGJsb2NrIGNoYW5naW5nIGVuYWJsZWQgY2hhbm5lbHMnIHBlcmlvZA0KPiAt
-IGRvY3VtZW50IHRoZSBoYXJkd2FyZS9kcml2ZXIgbGltaXRhdGlvbnMNCj4gLSByZWFycmFuZ2Ug
-Z2V0X3N0YXRlKCkgbW9yZSBsb2dpY2FsbHkNCj4gLSBmaXggY2FzdCBzaXplcyBpbiBnZXRfc3Rh
-dGUoKQ0KPiAtIGZpeCByZW1vdmUoKSBhbmQgcHJvYmUgZXJyb3IgcGF0aHMNCj4gLSBkZWxldGUg
-bWNocF9jb3JlX3B3bV9yZWdpc3RlcnMNCj4gLSBzaW1wbGlmeSAuYXBwbHkoKSBsb2dpYw0KPiAt
-IGRvbid0IHdhcm4gaW4gY2FsY3VsYXRlX2Jhc2UoKQ0KPiAtIGZpeCBwZXJpb2QgY2FsY3VsYXRp
-b24NCj4gLSBmaXggZHV0eSBjeWNsZSBjYWxjdWxhdGlvbg0KPiAtIGFkZCBDT1JFUFdNIHByZWZp
-eCB0byBkZWZpbmVzDQo+IC0gYWRkIGEgZG9jdW1lbnRhdGlvbiBsaW5rDQo+IA0KPiBDb25vciBE
-b29sZXkgKDIpOg0KPiAgICBwd206IGFkZCBtaWNyb2NoaXAgc29mdCBpcCBjb3JlUFdNIGRyaXZl
-cg0KPiAgICBNQUlOVEFJTkVSUzogYWRkIHB3bSB0byBQb2xhckZpcmUgU29DIGVudHJ5DQo+IA0K
-PiAgIE1BSU5UQUlORVJTICAgICAgICAgICAgICAgICAgICAgIHwgICAxICsNCj4gICBkcml2ZXJz
-L3B3bS9LY29uZmlnICAgICAgICAgICAgICB8ICAxMCArDQo+ICAgZHJpdmVycy9wd20vTWFrZWZp
-bGUgICAgICAgICAgICAgfCAgIDEgKw0KPiAgIGRyaXZlcnMvcHdtL3B3bS1taWNyb2NoaXAtY29y
-ZS5jIHwgMzEwICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gICA0IGZpbGVzIGNo
-YW5nZWQsIDMyMiBpbnNlcnRpb25zKCspDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMv
-cHdtL3B3bS1taWNyb2NoaXAtY29yZS5jDQo+IA0KPiANCj4gYmFzZS1jb21taXQ6IDYxMTE0ZTcz
-NGNjYjgwNGJjMTI1NjFhYjQwMjA3NDVlMDJjNDY4YzINCg==
+Maintainers of the directory Documentation/devicetree/bindings/pwm
+are also the maintainers of the corresponding directory
+include/dt-bindings/pwm.
+
+Add the file entry for include/dt-bindings/pwm to the appropriate
+section in MAINTAINERS.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Thierry, Lee, please pick this MAINTAINERS addition to your section.
+
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9c67cd163cbb..ec2e764a22ee 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16287,6 +16287,7 @@ F:	Documentation/driver-api/pwm.rst
+ F:	drivers/gpio/gpio-mvebu.c
+ F:	drivers/pwm/
+ F:	drivers/video/backlight/pwm_bl.c
++F:	include/dt-bindings/pwm/
+ F:	include/linux/pwm.h
+ F:	include/linux/pwm_backlight.h
+ K:	pwm_(config|apply_state|ops)
+-- 
+2.17.1
+
