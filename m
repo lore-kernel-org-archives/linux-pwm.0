@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA45CCA47B
-	for <linux-pwm@archiver.kernel.org>; Wed, 15 Jun 2022 07:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77EEACCA480
+	for <linux-pwm@archiver.kernel.org>; Wed, 15 Jun 2022 07:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346254AbiFOHIs (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 15 Jun 2022 03:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51888 "EHLO
+        id S1346349AbiFOHIu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 15 Jun 2022 03:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345926AbiFOHIi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Jun 2022 03:08:38 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0047529362;
-        Wed, 15 Jun 2022 00:08:34 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id w17so6540756wrg.7;
-        Wed, 15 Jun 2022 00:08:34 -0700 (PDT)
+        with ESMTP id S1343619AbiFOHId (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Jun 2022 03:08:33 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5A5286D2;
+        Wed, 15 Jun 2022 00:08:32 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id r123-20020a1c2b81000000b0039c1439c33cso585327wmr.5;
+        Wed, 15 Jun 2022 00:08:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LwR7/AOTal+NwY86Mp0FPWEx+VIIdg+npTDhkz4uRZA=;
-        b=gL8bFY2m4va0wZeJRgUWqT7kUBrgClgBRzeWX6YYme41Px5+XLUsZs9BZHzhA+j5uJ
-         QpBDiZsW+/xE0hj0VZ2mae9c9SV/iffmUp+YaRKTjsQ5uxNFtRv8KVw07hkNc5hb2YHR
-         Tt5zploYnrKt3aBmE4ykfGtpuKVbQj/z2Y3dmPwPKCl6BCsNBJE2maanXiYn9AIVrrFl
-         vBKDO78TRIcjTOYXLwIcPD7t27vpH8gPK88BJ++c5uX0ES11ecP8lurhG+W7JxuinaLY
-         R9rVz7bGM5P3rQb8mEoOkIBv4CTekqz9YbPYHu3acTS35H86hDApTQS2WCuz6Ineo8So
-         35jw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xLemtYN4NjZkALXs/YgJEqQjUNQmyKqkJvuZKJ4dSUA=;
+        b=TPvS/VbcNq+6Ypae95gBaHJ4vzgFNq9zVh1oqgug4WGPkNezDU71whbmowt+brLCQD
+         gBEOaPbE030U+bmS+tEvLrSPkT3QMhAHAEASiu/LciN7x3KdX9JsiZXGgurBxxuMe/DE
+         90/kuxnFrVy2K4reY3E0U5uC2f1U+jTOY6YcOCPrkVzCaFI1IicfRahkp+ca4jsEzBmY
+         g35v8qmnAm2BXeGxeWOHqPDbOpJGob11qV24Wk1pNX1Bkug+Pn28nbHMnZQ/riHesrh8
+         QjbUGgsK7Sws76W9+ZzQeSfiX7C8o0dczUKITjvKKd5gIsRQA7ActBYJQI4iaUWstWKj
+         mx9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LwR7/AOTal+NwY86Mp0FPWEx+VIIdg+npTDhkz4uRZA=;
-        b=SwkxC3iO7/kq6+7S+DLG0/yhdMrUSdbeYcGn83W0NHDKDuesmZI2pSZ82gDH/+xXtU
-         9T5kqgtbgCottHjT6Sb3CmavPdFQmfG/DVdhwXgjhX0WiVBSx9Y8ulUNq6RVQYtc3ufq
-         aKuZev5nfFBNgxTPPXjWjuQgt6mbH6IEHCCPtDc5e+zFGqqNyHYJePRScijDKqs9P/GS
-         sapq0V/w/uOSptG25q550CbtdBbGuxxp5tiaI0QVTCelW/zI8COa2kZs+NK9QtpArLWf
-         LXTIJrfkmbhKuGURrzP+V5JqVS12+4k4Myj6F8r6BweVziMzWNsRXdM01jJT+mnCnRpO
-         bGsw==
-X-Gm-Message-State: AJIora+rK9zKUNQ7WjVdP5ZCYXpKc0t+D7R+nNNa2IxqyNF3SyRoSpqk
-        pM+3D9PfTfGuhCHaGlZL5Bctbu//PRc=
-X-Google-Smtp-Source: AGRyM1ssv4YeT78/571fz1QIuy4yDwJUyp3ElYxO5BCNbb/YE3woCIMzzu8jcbMtQbq4IB8m1ejJpA==
-X-Received: by 2002:a5d:6d8a:0:b0:219:b7fc:f29d with SMTP id l10-20020a5d6d8a000000b00219b7fcf29dmr7969502wrs.665.1655276913323;
-        Wed, 15 Jun 2022 00:08:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xLemtYN4NjZkALXs/YgJEqQjUNQmyKqkJvuZKJ4dSUA=;
+        b=vXrsPhLimTf4hIC6t5SToBn769mJn/Nih/XVXorEyYVwHNY3fd9PHklP2Ft4au8Csf
+         XxyXHaUwNBJFi83DmLLSMvXyRlprp1iNzCsHPvRqHt0gtkd+z82sJ7GU86XgxZ6H9TcC
+         MM7PEL4FYlr8YiB3JbtEWr45wdx6xExrWmDfieym+vq9xuoJCHymSl3yPPtJOx4STWPz
+         /9G6zs95Nb9FJ6F3E8c7fkLeCCw8/4XGwSQVDLQASZbIj7zfeh3N1419sB6RMAzxUPxG
+         s9A7QiO6it3pgsOgC+3vNuBtnO8/Tf6MTL7Hqm0X9Tckfi7Qij654MdcXM9xN9OkXZTY
+         gc1Q==
+X-Gm-Message-State: AOAM531NI5S/wSvJgWUfiU77NFehipN4ydrxSycrHI/EgssNBXWLiNNT
+        gK5S35/Fk1I8q8IozCM3BWgQbMrSVGM=
+X-Google-Smtp-Source: ABdhPJwNiuycHQju8APe07AfqZFN0zr3QM0A1FSN64O19b05aJ62C/MzuRo6CLKYkDw4Bd4pey9ofg==
+X-Received: by 2002:a7b:c7c3:0:b0:398:934f:a415 with SMTP id z3-20020a7bc7c3000000b00398934fa415mr8371171wmk.27.1655276910397;
+        Wed, 15 Jun 2022 00:08:30 -0700 (PDT)
 Received: from debby ([2a01:e0a:a6d:a8d0:7ff4:8f61:5574:9f95])
-        by smtp.gmail.com with ESMTPSA id d9-20020adffd89000000b002102d4ed579sm13472386wrr.39.2022.06.15.00.08.32
+        by smtp.gmail.com with ESMTPSA id e12-20020adfa44c000000b0020fee88d0f2sm17160103wra.0.2022.06.15.00.08.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 00:08:32 -0700 (PDT)
+        Wed, 15 Jun 2022 00:08:29 -0700 (PDT)
 From:   Romain Perier <romain.perier@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
@@ -55,48 +55,42 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         Rob Herring <robh+dt@kernel.org>
 Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/5] ARM: dts: mstar: Add pwm device node to infinity
-Date:   Wed, 15 Jun 2022 09:08:11 +0200
-Message-Id: <20220615070813.7720-4-romain.perier@gmail.com>
+Subject: [PATCH 0/5] Add PWM for MStar SoCs
+Date:   Wed, 15 Jun 2022 09:08:08 +0200
+Message-Id: <20220615070813.7720-1-romain.perier@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220615070813.7720-1-romain.perier@gmail.com>
-References: <20220615070813.7720-1-romain.perier@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This adds the definition of the pwm device node. The PWM being able to
-work with the oscillator at 12Mhz for now, it shares the same xtal than
-other devices (rtc or watchdog for instance).
+This patches series adds a new driver for the PWM found in the Mstar
+MSC313e SoCs and newer. It adds a basic pwm driver, the corresponding
+devicetree bindings and its documentation.
 
-Signed-off-by: Romain Perier <romain.perier@gmail.com>
----
- arch/arm/boot/dts/mstar-infinity.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Daniel Palmer (1):
+  pwm: Add support for the MSTAR MSC313 PWM
 
-diff --git a/arch/arm/boot/dts/mstar-infinity.dtsi b/arch/arm/boot/dts/mstar-infinity.dtsi
-index 441a917b88ba..752f4c26b31c 100644
---- a/arch/arm/boot/dts/mstar-infinity.dtsi
-+++ b/arch/arm/boot/dts/mstar-infinity.dtsi
-@@ -38,6 +38,16 @@ opp-800000000 {
- 	};
- };
- 
-+&soc {
-+	pm_pwm: pwm@1f001da0 {
-+		compatible = "mstar,msc313-pwm";
-+		reg = <0x1f001da0 0xc>;
-+		#pwm-cells = <2>;
-+		clocks = <&xtal_div2>;
-+		status = "disabled";
-+	};
-+};
-+
- &cpu0 {
- 	operating-points-v2 = <&cpu0_opp_table>;
- };
+Romain Perier (4):
+  dt-bindings: pwm: Add Mstar MSC313e PWM devicetree bindings
+    documentation
+  ARM: dts: mstar: Add pwm device node to infinity
+  ARM: dts: mstar: Add pwm device node to infinity3
+  ARM: dts: mstar: Add pwm device node to infinity2m
+
+ .../bindings/pwm/mstar,msc313e-pwm.yaml       |  47 ++++
+ MAINTAINERS                                   |   1 +
+ arch/arm/boot/dts/mstar-infinity.dtsi         |  10 +
+ arch/arm/boot/dts/mstar-infinity2m.dtsi       |   8 +
+ arch/arm/boot/dts/mstar-infinity3.dtsi        |  10 +
+ drivers/pwm/Kconfig                           |  10 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-msc313e.c                     | 242 ++++++++++++++++++
+ 8 files changed, 329 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-msc313e.c
+
 -- 
 2.35.1
 
