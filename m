@@ -2,100 +2,139 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AEBC433EF
-	for <linux-pwm@archiver.kernel.org>; Thu, 23 Jun 2022 20:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 727F6C43334
+	for <linux-pwm@archiver.kernel.org>; Wed, 29 Jun 2022 07:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbiFWU0L (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 23 Jun 2022 16:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S232035AbiF2HYZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiFWU0K (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jun 2022 16:26:10 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6914FC4E
-        for <linux-pwm@vger.kernel.org>; Thu, 23 Jun 2022 13:26:09 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id e40so601621eda.2
-        for <linux-pwm@vger.kernel.org>; Thu, 23 Jun 2022 13:26:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9DQnJCB/qnsZZ49YdwXaekju9k4tCSafvgxqzP9n2e4=;
-        b=Pkfw2SVEODkEr/iN3r2gia1wLufw1vFGeVCgqKehK/nKj1tniPTjFy00fU8Qm5lAXc
-         FCC5ZLbyDI7wAvX80ZNILC4EgzlpbjDJbqRHCQ8KXSfDBb2ZzLJjx2Swj2ya4R5hgIpU
-         NWQF8fZ72qCynH/W4bOEP1GUD4biW4hBXwnjNFmXnfF80fB5XN61vsm+keE5rWT/Sjjn
-         TQyn4PsuSowMsXeX6o6W+gj4EmjFCo/OQECEF+1WvuM7WUObxiwPu+Q8GtyQcdZCRmZ/
-         4PZq4Z5Vu6r258j98Va1mAnmRqCXdQe+4ws2GAv2ujbUJcC87OxlDhJ+GmOOCEtp5Rdb
-         J7Yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9DQnJCB/qnsZZ49YdwXaekju9k4tCSafvgxqzP9n2e4=;
-        b=L3MWzgKq4s8qXE4kZnnmPOe6AMgvAnxozs/68OfZR8vMltZazinthXIUIEzITiWItf
-         b/VThtFkRpLb51+aVZovuxWbmzS8PhOYgUc1b9HJxSRZqS/kb/JdrvZWT9UGIeDAolUV
-         xLYAI0a/LUhepjYKZyr9UZtYb4x8947IbYvsUEXzewIGG4OjU2Tjm+pIFsyWX9tkHhvb
-         0V61+kaPjkGyxChQM6rLnagobgR6vqjofwfdtXvyuWo5TZLVbu36ngTxq1HmQkh3SQ+J
-         +9kL0NzYPnuRr2pbdpaXeAqAZFp//ZZMIewNJKMIFjW/vYf9jx41D4MqZ51x2BhoPF8/
-         9PmQ==
-X-Gm-Message-State: AJIora9+Mpy5WeHJV94zwFydlu7t7vjLhTHcSVyRBHFOu24vIfO6w6oD
-        ghfpKi4zvGON5svKcKS80kFJt4KjcxLNMoHZigjTGg==
-X-Google-Smtp-Source: AGRyM1udbZoS5HJJFMkz3vP35YFIDi1NipZA1WLbI3MwDL5OTpckKueb5LXpr8ocKVdSIt0x1YRZbhIx8cOMsNjEYcM=
-X-Received: by 2002:a05:6402:1774:b0:435:7fea:8c02 with SMTP id
- da20-20020a056402177400b004357fea8c02mr12808712edb.213.1656015968593; Thu, 23
- Jun 2022 13:26:08 -0700 (PDT)
+        with ESMTP id S231713AbiF2HYU (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 29 Jun 2022 03:24:20 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BD831340
+        for <linux-pwm@vger.kernel.org>; Wed, 29 Jun 2022 00:24:17 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6S2d-0005UO-4V; Wed, 29 Jun 2022 09:23:15 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6S2S-003M3c-Vk; Wed, 29 Jun 2022 09:23:08 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6S2V-001qeU-Nu; Wed, 29 Jun 2022 09:23:07 +0200
+Date:   Wed, 29 Jun 2022 09:23:04 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jeremy Kerr <jk@codeconstruct.com.au>
+Cc:     Wolfram Sang <wsa@kernel.org>, dri-devel@lists.freedesktop.org,
+        linux-serial@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-mtd@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-crypto@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        acpi4asus-user@lists.sourceforge.net,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, netdev@vger.kernel.org,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        chrome-platform@lists.linux.dev, linux-input@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-hwmon@vger.kernel.org,
+        Support Opensource <support.opensource@diasemi.com>,
+        linux-fbdev@vger.kernel.org, patches@opensource.cirrus.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pwm@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        kasan-dev@googlegroups.com, linux-staging@lists.linux.dev
+Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
+Message-ID: <20220629072304.qazmloqdi5h5kdre@pengutronix.de>
+References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
+ <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
+ <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
 MIME-Version: 1.0
-References: <20220526012946.3862776-1-chris.packham@alliedtelesis.co.nz>
-In-Reply-To: <20220526012946.3862776-1-chris.packham@alliedtelesis.co.nz>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 23 Jun 2022 22:25:58 +0200
-Message-ID: <CAMRc=MfOdbanS+rBoMnD00z2y015nW5xtyyzLHfHrMi68GHyOA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/3] dt-bindings: gpio: gpio-mvebu: Convert to DT
- schema format
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3yzpq2rgg2xm7tqn"
+Content-Disposition: inline
+In-Reply-To: <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Thu, May 26, 2022 at 3:29 AM Chris Packham
-<chris.packham@alliedtelesis.co.nz> wrote:
->
-> The 1st patch converts the old binding mostly 1:1.
-> The 2nd patch deprecates the unused marvell,armadaxp compatible.
-> The 3rd patch documents the existing usage of the offset/marvell,pwm-offset
-> properties.
->
-> Chris Packham (3):
->   dt-bindings: gpio: gpio-mvebu: convert txt binding to DT schema format
->   dt-bindings: gpio: gpio-mvebu: deprecate armadaxp-gpio
->   dt-bindings: gpio: gpio-mvebu: document offset and marvell,pwm-offset
->
->  .../arm/marvell/ap80x-system-controller.txt   |   2 +-
->  .../arm/marvell/cp110-system-controller.txt   |   2 +-
->  .../devicetree/bindings/gpio/gpio-mvebu.txt   |  93 -----------
->  .../devicetree/bindings/gpio/gpio-mvebu.yaml  | 146 ++++++++++++++++++
->  MAINTAINERS                                   |   2 +-
->  5 files changed, 149 insertions(+), 96 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
->  create mode 100644 Documentation/devicetree/bindings/gpio/gpio-mvebu.yaml
->
-> --
-> 2.36.1
->
 
-Applied the series, thanks!
+--3yzpq2rgg2xm7tqn
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Bart
+Hello,
+
+[I dropped nearly all individuals from the Cc: list because various
+bounces reported to be unhappy about the long (logical) line.]
+
+On Wed, Jun 29, 2022 at 03:03:54PM +0800, Jeremy Kerr wrote:
+> Looks good - just one minor change for the mctp-i2c driver, but only
+> worthwhile if you end up re-rolling this series for other reasons:
+>=20
+> > -static int mctp_i2c_remove(struct i2c_client *client)
+> > +static void mctp_i2c_remove(struct i2c_client *client)
+> > =A0{
+> > =A0=A0=A0=A0=A0=A0=A0=A0struct mctp_i2c_client *mcli =3D i2c_get_client=
+data(client);
+> > =A0=A0=A0=A0=A0=A0=A0=A0struct mctp_i2c_dev *midev =3D NULL, *tmp =3D N=
+ULL;
+> > @@ -1000,7 +1000,6 @@ static int mctp_i2c_remove(struct i2c_client *cli=
+ent)
+> > =A0=A0=A0=A0=A0=A0=A0=A0mctp_i2c_free_client(mcli);
+> > =A0=A0=A0=A0=A0=A0=A0=A0mutex_unlock(&driver_clients_lock);
+> > =A0=A0=A0=A0=A0=A0=A0=A0/* Callers ignore return code */
+> > -=A0=A0=A0=A0=A0=A0=A0return 0;
+> > =A0}
+>=20
+> The comment there no longer makes much sense, I'd suggest removing that
+> too.
+
+Yeah, that was already pointed out to me in a private reply. It's
+already fixed in
+
+	https://git.pengutronix.de/cgit/ukl/linux/log/?h=3Di2c-remove-void
+
+> Either way:
+>=20
+> Reviewed-by: Jeremy Kerr <jk@codeconstruct.com.au>
+
+Added to my tree, too.
+
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--3yzpq2rgg2xm7tqn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmK7/dUACgkQwfwUeK3K
+7AnTJgf9GW2H7fk9/Je11PRlCnUOSZ1sz/49RHAm4xj66pI/hdRP++D8L5o7ntEU
+Hl5hKosR36cUyX12ie+YQtiCRkjhLqUoJnPzJOtcXQNV7mlMt6ds2INSO4iHYtMa
+b2UH+lLQ6K/DO0+1KquElKJhfBOKucYY1WQAVK4cfasBKMR4MtukcHAgcYClRYdj
+Nvvy6bCjqr8M1+uqDTJUUR/d0rWYHxFKygYRUfK7YPpz57gaVgaR9Js9GDGkVFB4
+qVL5x23NzgB/Djr1Ls1F6Z5eFMjbtVb+S1HDRsU+HJOYD6v1LkT2OFx9iFpme+8m
++4HHNR5pxKogz59u4YpP1pIb0MejhA==
+=ibah
+-----END PGP SIGNATURE-----
+
+--3yzpq2rgg2xm7tqn--
