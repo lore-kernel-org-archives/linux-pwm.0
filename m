@@ -2,42 +2,42 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3737C43334
-	for <linux-pwm@archiver.kernel.org>; Fri,  8 Jul 2022 14:39:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC55CCA480
+	for <linux-pwm@archiver.kernel.org>; Fri,  8 Jul 2022 14:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238235AbiGHOjb (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58368 "EHLO
+        id S238251AbiGHOji (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 8 Jul 2022 10:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238038AbiGHOja (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Jul 2022 10:39:30 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6ACA1B7AC;
-        Fri,  8 Jul 2022 07:39:29 -0700 (PDT)
+        with ESMTP id S238245AbiGHOjg (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Jul 2022 10:39:36 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E0427CEC;
+        Fri,  8 Jul 2022 07:39:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657291169; x=1688827169;
+  t=1657291175; x=1688827175;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=E7lc4EnKiZ1cJys8i7k2b1wZuaqqZKmkVBwqdNfKks0=;
-  b=lR16GG3ARnFq5/fgQNR2zE6fcKMqn8kqtUG+puttq7tBsRli+fmhM/UH
-   jXQ+PqJGDiAMP82zbWUgd9AKAiQ2xCk6k3beConUWLR3QtZVqZAZNKo8e
-   FvP7TkTrOR2D3cCM2qN6KdKB9Y3I6ayRCCqnSG7SGm3sSB3dD8l6S39Ho
-   klxi7W3RJvWR+ljInsqVOTULQa2LwpgEy98soVHB8aBnBCVEfKkK8EZME
-   mtEer7d8n/MpTADRmFTEGMEbHzAx4Nc3zpff5CqTId9I8v8PYicov8odM
-   b+It5yJvVSPLVSvHMHq/FW/PRCNn6KtJT+0NAFnSOeSRggMNJLBrUQfzo
-   g==;
+  bh=fnl5CGvXmbwoIcy91psfgiwxnD3o6LZLHepJqwb/OE0=;
+  b=hamohxFVG8Q5km82YgwjCPMOexmesrWusbDnawCTRcDXFZ/4ndJ0XjN+
+   tAZltiVvkXbsgtkhqy5kXcCBt3gR9UI1WJ2w2cpDzP8n74PCcSb1xq54b
+   BdNy7ikCmUA/bIYCChvgHX/RSXPLRtlRhgZmE0OBpYD2EcV3Z+9diU1r0
+   UJnbiiFRImkelU56fA0A9NpNwIi4cuFHySoA0/TSxQ2HSJfBA0M6/+Tvc
+   vGeayOznobifO8OEvvFQLAB+NlK99Xez0LJkegbto1h24BpgsXdFAcJKV
+   ONjx3fA3iq62C2ne9bU1GcjL/5uWblYFAMD9pgiuw4jIge4DZscsBCjoh
+   w==;
 X-IronPort-AV: E=Sophos;i="5.92,255,1650956400"; 
-   d="scan'208";a="181342726"
+   d="scan'208";a="167013024"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2022 07:39:29 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2022 07:39:34 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 8 Jul 2022 07:39:27 -0700
+ 15.1.2375.17; Fri, 8 Jul 2022 07:39:33 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
  (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 8 Jul 2022 07:39:25 -0700
+ Transport; Fri, 8 Jul 2022 07:39:31 -0700
 From:   Conor Dooley <conor.dooley@microchip.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -49,9 +49,9 @@ CC:     Daire McNamara <daire.mcnamara@microchip.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
         Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v5 2/4] riscv: dts: fix the icicle's #pwm-cells
-Date:   Fri, 8 Jul 2022 15:39:21 +0100
-Message-ID: <20220708143923.1129928-3-conor.dooley@microchip.com>
+Subject: [PATCH v5 4/4] MAINTAINERS: add pwm to PolarFire SoC entry
+Date:   Fri, 8 Jul 2022 15:39:23 +0100
+Message-ID: <20220708143923.1129928-5-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220708143923.1129928-1-conor.dooley@microchip.com>
 References: <20220708143923.1129928-1-conor.dooley@microchip.com>
@@ -62,30 +62,25 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-\#pwm-cells for the Icicle kit's fabric PWM was incorrectly set to 2 &
-blindly overridden by the (out of tree) driver anyway. The core can
-support inverted operation, so update the entry to correctly report its
-capabilities.
+Add the newly introduced pwm driver to the existing PolarFire SoC entry.
 
-Fixes: 72560c6559b8 ("riscv: dts: microchip: add fpga fabric section to icicle kit")
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-index 0d28858b83f2..e09a13aef268 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-@@ -8,7 +8,7 @@ core_pwm0: pwm@41000000 {
- 		compatible = "microchip,corepwm-rtl-v4";
- 		reg = <0x0 0x41000000 0x0 0xF0>;
- 		microchip,sync-update-mask = /bits/ 32 <0>;
--		#pwm-cells = <2>;
-+		#pwm-cells = <3>;
- 		clocks = <&fabric_clk3>;
- 		status = "disabled";
- 	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d64d79eb36a2..f023ae8442ab 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17429,6 +17429,7 @@ L:	linux-riscv@lists.infradead.org
+ S:	Supported
+ F:	arch/riscv/boot/dts/microchip/
+ F:	drivers/mailbox/mailbox-mpfs.c
++F:	drivers/pwm/pwm-microchip-core.c
+ F:	drivers/rtc/rtc-mpfs.c
+ F:	drivers/soc/microchip/
+ F:	drivers/spi/spi-microchip-core.c
 -- 
 2.36.1
 
