@@ -2,85 +2,110 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE324CCA47C
-	for <linux-pwm@archiver.kernel.org>; Tue, 12 Jul 2022 14:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA51BC433EF
+	for <linux-pwm@archiver.kernel.org>; Tue, 12 Jul 2022 16:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233268AbiGLO0n (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        id S234303AbiGLQPd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:15:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233308AbiGLO0d (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Jul 2022 10:26:33 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2142DB93C9;
-        Tue, 12 Jul 2022 07:26:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657635978; x=1689171978;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0L9J2eXxRU3T3ZDdzxJjwk06pdsoufFKChVyEazSj6I=;
-  b=EH0eAnjCqFzDJuF6HIcqqZQN1Z8Nv8KZsGa3iz+XapXOd5Aj0YnbYrLb
-   y71Rha4fpA2n9uYYw9PQ6mXTaQrllHM8ZmEI5VTcglProTQey90258TKO
-   0/SkmOjXcSDYVhIxQrT61CYJaGwbR9fQg4YClYzGArOip5I8SFTWPZonC
-   CaONlljf5k59yfWRv8eVW7JD8xs+P/+PK1J7DevMD6LAwovsX5NsnGTNK
-   q1fNGalqBecEh0S6LUPg9ys1LMslwubEvSZ1qYCLA30f/de+FOl1BYO9p
-   q2i7E4dqh7Az9BRV6cuXqz8UliT3B1yetNGfKhOrYVj2YeoIBT5blvId1
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
-   d="scan'208";a="171772480"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jul 2022 07:26:17 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 12 Jul 2022 07:26:15 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 12 Jul 2022 07:26:13 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
+        with ESMTP id S233821AbiGLQPd (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Jul 2022 12:15:33 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D867CA6D2
+        for <linux-pwm@vger.kernel.org>; Tue, 12 Jul 2022 09:15:32 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oBIXp-0003lx-A9; Tue, 12 Jul 2022 18:15:29 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oBIXn-000Xqc-BZ; Tue, 12 Jul 2022 18:15:27 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oBIXm-004lKC-Oy; Tue, 12 Jul 2022 18:15:26 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Lee Jones" <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v6 4/4] MAINTAINERS: add pwm to PolarFire SoC entry
-Date:   Tue, 12 Jul 2022 15:25:57 +0100
-Message-ID: <20220712142557.1773075-5-conor.dooley@microchip.com>
+        Lee Jones <lee.jones@linaro.org>
+Cc:     Vladimir Zapolskiy <vz@mleia.com>,
+        Ariel D'Alessandro <ariel@vanguardiasur.com.ar>,
+        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kernel@pengutronix.de
+Subject: [PATCH 1/2] pwm: lpc18xx: Convert to use dev_err_probe()
+Date:   Tue, 12 Jul 2022 18:15:18 +0200
+Message-Id: <20220712161519.44010-1-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220712142557.1773075-1-conor.dooley@microchip.com>
-References: <20220712142557.1773075-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1981; h=from:subject; bh=XTdYQGNYHBg/yfhYrF5ihnVxsNAWuFyJDuFug36m8/w=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBizZ4Qn5OUR+231DyhluYJgc8lQLXIgw1ls1MenYg6 0FRvyaiJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYs2eEAAKCRDB/BR4rcrsCUR5CA CfPxr+2sBRAcsPLWjQ/OVAq7Q589KpP5lJ9j3ZXoLY45RIYw2PKQDDejmZn6JmwvwPTrQOoQTp6baW VrcGimYOTNREbzCsQb9nWLev+h7aB+J7ORpemEcmK2QZre6WCgd5QWP0KSiRDJEdR62u/QHAr3BMKp 8iCp/JCN/qkYIzTth1xhOSm1hNyu5UjNPp6RvIYunSfibAEEIvnHHVl+hxhdP8I5HOhIXLkxyUUEhJ s4WuwE7UXzXWtwyumXqVM9R9B/Q4QL8hFZX9WGmcZPG0rq/mBUmkH3EaFo74bvgjaCsqiGa1q+bKNz wuzN56PaOgJbko2Jg13JBXOJ+ShamE
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add the newly introduced pwm driver to the existing PolarFire SoC entry.
+This has various upsides:
+ - It emits the symbolic name of the error code
+ - It is silent in the EPROBE_DEFER case and properly sets the defer reason
+ - It reduces the number of code lines slightly
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pwm/pwm-lpc18xx-sct.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b5aeaddc9539..99f490a19850 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17468,6 +17468,7 @@ F:	drivers/char/hw_random/mpfs-rng.c
- F:	drivers/clk/microchip/clk-mpfs.c
- F:	drivers/mailbox/mailbox-mpfs.c
- F:	drivers/pci/controller/pcie-microchip-host.c
-+F:	drivers/pwm/pwm-microchip-core.c
- F:	drivers/rtc/rtc-mpfs.c
- F:	drivers/soc/microchip/
- F:	drivers/spi/spi-microchip-core.c
+diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
+index 272e0b5d01b8..9bb2693cece3 100644
+--- a/drivers/pwm/pwm-lpc18xx-sct.c
++++ b/drivers/pwm/pwm-lpc18xx-sct.c
+@@ -359,21 +359,19 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 		return PTR_ERR(lpc18xx_pwm->base);
+ 
+ 	lpc18xx_pwm->pwm_clk = devm_clk_get(&pdev->dev, "pwm");
+-	if (IS_ERR(lpc18xx_pwm->pwm_clk)) {
+-		dev_err(&pdev->dev, "failed to get pwm clock\n");
+-		return PTR_ERR(lpc18xx_pwm->pwm_clk);
+-	}
++	if (IS_ERR(lpc18xx_pwm->pwm_clk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(lpc18xx_pwm->pwm_clk),
++				     "failed to get pwm clock\n");
+ 
+ 	ret = clk_prepare_enable(lpc18xx_pwm->pwm_clk);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "could not prepare or enable pwm clock\n");
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(&pdev->dev, ret,
++				     "could not prepare or enable pwm clock\n");
+ 
+ 	lpc18xx_pwm->clk_rate = clk_get_rate(lpc18xx_pwm->pwm_clk);
+ 	if (!lpc18xx_pwm->clk_rate) {
+-		dev_err(&pdev->dev, "pwm clock has no frequency\n");
+-		ret = -EINVAL;
++		ret = dev_err_probe(&pdev->dev,
++				    -EINVAL, "pwm clock has no frequency\n");
+ 		goto disable_pwmclk;
+ 	}
+ 
+@@ -423,7 +421,7 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 
+ 	ret = pwmchip_add(&lpc18xx_pwm->chip);
+ 	if (ret < 0) {
+-		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
++		dev_err_probe(&pdev->dev, ret, "pwmchip_add failed\n");
+ 		goto disable_pwmclk;
+ 	}
+ 
+
+base-commit: 394b517585da9fbb2eea2f2103ff47d37321e976
 -- 
 2.36.1
 
