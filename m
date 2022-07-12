@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B97CCA488
-	for <linux-pwm@archiver.kernel.org>; Tue, 12 Jul 2022 10:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45343C43334
+	for <linux-pwm@archiver.kernel.org>; Tue, 12 Jul 2022 10:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232770AbiGLKBb (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 12 Jul 2022 06:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
+        id S232806AbiGLKBc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232554AbiGLKBY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Jul 2022 06:01:24 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F2AAA811
-        for <linux-pwm@vger.kernel.org>; Tue, 12 Jul 2022 03:01:21 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id bk26so10403516wrb.11
-        for <linux-pwm@vger.kernel.org>; Tue, 12 Jul 2022 03:01:21 -0700 (PDT)
+        with ESMTP id S232484AbiGLKBZ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Jul 2022 06:01:25 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A41AAB10
+        for <linux-pwm@vger.kernel.org>; Tue, 12 Jul 2022 03:01:23 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id q9so10428630wrd.8
+        for <linux-pwm@vger.kernel.org>; Tue, 12 Jul 2022 03:01:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WaBngfIDgp+LuYX1yI+DuPwYnhSYuzqWt4Zv2kZu9UE=;
-        b=l7eZFJcJjy02hiCtLaYjG3pmxwIqQOvU0o8LtV/2I8qD0vTExnm3F/J3gL4tWXU3EV
-         Jv+jDFJk++BushXe0sd2dYRSC6JvuguHOqdRO5gZPH5yWOtVMw0SsbyIHkBrfSqxHX0K
-         sGsPWeI5UbaHE5gt2SiwaAvApfrhAvCwSoqjEM5kv2huuQfTdFOleCwOYhap1jA/MXV6
-         1pzVxstOovQGA4dRB6744NoadZdGuJvBZO1hq7obwxEATP6MkweR7MhbQfDYFqxtEiXp
-         iQi34kMLIXJrBTlWj97Z6V/u9xLB/R7jUm/PUujEbNQe0ABhXLl4dngW55zClPjr+o7B
-         nN7w==
+        bh=fNgP14MAtLj1mkNOkCSavVhxwnDVj9LKGVrRGWXTHqg=;
+        b=GObBu8Br3TyNkEjFsGP8ZvMKVaSsDv1DBLlx9KrtsaRdweH8X3QnI/Id8vbt01om9x
+         GIKWi4Fy/2XLTziQ6IkWK2T72dr5iKIwkgasJN16p5Ud/s4LrY/p4ljhBkPcpnM3o15E
+         +Yer5SImBBG7s1WRMiq8/zxZcZo98V4zolVSXBCAcOrn0gt55mgneq4Yufx1HIpYqSbZ
+         esYXfxJ5GIAZErrG6++Ya4QkJAcqLiDOhDay6DhWD8pZlpvAZMz1rBu5oisO08uTD7zl
+         CqyYQtW+KDFafYPvdlgI+FNI5s8pfO4BhnHKYo6iaommrbP28GFDLQZZ40xIk5Wz85JH
+         ioYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WaBngfIDgp+LuYX1yI+DuPwYnhSYuzqWt4Zv2kZu9UE=;
-        b=76wIqiTZpsrHsEqiLYpxBgrqbM6A31TLEAwAWoGSxm9eDd8S288PAj2hkKE4YDsOLT
-         k7BAB5Y+aZkgnPW4oOrQ60q8u7sIvOMGk14izhbjMfnqBcwdJsGJ9+Dw4nMpTBmAQj35
-         cEqDgpMdXIWr8+KYnK7sPI6YRqLTewLQJxoM5kuHiEENgB4lKv6sc0MXko6Cy4ErUasz
-         c2uHD4fSPXdkfK3q+L+i+pjAjiDcaFgLJ9NNEzajh1pAYA2+dc3hfXqL35gOOsdfRdAK
-         tAJthu5uOmn+4dvYlrUkLxfBzGze6bxMISNzdapz8ZrWO7XUv74q6eyFjjVzaYioFeh/
-         Em3w==
-X-Gm-Message-State: AJIora9iz9DuA3s6P/Q2Ywy4FH3c9vxnKx5KSVidHY7eJSHzOy2kRkJ0
-        n/whr0NEsyd/wK50myiU7WrY/2+HXhhi8TbY
-X-Google-Smtp-Source: AGRyM1tjuhj3fWcPk98gcG1UWjgb3bac6LkRqQ0xSaH8sflc+6uHypIdsHB5bZgp7LLLI51pyzIxVw==
-X-Received: by 2002:adf:fb0e:0:b0:21a:34a2:5ca9 with SMTP id c14-20020adffb0e000000b0021a34a25ca9mr20980349wrr.472.1657620079470;
-        Tue, 12 Jul 2022 03:01:19 -0700 (PDT)
+        bh=fNgP14MAtLj1mkNOkCSavVhxwnDVj9LKGVrRGWXTHqg=;
+        b=HZPh6tJio4qv/mzrWeTnidDf1y+jYxyEfN/DDj32WKpkD1GD12t+Qft7E8lU0ki38U
+         4VVXUD9CY9g+FLJLTMTbPeZIn7+fml2qi91F1JHatoorsDP6InR8wv17BUjJrMskZ/bQ
+         DKE2gViqagN2YRoQ31fK+4SYfO8Y1eMV0+5ZJxkjOmLnUtBKXQiM3M9yqmWACKj2kYjb
+         bQ359jFaYRSIJSvL98Md3oIOIe1lCMk2MdCdoswJ+rP8Q3rng9X4Qk8S9s2wpxsKG/ui
+         QAeIaovS/CfmoJbdhocOFBbKOliEEAcHdr6mnlJsZcBGkd4/BfticuVnIPoRjX4Ol8md
+         0I6w==
+X-Gm-Message-State: AJIora9Kw65bVMT0Ykb7z3IvuGX5rYXidr9KmlTWg/dGkvkaWYvsro4K
+        TN12aq+7ES7/sbs2SJ7n1GWgF+RLv3MGebF9
+X-Google-Smtp-Source: AGRyM1tDf0TulvefmWPqg6e8ewgCNOGbNQvHvRkXvRP4sLZaZsOw3xNrUIQPWyetN0PANpvbInpVsw==
+X-Received: by 2002:a5d:6d46:0:b0:21b:933d:7950 with SMTP id k6-20020a5d6d46000000b0021b933d7950mr21023621wri.679.1657620081684;
+        Tue, 12 Jul 2022 03:01:21 -0700 (PDT)
 Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id u9-20020a7bc049000000b0039747cf8354sm8895314wmc.39.2022.07.12.03.01.18
+        by smtp.gmail.com with ESMTPSA id u9-20020a7bc049000000b0039747cf8354sm8895314wmc.39.2022.07.12.03.01.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 03:01:19 -0700 (PDT)
+        Tue, 12 Jul 2022 03:01:21 -0700 (PDT)
 From:   Ben Dooks <ben.dooks@sifive.com>
 To:     linux-pwm@vger.kernel.org
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -60,9 +60,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Salmon <william.salmon@sifive.com>,
         Adnan Chowdhury <adnan.chowdhury@sifive.com>,
         Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH 4/7] pwm: dwc: allow driver to be built with COMPILE_TEST
-Date:   Tue, 12 Jul 2022 11:01:10 +0100
-Message-Id: <20220712100113.569042-5-ben.dooks@sifive.com>
+Subject: [PATCH 7/7] pwm: dwc: add snps,pwm-number to limit pwm count
+Date:   Tue, 12 Jul 2022 11:01:13 +0100
+Message-Id: <20220712100113.569042-8-ben.dooks@sifive.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220712100113.569042-1-ben.dooks@sifive.com>
 References: <20220712100113.569042-1-ben.dooks@sifive.com>
@@ -72,27 +72,65 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Allow dwc driver to be built with COMPILE_TEST should allow
-better coverage when build testing.
+Add snps,pwm-number property to indicate if the block does not have
+all 8 of the PWM blocks.
+
+Not sure if this should be a general PWM property consider optional
+for all PWM types, so have added a specific one here (there is only
+one other controller with a property for PWM count at the moment)
 
 Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 ---
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/pwm/pwm-synposys.yaml | 5 +++++
+ drivers/pwm/pwm-dwc.c                                   | 8 ++++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index e1aa645c1084..e654655c4b3f 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -166,7 +166,7 @@ config PWM_CROS_EC
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml b/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
+index 38ac0da75272..15bdf764b46a 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
++++ b/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
+@@ -30,11 +30,16 @@ properties:
+       - items:
+         - const: snps,pwm
  
- config PWM_DWC
- 	tristate "DesignWare PWM Controller"
--	depends on PCI || OF
-+	depends on PCI || OF || COMPILE_TEST
- 	help
- 	  PWM driver for Synopsys DWC PWM Controller attached to either a
- 	  PCI or platform bus.
++  snps,pwm-number:
++    $ref: '/schemas/types.yaml#/definitions/uint32'
++    description: u32 value representing the number of PWM devices
++
+ required:
+   - "#pwm-cells"
+   - compatible
+   - reg
+   - clocks
+   - clock-names
++  - snps,pwm-number
+ 
+ additionalProperties: false
+diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
+index 6a4364a5d137..abdde83452ad 100644
+--- a/drivers/pwm/pwm-dwc.c
++++ b/drivers/pwm/pwm-dwc.c
+@@ -328,12 +328,20 @@ static int dwc_pwm_plat_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct dwc_pwm *dwc;
++	u32 nr_pwm;
+ 	int ret;
+ 
+ 	dwc = dwc_pwm_alloc(dev);
+ 	if (!dwc)
+ 		return -ENOMEM;
+ 
++	if (!device_property_read_u32(dev, "snps,pwm-number", &nr_pwm)) {
++		if (nr_pwm > DWC_TIMERS_TOTAL)
++			dev_err(dev, "too many PWMs specified (%d)\n", nr_pwm);
++		else
++			dwc->chip.npwm = nr_pwm;
++	}
++
+ 	dwc->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(dwc->base))
+ 		return dev_err_probe(dev, PTR_ERR(dwc->base),
 -- 
 2.35.1
 
