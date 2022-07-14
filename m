@@ -2,107 +2,91 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75BCAC433EF
-	for <linux-pwm@archiver.kernel.org>; Thu, 14 Jul 2022 13:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 770CEC43334
+	for <linux-pwm@archiver.kernel.org>; Thu, 14 Jul 2022 13:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239717AbiGNNTu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
+        id S238858AbiGNNd5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239609AbiGNNTo (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 14 Jul 2022 09:19:44 -0400
-Received: from mail.tkos.co.il (golan.tkos.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C615D0C6;
-        Thu, 14 Jul 2022 06:19:43 -0700 (PDT)
-Received: from tarshish (unknown [10.0.8.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.tkos.co.il (Postfix) with ESMTPS id AB87F440F68;
-        Thu, 14 Jul 2022 16:19:20 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1657804761;
-        bh=rC0OqKZ10lqLln3fBLyz//cFKspAfwxL4UXaVjVi8XU=;
-        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
-        b=MrTieGt7XR0JWNrlhEggY6RFpCNTkj4S/I29D/r7E9iLRoiiNEjgQw8yvijyGUY18
-         USwelBx/a/W0eH1BaP1mzhtFoM9EGuDIkyQdwKwH7qQFtHooAFVTAkQSU6Nc+jVVkM
-         XTerN+TiDMSh98lyFqFChgc5phW+3acfas1dwnG8BDaaQsH0Y6dVmCULYnlDgSSUGF
-         n70TM89gabXhe2/ccNloA4yxCXHBI7WYa/82TCDja8IbKO+p3UOwH50XvzjcbJeL1c
-         xtOXwehx2xeSIwpMNT+0h9FfXyONjU4gbsY8wNl8dUO7GlHNyoaFZurmpxRm0YhQcW
-         WuYOR6YQikoEQ==
-References: <20220714115515.5748-1-pali@kernel.org>
-User-agent: mu4e 1.8.2; emacs 27.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?utf-8?Q?Kleine-K?= =?utf-8?Q?=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        with ESMTP id S235151AbiGNNd5 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 14 Jul 2022 09:33:57 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D2F13D0F
+        for <linux-pwm@vger.kernel.org>; Thu, 14 Jul 2022 06:33:54 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id f2so2591107wrr.6
+        for <linux-pwm@vger.kernel.org>; Thu, 14 Jul 2022 06:33:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=D18Kutt6mbbmqTCIRA19IyVjLN8EyvtScWXKLi6ZISg=;
+        b=hqorxo4MDyobyVxLT9TXEwV/tp8Wwh9AU9FtNtoj6bsbfpsueGJ32tLAENvPergAuZ
+         N8hKZK2znbOL+DZorXWEx/aWQL3NGrUpA+CRoPW1EEsVhXfQcioUcwaDKyq5NmR1hzhB
+         ahJWfDJTHHAdJ2FKQqIXWi3kAXOF/t8CrmaHAUI5zaZJ5sBJVdoGDFCC6quMpPDWE+bj
+         xSjy0KpFsOiN2ChyM5A8HsPmI7/RWXqYNryg9PYlXiS83Wkag2joMZD7x3MzZPUn8+sJ
+         Vbe/1pyzbx8prBaYEvnq7pXSqMotz9RZRZ5Yag/aCL+FO+uVYQCzTNczSrBCfgE3u81w
+         leVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=D18Kutt6mbbmqTCIRA19IyVjLN8EyvtScWXKLi6ZISg=;
+        b=zIpgyX4UxFtnCkIs/htoG8rfPYTk8R6blzVQ71M5oVfKmdlfQiP8auDeTINBEZxX/2
+         ISNaFZf4flYUqKN0yFmZzS4tjOfuKhf8+WAkq6ofQwO17QOXoLRiXg/nChtOKFgWORxg
+         rea1l5i7RGc6H1h/9Dh6Wx11BaDzBLw1qL9Vm8Zl1vufc0DsQCudzrCCpLdb13LMmaNI
+         xVYdI8Ol4vpXnJ/C7YIINAulHAwp0gQuidBfreobt75/oeCwBp/CMx6WRuLX92hE1cRE
+         G+aJ29OiE+0WfNw7EeBxY0EBfsZm9Vz0wDPnvDJHXtrDGrL6wPYf0g89JRfQB69xPK7R
+         Js7A==
+X-Gm-Message-State: AJIora8T01Iq2fnxsRPrarXuX7oO1R9J4R0J80iaKNxq9AytZPqzBFp2
+        57vtam00hGv46qW0tZfNzjOUhA==
+X-Google-Smtp-Source: AGRyM1ufEuVtQlYn/mNtEPlqQl4kxuAgaboI90kRIy8ihaY3AZuKeuA0EJs0TwRKO9ooHu0YyAWq8w==
+X-Received: by 2002:a5d:56d1:0:b0:21d:78ad:c8bf with SMTP id m17-20020a5d56d1000000b0021d78adc8bfmr8385497wrw.175.1657805632856;
+        Thu, 14 Jul 2022 06:33:52 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id e39-20020a5d5967000000b0021badf3cb26sm1803458wri.63.2022.07.14.06.33.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 06:33:52 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 14:33:50 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Lee Jones <lee@kernel.org>, linux-kernel@vger.kernel.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
-        linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/4] gpio: mvebu: Fix check for pwm support on non-A8K
- platforms
-Date:   Thu, 14 Jul 2022 16:14:27 +0300
-In-reply-to: <20220714115515.5748-1-pali@kernel.org>
-Message-ID: <87lesvde6s.fsf@tarshish>
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 8/8] dt-bindings: regulator: pwm: Update Lee Jones' email
+ address
+Message-ID: <YtAbPnNzoBqgPDDi@google.com>
+References: <20220714112533.539910-1-lee@kernel.org>
+ <20220714112533.539910-9-lee@kernel.org>
+ <YtAUN7yFFWTU5cpZ@sirena.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YtAUN7yFFWTU5cpZ@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Pali,
+On Thu, 14 Jul 2022, Mark Brown wrote:
 
-On Thu, Jul 14 2022, Pali Roh=C3=A1r wrote:
-> pwm support incompatible with Armada 80x0/70x0 API is not only in
-> Armada 370, but also in Armada XP, 38x and 39x. So basically every non-A8K
-> platform. Fix check for pwm support appropriately.
->
-> Fixes: 85b7d8abfec7 ("gpio: mvebu: add pwm support for Armada 8K/7K")
-> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
-> ---
->  drivers/gpio/gpio-mvebu.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-> index 2db19cd640a4..70a22b68c034 100644
-> --- a/drivers/gpio/gpio-mvebu.c
-> +++ b/drivers/gpio/gpio-mvebu.c
-> @@ -793,8 +793,7 @@ static int mvebu_pwm_probe(struct platform_device *pd=
-ev,
->  	u32 offset;
->  	u32 set;
->=20=20
-> -	if (of_device_is_compatible(mvchip->chip.of_node,
-> -				    "marvell,armada-370-gpio")) {
-> +	if (mvchip->soc_variant !=3D MVEBU_GPIO_SOC_VARIANT_A8K) {
+> On Thu, Jul 14, 2022 at 12:25:33PM +0100, Lee Jones wrote:
+> > Going forward, I'll be using my kernel.org for upstream work.
+> 
+> > ---
+> >  Documentation/devicetree/bindings/regulator/pwm-regulator.yaml | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> Do you also want to update the comment and MODULE_AUTHOR in the driver
+> source as well?
 
-The 'if' condition that follow the 'else' below become always true:
+No mate, ta.  They should all stay as-is.
 
-       } else if (mvchip->soc_variant =3D=3D MVEBU_GPIO_SOC_VARIANT_A8K) {
-
-I would suggest to keep the '=3D=3D MVEBU_GPIO_SOC_VARIANT_A8K' condition,
-and reverse the if/else order, because positive logic is more readable.
-
-There is also another 'else' below that is dead code with this patch.
-
-baruch
-
->  		/*
->  		 * There are only two sets of PWM configuration registers for
->  		 * all the GPIO lines on those SoCs which this driver reserves
-
-
---=20
-                                                     ~. .~   Tk Open Systems
-=3D}------------------------------------------------ooO--U--Ooo------------=
-{=3D
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
