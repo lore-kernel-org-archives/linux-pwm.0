@@ -2,37 +2,37 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C85C43334
-	for <linux-pwm@archiver.kernel.org>; Thu, 14 Jul 2022 11:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78FECCCA480
+	for <linux-pwm@archiver.kernel.org>; Thu, 14 Jul 2022 11:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239121AbiGNL4S (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S239118AbiGNL4S (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Thu, 14 Jul 2022 07:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239113AbiGNL4R (ORCPT
+        with ESMTP id S239115AbiGNL4R (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 14 Jul 2022 07:56:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC7C2F67D;
-        Thu, 14 Jul 2022 04:56:15 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960485C354;
+        Thu, 14 Jul 2022 04:56:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E809B824CF;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 04B7CCE2696;
         Thu, 14 Jul 2022 11:56:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02956C34115;
-        Thu, 14 Jul 2022 11:56:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E36B3C34114;
+        Thu, 14 Jul 2022 11:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657799773;
-        bh=bHCnfGkhpaHt2kUmFet5jXNnahSMUqgBM2cXP2rBui0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sT2i1eP7kxIpRDjAxJm4nPZ/AP32JPS/GSOCIjD/VZPe2jkNSuWRL3xCPM3bSyL1L
-         Ym8lM7wOVVRi9O3wzTCjetYsCvoAdkjenmSbzGWr7OjM2g3wADTYJroWfMWbrHOgOA
-         SLY2squ7k+ubQgscECGndgO656+oSzwWXGyZcAxspjpcRCUQP9heDLQ29AJpmrkrNz
-         flScWBFR2qjSzXbo0gWVhUHN+O7p0y6JyCP0qB59PBi5qCOR2KvweYHdMc/CYE653S
-         smR4CWYQuyMIkz5dI4gq2dvdM0/EShuIzfKUU02Xce9x25DWG9QMaeOYpyFAB2r4kU
-         TayMRXlXYuOxg==
+        s=k20201202; t=1657799772;
+        bh=kMHYnrEnWCDRZLx3w2/b7o5Qlq/C+lrcPobY/5NWAME=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GjRXKN9g5LMFI0DX13xliVDcHGudOPZvUDepRt2Uw1pAe75XfnDZ/vKod5jO6OtnF
+         v+Uz/mIgbF0zCjRqEj0f85s4hNAiyPeQ63L5zPiGBHCCDjTBvnBXJICkXQ0fNjJWeG
+         /YQjkuJ+Q812pCWUiG2XfnJ6C8EHKo0B1pmjUR95WJezFk3fj14fpuvlQ92fJCtRoE
+         g9Eur6CDSq9HolDsx90so4jZ+VwZgjFegxZ1hD6AD6KY9lXfAkG8xoxEj6B+Dfkrhr
+         wXT/vyFoN57IZBLXUYafzSChpyOF8o1tDWlro15PgE25EjpljtzOc4yxDf7GFV7qHl
+         Gp8D1R5iayPCg==
 Received: by pali.im (Postfix)
-        id 3F244277A; Thu, 14 Jul 2022 13:56:10 +0200 (CEST)
+        id E7DF01295; Thu, 14 Jul 2022 13:56:08 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -48,12 +48,10 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
 Cc:     linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 4/4] ARM: dts: armada-39x: Fix compatible string for gpios
-Date:   Thu, 14 Jul 2022 13:55:15 +0200
-Message-Id: <20220714115515.5748-4-pali@kernel.org>
+Subject: [PATCH 1/4] gpio: mvebu: Fix check for pwm support on non-A8K platforms
+Date:   Thu, 14 Jul 2022 13:55:12 +0200
+Message-Id: <20220714115515.5748-1-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220714115515.5748-1-pali@kernel.org>
-References: <20220714115515.5748-1-pali@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -61,41 +59,30 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Armada 39x supports per CPU interrupts for gpios, like Armada XP.
+pwm support incompatible with Armada 80x0/70x0 API is not only in
+Armada 370, but also in Armada XP, 38x and 39x. So basically every non-A8K
+platform. Fix check for pwm support appropriately.
 
-So add compatible string "marvell,armadaxp-gpio" for Armada 39x GPIO nodes.
-
-Driver gpio-mvebu.c which handles both pre-XP and XP variants already
-provides support for per CPU interrupts on XP and newer variants.
-
+Fixes: 85b7d8abfec7 ("gpio: mvebu: add pwm support for Armada 8K/7K")
 Signed-off-by: Pali Rohár <pali@kernel.org>
-Fixes: d81a914fc630 ("ARM: dts: mvebu: armada-39x: add missing nodes describing GPIO's")
 ---
- arch/arm/boot/dts/armada-39x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-mvebu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/armada-39x.dtsi b/arch/arm/boot/dts/armada-39x.dtsi
-index e0b7c2099831..ef3a3859802c 100644
---- a/arch/arm/boot/dts/armada-39x.dtsi
-+++ b/arch/arm/boot/dts/armada-39x.dtsi
-@@ -213,7 +213,7 @@
- 			};
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 2db19cd640a4..70a22b68c034 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -793,8 +793,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+ 	u32 offset;
+ 	u32 set;
  
- 			gpio0: gpio@18100 {
--				compatible = "marvell,orion-gpio";
-+				compatible = "marvell,armadaxp-gpio", "marvell,orion-gpio";
- 				reg = <0x18100 0x40>;
- 				ngpios = <32>;
- 				gpio-controller;
-@@ -227,7 +227,7 @@
- 			};
- 
- 			gpio1: gpio@18140 {
--				compatible = "marvell,orion-gpio";
-+				compatible = "marvell,armadaxp-gpio", "marvell,orion-gpio";
- 				reg = <0x18140 0x40>;
- 				ngpios = <28>;
- 				gpio-controller;
+-	if (of_device_is_compatible(mvchip->chip.of_node,
+-				    "marvell,armada-370-gpio")) {
++	if (mvchip->soc_variant != MVEBU_GPIO_SOC_VARIANT_A8K) {
+ 		/*
+ 		 * There are only two sets of PWM configuration registers for
+ 		 * all the GPIO lines on those SoCs which this driver reserves
 -- 
 2.20.1
 
