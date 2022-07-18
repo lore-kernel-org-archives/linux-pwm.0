@@ -2,96 +2,95 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBFEC433EF
-	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jul 2022 08:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F544C433EF
+	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jul 2022 20:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233130AbiGRI36 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 18 Jul 2022 04:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        id S233836AbiGRUIc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 18 Jul 2022 16:08:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233522AbiGRI36 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Jul 2022 04:29:58 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A15517AB5
-        for <linux-pwm@vger.kernel.org>; Mon, 18 Jul 2022 01:29:54 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id h17so15991720wrx.0
-        for <linux-pwm@vger.kernel.org>; Mon, 18 Jul 2022 01:29:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Pvrgndmmn8YktJ8T281XpjP9LliHnMlSYEnEf1KWrn8=;
-        b=w/VI4XpE1c0gfAglNbNRXAhqPaRGANN0H3VlIihlDxCg0AFssRZyH9JH2CMhjh+m16
-         r9kx4cxZCwdPZHxM0QdTBdRa5GCRRy41dnLXaFC6kIw9J1f5Ud1bVQRDVEUOu+LjUtdS
-         0y0tP5IbD4pC0v7bW4NL3pvVOPG6p3ApdqDU1kFlB76VT7bI00QQ0lrVHyUiX7XOGp7o
-         j1sVgLaVztKSzwMJSZyw6MYGaI14FICoLPBg+neREy/8xVc3QW7pyhn80waPTWnR9x2t
-         9XNnDuiZm3q7jQ/GPmcSMQk6KrtZeHHA+RqZ7x6QBYgKE/kYnQPnRe2srklOqQJOWrb7
-         icHg==
+        with ESMTP id S231786AbiGRUIc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Jul 2022 16:08:32 -0400
+Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B15028E19;
+        Mon, 18 Jul 2022 13:08:31 -0700 (PDT)
+Received: by mail-il1-f176.google.com with SMTP id r4so2444847ilb.10;
+        Mon, 18 Jul 2022 13:08:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Pvrgndmmn8YktJ8T281XpjP9LliHnMlSYEnEf1KWrn8=;
-        b=QcckNi1tdhuhM4b94f95Tun4zN/LqAzktn9vyRiglUefJQSAtjanZmMyt98mpfz8Ln
-         M/haby0KqFuO+Y7J338YCrVykrhwDpD/YVGxXXs5L0QIw2SgVZ1ZCZfcG0z0FsYBEyFl
-         6q2vL6UW0qYMWGrR5HG2uP40r9Giw4xRTlvbhP0hieRtxLaBc/pB/uE7Jnb+BkJr0ORp
-         AGxuTDm/CSQHGuvFnvq+x4jovtAeMVyshbxPNJEQyTEGbBMCdv8L9Qgzt2OVqk7P5hgv
-         1KMP9y0CZxSZEZprCbuKsgXeEvunXuQvUlO4buPD4dUak4AVBhte8JZwso9SGvFDGGmb
-         5Uyg==
-X-Gm-Message-State: AJIora8Kv2g5g91rbBROF0IZGF9oHdGJSbOL0vT18+djL+MKeImMO6ia
-        nD8iKS7AUixBlObEsPoQHrfFNA==
-X-Google-Smtp-Source: AGRyM1veFFWv0Q5z9BYX2jyf571R7JB8ReLTZNwWeeEEwHqF1qW4UQ6d0Kq8k4zFKqezBHF1hXY/XQ==
-X-Received: by 2002:a5d:64a3:0:b0:21d:adaa:ce4c with SMTP id m3-20020a5d64a3000000b0021dadaace4cmr21808418wrp.161.1658132992989;
-        Mon, 18 Jul 2022 01:29:52 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id n30-20020a05600c3b9e00b003a2ed2a40e4sm17076668wms.17.2022.07.18.01.29.52
+         :mime-version:content-disposition:in-reply-to;
+        bh=+I5ZRgBbDf3RPxUCbZaLy/tEPOdK4YJDVpzXOSbpprc=;
+        b=urkqgoBJs/8re8VIbw7XbwWeqD3M3btujHkj0zmSyOHtSnEqtPClbnqOo0X5c/XcRE
+         Obrn702yU+aTE7otsZFuafcJOBLtb7+2TvguhGy569/nXsm9o6f0iEJJYJbq3R197Ch7
+         chJZN3uESrptKVs2pdr3SCliB8oiuJFpMPUoex6JRsHucfiOT755nM3on9S3+nPmXy5+
+         TG4fFWoHLxAQMC1gIjvlXOzakHUeCB4W1ZyTu/KTdK2GgQUNAwondqWuD0xhNRWYmrBd
+         i1FsJBcGxDpoftmzMkBzn5P/yzQUmAS5WFP2ax4HsHKRHYgHawuaTc0/ASWqqIb3WfQh
+         XcQg==
+X-Gm-Message-State: AJIora9S+qbPmDSPMS5a2EpCy6Jmkw/spcJZwqxlSb1OMq0Y9cLycNZl
+        Kh6BuMbkIT6yInaKWOXf/g==
+X-Google-Smtp-Source: AGRyM1tR7+ejhnEnx2w/BdniU0UfUO8r5ulQM83VlmIFvYsjDUHUS4lrU8jhwpfyzU+EPv7TFwnmog==
+X-Received: by 2002:a05:6e02:1405:b0:2da:c72f:e3a7 with SMTP id n5-20020a056e02140500b002dac72fe3a7mr14370733ilo.113.1658174910682;
+        Mon, 18 Jul 2022 13:08:30 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id c7-20020a056638028700b00331b9a3c5adsm5759039jaq.170.2022.07.18.13.08.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 01:29:52 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 09:29:50 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     =?iso-8859-1?Q?Ma=EDra?= Canal <mairacanal@riseup.net>
-Cc:     daniel.thompson@linaro.org, jingoohan1@gmail.com,
-        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH RESEND v6] backlight: lp855x: Switch to atomic PWM API
-Message-ID: <YtUZ/ojZjcPlzTHi@google.com>
-References: <20220714215334.78226-1-mairacanal@riseup.net>
+        Mon, 18 Jul 2022 13:08:30 -0700 (PDT)
+Received: (nullmailer pid 3461504 invoked by uid 1000);
+        Mon, 18 Jul 2022 20:08:28 -0000
+Date:   Mon, 18 Jul 2022 14:08:28 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Ben Dooks <ben.dooks@sifive.com>
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        u.kleine-koenig@pengutronix.de,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
+        Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+        William Salmon <william.salmon@sifive.com>,
+        Adnan Chowdhury <adnan.chowdhury@sifive.com>
+Subject: Re: [PATCH 7/7] pwm: dwc: add snps,pwm-number to limit pwm count
+Message-ID: <20220718200828.GA3453680-robh@kernel.org>
+References: <20220712100113.569042-1-ben.dooks@sifive.com>
+ <20220712100113.569042-8-ben.dooks@sifive.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220714215334.78226-1-mairacanal@riseup.net>
+In-Reply-To: <20220712100113.569042-8-ben.dooks@sifive.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Thu, 14 Jul 2022, Maíra Canal wrote:
-
-> Remove legacy PWM interface (pwm_config, pwm_enable, pwm_disable) and
-> replace it for the atomic PWM API.
+On Tue, Jul 12, 2022 at 11:01:13AM +0100, Ben Dooks wrote:
+> Add snps,pwm-number property to indicate if the block does not have
+> all 8 of the PWM blocks.
 > 
-> Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Maíra Canal <mairacanal@riseup.net>
-
-Nit: This should be chronological.
-
+> Not sure if this should be a general PWM property consider optional
+> for all PWM types, so have added a specific one here (there is only
+> one other controller with a property for PWM count at the moment)
+> 
+> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 > ---
-> V1 -> V2: Initialize variable and simplify conditional loop
-> V2 -> V3: Fix assignment of NULL variable
-> V3 -> V4: Replace division for pwm_set_relative_duty_cycle
-> V4 -> V5: Fix overwrite of state.period
-> V5 -> V6: Fix duty cycle rounding and set period outside conditional loop
-> ---
->  drivers/video/backlight/lp855x_bl.c | 21 +++++++++------------
->  1 file changed, 9 insertions(+), 12 deletions(-)
+>  Documentation/devicetree/bindings/pwm/pwm-synposys.yaml | 5 +++++
+>  drivers/pwm/pwm-dwc.c                                   | 8 ++++++++
+>  2 files changed, 13 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml b/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
+> index 38ac0da75272..15bdf764b46a 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
+> @@ -30,11 +30,16 @@ properties:
+>        - items:
+>          - const: snps,pwm
+>  
+> +  snps,pwm-number:
+> +    $ref: '/schemas/types.yaml#/definitions/uint32'
+> +    description: u32 value representing the number of PWM devices
 
-Applied, thanks.
+Why do we need to know this? Are you going to have a consumer to a 
+non-existent PWM? If you do need to know how many, it should be implied 
+by the compatible string.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Rob
