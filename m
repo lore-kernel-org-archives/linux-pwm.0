@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E769C25B0C
-	for <linux-pwm@archiver.kernel.org>; Fri,  5 Aug 2022 16:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD6CC00140
+	for <linux-pwm@archiver.kernel.org>; Fri,  5 Aug 2022 16:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240941AbiHEQux (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 5 Aug 2022 12:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S241114AbiHEQvB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 5 Aug 2022 12:51:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240963AbiHEQuu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 Aug 2022 12:50:50 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CF61C921
-        for <linux-pwm@vger.kernel.org>; Fri,  5 Aug 2022 09:50:49 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id j1so3905439wrw.1
-        for <linux-pwm@vger.kernel.org>; Fri, 05 Aug 2022 09:50:48 -0700 (PDT)
+        with ESMTP id S241022AbiHEQux (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 Aug 2022 12:50:53 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC69237F7
+        for <linux-pwm@vger.kernel.org>; Fri,  5 Aug 2022 09:50:50 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id r1-20020a05600c35c100b003a326685e7cso4095295wmq.1
+        for <linux-pwm@vger.kernel.org>; Fri, 05 Aug 2022 09:50:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Vd2bnsDvwYK3QZs1/z4/uJM0HKufhSZFOLxUdeVAjx8=;
-        b=G6Jq85njjPeRY3sN15vOdG+DjU9Tefc/M8qw3SCWZ9ffVB0UN4rzEOCTCzONvQ2iDi
-         soDSuHSh1ccY1fS6Bg5bqYWFCusOe7GJF2JNA+mkf6NoSRrEjbsQZCe5WPcQyj+VsTqi
-         4j0HRMRDpSfjoyULvXRcJ3B42XLhoWzinsPzTYzstdIVxHsW2emSdWeN/KUwk6oC0g/R
-         4K9Y0XSCcV5nE67o2iXc9k5UosnJQIOYcIGKPi+KApdlNhas5Hpk5y9INdUXQUGoT81S
-         XnfPAKCfHTFGe4RY0rPU3L+P71h/npcqP1/wzsVse9KxbM+DcxscwViC8XULb2hb2ZkY
-         g0Bg==
+        bh=yBJp61T732NhGvuYuS8ssmWnNYi45D7jFrvNVeym7no=;
+        b=LUgQeOOwftQJP0tKGwJY1ZErHDgZUvn4JHdWsZOolJMRDJPF33KXTjxkBQjFIU0GQt
+         YfEAVlMNTTy2rCodHHTHKM4yTERMMIimuLasIyIRLPe69kjbnSvZlV0qVFiR+oMnEKE5
+         eM/NYISQApci32tIh1y2eBx50mc8+03wgBXPGkWtW8+zqmwgshsy+8CQMUXtS+ChE9Vn
+         IyOE5RiHl0iEsfROzcLquyDInSs2SVs6oOT8OdFCzMzEU4085GX6Wf5ci9eACkF4ZUBK
+         i3hpu2/Y0JFdLpwd0x+hvDfPGl9S9S/BhS7oyqaZExY/jnlhHxROpw+JkyCejYVww/Ik
+         dL/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Vd2bnsDvwYK3QZs1/z4/uJM0HKufhSZFOLxUdeVAjx8=;
-        b=6/vVahFqc2tK7w9YyxqXotpKgMM91NLbzY8+Wd8O6S9dy6o8ZjTZqF7pxTcYeBdFkN
-         cob5a4ZoBbvxVhQoSREXp3Ny22hgJE4O6BGXXkX/79/raG1UnqPvpKlniHXEjbNKOdUb
-         gCQG/9qvz+NNZUTTFazdasggzFpTx7g35qyTajnPZXkKB3yeozxWoW+64YXur6V7c7Yz
-         3un885WJmYdJTevdPuFwuQJxyBUxnH11aVot3e6IfyNAh3DIDsGu3doUSwy2fxX6Br2S
-         t/2OT34uytXmzQ+oBrJ83XsIh0L3dmXZEdoN0PecKRmacviI+1k/+/fd/u7J+XDaI07O
-         AYoQ==
-X-Gm-Message-State: ACgBeo1Ij5KhaA85XFIa/49Cn8d43N/CU4n7nv0F2qWLojOtmsKn405Z
-        dBWIkBffbtYnHnSigkU0zT+JGvWxSpVR9aXn
-X-Google-Smtp-Source: AA6agR5C78I1WPKIFeNtDf+UDUlGcLonrI7K0R0ECqRS6cpCXeJ6kN7M12mEnP4TaGQJ6kWReyPSFg==
-X-Received: by 2002:a5d:5957:0:b0:220:79d5:f8ae with SMTP id e23-20020a5d5957000000b0022079d5f8aemr4882449wri.160.1659718247359;
-        Fri, 05 Aug 2022 09:50:47 -0700 (PDT)
+        bh=yBJp61T732NhGvuYuS8ssmWnNYi45D7jFrvNVeym7no=;
+        b=2mP4wo+3dG/C5yr0n9y4JVul7IUYdR1EkKHjsYfqYksdQggECgA2CC6sa6iaC8eXBe
+         PXv6nEidGE9tuTZoZjcfJQAlKohgBB4B2bBKuE3Ow3E6gIc4kZW00B6lTy8f/Rz9NVP8
+         KPDoE6AsxypecB708ftGzQdmq7sWZYeP4/4zC1o9xjsVvtCFW7xTqTerzy4uY5Y4ChSq
+         TERjWZ+0mHa7iCF6SdAh61004xGiLnuRQlEPFp4hOE926aqG4ZwfAg+3vqAVgQt2fkVX
+         +B2nne/x4YAWAdfuHoEnzChGQDmfwFLGA+Bx1KEa3Z2vNVyYWSjbX5gg3g03VlgQnRR/
+         W01Q==
+X-Gm-Message-State: ACgBeo3EvfK59emI1K7+8O9001f8MS9NQ6GlDOJW/n73UdRNA1fqP4pH
+        lw75tllB3lhhWLIdp/J9vxKlqBQ3rAkIBNrU
+X-Google-Smtp-Source: AA6agR4PJ6FvfUDry8dDMg/k/gZ2UHnGi7IpK1O00WLhlYJzCF6UAcvJhmmLLVY1R3TAfAXGSTClqw==
+X-Received: by 2002:a05:600c:a18f:b0:3a5:174e:d650 with SMTP id id15-20020a05600ca18f00b003a5174ed650mr3463797wmb.47.1659718249542;
+        Fri, 05 Aug 2022 09:50:49 -0700 (PDT)
 Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id h28-20020a05600c2cbc00b003a4f08495b7sm11325374wmc.34.2022.08.05.09.50.46
+        by smtp.gmail.com with ESMTPSA id h28-20020a05600c2cbc00b003a4f08495b7sm11325374wmc.34.2022.08.05.09.50.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 09:50:47 -0700 (PDT)
+        Fri, 05 Aug 2022 09:50:49 -0700 (PDT)
 From:   Ben Dooks <ben.dooks@sifive.com>
 To:     linux-pwm@vger.kernel.org
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -59,9 +59,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Salmon <william.salmon@sifive.com>,
         Jude Onyenegecha --subject-prefix=PATCH v3 
         <jude.onyenegecha@sifive.com>, Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH 5/8] pwm: dwc: allow driver to be built with COMPILE_TEST
-Date:   Fri,  5 Aug 2022 17:50:30 +0100
-Message-Id: <20220805165033.140958-6-ben.dooks@sifive.com>
+Subject: [PATCH 8/8] pwm: dwc: add PWM bit unset in get_state call
+Date:   Fri,  5 Aug 2022 17:50:33 +0100
+Message-Id: <20220805165033.140958-9-ben.dooks@sifive.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220805165033.140958-1-ben.dooks@sifive.com>
 References: <20220805165033.140958-1-ben.dooks@sifive.com>
@@ -71,31 +71,71 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Allow dwc driver to be built with COMPILE_TEST should allow
-better coverage when build testing.
+If we are not in PWM mode, then the output is technically a 50%
+output based on a single timer instead of the high-low based on
+the two counters. Add a check for the PWM mode in dwc_pwm_get_state()
+and if DWC_TIM_CTRL_PWM is not set, then return a 50% cycle.
+
+This may only be an issue on initialisation, as the rest of the
+code currently assumes we're always going to have the extended
+PWM mode using two counters.
 
 Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 ---
-v3:
- - add HAS_IOMEM depdency for compile testing
----
- drivers/pwm/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-dwc.c | 34 +++++++++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index b8717877a524..05718e0faac9 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -176,7 +176,8 @@ config PWM_CROS_EC
+diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
+index 5edfb8f8acbf..49e666be7afd 100644
+--- a/drivers/pwm/pwm-dwc.c
++++ b/drivers/pwm/pwm-dwc.c
+@@ -171,23 +171,35 @@ static void dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ {
+ 	struct dwc_pwm *dwc = to_dwc_pwm(chip);
+ 	u64 duty, period;
++	u32 ctrl, ld, ld2;
  
- config PWM_DWC
- 	tristate "DesignWare PWM Controller"
--	depends on PCI || OF
-+	depends on PCI || OF || COMPILE_TEST
-+	depends on HAS_IOMEM
- 	help
- 	  PWM driver for Synopsys DWC PWM Controller attached to either a
- 	  PCI or platform bus.
+ 	pm_runtime_get_sync(chip->dev);
+ 
+-	state->enabled = !!(dwc_pwm_readl(dwc,
+-				DWC_TIM_CTRL(pwm->hwpwm)) & DWC_TIM_CTRL_EN);
++	ctrl = dwc_pwm_readl(dwc, DWC_TIM_CTRL(pwm->hwpwm));
++	ld = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(pwm->hwpwm));
++	ld2 = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(pwm->hwpwm));
+ 
+-	duty = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(pwm->hwpwm));
+-	duty += 1;
+-	duty *= dwc->clk_ns;
+-	state->duty_cycle = duty;
++	state->enabled = !!(ctrl & DWC_TIM_CTRL_EN);
+ 
+-	period = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(pwm->hwpwm));
+-	period += 1;
+-	period *= dwc->clk_ns;
+-	period += duty;
+-	state->period = period;
++	/* If we're not in PWM, technically the output is a 50-50
++	 * based on the timer load-count only.
++	 */
++	if (ctrl & DWC_TIM_CTRL_PWM) {
++		duty = ld;
++		duty += 1;
++		duty *= dwc->clk_ns;
++
++		period = ld2;
++		period += 1;
++		period *= dwc->clk_ns;
++		period += duty;
++	} else {
++		duty = (ld + 1) * dwc->clk_ns;
++		period = duty * 2;
++	}
+ 
++	state->period = period;
++	state->duty_cycle = duty;
+ 	state->polarity = PWM_POLARITY_INVERSED;
+ 
+ 	pm_runtime_put_sync(chip->dev);
 -- 
 2.35.1
 
