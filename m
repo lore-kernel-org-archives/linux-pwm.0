@@ -2,134 +2,116 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CE8C00140
-	for <linux-pwm@archiver.kernel.org>; Fri,  5 Aug 2022 15:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA3EC25B08
+	for <linux-pwm@archiver.kernel.org>; Fri,  5 Aug 2022 15:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235883AbiHEPkW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 5 Aug 2022 11:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44324 "EHLO
+        id S230223AbiHEP4I (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 5 Aug 2022 11:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233431AbiHEPkV (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 Aug 2022 11:40:21 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3285910AE
-        for <linux-pwm@vger.kernel.org>; Fri,  5 Aug 2022 08:40:17 -0700 (PDT)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220805154012epoutp0333ffd1603e9522d20f7fa47ad7372531~IfRnQi1JT1253512535epoutp03D
-        for <linux-pwm@vger.kernel.org>; Fri,  5 Aug 2022 15:40:12 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220805154012epoutp0333ffd1603e9522d20f7fa47ad7372531~IfRnQi1JT1253512535epoutp03D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1659714012;
-        bh=1KRJArCAT+ep/ZqI946ziMenS9TXxF6qtdKNWy2fqEI=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=KH2+yc7v/IeRjdkvWwZxZzGRUoPzmeB29FO8VtOwMRZ3vcbaqOE9pd8lKwqTOLsfo
-         cXipTRmv1PoMMEaSdMqBddDPGKSCDuY6MhXFyP7oCqmqSUovpRO5MbrMPiAbflNuMU
-         kiClHY5chRpR59FnWuD4iMa+0xvRaIe1O0cAgIcA=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20220805154010epcas5p1070c746338851e012a8cbfe25f643ad6~IfRl0lb6O3137931379epcas5p1B;
-        Fri,  5 Aug 2022 15:40:10 +0000 (GMT)
-Received: from epsmges5p3new.samsung.com (unknown [182.195.38.178]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4LzqY50Ldzz4x9Pp; Fri,  5 Aug
-        2022 15:40:09 +0000 (GMT)
-Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        D8.44.09639.8D93DE26; Sat,  6 Aug 2022 00:40:08 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea~Ia62-LEvj2537125371epcas5p2R;
-        Fri,  5 Aug 2022 10:20:56 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220805102056epsmtrp2865cfe1989a42c16949630c802df6564~Ia62_ZtX72278622786epsmtrp2Y;
-        Fri,  5 Aug 2022 10:20:56 +0000 (GMT)
-X-AuditID: b6c32a4b-e6dff700000025a7-6e-62ed39d88104
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        46.93.08802.80FECE26; Fri,  5 Aug 2022 19:20:56 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220805102055epsmtip2d9f2564b6d8ac27eb117db43b8e85c09~Ia618ENVF1465614656epsmtip2S;
-        Fri,  5 Aug 2022 10:20:55 +0000 (GMT)
-From:   Tamseel Shams <m.shams@samsung.com>
-To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        lee.jones@linaro.org
-Cc:     linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, Tamseel Shams <m.shams@samsung.com>
-Subject: [PATCH] pwm: removes period check from pwm_apply_state()
-Date:   Fri,  5 Aug 2022 15:41:25 +0530
-Message-Id: <20220805101125.47955-1-m.shams@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrIKsWRmVeSWpSXmKPExsWy7bCmpu4Ny7dJBrc32Fg8mLeNzeL+16OM
-        Fpd3zWGzuHt3FaPF3dbF7BY/d81jsbg9cTKjA7vHzll32T3uXNvD5tH/18Cjb8sqRo/Pm+QC
-        WKOybTJSE1NSixRS85LzUzLz0m2VvIPjneNNzQwMdQ0tLcyVFPISc1NtlVx8AnTdMnOArlBS
-        KEvMKQUKBSQWFyvp29kU5ZeWpCpk5BeX2CqlFqTkFJgU6BUn5haX5qXr5aWWWBkaGBiZAhUm
-        ZGdM27yNsaCZo+Lw+R+sDYyH2LoYOTkkBEwktvdMALK5OIQEdjNKzD3/mxXC+cQo0f5oBTuE
-        85lR4uitPnaYloYNE5khErsYJT71t0FVtTBJPF92j7GLkYODTUBT4vh5bpAGEYEQiYWde8H2
-        MQtUSyz69R3MFhZwlJh97CULiM0ioCqx+eJEsAW8AhYSGzc/ZIJYJi+xesMBZgh7HbvErGsO
-        ELaLRNPUy6wQtrDEq+NboI6Tkvj8bi/Ub+kScx/2Qs0pkFi26ztUjb3EgStzWEDOZAY6c/0u
-        fYiwrMTUU+uYIM7kk+j9/QSqlVdixzwYW1Hi/+5+qDHiEu9WTIE6wUOi/c4zMFtIIFbic/NJ
-        pgmMsrMQNixgZFzFKJlaUJybnlpsWmCcl1oOj6fk/NxNjOC0peW9g/HRgw96hxiZOBgPMUpw
-        MCuJ8P7c8TpJiDclsbIqtSg/vqg0J7X4EKMpMMgmMkuJJucDE2deSbyhiaWBiZmZmYmlsZmh
-        kjiv19VNSUIC6YklqdmpqQWpRTB9TBycUg1M210tjX48jDhl9XdOUdbB57oXVsRNP7yBMcrD
-        9RkDp/x+y2eBXn+W/bY8qWgn5TErwY07T+eRvKZUzh6R2QfdPLhltN52idVV3phktTRF15WH
-        l2FvvEZF/5sj2V7Xn607GXfA7MTPd4J6+2zYSkNqFcxi9/ScKj32kOnb16zDZ3b5ZBYvLKq6
-        ldHVN0fw2NFNl6MZ2Ob47tK1TnVbav+qJpzJsfx9wpkswcRCl7CkT6KGG6TUtNqzLlq3fUvT
-        /ZEjGqUsP3/aRB5zw9CtWZPdFW6m1r/b2Sf4asFl1tKP/f6SNo/dnl+t1xOLvNj8xjZzRWmQ
-        cNjUs7XLHq7lyv/sl5153mzvqgBHAWu1b0osxRmJhlrMRcWJALFpDorkAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrDJMWRmVeSWpSXmKPExsWy7bCSvC7H+zdJBhteq1g8mLeNzeL+16OM
-        Fpd3zWGzuHt3FaPF3dbF7BY/d81jsbg9cTKjA7vHzll32T3uXNvD5tH/18Cjb8sqRo/Pm+QC
-        WKO4bFJSczLLUov07RK4MqZt3sZY0MxRcfj8D9YGxkNsXYycHBICJhINGyYydzFycQgJ7GCU
-        6N07iwUiIS4x7dd+RghbWGLlv+fsEEVNTBJvJv5m6mLk4GAT0JQ4fp4bpEZEIEyiecYGZpAw
-        s0C9xKKtfCBhYQFHidnHXoKNZBFQldh8cSI7iM0rYCGxcfNDJojx8hKrNxxgnsDIs4CRYRWj
-        ZGpBcW56brFhgVFearlecWJucWleul5yfu4mRnAAaWntYNyz6oPeIUYmDsZDjBIczEoivD93
-        vE4S4k1JrKxKLcqPLyrNSS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoRTJaJg1OqgSmcsfUL
-        e9eyzx+ChSrchb3fKoqUFx0RD2MWOSc2o7RNd//1cMWqbTI1r17GybJetpXfpsm0L3SHb0KA
-        y/mb7X1lNf63bAI53W//PvZ4XsbSPgNfdzuxyuevOC67n326dkqwgnzS1gdf/kfI29ewXXfe
-        Fv6moO/K6ioJbeuPrpeiJMpcDV9HnkhPCiidISu6QPNUokJL373AraU+KXWHmkUK2exmMf2b
-        FLhYYx7bwfpgeaElPTz6ibFVk48ZsPS0ZERen/hOkrs52vRp77keZ+PfWk/2i8tN3RN4qHGC
-        w7J9d/Z80guzceiLK3hRFN4xMcpnwqkNtzwOf1RO+L7q1L/5BbN7njVvPLbxab2SEktxRqKh
-        FnNRcSIAZ7N2948CAAA=
-X-CMS-MailID: 20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea
+        with ESMTP id S241337AbiHEPzb (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 Aug 2022 11:55:31 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B595F91
+        for <linux-pwm@vger.kernel.org>; Fri,  5 Aug 2022 08:55:18 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oJzfP-00026g-Om; Fri, 05 Aug 2022 17:55:15 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oJzfL-001vCS-6j; Fri, 05 Aug 2022 17:55:13 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oJzfM-009klO-RL; Fri, 05 Aug 2022 17:55:12 +0200
+Date:   Fri, 5 Aug 2022 17:55:09 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Tamseel Shams <m.shams@samsung.com>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alim.akhtar@samsung.com
+Subject: Re: [PATCH] pwm: removes period check from pwm_apply_state()
+Message-ID: <20220805155509.edqwxcvyoqfic4pn@pengutronix.de>
 References: <CGME20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea@epcas5p2.samsung.com>
+ <20220805101125.47955-1-m.shams@samsung.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xs6xr6e4bpqmmt22"
+Content-Disposition: inline
+In-Reply-To: <20220805101125.47955-1-m.shams@samsung.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-There may be situation when PWM is exported using sysfs,
-but at that point PWM period is not set. At this situation
-if we issue a system suspend, it calls pwm_class_suspend
-which in turn calls pwm_apply_state, where PWM period value is
-checked which returns an invalid argument error casuing Kernel
-to panic. So, check for PWM period value is removed so as to
-fix the kernel panic observed during suspend.
 
-Signed-off-by: Tamseel Shams <m.shams@samsung.com>
----
- drivers/pwm/core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+--xs6xr6e4bpqmmt22
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+On Fri, Aug 05, 2022 at 03:41:25PM +0530, Tamseel Shams wrote:
+> There may be situation when PWM is exported using sysfs,
+> but at that point PWM period is not set. At this situation
+> if we issue a system suspend, it calls pwm_class_suspend
+> which in turn calls pwm_apply_state, where PWM period value is
+> checked which returns an invalid argument error casuing Kernel
+> to panic. So, check for PWM period value is removed so as to
+> fix the kernel panic observed during suspend.
+
+This looks and sounds wrong. One thing I would accept is:
 
 diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index c7552df32082..69bca7f82398 100644
+index 0e042410f6b9..075bbcdad6c1 100644
 --- a/drivers/pwm/core.c
 +++ b/drivers/pwm/core.c
-@@ -634,8 +634,7 @@ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
+@@ -557,8 +557,8 @@ int pwm_apply_state(struct pwm_device *pwm, const struc=
+t pwm_state *state)
  	 */
  	might_sleep();
- 
+=20
 -	if (!pwm || !state || !state->period ||
 -	    state->duty_cycle > state->period)
-+	if (!pwm || !state || state->duty_cycle > state->period)
++	if (!pwm || !state || state->enabled && (!state->period ||
++	    state->duty_cycle > state->period))
  		return -EINVAL;
- 
- 	chip = pwm->chip;
--- 
-2.17.1
+=20
+ 	chip =3D pwm->chip;
 
+That is, don't refuse calling pwm_apply_state() for state->period =3D 0
+and even state->duty_cycle > state->period if the PWM is not enabled.
+
+But anyhow, even without that the kernel should not panic. So I ask you
+to research and provide some more info about the problem. (Which
+hardware does it affect? Where does it panic? ...)
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--xs6xr6e4bpqmmt22
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLtPVsACgkQwfwUeK3K
+7AkyeggAlIF4i7X3hL+F6WL3ld2fObx/1FvrgJASGSAoNdEVn0srMhrNEhjZrugG
+Bdy3IESIAp86OHLfMwyAbF+w1Ww/mXcTq8Me3BrRN5cN2D4mtm0J4Pm4q3A2K85x
+JdTfOiUV6exqQZScwhvSym3YMPwZO2sRc2gY2idBZhO4PRrdpE/aiifN0IdGKIQx
+kEA7TEQfPm2/ZQR0nHpIGte2TLX8YzyHkdeRbmmV3+JNO/ywi+YwXM+aA79g1qVL
+MGCsBDB6HjCu4RMpCpIZbGTuy9Xv7zFomVdvSMd8xF5vB5Y63JxsW0/JGZ1eP7VJ
+bNo40HqSbGyEDCgwAipnhdUV+mVW1g==
+=56AU
+-----END PGP SIGNATURE-----
+
+--xs6xr6e4bpqmmt22--
