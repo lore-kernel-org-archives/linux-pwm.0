@@ -2,112 +2,91 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A067C25B08
-	for <linux-pwm@archiver.kernel.org>; Fri,  5 Aug 2022 16:51:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29610C3F6B0
+	for <linux-pwm@archiver.kernel.org>; Fri,  5 Aug 2022 19:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240963AbiHEQvF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 5 Aug 2022 12:51:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48550 "EHLO
+        id S241332AbiHET7A (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 5 Aug 2022 15:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240988AbiHEQuy (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 Aug 2022 12:50:54 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4AD1C125
-        for <linux-pwm@vger.kernel.org>; Fri,  5 Aug 2022 09:50:50 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id b21-20020a05600c4e1500b003a32bc8612fso1516772wmq.3
-        for <linux-pwm@vger.kernel.org>; Fri, 05 Aug 2022 09:50:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=MnRM0/0IvgGtmALzay+KKuxuL9L7ec4/ENnxhkmEu0Q=;
-        b=jPNeDsvM9ON44JSlp39pKrw4+Qw+Wmp0x7j1vZHjc9WudWV8dVShaQsp8qS2bKEnh6
-         r+Ru+w9wNlXfFOmq09dJhq5OzqbB/Zc3U2D/XEqmYCo+GCAaG6egbHak0rtaQOZYX1vM
-         wuVVnNRQ0PtWAMHh4OAjoFL/3U55OTR6R2Stv0jIeB9r6uQduC/yWuUjvWqTCvgxUAsF
-         eN1Shm5ES65XWq32IzZ0Dg6xiHuvp4z8e1Mf0Z6+wJLNfoWF5Z+GyZhFpFWCFMd2eQvi
-         emQeHVs8/8HzRfYy/ZBls7NCtc6KWuDSFAimESy5FW3Awho530DJHRYTWWn+xIpJ9gNe
-         AQEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=MnRM0/0IvgGtmALzay+KKuxuL9L7ec4/ENnxhkmEu0Q=;
-        b=wnRg2Iz5pUQ83ohgzJ96ULybkmpJ3bhPZJ2niwfhzhwLpCJY2GUX/99WADTk6A/cJW
-         rwa3zLAPE2zI8+1iaCf3iZaCu5VAsdTkajhtDPxDEu6D/To1zr6xM8qK9RVIPkbDStrn
-         6pHuEzuQkxJ4ueTGAX9GeJSrCHmaAh0G8ydeL8RZm1qk8VKmRw55mK0kek/XmAC9fvdH
-         X+4z3WyJidBlGTvrKkZF6uwLWZwuFJBuX4ZnNu44lmdnnxelt5rlX2/wPf7z1O6Q9DEW
-         NpcbmV7HMjIJwtnYWPTJlGdV96R8cJo7GA5zKdAkyQR6m5mx8ASyVSqofTAe1o7g0Y0u
-         SpAA==
-X-Gm-Message-State: ACgBeo0p5ClIk/8+/jBny1CwyS4BJhECfW5RfX8XBq+dffu43Eq3pxKK
-        +UdXl706yNUkklVBpt+dlQfRK3MP9Rrq4fHR
-X-Google-Smtp-Source: AA6agR44ih/XPWj1ROUhl3PpcKPXw9THsTAXfnCoTFP9AsDJXUtGec86TVYz2HmjLlz96qab7qg1aw==
-X-Received: by 2002:a05:600c:4e94:b0:3a3:455b:a277 with SMTP id f20-20020a05600c4e9400b003a3455ba277mr5226727wmq.198.1659718248877;
-        Fri, 05 Aug 2022 09:50:48 -0700 (PDT)
-Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id h28-20020a05600c2cbc00b003a4f08495b7sm11325374wmc.34.2022.08.05.09.50.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 09:50:48 -0700 (PDT)
-From:   Ben Dooks <ben.dooks@sifive.com>
-To:     linux-pwm@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        u.kleine-koenig@pengutronix.de,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        jarkko.nikula@linux.intel.com,
-        William Salmon <william.salmon@sifive.com>,
-        Jude Onyenegecha --subject-prefix=PATCH v3 
-        <jude.onyenegecha@sifive.com>, Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH 7/8] pwm: dwc: add snps,pwm-number to limit pwm count
-Date:   Fri,  5 Aug 2022 17:50:32 +0100
-Message-Id: <20220805165033.140958-8-ben.dooks@sifive.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220805165033.140958-1-ben.dooks@sifive.com>
-References: <20220805165033.140958-1-ben.dooks@sifive.com>
+        with ESMTP id S241330AbiHET6y (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 Aug 2022 15:58:54 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DBDD5004E
+        for <linux-pwm@vger.kernel.org>; Fri,  5 Aug 2022 12:58:54 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oK3Sz-0001L6-Kr; Fri, 05 Aug 2022 21:58:41 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oK3Sv-001xCF-PI; Fri, 05 Aug 2022 21:58:40 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oK3Sx-009msZ-De; Fri, 05 Aug 2022 21:58:39 +0200
+Date:   Fri, 5 Aug 2022 21:58:36 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Conor.Dooley@microchip.com
+Cc:     Daire.McNamara@microchip.com, devicetree@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-riscv@lists.infradead.org, robh+dt@kernel.org,
+        thierry.reding@gmail.com
+Subject: Re: [PATCH v7 3/4] pwm: add microchip soft ip corePWM driver
+Message-ID: <20220805195836.vh3wv4xbpwjhuvfs@pengutronix.de>
+References: <20220721172109.941900-1-mail@conchuod.ie>
+ <20220721172109.941900-4-mail@conchuod.ie>
+ <20220802084619.wunl3nglcpgo6j5i@pengutronix.de>
+ <e55e4a7f-b0bc-f48a-b555-d4b96d69bb87@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gci3n4sxshtnuiph"
+Content-Disposition: inline
+In-Reply-To: <e55e4a7f-b0bc-f48a-b555-d4b96d69bb87@microchip.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add snps,pwm-number property to indicate if the block does not have
-all 8 of the PWM blocks.
 
-Not sure if this should be a general PWM property consider optional
-for all PWM types, so have added a specific one here (there is only
-one other controller with a property for PWM count at the moment)
+--gci3n4sxshtnuiph
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
----
- drivers/pwm/pwm-dwc.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Hello Conor,
 
-diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index 5c319d0e3d52..5edfb8f8acbf 100644
---- a/drivers/pwm/pwm-dwc.c
-+++ b/drivers/pwm/pwm-dwc.c
-@@ -328,12 +328,20 @@ static int dwc_pwm_plat_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct dwc_pwm *dwc;
-+	u32 nr_pwm;
- 	int ret;
- 
- 	dwc = dwc_pwm_alloc(dev);
- 	if (!dwc)
- 		return -ENOMEM;
- 
-+	if (!device_property_read_u32(dev, "snps,pwm-number", &nr_pwm)) {
-+		if (nr_pwm > DWC_TIMERS_TOTAL)
-+			dev_err(dev, "too many PWMs specified (%d)\n", nr_pwm);
-+		else
-+			dwc->chip.npwm = nr_pwm;
-+	}
-+
- 	dwc->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(dwc->base))
- 		return dev_err_probe(dev, PTR_ERR(dwc->base),
--- 
-2.35.1
+On Tue, Aug 02, 2022 at 12:34:14PM +0000, Conor.Dooley@microchip.com wrote:
+> I'll fix it all up & submit v8 after -rc1.
 
+I discard the whole series in patchwork in the expectation that all
+patches will be part of your v8.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--gci3n4sxshtnuiph
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLtdmkACgkQwfwUeK3K
+7AlcuQf+PzHja618Q4oqXducHw/jRkMygZFPSXlBZTRuIoMQZ/pMHPLAlMHM5pkw
+LXJbuMYpU/F7n42/VVs9CsnI1xLmpUTSRFfrJB4YEkiDUBsw0h46rZHKL04vZKRh
+y/0TmS4YBcoeSVUyylpD5J0ngNwTcpqG7LRjCfrCPYsXRDi90t6IUYw5e1aJ01hH
+zHTAKzv4tdXT4JWO6lnNBuwa/Px1AMvtTg476WI7YlVV9ekIM6pNPIzBb+SsrDJL
+LD/EnTBopac1x1qDSv9ZYwJqODqMYWBPxtXKFdZhw9yyWutXLE7eu5E/HpkMDIBx
+ZU3e0rIV8+7YfqTZPGxu3+qaG8YLkw==
+=txLA
+-----END PGP SIGNATURE-----
+
+--gci3n4sxshtnuiph--
