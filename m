@@ -2,43 +2,43 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD388C19F2D
-	for <linux-pwm@archiver.kernel.org>; Sat,  6 Aug 2022 15:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A8FC25B0D
+	for <linux-pwm@archiver.kernel.org>; Sat,  6 Aug 2022 15:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232572AbiHFPZY (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 6 Aug 2022 11:25:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46766 "EHLO
+        id S232680AbiHFPZ0 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 6 Aug 2022 11:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231604AbiHFPZX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 6 Aug 2022 11:25:23 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837979FEA;
-        Sat,  6 Aug 2022 08:25:22 -0700 (PDT)
+        with ESMTP id S232360AbiHFPZZ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 6 Aug 2022 11:25:25 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6673DBE26;
+        Sat,  6 Aug 2022 08:25:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659799522; x=1691335522;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yeMrOGaLj7UiZ3aSAIAl9Iu73Rv0eEWT/0hnU9WSJMI=;
-  b=eoW+a3M8jCwTF/zon9zMNufyDi1pzg5HyZMKPLXwYYC7iEfpv8feFeUx
-   pe6WkQT9xcpF3Cwvww1tx5FZmcsLu6rszGQj+WB3GKocV/oXXhkjFsHlD
-   5AJ/aFvhHjFhbv51qJWkASK5WZdrZRAR7NYM0sUHszcKGVKgh/QC2Lofs
-   lwfsjQLizLdQ65lcu+JpjYuppQ7dLd5OxA02qnM4OkGOPnRKOTVurQ4JD
-   CvgTOvASoRgQB17FPu3aGaZo6pQZTrBMI9ATgr9iVnUcNPIBmZNu0j1vD
-   s4CFHm3P/Nv9IoasOdgIj7pAVlDVeI8juT37q4TmaEM2i+sABHQFWOeaw
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="352098533"
+  t=1659799524; x=1691335524;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kbBuaKEL5Eapwb44NRKZmmeZ/n+9y6E91HvPfKTfkzw=;
+  b=Gj46FZRn4tkjhZcXS53ejOf7BWZyBajO5x4O4aiTR9MxjDidwlSxHNrU
+   Ek7qI8ujvqbhvIN0jmI2hu2CeGoxnyU7S+XUrcIm1ptiKlzfyXCMbZ4Ef
+   GtnRMhVDAE0J+QXlJR3zLbueyp57LaRJkmuog2yM3euFCLzgyl2RNB234
+   uNZiVMqxNYO4FxGPEmRnuQ+GFTSWd96plXVtLL/ci3hha0RswxzfEKvjw
+   SDQbjp0uOpxRKLXyVExps1HpU5HqPQCj1CHNgHYBfsvSNPH/pBdFitn6y
+   cjl/LO6UYqhurrJAsGcpmpKn6IDKnCL1bQ56Ti6Qj0IzDUZ633YV4n612
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="289131958"
 X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="352098533"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 08:25:22 -0700
+   d="scan'208";a="289131958"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 08:25:24 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="600652376"
+   d="scan'208";a="607432285"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 06 Aug 2022 08:25:19 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 06 Aug 2022 08:25:21 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 9F31617D5; Sat,  6 Aug 2022 18:25:30 +0300 (EEST)
+        id E4ED317E7; Sat,  6 Aug 2022 18:25:32 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -50,182 +50,78 @@ Cc:     Jonathan Corbet <corbet@lwn.net>,
         Thierry Reding <thierry.reding@gmail.com>,
         Jean Delvare <jdelvare@suse.com>,
         Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: [PATCH v1 1/3] hwmon: (pwm-fan) Make use of device properties
-Date:   Sat,  6 Aug 2022 18:25:15 +0300
-Message-Id: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/3] pwm: core: Make of_pwm_get() static
+Date:   Sat,  6 Aug 2022 18:25:17 +0300
+Message-Id: <20220806152517.78159-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
+References: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
-
-Add mod_devicetable.h include.
+There are no users outside of PWM core of the of_pwm_get().
+Make it static.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/hwmon/Kconfig   |  2 +-
- drivers/hwmon/pwm-fan.c | 50 +++++++++++++++++++++--------------------
- 2 files changed, 27 insertions(+), 25 deletions(-)
+ drivers/pwm/core.c  |  5 ++---
+ include/linux/pwm.h | 10 ----------
+ 2 files changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index e70d9614bec2..58912a5c5de8 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -1613,7 +1613,7 @@ source "drivers/hwmon/pmbus/Kconfig"
- 
- config SENSORS_PWM_FAN
- 	tristate "PWM fan"
--	depends on (PWM && OF) || COMPILE_TEST
-+	depends on PWM || COMPILE_TEST
- 	depends on THERMAL || THERMAL=n
- 	help
- 	  If you say yes here you get support for fans connected to PWM lines.
-diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-index 6c08551d8d14..9ce9f2543861 100644
---- a/drivers/hwmon/pwm-fan.c
-+++ b/drivers/hwmon/pwm-fan.c
-@@ -9,10 +9,11 @@
- 
- #include <linux/hwmon.h>
- #include <linux/interrupt.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
--#include <linux/of.h>
- #include <linux/platform_device.h>
-+#include <linux/property.h>
- #include <linux/pwm.h>
- #include <linux/regulator/consumer.h>
- #include <linux/sysfs.h>
-@@ -25,7 +26,6 @@ struct pwm_fan_tach {
- 	int irq;
- 	atomic_t pulses;
- 	unsigned int rpm;
--	u8 pulses_per_revolution;
- };
- 
- struct pwm_fan_ctx {
-@@ -36,6 +36,7 @@ struct pwm_fan_ctx {
- 
- 	int tach_count;
- 	struct pwm_fan_tach *tachs;
-+	u32 *pulses_per_revolution;
- 	ktime_t sample_start;
- 	struct timer_list rpm_timer;
- 
-@@ -73,7 +74,7 @@ static void sample_timer(struct timer_list *t)
- 			pulses = atomic_read(&tach->pulses);
- 			atomic_sub(pulses, &tach->pulses);
- 			tach->rpm = (unsigned int)(pulses * 1000 * 60) /
--				(tach->pulses_per_revolution * delta);
-+				(ctx->pulses_per_revolution[i] * delta);
- 		}
- 
- 		ctx->sample_start = ktime_get();
-@@ -229,16 +230,14 @@ static const struct thermal_cooling_device_ops pwm_fan_cooling_ops = {
- 	.set_cur_state = pwm_fan_set_cur_state,
- };
- 
--static int pwm_fan_of_get_cooling_data(struct device *dev,
--				       struct pwm_fan_ctx *ctx)
-+static int pwm_fan_get_cooling_data(struct device *dev, struct pwm_fan_ctx *ctx)
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index dc1b7263a0b0..cfe3a0327471 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -734,8 +734,8 @@ static struct device_link *pwm_device_link_add(struct device *dev,
+  * Returns: A pointer to the requested PWM device or an ERR_PTR()-encoded
+  * error code on failure.
+  */
+-struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
+-			      const char *con_id)
++static struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
++				     const char *con_id)
  {
--	struct device_node *np = dev->of_node;
- 	int num, i, ret;
+ 	struct pwm_device *pwm = NULL;
+ 	struct of_phandle_args args;
+@@ -797,7 +797,6 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
  
--	if (!of_find_property(np, "cooling-levels", NULL))
-+	if (!device_property_present(dev, "cooling-levels"))
- 		return 0;
+ 	return pwm;
+ }
+-EXPORT_SYMBOL_GPL(of_pwm_get);
  
--	ret = of_property_count_u32_elems(np, "cooling-levels");
-+	ret = device_property_count_u32(dev, "cooling-levels");
- 	if (ret <= 0) {
- 		dev_err(dev, "Wrong data!\n");
- 		return ret ? : -EINVAL;
-@@ -250,8 +249,8 @@ static int pwm_fan_of_get_cooling_data(struct device *dev,
- 	if (!ctx->pwm_fan_cooling_levels)
- 		return -ENOMEM;
+ /**
+  * acpi_pwm_get() - request a PWM via parsing "pwms" property in ACPI
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 572ba92e4206..d70c6e5a839d 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -403,8 +403,6 @@ struct pwm_device *of_pwm_single_xlate(struct pwm_chip *pc,
+ 				       const struct of_phandle_args *args);
  
--	ret = of_property_read_u32_array(np, "cooling-levels",
--					 ctx->pwm_fan_cooling_levels, num);
-+	ret = device_property_read_u32_array(dev, "cooling-levels",
-+					     ctx->pwm_fan_cooling_levels, num);
- 	if (ret) {
- 		dev_err(dev, "Property 'cooling-levels' cannot be read!\n");
- 		return ret;
-@@ -302,7 +301,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
+ struct pwm_device *pwm_get(struct device *dev, const char *con_id);
+-struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
+-			      const char *con_id);
+ void pwm_put(struct pwm_device *pwm);
  
- 	mutex_init(&ctx->lock);
+ struct pwm_device *devm_pwm_get(struct device *dev, const char *con_id);
+@@ -495,14 +493,6 @@ static inline struct pwm_device *pwm_get(struct device *dev,
+ 	return ERR_PTR(-ENODEV);
+ }
  
--	ctx->pwm = devm_of_pwm_get(dev, dev->of_node, NULL);
-+	ctx->pwm = devm_pwm_get(dev, NULL);
- 	if (IS_ERR(ctx->pwm))
- 		return dev_err_probe(dev, PTR_ERR(ctx->pwm), "Could not get PWM\n");
- 
-@@ -370,6 +369,20 @@ static int pwm_fan_probe(struct platform_device *pdev)
- 		if (!fan_channel_config)
- 			return -ENOMEM;
- 		ctx->fan_channel.config = fan_channel_config;
-+
-+		ctx->pulses_per_revolution = devm_kmalloc_array(dev,
-+								ctx->tach_count,
-+								sizeof(*ctx->pulses_per_revolution),
-+								GFP_KERNEL);
-+		if (!ctx->pulses_per_revolution)
-+			return -ENOMEM;
-+
-+		/* Setup default pulses per revolution */
-+		memset32(ctx->pulses_per_revolution, 2, ctx->tach_count);
-+
-+		device_property_read_u32_array(dev, "pulses-per-revolution",
-+					       ctx->pulses_per_revolution,
-+					       ctx->tach_count);
- 	}
- 
- 	channels = devm_kcalloc(dev, channel_count + 1,
-@@ -381,7 +394,6 @@ static int pwm_fan_probe(struct platform_device *pdev)
- 
- 	for (i = 0; i < ctx->tach_count; i++) {
- 		struct pwm_fan_tach *tach = &ctx->tachs[i];
--		u32 ppr = 2;
- 
- 		tach->irq = platform_get_irq(pdev, i);
- 		if (tach->irq == -EPROBE_DEFER)
-@@ -397,20 +409,10 @@ static int pwm_fan_probe(struct platform_device *pdev)
- 			}
- 		}
- 
--		of_property_read_u32_index(dev->of_node,
--					   "pulses-per-revolution",
--					   i,
--					   &ppr);
--		tach->pulses_per_revolution = ppr;
--		if (!tach->pulses_per_revolution) {
--			dev_err(dev, "pulses-per-revolution can't be zero.\n");
--			return -EINVAL;
--		}
+-static inline struct pwm_device *of_pwm_get(struct device *dev,
+-					    struct device_node *np,
+-					    const char *con_id)
+-{
+-	might_sleep();
+-	return ERR_PTR(-ENODEV);
+-}
 -
- 		fan_channel_config[i] = HWMON_F_INPUT;
- 
- 		dev_dbg(dev, "tach%d: irq=%d, pulses_per_revolution=%d\n",
--			i, tach->irq, tach->pulses_per_revolution);
-+			i, tach->irq, ctx->pulses_per_revolution[i]);
- 	}
- 
- 	if (ctx->tach_count > 0) {
-@@ -430,7 +432,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
- 		return PTR_ERR(hwmon);
- 	}
- 
--	ret = pwm_fan_of_get_cooling_data(dev, ctx);
-+	ret = pwm_fan_get_cooling_data(dev, ctx);
- 	if (ret)
- 		return ret;
- 
+ static inline void pwm_put(struct pwm_device *pwm)
+ {
+ 	might_sleep();
 -- 
 2.35.1
 
