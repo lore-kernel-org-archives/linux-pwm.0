@@ -2,105 +2,133 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6865BC25B0C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA53C3F6B0
 	for <linux-pwm@archiver.kernel.org>; Sat,  6 Aug 2022 21:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233735AbiHFVXc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 6 Aug 2022 17:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
+        id S233802AbiHFVXd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 6 Aug 2022 17:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233166AbiHFVXa (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 6 Aug 2022 17:23:30 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F683F58C;
-        Sat,  6 Aug 2022 14:23:26 -0700 (PDT)
+        with ESMTP id S233680AbiHFVXb (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 6 Aug 2022 17:23:31 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E4EF59C;
+        Sat,  6 Aug 2022 14:23:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659821006; x=1691357006;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=y6RbBLDtDHHiMcqJ3KvDVm+exxMIOLcEhhJLr3Mcmm4=;
-  b=VtJ4CpKD5b/mAC7RQzhS7oZ9WaEFrwvvJcubmZkbJIui1nWTDy8EsRJ3
-   WRsAhsIfbKTn9rgNzg8Zv/O1R/yISpvu9ln1J5iABHvl4zl+ZJOQQg5qV
-   k9/x7Dy6aDbS/FZYSb1JXtqphsQyzeGIEav3aM1sfVbyRq3M5ovqB91LX
-   C5hGw0AP29dOyruCDhzUdAxLexaIKdmwiDDp8JWiQZlsFwC7k2xifrOcQ
-   HZ3ngZigN7Hr5rZLUUuRtCtMekHVOxDDxNQICkfoRy+JraZbG7V92A4F0
-   j6vQcohE6BEFLvB+7g66i5Rz8vLOHLmW8NP6J1Y8cTxm9doqDKoCkEz4G
+  t=1659821008; x=1691357008;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Y/ekvDK9lfRgpxrLz1N34iu6xjYZHHBgk3QqU8GADcA=;
+  b=ObA13w7BRjtU4X86UJXmupe7mhxn7zjm6v2ev7zJyHcDQ1DQ1cj+rGAA
+   BmMP64NLkhFlo5AwaVk3CGgxziP3nGcvVVg2iFp+xudYdH95mKuUCCLIv
+   ioXTIf/l28MqWWGfRngTL+mi5VSdk1ypHjjEykWFId9281WRO022QqOn2
+   XRUSosjqVnqsUgsww76Z5o3KQN0tzeNhwAL2uiiCxOzUmOonhxVl/o2PX
+   ivoROelEemPJE6OONffGX6m00J3jKmUkaRbyqUzJku+EnaXmgpneKUKvM
+   wAMqoaUH51uPbY1JvW2d38Bw0kquKAIKqfx/CSyKEs2n6y024qEeEMfxt
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="273440385"
+X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="290400604"
 X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="273440385"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 14:23:25 -0700
+   d="scan'208";a="290400604"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 14:23:27 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="730332995"
+   d="scan'208";a="663426672"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 06 Aug 2022 14:23:24 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 06 Aug 2022 14:23:26 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 948AAF7; Sun,  7 Aug 2022 00:23:35 +0300 (EEST)
+        id 12665347; Sun,  7 Aug 2022 00:23:38 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v1 1/4] pwm: sysfs: Switch to DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr()
-Date:   Sun,  7 Aug 2022 00:23:28 +0300
-Message-Id: <20220806212331.40086-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 4/4] pwm: sysfs: Utilize an array for polarity strings
+Date:   Sun,  7 Aug 2022 00:23:31 +0300
+Message-Id: <20220806212331.40086-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220806212331.40086-1-andriy.shevchenko@linux.intel.com>
+References: <20220806212331.40086-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Using these newer macros allows the compiler to remove the unused
-structure and functions when !CONFIG_PM_SLEEP + removes the need to
-mark pm functions __maybe_unused.
+Code is smaller and looks nicer if we combine polarity strings into an array.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/pwm/sysfs.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pwm/sysfs.c | 32 ++++++++++++--------------------
+ 1 file changed, 12 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 9903c3a7eced..c21b6046067b 100644
+index 767c4b19afb1..1bbc5286b7c6 100644
 --- a/drivers/pwm/sysfs.c
 +++ b/drivers/pwm/sysfs.c
-@@ -433,7 +433,7 @@ static int pwm_class_resume_npwm(struct device *parent, unsigned int npwm)
- 	return ret;
+@@ -151,27 +151,23 @@ static ssize_t enable_store(struct device *child,
+ 	return ret ? : size;
  }
  
--static int __maybe_unused pwm_class_suspend(struct device *parent)
-+static int pwm_class_suspend(struct device *parent)
++static const char * const polarity_strings[] = {
++	[PWM_POLARITY_NORMAL]	= "normal",
++	[PWM_POLARITY_INVERSED]	= "inversed",
++};
++
+ static ssize_t polarity_show(struct device *child,
+ 			     struct device_attribute *attr,
+ 			     char *buf)
  {
- 	struct pwm_chip *chip = dev_get_drvdata(parent);
- 	unsigned int i;
-@@ -464,20 +464,20 @@ static int __maybe_unused pwm_class_suspend(struct device *parent)
- 	return ret;
+ 	const struct pwm_device *pwm = child_to_pwm_device(child);
+-	const char *polarity = "unknown";
+ 	struct pwm_state state;
+ 
+ 	pwm_get_state(pwm, &state);
++	if (state.polarity < 0 || state.polarity >= ARRAY_SIZE(polarity_strings))
++		return sysfs_emit(buf, "unknown\n");
+ 
+-	switch (state.polarity) {
+-	case PWM_POLARITY_NORMAL:
+-		polarity = "normal";
+-		break;
+-
+-	case PWM_POLARITY_INVERSED:
+-		polarity = "inversed";
+-		break;
+-	}
+-
+-	return sysfs_emit(buf, "%s\n", polarity);
++	return sysfs_emit(buf, "%s\n", polarity_strings[state.polarity]);
  }
  
--static int __maybe_unused pwm_class_resume(struct device *parent)
-+static int pwm_class_resume(struct device *parent)
+ static ssize_t polarity_store(struct device *child,
+@@ -180,20 +176,16 @@ static ssize_t polarity_store(struct device *child,
  {
- 	struct pwm_chip *chip = dev_get_drvdata(parent);
+ 	struct pwm_export *export = child_to_pwm_export(child);
+ 	struct pwm_device *pwm = export->pwm;
+-	enum pwm_polarity polarity;
+ 	struct pwm_state state;
+ 	int ret;
  
- 	return pwm_class_resume_npwm(parent, chip->npwm);
- }
+-	if (sysfs_streq(buf, "normal"))
+-		polarity = PWM_POLARITY_NORMAL;
+-	else if (sysfs_streq(buf, "inversed"))
+-		polarity = PWM_POLARITY_INVERSED;
+-	else
+-		return -EINVAL;
++	ret = sysfs_match_string(polarity_strings, buf);
++	if (ret < 0)
++		return ret;
  
--static SIMPLE_DEV_PM_OPS(pwm_class_pm_ops, pwm_class_suspend, pwm_class_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(pwm_class_pm_ops, pwm_class_suspend, pwm_class_resume);
+ 	mutex_lock(&export->lock);
+ 	pwm_get_state(pwm, &state);
+-	state.polarity = polarity;
++	state.polarity = ret;
+ 	ret = pwm_apply_state(pwm, &state);
+ 	mutex_unlock(&export->lock);
  
- static struct class pwm_class = {
- 	.name = "pwm",
- 	.owner = THIS_MODULE,
- 	.dev_groups = pwm_chip_groups,
--	.pm = &pwm_class_pm_ops,
-+	.pm = pm_sleep_ptr(&pwm_class_pm_ops),
- };
- 
- static int pwmchip_sysfs_match(struct device *parent, const void *data)
 -- 
 2.35.1
 
