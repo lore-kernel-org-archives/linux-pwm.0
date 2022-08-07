@@ -2,118 +2,116 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B2BFC25B06
-	for <linux-pwm@archiver.kernel.org>; Sat,  6 Aug 2022 21:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F2BC19F2A
+	for <linux-pwm@archiver.kernel.org>; Sun,  7 Aug 2022 07:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233763AbiHFVXc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 6 Aug 2022 17:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
+        id S233776AbiHGH1a (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 7 Aug 2022 03:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233672AbiHFVXa (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 6 Aug 2022 17:23:30 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDA7F593;
-        Sat,  6 Aug 2022 14:23:27 -0700 (PDT)
+        with ESMTP id S231962AbiHGH13 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 7 Aug 2022 03:27:29 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD07BBC05;
+        Sun,  7 Aug 2022 00:27:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659821007; x=1691357007;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=B9uL+ecQZ0NAOtCcVBdGiNsDhlGKvi4c2/vcVVL4eBU=;
-  b=IXeUEGn9lD+N93qv5GNEq3TlSg8huf4PMJ/fj9KkBPLhDyTZlSB8Ny8z
-   4dC2B37GOZ49l80mmpOyS893RtPERVVh7KC8BU1iMW7bNSmugoCfk8ZLr
-   adyB1FLFe+/HDC/7QsCwnQWU+TTH5gFGM+hLv3eJbnGW3r8sZOTbBk9V7
-   Z8oN3v65XNCqoGFQHyHuXG3TO8HGZD27f8nZxR6C1E4Kn3qxthVrqgdN2
-   KPyoDdiVadFHoIZObxR2vOzgxP/xL0yaSAvCXup/cqpUZMvIgyZEAW/Uf
-   JKKLEqmJ0PDjzsLmv74Sa/xgMXr1Pk2zI3qmfSSiK00CSmyrqpAomVPfW
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="270166039"
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="270166039"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 14:23:26 -0700
+  t=1659857248; x=1691393248;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pvqTo8cwE9NuvkuDRbkdGR3FgW6g0e3IKRUiwqeyOpU=;
+  b=h/IEM78VcMPE08Ojl0iDwj1ZDnMnQuKh+SjaKbJIsJz5S1L8kNRPvtBZ
+   shT0S97S2ngBBPGhnESDJM/SfIepM30q2u2K7v3k6OzNNcX0MbOV1lCkK
+   Hg9Jgn/48ualM77KHDAR1BPZjorMfVUdpB8tbW+HRg6H0hDM6g+jwkosN
+   kv8N/JK5/dB6NZuldJZFmFmhA8ol2r5NrfO/2b/MmJ/4hY93iEvDSbwQB
+   zxnUHWam8lS9BNnXJ6F61Yi6u3qqyjahCKFYr/Wb+ImqW9su5MFc+xNmZ
+   gCqO+l37/brWxBIZG3aU39EEQ5dWsb20VhZ72PGKaT+6oaDlBszAefIV6
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="273466626"
+X-IronPort-AV: E=Sophos;i="5.93,219,1654585200"; 
+   d="scan'208";a="273466626"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 00:27:28 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="636859733"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 06 Aug 2022 14:23:25 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8E0ED1AA; Sun,  7 Aug 2022 00:23:36 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v1 2/4] pwm: sysfs: Return directly from the for-loop in PM callbacks
-Date:   Sun,  7 Aug 2022 00:23:29 +0300
-Message-Id: <20220806212331.40086-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220806212331.40086-1-andriy.shevchenko@linux.intel.com>
-References: <20220806212331.40086-1-andriy.shevchenko@linux.intel.com>
+X-IronPort-AV: E=Sophos;i="5.93,219,1654585200"; 
+   d="scan'208";a="746292715"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 07 Aug 2022 00:27:25 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oKah2-000L6j-20;
+        Sun, 07 Aug 2022 07:27:24 +0000
+Date:   Sun, 7 Aug 2022 15:27:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ben Dooks <ben.dooks@sifive.com>, linux-pwm@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        u.kleine-koenig@pengutronix.de,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        jarkko.nikula@linux.intel.com,
+        William Salmon <william.salmon@sifive.com>,
+        Jude Onyenegecha --subject-prefix=PATCH v3 
+        <jude.onyenegecha@sifive.com>, Ben Dooks <ben.dooks@sifive.com>
+Subject: Re: [PATCH 4/8] pwm: dwc: add of/platform support
+Message-ID: <202208071526.YxCqCuJZ-lkp@intel.com>
+References: <20220805165033.140958-5-ben.dooks@sifive.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805165033.140958-5-ben.dooks@sifive.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-There is no need to assign ret to 0 and then break the loop just
-for returning the error to the caller. Instead, return directly
-from the for-loop, and 0 otherwise.
+Hi Ben,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pwm/sysfs.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+I love your patch! Yet something to improve:
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index c21b6046067b..1543fe07765b 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -413,7 +413,7 @@ static int pwm_class_resume_npwm(struct device *parent, unsigned int npwm)
- {
- 	struct pwm_chip *chip = dev_get_drvdata(parent);
- 	unsigned int i;
--	int ret = 0;
-+	int ret;
- 
- 	for (i = 0; i < npwm; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
-@@ -427,17 +427,17 @@ static int pwm_class_resume_npwm(struct device *parent, unsigned int npwm)
- 		state.enabled = export->suspend.enabled;
- 		ret = pwm_class_apply_state(export, pwm, &state);
- 		if (ret < 0)
--			break;
-+			return ret;
- 	}
- 
--	return ret;
-+	return 0;
- }
- 
- static int pwm_class_suspend(struct device *parent)
- {
- 	struct pwm_chip *chip = dev_get_drvdata(parent);
- 	unsigned int i;
--	int ret = 0;
-+	int ret;
- 
- 	for (i = 0; i < chip->npwm; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
-@@ -457,11 +457,11 @@ static int pwm_class_suspend(struct device *parent)
- 			 * this suspend function.
- 			 */
- 			pwm_class_resume_npwm(parent, i);
--			break;
-+			return ret;
- 		}
- 	}
- 
--	return ret;
-+	return 0;
- }
- 
- static int pwm_class_resume(struct device *parent)
+[auto build test ERROR on thierry-reding-pwm/for-next]
+[also build test ERROR on linus/master v5.19 next-20220805]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Ben-Dooks/dt-bindings-pwm-Document-Synopsys-DesignWare-snps-pwm-dw-apb-timers-pwm2/20220806-015142
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git for-next
+config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220807/202208071526.YxCqCuJZ-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/3bd100d711908b7d16a2c4793b4f5b597acb8d7f
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Ben-Dooks/dt-bindings-pwm-Document-Synopsys-DesignWare-snps-pwm-dw-apb-timers-pwm2/20220806-015142
+        git checkout 3bd100d711908b7d16a2c4793b4f5b597acb8d7f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/pwm/pwm-dwc.c:321:1: warning: data definition has no type or storage class
+     321 | module_pci_driver(dwc_pwm_driver);
+         | ^~~~~~~~~~~~~~~~~
+>> drivers/pwm/pwm-dwc.c:321:1: error: type defaults to 'int' in declaration of 'module_pci_driver' [-Werror=implicit-int]
+   drivers/pwm/pwm-dwc.c:321:1: warning: parameter names (without types) in function declaration
+   drivers/pwm/pwm-dwc.c:311:26: warning: 'dwc_pwm_driver' defined but not used [-Wunused-variable]
+     311 | static struct pci_driver dwc_pwm_driver = {
+         |                          ^~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +321 drivers/pwm/pwm-dwc.c
+
+1ed2b3fca64516 Jarkko Nikula 2020-10-02  320  
+1ed2b3fca64516 Jarkko Nikula 2020-10-02 @321  module_pci_driver(dwc_pwm_driver);
+1ed2b3fca64516 Jarkko Nikula 2020-10-02  322  
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
