@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30237C32796
-	for <linux-pwm@archiver.kernel.org>; Tue, 16 Aug 2022 21:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4E3C2BB41
+	for <linux-pwm@archiver.kernel.org>; Tue, 16 Aug 2022 21:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237493AbiHPVPD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 16 Aug 2022 17:15:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54266 "EHLO
+        id S237499AbiHPVP1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 16 Aug 2022 17:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237475AbiHPVPC (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Aug 2022 17:15:02 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149327A516
-        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:01 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id z14-20020a7bc7ce000000b003a5db0388a8so1089498wmk.1
-        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:01 -0700 (PDT)
+        with ESMTP id S237546AbiHPVPV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Aug 2022 17:15:21 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBE588DF1
+        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:05 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id ba1so3480730wrb.5
+        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=BEOpRioXienSDDf6vjruAkPlsDKDhUNbn1dmZioZ4X4=;
-        b=eYefCuC/rgQ6p0YNaYBu3lEQX3Uj5IL6sNCWvehy/NqfbV2p8Tg917eIc4dD2xBV0i
-         K6XA3rjwJrLptS3Vz6FWghqV/m/+uSJZOHd3f1V/5Iuu7cyDt+EnKxHLceb//0HzG+0U
-         VMAw6kcNGsOyYE+zE8yRUZcMNM1FWfVR2vaEptiW2uiAGrPMtoyMmaT+/xiiBPXVNkmx
-         JBx3FNmZxxDxmOSq5XtmfuSRL8YncLD/nkyfu/ji3WjuS3IQ/ekjJFSIRpBSF52V2WyO
-         I/IocNCe/7jr1MYPJB/9stcdR3DucirXsphktPY+U+g3ZM3M2LUbFC5e29KVDZIggqNs
-         bB1g==
+        bh=HJHRtwvM9XKFKJZyiCAat71LR5qh4WybnuX4htGG8co=;
+        b=aONfSRH9mk7Lcf234Z34egz6022TWDk9fVq7vrFyoi9eN4tr2FZ7mTW0QiG2NhLaMc
+         m3hYVtWdO2IqkmBUMXZe2F2Z09yD8jpjqPIKGeJxfArjXPr9XzU0keCJBWAAhw0bypey
+         H2xFZ3Rk58fJMfd0TrQGZmDUC+TALbkTe8YBNno6IC08sNX+WdDbNysmzFwDKN7c1M5H
+         e0zZ2i41dyeGBkuZXeD1qsZtGRCn2E292hPiZ4UwfCSC8UBcC5EKYhathtpS0JOgiCNa
+         qGTSF5tFcr+3XT1wW4DCSH3USPDSIyZb89tBjYHfvkagXpX0V5a5lRS69ArWyv4b6XfJ
+         K4/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=BEOpRioXienSDDf6vjruAkPlsDKDhUNbn1dmZioZ4X4=;
-        b=k1OfzM1fyubY+hc//SaNyk4hxmu2Je2GZipeTvGqSvnFnKbmrvbWqwCfp4u2J5p/fj
-         m5QNLggkhGvxs5hcNOkFCZdaqi4qpAIjOpNUAyvT9vUbn3Ycbq+5meHrCg3Ku5+YFDQB
-         KYNwxd1iy1FgXGuoCPAS0S77bTuhzsEe/UxnRQPa1uzPWZ881bQnOUomwGvIE9mIGzLE
-         ZDJwNwqT9xfxc4DMxMEWH4YV2rrq7nwq43C+pYKs1eiOzGeYrh4/lSOK/7tp6LKvjbTv
-         sSsOZUdPznS5mr9vtPguC0UrGvxUpO/qllCcvSZOoZYCoca3yME3JivbJDw9dRJ0Y3R7
-         oS+A==
-X-Gm-Message-State: ACgBeo38FjEwIlS02YDdAtrf9BdHVwBaN/zLLDP6l+y/amNY+u7fKEUX
-        +j0PJwOXimabykVP3PvYHakbvooEaxGiVQ==
-X-Google-Smtp-Source: AA6agR4x5105693B/mvfnk5ocFtht52wNSb/pOgM+837u+GyY9Nw0+ugNz4CTpZcN8mxWyQV6UPlmg==
-X-Received: by 2002:a1c:3b04:0:b0:3a5:487c:6240 with SMTP id i4-20020a1c3b04000000b003a5487c6240mr212714wma.152.1660684499117;
-        Tue, 16 Aug 2022 14:14:59 -0700 (PDT)
+        bh=HJHRtwvM9XKFKJZyiCAat71LR5qh4WybnuX4htGG8co=;
+        b=aF/YH8hqksaHrmlXeVYySMucD77QC9+QsFsN/Y9/MFHYGFt22kviPHG2Et6hR0fqKK
+         wq+HNFD4M0Zh4BewxpkwnWbspO8wN9199eM5eRiFLOcCNlnSH9mugmMsDus52cQ9RPBM
+         N6800bOWKxa95csbB71YgEzQ9KS/Ab7QUHbJh/21sY7uAf6HKEuD3lgn666Ko2Ia0DZ5
+         qJb6NXfuu5eKvl0wuAJSMDwwSb2n3kXetc69kMSh38kzHaXXj7l1t9eB41M1v5I/jfYp
+         NbbqV71VwKWEk4asvDosM2Ouo1wFZbMncdwq4WMW6gA/2tEMWGpBzXwwkMzKNXGWq9kJ
+         N3MQ==
+X-Gm-Message-State: ACgBeo1x17cliJfkFtiM9qA/Khhrlr2fs7SMPlWbCtf0oJO2B6ZYG+TH
+        a4Un5iQ677ax2RdZMj4byfRHeHrALmY5Ng==
+X-Google-Smtp-Source: AA6agR4PSu/FeqggYgzon5wVbBrXNRT04fTg3xrVMWNipvz5DeMvZ0VtVmr7OOfx6ZSUExxyviDsBA==
+X-Received: by 2002:a05:6000:10d1:b0:220:5c89:50e5 with SMTP id b17-20020a05600010d100b002205c8950e5mr12981023wrx.335.1660684502898;
+        Tue, 16 Aug 2022 14:15:02 -0700 (PDT)
 Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id r4-20020a1c4404000000b003a3170a7af9sm23913wma.4.2022.08.16.14.14.58
+        by smtp.gmail.com with ESMTPSA id r4-20020a1c4404000000b003a3170a7af9sm23913wma.4.2022.08.16.14.15.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 14:14:58 -0700 (PDT)
+        Tue, 16 Aug 2022 14:15:02 -0700 (PDT)
 From:   Ben Dooks <ben.dooks@sifive.com>
 To:     linux-pwm@vger.kernel.org
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -59,67 +59,154 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Salmon <william.salmon@sifive.com>,
         Jude Onyenegecha <jude.onyenegecha@sifive.com>,
         Ben Dooks <ben.dooks@sifive.com>
-Subject: [RFC v4 03/10] pwm: dwc: change &pci->dev to dev in probe
-Date:   Tue, 16 Aug 2022 22:14:47 +0100
-Message-Id: <20220816211454.237751-4-ben.dooks@sifive.com>
+Subject: [RFC v4 08/10] pwm: dwc: add of/platform support
+Date:   Tue, 16 Aug 2022 22:14:52 +0100
+Message-Id: <20220816211454.237751-9-ben.dooks@sifive.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220816211454.237751-1-ben.dooks@sifive.com>
 References: <20220816211454.237751-1-ben.dooks@sifive.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The dwc_pwm_probe() assignes dev to be &pci->dev but then uses
-&pci->dev throughout the function. Change these all to the be
-'dev' variable to make lines shorter.
+The dwc pwm controller can be used in non-PCI systems, so allow
+either platform or OF based probing.
 
 Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-dwc.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+v4:
+ - split the of code out of the core
+ - moved the compile test code earlier
+ - fixed review comments
+  - used NS_PER_SEC
+  - use devm_clk_get_enabled
+v3:
+ - changed compatible name
+---
+ drivers/pwm/Kconfig      |  9 +++++
+ drivers/pwm/Makefile     |  1 +
+ drivers/pwm/pwm-dwc-of.c | 78 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 88 insertions(+)
+ create mode 100644 drivers/pwm/pwm-dwc-of.c
 
-diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index 7568300bb11e..c706ef9a7ba1 100644
---- a/drivers/pwm/pwm-dwc.c
-+++ b/drivers/pwm/pwm-dwc.c
-@@ -202,14 +202,13 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	struct dwc_pwm *dwc;
- 	int ret;
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index a9f1c554db2b..f1735653365f 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -192,6 +192,15 @@ config PWM_DWC_PCI
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-dwc-pci.
  
--	dwc = devm_kzalloc(&pci->dev, sizeof(*dwc), GFP_KERNEL);
-+	dwc = devm_kzalloc(dev, sizeof(*dwc), GFP_KERNEL);
- 	if (!dwc)
- 		return -ENOMEM;
- 
- 	ret = pcim_enable_device(pci);
- 	if (ret) {
--		dev_err(&pci->dev,
--			"Failed to enable device (%pe)\n", ERR_PTR(ret));
-+		dev_err(dev, "Failed to enable device (%pe)\n", ERR_PTR(ret));
- 		return ret;
- 	}
- 
-@@ -217,14 +216,13 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 
- 	ret = pcim_iomap_regions(pci, BIT(0), pci_name(pci));
- 	if (ret) {
--		dev_err(&pci->dev,
--			"Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
-+		dev_err(dev, "Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
- 		return ret;
- 	}
- 
- 	dwc->base = pcim_iomap_table(pci)[0];
- 	if (!dwc->base) {
--		dev_err(&pci->dev, "Base address missing\n");
-+		dev_err(dev, "Base address missing\n");
- 		return -ENOMEM;
- 	}
- 
++config PWM_DWC_OF
++	tristate "DesignWare PWM Controller (OF bus)
++	depends on PWM_DWC && OF
++	help
++	  PWM driver for Synopsys DWC PWM Controller on an OF bus.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-dwc-of.
++
+ config PWM_EP93XX
+ 	tristate "Cirrus Logic EP93xx PWM support"
+ 	depends on ARCH_EP93XX || COMPILE_TEST
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index a70d36623129..d1fd1641f077 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -15,6 +15,7 @@ obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
+ obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
+ obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
+ obj-$(CONFIG_PWM_DWC)		+= pwm-dwc.o
++obj-$(CONFIG_PWM_DWC_OF)	+= pwm-dwc-of.o
+ obj-$(CONFIG_PWM_DWC_PCI)	+= pwm-dwc-pci.o
+ obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
+ obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
+diff --git a/drivers/pwm/pwm-dwc-of.c b/drivers/pwm/pwm-dwc-of.c
+new file mode 100644
+index 000000000000..d18fac287325
+--- /dev/null
++++ b/drivers/pwm/pwm-dwc-of.c
+@@ -0,0 +1,78 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * DesignWare PWM Controller driver OF
++ *
++ * Copyright (C) 2022 SiFive, Inc.
++ */
++
++#include <linux/bitops.h>
++#include <linux/export.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/clk.h>
++#include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
++#include <linux/pwm.h>
++#include <linux/io.h>
++
++#include "pwm-dwc.h"
++
++static int dwc_pwm_plat_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct dwc_pwm *dwc;
++	int ret;
++
++	dwc = dwc_pwm_alloc(dev);
++	if (!dwc)
++		return -ENOMEM;
++
++	dwc->base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(dwc->base))
++		return dev_err_probe(dev, PTR_ERR(dwc->base),
++				     "failed to map IO\n");
++
++	dwc->clk = devm_clk_get_enabled(dev, "timer");
++	if (IS_ERR(dwc->clk))
++		return dev_err_probe(dev, PTR_ERR(dwc->clk),
++				     "failed to get timer clock\n");
++
++	clk_prepare_enable(dwc->clk);
++	dwc->clk_ns = NSEC_PER_SEC / clk_get_rate(dwc->clk);
++
++	ret = devm_pwmchip_add(dev, &dwc->chip);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static int dwc_pwm_plat_remove(struct platform_device *pdev)
++{
++	struct dwc_pwm *dwc = platform_get_drvdata(pdev);
++
++	clk_disable_unprepare(dwc->clk);
++	return 0;
++}
++
++static const struct of_device_id dwc_pwm_dt_ids[] = {
++	{ .compatible = "snps,dw-apb-timers-pwm2" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, dwc_pwm_dt_ids);
++
++static struct platform_driver dwc_pwm_plat_driver = {
++	.driver = {
++		.name		= "dwc-pwm",
++		.of_match_table  = dwc_pwm_dt_ids,
++	},
++	.probe	= dwc_pwm_plat_probe,
++	.remove	= dwc_pwm_plat_remove,
++};
++
++module_platform_driver(dwc_pwm_plat_driver);
++
++MODULE_ALIAS("platform:dwc-pwm-of");
++MODULE_AUTHOR("Ben Dooks <ben.dooks@sifive.com>");
++MODULE_DESCRIPTION("DesignWare PWM Controller");
++MODULE_LICENSE("GPL");
 -- 
 2.35.1
 
