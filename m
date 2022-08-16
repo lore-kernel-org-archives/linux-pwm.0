@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 757C1C32772
-	for <linux-pwm@archiver.kernel.org>; Tue, 16 Aug 2022 21:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF99BC25B0E
+	for <linux-pwm@archiver.kernel.org>; Tue, 16 Aug 2022 21:15:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237545AbiHPVP3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 16 Aug 2022 17:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+        id S237558AbiHPVPa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 16 Aug 2022 17:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237547AbiHPVPV (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Aug 2022 17:15:21 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FA281690
-        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:04 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id v3so14091094wrp.0
-        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:04 -0700 (PDT)
+        with ESMTP id S237564AbiHPVPW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Aug 2022 17:15:22 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3403B7E805
+        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:05 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id bs25so14079506wrb.2
+        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=K+0T7eMnG9viH95X8ZDAFfAxPVbDcFvb4w8kFF6bgj4=;
-        b=g3/pLiY7c4wVtmnZ76G9FV0R9hlwFRQW0Pla5jQl6kNNkwbWldSnhVaeivjNwCPNCT
-         xVzF3Ebgz7IzBp8X4RO8foOLbyi5WX87QGwIIt9U306als7lAskZDrYBQ8iOkBTLmmHa
-         z63NJItmGdga42drDCqV5xKjVTyp7zc+G+bXa/DNsJoccOxV15L33Y3h5A9hdOddcVKE
-         aWqjBjavYtOa3Z0W1oGybM0j+AtQ96ZRMaTADLP6cblMvRmtYLQbaNGWKiM1UaKLERRD
-         u49rrzKHv4pSESi2uVSV8TzhLKgXQkDVgYl0aAPvwcZ03xfLhbk06TSd+6PHU7UD0MsL
-         CuTA==
+        bh=vfBwzF4rBTQWX76kzjBGU8pHOvCFE0ZGsFmgL4Ysnj8=;
+        b=YTgW1xsIf6ErLzD2iA8TpuGl1vu1Jg42HLk63//faqV0F0fGxWnr8xyqH4xhxe6GMM
+         jkXIZPysqJ4iIQEKHm26iMOIp0zNxHP6T5eoPabQlsrh11ohV/jjX0ZI7LTeRGiQ20kI
+         2afGCx3PzyvpI6PWWEdsf8kmYHO1vzWqyOAPVkQ3rL/YnJYyHhU9CMX3J+IqvMS2ht/g
+         qz0jkwPpqrmR8bt581eEdjqe0PkcYhuX69DkBXsreoxkBYhVVoRtU6qvQRjN4DchphpT
+         B9VEJVdoI1guO9Flxt7ivU2j4GdqaILVHiJVyc65NPsUEobDvW6ThpolTeAbpRh6ALQG
+         X7jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=K+0T7eMnG9viH95X8ZDAFfAxPVbDcFvb4w8kFF6bgj4=;
-        b=iHuHi7+1PweAQRf56GvRblIS1jma+eI3KsGWnrxwGbECiUG1IdR8mDh0APpol2X5U8
-         dliFFArEffnzAtnb5TfnskNcg6v/awoBJBEUMHMpbAWq0fRdOcRerugTQf4TfD5Kut2S
-         XjxHXmLUQHh31vRYRbJdtWFo+hUX9TZl9VmMbaNemF0Bd+zHvO6tmseyIfXM/xBf6JJn
-         xWVSQe/YcWeRfQJfoQ0hi0qy5Aj/mOvgqO60xqpCm5Ddnd0VkHpqIt3bYiXliAb76oaf
-         GYIGIJFag909mtxi1K2jnJePXL9k/eYU+BHuso0Ab4SUOL7yy2yoCqC/NwUNl2ZXfPZV
-         cUDQ==
-X-Gm-Message-State: ACgBeo1YgdUxfVZvQtzOtXwnM5//OGhP9nscaVfty40OrvrcyqJZR7BS
-        MGk8r5WDWQhwszCdLAPJcfHoQdS9grGM2A==
-X-Google-Smtp-Source: AA6agR66IDGpcoJmlcZn04Ud0H7wCd2kl/mx2pHl7iw36roYxeJwHuY8Zq5uBiH/Gl2JDBCBKijTJw==
-X-Received: by 2002:a05:6000:1e19:b0:21f:c32:f45b with SMTP id bj25-20020a0560001e1900b0021f0c32f45bmr12876665wrb.657.1660684502192;
-        Tue, 16 Aug 2022 14:15:02 -0700 (PDT)
+        bh=vfBwzF4rBTQWX76kzjBGU8pHOvCFE0ZGsFmgL4Ysnj8=;
+        b=1FA7OXc4P6nElvxkmnESgfEv+1d3ETeUOibT6p/tv5akA16rmFC/oAvBwkYmsfVwet
+         3cizqREyGx3k4mw8fO9vG/aUL+/r5kEVRasEJcND2urU+IhKdo+gS3bIIBHHDtt5VPjB
+         aaDohoWgwd4KEPZVlO8jvAYWhgxvGUzS3kQrwSP0m/GY8+71VC32gATXSGDjHBKXfG35
+         I5I+xoqItCCV7CieIli96YJFqbZZUn+dXpA57CUvGKjI9QkGc1BVRkwKaOZ58KrqZ8Ti
+         oHDnFDJ6aq/kQvu5u1t7HxX7H/91e7gca0gfFgdNayxH+7ulP4yA6Mogv4NWQxBQEDe3
+         bcdg==
+X-Gm-Message-State: ACgBeo0kt/By7sSC19pYnWjQgnArM5MgdD4+jqevYSfr5E5S1yLAfz+C
+        SmbAFOmLtlvTOw6EZOJFyysCxIx5Fr9U9w==
+X-Google-Smtp-Source: AA6agR5yZXOyGj6Ixhwe3p4B5VxRBMFdbaBa9BYBCEq36I0L5rcwum9l7q5l5QZuw2rYF7R1IC+Luw==
+X-Received: by 2002:a05:6000:1545:b0:220:61fa:64a with SMTP id 5-20020a056000154500b0022061fa064amr13124840wry.174.1660684503637;
+        Tue, 16 Aug 2022 14:15:03 -0700 (PDT)
 Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id r4-20020a1c4404000000b003a3170a7af9sm23913wma.4.2022.08.16.14.15.01
+        by smtp.gmail.com with ESMTPSA id r4-20020a1c4404000000b003a3170a7af9sm23913wma.4.2022.08.16.14.15.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 14:15:01 -0700 (PDT)
+        Tue, 16 Aug 2022 14:15:03 -0700 (PDT)
 From:   Ben Dooks <ben.dooks@sifive.com>
 To:     linux-pwm@vger.kernel.org
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -59,9 +59,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Salmon <william.salmon@sifive.com>,
         Jude Onyenegecha <jude.onyenegecha@sifive.com>,
         Ben Dooks <ben.dooks@sifive.com>
-Subject: [RFC v4 07/10] pwm: dwc: make timer clock configurable
-Date:   Tue, 16 Aug 2022 22:14:51 +0100
-Message-Id: <20220816211454.237751-8-ben.dooks@sifive.com>
+Subject: [RFC v4 09/10] pwm: dwc: add snps,pwm-number to limit pwm count
+Date:   Tue, 16 Aug 2022 22:14:53 +0100
+Message-Id: <20220816211454.237751-10-ben.dooks@sifive.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220816211454.237751-1-ben.dooks@sifive.com>
 References: <20220816211454.237751-1-ben.dooks@sifive.com>
@@ -71,97 +71,43 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add a configurable clock base rate for the pwm as when being built
-for non-PCI the block may be sourced from an internal clock.
+Add snps,pwm-number property to indicate if the block does not have
+all 8 of the PWM blocks.
+
+Not sure if this should be a general PWM property consider optional
+for all PWM types, so have added a specific one here (there is only
+one other controller with a property for PWM count at the moment)
 
 Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 ---
-v4:
- - moved earlier before the of changes to make the of changes one patch
-v2:
-  - removed the ifdef and merged the other clock patch in here
----
- drivers/pwm/pwm-dwc-pci.c |  1 +
- drivers/pwm/pwm-dwc.c     | 10 ++++++----
- drivers/pwm/pwm-dwc.h     |  2 ++
- 3 files changed, 9 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-dwc-of.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/pwm/pwm-dwc-pci.c b/drivers/pwm/pwm-dwc-pci.c
-index 2213d0e7f3c8..949423e368f9 100644
---- a/drivers/pwm/pwm-dwc-pci.c
-+++ b/drivers/pwm/pwm-dwc-pci.c
-@@ -20,6 +20,7 @@
- #include <linux/pci.h>
- #include <linux/pm_runtime.h>
- #include <linux/pwm.h>
-+#include <linux/clk.h>
+diff --git a/drivers/pwm/pwm-dwc-of.c b/drivers/pwm/pwm-dwc-of.c
+index d18fac287325..65c7e6621bba 100644
+--- a/drivers/pwm/pwm-dwc-of.c
++++ b/drivers/pwm/pwm-dwc-of.c
+@@ -21,12 +21,20 @@ static int dwc_pwm_plat_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct dwc_pwm *dwc;
++	u32 nr_pwm;
+ 	int ret;
  
- #include "pwm-dwc.h"
- 
-diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index 90a8ae1252a1..1251620ab771 100644
---- a/drivers/pwm/pwm-dwc.c
-+++ b/drivers/pwm/pwm-dwc.c
-@@ -14,6 +14,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/clk.h>
- #include <linux/pm_runtime.h>
- #include <linux/pwm.h>
- 
-@@ -47,13 +48,13 @@ static int __dwc_pwm_configure_timer(struct dwc_pwm *dwc,
- 	 * periods and check are the result within HW limits between 1 and
- 	 * 2^32 periods.
- 	 */
--	tmp = DIV_ROUND_CLOSEST_ULL(state->duty_cycle, DWC_CLK_PERIOD_NS);
-+	tmp = DIV_ROUND_CLOSEST_ULL(state->duty_cycle, dwc->clk_ns);
- 	if (tmp < 1 || tmp > (1ULL << 32))
- 		return -ERANGE;
- 	low = tmp - 1;
- 
- 	tmp = DIV_ROUND_CLOSEST_ULL(state->period - state->duty_cycle,
--				    DWC_CLK_PERIOD_NS);
-+				    dwc->clk_ns);
- 	if (tmp < 1 || tmp > (1ULL << 32))
- 		return -ERANGE;
- 	high = tmp - 1;
-@@ -128,12 +129,12 @@ static void dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	duty = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(pwm->hwpwm));
- 	duty += 1;
--	duty *= DWC_CLK_PERIOD_NS;
-+	duty *= dwc->clk_ns;
- 	state->duty_cycle = duty;
- 
- 	period = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(pwm->hwpwm));
- 	period += 1;
--	period *= DWC_CLK_PERIOD_NS;
-+	period *= dwc->clk_ns;
- 	period += duty;
- 	state->period = period;
- 
-@@ -156,6 +157,7 @@ struct dwc_pwm *dwc_pwm_alloc(struct device *dev)
+ 	dwc = dwc_pwm_alloc(dev);
  	if (!dwc)
- 		return NULL;
+ 		return -ENOMEM;
  
-+	dwc->clk_ns = 10;
- 	dwc->chip.dev = dev;
- 	dwc->chip.ops = &dwc_pwm_ops;
- 	dwc->chip.npwm = DWC_TIMERS_TOTAL;
-diff --git a/drivers/pwm/pwm-dwc.h b/drivers/pwm/pwm-dwc.h
-index 68f98eb76152..e5a1f7be7bc8 100644
---- a/drivers/pwm/pwm-dwc.h
-+++ b/drivers/pwm/pwm-dwc.h
-@@ -41,6 +41,8 @@ struct dwc_pwm_ctx {
- struct dwc_pwm {
- 	struct pwm_chip chip;
- 	void __iomem *base;
-+	struct clk *clk;
-+	unsigned int clk_ns;
- 	struct dwc_pwm_ctx ctx[DWC_TIMERS_TOTAL];
- };
- #define to_dwc_pwm(p)	(container_of((p), struct dwc_pwm, chip))
++	if (!device_property_read_u32(dev, "snps,pwm-number", &nr_pwm)) {
++		if (nr_pwm > DWC_TIMERS_TOTAL)
++			dev_err(dev, "too many PWMs specified (%d)\n", nr_pwm);
++		else
++			dwc->chip.npwm = nr_pwm;
++	}
++
+ 	dwc->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(dwc->base))
+ 		return dev_err_probe(dev, PTR_ERR(dwc->base),
 -- 
 2.35.1
 
