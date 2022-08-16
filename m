@@ -2,51 +2,51 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF99BC25B0E
-	for <linux-pwm@archiver.kernel.org>; Tue, 16 Aug 2022 21:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A41ABC32774
+	for <linux-pwm@archiver.kernel.org>; Tue, 16 Aug 2022 21:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237558AbiHPVPa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 16 Aug 2022 17:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
+        id S237562AbiHPVPb (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 16 Aug 2022 17:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237564AbiHPVPW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Aug 2022 17:15:22 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3403B7E805
-        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:05 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id bs25so14079506wrb.2
-        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:05 -0700 (PDT)
+        with ESMTP id S237520AbiHPVPN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Aug 2022 17:15:13 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921F37E80B
+        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:02 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id ba1so3480635wrb.5
+        for <linux-pwm@vger.kernel.org>; Tue, 16 Aug 2022 14:15:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=vfBwzF4rBTQWX76kzjBGU8pHOvCFE0ZGsFmgL4Ysnj8=;
-        b=YTgW1xsIf6ErLzD2iA8TpuGl1vu1Jg42HLk63//faqV0F0fGxWnr8xyqH4xhxe6GMM
-         jkXIZPysqJ4iIQEKHm26iMOIp0zNxHP6T5eoPabQlsrh11ohV/jjX0ZI7LTeRGiQ20kI
-         2afGCx3PzyvpI6PWWEdsf8kmYHO1vzWqyOAPVkQ3rL/YnJYyHhU9CMX3J+IqvMS2ht/g
-         qz0jkwPpqrmR8bt581eEdjqe0PkcYhuX69DkBXsreoxkBYhVVoRtU6qvQRjN4DchphpT
-         B9VEJVdoI1guO9Flxt7ivU2j4GdqaILVHiJVyc65NPsUEobDvW6ThpolTeAbpRh6ALQG
-         X7jQ==
+        bh=JVsjMt/QqWDQIkbN9ThQA44X6Q8M6+q3vjfLdgd5aDk=;
+        b=iUS24IUBcSYVk/v9LGcfBAbdE8omk79FTlXYwGOvTFsmSoJzzweOMg1AFAUYy7XVEk
+         WvQZrYBXdPmwfaE9DFGiIykTwTb563DQ2b9zAJu+0py2W+TBnuNaQ1DKNhqtuGbFKYSp
+         wvmSFO3mrElffgoZ7ie9N7PdS9M3ojmedAScRv8LBee526WL7tUDQa0lwJ51R1WgBP/Q
+         CmYx/LzG99+FL/Jlf6muJvp9h7qEgIvsbynpavhBcrdE49QUroDg1nhUYRU1tsCeDwJS
+         Uwk55jGxuvB8gDdyPaZITG9fDjAx0W4SzxlH0Oq9Y7+9vUFgr3fLBrVydj5LBxOEQ3Z4
+         VtJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=vfBwzF4rBTQWX76kzjBGU8pHOvCFE0ZGsFmgL4Ysnj8=;
-        b=1FA7OXc4P6nElvxkmnESgfEv+1d3ETeUOibT6p/tv5akA16rmFC/oAvBwkYmsfVwet
-         3cizqREyGx3k4mw8fO9vG/aUL+/r5kEVRasEJcND2urU+IhKdo+gS3bIIBHHDtt5VPjB
-         aaDohoWgwd4KEPZVlO8jvAYWhgxvGUzS3kQrwSP0m/GY8+71VC32gATXSGDjHBKXfG35
-         I5I+xoqItCCV7CieIli96YJFqbZZUn+dXpA57CUvGKjI9QkGc1BVRkwKaOZ58KrqZ8Ti
-         oHDnFDJ6aq/kQvu5u1t7HxX7H/91e7gca0gfFgdNayxH+7ulP4yA6Mogv4NWQxBQEDe3
-         bcdg==
-X-Gm-Message-State: ACgBeo0kt/By7sSC19pYnWjQgnArM5MgdD4+jqevYSfr5E5S1yLAfz+C
-        SmbAFOmLtlvTOw6EZOJFyysCxIx5Fr9U9w==
-X-Google-Smtp-Source: AA6agR5yZXOyGj6Ixhwe3p4B5VxRBMFdbaBa9BYBCEq36I0L5rcwum9l7q5l5QZuw2rYF7R1IC+Luw==
-X-Received: by 2002:a05:6000:1545:b0:220:61fa:64a with SMTP id 5-20020a056000154500b0022061fa064amr13124840wry.174.1660684503637;
-        Tue, 16 Aug 2022 14:15:03 -0700 (PDT)
+        bh=JVsjMt/QqWDQIkbN9ThQA44X6Q8M6+q3vjfLdgd5aDk=;
+        b=e4nHsb+olP+YH8gWL9pEYMSbGtIBsPMubGKDpikIMbikcBvMU4X6nQXP7VNYrLcygr
+         lgPFmm9+35us6pHswd+QQWtWl4iTH+VRNIpQlUEXQ4wDlQcqxsSNPgUuHZQ+3/l2cbbH
+         V4dIY4C0h31kQlBvV6bekJ2Cqqu7Wbo/1nORYRVYQRnVnEToNeWOi9IWa46yISxb5fJ7
+         vQ5EZpoSLhHI52Gz/om9WiFK7eqo/9ImCwGKn5Iklj54VWnIPVgiQqGsS50xapG7JHdN
+         SPBilF48TwO1uqwkqDSkypOuIP280s5+8wGpkZyN1tV4rSEu0HprkJHm4qRt+lGrRNYd
+         kBaw==
+X-Gm-Message-State: ACgBeo0x2nd+GOEECOtyUe7cN6EjmCckZt20uz80g2HQvdB8Dpkv2Z0P
+        hngj1AjrKaHVEKR/qDZWjgXUyoAgvfSXng==
+X-Google-Smtp-Source: AA6agR6rJEVM9k9/OFm1EphK5seIurmVKIY8ySy6UTIsjCCBbjyGKDkT0GFwfz2i0yAL0c8lmyMmWg==
+X-Received: by 2002:a5d:47c6:0:b0:225:fd3:f0c0 with SMTP id o6-20020a5d47c6000000b002250fd3f0c0mr4282371wrc.308.1660684500588;
+        Tue, 16 Aug 2022 14:15:00 -0700 (PDT)
 Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id r4-20020a1c4404000000b003a3170a7af9sm23913wma.4.2022.08.16.14.15.02
+        by smtp.gmail.com with ESMTPSA id r4-20020a1c4404000000b003a3170a7af9sm23913wma.4.2022.08.16.14.14.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 14:15:03 -0700 (PDT)
+        Tue, 16 Aug 2022 14:15:00 -0700 (PDT)
 From:   Ben Dooks <ben.dooks@sifive.com>
 To:     linux-pwm@vger.kernel.org
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -59,9 +59,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Salmon <william.salmon@sifive.com>,
         Jude Onyenegecha <jude.onyenegecha@sifive.com>,
         Ben Dooks <ben.dooks@sifive.com>
-Subject: [RFC v4 09/10] pwm: dwc: add snps,pwm-number to limit pwm count
-Date:   Tue, 16 Aug 2022 22:14:53 +0100
-Message-Id: <20220816211454.237751-10-ben.dooks@sifive.com>
+Subject: [RFC v4 05/10] pwm: dwc: use devm_pwmchip_add
+Date:   Tue, 16 Aug 2022 22:14:49 +0100
+Message-Id: <20220816211454.237751-6-ben.dooks@sifive.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220816211454.237751-1-ben.dooks@sifive.com>
 References: <20220816211454.237751-1-ben.dooks@sifive.com>
@@ -71,43 +71,41 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add snps,pwm-number property to indicate if the block does not have
-all 8 of the PWM blocks.
-
-Not sure if this should be a general PWM property consider optional
-for all PWM types, so have added a specific one here (there is only
-one other controller with a property for PWM count at the moment)
+Use devm_pwmchip_add() to add the pwm chip to avoid having to manually
+remove it (useful for the next patch which adds the platform-device
+support).
 
 Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 ---
- drivers/pwm/pwm-dwc-of.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/pwm/pwm-dwc.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-dwc-of.c b/drivers/pwm/pwm-dwc-of.c
-index d18fac287325..65c7e6621bba 100644
---- a/drivers/pwm/pwm-dwc-of.c
-+++ b/drivers/pwm/pwm-dwc-of.c
-@@ -21,12 +21,20 @@ static int dwc_pwm_plat_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct dwc_pwm *dwc;
-+	u32 nr_pwm;
- 	int ret;
- 
- 	dwc = dwc_pwm_alloc(dev);
- 	if (!dwc)
+diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
+index 61f11e0a9319..56cde9da2c0e 100644
+--- a/drivers/pwm/pwm-dwc.c
++++ b/drivers/pwm/pwm-dwc.c
+@@ -242,7 +242,7 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
  		return -ENOMEM;
+ 	}
  
-+	if (!device_property_read_u32(dev, "snps,pwm-number", &nr_pwm)) {
-+		if (nr_pwm > DWC_TIMERS_TOTAL)
-+			dev_err(dev, "too many PWMs specified (%d)\n", nr_pwm);
-+		else
-+			dwc->chip.npwm = nr_pwm;
-+	}
-+
- 	dwc->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(dwc->base))
- 		return dev_err_probe(dev, PTR_ERR(dwc->base),
+-	ret = pwmchip_add(&dwc->chip);
++	ret = devm_pwmchip_add(dev, &dwc->chip);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -254,12 +254,8 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 
+ static void dwc_pwm_remove(struct pci_dev *pci)
+ {
+-	struct dwc_pwm *dwc = pci_get_drvdata(pci);
+-
+ 	pm_runtime_forbid(&pci->dev);
+ 	pm_runtime_get_noresume(&pci->dev);
+-
+-	pwmchip_remove(&dwc->chip);
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
 -- 
 2.35.1
 
