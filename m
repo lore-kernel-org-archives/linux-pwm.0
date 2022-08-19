@@ -2,251 +2,243 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B66C00140
-	for <linux-pwm@archiver.kernel.org>; Thu, 18 Aug 2022 23:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A56BC32773
+	for <linux-pwm@archiver.kernel.org>; Fri, 19 Aug 2022 07:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346124AbiHRXUp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 18 Aug 2022 19:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
+        id S1346905AbiHSHAq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 19 Aug 2022 03:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234827AbiHRXUo (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 18 Aug 2022 19:20:44 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544C448EB2;
-        Thu, 18 Aug 2022 16:20:43 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso6079143pjk.0;
-        Thu, 18 Aug 2022 16:20:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :from:to:cc;
-        bh=NK3oPYmCQJH4udrs0XzADJ5rLSUEh35MtVHYmSmGTno=;
-        b=lAGkEnLjQS0leDi18SdVWZbt4EMrdoENDIqOb4UhJng/iM9TRoriKt93H6nISAyKcm
-         QiUraSMQ9sr7WXPoxce46Lrs1Qu73l+H4pKagsleaOPFWpVX8M1DtZTVMcsa+MR6oUek
-         ALrsrimm0tnMTf0DsCpLfpxW0FIjVswoH5Smubu+hLcDb83zlvOKbTkVjEI5j5HYFwVr
-         U4R+3F6I8UjxJNqFFJTzS9uQ7e0ryjwKTtxM6oKAeyyfW+onn/4s2myQDzlSPPEecyBW
-         BLv37g8Hhx2VlWwzmTTLM9Ob/RXAi1385xfaHosIWLDNBh2g4ljB6GNdAZsPMNm0iM0A
-         RyQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :x-gm-message-state:from:to:cc;
-        bh=NK3oPYmCQJH4udrs0XzADJ5rLSUEh35MtVHYmSmGTno=;
-        b=2sDu0q3p603eo+aD8IIeOJbiDIo4bGZFbxhEFZ8LasN2EqJhuBVZCyOxzcR2EEc8aH
-         Nq9x7EJVRcrpg1r/tPjslJkFsEScfpOmxGM+DhfjI992aL5ZBrvA5+YZMwp5kZqvcD11
-         wSAspUHGyRAmKFMp2H6k6QqLpnLpLL31eNMYlSJcLoOBumMVxuf9PzKtfUdqW32DwHYQ
-         YzayOwyMM9qBb/5397D71U4tnMi3YSEz5VaEIVRX/c2NOZSxmY8M9xnO0HBwNpiyr3U0
-         Z1wFa5r6rE4kb6zFpEnksQFC06bCTca0QqaI+YZUkWWKnjE4yfRAzdw2Vy81Vjx/ovL3
-         GdYw==
-X-Gm-Message-State: ACgBeo0WhkhfpNy+cNU6Oo032bslLM1xPCK5d0f+MOmqOJUVtUSrgCDX
-        GJ9dpbwZRHN/mj1vejRc0jk=
-X-Google-Smtp-Source: AA6agR6sQMJACV9ZAATQcATZQhMwp7ovZzSTbbzQlIi8IFzY8wNOszWiFXbPnS2w1AaQRyX5sEKdDA==
-X-Received: by 2002:a17:90b:1e49:b0:1f5:1dbf:4c3a with SMTP id pi9-20020a17090b1e4900b001f51dbf4c3amr11186872pjb.232.1660864842822;
-        Thu, 18 Aug 2022 16:20:42 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 2-20020a630c42000000b004129741dd9dsm1812779pgm.51.2022.08.18.16.20.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 16:20:41 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Thu, 18 Aug 2022 16:20:40 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: Re: [PATCH v1 1/3] hwmon: (pwm-fan) Make use of device properties
-Message-ID: <20220818232040.GA3505561@roeck-us.net>
-References: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
+        with ESMTP id S1346855AbiHSHAl (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 19 Aug 2022 03:00:41 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA7ABD2AC
+        for <linux-pwm@vger.kernel.org>; Fri, 19 Aug 2022 00:00:33 -0700 (PDT)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220819070028epoutp027f334fa4f37f15a284150765d084ac60~MrN0RgfKU1166011660epoutp02S
+        for <linux-pwm@vger.kernel.org>; Fri, 19 Aug 2022 07:00:28 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220819070028epoutp027f334fa4f37f15a284150765d084ac60~MrN0RgfKU1166011660epoutp02S
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1660892428;
+        bh=wSppfcu80Jat1P3mvcqiATRJLkc71gy/XgEBekoydYg=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=sPTAWW8f7SH5QsZvUNC61uEFeu2maaxrjY/22RXykOEIw81XTXw+KPb+/h61dTKCx
+         dm3wM/DUoSVm9GRkxJYgIOaCS2Fr/swqzcxVvTAPXoO/gfwYclySfQYbZ/S3QcsNKh
+         zXonbo6xqQgRkmSQghkSqkcCNkhs4FceSdbGwC0c=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20220819070027epcas5p14fc654a5e47ce4e043303cbbac216009~MrNz6UoHF1013110131epcas5p10;
+        Fri, 19 Aug 2022 07:00:27 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.177]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4M8CLx0lXYz4x9Q1; Fri, 19 Aug
+        2022 07:00:25 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A8.1E.09494.6053FF26; Fri, 19 Aug 2022 16:00:22 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220819043928epcas5p33942271e69c4e21dcbc506cce74fbbf4~MpStYb-Rn0547805478epcas5p3R;
+        Fri, 19 Aug 2022 04:39:28 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220819043928epsmtrp1555f02093d2b9c4faaaa3f73211af9fe~MpStXnuob2633826338epsmtrp13;
+        Fri, 19 Aug 2022 04:39:28 +0000 (GMT)
+X-AuditID: b6c32a4a-201ff70000012516-35-62ff3506c782
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        5B.4C.08802.0041FF26; Fri, 19 Aug 2022 13:39:28 +0900 (KST)
+Received: from mshams02 (unknown [107.122.12.94]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220819043927epsmtip13e2ba04fe94b991e2fe5faa9abda3172~MpSsSrgch1298112981epsmtip16;
+        Fri, 19 Aug 2022 04:39:26 +0000 (GMT)
+From:   "m.shams" <m.shams@samsung.com>
+To:     =?iso-8859-1?Q?'Uwe_Kleine-K=F6nig'?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     <thierry.reding@gmail.com>, <lee.jones@linaro.org>,
+        <linux-pwm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <alim.akhtar@samsung.com>
+In-Reply-To: <20220810171033.bfkzkdipw2v5yorh@pengutronix.de>
+Subject: RE: [PATCH] pwm: removes period check from pwm_apply_state()
+Date:   Fri, 19 Aug 2022 10:09:18 +0530
+Message-ID: <009c01d8b385$aa615f40$ff241dc0$@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQE14N23Ecc1n6hvU/1TooO9Vl2YEgEF3maVAoBW2yoC+wqOdQK9h22TAppw35ICpXWcEK6HU1ow
+Content-Language: en-in
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGJsWRmVeSWpSXmKPExsWy7bCmli6b6f8kg3XrrSwezNvGZnH/61FG
+        i8u75rBZ3L27itHi5655LBa3J05mdGDz2DnrLrvHnWt72Dz6/xp49G1ZxejxeZNcAGtUtk1G
+        amJKapFCal5yfkpmXrqtkndwvHO8qZmBoa6hpYW5kkJeYm6qrZKLT4CuW2YO0AFKCmWJOaVA
+        oYDE4mIlfTubovzSklSFjPziElul1IKUnAKTAr3ixNzi0rx0vbzUEitDAwMjU6DChOyMp687
+        GQsmeFW8//mCtYFxgkcXIyeHhICJxI+2LuYuRi4OIYHdjBJHtv1mg3A+MUrs2TSfEcL5zCjx
+        blU7G0zLpd07WSESuxglZvRchep/xihxbd4PoAwHB5uAqsSOmyIgDSICXhJzL+9mB6lhFpjE
+        KPGj/xgrSIJTwFZizvfDTCD1wgKuEh9/MYKEWYBau1f9AFvGK2Ap8ejFWShbUOLkzCcsIDaz
+        gJ7EjalT2CBsbYllC18zQxynIPHz6TKwE0QEoiRWPU+CKBGXOPqzB+xMCYGJHBLf1r+GesZF
+        Yvulg1C2sMSr41vYIWwpiZf9bVB2usTch71MEHaBxLJd36Hi9hIHrsxhgbBlJaaeWscEsYxP
+        ovf3E6h6Xokd82BsRYn/u/uhesUl3q2YwjqBUWkWktdmIXltFpLXZiH5YQEjyypGydSC4tz0
+        1GLTAqO81HJ4jCfn525iBCdQLa8djA8ffNA7xMjEwXiIUYKDWUmE98adP0lCvCmJlVWpRfnx
+        RaU5qcWHGE2BAT6RWUo0OR+YwvNK4g1NLA1MzMzMTCyNzQyVxHm9rm5KEhJITyxJzU5NLUgt
+        gulj4uCUamDqTZOQdN+llsH4sPVbZ0dhxavwM5WneQrldE+c9L2u/albdvNcBa4vG2sduTLn
+        Lf23Pm1nktMb1i9iVWr9ro78Z07y6h+fWe0XcqZDM9wucIXXx2Jl/fRp+3mynI0lfgioMOW7
+        fONOeOT5/9/Mmz7hpxMaWc7vrNi+z+zn6c56rnX/vO0PpbOW3lqxN+b661UXj6/u/zlRp+E7
+        w5T/h54ed7OV+3j6gvqdLTvuz9qwwlLWpp+T9bYW47xLYkJLZc5/XGDm67rx5Luq7NQJM5dz
+        2Gy2WVSSXyWg0LuNRYZR5tStXRpSJcKOzzZxapw1ZVrA2H3u+aE/+xRKkuXDeFjFb07d4v1H
+        8MJRnkajSmUlluKMREMt5qLiRABOLV6UKQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNLMWRmVeSWpSXmKPExsWy7bCSnC6DyP8kg+dLWSwezNvGZnH/61FG
+        i8u75rBZ3L27itHi5655LBa3J05mdGDz2DnrLrvHnWt72Dz6/xp49G1ZxejxeZNcAGsUl01K
+        ak5mWWqRvl0CV8a8jmOsBWf0Kz4fvcTcwLhIpYuRk0NCwETi0u6drF2MXBxCAjsYJb71PWCH
+        SIhLTPu1nxHCFpZY+e85WFxI4AmjxLIjIl2MHBxsAqoSO26KgIRFBLwk5l7ezQ4yh1lgGqPE
+        1Nt3GSGG/mSSWLh4GTNIFaeArcSc74eZQJqFBVwlPv4Cm88CNKd71Q82EJtXwFLi0YuzULag
+        xMmZT1hAbGYBA4n7hzpYIWxtiWULXzND3KYg8fPpMlaQkSICURKrnidBlIhLHP3ZwzyBUXgW
+        kkmzkEyahWTSLCQtCxhZVjFKphYU56bnFhsWGOWllusVJ+YWl+al6yXn525iBMePltYOxj2r
+        PugdYmTiYDzEKMHBrCTCe+POnyQh3pTEyqrUovz4otKc1OJDjNIcLErivBe6TsYLCaQnlqRm
+        p6YWpBbBZJk4OKUamLYkXr2yYgX7x9i2ORvStdQ2Vy8MKpm8l3lVyN4ct68+5/keRfxbkpvv
+        Kfv8a42snNDfXS9qtp2bzLRS5XIZv3lf8rVvOcvuHfOvKlVrjMz5cj9+897GXqMti2U+F0z8
+        7tf43GgHi8wNX6/5nwqb3ybkfkwR5LI9uaZ7oevCaWFp9rEMxj2qSpt/B+Wbr30wpSFqe400
+        0/X3Zd/PtoQqnN9z5W3NToV9p9xn/U7MnWimYVNlKGUwb+NHxhzz13q/6xes+bZINNJ8lXXP
+        +Y9TEniezHgjz6ygx9G+7rdF5c6Zz5uid5T26MZdTXKJe8UdI6dqcrIr51VxeGx4rhSXuZ5E
+        4X2bdM6rp7bZbjvCpsRSnJFoqMVcVJwIAHWq6X4OAwAA
+X-CMS-MailID: 20220819043928epcas5p33942271e69c4e21dcbc506cce74fbbf4
+X-Msg-Generator: CA
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea
+References: <CGME20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea@epcas5p2.samsung.com>
+        <20220805101125.47955-1-m.shams@samsung.com>
+        <20220805155509.edqwxcvyoqfic4pn@pengutronix.de>
+        <019701d8ab31$94c86d60$be594820$@samsung.com>
+        <20220808174842.jiato34jzqstchdn@pengutronix.de>
+        <004301d8acad$e31fee70$a95fcb50$@samsung.com>
+        <20220810171033.bfkzkdipw2v5yorh@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Sat, Aug 06, 2022 at 06:25:15PM +0300, Andy Shevchenko wrote:
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
-> 
-> Add mod_devicetable.h include.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Hi Uwe,
 
-I had another look at this patch. A substantial part of the changes
-is because device properties don't support of_property_read_u32_index(),
-reworking the code to use device_property_read_u32_array() instead.
-Sorry, I don't like it, it results in a substantial number of unnecessary
-changes. Device properties should support the equivalent of
-of_property_read_u32_index() instead to simplify conversions.
-
-Guenter
-
-> ---
->  drivers/hwmon/Kconfig   |  2 +-
->  drivers/hwmon/pwm-fan.c | 50 +++++++++++++++++++++--------------------
->  2 files changed, 27 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-> index e70d9614bec2..58912a5c5de8 100644
-> --- a/drivers/hwmon/Kconfig
-> +++ b/drivers/hwmon/Kconfig
-> @@ -1613,7 +1613,7 @@ source "drivers/hwmon/pmbus/Kconfig"
->  
->  config SENSORS_PWM_FAN
->  	tristate "PWM fan"
-> -	depends on (PWM && OF) || COMPILE_TEST
-> +	depends on PWM || COMPILE_TEST
->  	depends on THERMAL || THERMAL=n
->  	help
->  	  If you say yes here you get support for fans connected to PWM lines.
-> diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-> index 6c08551d8d14..9ce9f2543861 100644
-> --- a/drivers/hwmon/pwm-fan.c
-> +++ b/drivers/hwmon/pwm-fan.c
-> @@ -9,10 +9,11 @@
->  
->  #include <linux/hwmon.h>
->  #include <linux/interrupt.h>
-> +#include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/mutex.h>
-> -#include <linux/of.h>
->  #include <linux/platform_device.h>
-> +#include <linux/property.h>
->  #include <linux/pwm.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/sysfs.h>
-> @@ -25,7 +26,6 @@ struct pwm_fan_tach {
->  	int irq;
->  	atomic_t pulses;
->  	unsigned int rpm;
-> -	u8 pulses_per_revolution;
->  };
->  
->  struct pwm_fan_ctx {
-> @@ -36,6 +36,7 @@ struct pwm_fan_ctx {
->  
->  	int tach_count;
->  	struct pwm_fan_tach *tachs;
-> +	u32 *pulses_per_revolution;
->  	ktime_t sample_start;
->  	struct timer_list rpm_timer;
->  
-> @@ -73,7 +74,7 @@ static void sample_timer(struct timer_list *t)
->  			pulses = atomic_read(&tach->pulses);
->  			atomic_sub(pulses, &tach->pulses);
->  			tach->rpm = (unsigned int)(pulses * 1000 * 60) /
-> -				(tach->pulses_per_revolution * delta);
-> +				(ctx->pulses_per_revolution[i] * delta);
->  		}
->  
->  		ctx->sample_start = ktime_get();
-> @@ -229,16 +230,14 @@ static const struct thermal_cooling_device_ops pwm_fan_cooling_ops = {
->  	.set_cur_state = pwm_fan_set_cur_state,
->  };
->  
-> -static int pwm_fan_of_get_cooling_data(struct device *dev,
-> -				       struct pwm_fan_ctx *ctx)
-> +static int pwm_fan_get_cooling_data(struct device *dev, struct pwm_fan_ctx *ctx)
->  {
-> -	struct device_node *np = dev->of_node;
->  	int num, i, ret;
->  
-> -	if (!of_find_property(np, "cooling-levels", NULL))
-> +	if (!device_property_present(dev, "cooling-levels"))
->  		return 0;
->  
-> -	ret = of_property_count_u32_elems(np, "cooling-levels");
-> +	ret = device_property_count_u32(dev, "cooling-levels");
->  	if (ret <= 0) {
->  		dev_err(dev, "Wrong data!\n");
->  		return ret ? : -EINVAL;
-> @@ -250,8 +249,8 @@ static int pwm_fan_of_get_cooling_data(struct device *dev,
->  	if (!ctx->pwm_fan_cooling_levels)
->  		return -ENOMEM;
->  
-> -	ret = of_property_read_u32_array(np, "cooling-levels",
-> -					 ctx->pwm_fan_cooling_levels, num);
-> +	ret = device_property_read_u32_array(dev, "cooling-levels",
-> +					     ctx->pwm_fan_cooling_levels, num);
->  	if (ret) {
->  		dev_err(dev, "Property 'cooling-levels' cannot be read!\n");
->  		return ret;
-> @@ -302,7 +301,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
->  
->  	mutex_init(&ctx->lock);
->  
-> -	ctx->pwm = devm_of_pwm_get(dev, dev->of_node, NULL);
-> +	ctx->pwm = devm_pwm_get(dev, NULL);
->  	if (IS_ERR(ctx->pwm))
->  		return dev_err_probe(dev, PTR_ERR(ctx->pwm), "Could not get PWM\n");
->  
-> @@ -370,6 +369,20 @@ static int pwm_fan_probe(struct platform_device *pdev)
->  		if (!fan_channel_config)
->  			return -ENOMEM;
->  		ctx->fan_channel.config = fan_channel_config;
-> +
-> +		ctx->pulses_per_revolution = devm_kmalloc_array(dev,
-> +								ctx->tach_count,
-> +								sizeof(*ctx->pulses_per_revolution),
-> +								GFP_KERNEL);
-> +		if (!ctx->pulses_per_revolution)
-> +			return -ENOMEM;
-> +
-> +		/* Setup default pulses per revolution */
-> +		memset32(ctx->pulses_per_revolution, 2, ctx->tach_count);
-> +
-> +		device_property_read_u32_array(dev, "pulses-per-revolution",
-> +					       ctx->pulses_per_revolution,
-> +					       ctx->tach_count);
->  	}
->  
->  	channels = devm_kcalloc(dev, channel_count + 1,
-> @@ -381,7 +394,6 @@ static int pwm_fan_probe(struct platform_device *pdev)
->  
->  	for (i = 0; i < ctx->tach_count; i++) {
->  		struct pwm_fan_tach *tach = &ctx->tachs[i];
-> -		u32 ppr = 2;
->  
->  		tach->irq = platform_get_irq(pdev, i);
->  		if (tach->irq == -EPROBE_DEFER)
-> @@ -397,20 +409,10 @@ static int pwm_fan_probe(struct platform_device *pdev)
->  			}
->  		}
->  
-> -		of_property_read_u32_index(dev->of_node,
-> -					   "pulses-per-revolution",
-> -					   i,
-> -					   &ppr);
-> -		tach->pulses_per_revolution = ppr;
-> -		if (!tach->pulses_per_revolution) {
-> -			dev_err(dev, "pulses-per-revolution can't be zero.\n");
-> -			return -EINVAL;
-> -		}
-> -
->  		fan_channel_config[i] = HWMON_F_INPUT;
->  
->  		dev_dbg(dev, "tach%d: irq=%d, pulses_per_revolution=%d\n",
-> -			i, tach->irq, tach->pulses_per_revolution);
-> +			i, tach->irq, ctx->pulses_per_revolution[i]);
->  	}
->  
->  	if (ctx->tach_count > 0) {
-> @@ -430,7 +432,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
->  		return PTR_ERR(hwmon);
->  	}
->  
-> -	ret = pwm_fan_of_get_cooling_data(dev, ctx);
-> +	ret = pwm_fan_get_cooling_data(dev, ctx);
->  	if (ret)
->  		return ret;
->  
+> -----Original Message-----
+> From: Uwe Kleine-K=F6nig=20=5Bmailto:u.kleine-koenig=40pengutronix.de=5D=
+=0D=0A>=20Sent:=2010=20August=202022=2022:41=0D=0A>=20To:=20m.shams=20<m.sh=
+ams=40samsung.com>=0D=0A>=20Cc:=20thierry.reding=40gmail.com;=20lee.jones=
+=40linaro.org;=20linux-=0D=0A>=20pwm=40vger.kernel.org;=20linux-kernel=40vg=
+er.kernel.org;=0D=0A>=20alim.akhtar=40samsung.com=0D=0A>=20Subject:=20Re:=
+=20=5BPATCH=5D=20pwm:=20removes=20period=20check=20from=20pwm_apply_state()=
+=0D=0A>=20=0D=0A>=20Hello,=0D=0A>=20=0D=0A>=20On=20Wed,=20Aug=2010,=202022=
+=20at=2005:09:30PM=20+0530,=20m.shams=20wrote:=0D=0A>=20>=20>=20I=20fixed=
+=20up=20the=20quoting=20for=20you=20in=20this=20mail.=20Please=20fix=20your=
+=20mailer=0D=0A>=20>=20>=20to=20not=0D=0A>=20>=20break=0D=0A>=20>=20>=20quo=
+tes,=20this=20is=20quite=20annoying.=20(Looking=20at=20the=20headers=20of=
+=20your=20mail=0D=0A>=20>=20you're=20using=0D=0A>=20>=20>=20Outlook.=20Then=
+=20your=20only=20viable=20option=20is=20to=20switch=20to=20a=20saner=0D=0A>=
+=20>=20>=20client.)=0D=0A>=20>=20>=0D=0A>=20>=0D=0A>=20>=20Sorry=20for=20th=
+e=20inconvenience.=20I=20have=20fixed=20my=20mailer.=0D=0A>=20=0D=0A>=20No=
+=20you=20didn't.=0D=0A>=20=0D=0A>=20>=20>=20On=20Mon,=20Aug=2008,=202022=20=
+at=2007:47:03PM=20+0530,=20m.shams=20wrote:=0D=0A>=20>=20>=20>=20On=20Fri,=
+=20Aug=2005,=202022=20at=2003:41:25PM=20+0530,=20Tamseel=20Shams=20wrote:=
+=0D=0A>=20>=20>=20>=20>=20>=20There=20may=20be=20situation=20when=20PWM=20i=
+s=20exported=20using=20sysfs,=20but=0D=0A>=20>=20>=20>=20>=20>=20at=20that=
+=20point=20PWM=20period=20is=20not=20set.=20At=20this=20situation=20if=20we=
+=0D=0A>=20>=20>=20>=20>=20>=20issue=20a=20system=20suspend,=20it=20calls=20=
+pwm_class_suspend=20which=20in=0D=0A>=20>=20>=20>=20>=20>=20turn=20calls=20=
+pwm_apply_state,=20where=20PWM=20period=20value=20is=20checked=0D=0A>=20>=
+=20>=20>=20>=20>=20which=20returns=20an=20invalid=20argument=20error=20casu=
+ing=20Kernel=20to=0D=0A>=20>=20>=20>=20>=20>=20panic.=20So,=20check=20for=
+=20PWM=20period=20value=20is=20removed=20so=20as=20to=20fix=0D=0A>=20>=20>=
+=20>=20>=20>=20the=20kernel=20panic=20observed=20during=20suspend.=0D=0A>=
+=20>=20>=20>=20>=0D=0A>=20>=20>=20>=20>=20This=20looks=20and=20sounds=20wro=
+ng.=20One=20thing=20I=20would=20accept=20is:=0D=0A>=20>=20>=20>=20>=0D=0A>=
+=20>=20>=20>=20>=20diff=20--git=20a/drivers/pwm/core.c=20b/drivers/pwm/core=
+.c=20index=0D=0A>=20>=20>=20>=20>=200e042410f6b9..075bbcdad6c1=20100644=0D=
+=0A>=20>=20>=20>=20>=20---=20a/drivers/pwm/core.c=0D=0A>=20>=20>=20>=20>=20=
++++=20b/drivers/pwm/core.c=0D=0A>=20>=20>=20>=20>=20=40=40=20-557,8=20+557,=
+8=20=40=40=20int=20pwm_apply_state(struct=20pwm_device=0D=0A>=20*pwm,=0D=0A=
+>=20>=20>=20const=20struct=20pwm_state=20*state)=0D=0A>=20>=20>=20>=20>=20=
+=09=20*/=0D=0A>=20>=20>=20>=20>=20=09might_sleep();=0D=0A>=20>=20>=20>=20>=
+=0D=0A>=20>=20>=20>=20>=20-=09if=20(=21pwm=20=7C=7C=20=21state=20=7C=7C=20=
+=21state->period=20=7C=7C=0D=0A>=20>=20>=20>=20>=20-=09=20=20=20=20state->d=
+uty_cycle=20>=20state->period)=0D=0A>=20>=20>=20>=20>=20+=09if=20(=21pwm=20=
+=7C=7C=20=21state=20=7C=7C=20state->enabled=20&&=20(=21state->period=20=7C=
+=7C=0D=0A>=20>=20>=20>=20>=20+=09=20=20=20=20state->duty_cycle=20>=20state-=
+>period))=0D=0A>=20>=20>=20>=20>=20=20=09=09return=20-EINVAL;=0D=0A>=20>=20=
+>=20>=20>=0D=0A>=20>=20>=20>=20>=20=09chip=20=3D=20pwm->chip;=0D=0A>=20>=20=
+>=20>=20>=0D=0A>=20>=20>=20>=20>=20That=20is,=20don't=20refuse=20calling=20=
+pwm_apply_state()=20for=0D=0A>=20>=20>=20>=20>=20state->period=20=3D=0D=0A>=
+=20>=20>=20>=20>=200=20and=20even=20state->duty_cycle=20>=20state->period=
+=20if=20the=20>=20>=20PWM=20is=0D=0A>=20>=20>=20>=20>=20not=0D=0A>=20>=20en=
+abled.=0D=0A>=20>=20>=20>=0D=0A>=20>=20>=20>=20By=20this=20do=20you=20mean=
+=20doing=20it=20following=20way?=0D=0A>=20>=20>=20>=0D=0A>=20>=20>=20>=20if=
+=20(=21pwm=20=7C=7C=20=21state=20=7C=7C=20(pwm=20&&=20=21state->period)=20=
+=7C=7C=0D=0A>=20>=20>=20>=20=09=20=20=20=20(pwm=20&&=20state->duty_cycle=20=
+>=20state->period))=0D=0A>=20>=20>=20>=20=09=09return=20-EINVAL;=0D=0A>=20>=
+=20>=0D=0A>=20>=20>=20No.=20Your=20expression=20is=20logically=20equivalent=
+=20to=20what=20we=20already=20have.=0D=0A>=20>=20>=20I=0D=0A>=20>=20>=20mea=
+nt:=0D=0A>=20>=20>=0D=0A>=20>=20>=20=09if=20(=21pwm=20=7C=7C=20=21state=20=
+=7C=7C=20state->enabled=20&&=20(=21state->period=20=7C=7C=0D=0A>=20>=20>=20=
+=09=20=20=20=20state->duty_cycle=20>=20state->period))=0D=0A>=20>=20>=20=09=
+=09return=20-EINVAL;=0D=0A>=20>=20>=0D=0A>=20>=20>=20Learning=20to=20read=
+=20diffs=20(maybe=20Outlook=20scrambled=20the=20view=20for=20you,=0D=0A>=20=
+>=20>=20too?)=20is=0D=0A>=20>=20a=0D=0A>=20>=20>=20nice=20capability=20you=
+=20should=20master.=0D=0A>=20>=20>=0D=0A>=20>=20>=20>=20>=20But=20anyhow,=
+=20even=20without=20that=20the=20kernel=20should=20not=20panic.=20So=20I=0D=
+=0A>=20>=20>=20>=20>=20ask=20you=20to=20research=20and=20provide=20some=20m=
+ore=20info=20about=20>=20>=20the=0D=0A>=20problem.=0D=0A>=20>=20>=20>=20>=
+=20(Which=20hardware=20does=20it=20affect?=20Where=20does=20it=20panic?=20.=
+..)=0D=0A>=20>=20>=20>=0D=0A>=20>=20>=20>=20Observing=20Kernel=20panic=20in=
+=20exynos=20SoC=20when=20we=20issue=20system=20suspend.=0D=0A>=20>=20>=20>=
+=20Following=20is=20the=20snippet=20of=20error:=0D=0A>=20>=20>=20>=0D=0A>=
+=20>=20>=20>=20=23=20echo=20mem=20>=20/sys/power/state=0D=0A>=20>=20>=20>=
+=20=5B=20=20=2029.224784=5D=20010:=20Kernel=20panic=20-=20not=20syncing:=20=
+pwm=20pwmchip0:=0D=0A>=20>=20>=20>=20dpm_run_callback=20failure=0D=0A>=20>=
+=20>=20>=20=5B=20=20=2029.240134=5D=20010:=20Call=20trace:=0D=0A>=20>=20>=
+=20>=20=5B=20=20=2029.242993=5D=20010:=20=20dump_backtrace+0x0/0x1b8=0D=0A>=
+=20>=20>=20>=20=5B=20=20=2029.247067=5D=20010:=20=20show_stack+0x24/0x30=0D=
+=0A>=20>=20>=20>=20=5B=20=20=2029.250793=5D=20010:=20=20dump_stack+0xb8/0x1=
+14=0D=0A>=20>=20>=20>=20=5B=20=20=2029.254606=5D=20010:=20=20panic+0x180/0x=
+398=0D=0A>=20>=20>=20>=20=5B=20=20=2029.258073=5D=20010:=20=20dpm_run_callb=
+ack+0x270/0x278=0D=0A>=20>=20>=20>=20=5B=20=20=2029.262493=5D=20010:=20=20_=
+_device_suspend+0x15c/0x628=0D=0A>=20>=20>=20>=20=5B=20=20=2029.266913=5D=
+=20010:=20=20dpm_suspend+0x124/0x3b0=0D=0A>=20>=20>=20>=20=5B=20=20=2029.27=
+0899=5D=20010:=20=20dpm_suspend_start+0xa0/0xa8=0D=0A>=20>=20>=20>=20=5B=20=
+=20=2029.275233=5D=20010:=20=20suspend_devices_and_enter+0x110/0x968=0D=0A>=
+=20>=20>=20>=20=5B=20=20=2029.280433=5D=20010:=20=20pm_suspend+0x308/0x3d8=
+=0D=0A>=20>=20>=20>=20=5B=20=20=2029.284333=5D=20010:=20=20state_store+0x8c=
+/0x110=0D=0A>=20>=20>=20>=20=5B=20=20=2029.288233=5D=20010:=20=20kobj_attr_=
+store+0x14/0x28=0D=0A>=20>=20>=20>=20=5B=20=20=2029.292393=5D=20010:=20=20s=
+ysfs_kf_write+0x5c/0x78=0D=0A>=20>=20>=20>=20=5B=20=20=2029.296466=5D=20010=
+:=20=20kernfs_fop_write+0x10c/0x220=0D=0A>=20>=20>=20>=20=5B=20=20=2029.300=
+886=5D=20010:=20=20__vfs_write+0x48/0x90=0D=0A>=20>=20>=20>=20=5B=20=20=202=
+9.304699=5D=20010:=20=20vfs_write+0xb8/0x1c0=0D=0A>=20>=20>=20>=20=5B=20=20=
+=2029.308426=5D=20010:=20=20ksys_write+0x74/0x100=0D=0A>=20>=20>=20>=20=5B=
+=20=20=2029.312240=5D=20010:=20=20__arm64_sys_write+0x24/0x30=0D=0A>=20>=20=
+>=20>=20=5B=20=20=2029.316573=5D=20010:=20=20el0_svc_handler+0x110/0x1b8=0D=
+=0A>=20>=20>=20>=20=5B=20=20=2029.320906=5D=20010:=20=20el0_svc+0x8/0x1bc=
+=0D=0A>=20>=20>=20>=20=5B=20=20=2029.324374=5D=20010:=20SMP:=20stopping=20s=
+econdary=20CPUs=0D=0A>=20>=20>=20>=20=5B=20=20=2029.328711=5D=20010:=20Kern=
+el=20Offset:=20disabled=0D=0A>=20>=20>=20>=20=5B=20=20=2029.332607=5D=20010=
+:=20CPU=20features:=200x0002,00006008=0D=0A>=20>=20>=20>=20=5B=20=20=2029.3=
+37026=5D=20010:=20Memory=20Limit:=20none=0D=0A>=20>=20>=20>=20=5B=20=20=202=
+9.343949=5D=20010:=20Rebooting=20in=201=20seconds..=0D=0A>=20>=20>=20>=20=
+=5B=20=20=2030.344539=5D=20010:=20Disabling=20non-boot=20CPUs=20...=0D=0A>=
+=20>=20>=0D=0A>=20>=20>=20Just=20locking=20at=20that=20and=20starring=20at=
+=20drivers/base/power/main.c=20for=20a=0D=0A>=20>=20>=20while=20doesn't=20m=
+ake=20this=20clearer=20to=20me.=20Are=20you=20using=20a=20mainline=0D=0Aker=
+nel?=0D=0A>=20>=20>=20Which=20version?=0D=0A>=20>=20>=0D=0A>=20>=0D=0A>=20>=
+=20Looks=20like=20I=20had=20some=20local=20patch=20which=20was=20causing=20=
+the=20error=20to=0D=0A>=20>=20trigger=20Kernel=20Panic=20(sorry=20about=20t=
+hat).=0D=0A>=20>=20On=20removing=20those=20local=20changes,=20I=20do=20not=
+=20observe=20kernel=20panic,=20but=0D=0A>=20>=20observe=20following=20error=
+=20and=20then=20suspend=20fails.=0D=0A>=20>=0D=0A>=20>=20=5B=20=20=2063.963=
+063=5D=20pwm=20pwmchip0:=20PM:=20dpm_run_callback=20():=0D=0A>=20>=20pwm_cl=
+ass_suspend+0x0/0xf8=20returns=20-22=0D=0A>=20>=20=5B=20=20=2063.963079=5D=
+=20pwm=20pwmchip0:=20PM:=20failed=20to=20suspend:=20error=20-22=0D=0A>=20>=
+=0D=0A>=20>=20So,=20as=20to=20fix=20this=20issue=20I=20will=20post=20a=20ne=
+w=20version=20of=20patch=20containing=0D=0A>=20>=20change=20suggested=20by=
+=20you.=0D=0A>=20=0D=0A>=20Note=20that=20my=20suggestion=20only=20covers=20=
+you=20problem,=20it=20doesn't=20solve=20it.=0D=0A>=20=0D=0A=0D=0AYour=20sug=
+gestion=20looks=20like=20a=20permanent=20fix,=20as=20there=20should=20not=
+=20be=20any=20use=0D=0Acase=0D=0Awhere=20we=20check=20for=20=22period=22=20=
+and=20=22duty_cycle=22,=20without=20PWM=20being=20in=20enabled=0D=0Astate.=
+=0D=0A=0D=0AThanks=20&=20Regards,=0D=0ATamseel=20Shams=0D=0A=0D=0A=0D=0A
