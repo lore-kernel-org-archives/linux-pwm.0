@@ -2,145 +2,85 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C07C25B0E
-	for <linux-pwm@archiver.kernel.org>; Fri, 19 Aug 2022 07:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 896FEC25B0E
+	for <linux-pwm@archiver.kernel.org>; Fri, 19 Aug 2022 07:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346890AbiHSHBQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 19 Aug 2022 03:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        id S1345291AbiHSHIq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 19 Aug 2022 03:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346861AbiHSHBK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 19 Aug 2022 03:01:10 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48AB5E0FE7
-        for <linux-pwm@vger.kernel.org>; Fri, 19 Aug 2022 00:00:59 -0700 (PDT)
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220819070057epoutp0453f9d8469479ada4f6e0c14075abcc57~MrOPvW4Sm0448004480epoutp04j
-        for <linux-pwm@vger.kernel.org>; Fri, 19 Aug 2022 07:00:57 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220819070057epoutp0453f9d8469479ada4f6e0c14075abcc57~MrOPvW4Sm0448004480epoutp04j
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1660892457;
-        bh=7k3ZxzxB6crH2mIdm+4xsxZYtcaYa2jA+zI29yT4jrQ=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=e4nCcHYyTEAuKSJ6S3Z+0G9Gx+julB9teyeMxDcKqYVwpYY7RcEvwGIyE3/MLnRUr
-         m0Chhlwnv6eGFFVCOLTPJYlJbi9QrYA15lLS2C3wWuxdiF2ooPJMp87wsYn65hyrfg
-         EbFGXUXjlBVnJGMkdIIohVkbzknOVRurbhVTWndk=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20220819070057epcas5p4b08b53c9cfeac499d19f8d2f5eb8540e~MrOPUhDy_2224922249epcas5p4i;
-        Fri, 19 Aug 2022 07:00:57 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.178]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4M8CMV2JzQz4x9Q0; Fri, 19 Aug
-        2022 07:00:54 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E0.5E.09494.4253FF26; Fri, 19 Aug 2022 16:00:52 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220819044619epcas5p27ba774aacaa5d2a0056bba376b9dae54~MpYsYfUBp2185421854epcas5p2E;
-        Fri, 19 Aug 2022 04:46:19 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220819044619epsmtrp1034d84e576cbf839db1228d4ce97cd35~MpYsXpImQ3048930489epsmtrp1i;
-        Fri, 19 Aug 2022 04:46:19 +0000 (GMT)
-X-AuditID: b6c32a4a-201ff70000012516-c4-62ff352468f1
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        5E.FC.08802.B951FF26; Fri, 19 Aug 2022 13:46:19 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.109.115.6]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220819044618epsmtip22d59b8ce2b18633b66ad201616bc4cd1~MpYrIUNuD1162911629epsmtip2N;
-        Fri, 19 Aug 2022 04:46:17 +0000 (GMT)
-From:   Tamseel Shams <m.shams@samsung.com>
-To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        lee.jones@linaro.org
-Cc:     linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, Tamseel Shams <m.shams@samsung.com>
-Subject: [PATCH v2] pwm: Fixes dpm_run_callback() error in pwm_apply_state()
-Date:   Fri, 19 Aug 2022 10:04:59 +0530
-Message-Id: <20220819043459.32584-1-m.shams@samsung.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S1345249AbiHSHIp (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 19 Aug 2022 03:08:45 -0400
+Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E698257E34;
+        Fri, 19 Aug 2022 00:08:39 -0700 (PDT)
+X-QQ-mid: bizesmtp70t1660892882t7gg8drd
+Received: from localhost.localdomain ( [123.114.60.34])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 19 Aug 2022 15:08:00 +0800 (CST)
+X-QQ-SSF: 01400000002000D0U000B00A0000000
+X-QQ-FEAT: QityeSR92A0+yWSjjTB+IV8pKbCs/7cP9P/foXuOyx46FWXJK6UkeN9TfHSeh
+        k2nb5FbStNEBg6w+wZB3rQFMQ63eo8yZVOFmJZ/8T2vCfABNU/b/5u0/8VUA2wP3SE6Gxo/
+        T7S8cIG+y+raPFt2oUZmcL2175HQVTt7+/r6zq/kyat7ArX6Unm/vwDAFUD1UWnIJ3biMeX
+        fiLk8i+2b6fKngOnmaN9bt7dF++F3GyhSL0xnvsdNuBLWXntJEmhoHddaryH0+fIHhDoM4Z
+        GxYH+ToyEnFO6skNCVqeeEmZVbK/sMygxrQojN3Da855Pbea7sbPF/QcNpB8FoLH7p2dIga
+        escZsEpTwPMh1uXBgfig67RP8fzIWPIWEdf0l9hlL5iH5Gw4kUCTbK8IuQMnQ==
+X-QQ-GoodBg: 2
+From:   zhaoxiao <zhaoxiao@uniontech.com>
+To:     thierry.reding@gmail.com, heiko@sntech.de
+Cc:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        zhaoxiao <zhaoxiao@uniontech.com>
+Subject: [PATCH v3] pwm: rockchip: Convert to use dev_err_probe()
+Date:   Fri, 19 Aug 2022 15:07:56 +0800
+Message-Id: <20220819070756.14895-1-zhaoxiao@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpkk+LIzCtJLcpLzFFi42LZdlhTQ1fF9H+SwckZ7BYP5m1js7j/9Sij
-        xeVdc9gs7t5dxWhxt3Uxu8XPXfNYLG5PnMzowO6xc9Zddo871/awefT/NfDo27KK0ePzJrkA
-        1qhsm4zUxJTUIoXUvOT8lMy8dFsl7+B453hTMwNDXUNLC3MlhbzE3FRbJRefAF23zBygK5QU
-        yhJzSoFCAYnFxUr6djZF+aUlqQoZ+cUltkqpBSk5BSYFesWJucWleel6eaklVoYGBkamQIUJ
-        2RmbfjazFszgqpj/fhVbA+NKji5GTg4JAROJTRvvMHYxcnEICexmlLi/9B4LhPOJUWLtzwvs
-        IFVCAp8ZJa7dtoPp2LbvDBNE0S6gjtMNUO3NTBL9W1qBHA4ONgFNiePnuUEaRARCJBZ27mUD
-        sZkFqiUW/foOZgsL+EisOncebAGLgKrEmj+HWUFsXgELiWXzD7FCLJOXWL3hADNEXFDi5Mwn
-        LBBz5CWat85mBtkrIXCPXeLZ/3csEA0uEnt/7WCCsIUlXh3fwg5hS0m87G+DstMl5j7shaop
-        kFi26ztU3F7iwJU5LCD3MwPdv36XPkRYVmLqqXVMEHv5JHp/P4Fq5ZXYMQ/GVpT4v7sfaoy4
-        xLsVU6Du95C41HOQDRKIsRL/2+eyTGCUn4XknVlI3pmFsHkBI/MqRsnUguLc9NRi0wKjvNRy
-        eLwm5+duYgSnRS2vHYwPH3zQO8TIxMF4iFGCg1lJhPfGnT9JQrwpiZVVqUX58UWlOanFhxhN
-        gWE8kVlKNDkfmJjzSuINTSwNTMzMzEwsjc0MlcR5va5uShISSE8sSc1OTS1ILYLpY+LglGpg
-        mvBW1WFTsSH7l599Lnc1BT5mZyfFP11RpFZz+oaS9olavtmBzUeZ1Uot+A46yV9ScenWMOte
-        N0/h7XmpnVOO1de7ih75uMZP/sqS0wYsV2rrdLfsvrW+a9+zZ4e4vj+K/yi+wtpst0p22I3A
-        Jacan7ovvZXNKr53aeWbfeV/L1wtYrSuOZ7qzut0QWiPrmrw2Szbuil3tx9Qd/9R99qp58b3
-        1Nwu4XR1kfpTbEJxMvrGm9SaY2Y88NnxadPVWEmX3sJNlk3b1zD/VJjxTDIy+/Uube0Xe75Z
-        LLvwX6pCq/XwI0lertdOCwqLM9Y8tPlwev/MXTdnd6i5f1YMbvtz2Uj7jqjO2hD9XrfaMgVT
-        JZbijERDLeai4kQAfZUhOhQEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrELMWRmVeSWpSXmKPExsWy7bCSvO5s0f9JBrc3ilo8mLeNzeL+16OM
-        Fpd3zWGzuHt3FaPF3dbF7BY/d81jsbg9cTKjA7vHzll32T3uXNvD5tH/18Cjb8sqRo/Pm+QC
-        WKO4bFJSczLLUov07RK4Mjb9bGYtmMFVMf/9KrYGxpUcXYycHBICJhLb9p1h6mLk4hAS2MEo
-        cXHfPnaIhLjEtF/7GSFsYYmV/56zQxQ1Mkn8XnWetYuRg4NNQFPi+HlukBoRgTCJ5hkbmEHC
-        zAL1Eou28oGEhQV8JFadOw82kkVAVWLNn8OsIDavgIXEsvmHWCHGy0us3nCAGSIuKHFy5hMW
-        iDHqEuvnCYGEmYFKmrfOZp7AyD8LSdUshKpZSKoWMDKvYpRMLSjOTc8tNiwwykst1ytOzC0u
-        zUvXS87P3cQIDmYtrR2Me1Z90DvEyMTBeIhRgoNZSYT3xp0/SUK8KYmVValF+fFFpTmpxYcY
-        pTlYlMR5L3SdjBcSSE8sSc1OTS1ILYLJMnFwSjUwRUpdPDRhWfIWk/pJ5VNVtQ4841EOzX1V
-        WSirkjDZao7blIfKQc4X7/nY/Z5peXBqsnlpb1iAiYWSzMlpu4S3Vdyds28tw0EPzTr/t/xO
-        L75767gX8vlcs9k62aG1cPo9BeP6b1+SNjEKlf6S1FH/Pzl01YSWx1WHzUx6r4mdPdafnLwk
-        Zct302t/DWWOzCrNbY5s0Uux+upyneXsTvmz5w/LKGddYVW61rD8W2Jnm+O9D6o/3N/c3fCF
-        0XKx2G0tt0tp9nOYnR//2XdqVy4ff/Ghaw4Vqm3Fyz9OXv71/4ejm/akHpSeYlbFKTiF98CH
-        j109Z/8eFFKvnsB3Kkdbyr3h7LdJfWUfZrfYL0hYpsRSnJFoqMVcVJwIAGK/0X7VAgAA
-X-CMS-MailID: 20220819044619epcas5p27ba774aacaa5d2a0056bba376b9dae54
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220819044619epcas5p27ba774aacaa5d2a0056bba376b9dae54
-References: <CGME20220819044619epcas5p27ba774aacaa5d2a0056bba376b9dae54@epcas5p2.samsung.com>
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr1
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Return invalid argument error from pwm_apply_state()
-call when 'period is not set' or 'duty_cycle is greater
-than period' only when PWM is enabled, so as to fix the
-dpm_run_callback() error seen on exynos SoC during
-Suspend
+It's fine to call dev_err_probe() in ->probe() when error code is known.
+Convert the driver to use dev_err_probe().
 
-There may be situation when PWM is exported using sysfs,
-but at that point period is not set for PWM. At this
-point if we do suspend, then during pwm_apply_state
-function call from pwm_class_suspend, it checks whether
-period is set or not. It is not set now, so it returns
-an invalid argument error which issues dpm_run_callback()
-error
-
-Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Tamseel Shams <m.shams@samsung.com>
+Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
 ---
- drivers/pwm/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ v3: 1.There is no need to assign it to 'ret', and use PTR_ERR(pc->pclk) directly.
+     2.add the return before dev_err_probe().
+ drivers/pwm/pwm-rockchip.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index c7552df32082..10b4e39aaac0 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -634,8 +634,8 @@ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
- 	 */
- 	might_sleep();
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index f3647b317152..eda1bd49d260 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -328,18 +328,12 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	else
+ 		pc->pclk = pc->clk;
  
--	if (!pwm || !state || !state->period ||
--	    state->duty_cycle > state->period)
-+	if (!pwm || !state || (state->enabled && (!state->period ||
-+	    state->duty_cycle > state->period)))
- 		return -EINVAL;
+-	if (IS_ERR(pc->pclk)) {
+-		ret = PTR_ERR(pc->pclk);
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "Can't get APB clk: %d\n", ret);
+-		return ret;
+-	}
++	if (IS_ERR(pc->pclk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(pc->pclk), "Can't get APB clk\n");
  
- 	chip = pwm->chip;
+ 	ret = clk_prepare_enable(pc->clk);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Can't prepare enable PWM clk: %d\n", ret);
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret, "Can't prepare enable PWM clk\n");
+ 
+ 	ret = clk_prepare_enable(pc->pclk);
+ 	if (ret) {
 -- 
-2.17.1
+2.20.1
 
