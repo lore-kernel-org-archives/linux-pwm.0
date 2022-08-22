@@ -2,122 +2,109 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91558C28D13
-	for <linux-pwm@archiver.kernel.org>; Fri, 19 Aug 2022 23:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 278E0C28D13
+	for <linux-pwm@archiver.kernel.org>; Mon, 22 Aug 2022 07:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240821AbiHSXdC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 19 Aug 2022 19:33:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
+        id S233120AbiHVH32 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240543AbiHSXdA (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 19 Aug 2022 19:33:00 -0400
-Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CB3114A5C;
-        Fri, 19 Aug 2022 16:32:59 -0700 (PDT)
-Received: by mail-vk1-xa2a.google.com with SMTP id i67so2957627vkb.2;
-        Fri, 19 Aug 2022 16:32:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=8Ftt3u2zVCJ1XlR/QC6Ig2RR9m+8QvnAb/eHfD5q1ag=;
-        b=eo8bqwAPmtSdzpfC2DXbNh1J+I4B3JgMZPZGvQwqJZ8zZiILLZeVZxbp+nNPCMQgir
-         ND29DitHrMJ5vWipZ//ZPEFizYP6eeFn/DiDdrGg26CZgXcvLA5j9Ho1GTHzhZ3t7oE/
-         luOF4fjMXtVJfi6YzE9a+DljBgBmoaUjqr2KlVEzzppf9JjF3cZlhZmh/vGq5IkcfnLj
-         XfGp407fNCISq1mZdY79HdDwvNEm3o6fg8NwGfoAUDlzbAzu3EXnYacVWVN3XYTruSi3
-         yRvda0WWPHy0zxa7c2Fm/RjxoFZS0HwBAL9/nxZVcMgSdywfaH3wZjxC3J7qQVyB3Wn/
-         8pRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=8Ftt3u2zVCJ1XlR/QC6Ig2RR9m+8QvnAb/eHfD5q1ag=;
-        b=m7fw3visih2cB3/NcyKErXYIwXNaGIO3i68WqwLKzwn0zQtedodzegUSpmikgPr7JI
-         9tEgPKMoKD+S0TzjOdG/ishXb6E3ZQuGW8STj6SQ0M/d9vfFHSVVQw4vFlFnIWAgnk7o
-         hJNMAYRvwgpdUmyt9jm2z1CHw8J/9C7udYqW6h7mwLXCJOcsr2z1/Z4h4IEa/ESe5xR1
-         +IUfWm2M5/o5KnfCpjraoAWETeGCuJ7pQKTwYvCw6cp1w9dJ4R6DHsENynqMFRV06CIj
-         T5wAYbbUdkxJEbWXL3Jh2Jth1I3/Lkb6f0yxNiUUPFM7uEfcefDhh1cX8pBLJNZxPLp3
-         Reqg==
-X-Gm-Message-State: ACgBeo2qCKPU2Z/vdHwRgXTBpJtkGSMg9oISfWkVFVlzx5FKFDAK+PF+
-        eodEyqbwMZD8HpR8vEpjG8JM9mlDqFYiuR6NUIA=
-X-Google-Smtp-Source: AA6agR6eJaaqNg8VDsxPvmfVCSoGG2OIUBTxkWbH6MePnRJAOqSfJjo7UZdduGoUilT7hODPdRuYkkP+jlm7KDQsFVY=
-X-Received: by 2002:ac5:c7d7:0:b0:389:61cd:ac2d with SMTP id
- e23-20020ac5c7d7000000b0038961cdac2dmr1482277vkn.27.1660951978768; Fri, 19
- Aug 2022 16:32:58 -0700 (PDT)
+        with ESMTP id S233133AbiHVH31 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Aug 2022 03:29:27 -0400
+Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B862A27C
+        for <linux-pwm@vger.kernel.org>; Mon, 22 Aug 2022 00:29:26 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id Q1s6ofUmvLFqbQ1s6oZUKW; Mon, 22 Aug 2022 09:29:23 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 22 Aug 2022 09:29:23 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <66333c4d-8e8b-22a0-0c05-b72e2db2d3ca@wanadoo.fr>
+Date:   Mon, 22 Aug 2022 09:29:17 +0200
 MIME-Version: 1.0
-References: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
- <20220818232040.GA3505561@roeck-us.net> <CAHp75Vf+-4U6OW4sf+mKsPt8WoRL_jN-sYtzOMzhhH8--+OU1w@mail.gmail.com>
- <20220819130955.GB3108215@roeck-us.net>
-In-Reply-To: <20220819130955.GB3108215@roeck-us.net>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 20 Aug 2022 02:32:22 +0300
-Message-ID: <CAHp75VetU7_sJ-n6UHgFE+NU56t2Gw83x9E+OHETZkyxyF1qBQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/3] hwmon: (pwm-fan) Make use of device properties
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4] pwm: rockchip: Convert to use dev_err_probe()
+Content-Language: en-US
+To:     zhaoxiao <zhaoxiao@uniontech.com>, thierry.reding@gmail.com,
+        heiko@sntech.de
+Cc:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220819092627.19416-1-zhaoxiao@uniontech.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220819092627.19416-1-zhaoxiao@uniontech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 4:09 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On Fri, Aug 19, 2022 at 12:56:42PM +0300, Andy Shevchenko wrote:
-> > On Fri, Aug 19, 2022 at 2:41 AM Guenter Roeck <linux@roeck-us.net> wrot=
-e:
-> > > On Sat, Aug 06, 2022 at 06:25:15PM +0300, Andy Shevchenko wrote:
-> > > > Convert the module to be property provider agnostic and allow
-> > > > it to be used on non-OF platforms.
-> > > >
-> > > > Add mod_devicetable.h include.
-> > > >
-> > > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > > Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> > >
-> > > I had another look at this patch. A substantial part of the changes
-> > > is because device properties don't support of_property_read_u32_index=
-(),
-> > > reworking the code to use device_property_read_u32_array() instead.
-> > > Sorry, I don't like it, it results in a substantial number of unneces=
-sary
-> > > changes. Device properties should support the equivalent of
-> > > of_property_read_u32_index() instead to simplify conversions.
-> >
-> > Not all (device property) providers can have such API available. Are
-> > you suggesting to
-> >  a) alloc memory for entire array;
-> >  b) cache one for a given index;
-> >  c) free a memory;
-> >  d) loop as many times as index op is called.
-> >
-> > Sorry, this is way too far and non-optimal in comparison to the
-> > substantial number of unnecessary changes (two or three small
-> > refactorings?).
-> >
-> > Another way is to provide a pwm-fan-acpi, which will be the copy of
-> > the driver after this patch is applied. I don't think it's a very
-> > bright idea either.
-> >
-> An alternative might be to split the patch in two parts, one replacing
-> of_property_read_u32_index() with of_property_read_u32_array() as
-> preparation, with the above rationale and a note that this is to
-> prepare for the switch to device properties, and then the actual device
-> property switch. Some context showing how other conversions handled this
-> problem would also be nice, though not necessary.
+Le 19/08/2022 à 11:26, zhaoxiao a écrit :
+> It's fine to call dev_err_probe() in ->probe() when error code is known.
+> Convert the driver to use dev_err_probe().
 
-Thanks for the idea, I like it and it would indeed simplify the
-understanding of the changes made.
+Hi, just a last comment below.
 
---=20
-With Best Regards,
-Andy Shevchenko
+> 
+> Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
+> ---
+>   v4: add the missing dev_err function.
+>   drivers/pwm/pwm-rockchip.c | 18 ++++++------------
+>   1 file changed, 6 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index f3647b317152..e6ee14c6a159 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -328,22 +328,16 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+>   	else
+>   		pc->pclk = pc->clk;
+>   
+> -	if (IS_ERR(pc->pclk)) {
+> -		ret = PTR_ERR(pc->pclk);
+> -		if (ret != -EPROBE_DEFER)
+> -			dev_err(&pdev->dev, "Can't get APB clk: %d\n", ret);
+> -		return ret;
+> -	}
+> +	if (IS_ERR(pc->pclk))
+> +		return dev_err_probe(&pdev->dev, PTR_ERR(pc->pclk), "Can't get APB clk\n");
+>   
+>   	ret = clk_prepare_enable(pc->clk);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "Can't prepare enable PWM clk: %d\n", ret);
+> -		return ret;
+> -	}
+> +	if (ret)
+> +		return dev_err_probe(&pdev->dev, ret, "Can't prepare enable PWM clk\n");
+>   
+>   	ret = clk_prepare_enable(pc->pclk);
+>   	if (ret) {
+> -		dev_err(&pdev->dev, "Can't prepare enable APB clk: %d\n", ret);
+> +		dev_err_probe(&pdev->dev, ret, "Can't prepare enable APB clk: %d\n", ret);
+
+As in the previous patches, %d and the final ret are not needed. 
+dev_err_probe() will already display an error code in a human readable way.
+
+>   		goto err_clk;
+>   	}
+>   
+> @@ -360,7 +354,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+>   
+>   	ret = pwmchip_add(&pc->chip);
+>   	if (ret < 0) {
+> -		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> +		dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed: %d\n", ret);
+
+Same here.
+
+Otherwise, LGTM.
+
+CJ
+
+>   		goto err_pclk;
+>   	}
+>   
+
