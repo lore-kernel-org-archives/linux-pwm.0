@@ -2,178 +2,129 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC371ECAADA
-	for <linux-pwm@archiver.kernel.org>; Fri, 26 Aug 2022 17:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6980EECAAD1
+	for <linux-pwm@archiver.kernel.org>; Sun, 28 Aug 2022 02:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244087AbiHZR0j (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 26 Aug 2022 13:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        id S231721AbiH1CPc convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 27 Aug 2022 22:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240638AbiHZR0f (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 26 Aug 2022 13:26:35 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4485D7D11;
-        Fri, 26 Aug 2022 10:26:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661534794; x=1693070794;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cT/5nIKXxykBJq500OJtCkmmFNx0IZv//sufeJTfcOw=;
-  b=DOzWVCekvZKNcQQ9y5abgL0dYI0EYkuWDrE7ldCOeE/w8+9eK5smm33Y
-   jn/zKMJqDv/PiH7Gnj9VWG/gO2Gvc5VXcHfN76ZS4wqMYP2/vC4VmZxok
-   eSy/wUqATyPQ3xY+p0gsswHKGQzxGe2tL4Z6RdQevly0JDkmbJtL0rs5t
-   m9Aqegwb8n5lEYXYf5JKb0Q4a3Y7hdULY15lYmmsuL7a4jnzkmr6z/QpB
-   zRYXtWGKze3mjLiGeRxKWj3kpCxJ4KxjPXtDBguGxqwfkYSCFDhmrE0dz
-   VGUH1ERiBdRwo0wXa4AKyd+qdJKg5g68yPR2AimB4dy6wMKmsd51MJEkk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="320661902"
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="320661902"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 10:26:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="643738800"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 26 Aug 2022 10:26:30 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3F0071C3; Fri, 26 Aug 2022 20:26:45 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+        with ESMTP id S231697AbiH1CPa (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 27 Aug 2022 22:15:30 -0400
+X-Greylist: delayed 466 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 27 Aug 2022 19:15:27 PDT
+Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C938A52DCE
+        for <linux-pwm@vger.kernel.org>; Sat, 27 Aug 2022 19:15:27 -0700 (PDT)
+Received: from omf19.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay09.hostedemail.com (Postfix) with ESMTP id A4A2E808B3;
+        Sun, 28 Aug 2022 02:07:40 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id 765B420027;
+        Sun, 28 Aug 2022 02:07:39 +0000 (UTC)
+Message-ID: <5ba98dbd91dc981ec7384484b2a498805abef6b0.camel@perches.com>
+Subject: Re: [PATCH v2 4/4] pwm: sysfs: Utilize an array for polarity strings
+From:   Joe Perches <joe@perches.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-hwmon@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 2/3] pwm: core: Get rid of unused devm_of_pwm_get()
-Date:   Fri, 26 Aug 2022 20:26:41 +0300
-Message-Id: <20220826172642.16404-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220826172642.16404-1-andriy.shevchenko@linux.intel.com>
-References: <20220826172642.16404-1-andriy.shevchenko@linux.intel.com>
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Date:   Sat, 27 Aug 2022 22:07:38 -0400
+In-Reply-To: <20220826170716.6886-4-andriy.shevchenko@linux.intel.com>
+References: <20220826170716.6886-1-andriy.shevchenko@linux.intel.com>
+         <20220826170716.6886-4-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 765B420027
+X-Stat-Signature: hed4q761cpj4ekwmpa1xwd89x111ebwk
+X-Rspamd-Server: rspamout05
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18e8tZ+l4e9sZ6+USwDYNFsrhKxx8WnSpk=
+X-HE-Tag: 1661652459-664208
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The devm_of_pwm_get() has recently lost its single user, drop
-the dead API as well.
+On Fri, 2022-08-26 at 20:07 +0300, Andy Shevchenko wrote:
+> Code is smaller and looks nicer if we combine polarity strings
+> into an array.
 
-Note, the new code should use either plain pwm_get() or managed
-devm_pwm_get() or devm_fwnode_pwm_get() APIs.
+It's less robust though as PWM_POLARITY_NORMAL and _INVERSED
+are now required to be 0 and 1.  As the only 2 values in
+an enum they are, but that's not really guaranteed unless
+you read the enum definition.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-v2: added tag (Uwe)
- .../driver-api/driver-model/devres.rst        |  1 -
- Documentation/driver-api/pwm.rst              |  3 +-
- drivers/pwm/core.c                            | 30 -------------------
- include/linux/pwm.h                           | 10 -------
- 4 files changed, 1 insertion(+), 43 deletions(-)
-
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-index eb01a2f0ab80..57f0620d4c8e 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -410,7 +410,6 @@ POWER
- 
- PWM
-   devm_pwm_get()
--  devm_of_pwm_get()
-   devm_fwnode_pwm_get()
- 
- REGULATOR
-diff --git a/Documentation/driver-api/pwm.rst b/Documentation/driver-api/pwm.rst
-index fd26c3d895b6..8c71a2055d27 100644
---- a/Documentation/driver-api/pwm.rst
-+++ b/Documentation/driver-api/pwm.rst
-@@ -40,8 +40,7 @@ after usage with pwm_free().
- 
- New users should use the pwm_get() function and pass to it the consumer
- device or a consumer name. pwm_put() is used to free the PWM device. Managed
--variants of the getter, devm_pwm_get(), devm_of_pwm_get(),
--devm_fwnode_pwm_get(), also exist.
-+variants of the getter, devm_pwm_get() and devm_fwnode_pwm_get(), also exist.
- 
- After being requested, a PWM has to be configured using::
- 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 0e042410f6b9..dc1b7263a0b0 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -1070,36 +1070,6 @@ struct pwm_device *devm_pwm_get(struct device *dev, const char *con_id)
- }
- EXPORT_SYMBOL_GPL(devm_pwm_get);
- 
--/**
-- * devm_of_pwm_get() - resource managed of_pwm_get()
-- * @dev: device for PWM consumer
-- * @np: device node to get the PWM from
-- * @con_id: consumer name
-- *
-- * This function performs like of_pwm_get() but the acquired PWM device will
-- * automatically be released on driver detach.
-- *
-- * Returns: A pointer to the requested PWM device or an ERR_PTR()-encoded
-- * error code on failure.
-- */
--struct pwm_device *devm_of_pwm_get(struct device *dev, struct device_node *np,
--				   const char *con_id)
--{
--	struct pwm_device *pwm;
--	int ret;
--
--	pwm = of_pwm_get(dev, np, con_id);
--	if (IS_ERR(pwm))
--		return pwm;
--
--	ret = devm_add_action_or_reset(dev, devm_pwm_release, pwm);
--	if (ret)
--		return ERR_PTR(ret);
--
--	return pwm;
--}
--EXPORT_SYMBOL_GPL(devm_of_pwm_get);
--
- /**
-  * devm_fwnode_pwm_get() - request a resource managed PWM from firmware node
-  * @dev: device for PWM consumer
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 9429930c5566..572ba92e4206 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -408,8 +408,6 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
- void pwm_put(struct pwm_device *pwm);
- 
- struct pwm_device *devm_pwm_get(struct device *dev, const char *con_id);
--struct pwm_device *devm_of_pwm_get(struct device *dev, struct device_node *np,
--				   const char *con_id);
- struct pwm_device *devm_fwnode_pwm_get(struct device *dev,
- 				       struct fwnode_handle *fwnode,
- 				       const char *con_id);
-@@ -517,14 +515,6 @@ static inline struct pwm_device *devm_pwm_get(struct device *dev,
- 	return ERR_PTR(-ENODEV);
- }
- 
--static inline struct pwm_device *devm_of_pwm_get(struct device *dev,
--						 struct device_node *np,
--						 const char *con_id)
--{
--	might_sleep();
--	return ERR_PTR(-ENODEV);
--}
--
- static inline struct pwm_device *
- devm_fwnode_pwm_get(struct device *dev, struct fwnode_handle *fwnode,
- 		    const char *con_id)
--- 
-2.35.1
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> v2: added pwm_ prefix to the variable (Uwe), adjusted intendation (Uwe)
+>  drivers/pwm/sysfs.c | 32 ++++++++++++--------------------
+>  1 file changed, 12 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+> index 767c4b19afb1..502167e44a3d 100644
+> --- a/drivers/pwm/sysfs.c
+> +++ b/drivers/pwm/sysfs.c
+> @@ -151,27 +151,23 @@ static ssize_t enable_store(struct device *child,
+>  	return ret ? : size;
+>  }
+>  
+> +static const char * const pwm_polarity_strings[] = {
+> +	[PWM_POLARITY_NORMAL] = "normal",
+> +	[PWM_POLARITY_INVERSED] = "inversed",
+> +};
+> +
+>  static ssize_t polarity_show(struct device *child,
+>  			     struct device_attribute *attr,
+>  			     char *buf)
+>  {
+>  	const struct pwm_device *pwm = child_to_pwm_device(child);
+> -	const char *polarity = "unknown";
+>  	struct pwm_state state;
+>  
+>  	pwm_get_state(pwm, &state);
+> +	if (state.polarity < 0 || state.polarity >= ARRAY_SIZE(pwm_polarity_strings))
+> +		return sysfs_emit(buf, "unknown\n");
+>  
+> -	switch (state.polarity) {
+> -	case PWM_POLARITY_NORMAL:
+> -		polarity = "normal";
+> -		break;
+> -
+> -	case PWM_POLARITY_INVERSED:
+> -		polarity = "inversed";
+> -		break;
+> -	}
+> -
+> -	return sysfs_emit(buf, "%s\n", polarity);
+> +	return sysfs_emit(buf, "%s\n", pwm_polarity_strings[state.polarity]);
+>  }
+>  
+>  static ssize_t polarity_store(struct device *child,
+> @@ -180,20 +176,16 @@ static ssize_t polarity_store(struct device *child,
+>  {
+>  	struct pwm_export *export = child_to_pwm_export(child);
+>  	struct pwm_device *pwm = export->pwm;
+> -	enum pwm_polarity polarity;
+>  	struct pwm_state state;
+>  	int ret;
+>  
+> -	if (sysfs_streq(buf, "normal"))
+> -		polarity = PWM_POLARITY_NORMAL;
+> -	else if (sysfs_streq(buf, "inversed"))
+> -		polarity = PWM_POLARITY_INVERSED;
+> -	else
+> -		return -EINVAL;
+> +	ret = sysfs_match_string(pwm_polarity_strings, buf);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	mutex_lock(&export->lock);
+>  	pwm_get_state(pwm, &state);
+> -	state.polarity = polarity;
+> +	state.polarity = ret;
+>  	ret = pwm_apply_state(pwm, &state);
+>  	mutex_unlock(&export->lock);
+>  
 
