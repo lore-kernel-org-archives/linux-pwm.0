@@ -2,52 +2,52 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E484ECAAA1
-	for <linux-pwm@archiver.kernel.org>; Tue,  6 Sep 2022 20:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BAB5C38145
+	for <linux-pwm@archiver.kernel.org>; Tue,  6 Sep 2022 20:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbiIFUDW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 6 Sep 2022 16:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44254 "EHLO
+        id S230173AbiIFUEA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 6 Sep 2022 16:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiIFUC7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Sep 2022 16:02:59 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C9BBB011;
-        Tue,  6 Sep 2022 12:58:34 -0700 (PDT)
+        with ESMTP id S230328AbiIFUDd (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Sep 2022 16:03:33 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C2C3A489;
+        Tue,  6 Sep 2022 12:59:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662494314; x=1694030314;
+  t=1662494341; x=1694030341;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=v2bmBUdg7tTSWGG6WO2kYa469atbFuZ0zlWdbeqwE3Q=;
-  b=Sd8psmHVeN2Ac4AfILrWZJTAIF76QD2GpvuEQ37se6TVpxj63l2cHUGG
-   jSRGznnXPVQPmAC+eWxIgL28sx9HidgkTKEgWAkCJnYgtQlszgS6fHevW
-   L7Bka04ULf+4kbpcOq/dLAeTgBqWc5CLJvtBegMyaQSKUuvmXIBmG/ha6
-   V41LB1Iu8ssAhwkX9kS6EJa/rAemFYn6+ayWigpwtQr9baFwFvG8gAyj3
-   8Fl0i0mgS1m3Vjca5ohJmMikHvX+TTZ+vK9pI2r/FsZKfzSfaEu4MsZzx
-   hBHFhbRwqh5OPCAXUSkyILaxp0Dh971QdWIFfON8wiOfFpTsExstTzjJ3
+  bh=3QJCpzgRCnUz4yyccAi/oO2t5HlZBvGdGKxNCfeQF40=;
+  b=hq6VwI9QiNL0Dp37ogrSouHxApn4goAjx+gJyIlOJj9l/+8p4WzB2xn6
+   laOKMKsk2XMfuK96symJEDL9TMdwDGSKgOBNCgmbmfdxQCPHeNDFuEP/1
+   dfCbfsFW3PDXvGXsTgFtUzNlmAGs5FcmnJgo0GSaGqOSlwbC6xx2St1rm
+   iACDIuqVuP4oE6XvQSpxH0eSk5nH1JR6kzOcIFzu8TJ5bXP+KIXmepUXM
+   yF1WoidG5/Sj7XTdi14+RgKlffKhvxtYZGfUtxtbwr2ijN/qYZG7ilgMX
+   yowZ7aVcEMofA7RJ8nEObyr82WSFqztSFgnb1P4QZU5d9uGpojqzCXXBs
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="322871071"
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="279705038"
 X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="322871071"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 12:57:31 -0700
+   d="scan'208";a="279705038"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 12:57:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="675844718"
+   d="scan'208";a="610070479"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 06 Sep 2022 12:57:30 -0700
+  by orsmga007.jf.intel.com with ESMTP; 06 Sep 2022 12:57:32 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 14752235; Tue,  6 Sep 2022 22:57:46 +0300 (EEST)
+        id 290E3363; Tue,  6 Sep 2022 22:57:46 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v1 4/9] pwm: lpss: Include headers we are direct user of
-Date:   Tue,  6 Sep 2022 22:57:30 +0300
-Message-Id: <20220906195735.87361-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 6/9] pwm: lpss: Use DEFINE_RUNTIME_DEV_PM_OPS() and pm_ptr() macros
+Date:   Tue,  6 Sep 2022 22:57:32 +0300
+Message-Id: <20220906195735.87361-6-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220906195735.87361-1-andriy.shevchenko@linux.intel.com>
 References: <20220906195735.87361-1-andriy.shevchenko@linux.intel.com>
@@ -57,36 +57,53 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-For the sake of integrity, include headers we are direct user of.
-
-While at it, replace device.h with a forward declaration.
+Using these new macros allows the compiler to remove the unused dev_pm_ops
+structure and related functions if !CONFIG_PM without the need to mark
+the functions __maybe_unused.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/pwm/pwm-lpss.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-lpss-pci.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index 5995b6b750a8..832cb86996d7 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -10,11 +10,15 @@
- #ifndef __PWM_LPSS_H
- #define __PWM_LPSS_H
+diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
+index f3367e844e61..98413d364338 100644
+--- a/drivers/pwm/pwm-lpss-pci.c
++++ b/drivers/pwm/pwm-lpss-pci.c
+@@ -48,7 +48,6 @@ static void pwm_lpss_remove_pci(struct pci_dev *pdev)
+ 	pm_runtime_get_sync(&pdev->dev);
+ }
  
--#include <linux/device.h>
- #include <linux/pwm.h>
-+#include <linux/types.h>
+-#ifdef CONFIG_PM
+ static int pwm_lpss_runtime_suspend_pci(struct device *dev)
+ {
+ 	/*
+@@ -62,12 +61,11 @@ static int pwm_lpss_runtime_resume_pci(struct device *dev)
+ {
+ 	return 0;
+ }
+-#endif
  
- #define MAX_PWMS			4
+-static const struct dev_pm_ops pwm_lpss_pci_pm = {
+-	SET_RUNTIME_PM_OPS(pwm_lpss_runtime_suspend_pci,
+-			   pwm_lpss_runtime_resume_pci, NULL)
+-};
++static DEFINE_RUNTIME_DEV_PM_OPS(pwm_lpss_pci_pm,
++				 pwm_lpss_runtime_suspend_pci,
++				 pwm_lpss_runtime_resume_pci,
++				 NULL);
  
-+struct device;
-+
-+struct pwm_lpss_boardinfo;
-+
- struct pwm_lpss_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
+ static const struct pci_device_id pwm_lpss_pci_ids[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x0ac8), (unsigned long)&pwm_lpss_bxt_info},
+@@ -89,7 +87,7 @@ static struct pci_driver pwm_lpss_driver_pci = {
+ 	.probe = pwm_lpss_probe_pci,
+ 	.remove = pwm_lpss_remove_pci,
+ 	.driver = {
+-		.pm = &pwm_lpss_pci_pm,
++		.pm = pm_ptr(&pwm_lpss_pci_pm),
+ 	},
+ };
+ module_pci_driver(pwm_lpss_driver_pci);
 -- 
 2.35.1
 
