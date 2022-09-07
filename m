@@ -2,157 +2,231 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F91ECAAA1
-	for <linux-pwm@archiver.kernel.org>; Tue,  6 Sep 2022 20:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDECDECAAD3
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Sep 2022 09:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230474AbiIFUFm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 6 Sep 2022 16:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43602 "EHLO
+        id S230229AbiIGJEU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 7 Sep 2022 05:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230509AbiIFUFQ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Sep 2022 16:05:16 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8C1BD175;
-        Tue,  6 Sep 2022 13:00:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662494450; x=1694030450;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iq1Y9qzevbXHQV0PMTlCthi3beONg7fz4bV5MI/m6y4=;
-  b=M6BXCBHbOGN3zvi9oLzQIhvP1A+S/3yxa/pNBXdjCXO4UpXTergRLhNu
-   4YGwQm7HN8poLnMGnnBMWjvNGV+xEyNB6PtjXsdGVyeadBobmuvkN+A2p
-   8X9TtkDX1nOeDxKmxN+S+XiIt82cdk16rvF7RELShgazO0CzON/4wdPg8
-   lVlZGqkszBFZ/1KpSDYZE8QZblUN2hVUPJjMibGcMArXZ3eWXplmRmntO
-   OjhfOXQI6r56U5Avbup/JEq7pnOQgZyJyX5vSyRgCKElddv28kwdv6Z/q
-   dzb/Onk862EkWUoEPn+nJU4HYt4lV/tTIIJ/uWFn69mO+Kr8AmnRN3BBS
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="296692324"
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="296692324"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 12:57:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="717838948"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 06 Sep 2022 12:57:30 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 0EA4E238; Tue,  6 Sep 2022 22:57:46 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v1 3/9] pwm: lpss: Move resource mapping to the glue drivers
-Date:   Tue,  6 Sep 2022 22:57:29 +0300
-Message-Id: <20220906195735.87361-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220906195735.87361-1-andriy.shevchenko@linux.intel.com>
+        with ESMTP id S230263AbiIGJET (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Sep 2022 05:04:19 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7E7AFADA
+        for <linux-pwm@vger.kernel.org>; Wed,  7 Sep 2022 02:04:18 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oVqyk-0002uB-EQ; Wed, 07 Sep 2022 11:04:14 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oVqyh-004PGT-O8; Wed, 07 Sep 2022 11:04:13 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oVqyi-00GfDc-RP; Wed, 07 Sep 2022 11:04:12 +0200
+Date:   Wed, 7 Sep 2022 11:04:12 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v1 1/9] pwm: lpss: Deduplicate board info data structures
+Message-ID: <20220907090412.kqvbmgfgeb4toz5n@pengutronix.de>
 References: <20220906195735.87361-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="scqcxlngs5jspysc"
+Content-Disposition: inline
+In-Reply-To: <20220906195735.87361-1-andriy.shevchenko@linux.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Move resource mapping to the glue drivers which helps
-to transform pwm_lpss_probe() to pure library function
-that may be used by others without need of specific
-resource management.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pwm/pwm-lpss-pci.c      | 6 +++++-
- drivers/pwm/pwm-lpss-platform.c | 9 ++++++---
- drivers/pwm/pwm-lpss.c          | 7 ++-----
- drivers/pwm/pwm-lpss.h          | 2 +-
- 4 files changed, 14 insertions(+), 10 deletions(-)
+--scqcxlngs5jspysc
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Sep 06, 2022 at 10:57:27PM +0300, Andy Shevchenko wrote:
+> With help of __maybe_unused, that allows to avoid compilation warnings,
+> move the board info structures from the C files to the common header
+> and hence deduplicate configuration data.
+>=20
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/pwm/pwm-lpss-pci.c      | 29 -----------------------------
+>  drivers/pwm/pwm-lpss-platform.c | 23 -----------------------
+>  drivers/pwm/pwm-lpss.h          | 30 ++++++++++++++++++++++++++++++
+
+Given that both the pci driver and the platform driver alread depend on
+pwm-lpss.o, I'd prefer something like the patch below to really
+deduplicate the data.
+
+One thing to note is that the two pwm_lpss_bsw_info are not identical. I
+didn't check how that is relevant. Did you check that?
+
+Best regards
+Uwe
 
 diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
-index 9f2c666b95ec..f3367e844e61 100644
+index c893ec3d2fb4..75b778e839b3 100644
 --- a/drivers/pwm/pwm-lpss-pci.c
 +++ b/drivers/pwm/pwm-lpss-pci.c
-@@ -25,8 +25,12 @@ static int pwm_lpss_probe_pci(struct pci_dev *pdev,
- 	if (err < 0)
- 		return err;
- 
-+	err = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
-+	if (err)
-+		return err;
-+
- 	info = (struct pwm_lpss_boardinfo *)id->driver_data;
--	lpwm = pwm_lpss_probe(&pdev->dev, &pdev->resource[0], info);
-+	lpwm = pwm_lpss_probe(&pdev->dev, pcim_iomap_table(pdev)[0], info);
- 	if (IS_ERR(lpwm))
- 		return PTR_ERR(lpwm);
- 
-diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index 96fde1b2b967..af57472f3ddc 100644
+@@ -14,35 +14,6 @@
+=20
+ #include "pwm-lpss.h"
+=20
+-/* BayTrail */
+-static const struct pwm_lpss_boardinfo pwm_lpss_byt_info =3D {
+-	.clk_rate =3D 25000000,
+-	.npwm =3D 1,
+-	.base_unit_bits =3D 16,
+-};
+-
+-/* Braswell */
+-static const struct pwm_lpss_boardinfo pwm_lpss_bsw_info =3D {
+-	.clk_rate =3D 19200000,
+-	.npwm =3D 1,
+-	.base_unit_bits =3D 16,
+-};
+-
+-/* Broxton */
+-static const struct pwm_lpss_boardinfo pwm_lpss_bxt_info =3D {
+-	.clk_rate =3D 19200000,
+-	.npwm =3D 4,
+-	.base_unit_bits =3D 22,
+-	.bypass =3D true,
+-};
+-
+-/* Tangier */
+-static const struct pwm_lpss_boardinfo pwm_lpss_tng_info =3D {
+-	.clk_rate =3D 19200000,
+-	.npwm =3D 4,
+-	.base_unit_bits =3D 22,
+-};
+-
+ static int pwm_lpss_probe_pci(struct pci_dev *pdev,
+ 			      const struct pci_device_id *id)
+ {
+diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platfor=
+m.c
+index 928570430cef..834423c34f48 100644
 --- a/drivers/pwm/pwm-lpss-platform.c
 +++ b/drivers/pwm/pwm-lpss-platform.c
-@@ -20,16 +20,19 @@ static int pwm_lpss_probe_platform(struct platform_device *pdev)
- 	const struct pwm_lpss_boardinfo *info;
- 	const struct acpi_device_id *id;
- 	struct pwm_lpss_chip *lpwm;
--	struct resource *r;
-+	void __iomem *base;
- 
- 	id = acpi_match_device(pdev->dev.driver->acpi_match_table, &pdev->dev);
- 	if (!id)
- 		return -ENODEV;
- 
- 	info = (const struct pwm_lpss_boardinfo *)id->driver_data;
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 
--	lpwm = pwm_lpss_probe(&pdev->dev, r, info);
-+	base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(base))
-+		return PTR_ERR(base);
-+
-+	lpwm = pwm_lpss_probe(&pdev->dev, base, info);
- 	if (IS_ERR(lpwm))
- 		return PTR_ERR(lpwm);
- 
+@@ -15,28 +15,6 @@
+=20
+ #include "pwm-lpss.h"
+=20
+-/* BayTrail */
+-static const struct pwm_lpss_boardinfo pwm_lpss_byt_info =3D {
+-	.clk_rate =3D 25000000,
+-	.npwm =3D 1,
+-	.base_unit_bits =3D 16,
+-};
+-
+-/* Braswell */
+-static const struct pwm_lpss_boardinfo pwm_lpss_bsw_info =3D {
+-	.clk_rate =3D 19200000,
+-	.npwm =3D 1,
+-	.base_unit_bits =3D 16,
+-	.other_devices_aml_touches_pwm_regs =3D true,
+-};
+-
+-/* Broxton */
+-static const struct pwm_lpss_boardinfo pwm_lpss_bxt_info =3D {
+-	.clk_rate =3D 19200000,
+-	.npwm =3D 4,
+-	.base_unit_bits =3D 22,
+-	.bypass =3D true,
+-};
+=20
+ static int pwm_lpss_probe_platform(struct platform_device *pdev)
+ {
 diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index a82a57eb2482..44f9bb80611d 100644
+index 36d4e83e6b79..e8b16b67bfd4 100644
 --- a/drivers/pwm/pwm-lpss.c
 +++ b/drivers/pwm/pwm-lpss.c
-@@ -207,7 +207,7 @@ static const struct pwm_ops pwm_lpss_ops = {
- 	.owner = THIS_MODULE,
- };
- 
--struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
-+struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
- 				     const struct pwm_lpss_boardinfo *info)
+@@ -29,6 +29,39 @@
+ /* Size of each PWM register space if multiple */
+ #define PWM_SIZE			0x400
+=20
++/* BayTrail */
++const struct pwm_lpss_boardinfo pwm_lpss_byt_info =3D {
++	.clk_rate =3D 25000000,
++	.npwm =3D 1,
++	.base_unit_bits =3D 16,
++};
++EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
++
++/* Braswell */
++const struct pwm_lpss_boardinfo pwm_lpss_bsw_info =3D {
++	.clk_rate =3D 19200000,
++	.npwm =3D 1,
++	.base_unit_bits =3D 16,
++};
++EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
++
++/* Broxton */
++const struct pwm_lpss_boardinfo pwm_lpss_bxt_info =3D {
++	.clk_rate =3D 19200000,
++	.npwm =3D 4,
++	.base_unit_bits =3D 22,
++	.bypass =3D true,
++};
++EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
++
++/* Tangier */
++const struct pwm_lpss_boardinfo pwm_lpss_tng_info =3D {
++	.clk_rate =3D 19200000,
++	.npwm =3D 4,
++	.base_unit_bits =3D 22,
++};
++EXPORT_SYMBOL_GPL(pwm_lpss_tng_info);
++
+ static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
  {
- 	struct pwm_lpss_chip *lpwm;
-@@ -222,10 +222,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
- 	if (!lpwm)
- 		return ERR_PTR(-ENOMEM);
- 
--	lpwm->regs = devm_ioremap_resource(dev, r);
--	if (IS_ERR(lpwm->regs))
--		return ERR_CAST(lpwm->regs);
--
-+	lpwm->regs = base;
- 	lpwm->info = info;
- 
- 	c = lpwm->info->clk_rate;
+ 	return container_of(chip, struct pwm_lpss_chip, chip);
 diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index 3864f32c2487..5995b6b750a8 100644
+index 8b3476f25e06..918d2f177109 100644
 --- a/drivers/pwm/pwm-lpss.h
 +++ b/drivers/pwm/pwm-lpss.h
-@@ -63,7 +63,7 @@ static __maybe_unused const struct pwm_lpss_boardinfo pwm_lpss_tng_info = {
- 	.base_unit_bits = 22,
+@@ -33,6 +33,11 @@ struct pwm_lpss_boardinfo {
+ 	bool other_devices_aml_touches_pwm_regs;
  };
- 
--struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
-+struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
+=20
++extern const struct pwm_lpss_boardinfo pwm_lpss_tng_info;
++extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
++extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
++extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
++
+ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *=
+r,
  				     const struct pwm_lpss_boardinfo *info);
- 
- #endif	/* __PWM_LPSS_H */
--- 
-2.35.1
+=20
 
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--scqcxlngs5jspysc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmMYXokACgkQwfwUeK3K
+7AnUAggAgAeeWAWu/LmXJf/jBBobK0LmrjQtLRhHxMwo5TwkbqSLFSCBo0FRE5yW
+SsqRB+eDvqPleo+qjA5RlXVnlPyi/nMw0NYyIepbZVT9gLcTvM4vwcz8YPxverCs
+kZD41KdNh8t+CUgtGhfbXyyIkuFqbxe01D0nRIYyem/DdL12gKhQxqXypv09l53q
+++KpWaejfKb3r11q0aafg9f51e8JBHNEaxBCSdlRGvlmRHIQ5afCbLwaytbRxN3u
+GJOFZ4FXpKpSux8MRa+zwETxLKQn3YZ83MOvC3bBK7AyR8tqGkrAkmf5lAzvq9BE
+o4Obg1PL6gKZLWw9k1m8rtEzi9fW6Q==
+=KFjG
+-----END PGP SIGNATURE-----
+
+--scqcxlngs5jspysc--
