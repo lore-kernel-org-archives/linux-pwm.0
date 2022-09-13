@@ -2,81 +2,211 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99146C6FA8D
-	for <linux-pwm@archiver.kernel.org>; Tue, 13 Sep 2022 15:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBB4C6FA82
+	for <linux-pwm@archiver.kernel.org>; Tue, 13 Sep 2022 15:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233530AbiIMP1W (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 13 Sep 2022 11:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
+        id S234129AbiIMPtu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 13 Sep 2022 11:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236242AbiIMPZd (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 13 Sep 2022 11:25:33 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4BF7C1AB;
-        Tue, 13 Sep 2022 07:38:29 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id d189so18019684ybh.12;
-        Tue, 13 Sep 2022 07:38:28 -0700 (PDT)
+        with ESMTP id S234273AbiIMPt2 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 13 Sep 2022 11:49:28 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E94A89814;
+        Tue, 13 Sep 2022 07:51:17 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id m1so17930501edb.7;
+        Tue, 13 Sep 2022 07:51:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=MgOl5Ps7/2BViAuks7F+2zguUGoKnsho7d41gsbe7gU=;
+        b=phI1mDsJ91Ezqe+J9QSI4gKmWBYFwLv3a4vgdotqIDXesK/xAcMRrInv1BxehcSiNn
+         iO4wEx62cNKtkhxm3LUUkgHKwWoD8+oL3CoKCCkGIJSmzyHoC60ESSeM8AnlpBoUESO9
+         PW/02GNVA7Jnp9RjsxA3tQ0y95Ub4Y/MY2lKLzvkdi8lJLmVa40SE4Lvzh315cSvt0jO
+         Vvo1c9LtMxEsqrOtLjIQyftz3hTn9QuMuhlMaJGbfS91mRgeHiIfHHhxVnjB8sRjvghW
+         pPge+mK0EuTEpiPznBIHcLW3Nc9ZehX/WvuH6hXva4oBfGLrd/0jZlhQhttIzxmIEG8C
+         uVyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=4gw0CfqCHcXqAoTLFj5CKupMrM0B3+NLn0hUfShCnJs=;
-        b=LXRZQqJvWtf444RNQViTqZZpUnJE35jc5FEy7+FY04exv9iSQYYyCZhIETfddk2kSG
-         neTQ0A2t/NBa6Q/hdWG/gXjxTnnaVyo8BkwxoUltzxzx4GamUydXWPaYmGnjuipuR11Z
-         UJLdMGB7TD88WvOaYxHrc4huQ/p7HNyd5aMd68K2Q1zbU8Pa0WALKzSTv6A+UE1gqbLU
-         KTSDJx4z2TtF27N3KN/LKkq8QLfhdK//6GNlUIaHW7O15DaBvb384kOMdEFIM93XRRjG
-         3BZR7/Qzg5KooM4AT++RR+R1BlCmg7PdJTBqQvuSdWXAvRGWy98K+/7WNUfvqRh80aiW
-         QLJw==
-X-Gm-Message-State: ACgBeo0/4zoKPlhbFIkTzjKBExCd38eiUIfgNQiUwJNgHQRcbBrXlxR7
-        HZbN+tmF8VBIry2fd9VIg1CUvRF8Rw==
-X-Google-Smtp-Source: AA6agR4n0Ns56EN8nmYZqaKfPiqFjPvLKM2zBkaiEJuhTpw5P4+YOL15TzmiGoYt1IKTERcqsRj7vA==
-X-Received: by 2002:a05:6830:9c8:b0:654:d91:222 with SMTP id y8-20020a05683009c800b006540d910222mr9721862ott.67.1663079183487;
-        Tue, 13 Sep 2022 07:26:23 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r6-20020a056830418600b00618fa37308csm5999103otu.35.2022.09.13.07.26.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 07:26:23 -0700 (PDT)
-Received: (nullmailer pid 3620466 invoked by uid 1000);
-        Tue, 13 Sep 2022 14:26:21 -0000
-Date:   Tue, 13 Sep 2022 09:26:21 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     kever.yang@rock-chips.com, jamie@jamieiles.com,
-        philipp.tomsich@vrull.eu, u.kleine-koenig@pengutronix.de,
-        linux-spi@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        zhangqing@rock-chips.com, linux-i2c@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux@roeck-us.net,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, kishon@ti.com,
-        linux-pwm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        sjg@chromium.org, gregkh@linuxfoundation.org,
-        ulf.hansson@linaro.org, linux-rockchip@lists.infradead.org,
-        miquel.raynal@bootlin.com, vigneshr@ti.com,
-        thierry.reding@gmail.com, broonie@kernel.org, heiko@sntech.de,
-        linux-mtd@lists.infradead.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, vkoul@kernel.org,
-        wim@linux-watchdog.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, richard@nod.at
-Subject: Re: [PATCH v1 02/11] dt-bindings: i2c: rockchip: add
- rockchip,rk3128-i2c
-Message-ID: <20220913142621.GA3620421-robh@kernel.org>
-References: <20220909212543.17428-1-jbx6244@gmail.com>
- <405db21d-154e-fed0-7524-ace1cef0203c@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=MgOl5Ps7/2BViAuks7F+2zguUGoKnsho7d41gsbe7gU=;
+        b=3Ar/rmxpZhZrhiSOFd7SVRFMWSVk7cqV13tEMC1XzsFQlahJxIu+m4UpalBB4+epto
+         zNmxfzt2aYcxtHG0fNGa6j3hvFd7JzolpZVlB/q4Z1DSq+T6eLMxjfOyQ4BREbAk1Dgo
+         zSdPQRV/xhNPzQqTtjnpC02mm6V48bCpe5AYhl3PAbSVqjWCu8vDGevqHRUQ3Efo2jre
+         32zb4H7WsZkSjI4Tjxlml28D/FCoxd0M4QoH85KNXxpHOoBMobWUcWceQ2CIG/aNsHok
+         fd4teJdI6VuEuC3VPvUtK/762QcSdrsdO20jSzEiRUUc+bvtzma8xpkWBBIp+JphbiGB
+         VlCQ==
+X-Gm-Message-State: ACgBeo06nIagcjnkh4UsvIMlWhRUqmOdmbHi27ti8JXRPho+RLoQyQ6b
+        5J7sa+YgHKJZbJhYPko6mCW1d3nyP80=
+X-Google-Smtp-Source: AA6agR7OqLSlYti2bg9ewEBW2lVZRnfEoBgDi0E0GHMdwoZmfrnb33kN60z1XTcfTWmSe4rdpS3fMw==
+X-Received: by 2002:a17:906:6a03:b0:779:e97d:9a94 with SMTP id qw3-20020a1709066a0300b00779e97d9a94mr14384553ejc.507.1663079914209;
+        Tue, 13 Sep 2022 07:38:34 -0700 (PDT)
+Received: from [192.168.2.1] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id dk9-20020a0564021d8900b0044ea683d04csm7964177edb.14.2022.09.13.07.38.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Sep 2022 07:38:33 -0700 (PDT)
+Message-ID: <37fd8d4b-3a66-bc51-c2dc-76c9e756fed8@gmail.com>
+Date:   Tue, 13 Sep 2022 16:38:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <405db21d-154e-fed0-7524-ace1cef0203c@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v1 03/11] dt-bindings: pwm: rockchip: add
+ rockchip,rk3128-pwm
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        linux-rockchip@lists.infradead.org, philipp.tomsich@vrull.eu,
+        linux-arm-kernel@lists.infradead.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-pwm@vger.kernel.org, kever.yang@rock-chips.com,
+        zhangqing@rock-chips.com, linux-kernel@vger.kernel.org,
+        heiko@sntech.de
+References: <20220909212543.17428-1-jbx6244@gmail.com>
+ <f5dd0ee4-d97e-d878-ffde-c06e9b233e38@gmail.com>
+ <1662821635.180247.34700.nullmailer@robh.at.kernel.org>
+ <1c13181b-8421-69d8-21ee-9742dd5f55dd@gmail.com>
+ <20220912162159.GA1397560-robh@kernel.org>
+From:   Johan Jonker <jbx6244@gmail.com>
+In-Reply-To: <20220912162159.GA1397560-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Sat, 10 Sep 2022 00:02:30 +0200, Johan Jonker wrote:
-> Add rockchip,rk3128-i2c compatible string.
-> 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
->  Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
 
-Acked-by: Rob Herring <robh@kernel.org>
+
+On 9/12/22 18:21, Rob Herring wrote:
+> On Sat, Sep 10, 2022 at 09:48:04PM +0200, Johan Jonker wrote:
+>> Reduced CC.
+>>
+>> Hi Rob,
+>>
+> 
+> Seemed like a simple enough warning to fix...
+
+Some examples for comment.
+Let us know what would be the better solution?
+
+===========================================================================
+
+option1:
+
+	combpwm0: combpwm0 {
+		compatible = "rockchip,rv1108-combpwm";
+		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+
+		pwm0: pwm@20040000 {
+			compatible = "rockchip,rv1108-pwm";
+			reg = <0x20040000 0x10>;
+		};
+
+		pwm1: pwm@20040010 {
+			compatible = "rockchip,rv1108-pwm";
+			reg = <0x20040010 0x10>;
+		};
+
+		pwm2: pwm@20040020 {
+			compatible = "rockchip,rv1108-pwm";
+			reg = <0x20040020 0x10>;
+		};
+
+		pwm3: pwm@20040030 {
+			compatible = "rockchip,rv1108-pwm";
+			reg = <0x20040030 0x10>;
+		};
+	};
+
+PRO:
+- Existing driver might still work.
+CON:
+- New compatible needed to service the combined interrupts.
+- Driver change needed.
+
+===========================================================================
+option 2:
+
+	combpwm0: pwm@10280000 {
+		compatible = "rockchip,rv1108-pwm";
+		reg = <0x10280000 0x40>;
+		interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		pwm4: pwm-4@0 {
+			reg = <0x0>;
+		};
+
+		pwm5: pwm-5@10 {
+			reg = <0x10>;
+		};
+
+		pwm6: pwm-6@20 {
+			reg = <0x20>;
+		};
+
+		pwm7: pwm-7@30 {
+			reg = <0x30>;
+		};
+	};
+
+CON:
+- Driver change needed.
+- Not compatible with current drivers.
+
+===========================================================================
+
+Current situation:
+
+	pwm0: pwm@20040000 {
+		compatible = "rockchip,rv1108-pwm", "rockchip,rk3288-pwm";
+		reg = <0x20040000 0x10>;
+		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	pwm1: pwm@20040010 {
+		compatible = "rockchip,rv1108-pwm", "rockchip,rk3288-pwm";
+		reg = <0x20040010 0x10>;
+		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	pwm2: pwm@20040020 {
+		compatible = "rockchip,rv1108-pwm", "rockchip,rk3288-pwm";
+		reg = <0x20040020 0x10>;
+		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	pwm3: pwm@20040030 {
+		compatible = "rockchip,rv1108-pwm", "rockchip,rk3288-pwm";
+		reg = <0x20040030 0x10>;
+		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+CON:
+- The property "interrupts 39" can only be claimed ones by one probe function at the time.
+- Has a fall-back string for rk3288, but unknown identical behavior for interrupts ???
+
+
+> 
+>> The rk3328 and rv1108 PWM interrupt is chaired between blocks I think.
+>> For rv1108 the same interrupt is used for all PWM nodes.
+>> For rk3328 only added to one PWM node.
+>> Currently not in use in a Linux drivers??
+> 
+> How is that relevant to the binding? It's used in dts files.
+> 
+>>
+>> No consensus yet...on removing or parent node, so it stays as it is...
+>> Maybe if you have ideas things will change. ;)
+> 
+> Only that existing issues should be addressed before adding new 
+> platforms especially if the binding might change in an incompatible way 
+> (splitting nodes).
+> 
+> Rob
