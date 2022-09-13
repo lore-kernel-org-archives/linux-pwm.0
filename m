@@ -2,86 +2,82 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38887C6FA82
-	for <linux-pwm@archiver.kernel.org>; Tue, 13 Sep 2022 15:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 480CBC54EE9
+	for <linux-pwm@archiver.kernel.org>; Tue, 13 Sep 2022 16:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234345AbiIMPwq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 13 Sep 2022 11:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39042 "EHLO
+        id S231691AbiIMQEA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 13 Sep 2022 12:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234671AbiIMPwM (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 13 Sep 2022 11:52:12 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4018E459
-        for <linux-pwm@vger.kernel.org>; Tue, 13 Sep 2022 07:54:01 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id l12so14693610ljg.9
-        for <linux-pwm@vger.kernel.org>; Tue, 13 Sep 2022 07:54:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jamieiles.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=PSryuLt8d2S5NOnFQYaRkPd+ewmY9YOJjJlVlykIIBw=;
-        b=PL6KQK4WAvTjNL4+2racF+mN5DenWrVgvTfKHYOm+TdmcOdBXajJDYGu389LYMga76
-         oUHxjWLeSy9pbqbs2NWCLbFwPpAHiVTXhrc7QPnxKyrDCjUyqL35opweViGReRMLNghi
-         Bw+KX6HO1tj+6pGtABPL2WSs7vcJaJ5qWQbQU2xeGWHyAh7PIxvR+zlDuuZzT8W3+srE
-         hdboMRmbejnhTl8Nl6xaQsK3sWD2coMQIkTLhV6pGOgxuzJOoJ1v7luzQZSpvE6cT8DT
-         gXMklK1wStxJaSEE95t3niygm91XlGX6v5/n0WFrglI0LZZnC3voDzTUaFlGqjPIVS8e
-         twBA==
+        with ESMTP id S233331AbiIMQDU (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 13 Sep 2022 12:03:20 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201514F19A;
+        Tue, 13 Sep 2022 08:00:02 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-1279948d93dso32708173fac.10;
+        Tue, 13 Sep 2022 08:00:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=PSryuLt8d2S5NOnFQYaRkPd+ewmY9YOJjJlVlykIIBw=;
-        b=I3RRO5UtJFvsHi6cRpHjhkfW9R5AA7JpurpgzOzJpS0NOwbudJmlJuQS8fQoYi6MFU
-         ohrNWQwjXGM36zoMjRJByEXgtWQnK25/ywVwwtv/TNmQymWMZLl0rJ2r4Ajgyuy2eX0v
-         wXf9kuOeTQPOurSTozkpSj9N0tqbdkTg64hlGPkJq1JeQgMLuu9w3NyVvrYsXV/ClwBa
-         lh+eaXU4ZreKPzWVIBuuulDxbvVg9K/kCPH0tgW/d9LhTti8SnMh9UxMeZibw6pL0qaa
-         Z2UL0RBcbGwCACYrfOSA+wTVwyNi5lYxfNc9rJ6+BS8y/Jx8Rejh8Zk0+qHLZgz+V50/
-         mMsA==
-X-Gm-Message-State: ACgBeo3d+EhLoE4lOy6RiERdU3Pnm92OjIdLU9YX239MqEhvu1HhO0kw
-        P+d736o3uMObNiBfNCoBrpJullrgRrw/aiTx
-X-Google-Smtp-Source: AA6agR4xan9LcIemBd+CCIzPWBfolAoJH5FobI9T3VFcNGbSV5nwx/8YASJdkNc6pzosk4RDb4XfCw==
-X-Received: by 2002:adf:e10c:0:b0:225:3168:c261 with SMTP id t12-20020adfe10c000000b002253168c261mr18279435wrz.159.1663079845811;
-        Tue, 13 Sep 2022 07:37:25 -0700 (PDT)
-Received: from localhost ([5.181.106.148])
-        by smtp.gmail.com with ESMTPSA id e11-20020adffd0b000000b00228da845d4dsm10633337wrr.94.2022.09.13.07.37.24
+        bh=7RWaneRC8/NytetCZObAsUNo67j3yzk6oJ+xsdXrYf4=;
+        b=TgUYFvq6mrydc/No8k54t3k+VWuQk58yVVlpsfy++YjZXL+UDdfrsapDf58yiMGI+Y
+         fOF+rzudOSEPRJP5Lb8Jo+VTX/xuGdqlRdENfYbpy5OC0sOfBjTYF0mppxxpVrA8IMo3
+         8TyhDmfH8X01qYNeuv/WOGDKcWg8JcGF4O4nCmowCjzZ/9t8BHoUr0IhMz9ICR64cjn1
+         GlCwZfFoWBw1UXgxoKtNDcAkHkNgQWvWIzKrtCAFpKjVpZUTTuIvLcI0yqfTSXhWuQla
+         SVZcEZa8Ay6Z5GHraH4AM5Yqyhpu4+3Iyc+lUZP9T+ZJ9EmBr2Pf4Pzj5f07wXdFmntK
+         Gy5g==
+X-Gm-Message-State: ACgBeo1YZ5LD2sShRyq1y2qZ/5bVMTZnEql1ylx4/v+mQRSlVzA4zzsC
+        2tmm2h8pVqvOsHIM4v+j3J/i1/apOg==
+X-Google-Smtp-Source: AA6agR56X4nOuBVmlb1hHNay/YivDzxq3eWYSEJNyeQmir/p3WlQ97jnab+s2pE/O3fUGh03U3FVQA==
+X-Received: by 2002:a05:6808:201e:b0:34f:b9bd:d678 with SMTP id q30-20020a056808201e00b0034fb9bdd678mr1641252oiw.1.1663079170617;
+        Tue, 13 Sep 2022 07:26:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id z26-20020a9d7a5a000000b006370abdc976sm6040184otm.58.2022.09.13.07.26.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 07:37:24 -0700 (PDT)
-Date:   Tue, 13 Sep 2022 15:37:23 +0100
-From:   Jamie Iles <jamie@jamieiles.com>
+        Tue, 13 Sep 2022 07:26:10 -0700 (PDT)
+Received: (nullmailer pid 3620059 invoked by uid 1000);
+        Tue, 13 Sep 2022 14:26:08 -0000
+Date:   Tue, 13 Sep 2022 09:26:08 -0500
+From:   Rob Herring <robh@kernel.org>
 To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     kever.yang@rock-chips.com, sjg@chromium.org,
-        philipp.tomsich@vrull.eu, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, heiko@sntech.de,
-        ulf.hansson@linaro.org, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, kishon@ti.com, vkoul@kernel.org,
-        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        gregkh@linuxfoundation.org, broonie@kernel.org,
-        wim@linux-watchdog.org, linux@roeck-us.net,
-        zhangqing@rock-chips.com, jamie@jamieiles.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
+Cc:     devicetree@vger.kernel.org, jamie@jamieiles.com, vkoul@kernel.org,
+        richard@nod.at, linux-i2c@vger.kernel.org,
+        linux-usb@vger.kernel.org, u.kleine-koenig@pengutronix.de,
+        zhangqing@rock-chips.com, linux-spi@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux@roeck-us.net,
+        linux-watchdog@vger.kernel.org, vigneshr@ti.com,
+        linux-kernel@vger.kernel.org, kishon@ti.com,
+        kever.yang@rock-chips.com, heiko@sntech.de,
+        linux-serial@vger.kernel.org, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         linux-mtd@lists.infradead.org, linux-phy@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v1 01/11] dt-bindings: serial: rockchip: add
- rockchip,rk3128-uart
-Message-ID: <YyCVo/kHpWTbGpvx@elm>
+        krzysztof.kozlowski+dt@linaro.org, linux-pwm@vger.kernel.org,
+        philipp.tomsich@vrull.eu, sjg@chromium.org,
+        gregkh@linuxfoundation.org, ulf.hansson@linaro.org,
+        wim@linux-watchdog.org, broonie@kernel.org,
+        linux-rockchip@lists.infradead.org, miquel.raynal@bootlin.com,
+        thierry.reding@gmail.com
+Subject: Re: [PATCH v1 03/11] dt-bindings: pwm: rockchip: add
+ rockchip,rk3128-pwm
+Message-ID: <20220913142608.GA3620009-robh@kernel.org>
 References: <20220909212543.17428-1-jbx6244@gmail.com>
- <4f283231-2ed4-202b-0c23-157bce0841ee@gmail.com>
+ <f5dd0ee4-d97e-d878-ffde-c06e9b233e38@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4f283231-2ed4-202b-0c23-157bce0841ee@gmail.com>
+In-Reply-To: <f5dd0ee4-d97e-d878-ffde-c06e9b233e38@gmail.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Sat, Sep 10, 2022 at 12:01:28AM +0200, Johan Jonker wrote:
-> Add rockchip,rk3128-uart compatible string.
+On Sat, 10 Sep 2022 00:02:22 +0200, Johan Jonker wrote:
+> Add rockchip,rk3128-pwm compatible string.
 > 
 > Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Acked-by: Jamie Iles <jamie@jamieiles.com>
+Acked-by: Rob Herring <robh@kernel.org>
