@@ -2,33 +2,33 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 688F1ECAAD3
-	for <linux-pwm@archiver.kernel.org>; Wed, 14 Sep 2022 15:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 364D6C6FA82
+	for <linux-pwm@archiver.kernel.org>; Wed, 14 Sep 2022 15:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229638AbiINPbt (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 14 Sep 2022 11:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42454 "EHLO
+        id S229667AbiINPbu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 14 Sep 2022 11:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbiINPbs (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Sep 2022 11:31:48 -0400
+        with ESMTP id S229770AbiINPbt (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Sep 2022 11:31:49 -0400
 Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B9750700;
-        Wed, 14 Sep 2022 08:31:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5540A4455F;
+        Wed, 14 Sep 2022 08:31:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1663169507; x=1694705507;
+  t=1663169508; x=1694705508;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=WM+xIdPpk5wsGwY+EBkuixZH3uS2Jyz3uzB0NBE5Q3k=;
-  b=E04LbOy8t4tccSnSG00tuUe7kxj1oMBa1w+Nh+RH8pVEO8T02/Bz6ge4
-   CErxje0B/G+4VvSSr6/BYPzpFCn1D0w6SY1Ri/2vS4qz212P5DogZonb4
-   RipUt4UvMeKFP0x5/K8n5YScGSb2wFS8LwwyzesTvcFyr2vsIW1evZNn7
-   naxzJSJjAMXoAKJCH4/knYLz4b3/vJNagz4iyki1vZMM8YBbnItO3VScn
-   EhCwFzZkzrsY9YXA+vtFmscjvt+cBl/4Aymewevwv/XcHpFhQeuTMM4X8
-   O7WeaRcs4VsLJAO6u+os2J7IYEGD1MThvClSilNA6081cN9qbA6HXMPRp
-   A==;
+  bh=85aJxQmKurDkYSP1FJQw3TqELhxhuad70Kc3ZbTLiDU=;
+  b=JCopAZ3UxZkFbmCtdPYkBFq77fhwhJtRvfwHCSWYBpTGpcVyetXtWY/h
+   PlHH/I5MsqPU3Tu5hBLnCp+8G7KjC6StkOfQ/QdqKfX6XfAaAvI/3wLhT
+   cm90SRv+1YGC6CE/52WFCodc5yC8OIp2PfVOUG1SAO3SJZZeStzofMgLy
+   X5P2v/LAFO+ZpnIciowt3n/41xWUxRWs9S4BzdaRw4f3bgNg4csm9Qn1a
+   BBcfL+Xp6S10k0PAKWhEEcckD4bA1T8qYT1ifz/r3t2xkwFurxiMlGf9N
+   NYKqn3q0jd40u/5qtg9TZnR6cl3ieSgUW0YyaM0ctLKUcAiL5/Tb+6GLD
+   w==;
 X-IronPort-AV: E=Sophos;i="5.93,315,1654552800"; 
-   d="scan'208";a="26181299"
+   d="scan'208";a="26181305"
 Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
   by mx1-pgp.tq-group.com with ESMTP; 14 Sep 2022 17:31:44 +0200
 Received: from mx1.tq-group.com ([192.168.6.7])
@@ -41,22 +41,22 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   t=1663169504; x=1694705504;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=WM+xIdPpk5wsGwY+EBkuixZH3uS2Jyz3uzB0NBE5Q3k=;
-  b=e1l8ZBIQ36TVBcdaZU1MXuzLIw3pzc6lrcKToWJDn9jYcHUd7t7S10t5
-   HpOSnK/9Z4+GTqrmKUzyJ7DGFKJ8fBkFnzQ72pWk7/MXRa4BRaX3PtjZm
-   N6kGGA8Kl97s/q4phzyuu+hYmi/nWOKlA0GczZTnpo7RaMrxNasQ9Sl80
-   LKznogmhpCBIiRjEzQpakkeASHsuj4SVxOFhG3yNysKtYxFzhCfk1UENX
-   4pFxQWKdEDPZGAdRahxmDyqmEuDP6JKvrHo76OepNIBioFh+wlk7Dy/NU
-   CdelbAOUTDBxTDkPvRXBXa36YfXT4xNe47ASAtEN6XfQiwEOi2ifJ/BLr
-   g==;
+  bh=85aJxQmKurDkYSP1FJQw3TqELhxhuad70Kc3ZbTLiDU=;
+  b=TNx2rb7vlJsNyykDsNrCbfi9QNtwXpZQnzbXLYUPn8tOni0IXiL98Nez
+   It7mhgv561AVkLJZk2jSIZSUIeW/ZaehH+/xGNWXAU8SYrpQO181+kDfU
+   HSrLCbeHBCymHll4QXIUMFrPjl+A7tJ2G+026WtdpjsHdeZwPChtkYOzV
+   qLczwEHa2FdycrZKUESbXz+tUxauRv3qH0+T4jgYJyfIZ/9qFBW4Re2No
+   Hr6Xzo8H9DwKGi7gUzwiNR0HKSqeLskNmizpRFxhKuQp20+M2e0UlaCku
+   LRiR8Lh2kJKbn8fWu7DNWfozjsGhsTq34GZfAdvTx4AwGBioHAGERjd8f
+   A==;
 X-IronPort-AV: E=Sophos;i="5.93,315,1654552800"; 
-   d="scan'208";a="26181298"
+   d="scan'208";a="26181303"
 Received: from vtuxmail01.tq-net.de ([10.115.0.20])
   by mx1.tq-group.com with ESMTP; 14 Sep 2022 17:31:44 +0200
 Received: from steina-w.tq-net.de (unknown [10.123.49.11])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 0C2D3280072;
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 6D3BD280073;
         Wed, 14 Sep 2022 17:31:44 +0200 (CEST)
 From:   Alexander Stein <alexander.stein@ew.tq-group.com>
 To:     Jean Delvare <jdelvare@suse.com>,
@@ -68,9 +68,9 @@ To:     Jean Delvare <jdelvare@suse.com>,
 Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
         linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org,
         Markus Niebel <Markus.Niebel@ew.tq-group.com>
-Subject: [PATCH v5 1/5] hwmon: pwm-fan: Refactor fan power on/off
-Date:   Wed, 14 Sep 2022 17:31:33 +0200
-Message-Id: <20220914153137.613982-2-alexander.stein@ew.tq-group.com>
+Subject: [PATCH v5 3/5] hwmon: pwm-fan: Add dedicated power switch function
+Date:   Wed, 14 Sep 2022 17:31:35 +0200
+Message-Id: <20220914153137.613982-4-alexander.stein@ew.tq-group.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220914153137.613982-1-alexander.stein@ew.tq-group.com>
 References: <20220914153137.613982-1-alexander.stein@ew.tq-group.com>
@@ -80,73 +80,112 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-In preparation for dynamically switching regulator, split the power on
-and power off sequence into separate functions.
+This handles enabling/disabling the regulator in a single function, while
+keeping the enables/disabled balanced. This is a preparation when
+regulator is switched from different code paths.
 
 Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 ---
- drivers/hwmon/pwm-fan.c | 36 ++++++++++++++++++++++++++++++------
- 1 file changed, 30 insertions(+), 6 deletions(-)
+ drivers/hwmon/pwm-fan.c | 46 +++++++++++++++++++++++++++--------------
+ 1 file changed, 31 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-index 06fd1d75101d..c8a7926d39e7 100644
+index 01412c71deb3..92c5b7f5ddd6 100644
 --- a/drivers/hwmon/pwm-fan.c
 +++ b/drivers/hwmon/pwm-fan.c
-@@ -82,23 +82,47 @@ static void sample_timer(struct timer_list *t)
+@@ -35,6 +35,7 @@ struct pwm_fan_ctx {
+ 	struct pwm_device *pwm;
+ 	struct pwm_state pwm_state;
+ 	struct regulator *reg_en;
++	bool regulator_enabled;
+ 	bool enabled;
+ 
+ 	int tach_count;
+@@ -85,6 +86,25 @@ static void sample_timer(struct timer_list *t)
  	mod_timer(&ctx->rpm_timer, jiffies + HZ);
  }
  
--static int  __set_pwm(struct pwm_fan_ctx *ctx, unsigned long pwm)
-+static int pwm_fan_power_on(struct pwm_fan_ctx *ctx)
- {
-+	struct pwm_state *state = &ctx->pwm_state;
- 	unsigned long period;
--	int ret = 0;
-+	int ret;
-+
-+	period = state->period;
-+	state->duty_cycle = DIV_ROUND_UP(ctx->pwm_value * (period - 1), MAX_PWM);
-+	state->enabled = true;
-+	ret = pwm_apply_state(ctx->pwm, state);
-+
-+	return ret;
-+}
-+
-+static int pwm_fan_power_off(struct pwm_fan_ctx *ctx)
-+{
- 	struct pwm_state *state = &ctx->pwm_state;
- 
-+	state->enabled = false;
-+	state->duty_cycle = 0;
-+	pwm_apply_state(ctx->pwm, state);
-+
-+	return 0;
-+}
-+
-+static int  __set_pwm(struct pwm_fan_ctx *ctx, unsigned long pwm)
++static int pwm_fan_switch_power(struct pwm_fan_ctx *ctx, bool on)
 +{
 +	int ret = 0;
 +
- 	mutex_lock(&ctx->lock);
- 	if (ctx->pwm_value == pwm)
- 		goto exit_set_pwm_err;
- 
--	period = state->period;
--	state->duty_cycle = DIV_ROUND_UP(pwm * (period - 1), MAX_PWM);
--	state->enabled = pwm ? true : false;
-+	if (pwm > 0)
-+		ret = pwm_fan_power_on(ctx);
-+	else
-+		ret = pwm_fan_power_off(ctx);
- 
--	ret = pwm_apply_state(ctx->pwm, state);
- 	if (!ret)
- 		ctx->pwm_value = pwm;
++	if (!ctx->reg_en)
++		return ret;
 +
- exit_set_pwm_err:
- 	mutex_unlock(&ctx->lock);
- 	return ret;
++	if (!ctx->regulator_enabled && on) {
++		ret = regulator_enable(ctx->reg_en);
++		if (ret == 0)
++			ctx->regulator_enabled = true;
++	} else if (ctx->regulator_enabled && !on) {
++		ret = regulator_disable(ctx->reg_en);
++		if (ret == 0)
++			ctx->regulator_enabled = false;
++	}
++	return ret;
++}
++
+ static int pwm_fan_power_on(struct pwm_fan_ctx *ctx)
+ {
+ 	struct pwm_state *state = &ctx->pwm_state;
+@@ -320,7 +340,7 @@ static int pwm_fan_of_get_cooling_data(struct device *dev,
+ 
+ static void pwm_fan_regulator_disable(void *data)
+ {
+-	regulator_disable(data);
++	pwm_fan_switch_power(data, false);
+ }
+ 
+ static void pwm_fan_pwm_disable(void *__ctx)
+@@ -364,13 +384,13 @@ static int pwm_fan_probe(struct platform_device *pdev)
+ 
+ 		ctx->reg_en = NULL;
+ 	} else {
+-		ret = regulator_enable(ctx->reg_en);
++		ret = pwm_fan_switch_power(ctx, true);
+ 		if (ret) {
+ 			dev_err(dev, "Failed to enable fan supply: %d\n", ret);
+ 			return ret;
+ 		}
+ 		ret = devm_add_action_or_reset(dev, pwm_fan_regulator_disable,
+-					       ctx->reg_en);
++					       ctx);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -516,12 +536,10 @@ static int pwm_fan_disable(struct device *dev)
+ 			return ret;
+ 	}
+ 
+-	if (ctx->reg_en) {
+-		ret = regulator_disable(ctx->reg_en);
+-		if (ret) {
+-			dev_err(dev, "Failed to disable fan supply: %d\n", ret);
+-			return ret;
+-		}
++	ret = pwm_fan_switch_power(ctx, false);
++	if (ret) {
++		dev_err(dev, "Failed to disable fan supply: %d\n", ret);
++		return ret;
+ 	}
+ 
+ 	return 0;
+@@ -543,12 +561,10 @@ static int pwm_fan_resume(struct device *dev)
+ 	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
+ 	int ret;
+ 
+-	if (ctx->reg_en) {
+-		ret = regulator_enable(ctx->reg_en);
+-		if (ret) {
+-			dev_err(dev, "Failed to enable fan supply: %d\n", ret);
+-			return ret;
+-		}
++	ret = pwm_fan_switch_power(ctx, true);
++	if (ret) {
++		dev_err(dev, "Failed to enable fan supply: %d\n", ret);
++		return ret;
+ 	}
+ 
+ 	if (ctx->pwm_value == 0)
 -- 
 2.25.1
 
