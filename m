@@ -2,117 +2,91 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A86A0C32771
-	for <linux-pwm@archiver.kernel.org>; Mon, 26 Sep 2022 09:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EF8C6FA83
+	for <linux-pwm@archiver.kernel.org>; Mon, 26 Sep 2022 09:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233912AbiIZJs7 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 26 Sep 2022 05:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
+        id S234438AbiIZJvq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 26 Sep 2022 05:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233588AbiIZJsM (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Sep 2022 05:48:12 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372866328;
-        Mon, 26 Sep 2022 02:48:10 -0700 (PDT)
+        with ESMTP id S234705AbiIZJvf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Sep 2022 05:51:35 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C544E31DC2;
+        Mon, 26 Sep 2022 02:51:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664185690; x=1695721690;
+  t=1664185889; x=1695721889;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=rFbdK+TnkebQ/ebOKxQtSt/l+qNTLawZB70V4CVhIXw=;
-  b=VBZfKlcI60pm02Di3RETVVEqU/TQD09kTztYajGnolRMNOtvl22cbEH4
-   wuVTAorEeDO6OPQcByuV8ruqd5E8lm1+hVprdO2h/oGfl4b6O63KrkcU4
-   NcXKJ1F8hp31bxQEtnVThjj6XlV2H+kDsbNtUbl76Wygf+uDqB4PChvwQ
-   CeeKlqRe7ejnuqGmq2GRWR4pueaY8C61Jcb5F7QjUtNNv0h8cB+cgyvf+
-   X0ay3k06eKdDXZ1rd3QwHVYkAhxuuRxnW+U6kkrlJEH66qx5YUjK7WcLW
-   kckIlBKspRui6Z3WuTJ1lXIfJEpLouFmwN8eXZh9BbYfU8crkY6ucu5kl
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10481"; a="300967957"
+  bh=Vv4T7R4h9e9Wl2n3SmIRXDL5lb25nAct3ThLSkM40ug=;
+  b=YZu2ugZeh2L39xui7eclk6UnQWL6zxn/m9C2m9UtDw0QTJryW3qsLIr/
+   zuORYnd87ZxxM67279RLgff0QfD0+wv7z9I1t+cfdF7OHll/0Cdv5IJLa
+   5Kv8bwaEUWIQqWAh8ZoOQlaJH8o0FxIonXaj0VTey5j1S8BraRGcMuknK
+   KtUHPc+gC81zMEUDorQlvF0+u4+PZ32X2XYvNqB7dT8IrvRDo9xgQ8MrF
+   waGIEmvc0HV4spPx9X/ZRBdcqCrV1IhgAtaev4Tb3eqMT3sZ/IiQPEfeQ
+   sL4BN4d39TVOJhCfSlpO2nj7w/6nsDOSC4DWK/feEI9EK5FhyjHcP4d0D
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10481"; a="387278268"
 X-IronPort-AV: E=Sophos;i="5.93,345,1654585200"; 
-   d="scan'208";a="300967957"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 02:48:09 -0700
+   d="scan'208";a="387278268"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 02:51:28 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10481"; a="796265739"
+X-IronPort-AV: E=McAfee;i="6500,9779,10481"; a="710062423"
 X-IronPort-AV: E=Sophos;i="5.93,345,1654585200"; 
-   d="scan'208";a="796265739"
+   d="scan'208";a="710062423"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP; 26 Sep 2022 02:48:07 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 26 Sep 2022 02:51:27 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ockic-007jXR-18;
-        Mon, 26 Sep 2022 12:48:06 +0300
-Date:   Mon, 26 Sep 2022 12:48:06 +0300
+        id 1ocklq-007jdW-1P;
+        Mon, 26 Sep 2022 12:51:26 +0300
+Date:   Mon, 26 Sep 2022 12:51:26 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>
 Cc:     linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
         Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 4/9] pwm: lpss: Include headers we are direct user of
-Message-ID: <YzF1VmChe+MyXxJF@smile.fi.intel.com>
+Subject: Re: [PATCH v2 6/9] pwm: lpss: Use DEFINE_RUNTIME_DEV_PM_OPS() and
+ pm_ptr() macros
+Message-ID: <YzF2HmvDcOF8zBXk@smile.fi.intel.com>
 References: <20220908135658.64463-1-andriy.shevchenko@linux.intel.com>
- <20220908135658.64463-5-andriy.shevchenko@linux.intel.com>
- <20220924100453.hupbeotwqrehc4yq@pengutronix.de>
+ <20220908135658.64463-7-andriy.shevchenko@linux.intel.com>
+ <20220924100714.mn6o5iggv5dtucyd@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220924100453.hupbeotwqrehc4yq@pengutronix.de>
+In-Reply-To: <20220924100714.mn6o5iggv5dtucyd@pengutronix.de>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Sat, Sep 24, 2022 at 12:04:53PM +0200, Uwe Kleine-König wrote:
-> On Thu, Sep 08, 2022 at 04:56:53PM +0300, Andy Shevchenko wrote:
-> > For the sake of integrity, include headers we are direct user of.
-> > 
-> > While at it, replace device.h with a forward declaration and add
-> > missed struct pwm_lpss_boardinfo one.
+On Sat, Sep 24, 2022 at 12:07:14PM +0200, Uwe Kleine-König wrote:
+> On Thu, Sep 08, 2022 at 04:56:55PM +0300, Andy Shevchenko wrote:
+> > Using these new macros allows the compiler to remove the unused dev_pm_ops
+> > structure and related functions if !CONFIG_PM without the need to mark
+> > the functions __maybe_unused.
 > > 
 > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > ---
-> >  drivers/pwm/pwm-lpss.h | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-> > index c344921b2cab..839622964b2a 100644
-> > --- a/drivers/pwm/pwm-lpss.h
-> > +++ b/drivers/pwm/pwm-lpss.h
-> > @@ -10,11 +10,15 @@
-> >  #ifndef __PWM_LPSS_H
-> >  #define __PWM_LPSS_H
-> >  
-> > -#include <linux/device.h>
-> >  #include <linux/pwm.h>
-> > +#include <linux/types.h>
-> >  
-> >  #define MAX_PWMS			4
-> >  
-> > +struct device;
 > 
-> It's not clear to me how this is an improvment. Isn't it saner to
-> include <linux/device.h>?
+> that was one of the patches I thought I already acked. I didn't check if
+> I'm confused or if you missed to add my Ack.
 
-The compilation time improvement. You don't need to include entire
-train of unrelated stuff when compile something.
+If so, sorry, and I think it might be because of wrong branch I took or misuse
+of `git filter-branch --msg-filter`... But looking into [1] I do not see your
+replies.
 
-Moreover, the rule of thumb for the headers is avoid as much as possible
-unrelated inclusions not only due to compilation time rising, but also
-due to potential circular dependencies and increasing dependency hell
-of headers. Believe me, we suffer a lot in the kernel due to this
-(I have an example). Also you may check the Ingo's work of improving
-headers breakage (APIs vs. implementation vs. data types, etc) to see
-the achievement(s).
+[1]: https://lore.kernel.org/linux-pwm/20220906195735.87361-1-andriy.shevchenko@linux.intel.com/
 
-> > +struct pwm_lpss_boardinfo;
+> Doesn't really matter to
+> me. So:
 > 
-> Why is this necessary? The struct is defined a few lines below the
-> context of this patch and I see no user that would benefit.
+> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-This is clean way of how we program in C. We should forward declare
-the types _before_ using them. Since this is a pointer, forward
-declaration is enough.
+Thanks!
 
 -- 
 With Best Regards,
