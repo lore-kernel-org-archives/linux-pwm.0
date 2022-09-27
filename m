@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5512EC6FA82
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86184C6FA93
 	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 16:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232927AbiI0QYL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S232932AbiI0QYL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Tue, 27 Sep 2022 12:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38740 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232215AbiI0QYJ (ORCPT
+        with ESMTP id S232838AbiI0QYJ (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2022 12:24:09 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C5EF3907;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48F415EF98;
         Tue, 27 Sep 2022 09:24:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1664295848; x=1695831848;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ukOdzELifqcnXw/bosHJZLdsOJjTP4tM401DI/ki8bI=;
-  b=bzUkcsuzSGjYQ99Hch1LBSTWj7q318eKZCNx+j1NS7BIIGrCE24zWCVC
-   gTCPcmuI6VhcwmDk9MiwS80JtwL4Z+2vCx3Hu6HWuAh4KoNygQeZC6GNC
-   kvOUEE9smB6P1KZ2tM9fRknwFD4Glg7Iu++uAY6i3HEZVZQSw66gvEw4n
-   iRfATeBfqu/9fyJkeYa+1dUqXPMoF1wwP2fjTwuClQnIh+0C/JY/+XlSS
-   oOA590PFQW+8R0hzAQG/+0oHhcqUWZeoB8CnAx7ubQqB0dsPP/hSezUKw
-   /ki4GAKFdrTlQe9fit95A/BVcVqzwbn3pJqHBwqT1aVLZyfmD59rZzbCo
+  bh=dpNyqYIg37FmXv5O2Z7OWfgIqfp8/Y7GWzFm22mxQjs=;
+  b=KTuzX4gaF0PKZMegG+m7e4zaK0eM3if05gPFgVHRycI95BPlpDhIY7Ct
+   K2LuUW5rhR+qb2wdo/zAjWcpfMcpPGnRU/3v7iqjl83Kcf2WuGY0ZWznO
+   bR5DKMUuttyP6WvkSK3K3Y0dS2+l7Nnmu7qwbeStIUvaVErevZ7vuj11Z
+   KYM1aKJE/euckqoFhrJoluy6uRUOfmfhGiyO5hlXQOZ8n7gTmRfO5BdB6
+   tdBXVRw5JfgT5+1DnA/7xDO3ZS9+kIysKtDu+7M78lbsE2kynCkiiTrSo
+   OuBVW6Q0nhhCAEbky1dV7xbKOg6IpEUDGY1kllNKcMLabJe9mj7+OXgfd
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="327719509"
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="327719510"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="327719509"
+   d="scan'208";a="327719510"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 09:24:07 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="763935896"
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="763935894"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="763935896"
+   d="scan'208";a="763935894"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 27 Sep 2022 09:24:05 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 91272265; Tue, 27 Sep 2022 19:24:23 +0300 (EEST)
+        id 7E124101; Tue, 27 Sep 2022 19:24:23 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Hans de Goede <hdegoede@redhat.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -47,9 +47,9 @@ To:     Hans de Goede <hdegoede@redhat.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v4 4/7] pwm: lpss: Use device_get_match_data to get device data
-Date:   Tue, 27 Sep 2022 19:24:18 +0300
-Message-Id: <20220927162421.11052-5-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 2/7] pwm: lpss: Move exported symbols to PWM_LPSS namespace
+Date:   Tue, 27 Sep 2022 19:24:16 +0300
+Message-Id: <20220927162421.11052-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220927162421.11052-1-andriy.shevchenko@linux.intel.com>
 References: <20220927162421.11052-1-andriy.shevchenko@linux.intel.com>
@@ -60,54 +60,54 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-device_get_match_data() in ACPI case calls similar to the
-acpi_match_device(). We may simplify the code and make it
-generic by replacing the latter with the former.
+Avoid unnecessary pollution of the global symbol namespace by
+moving library functions in to a specific namespace and import
+that into the drivers that make use of the functions.
 
+For more info: https://lwn.net/Articles/760045/
+
+Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-lpss-platform.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/pwm/pwm-lpss-pci.c      | 1 +
+ drivers/pwm/pwm-lpss-platform.c | 1 +
+ drivers/pwm/pwm-lpss.c          | 2 ++
+ 3 files changed, 4 insertions(+)
 
+diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
+index 75b778e839b3..9f2c666b95ec 100644
+--- a/drivers/pwm/pwm-lpss-pci.c
++++ b/drivers/pwm/pwm-lpss-pci.c
+@@ -92,3 +92,4 @@ module_pci_driver(pwm_lpss_driver_pci);
+ 
+ MODULE_DESCRIPTION("PWM PCI driver for Intel LPSS");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(PWM_LPSS);
 diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index 7bbbb7a9b578..c48c6f2b2cd8 100644
+index 834423c34f48..65154c0abab1 100644
 --- a/drivers/pwm/pwm-lpss-platform.c
 +++ b/drivers/pwm/pwm-lpss-platform.c
-@@ -7,11 +7,12 @@
-  * Derived from the original pwm-lpss.c
-  */
+@@ -88,4 +88,5 @@ module_platform_driver(pwm_lpss_driver_platform);
  
--#include <linux/acpi.h>
- #include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/platform_device.h>
+ MODULE_DESCRIPTION("PWM platform driver for Intel LPSS");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(PWM_LPSS);
+ MODULE_ALIAS("platform:pwm-lpss");
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 9537aefd254a..74a296cb1af0 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -18,6 +18,8 @@
  #include <linux/pm_runtime.h>
-+#include <linux/property.h>
+ #include <linux/time.h>
  
++#define DEFAULT_SYMBOL_NAMESPACE PWM_LPSS
++
  #include "pwm-lpss.h"
  
-@@ -19,16 +20,13 @@
- static int pwm_lpss_probe_platform(struct platform_device *pdev)
- {
- 	const struct pwm_lpss_boardinfo *info;
--	const struct acpi_device_id *id;
- 	struct pwm_lpss_chip *lpwm;
- 	void __iomem *base;
- 
--	id = acpi_match_device(pdev->dev.driver->acpi_match_table, &pdev->dev);
--	if (!id)
-+	info = device_get_match_data(&pdev->dev);
-+	if (!info)
- 		return -ENODEV;
- 
--	info = (const struct pwm_lpss_boardinfo *)id->driver_data;
--
- 	base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
+ #define PWM				0x00000000
 -- 
 2.35.1
 
