@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C52CEC07E9D
-	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 14:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2C4C6FA8E
+	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 14:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233147AbiI0Otz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S233041AbiI0Otz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Tue, 27 Sep 2022 10:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233032AbiI0Ot0 (ORCPT
+        with ESMTP id S233027AbiI0Ot0 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2022 10:49:26 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84EA4AD59;
-        Tue, 27 Sep 2022 07:47:13 -0700 (PDT)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6EB491C7;
+        Tue, 27 Sep 2022 07:47:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664290033; x=1695826033;
+  t=1664290032; x=1695826032;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=A9XwjcYhm5i/e8vIjenDrCHIcT6qFMQ1yXOriuZ1ixc=;
-  b=jjrHi7LFzrlsJAp9U9RI5LPpJcRVT4+mNZ0ND1dW83klxeBDQQbhvfwi
-   KfAtoKOigWNm5BfLjrZDz6CltfzwkO7L1wXaw6daZcCAEBn/BcxOA8Oj5
-   XSW4G92mF3ueGy+M0+K7zNZNK341gs0moto51YcDrkQGJyEg9QaPGDvS4
-   kjh8gsiuO8hTolyiLzH17ObyXnu+P7y+PEbfpRmNRuP18a+0ZEEBzsmcK
-   4/asxqV7WePwj7ob7oyX99LmjJ+KT/O2rsMAyxA+YNaiKVgyBXOxPzhYm
-   Gil3pVbqs1jsv5BLsAjfOuzkliV5viL+6RAgKVmiCYLrT6FNcL1wYO4fK
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="363173002"
+  bh=AkJ7r9qIGFbqcyFndSrUSN7w20yIgGyauGNBmBcaZzY=;
+  b=blwyBofWqNOIFH21AY7o9HNwic2YXA2WwGcM9pDnRSkoQa3wD5E27r86
+   K5tLx5wmK+OWsQiqLO0x1+RjA6lcTTp5LIl0pp3zxH19d7/aAZG2Grspn
+   046N+TWZE2Cbl9IBOpOSDA4f2y/GCaYbz0pPcgFinCIAtnn4m7ToTOA43
+   nHEoZMD+Gnvl0aw+pQBZ1LbKca80rxB98hsVNK2XZwp8vIWTsF4HpxvAO
+   ZGdmbmYZ8mXE+w3OV3XgrqCGaUREupnLcvke9qQWkpKbDp11FVcRsF1+N
+   TWV1XcIEkhekaqmDetufQaS2nP0amqCLD39/N5pDxcJHxUnrTMvwcMfsO
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="387621583"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="363173002"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 07:47:13 -0700
+   d="scan'208";a="387621583"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 07:47:10 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="621544887"
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="684015493"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="621544887"
+   d="scan'208";a="684015493"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 27 Sep 2022 07:47:11 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 27 Sep 2022 07:47:08 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id C5F26268; Tue, 27 Sep 2022 17:47:27 +0300 (EEST)
+        id 8BD4541; Tue, 27 Sep 2022 17:47:27 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
@@ -47,9 +47,9 @@ To:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v3 7/8] pwm: lpss: Make use of bits.h macros for all masks
-Date:   Tue, 27 Sep 2022 17:47:22 +0300
-Message-Id: <20220927144723.9655-8-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 1/8] pwm: lpss: Deduplicate board info data structures
+Date:   Tue, 27 Sep 2022 17:47:16 +0300
+Message-Id: <20220927144723.9655-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220927144723.9655-1-andriy.shevchenko@linux.intel.com>
 References: <20220927144723.9655-1-andriy.shevchenko@linux.intel.com>
@@ -60,36 +60,162 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Make use of the GENMASK() (far less error-prone, far more concise).
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
+Move the board info structures from the glue drivers to the
+common library and hence deduplicate configuration data.
+
+For the Intel Braswell case the ACPI version should be used.
+Because switch to ACPI/PCI is done in BIOS while quite likely
+the rest of AML code is the same, meaning similar issue might
+be observed. There is no bug report due to no PCI enabled device
+in the wild, Andy thinks, and only reference boards can be tested,
+so nobody really cares about Intel Braswell PCI case.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-lpss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-lpss-pci.c      | 29 ----------------------------
+ drivers/pwm/pwm-lpss-platform.c | 22 ---------------------
+ drivers/pwm/pwm-lpss.c          | 34 +++++++++++++++++++++++++++++++++
+ drivers/pwm/pwm-lpss.h          |  5 +++++
+ 4 files changed, 39 insertions(+), 51 deletions(-)
 
+diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
+index c893ec3d2fb4..75b778e839b3 100644
+--- a/drivers/pwm/pwm-lpss-pci.c
++++ b/drivers/pwm/pwm-lpss-pci.c
+@@ -14,35 +14,6 @@
+ 
+ #include "pwm-lpss.h"
+ 
+-/* BayTrail */
+-static const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
+-	.clk_rate = 25000000,
+-	.npwm = 1,
+-	.base_unit_bits = 16,
+-};
+-
+-/* Braswell */
+-static const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
+-	.clk_rate = 19200000,
+-	.npwm = 1,
+-	.base_unit_bits = 16,
+-};
+-
+-/* Broxton */
+-static const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
+-	.clk_rate = 19200000,
+-	.npwm = 4,
+-	.base_unit_bits = 22,
+-	.bypass = true,
+-};
+-
+-/* Tangier */
+-static const struct pwm_lpss_boardinfo pwm_lpss_tng_info = {
+-	.clk_rate = 19200000,
+-	.npwm = 4,
+-	.base_unit_bits = 22,
+-};
+-
+ static int pwm_lpss_probe_pci(struct pci_dev *pdev,
+ 			      const struct pci_device_id *id)
+ {
+diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
+index 928570430cef..834423c34f48 100644
+--- a/drivers/pwm/pwm-lpss-platform.c
++++ b/drivers/pwm/pwm-lpss-platform.c
+@@ -15,28 +15,6 @@
+ 
+ #include "pwm-lpss.h"
+ 
+-/* BayTrail */
+-static const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
+-	.clk_rate = 25000000,
+-	.npwm = 1,
+-	.base_unit_bits = 16,
+-};
+-
+-/* Braswell */
+-static const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
+-	.clk_rate = 19200000,
+-	.npwm = 1,
+-	.base_unit_bits = 16,
+-	.other_devices_aml_touches_pwm_regs = true,
+-};
+-
+-/* Broxton */
+-static const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
+-	.clk_rate = 19200000,
+-	.npwm = 4,
+-	.base_unit_bits = 22,
+-	.bypass = true,
+-};
+ 
+ static int pwm_lpss_probe_platform(struct platform_device *pdev)
+ {
 diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index a20915459809..accdef5dd58e 100644
+index 36d4e83e6b79..9537aefd254a 100644
 --- a/drivers/pwm/pwm-lpss.c
 +++ b/drivers/pwm/pwm-lpss.c
-@@ -10,6 +10,7 @@
-  * Author: Alan Cox <alan@linux.intel.com>
-  */
- 
-+#include <linux/bits.h>
- #include <linux/delay.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
-@@ -26,7 +27,7 @@
- #define PWM_ENABLE			BIT(31)
- #define PWM_SW_UPDATE			BIT(30)
- #define PWM_BASE_UNIT_SHIFT		8
--#define PWM_ON_TIME_DIV_MASK		0x000000ff
-+#define PWM_ON_TIME_DIV_MASK		GENMASK(7, 0)
- 
+@@ -29,6 +29,40 @@
  /* Size of each PWM register space if multiple */
  #define PWM_SIZE			0x400
+ 
++/* BayTrail */
++const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
++	.clk_rate = 25000000,
++	.npwm = 1,
++	.base_unit_bits = 16,
++};
++EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
++
++/* Braswell */
++const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
++	.clk_rate = 19200000,
++	.npwm = 1,
++	.base_unit_bits = 16,
++	.other_devices_aml_touches_pwm_regs = true,
++};
++EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
++
++/* Broxton */
++const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
++	.clk_rate = 19200000,
++	.npwm = 4,
++	.base_unit_bits = 22,
++	.bypass = true,
++};
++EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
++
++/* Tangier */
++const struct pwm_lpss_boardinfo pwm_lpss_tng_info = {
++	.clk_rate = 19200000,
++	.npwm = 4,
++	.base_unit_bits = 22,
++};
++EXPORT_SYMBOL_GPL(pwm_lpss_tng_info);
++
+ static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
+ {
+ 	return container_of(chip, struct pwm_lpss_chip, chip);
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index 8b3476f25e06..9ea5b145a353 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -33,6 +33,11 @@ struct pwm_lpss_boardinfo {
+ 	bool other_devices_aml_touches_pwm_regs;
+ };
+ 
++extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
++extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
++extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
++extern const struct pwm_lpss_boardinfo pwm_lpss_tng_info;
++
+ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
+ 				     const struct pwm_lpss_boardinfo *info);
+ 
 -- 
 2.35.1
 
