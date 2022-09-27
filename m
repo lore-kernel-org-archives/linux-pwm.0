@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A16D1C6FA93
-	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 14:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9A3C6FA82
+	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 14:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231582AbiI0Ot7 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 27 Sep 2022 10:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
+        id S233185AbiI0OuI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 27 Sep 2022 10:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbiI0Ot1 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2022 10:49:27 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4917E4B49F;
-        Tue, 27 Sep 2022 07:47:15 -0700 (PDT)
+        with ESMTP id S231394AbiI0Otf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2022 10:49:35 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E232E7968A;
+        Tue, 27 Sep 2022 07:47:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664290035; x=1695826035;
+  t=1664290056; x=1695826056;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=12q8cDNacifTN/HmQ4Xx/05Vt+MQ8T4JNw/rqVBiRhA=;
-  b=dMnptJcRWgyZA3dS+JhCqglEN70s37PNRvuiXAcqlneNYG8ve7lSZCsx
-   T1fw3j0bHpcXkIwDPR+1LPlu+MEwZmRsrxHwbBpFSqMoFof5OYK5r8XOI
-   PEEw9CBCQTea2pG5WuoGGUJfRNYI1KzB7IbzBeqmmVQ5Qssh4Bl0QOOwz
-   NU9mxs80x1QD4IPD5H/qZ7WZ0sJhYiitzBaVX2AIjMZBbaEOzKbAD0Xo7
-   3bzaZK4BxU8L+DH7bbkZrQCc4BVfPnRZ3HCh22ADN/ORGfD3sc1N0PS+3
-   7PcUM9ZZx3WPjaFejzuzGLHQZOc3IylY83MBtF10jhHW75/WgK2EmiH8P
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="363173003"
+  bh=ukOdzELifqcnXw/bosHJZLdsOJjTP4tM401DI/ki8bI=;
+  b=Q4n6Qqa5VvO0+Gg1o8mBCPoUztuVd6inowYSl7h7vIoLoTgB7WG2Uj0l
+   Wqd+5BlLsOXVoUW3z3ADnAXjRkJx9msq4La+SMMzC52n5hyRxrHgrxKQY
+   EVmJBDNVJ+yeswygj0WYc4a4Mo1ggN9bHM+tpXlQpMu+dmOlTqu7LjoHR
+   imX7n8loaykBwTdiYayjAzFbUZwe96kY5mBeoZWBKgA3HZiZeBBumfvN8
+   AT1dV2CAn30QHwYEiDysGsJ/RyfKY7m7keiYbZjQybeSercmWWuNTUNH3
+   WOUIMoZ0DqlPpc+3d1LS57uYtrBa0AT/p9i+RYjjqX1hsMVNh6/k67sux
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="365377050"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="363173003"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 07:47:13 -0700
+   d="scan'208";a="365377050"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 07:47:16 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="621544886"
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="796788525"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="621544886"
+   d="scan'208";a="796788525"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 27 Sep 2022 07:47:11 -0700
+  by orsmga005.jf.intel.com with ESMTP; 27 Sep 2022 07:47:11 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id DA0275E4; Tue, 27 Sep 2022 17:47:27 +0300 (EEST)
+        id B0FE1265; Tue, 27 Sep 2022 17:47:27 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
@@ -47,9 +47,9 @@ To:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v3 8/8] pwm: lpss: Add a comment to the bypass field
-Date:   Tue, 27 Sep 2022 17:47:23 +0300
-Message-Id: <20220927144723.9655-9-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 5/8] pwm: lpss: Use device_get_match_data to get device data
+Date:   Tue, 27 Sep 2022 17:47:20 +0300
+Message-Id: <20220927144723.9655-6-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220927144723.9655-1-andriy.shevchenko@linux.intel.com>
 References: <20220927144723.9655-1-andriy.shevchenko@linux.intel.com>
@@ -60,33 +60,54 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add a comment to the bypass field based on the commit b997e3edca4f
-("pwm: lpss: Set enable-bit before waiting for update-bit
-to go low").
+device_get_match_data() in ACPI case calls similar to the
+acpi_match_device(). We may simplify the code and make it
+generic by replacing the latter with the former.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-lpss.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/pwm/pwm-lpss-platform.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index 839622964b2a..0249c01befd5 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -29,6 +29,11 @@ struct pwm_lpss_boardinfo {
- 	unsigned long clk_rate;
- 	unsigned int npwm;
- 	unsigned long base_unit_bits;
-+	/*
-+	 * Some versions of the IP may stuck in the state machine if enable
-+	 * bit is not set, and hence update bit will show busy status till
-+	 * the reset. For the rest it may be otherwise.
-+	 */
- 	bool bypass;
- 	/*
- 	 * On some devices the _PS0/_PS3 AML code of the GPU (GFX0) device
+diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
+index 7bbbb7a9b578..c48c6f2b2cd8 100644
+--- a/drivers/pwm/pwm-lpss-platform.c
++++ b/drivers/pwm/pwm-lpss-platform.c
+@@ -7,11 +7,12 @@
+  * Derived from the original pwm-lpss.c
+  */
+ 
+-#include <linux/acpi.h>
+ #include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
++#include <linux/property.h>
+ 
+ #include "pwm-lpss.h"
+ 
+@@ -19,16 +20,13 @@
+ static int pwm_lpss_probe_platform(struct platform_device *pdev)
+ {
+ 	const struct pwm_lpss_boardinfo *info;
+-	const struct acpi_device_id *id;
+ 	struct pwm_lpss_chip *lpwm;
+ 	void __iomem *base;
+ 
+-	id = acpi_match_device(pdev->dev.driver->acpi_match_table, &pdev->dev);
+-	if (!id)
++	info = device_get_match_data(&pdev->dev);
++	if (!info)
+ 		return -ENODEV;
+ 
+-	info = (const struct pwm_lpss_boardinfo *)id->driver_data;
+-
+ 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
 -- 
 2.35.1
 
