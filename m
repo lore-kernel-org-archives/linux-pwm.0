@@ -2,94 +2,83 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4D2C07E9D
-	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 16:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED08C07E9D
+	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 16:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbiI0QYV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 27 Sep 2022 12:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
+        id S233061AbiI0QZz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 27 Sep 2022 12:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiI0QYK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2022 12:24:10 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1874315EF98;
-        Tue, 27 Sep 2022 09:24:10 -0700 (PDT)
+        with ESMTP id S232877AbiI0QZT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2022 12:25:19 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0D5979E8;
+        Tue, 27 Sep 2022 09:24:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664295850; x=1695831850;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=A9XwjcYhm5i/e8vIjenDrCHIcT6qFMQ1yXOriuZ1ixc=;
-  b=WZYd2ZhwG7glfegqrVJOPGOJhaefmKU6cl3/AT34/lCjL0q3+V/pojAn
-   RCdXN6JopcneKQZ/sBTuYHarCQIUOxg2F/Whym1rJ2dGYseAZMCm8zdcx
-   TnKOqI0/bhBkYcFjX6Xra9BnRwmlFLZOtw5uZgiQ+dPr2H2jvcxujxFZq
-   fN6hsqiAgWyaHY0Xu6531hGqfqrEVUce5Pbj1sNWzGm7lz6ZubZb2/1WI
-   iHyLUQNX2MW1Q5ORkhtBUVYsovaGQbys3eA3aDyLWxtYA0t29jPbWL00C
-   iid9bEpmAzEBzK19ccacGL+e6BlGG5Xkd/nb29R3tp1C9EjM4zih/LIBp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="327719524"
+  t=1664295896; x=1695831896;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=+8+/xApJ1jbRQJ7bxF89i3oMtVoDfkDGQljqzqT0OQI=;
+  b=Gtl221XG4ChXhWoc6ghWorSTIeVIMDTFyp7rcBlvmmc/CTtsMIpr9hHz
+   xNjUWZxuD7zOoaYD4ZkzbfHqW4g5xcr1xNVANVUDZlSV/htjL7lQJ76U3
+   7u6Hv21JJX0Ry+U6JfHUBd3dXSHdeI50nQ8Zpyum2DWht1syTlXAU5Gh1
+   UnC9qFe+ZZj1/enskiQKy9RzX8OUKB7zJ/kTKZOPoD3s94mQSdq2tv1oq
+   zApuYA7/csspjLOjotusrngmDXmqNxIxrstCTJtF998b/H4iRY8vD3f5+
+   7jbkwO/blSrqJMurRnBXh80yi2RO5DENwkCf4Ta/E8EUZ3ppGCoAgyp3B
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="281732196"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="327719524"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 09:24:09 -0700
+   d="scan'208";a="281732196"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 09:24:55 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="763935923"
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="599232964"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="763935923"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 27 Sep 2022 09:24:08 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id A41C850D; Tue, 27 Sep 2022 19:24:23 +0300 (EEST)
+   d="scan'208";a="599232964"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006.jf.intel.com with ESMTP; 27 Sep 2022 09:24:53 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1odDO7-008Wo6-2L;
+        Tue, 27 Sep 2022 19:24:51 +0300
+Date:   Tue, 27 Sep 2022 19:24:51 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v4 6/7] pwm: lpss: Make use of bits.h macros for all masks
-Date:   Tue, 27 Sep 2022 19:24:20 +0300
-Message-Id: <20220927162421.11052-7-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220927162421.11052-1-andriy.shevchenko@linux.intel.com>
-References: <20220927162421.11052-1-andriy.shevchenko@linux.intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3 4/8] pwm: lpss: Include headers we are direct user of
+Message-ID: <YzMj04Gcf011F+v8@smile.fi.intel.com>
+References: <20220927144723.9655-1-andriy.shevchenko@linux.intel.com>
+ <20220927144723.9655-5-andriy.shevchenko@linux.intel.com>
+ <20220927151053.7eh63stoganpgawr@pengutronix.de>
+ <YzMWJFmeMAvn0e1c@smile.fi.intel.com>
+ <20220927155521.t4hanojroe247lqr@pengutronix.de>
+ <YzMiW0rjFek8VTS7@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YzMiW0rjFek8VTS7@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Make use of the GENMASK() (far less error-prone, far more concise).
+On Tue, Sep 27, 2022 at 07:18:36PM +0300, Andy Shevchenko wrote:
+> On Tue, Sep 27, 2022 at 05:55:21PM +0200, Uwe Kleine-König wrote:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-lpss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+...
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index a20915459809..accdef5dd58e 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -10,6 +10,7 @@
-  * Author: Alan Cox <alan@linux.intel.com>
-  */
- 
-+#include <linux/bits.h>
- #include <linux/delay.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
-@@ -26,7 +27,7 @@
- #define PWM_ENABLE			BIT(31)
- #define PWM_SW_UPDATE			BIT(30)
- #define PWM_BASE_UNIT_SHIFT		8
--#define PWM_ON_TIME_DIV_MASK		0x000000ff
-+#define PWM_ON_TIME_DIV_MASK		GENMASK(7, 0)
- 
- /* Size of each PWM register space if multiple */
- #define PWM_SIZE			0x400
+> That said, if you want to NAK this, please do it explicitly. I'm not going
+> to waste my time on this simple change anymore.
+
+Just sent a v4 without this change, so I will not waste more time on this.
+
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
