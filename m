@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86184C6FA93
-	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 16:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B05CC6FA82
+	for <linux-pwm@archiver.kernel.org>; Tue, 27 Sep 2022 16:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232932AbiI0QYL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 27 Sep 2022 12:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S232982AbiI0QYR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 27 Sep 2022 12:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232838AbiI0QYJ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2022 12:24:09 -0400
+        with ESMTP id S232877AbiI0QYK (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2022 12:24:10 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48F415EF98;
-        Tue, 27 Sep 2022 09:24:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822AF177343;
+        Tue, 27 Sep 2022 09:24:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664295848; x=1695831848;
+  t=1664295849; x=1695831849;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dpNyqYIg37FmXv5O2Z7OWfgIqfp8/Y7GWzFm22mxQjs=;
-  b=KTuzX4gaF0PKZMegG+m7e4zaK0eM3if05gPFgVHRycI95BPlpDhIY7Ct
-   K2LuUW5rhR+qb2wdo/zAjWcpfMcpPGnRU/3v7iqjl83Kcf2WuGY0ZWznO
-   bR5DKMUuttyP6WvkSK3K3Y0dS2+l7Nnmu7qwbeStIUvaVErevZ7vuj11Z
-   KYM1aKJE/euckqoFhrJoluy6uRUOfmfhGiyO5hlXQOZ8n7gTmRfO5BdB6
-   tdBXVRw5JfgT5+1DnA/7xDO3ZS9+kIysKtDu+7M78lbsE2kynCkiiTrSo
-   OuBVW6Q0nhhCAEbky1dV7xbKOg6IpEUDGY1kllNKcMLabJe9mj7+OXgfd
+  bh=yIqxRHRS1triyvN1zukI7EVS4f3lxjAFUc90xkhDIu4=;
+  b=dp5BVjDqlQff+n5t2CUTcILZREXOYk035xXnqtWfYnF16gUS0i+SjJlM
+   VCpknJhhusxtRTgVbPczTsTrF7tSkkJ6Vnuc69vd8SW1U5ysbOi/lbwLy
+   cI/99WT5dP7YD5gmKMTkYDrUyybryQElcUcyRshsiqstDMsNZ66DSyo1I
+   xCjCKTYcpQwgyNNbxyrVDPF/uG4wCdlRLknonRyrAKSa/Nb2zAiiTg7Xq
+   gU+1a6LBJy2x5TFScdASsvTdx9RU0YR8tFJZgA/Pm8x5gmeAG9my36d5+
+   nq58WXtLzx+csUknqpqI8ogjwuTCI1mw+r22qQGxvi12C6gH0VsWBIbdG
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="327719510"
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="327719522"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="327719510"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 09:24:07 -0700
+   d="scan'208";a="327719522"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 09:24:09 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="763935894"
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="684047856"
 X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
-   d="scan'208";a="763935894"
+   d="scan'208";a="684047856"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 27 Sep 2022 09:24:05 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 27 Sep 2022 09:24:07 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7E124101; Tue, 27 Sep 2022 19:24:23 +0300 (EEST)
+        id 9CC46268; Tue, 27 Sep 2022 19:24:23 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Hans de Goede <hdegoede@redhat.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -47,9 +47,9 @@ To:     Hans de Goede <hdegoede@redhat.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v4 2/7] pwm: lpss: Move exported symbols to PWM_LPSS namespace
-Date:   Tue, 27 Sep 2022 19:24:16 +0300
-Message-Id: <20220927162421.11052-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 5/7] pwm: lpss: Use DEFINE_RUNTIME_DEV_PM_OPS() and pm_ptr() macros
+Date:   Tue, 27 Sep 2022 19:24:19 +0300
+Message-Id: <20220927162421.11052-6-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220927162421.11052-1-andriy.shevchenko@linux.intel.com>
 References: <20220927162421.11052-1-andriy.shevchenko@linux.intel.com>
@@ -60,54 +60,55 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Avoid unnecessary pollution of the global symbol namespace by
-moving library functions in to a specific namespace and import
-that into the drivers that make use of the functions.
+Using these new macros allows the compiler to remove the unused dev_pm_ops
+structure and related functions if !CONFIG_PM without the need to mark
+the functions __maybe_unused.
 
-For more info: https://lwn.net/Articles/760045/
-
-Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-lpss-pci.c      | 1 +
- drivers/pwm/pwm-lpss-platform.c | 1 +
- drivers/pwm/pwm-lpss.c          | 2 ++
- 3 files changed, 4 insertions(+)
+ drivers/pwm/pwm-lpss-pci.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
-index 75b778e839b3..9f2c666b95ec 100644
+index f3367e844e61..98413d364338 100644
 --- a/drivers/pwm/pwm-lpss-pci.c
 +++ b/drivers/pwm/pwm-lpss-pci.c
-@@ -92,3 +92,4 @@ module_pci_driver(pwm_lpss_driver_pci);
+@@ -48,7 +48,6 @@ static void pwm_lpss_remove_pci(struct pci_dev *pdev)
+ 	pm_runtime_get_sync(&pdev->dev);
+ }
  
- MODULE_DESCRIPTION("PWM PCI driver for Intel LPSS");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(PWM_LPSS);
-diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index 834423c34f48..65154c0abab1 100644
---- a/drivers/pwm/pwm-lpss-platform.c
-+++ b/drivers/pwm/pwm-lpss-platform.c
-@@ -88,4 +88,5 @@ module_platform_driver(pwm_lpss_driver_platform);
+-#ifdef CONFIG_PM
+ static int pwm_lpss_runtime_suspend_pci(struct device *dev)
+ {
+ 	/*
+@@ -62,12 +61,11 @@ static int pwm_lpss_runtime_resume_pci(struct device *dev)
+ {
+ 	return 0;
+ }
+-#endif
  
- MODULE_DESCRIPTION("PWM platform driver for Intel LPSS");
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(PWM_LPSS);
- MODULE_ALIAS("platform:pwm-lpss");
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 9537aefd254a..74a296cb1af0 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -18,6 +18,8 @@
- #include <linux/pm_runtime.h>
- #include <linux/time.h>
+-static const struct dev_pm_ops pwm_lpss_pci_pm = {
+-	SET_RUNTIME_PM_OPS(pwm_lpss_runtime_suspend_pci,
+-			   pwm_lpss_runtime_resume_pci, NULL)
+-};
++static DEFINE_RUNTIME_DEV_PM_OPS(pwm_lpss_pci_pm,
++				 pwm_lpss_runtime_suspend_pci,
++				 pwm_lpss_runtime_resume_pci,
++				 NULL);
  
-+#define DEFAULT_SYMBOL_NAMESPACE PWM_LPSS
-+
- #include "pwm-lpss.h"
- 
- #define PWM				0x00000000
+ static const struct pci_device_id pwm_lpss_pci_ids[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x0ac8), (unsigned long)&pwm_lpss_bxt_info},
+@@ -89,7 +87,7 @@ static struct pci_driver pwm_lpss_driver_pci = {
+ 	.probe = pwm_lpss_probe_pci,
+ 	.remove = pwm_lpss_remove_pci,
+ 	.driver = {
+-		.pm = &pwm_lpss_pci_pm,
++		.pm = pm_ptr(&pwm_lpss_pci_pm),
+ 	},
+ };
+ module_pci_driver(pwm_lpss_driver_pci);
 -- 
 2.35.1
 
