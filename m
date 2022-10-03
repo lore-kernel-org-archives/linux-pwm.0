@@ -2,86 +2,123 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BDBC433FE
-	for <linux-pwm@archiver.kernel.org>; Mon,  3 Oct 2022 01:56:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A6AC433FE
+	for <linux-pwm@archiver.kernel.org>; Mon,  3 Oct 2022 08:16:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbiJCB4X (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 2 Oct 2022 21:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40816 "EHLO
+        id S230103AbiJCIQU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 3 Oct 2022 04:16:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiJCB4W (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 2 Oct 2022 21:56:22 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024D12F3B0
-        for <linux-pwm@vger.kernel.org>; Sun,  2 Oct 2022 18:56:22 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id d1-20020a17090a6a4100b002095b319b9aso8082607pjm.0
-        for <linux-pwm@vger.kernel.org>; Sun, 02 Oct 2022 18:56:21 -0700 (PDT)
+        with ESMTP id S230184AbiJCIP4 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 3 Oct 2022 04:15:56 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C91C74E32;
+        Mon,  3 Oct 2022 00:50:58 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id w10so514171edd.4;
+        Mon, 03 Oct 2022 00:50:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=schmorgal.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=EnV/ld2NipwM/UxxeyFxa6W6VAWGpYuC5Pc6JMzfqhM=;
-        b=bmZ0rCa1Md1jWNyL8uYIYi1ao7DLs4+rI99nqYXdPcrpxoEEm2AXze38PB9Cws7JAd
-         MCa3zSCAdcqMsIdMxA/wDRA3UKHaPjR2PMec+cNgTxONlzmf+NFYygzuj8NA709b7Qs4
-         MKbEQFm+mYDhMAEiJ631AB4FieGAn/+fk1C+Y=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date;
+        bh=hdKudSePDxWLBXYpgpsmYiPPEBTmuwXmjH9VQ2JVEKQ=;
+        b=mgaFRN3e9nI62i6lIBK7pOvT7M89RCjvaLYY0pTecskwiSnexQez+HtTc0rsr4WceC
+         +2pOk4Eyyr0L+MsFWWm9CEAMXXwIT6lAw6PzOEfCd9YaGGLASAR9ItihMWsmq+9bZo7x
+         HHMzGPe5lGzjMvjsPK1hwEEdUO9OZgzwHA873Tm6GFp8NYS2qWbj6DUWTv91+2NBiBcd
+         prlCo6Vn92AIEos1/X1amWtcnn7LTfc6ZmPXZkt3SkbJCJ0oh36QpycKQUdrr02ivtQC
+         8zKdghDcWwvi9BKupCs6qB+flcMLUOwS0O8PfgGVoK0yIW2PZkZcs3IV15+gvQBs8GQo
+         G6Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=EnV/ld2NipwM/UxxeyFxa6W6VAWGpYuC5Pc6JMzfqhM=;
-        b=5oUC45oKyjQ+fCp6ntbWd3WU4CTVlSp3+bVpq52AZaAdYZd7FoTSik+8faLKmyfSSw
-         MhyvkPABq5LdrReZcKRdZFBKbZLtAHVaetI7lt8oEaKFwEMIUke6QHbUxQuKNxWxjBkd
-         QCwdoCw1oTyKCDKXCVTlgF3GUhbzFrNAHeYL36XUZX7GRU/W8FNnq67JRKAHoYk+lqfe
-         WY63lKjjoPnwnNA/7X8IP13kiVsnRzKwI5oinVEOOXC46jCvPtbro3qSeBBuuTVfh/iO
-         rWoD0+QsGs6cEHgjGMwiAHgGRHaiB+nuFrRahjeJ4PE8EEvYRMdJDvUYBwkanpI1lDD3
-         3sEQ==
-X-Gm-Message-State: ACrzQf1lFkPbMlA9pbM6/7KApaxsBo/gxysXsQvvzq1J9CFUir/eQat5
-        2g3SbVYKLe9HD2Hn4GUY88PYtw==
-X-Google-Smtp-Source: AMsMyM5VQDHF9RrS57mMLEuK5ILzBKePX4ex8AyaHSvWUp/Z0OhxAl4ktQ/JNCFL9T+ckdiHMc8HEw==
-X-Received: by 2002:a17:90a:e7d2:b0:202:c6c9:4731 with SMTP id kb18-20020a17090ae7d200b00202c6c94731mr9766686pjb.114.1664762181405;
-        Sun, 02 Oct 2022 18:56:21 -0700 (PDT)
-Received: from doug-ryzen-5700G.. ([50.45.132.124])
-        by smtp.gmail.com with ESMTPSA id s9-20020a17090302c900b0017b69f99321sm5893786plk.219.2022.10.02.18.56.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Oct 2022 18:56:21 -0700 (PDT)
-From:   Doug Brown <doug@schmorgal.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org, Doug Brown <doug@schmorgal.com>
-Subject: [PATCH v2 5/5] pwm: pxa: Enable for MMP platform
-Date:   Sun,  2 Oct 2022 18:55:46 -0700
-Message-Id: <20221003015546.202308-6-doug@schmorgal.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221003015546.202308-1-doug@schmorgal.com>
-References: <20221003015546.202308-1-doug@schmorgal.com>
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=hdKudSePDxWLBXYpgpsmYiPPEBTmuwXmjH9VQ2JVEKQ=;
+        b=CLy8tjbfFuSEvkvVXA0C1chwEACjxAnyNDTqTWJQ5GjKXPrK1KlBfOVVmwYfh5vM2P
+         GbUqLJ0lx+ABOC6GiafLipyS2Wj47v8taxAMgUFW0TmjKKsv71lW921eE3WDZL37zOYU
+         fXf2pWwdxIoFFJiWXhhVSJgzxlqFIIl5JNReXb4XEeQnBpz2NoD6peKhHX3vHJrJMTdo
+         o58kR1ua253ATnJvL07+ZyoFIeMZwAjmDGJuDnUWtvHEux7KGOeDRsRDaQ0FiQJBcSGI
+         gqeV2wB/HVz2QfiVcJ9AcT2IhoQdzQ83Cf3jbEae3nOpEzm3jxe89t/Bgh0eaPXTYOno
+         J39A==
+X-Gm-Message-State: ACrzQf2rr9M3SyPqbRlDaBTIa9Z5v6WihUhzwWC5ozFtElPmQtJTZv/l
+        0f0p1R4zSf3++HgEVy3JYTE=
+X-Google-Smtp-Source: AMsMyM6kCoEAxHJq2sN3aA4M/LNxj7SGtz26zQgE7juVgcBy7TVziLcy7qwpdnUNc8MMCNO2d5hdTw==
+X-Received: by 2002:a05:6402:3550:b0:451:473a:5ca3 with SMTP id f16-20020a056402355000b00451473a5ca3mr17697587edd.48.1664783368882;
+        Mon, 03 Oct 2022 00:49:28 -0700 (PDT)
+Received: from [192.168.2.2] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id b17-20020a1709063cb100b007305d408b3dsm5002579ejh.78.2022.10.03.00.49.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Oct 2022 00:49:28 -0700 (PDT)
+Message-ID: <ed3df2c8-ffb5-1723-0ed7-3a2721972852@gmail.com>
+Date:   Mon, 3 Oct 2022 09:49:27 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [RFC PATCH v1 1/2] dt-bindings: pwm: rockchip: add interrupts
+ property
+From:   Johan Jonker <jbx6244@gmail.com>
+To:     heiko@sntech.de
+Cc:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        sebastian.reichel@collabora.com, wxt@rock-chips.com,
+        kever.yang@rock-chips.com, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <94bcb278-7bb9-d173-497c-fe12682c4a17@gmail.com>
+Content-Language: en-US
+In-Reply-To: <94bcb278-7bb9-d173-497c-fe12682c4a17@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The PXA168, which is part of the MMP platform, also uses this driver.
 
-Signed-off-by: Doug Brown <doug@schmorgal.com>
----
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 60d13a949bc5..d0d4caebf12f 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -434,7 +434,7 @@ config PWM_PCA9685
+On 9/29/22 16:04, Johan Jonker wrote:
+> The Rockchip SoCs have 4 or more built-in PWM channels.
+> 
+> Configurable to operate in capture mode.
+> Measures the high/low polarity effective cycles of this input waveform
+> Generates a single interrupt at the transition of input waveform polarity
+> 
+> Configurable to operate in continuous mode or one-shot mode.
+> One-shot operation will produce N + 1 periods of the waveform,
+> where N is the repeat counter value, and generates a single interrupt at
+> the end of operation.
+> Continuous mode generates the waveform continuously and
+> do not generates any interrupts.
+> 
+
+> Older SoCs have an interrupt for each node.
+> Newer models share an interrupt.
+
+As mentioned by Robin the common interrupt status registers are located outside the PWM node reg range.
+The Rockchip PWM driver is only focused on continuous mode, while these interrupts only for "Capture mode" and "One-shot mode" and need a different handling.
+Interrupts without reg resources is not going to work well,
+so I think this patch can go in the garbage bin.
  
- config PWM_PXA
- 	tristate "PXA PWM support"
--	depends on ARCH_PXA || COMPILE_TEST
-+	depends on ARCH_PXA || ARCH_MMP || COMPILE_TEST
- 	depends on HAS_IOMEM
- 	help
- 	  Generic PWM framework driver for PXA.
--- 
-2.34.1
-
+> 
+> Add interrupts property to the pwm-rockchip.yaml file.
+> DT describes hardware. Rockchip PWM driver support for
+> interrupts might not available.
+> 
+> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+> index f2d1dc7e7..f7634069d 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+> @@ -37,6 +37,9 @@ properties:
+>    reg:
+>      maxItems: 1
+>  
+> +  interrupts:
+> +    maxItems: 1
+> +
+>    clocks:
+>      minItems: 1
+>      maxItems: 2
