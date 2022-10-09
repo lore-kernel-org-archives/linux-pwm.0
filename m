@@ -2,122 +2,102 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C19FC433F5
-	for <linux-pwm@archiver.kernel.org>; Sun,  9 Oct 2022 15:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03483C433FE
+	for <linux-pwm@archiver.kernel.org>; Sun,  9 Oct 2022 21:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbiJIPSp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 9 Oct 2022 11:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
+        id S231271AbiJIVPS (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 9 Oct 2022 17:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbiJIPSp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 9 Oct 2022 11:18:45 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDEE32A417
-        for <linux-pwm@vger.kernel.org>; Sun,  9 Oct 2022 08:18:43 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id s7so1554248qkj.1
-        for <linux-pwm@vger.kernel.org>; Sun, 09 Oct 2022 08:18:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=akrQmjJ5ANNV9oJ9U081ngxumiXjo/3S9Mc5SAIBAo4=;
-        b=zY2GkVGgwwzE6TzX4K9RcSkWVEvq1t01CH68PG0NUS2gh/e9MkdC2BH9pkwJKNczCR
-         HhT8beTnLqIeI+++qrQYlklUCPXaD0kgfp13PQwzuYedG3pYjg6dT2pLNMXatzYzSCjk
-         d+03YtbjJIKR5WsSTLsQHFneqyhW7Dnm6+a0xRCCJDCBdVeoCY53Ak8wO20XD/meqBrL
-         x8Wvhsq38xtA5uPh786ACn11NfkuITyp1dym/4Q1NUEnRiFZ3AIOIemsnHavcclGovom
-         qDWnXC/gG6fKQjGY7iwX9gnUm+AFJ3IsNY3hKlgrnQOOkdJCx3ehcaJaS91CsJAhztnA
-         3yzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=akrQmjJ5ANNV9oJ9U081ngxumiXjo/3S9Mc5SAIBAo4=;
-        b=af0s/4VKwVVRxUAHw2UskMCsb6Zg4e44U8M1LEZ9UxlVOFFzyzS3KjgJBwyVNmTG9Z
-         Nt9Ugsxk1lRbcPS3TdyFoytDUJqHAWpYS1SZUATWIxTzFd+/1GaY5bRh4SYHAkEArTXE
-         CP+x79mIF0kwRLDJWt0sL0kn4nx/4Zaqg8O6H8Jxe7iJjvjnc1jW3DBAx+dtGSU2JAaC
-         wVRT78KBQO8bt+gL/5REEpLwrtGFNuYaRIgRWQkils62TG2gD+KxgZi1V8WqDhwWb6Vc
-         gy1zbg/kXzHH4+5WuB8JQpibDYsu/kkskxJhyWBrspkelOYPDNSagajsrsVcMoAxUieH
-         9GWA==
-X-Gm-Message-State: ACrzQf1hErTER4J1ebhbTaWa82RcCiimBBqwekCfmkdg0H0DfKYhTqt5
-        0+NzMZs+gxgUvWtQAs5h26uPmw==
-X-Google-Smtp-Source: AMsMyM7wkO+uNHublLqxbJQRkrkJLB4Tdfxa8dNbZoat2NF6x6vAN9JwuDKqfO3jpnBNaKGD+syWqg==
-X-Received: by 2002:a05:620a:a03:b0:6ec:bf65:d0fc with SMTP id i3-20020a05620a0a0300b006ecbf65d0fcmr864584qka.381.1665328723009;
-        Sun, 09 Oct 2022 08:18:43 -0700 (PDT)
-Received: from [192.168.1.57] (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
-        by smtp.gmail.com with ESMTPSA id t28-20020a37ea1c000000b006cdd0939ffbsm7756178qkj.86.2022.10.09.08.18.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 Oct 2022 08:18:42 -0700 (PDT)
-Message-ID: <8b4a2bfd-ce7f-6bb9-4e50-ecd9bda881a2@linaro.org>
-Date:   Sun, 9 Oct 2022 17:16:29 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: [PATCH v3 1/4] dt-bindings: mfd: Document RZ/G2L MTU3a bindings
-Content-Language: en-US
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Rob Herring <robh@kernel.org>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        with ESMTP id S231289AbiJIVOz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 9 Oct 2022 17:14:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCEA1AF1E;
+        Sun,  9 Oct 2022 14:13:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8753360C79;
+        Sun,  9 Oct 2022 21:13:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA3EC433D6;
+        Sun,  9 Oct 2022 21:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665349989;
+        bh=y/vuj298TobbmTUgC2gtr5IiQQXFOztoALIpmHmy5ZE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ilyGNZkg9qABwN/cUAzDnXQFv5BRs1FhVHltijx1PJpus/Zx31NvT6Hb+TYnYKisW
+         Nhe7M3Xrq1cix3eZHurGF2QcOalZKilm+3U+1qbJsEuHxqvAPyWoM7JK10ZIsvUJ9Q
+         AGNZw7NXTvMZG/GYVxWiqEo1QQ3PO6wI5cIJ+4Xi7/8L3cYtTKr8OmnlOd6C8zQZT/
+         O9TAJ1qioAtor9AczRdONd9UKUMFuM945cL8cWq+933LmnrNMcCV0ANYJsdiiXBMNr
+         9XTlMx1ic4H5cxjZ7rWl9IDUhktgcQXgGUoY7T1tO/s5kFWN7/SAxViw1n2wYlC8Vc
+         Yglxh5AdJ/Vag==
+Date:   Sun, 9 Oct 2022 23:13:06 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: pwm: renesas,pwm-rcar: Add r8a779g0 support
+Message-ID: <Y0M5Ygv9ALPb94Hf@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-References: <20221006135717.1748560-1-biju.das.jz@bp.renesas.com>
- <20221006135717.1748560-2-biju.das.jz@bp.renesas.com>
- <20221006201746.GA93297-robh@kernel.org>
- <OS0PR01MB5922F8058FC8FD1E35C17755865F9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <OS0PR01MB59221BDEB7E6B39AEFD31C44865E9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <OS0PR01MB59221BDEB7E6B39AEFD31C44865E9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+References: <7785f163a5a798574c68495de8b0ca7a02e35f07.1665156318.git.geert+renesas@glider.be>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="SNj1/ZNMPPXvsfJb"
+Content-Disposition: inline
+In-Reply-To: <7785f163a5a798574c68495de8b0ca7a02e35f07.1665156318.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 08/10/2022 09:42, Biju Das wrote:
 
->>>> +                        "tgia8", "tgib8", "tgic8", "tgid8",
->>> "tgiv8", "tgiu8";
->>>> +      clocks = <&cpg CPG_MOD R9A07G044_MTU_X_MCK_MTU3>;
->>>> +      power-domains = <&cpg>;
->>>> +      resets = <&cpg R9A07G044_MTU_X_PRESET_MTU3>;
->>>> +
->>>> +      counter {
->>>> +        compatible = "renesas,rz-mtu3-counter";
->>>
->>> You don't have any resources for the counter in DT, so you don't
->> even
->>> need a node here. Just have the parent driver instaniate the counter
->>> driver.
->>
-> 
-> If I remove "renesas,rz-mtu3-counter" and "renesas,rz-mtu3-pwm" then instantiating 
-> the counter and pwm driver from parent driver by directly calling probe function is
-> giving cyclic dependency error[1].
+--SNj1/ZNMPPXvsfJb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-How is this related to DT? Purpose of DT is not to solve your probe
-problems.
+On Fri, Oct 07, 2022 at 05:25:56PM +0200, Geert Uytterhoeven wrote:
+> Document support for the PWM timers in the Renesas R-Car V4H (R8A779G0)
+> SoC.
+>=20
+> Based on a patch in the BSP by CongDang.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> 
-> So looks like either we need to use compatible "renesas,rz-mtu3-counter" and 
-> "renesas,rz-mtu3-pwm" if these functionalities to be in respective subsystem tree
-> 
-
-No, you don't need. Your driver implementation is not really related to
-the bindings.
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
 
-Best regards,
-Krzysztof
+--SNj1/ZNMPPXvsfJb
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmNDOV4ACgkQFA3kzBSg
+Kbbrvg/+MuB0iN8uvChRjFAL+DksyM6IqlKyfQV+ZMHMYQr0EYKOKX5I20fm66z5
+JeTcj6+kOS9M5JNuErbU6RI/tMKqjHApBjckO4h8RGc5ghfnKVLNQxKWQe1JwX8U
+vEEjJvMCIRWw6WfMZBV4shPqo2ILKHz6Pd2ZeQeMZqf+PxSS4cfXvwTIeKvCepL6
+2qYRq5p0/en6et1rqvkpyZnK48vg8UWU/Yf47xSliV8N3IRrs8kUMYoS3FsCpqYI
+AIAUoqWqA3Us5APNhcGh7dEtjOm4V9gsg2KQ+B+Nb8nKMr3iOLjqatZeE/v3IQan
+2iZG9dlvE2EsK3MG8T7kLAiBQ92RpkGifPWbXWbWMKCSrEbIIEEif1/IvuWjHhkl
+l9HV/Sk1uX7gZ7DqVYxtkSDVUoBDDiofVlJzsvAm394nyf9jjhGzRYoPtCMnpRNK
+kPSIV+pVpWYmHOX5m5Uf11vAAwL5l2gMPgE9nUBqYKZWiVJDRsyVOCOIRq7RsdmI
+l+X1hkNMBtwI1WuL0tCvmZNmRiqUi54AHCkftqD2SPUoaNHcscm1Xg6yUm2kTIEc
+fAwpE34FDYtaMclaPlzw5XQnWl6T4YFFQQFlArIBO8hCdj/EGJ7xTelOdEGpYf/R
+usxAf2TDU0Zip6NMaOvJ1EK2CL+KaByjbbwGOSMEm02SjJRruvQ=
+=yA1p
+-----END PGP SIGNATURE-----
+
+--SNj1/ZNMPPXvsfJb--
