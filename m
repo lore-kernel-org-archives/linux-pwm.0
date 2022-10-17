@@ -2,47 +2,64 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A06FC433FE
-	for <linux-pwm@archiver.kernel.org>; Sat, 15 Oct 2022 17:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBDAC4332F
+	for <linux-pwm@archiver.kernel.org>; Mon, 17 Oct 2022 14:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbiJORbp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 15 Oct 2022 13:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
+        id S230041AbiJQOAj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 17 Oct 2022 10:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiJORbl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 15 Oct 2022 13:31:41 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2109.outbound.protection.outlook.com [40.107.114.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A99E3FEDD;
-        Sat, 15 Oct 2022 10:31:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MHwrFP4UrkBrMHB68kYK5sBiykndga84qpvo1Ufi8BLMSYlseN1oykZF/rvsAByp5IBQBLaknzyenm9Og3wPopfbhSMlQzYAkoQl7Uy8FF7p4xkfT5OAo+o+GeCR2phbYEhB/THwuIQn2N7AbqPn1+bKrlUjrDCkttJcxUDPgOTNk/f8ZoZKN3+fiRudSe+mGSZNVSzXHraS9h/rxFR2Aa8WJDP8/E6nRRm91iSU7MhtJwgTB6+VPp0jdbahIy/DtIg6JGUT/GY49KolxlbgM0Ept7Y8L4UMTipwtOb/5lraSnfkfyLociBGyuVRaS5jy+EnO1DOYeFYhGCeUXjpqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RWaui0UnTcXjz08aKy/es3VBa+IxhHSbrOEpI/75eWY=;
- b=gDIh32C0oG45C94LPDyM7Tf4OqTpFV9l1vwqMIWhjoW+XIX+n/1kaNnYpaJr+irxHkpMsOyOTYYEisjJ0+D0Ms/FNzkIu6DzmHiCeUt2i4bdDHpO4c8IjkO2Gz+LsFSilQZf9LSQBjgIuVRT2uGkVUehekle19cy9IOXSxk7Gip73vKLvKwaD/59jtbgzNuRP7scqvwBcJw1IqUZgfyt+OIOid4NwYjFdLGjbcg+RXru1dQU6ex9+5Rq7NUPwwEdhgIhJELbWzThqTwpF2utja4wQu4z0dRjsWijwAAWYrWfdE48Qmxkm/UQ//ILok2LeNgtGzdOTDZ3+fTAiLCAKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RWaui0UnTcXjz08aKy/es3VBa+IxhHSbrOEpI/75eWY=;
- b=ktjB2I8TjdxNfFD4+9nVFNWPfgahjDYvaw0mDtO7hIujO4umZb2CsQFoWVAPpUKnwd0uDVvG15hui/Ufe8+rQVMH0PVcqU+Ka7sGEbpSeXUE5CrMjEs9o0daQuI5oQWu/ij7kiJuQf391H7CJWdbxHtgP2KsLZyu9v5kQK9po44=
-Received: from TYCPR01MB5933.jpnprd01.prod.outlook.com (2603:1096:400:47::11)
- by OS0PR01MB5491.jpnprd01.prod.outlook.com (2603:1096:604:a3::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.32; Sat, 15 Oct
- 2022 17:31:32 +0000
-Received: from TYCPR01MB5933.jpnprd01.prod.outlook.com
- ([fe80::1521:658f:6696:65b1]) by TYCPR01MB5933.jpnprd01.prod.outlook.com
- ([fe80::1521:658f:6696:65b1%7]) with mapi id 15.20.5723.032; Sat, 15 Oct 2022
- 17:31:30 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>
-CC:     =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= 
+        with ESMTP id S229726AbiJQOAh (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Oct 2022 10:00:37 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9AF101CF;
+        Mon, 17 Oct 2022 07:00:36 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id bj12so25064749ejb.13;
+        Mon, 17 Oct 2022 07:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/6Mxh+LUgjvM5Wy1z968oPB0TD46726WrRuhqmLLUF8=;
+        b=cIB6/ZaMlhQLapkDhLKU88sKZVO8jSTXcbrwyM0v0J14Lyp9HI/NvT7Rg4R0iwiOw5
+         Tr+goX1/+z3/6ZT89TN+wTQG30Anz6owonNBXvffGvwPcp0KC3igmjHt0vFIfiVEExYq
+         OpyzcZ5/F76gd1iYG3D0VAs9Ext9SD81/T9/xgxccz2elVaIJyRS31RepA14jTGY6u4w
+         JtFz+xvcOPmkOgWMi2XK7/H/MxAfFmlu2YaxFk17Uyrv1LsYWYMJZq2rq3DFuHkpcBr7
+         3mGD+04tlPHdh2rX+INqGYQc0fJfc5/vMmujikmWC7xQSdr1PrJGnbza8355Nndrls9q
+         x/3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/6Mxh+LUgjvM5Wy1z968oPB0TD46726WrRuhqmLLUF8=;
+        b=e5X1YexuzuWAArWsl0VufqymJ6zUIfkwK2GVpn+vkXmi6U/fW+GkYIZDWZYofxmsJ7
+         duKXkSW07duR8MEa+XF8iZYJd3dxVDqUt12d3F6eWN7XPIkOCjb9zXkgzDyCOvD78M+Z
+         iawxQ6qBoWHDeW9XQImQQxuhDFMUlqZS4rnc2lKhXnCUgzDdpVX/QcvNm+QdhN2iKBJ+
+         CrLvTdUafxtaC7ZDknDrOyIteWTehlrRdmNY6lxF/pAERnNrX78EYVXQgeWZK93nt8jQ
+         Xz/fP1WQSEqtxrzKO9E1qd5oNqDVugMcRXbcLRLgY9Q4lulyQI6ky8A5UuvL5VQ0UtCj
+         qFTw==
+X-Gm-Message-State: ACrzQf39MrX+GjTsjvZc6AfvabCdL35+tqNl8xS/Hgh/kS5UyzsCFcug
+        JatfcAeA5/E+svcZ+ZWomaI=
+X-Google-Smtp-Source: AMsMyM7/2Qu+IN4+gZnrPRxaCKtT7vBBWfcsq/ollfS2FGqUS9hTmmS4SwjYJtUP+clglaCk3um8gg==
+X-Received: by 2002:a17:907:3e0f:b0:791:9529:3674 with SMTP id hp15-20020a1709073e0f00b0079195293674mr2292715ejc.503.1666015234887;
+        Mon, 17 Oct 2022 07:00:34 -0700 (PDT)
+Received: from orome (p200300e41f201d00f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f20:1d00:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id s15-20020a05640217cf00b0045467008dd0sm7468590edy.35.2022.10.17.07.00.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Oct 2022 07:00:33 -0700 (PDT)
+Date:   Mon, 17 Oct 2022 16:00:31 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     William Breathitt Gray <william.gray@linaro.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee@kernel.org>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
@@ -50,96 +67,191 @@ CC:     =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?=
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         "linux-renesas-soc@vger.kernel.org" 
         <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v8 2/2] pwm: Add support for RZ/G2L GPT
-Thread-Topic: [PATCH v8 2/2] pwm: Add support for RZ/G2L GPT
-Thread-Index: AQHY3Xc4x9nhEXoTEUSC88Mqgf7asK4JP1wAgAZ9ZfA=
-Date:   Sat, 15 Oct 2022 17:31:30 +0000
-Message-ID: <TYCPR01MB59339FD821425B9A00A9EBF486279@TYCPR01MB5933.jpnprd01.prod.outlook.com>
-References: <20221011134135.1930260-1-biju.das.jz@bp.renesas.com>
-         <20221011134135.1930260-3-biju.das.jz@bp.renesas.com>
- <c41fe00b1e6eb5599da77f959294b05fd73bf069.camel@pengutronix.de>
-In-Reply-To: <c41fe00b1e6eb5599da77f959294b05fd73bf069.camel@pengutronix.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYCPR01MB5933:EE_|OS0PR01MB5491:EE_
-x-ms-office365-filtering-correlation-id: 734bbbbf-78a7-4cc1-b918-08daaed318d1
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: T7edJ1x6SJiJ5ZI7ZnmH3p82umd1KDxsCad6VvQEmiEPXZm7sTM0wpGna8VBORWikCMc1+sl7z/9uMsYrKtPmOJneOBglockRbRULGKenSJ7MQLs77MvLtlwVYcucieOzReLX9qiRw1yuZdW0gWD1scrODP1v0j0oodQbSN9E01h4wLy03fu6llx+nwCmqAQE+HbMQgxQty/4MB3XMkrFrJ2DFfkaMywlKIgU7x8nCU7ZwjA5JAhjkn+YH51y4CuDNeHKU6Tv2QIALyO5mmNcozA5jog7w4sip/mUw164lO/YGewtLnHU3muf0llxCnHnQuvD0P+u1SAN3WgHdgNuEY3q/CH/he91djDLqMWBOe+YigmG15tEIR8p/rCax8h8NN3+LDB+BUjSNk9IPuQ0pmCqKgxRUFs8Pxw0kNlzmzEcseHm+N0MqVv690FJGiVpC6fezXDpH9iKRXU+YiQmvqwdO1G0lm7+lei3f8r22k5p2V0IqjaAkAoJUERLDJeX1++LlXNdO0mrDr5QFph02vdj1aSdP+SevyCTXyfu13jS7i4tBpGiax9lcNrYqiyByMFg0GqPiiwO8A0cppaJ26XbDOv+P5IM3hI1SykAQj7MEZbkg1EnBFHO6jh9Z4dg+9DljUVUSIvMOeoi3yANkTraP+bs3TkfFOqWe9IxG3bEFiCryHu1fHAjBxtUHoLSFSCwAk1zaGiE5k/wfkjy79RnZ68ThrS3syiTUVgpxMzrI2ZZzV1lH6eA/VCaUVOYAbZaX5zQ+Tv1oziQBNJ8A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB5933.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(451199015)(38070700005)(55016003)(33656002)(86362001)(122000001)(38100700002)(83380400001)(316002)(478600001)(71200400001)(110136005)(54906003)(41300700001)(26005)(6506007)(7696005)(52536014)(8936002)(4744005)(9686003)(5660300002)(66446008)(66476007)(66556008)(66946007)(76116006)(8676002)(64756008)(4326008)(2906002)(186003)(4001150100001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dm8wdGNMcG1wK3hCNXpDU1ArUVdpdi9VU2FmMVBRNEtWWkRXdUZGRnNWL0pX?=
- =?utf-8?B?aTBLQXlyM0I1Q0dQb1ZMdHY1UTFEK3dpcElhN3NrK0RZTnIyUHBtTC9UelpX?=
- =?utf-8?B?eU9TY2xZMzJpQlY5blVEQjV6alNZWUF6TXYvRmY5UklkdFZEV3BwRTRzSGlX?=
- =?utf-8?B?VlVCbHFDeVovVkdtbHdiYjZXN3ROZnhnbUpZUlE3UzArZCs1UXFmay9hOXNR?=
- =?utf-8?B?REd6eEEvYysyWFF0ZFZlQUgrZVVRNnJJRUtGN1phRjlSb2I5NmxhdzNvTDhj?=
- =?utf-8?B?aUQ5bnppM1RFUmJBSGs3T1pEV2JGRHkraEdpQW9LaGZBQlVUcGRBcVc3K2pT?=
- =?utf-8?B?WFVvWG9GTmxPZWFScXJ2YTg4ZFhkR0RsSDkrVERJSlcvUU9UL0prZ05rZ2JC?=
- =?utf-8?B?ZWxuaENhUTI2bFZ6Z1JOYWlXYk5OZUNrbG45RTBGVHBpdGlvSlZYQXljNXZH?=
- =?utf-8?B?ckFLeEhUR3JGVEl6WUIyUkQ2cXBUc0tMcVZEeWV3MDNHTFhPMDRnL0ZDNkVn?=
- =?utf-8?B?dUppZXVqS0FidTVEY1hYdlJEc2VUZFYrYXJkeGNLN3JnMW1EK0hiVUlNdExu?=
- =?utf-8?B?YzMreDdXQ1h1blZLRFlMcXhCM1l0S2x3aFkzVEdQMG1wbllOazR6TUFIQUQv?=
- =?utf-8?B?STc1bkVqbURnZENubXE4NHYxbU03Z3R4cG1hNVl2c3VLcU5KQkY4QlJpTWg0?=
- =?utf-8?B?anc4Z1Z4K3VNbnMvbmZGYmxtdGdIVDFFdWZ4SHBYOWNCeDZYd1NvN2JtY3FP?=
- =?utf-8?B?NklPQjJsK1hRdTJmZGRlaU1wWnY4aGJFWk0vRG9vWGMyT0RnYlNEcXEvNFhU?=
- =?utf-8?B?UjdMOGl5YXZSVDc0Rm9XUjhyRjIydHAzWEJFcVZlSTUwamswWi93NkR3bTA5?=
- =?utf-8?B?N2NMOE51NThjd3lucFF3S09NWmxzSE9OUWRERDBwa3ZmTkhaL3k3a3RWU3BL?=
- =?utf-8?B?SzhRUjVhcy9ia3dia0NBZDJBUFg3UjhnYm81QjJwdXRiYkcyRzh0QmltMDhh?=
- =?utf-8?B?d1FsR1VBdTh5d082ajNwRmh6eVdJcjZOL1poOWlpWXI1bjZCeHM1Z0VON1lP?=
- =?utf-8?B?Z0p6eVFyK3JHRi9hdzZUamVweEVkK3VQazd2N0NTVlRQVUNiRE15bmxkUDVJ?=
- =?utf-8?B?R0V5eU1mT2o0Y0VTVkxUTzhVQk1aTlROalZIc3BaWU9HdXdXUGllLzJLNmQ4?=
- =?utf-8?B?ZzhidWxsZFR6Nnh3NndHenVsVHMxM1krUTdjZGZkc25CRnp2ZmdXam4xcnln?=
- =?utf-8?B?b2YvTVk0UjhPQit2L29KTHQ2T0x0WXU3dHUzZTVveE1CNXhFREsycVpJbGJX?=
- =?utf-8?B?Uk5GMnkwSmZ6RVZTVWxNQjc4d2JTYVMvRS9HTXlRd3J0NEZRWkV0WDI1bXk3?=
- =?utf-8?B?c0JZTjlnaXNYWFUrY1hPT3FQclQ0a3h1OXBYbDMveW9QTXFtZDB1aGdrYVl5?=
- =?utf-8?B?Y0NXZG4xWDBiMjBhUVNhQ0VpQWJCeVgwY3hBQ05WZ1BWYVV6Y2lVaW9IbmVQ?=
- =?utf-8?B?UzBJZFZIRHUrZmRCM2VQRUdwdWxqYW0yN0d6NUVLL0lCeEtqSWluemg2VlZB?=
- =?utf-8?B?bExuZWJxdWtnRzZYN0M4K2dYVFdiWUI1Rlh4WDZ4YkdSemxkdWFJZGlrRzNq?=
- =?utf-8?B?SVZldmV0OUgvUWxHcVo3WWowME5QMUppRjY5K2gyZ0QyYTFIMytQeXFIeTEr?=
- =?utf-8?B?SEc1Q2ljMUo3WWlhcXVKVndOb2poK2YrMlpyRlIwbXcvWTRlNHhxYlpMMGtu?=
- =?utf-8?B?NkJhTUp0UUVaMCtkU2pkem1kZjBYaHVRSSt2Rm9IcWVrTUt3WG5KZGxDWlNO?=
- =?utf-8?B?akI3dFQwbVBHMGJaTlRSRmNleU9MSmwzVkJBVEV6MzYzc3RwL2ZaS05mSExQ?=
- =?utf-8?B?VC9UNjhJUXN4T20rbFU0alo4R05WLzIyeDgzWjNxTUJJVSsybU1ISEVKbjdH?=
- =?utf-8?B?N0JQL1gyWHRiaFhKTEdYKzhmY2E4Skc2VXdiZ0RhNHR1Z2dGQ2ZXY2kzUGZL?=
- =?utf-8?B?QlIzZXVYcER2dzViTWZKb3hvMVhoZkJabnQzRFhUN1pQSVh4SS84ckRabzNM?=
- =?utf-8?B?aWIwVkd5a01hOHNvcSs4TG1TZ2g2aVFJQ1VsRW9vS3pubHFwUWJsdWRaREZi?=
- =?utf-8?B?NUFselFvLzN0OUdFd1hkMklTTytlUXEyRGFaQjQ3WFRUZzNJeWxqWHMreGRx?=
- =?utf-8?B?dUE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH v4 1/4] dt-bindings: mfd: Document RZ/G2L MTU3a bindings
+Message-ID: <Y01f/5VtxgCDz+tx@orome>
+References: <20221010145222.1047748-1-biju.das.jz@bp.renesas.com>
+ <20221010145222.1047748-2-biju.das.jz@bp.renesas.com>
+ <8d6b8f0e-d9d7-0d77-aa99-379de768fd5d@linaro.org>
+ <OS0PR01MB592232C831CCA84FC302212F86239@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <ad2e4445-052b-d65a-bdba-5759c169aafd@linaro.org>
+ <OS0PR01MB59228146DE05231586212FE886239@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <17fc9f27-03ad-7663-db21-2f14c7ff4312@linaro.org>
+ <OS0PR01MB5922152268684B5564AA170D86239@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <Y0rDpaGosqox77SQ@fedora>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYCPR01MB5933.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 734bbbbf-78a7-4cc1-b918-08daaed318d1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2022 17:31:30.3452
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rpwLYOCJWt4N2jpt+3rHRiNpX0W8nM/e11V1NO0JdCAeFXEJ5x2Q9XEtyh3AUl60VLFBQ16eCwprfGt5Dj3y8ZK2Ap2F8mNtOXurBqDrti4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS0PR01MB5491
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="nZ+UcSAkhSAEBb22"
+Content-Disposition: inline
+In-Reply-To: <Y0rDpaGosqox77SQ@fedora>
+User-Agent: Mutt/2.2.7 (2022-08-07)
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-SGkgUGhpbGlwcCBaYWJlbCwNCg0KVGhhbmtzIGZvciB0aGUgcmV2aWV3Lg0KDQo+IFN1YmplY3Q6
-IFJlOiBbUEFUQ0ggdjggMi8yXSBwd206IEFkZCBzdXBwb3J0IGZvciBSWi9HMkwgR1BUDQo+IA0K
-PiBIaSBCaWp1LA0KPiANCj4gT24gRGksIDIwMjItMTAtMTEgYXQgMTQ6NDEgKzAxMDAsIEJpanUg
-RGFzIHdyb3RlOg0KPiBbLi4uXQ0KPiA+ICtzdGF0aWMgaW50IHJ6ZzJsX2dwdF9wcm9iZShzdHJ1
-Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KSB7DQo+IFsuLi5dDQo+ID4gKwlyZXQgPSByZXNldF9j
-b250cm9sX2RlYXNzZXJ0KHJ6ZzJsX2dwdC0+cnN0Yyk7DQo+ID4gKwlpZiAocmV0KQ0KPiA+ICsJ
-CXJldHVybiBkZXZfZXJyX3Byb2JlKCZwZGV2LT5kZXYsIHJldCwNCj4gPiArCQkJCSAgICAgImNh
-bm5vdCBkZWFzc2VydCByZXNldCBjb250cm9sXG4iKTsNCj4gPiArDQo+ID4gKwlyemcybF9ncHQt
-PmNsayA9IGRldm1fY2xrX2dldCgmcGRldi0+ZGV2LCBOVUxMKTsNCj4gPiArCWlmIChJU19FUlIo
-cnpnMmxfZ3B0LT5jbGspKQ0KPiA+ICsJCXJldHVybiBkZXZfZXJyX3Byb2JlKCZwZGV2LT5kZXYs
-IFBUUl9FUlIocnpnMmxfZ3B0LT5jbGspLA0KPiA+ICsJCQkJICAgICAiY2Fubm90IGdldCBjbG9j
-a1xuIik7DQo+IA0KPiBJZiBkZXZtX2Nsa19nZXQoKSBmYWlscywgdGhlIHJlc2V0IHN0YXlzIGRl
-YXNzZXJ0ZWQuIEJldHRlciBkZWFzc2VydA0KPiBhZnRlciBkZXZtX2Nsa19nZXQoKS4NCg0KV2ls
-bCBmaXggdGhpcyBpbiBuZXh0IHZlcnNpb24uDQoNCkNoZWVycywNCkJpanUNCg==
+
+--nZ+UcSAkhSAEBb22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sat, Oct 15, 2022 at 10:28:53AM -0400, William Breathitt Gray wrote:
+> On Tue, Oct 11, 2022 at 08:31:48PM +0000, Biju Das wrote:
+> > > Subject: Re: [PATCH v4 1/4] dt-bindings: mfd: Document RZ/G2L MTU3a
+> > > bindings
+> > >=20
+> > > On 11/10/2022 15:23, Biju Das wrote:
+> > > >> Subject: Re: [PATCH v4 1/4] dt-bindings: mfd: Document RZ/G2L MTU3a
+> > > >> bindings
+> > > >>
+> > > >> On 11/10/2022 10:55, Biju Das wrote:
+> > > >>>
+> > > >>>>>  .../bindings/mfd/renesas,rz-mtu3.yaml         | 305
+> > > >>>> ++++++++++++++++++
+> > > >>>>>  1 file changed, 305 insertions(+)  create mode 100644
+> > > >>>>> Documentation/devicetree/bindings/mfd/renesas,rz-mtu3.yaml
+> > > >>>>
+> > > >>>> This should not be in MFD. Just because some device has few
+> > > >> features,
+> > > >>>> does not mean it should go to MFD... Choose either timer or pwm.
+> > > >>>
+> > > >>> MFD is for multifunction device. This IP supports multiple
+> > > functions
+> > > >>> like timer, pwm, clock source/events. That is the reason I have
+> > > >> added
+> > > >>> here. MFD is core which provides register access for client
+> > > devices.
+> > > >>>
+> > > >>> For me moving it to pwm or counter is not a big problem.
+> > > >>> Why do you think it cannot be MFD?
+> > > >>
+> > > >>
+> > > >> Because it makes MFD a dump for everything where author did not
+> > > want
+> > > >> to think about real device aspects, but instead represented driver
+> > > >> design (MFD driver).
+> > > >
+> > > > Core driver is MFD, just provides resources to child devices and is
+> > > > not aware of any real device aspects.
+> > > >
+> > > >>
+> > > >> MFDs are pretty often combining unrelated features, e.g. PMICs
+> > > which
+> > > >> have wakeup and system power control, regulator, 32 kHz clocks, RTC
+> > > >> and some USB connector.
+> > > >
+> > > > Here also same right? pwm, counter and clock are 3 unrelated
+> > > features.
+> > > > That is the reason we have separate subsystems for these features.
+> > >=20
+> > > These are quite similar features of a similar piece of hardware.
+> > > Sometimes called timer.
+> > >=20
+> > > >
+> > > >>
+> > > >> Just because you will have clocksource driver, PWM driver and timer
+> > > >> driver does not make it a MFD.
+> > > >
+> > > > MFD is multi function device.
+> > >=20
+> > > No. MFD is a Linux subsystem name. Not a device type. The bindings are
+> > > located in respective type.
+> > >=20
+> > > > So are are you agreeing Clock source, PWM and timer are different
+> > > > functionalities or not? If not, why do we have 3 subsystems, if it
+> > > is
+> > > > same?
+> > >=20
+> > > Linux subsystems? We can have millions of them and it is not related
+> > > to bindings.
+> >=20
+> > OK.
+> >=20
+> > >=20
+> > >=20
+> > > > Where do keep these bindings as there is only single "rz_mtu"
+> > > bindings for these 3 different functionalities?
+> > >=20
+> > > Again, focus on hardware not on Linux drivers. Hardware is called MTU
+> > > - Multi-Function TIMER Unit. Timer.
+> >=20
+> > OK
+> > >=20
+> > > > pwm or counter or mfd?
+> > >=20
+> > > Not MFD. I already proposed where to put it. Other Timer/PWM/Counter
+> > > units are also in timer.
+> > >=20
+> >=20
+> > I guess for counter/pwm maintainers, it is ok to model MTU3 as a single=
+=20
+> > binding "rz-mtu3" in timer that binds against counter and pwm=20
+> > functionalities as well??
+> >=20
+> > Cheers,
+> > Biju
+>=20
+> I'm okay with putting the MTU3 binding under timer; we already have
+> Documentation/devicetree/bindings/timer/renesas,mtu2.yaml there so
+> adding a new renesas,mtu3.yaml next to it seems reasonable.
+>=20
+> Just to reiterate Krzysztof's point, the subsystems in Linux serve as a
+> way to group drivers together that utilize the same ABIs, whereas the
+> devicetree is a structure for organizing physical hardware. The
+> structure of physical hardware types don't necessarily match the
+> organization of the ABIs we use to support them. This is why you may end
+> up with differing heirarchies between the devicetree and driver
+> subsystems.
+>=20
+> To illustrate the point, take for example a hypothetical
+> digital-to-analog (DAC) device with a few GPIO lines. Those GPIO
+> input signals could be tied to buttons used to indicate to the system
+> that a user wants to reset or adjust the DAC output, while the GPIO
+> output signals could be status lights or triggers indicating that the
+> DAC is operating. The respective driver for this device may utilize the
+> IIO subsystem to support the DAC and the GPIO subsystem to support those
+> GPIO lines, but it would be incorrect to put this under MFD because the
+> purpose of the GPIO lines is to assist in the operation of the DAC; in
+> other words, this is primarily a DAC device with some auxiliary
+> convenience functionalities, not a MFD with distinct unrelated separate
+> components.
+
+Exactly. In addition to the DT aspect, another misconception is that a
+driver for a multi-function device needs to be somehow split up to match
+the Linux subsystem structure. In most cases that's not true. Pick the
+subsystem that most closely fits the main function of a device and
+implement the driver. If you can expose further functions using other
+subsystems, that's absolutely fine. Drivers can register with multiple
+subsystems at the same time.
+
+Yes, that's not quite as neat as having individual drivers for each
+subsystem, but it's a much better approximation of the hardware and
+therefore will lead to more compact and stable drivers. Trying to split
+things up arbitrarily often makes for wonky constructs.
+
+We've gained powerful tools over the years to easily deal with cross-
+subsystem drivers, so there's seldom a reason to strictly split things
+across subsystem boundaries anymore.
+
+Thierry
+
+--nZ+UcSAkhSAEBb22
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmNNX/0ACgkQ3SOs138+
+s6Fd7w/7Bk/7GH1pccb3LSpYVwJqBPu6guiw4I1yjG2aNVsX3MBfwjXXg0LBJkRV
+0YctZRdJTPgZcaXrTs5Kx8GovuxokrxgM9M9jqktB7tSmlQSVUEJC19uk01X5hwc
+f+VtHHugkqde1PbC2aMSX4OBX0C7MeRHijIGK8oi2e9auN+LQm+w2lh5vKJtP/6C
+MEDJtOOCo+eEZWKPx5wOwwV/8WLEmyBolMYQunCrwVE8VyXnerGzf0Pc9BBsEEFS
+vaO8ad+VaUFnSMsMDTPOzW6oPsPmQafD8Jih3diuP1aZgcEE1iwfzBYTHAkX4kuw
+us38EbVXOMNx6pVi9MzUTon/XuKdPHsXT4byq4nHXVqE0yv1O9H6zrGIQTocBKvK
+8WJaHynZUW+fmL5Yi3wnBY72EY3+bFQxtpGNCBb5EWdO45e871pXnAebOCpsgw3Y
+rIu74lOmAUeHuSvZZC8njsW8aFgXlBNtSb9Ja0c+ng7XxmrVNWgRgJ4E9MUV8Kf7
+nESRrVTHyhPbOyKjAe4nTZF3hxZV52Rq74icpPGA6Mv4mKZpY6q999WvVzUPxUT6
+2wTZc4nQoKyDn233bD/FwQqA5fguE4lx1fZ2UOItvPyK5abQvVVw5d/980Wr71IP
+Xk3Q7svtVW1zRBaJoltW+D8v62H8pXk6BZvfgPnz3YSVr+1y3xA=
+=yeGv
+-----END PGP SIGNATURE-----
+
+--nZ+UcSAkhSAEBb22--
