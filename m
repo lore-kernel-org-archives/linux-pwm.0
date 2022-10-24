@@ -2,27 +2,27 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB25C38A2D
-	for <linux-pwm@archiver.kernel.org>; Mon, 24 Oct 2022 23:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8CE9C38A2D
+	for <linux-pwm@archiver.kernel.org>; Mon, 24 Oct 2022 23:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230426AbiJXXbu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 24 Oct 2022 19:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38508 "EHLO
+        id S231235AbiJXXcK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 24 Oct 2022 19:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbiJXXbc (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Oct 2022 19:31:32 -0400
+        with ESMTP id S231297AbiJXXbq (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Oct 2022 19:31:46 -0400
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CC68E7AE;
-        Mon, 24 Oct 2022 14:52:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017771D4DFA;
+        Mon, 24 Oct 2022 14:52:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1666644742; h=from:from:sender:reply-to:subject:subject:date:date:
+        s=mail; t=1666644743; h=from:from:sender:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xak1hhi2ZXgbcAJgD44C+AwcAkXWEuIXNRLIGjZ6/V8=;
-        b=BT7X4ojFfsnA/z0K4xQ9xt0xKjIe+Y3K9UTqeUi22nPxgECWzdT8xZj6o3SR86Aj5EFyQp
-        mA3k4mYgDmL/0+hpBIM1GI1AEz0Bt2Trq6p/O5Z9ArFc1cHm13OatrZtQKO7Vo7rwBTckm
-        PGfl/xO9c5iQmmHRmm54wy2LFaSfIdw=
+        bh=HPp+33aYNoQqAGKipSoPytGt3HFjbS0IYlzYnBXZnaU=;
+        b=jmCmEXMjhFZ7z+eIBo9HtNqhmipvRftvCUfSkfxFDQLiBRNfB9VrBmbvT96g75zhyIZIce
+        shnY8wpFnn7y/GovUG363mZ+WURakSFyv420pdTbBDBiPOx0yoe+99bQVAb/OULG5PUbgE
+        R7g4gCSz49qRygDCKTsSTHba6xJ1CCw=
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -30,9 +30,9 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
 Cc:     od@opendingux.net, linux-pwm@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
         Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 3/5] pwm: jz4740: Force dependency on Device Tree
-Date:   Mon, 24 Oct 2022 21:52:11 +0100
-Message-Id: <20221024205213.327001-4-paul@crapouillou.net>
+Subject: [PATCH 5/5] pwm: jz4740: Use regmap_{set,clear}_bits
+Date:   Mon, 24 Oct 2022 21:52:13 +0100
+Message-Id: <20221024205213.327001-6-paul@crapouillou.net>
 In-Reply-To: <20221024205213.327001-1-paul@crapouillou.net>
 References: <20221024205213.327001-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -41,69 +41,49 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Ingenic SoCs all require CONFIG_OF, so there is no case where we want to
-use this driver without CONFIG_OF.
+Simplify a bit the code by using regmap_set_bits() and
+regmap_clear_bits() instead of regmap_update_bits() when possible.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- drivers/pwm/Kconfig      |  2 +-
  drivers/pwm/pwm-jz4740.c | 10 ++++------
- 2 files changed, 5 insertions(+), 7 deletions(-)
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 60d13a949bc5..1fe420a45f91 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -283,7 +283,7 @@ config PWM_IQS620A
- config PWM_JZ4740
- 	tristate "Ingenic JZ47xx PWM support"
- 	depends on MIPS || COMPILE_TEST
--	depends on COMMON_CLK
-+	depends on COMMON_CLK && OF
- 	select MFD_SYSCON
- 	help
- 	  Generic PWM framework driver for Ingenic JZ47xx based
 diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index 65462a0052af..c0afc0c316a8 100644
+index c0afc0c316a8..22fcdca66081 100644
 --- a/drivers/pwm/pwm-jz4740.c
 +++ b/drivers/pwm/pwm-jz4740.c
-@@ -269,19 +269,18 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
- 	return devm_pwmchip_add(dev, &jz4740->chip);
- }
+@@ -88,8 +88,7 @@ static int jz4740_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct jz4740_pwm_chip *jz = to_jz4740(chip);
  
--static const struct soc_info __maybe_unused jz4740_soc_info = {
-+static const struct soc_info jz4740_soc_info = {
- 	.num_pwms = 8,
- };
+ 	/* Enable PWM output */
+-	regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
+-			   TCU_TCSR_PWM_EN, TCU_TCSR_PWM_EN);
++	regmap_set_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm), TCU_TCSR_PWM_EN);
  
--static const struct soc_info __maybe_unused jz4725b_soc_info = {
-+static const struct soc_info jz4725b_soc_info = {
- 	.num_pwms = 6,
- };
+ 	/* Start counter */
+ 	regmap_write(jz->map, TCU_REG_TESR, BIT(pwm->hwpwm));
+@@ -129,8 +128,7 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	 * In TCU2 mode (channel 1/2 on JZ4750+), this must be done before the
+ 	 * counter is stopped, while in TCU1 mode the order does not matter.
+ 	 */
+-	regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
+-			   TCU_TCSR_PWM_EN, 0);
++	regmap_clear_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm), TCU_TCSR_PWM_EN);
  
--static const struct soc_info __maybe_unused x1000_soc_info = {
-+static const struct soc_info x1000_soc_info = {
- 	.num_pwms = 5,
- };
+ 	/* Stop counter */
+ 	regmap_write(jz->map, TCU_REG_TECR, BIT(pwm->hwpwm));
+@@ -204,8 +202,8 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	regmap_write(jz4740->map, TCU_REG_TDFRc(pwm->hwpwm), period);
  
--#ifdef CONFIG_OF
- static const struct of_device_id jz4740_pwm_dt_ids[] = {
- 	{ .compatible = "ingenic,jz4740-pwm", .data = &jz4740_soc_info },
- 	{ .compatible = "ingenic,jz4725b-pwm", .data = &jz4725b_soc_info },
-@@ -289,12 +288,11 @@ static const struct of_device_id jz4740_pwm_dt_ids[] = {
- 	{},
- };
- MODULE_DEVICE_TABLE(of, jz4740_pwm_dt_ids);
--#endif
+ 	/* Set abrupt shutdown */
+-	regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
+-			   TCU_TCSR_PWM_SD, TCU_TCSR_PWM_SD);
++	regmap_set_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
++			TCU_TCSR_PWM_SD);
  
- static struct platform_driver jz4740_pwm_driver = {
- 	.driver = {
- 		.name = "jz4740-pwm",
--		.of_match_table = of_match_ptr(jz4740_pwm_dt_ids),
-+		.of_match_table = jz4740_pwm_dt_ids,
- 	},
- 	.probe = jz4740_pwm_probe,
- };
+ 	if (state->enabled) {
+ 		/*
 -- 
 2.35.1
 
