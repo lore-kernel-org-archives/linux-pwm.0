@@ -2,26 +2,27 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73873C38A2D
-	for <linux-pwm@archiver.kernel.org>; Mon, 24 Oct 2022 23:30:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 003AAFA373D
+	for <linux-pwm@archiver.kernel.org>; Mon, 24 Oct 2022 23:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231192AbiJXXac (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 24 Oct 2022 19:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
+        id S230207AbiJXXbU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 24 Oct 2022 19:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231197AbiJXXaK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Oct 2022 19:30:10 -0400
+        with ESMTP id S230341AbiJXXaz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Oct 2022 19:30:55 -0400
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07339A2851;
-        Mon, 24 Oct 2022 14:51:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC676147D03;
+        Mon, 24 Oct 2022 14:51:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1666644739; h=from:from:sender:reply-to:subject:subject:date:date:
+        s=mail; t=1666644742; h=from:from:sender:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:references; bh=+ftnH8PiQM7vRwC+vvn0YErE9wzRcvPE7+Jxycee6FQ=;
-        b=wVkh2ifrrqdicQgTmpFgvZOs3NWX3iw+5/2+Shc97X68/Ox2Rj10J7SKhU7vHGKOW09XMB
-        M3loSKulHb98Jomn0jFr/vLlIBpdb3uKknbojkUr7gChwE5dnfyYRv9J/2luFYwQ2982fx
-        3O1A90BpcOtDWDnDXyTgug7MTr5XEl4=
+         in-reply-to:in-reply-to:references:references;
+        bh=Vr7lNDSbGtSjiNdf7yERkT0vvFH6fFGxF2sxGNjzC/g=;
+        b=B2abmIY22GUeSjPRTWzhdM/9vbX7QdDB9z6ewKCRCOvLaLS1P/CDnidjVpsxGAFWB9KLs7
+        JPgBNcc5ZPDngtVnNwFl8YpWba+3xfg8Dz3jVqpmCK2cv1bSPBhPG8z3kixHrN2vdJ4vc9
+        jZ+a11nSsRwYNTUVc3yMBQxX/K2NLcQ=
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -29,39 +30,43 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
 Cc:     od@opendingux.net, linux-pwm@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
         Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 0/5] pwm: jz4740: Fixes and some light changes
-Date:   Mon, 24 Oct 2022 21:52:08 +0100
-Message-Id: <20221024205213.327001-1-paul@crapouillou.net>
+Subject: [PATCH 4/5] pwm: jz4740: Depend on MACH_INGENIC instead of MIPS
+Date:   Mon, 24 Oct 2022 21:52:12 +0100
+Message-Id: <20221024205213.327001-5-paul@crapouillou.net>
+In-Reply-To: <20221024205213.327001-1-paul@crapouillou.net>
+References: <20221024205213.327001-1-paul@crapouillou.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam: Yes
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Thierry, Uwe,
+The MACH_INGENIC Kconfig option will be selected when building a kernel
+targeting Ingenic SoCs, but also when compiling a generic MIPS kernel
+that happens to support Ingenic SoCs.
 
-Here are two important fixes for the pwm-jz4740 driver. They address
-problems with the PWM pin levels not being driven inactive when they
-should be.
+Therefore, if MACH_INGENIC is not set, we know that we're not even
+trying to build a generic kernel that supports these SoCs, and we can
+hide the options to compile the SoC-specific drivers.
 
-The patches 3-5 are simple changes and are not bugfixes.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ drivers/pwm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Cheers,
--Paul
-
-
-Paul Cercueil (5):
-  pwm: jz4740: Fix pin level of disabled TCU2 channels, part 1
-  pwm: jz4740: Fix pin level of disabled TCU2 channels, part 2
-  pwm: jz4740: Force dependency on Device Tree
-  pwm: jz4740: Depend on MACH_INGENIC instead of MIPS
-  pwm: jz4740: Use regmap_{set,clear}_bits
-
- drivers/pwm/Kconfig      |  4 +-
- drivers/pwm/pwm-jz4740.c | 89 ++++++++++++++++++++++++----------------
- 2 files changed, 55 insertions(+), 38 deletions(-)
-
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 1fe420a45f91..cb623d0702f6 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -282,7 +282,7 @@ config PWM_IQS620A
+ 
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+-	depends on MIPS || COMPILE_TEST
++	depends on MACH_INGENIC || COMPILE_TEST
+ 	depends on COMMON_CLK && OF
+ 	select MFD_SYSCON
+ 	help
 -- 
 2.35.1
 
