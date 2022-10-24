@@ -2,37 +2,37 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 003AAFA373D
-	for <linux-pwm@archiver.kernel.org>; Mon, 24 Oct 2022 23:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DA4FA373D
+	for <linux-pwm@archiver.kernel.org>; Mon, 24 Oct 2022 23:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbiJXXbU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 24 Oct 2022 19:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        id S231178AbiJXXbn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 24 Oct 2022 19:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230341AbiJXXaz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Oct 2022 19:30:55 -0400
+        with ESMTP id S231289AbiJXXbT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Oct 2022 19:31:19 -0400
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC676147D03;
-        Mon, 24 Oct 2022 14:51:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1916FE93F;
+        Mon, 24 Oct 2022 14:52:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1666644742; h=from:from:sender:reply-to:subject:subject:date:date:
+        s=mail; t=1666644741; h=from:from:sender:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Vr7lNDSbGtSjiNdf7yERkT0vvFH6fFGxF2sxGNjzC/g=;
-        b=B2abmIY22GUeSjPRTWzhdM/9vbX7QdDB9z6ewKCRCOvLaLS1P/CDnidjVpsxGAFWB9KLs7
-        JPgBNcc5ZPDngtVnNwFl8YpWba+3xfg8Dz3jVqpmCK2cv1bSPBhPG8z3kixHrN2vdJ4vc9
-        jZ+a11nSsRwYNTUVc3yMBQxX/K2NLcQ=
+        bh=fhJrUP+Njp6HsgAA/ZXoqJpzcRmNXj5pVHzoSisYMV4=;
+        b=X3ViSXvrs2DTVmBs1bS+Stp7Zsayi6JvxxstatJ+bXCQrKzYPB71+k+m1NyhYpgUfMubvJ
+        1dhLa4d241qWW23ro7HP2VPDT6HVtKb9MrcefjBfaOWEPUqVCF2iMd9coarbeAtB+h+dD8
+        8LWesp3qkUci38YVquaZ1QjiD5SP8lU=
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 Cc:     od@opendingux.net, linux-pwm@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 4/5] pwm: jz4740: Depend on MACH_INGENIC instead of MIPS
-Date:   Mon, 24 Oct 2022 21:52:12 +0100
-Message-Id: <20221024205213.327001-5-paul@crapouillou.net>
+        Paul Cercueil <paul@crapouillou.net>, stable@vger.kernel.org
+Subject: [PATCH 2/5] pwm: jz4740: Fix pin level of disabled TCU2 channels, part 2
+Date:   Mon, 24 Oct 2022 21:52:10 +0100
+Message-Id: <20221024205213.327001-3-paul@crapouillou.net>
 In-Reply-To: <20221024205213.327001-1-paul@crapouillou.net>
 References: <20221024205213.327001-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -41,32 +41,115 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The MACH_INGENIC Kconfig option will be selected when building a kernel
-targeting Ingenic SoCs, but also when compiling a generic MIPS kernel
-that happens to support Ingenic SoCs.
+After commit a020f22a4ff5 ("pwm: jz4740: Make PWM start with the active part"),
+the trick to set duty > period to properly shut down TCU2 channels did
+not work anymore, because of the polarity inversion.
 
-Therefore, if MACH_INGENIC is not set, we know that we're not even
-trying to build a generic kernel that supports these SoCs, and we can
-hide the options to compile the SoC-specific drivers.
+Address this issue by restoring the proper polarity before disabling the
+channels.
 
+Fixes: a020f22a4ff5 ("pwm: jz4740: Make PWM start with the active part")
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Cc: stable@vger.kernel.org
 ---
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-jz4740.c | 62 ++++++++++++++++++++++++++--------------
+ 1 file changed, 40 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 1fe420a45f91..cb623d0702f6 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -282,7 +282,7 @@ config PWM_IQS620A
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index 228eb104bf1e..65462a0052af 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -97,6 +97,19 @@ static int jz4740_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	return 0;
+ }
  
- config PWM_JZ4740
- 	tristate "Ingenic JZ47xx PWM support"
--	depends on MIPS || COMPILE_TEST
-+	depends on MACH_INGENIC || COMPILE_TEST
- 	depends on COMMON_CLK && OF
- 	select MFD_SYSCON
- 	help
++static void jz4740_pwm_set_polarity(struct jz4740_pwm_chip *jz,
++				    unsigned int hwpwm,
++				    enum pwm_polarity polarity)
++{
++	unsigned int value = 0;
++
++	if (polarity == PWM_POLARITY_INVERSED)
++		value = TCU_TCSR_PWM_INITL_HIGH;
++
++	regmap_update_bits(jz->map, TCU_REG_TCSRc(hwpwm),
++			   TCU_TCSR_PWM_INITL_HIGH, value);
++}
++
+ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct jz4740_pwm_chip *jz = to_jz4740(chip);
+@@ -130,6 +143,7 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	unsigned long long tmp = 0xffffull * NSEC_PER_SEC;
+ 	struct clk *clk = pwm_get_chip_data(pwm);
+ 	unsigned long period, duty;
++	enum pwm_polarity polarity;
+ 	long rate;
+ 	int err;
+ 
+@@ -169,6 +183,9 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (duty >= period)
+ 		duty = period - 1;
+ 
++	/* Restore regular polarity before disabling the channel. */
++	jz4740_pwm_set_polarity(jz4740, pwm->hwpwm, state->polarity);
++
+ 	jz4740_pwm_disable(chip, pwm);
+ 
+ 	err = clk_set_rate(clk, rate);
+@@ -190,29 +207,30 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
+ 			   TCU_TCSR_PWM_SD, TCU_TCSR_PWM_SD);
+ 
+-	/*
+-	 * Set polarity.
+-	 *
+-	 * The PWM starts in inactive state until the internal timer reaches the
+-	 * duty value, then becomes active until the timer reaches the period
+-	 * value. In theory, we should then use (period - duty) as the real duty
+-	 * value, as a high duty value would otherwise result in the PWM pin
+-	 * being inactive most of the time.
+-	 *
+-	 * Here, we don't do that, and instead invert the polarity of the PWM
+-	 * when it is active. This trick makes the PWM start with its active
+-	 * state instead of its inactive state.
+-	 */
+-	if ((state->polarity == PWM_POLARITY_NORMAL) ^ state->enabled)
+-		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
+-				   TCU_TCSR_PWM_INITL_HIGH, 0);
+-	else
+-		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
+-				   TCU_TCSR_PWM_INITL_HIGH,
+-				   TCU_TCSR_PWM_INITL_HIGH);
+-
+-	if (state->enabled)
++	if (state->enabled) {
++		/*
++		 * Set polarity.
++		 *
++		 * The PWM starts in inactive state until the internal timer
++		 * reaches the duty value, then becomes active until the timer
++		 * reaches the period value. In theory, we should then use
++		 * (period - duty) as the real duty value, as a high duty value
++		 * would otherwise result in the PWM pin being inactive most of
++		 * the time.
++		 *
++		 * Here, we don't do that, and instead invert the polarity of
++		 * the PWM when it is active. This trick makes the PWM start
++		 * with its active state instead of its inactive state.
++		 */
++		if (state->polarity == PWM_POLARITY_NORMAL)
++			polarity = PWM_POLARITY_INVERSED;
++		else
++			polarity = PWM_POLARITY_NORMAL;
++
++		jz4740_pwm_set_polarity(jz4740, pwm->hwpwm, polarity);
++
+ 		jz4740_pwm_enable(chip, pwm);
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
