@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3873C4332F
-	for <linux-pwm@archiver.kernel.org>; Tue,  1 Nov 2022 15:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B19B5C4167D
+	for <linux-pwm@archiver.kernel.org>; Tue,  1 Nov 2022 15:56:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229562AbiKAP43 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 1 Nov 2022 11:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
+        id S230045AbiKAP4b (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 1 Nov 2022 11:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiKAP42 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2022 11:56:28 -0400
+        with ESMTP id S229827AbiKAP43 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2022 11:56:29 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEB8381;
-        Tue,  1 Nov 2022 08:56:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBBF65AC;
+        Tue,  1 Nov 2022 08:56:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667318187; x=1698854187;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Rt/S8ugIyQc8CcEgszJLJMjilUawwEzDrxItMe6ZNY0=;
-  b=g/LIc4ZrHnVTXnL99ZiFlbm2nfFiEiE/v2RnUGpJ+AjBvXUOutWM7SKY
-   fDMS+mdXySVXn+5o2l/WABroRAakf+OQyJFUzH6LzXqwe3qLAeQWRVZqk
-   fSsj6yZrHpl3wtOZ7Z471pUXQXl/GunZZ6AnufLTADrKLIQ29hyqvDPQ5
-   WxBVCEF6G2K3VadzjM5xRNApMRkSYthqQTxEcTgw2mpqRi0Pz8QAA88mA
-   R/fo4bachhXlii2bCkLrj7TjLH8JjOulV1i4ViX+Sety3/WlKlKIGe/Hh
-   /kYQgq1AwMotMLSRPevan3zbrfYPkDRAFvefy7K3/a6gOmvEEb9egd+jX
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="292474804"
+  t=1667318188; x=1698854188;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=NI154NeC1RWG4hSdSSq9uISzU3eVykdnlrIdlNSvC4A=;
+  b=KkXarmWr/Efn/RiHllZ6FOxL4J4zLyJxG7rAdBs3f6Hn513mEUpjTm8H
+   fyfa/3KqBnIskWPCOXYoJvTlkCXFhbl6GyybEo06AuBESG9dNIMP2zueI
+   TThVK7v8VzU+YY/0iqMqSBquVv5BowV5kBBJN+VpnYFsiMyDxn7ktXmYy
+   76iBf44lfehHNVDii4hhhTFj5iNgWqYbVwySY8YvYKUpZ2YydgvM9Htkt
+   tygQoDQ7SAYGjCX7FK8sEE3KCvqve/9dwzu5H2bR/IhhbI9X3+pXBVBVk
+   qTSgHNAUqzU0XKTHNehSuHE77rL4X9W1B40Y4KkUjODYoidMEqbx0QWia
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="292474806"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="292474804"
+   d="scan'208";a="292474806"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 08:56:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="776537914"
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="776537916"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="776537914"
+   d="scan'208";a="776537916"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 01 Nov 2022 08:56:24 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5F6BFF7; Tue,  1 Nov 2022 17:56:47 +0200 (EET)
+        id 7271215C; Tue,  1 Nov 2022 17:56:47 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Hans de Goede <hdegoede@redhat.com>,
@@ -51,10 +51,12 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
         Andy Shevchenko <andy@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 0/6] pinctrl: intel: Enable PWM optional feature
-Date:   Tue,  1 Nov 2022 17:56:36 +0200
-Message-Id: <20221101155642.52575-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 2/6] pwm: lpss: Rename MAX_PWMS --> LPSS_MAX_PWMS
+Date:   Tue,  1 Nov 2022 17:56:38 +0200
+Message-Id: <20221101155642.52575-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221101155642.52575-1-andriy.shevchenko@linux.intel.com>
+References: <20221101155642.52575-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -62,38 +64,45 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This is a continuation of the previously applied PWM LPSS clean up.
-Now, we would like to enable PWM optional feature that may be embedded
-into Intel pin control IPs (starting from Sky Lake platforms).
+The MAX_PWMS definition is already being used by PWM core.
+Using the same name in the certain driver confuses people
+and potentially can clash with it.
 
-I would like to route this via Intel pin control tree with issuing
-an immutable branch for both PINCTRL and PWM subsystems, but I'm
-open for other suggestions.
+Hence, rename it by adding LPSS prefix.
 
-Hans, I dared to leave your Rb tags, however the patches are slighly
-differ, because of the Uwe's suggestion on how to handle the missing
-headers. I hope you is okay with that. If not, please comment what
-must be ammended then.
+Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pwm/pwm-lpss.c | 2 +-
+ drivers/pwm/pwm-lpss.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-
-Andy Shevchenko (6):
-  pwm: Add a stub for devm_pwmchip_add()
-  pwm: lpss: Rename MAX_PWMS --> LPSS_MAX_PWMS
-  pwm: lpss: Include headers we are direct user of
-  pwm: lpss: Allow other drivers to enable PWM LPSS
-  pwm: lpss: Add pwm_lpss_probe() stub
-  pinctrl: intel: Enumerate PWM device when community has a capabilitty
-
- drivers/pinctrl/intel/pinctrl-intel.c         | 29 +++++++++++++
- drivers/pwm/pwm-lpss.c                        |  2 +-
- drivers/pwm/pwm-lpss.h                        | 34 ++++-----------
- .../linux/platform_data/x86}/pwm-lpss.h       | 41 ++++++++-----------
- include/linux/pwm.h                           |  5 +++
- 5 files changed, 61 insertions(+), 50 deletions(-)
- copy {drivers/pwm => include/linux/platform_data/x86}/pwm-lpss.h (51%)
-
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index accdef5dd58e..b8739cd2c235 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -252,7 +252,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
+ 	int i, ret;
+ 	u32 ctrl;
+ 
+-	if (WARN_ON(info->npwm > MAX_PWMS))
++	if (WARN_ON(info->npwm > LPSS_MAX_PWMS))
+ 		return ERR_PTR(-ENODEV);
+ 
+ 	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index 8e82eb5a7e00..2c746c51b883 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -13,7 +13,7 @@
+ #include <linux/device.h>
+ #include <linux/pwm.h>
+ 
+-#define MAX_PWMS			4
++#define LPSS_MAX_PWMS			4
+ 
+ struct pwm_lpss_chip {
+ 	struct pwm_chip chip;
 -- 
 2.35.1
 
