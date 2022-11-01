@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B19B5C4167D
-	for <linux-pwm@archiver.kernel.org>; Tue,  1 Nov 2022 15:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77307C43219
+	for <linux-pwm@archiver.kernel.org>; Tue,  1 Nov 2022 15:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbiKAP4b (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 1 Nov 2022 11:56:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36530 "EHLO
+        id S229959AbiKAP4a (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 1 Nov 2022 11:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbiKAP43 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2022 11:56:29 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBBF65AC;
-        Tue,  1 Nov 2022 08:56:28 -0700 (PDT)
+        with ESMTP id S229475AbiKAP42 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2022 11:56:28 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D606460;
+        Tue,  1 Nov 2022 08:56:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667318188; x=1698854188;
+  t=1667318187; x=1698854187;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=NI154NeC1RWG4hSdSSq9uISzU3eVykdnlrIdlNSvC4A=;
-  b=KkXarmWr/Efn/RiHllZ6FOxL4J4zLyJxG7rAdBs3f6Hn513mEUpjTm8H
-   fyfa/3KqBnIskWPCOXYoJvTlkCXFhbl6GyybEo06AuBESG9dNIMP2zueI
-   TThVK7v8VzU+YY/0iqMqSBquVv5BowV5kBBJN+VpnYFsiMyDxn7ktXmYy
-   76iBf44lfehHNVDii4hhhTFj5iNgWqYbVwySY8YvYKUpZ2YydgvM9Htkt
-   tygQoDQ7SAYGjCX7FK8sEE3KCvqve/9dwzu5H2bR/IhhbI9X3+pXBVBVk
-   qTSgHNAUqzU0XKTHNehSuHE77rL4X9W1B40Y4KkUjODYoidMEqbx0QWia
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="292474806"
+  bh=XBafnubMqFq/SZkOKUaP3VSykoY0r8hf6OiR8NcEyP8=;
+  b=lGqFiRte+bUByNzGAgCAbpAFBp7T9zMJ7upGCEs5KXpKWKcXyeWiGzib
+   PhhoIjJW+beYKuECqBUdOG3dTS83w3tz9qNPITTRyY8tG9++zXh0ccz3m
+   /j8ZGnoey+VPHdoCNWYAm2/4SYhcGoy3dcioxGyhu1rfcyrOYfC452fFu
+   XTycDwBw6a0WcP9UHpOrPM21qKwG3d+JOPlsFXct/lTcdvZEVful1RmOS
+   3mqQkRShsgotf0fJLD0Sb+eyPJwy5MjMu9ECNU4QGjmdv9RiIZi4NQmhO
+   oRFg1mnzxZ7so4N28F//sJXRtPqYwDRr/n12IJqP8M5+b2QSYSPOErqn6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="335838670"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="292474806"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 08:56:27 -0700
+   d="scan'208";a="335838670"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 08:56:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="776537916"
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="628614198"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="776537916"
+   d="scan'208";a="628614198"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 01 Nov 2022 08:56:24 -0700
+  by orsmga007.jf.intel.com with ESMTP; 01 Nov 2022 08:56:24 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7271215C; Tue,  1 Nov 2022 17:56:47 +0200 (EET)
+        id 8154029D; Tue,  1 Nov 2022 17:56:47 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Hans de Goede <hdegoede@redhat.com>,
@@ -51,58 +51,124 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
         Andy Shevchenko <andy@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 2/6] pwm: lpss: Rename MAX_PWMS --> LPSS_MAX_PWMS
-Date:   Tue,  1 Nov 2022 17:56:38 +0200
-Message-Id: <20221101155642.52575-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 4/6] pwm: lpss: Allow other drivers to enable PWM LPSS
+Date:   Tue,  1 Nov 2022 17:56:40 +0200
+Message-Id: <20221101155642.52575-5-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221101155642.52575-1-andriy.shevchenko@linux.intel.com>
 References: <20221101155642.52575-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The MAX_PWMS definition is already being used by PWM core.
-Using the same name in the certain driver confuses people
-and potentially can clash with it.
+The PWM LPSS device can be embedded in another device.
+In order to enable it, allow that drivers to probe
+a corresponding device.
 
-Hence, rename it by adding LPSS prefix.
-
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/pwm-lpss.c | 2 +-
- drivers/pwm/pwm-lpss.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-lpss.h                        | 22 +--------------
+ .../linux/platform_data/x86}/pwm-lpss.h       | 28 ++++---------------
+ 2 files changed, 6 insertions(+), 44 deletions(-)
+ copy {drivers/pwm => include/linux/platform_data/x86}/pwm-lpss.h (53%)
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index accdef5dd58e..b8739cd2c235 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -252,7 +252,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
- 	int i, ret;
- 	u32 ctrl;
- 
--	if (WARN_ON(info->npwm > MAX_PWMS))
-+	if (WARN_ON(info->npwm > LPSS_MAX_PWMS))
- 		return ERR_PTR(-ENODEV);
- 
- 	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
 diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index 8e82eb5a7e00..2c746c51b883 100644
+index 4561d229b27d..b721532c6c3c 100644
 --- a/drivers/pwm/pwm-lpss.h
 +++ b/drivers/pwm/pwm-lpss.h
-@@ -13,7 +13,7 @@
- #include <linux/device.h>
+@@ -13,27 +13,10 @@
  #include <linux/pwm.h>
+ #include <linux/types.h>
  
--#define MAX_PWMS			4
-+#define LPSS_MAX_PWMS			4
+-struct device;
++#include <linux/platform_data/x86/pwm-lpss.h>
  
- struct pwm_lpss_chip {
- 	struct pwm_chip chip;
+ #define LPSS_MAX_PWMS			4
+ 
+-struct pwm_lpss_boardinfo {
+-	unsigned long clk_rate;
+-	unsigned int npwm;
+-	unsigned long base_unit_bits;
+-	/*
+-	 * Some versions of the IP may stuck in the state machine if enable
+-	 * bit is not set, and hence update bit will show busy status till
+-	 * the reset. For the rest it may be otherwise.
+-	 */
+-	bool bypass;
+-	/*
+-	 * On some devices the _PS0/_PS3 AML code of the GPU (GFX0) device
+-	 * messes with the PWM0 controllers state,
+-	 */
+-	bool other_devices_aml_touches_pwm_regs;
+-};
+-
+ extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
+ extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
+ extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
+@@ -45,7 +28,4 @@ struct pwm_lpss_chip {
+ 	const struct pwm_lpss_boardinfo *info;
+ };
+ 
+-struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
+-				     const struct pwm_lpss_boardinfo *info);
+-
+ #endif	/* __PWM_LPSS_H */
+diff --git a/drivers/pwm/pwm-lpss.h b/include/linux/platform_data/x86/pwm-lpss.h
+similarity index 53%
+copy from drivers/pwm/pwm-lpss.h
+copy to include/linux/platform_data/x86/pwm-lpss.h
+index 4561d229b27d..296bd837ddbb 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/include/linux/platform_data/x86/pwm-lpss.h
+@@ -1,21 +1,14 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * Intel Low Power Subsystem PWM controller driver
+- *
+- * Copyright (C) 2014, Intel Corporation
+- *
+- * Derived from the original pwm-lpss.c
+- */
++/* Intel Low Power Subsystem PWM controller driver */
+ 
+-#ifndef __PWM_LPSS_H
+-#define __PWM_LPSS_H
++#ifndef __PLATFORM_DATA_X86_PWM_LPSS_H
++#define __PLATFORM_DATA_X86_PWM_LPSS_H
+ 
+-#include <linux/pwm.h>
+ #include <linux/types.h>
+ 
+ struct device;
+ 
+-#define LPSS_MAX_PWMS			4
++struct pwm_lpss_chip;
+ 
+ struct pwm_lpss_boardinfo {
+ 	unsigned long clk_rate;
+@@ -34,18 +27,7 @@ struct pwm_lpss_boardinfo {
+ 	bool other_devices_aml_touches_pwm_regs;
+ };
+ 
+-extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
+-extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
+-extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
+-extern const struct pwm_lpss_boardinfo pwm_lpss_tng_info;
+-
+-struct pwm_lpss_chip {
+-	struct pwm_chip chip;
+-	void __iomem *regs;
+-	const struct pwm_lpss_boardinfo *info;
+-};
+-
+ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
+ 				     const struct pwm_lpss_boardinfo *info);
+ 
+-#endif	/* __PWM_LPSS_H */
++#endif	/* __PLATFORM_DATA_X86_PWM_LPSS_H */
 -- 
 2.35.1
 
