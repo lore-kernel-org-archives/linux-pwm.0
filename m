@@ -2,82 +2,73 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD4BC43219
-	for <linux-pwm@archiver.kernel.org>; Tue,  1 Nov 2022 17:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B32C5C433FE
+	for <linux-pwm@archiver.kernel.org>; Tue,  1 Nov 2022 17:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231220AbiKARml (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 1 Nov 2022 13:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41524 "EHLO
+        id S229641AbiKARru (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 1 Nov 2022 13:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbiKARmi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2022 13:42:38 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAAB1CB08;
-        Tue,  1 Nov 2022 10:42:38 -0700 (PDT)
+        with ESMTP id S229562AbiKARrt (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2022 13:47:49 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466EA1D643;
+        Tue,  1 Nov 2022 10:47:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667324558; x=1698860558;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=F1q8w57mHPaiy0oFIx6dL3sLIgTgPFyzkabGHkE+Pbc=;
-  b=iJSkEHUZQ80xSdg39ECByhFTNzrHmEvw8DSAsj/dlRlse1IiSyRX000p
-   VU0EgYah5iHP34oZMH8E2/shn0CdaBnU/AarVMHraz1O8Ro5i1vHK+z/m
-   cv79dJcu2PrsCnJL8RHZm6H/BO17K0kd6iVDaVNbbST5osAbxQmGww+cV
-   JiY5IVEqIWA7dinya60RUSwoRiUwrt/L3ait5RT39o9/oEEi/JwGIlBGw
-   O9WFwW0vEFhtrn8l6ZfYLo8P6b0p4p3oAEYTG5X/vxylKmegFmg1Xq9kX
-   trZpCTn4p7EwLrt9+VjW3Ns37xrBWkwirnGHcFGucTsKO+etum8nQgUiZ
+  t=1667324869; x=1698860869;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TYf5YYIzFj+h7ElHv3ioNLA0mS+1SXo5oCNtaYVIquA=;
+  b=N+5O+DumIbOame0OI571r3Y2i4czPcQ4fSvgdL9h58eXO5ZiBhRFdYWx
+   tbH/wgAoDhX1ofBhmqyTfYJbKHrE2CK/kMp11PsbsoU4bfnhmMXHwD3ZA
+   /JLJBTvnKFv3Ct7t5E3sXSVn3MfqpP8eqSE95Wr9Ah+cDrCKwy7fhs2op
+   EPQaLqRiiBd3HZQ/wynIbLHH5u+SfVK1sypDEJfjYtsPXTYbJuyyFPEiV
+   lSFQpfO2wqzqXNpjb5yAyXbe/eksdPO4UHVN9GGv/4RLpwVVRgqhBsuaI
+   CF+lPG652PLs+6g4zOIldwnGv5lGqtcGRRNEBU9lw3onOCgOBtU7hUCVS
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="310909165"
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="306818990"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="310909165"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 10:42:36 -0700
+   d="scan'208";a="306818990"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 10:47:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="667272869"
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="963206366"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="667272869"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 01 Nov 2022 10:42:34 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id E71DCD0; Tue,  1 Nov 2022 19:42:57 +0200 (EET)
+   d="scan'208";a="963206366"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP; 01 Nov 2022 10:47:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1opvMY-005hWx-1m;
+        Tue, 01 Nov 2022 19:47:46 +0200
+Date:   Tue, 1 Nov 2022 19:47:46 +0200
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 2/3] pwm: core: Drop unneeded casting in pwm_seq_show()
-Date:   Tue,  1 Nov 2022 19:42:54 +0200
-Message-Id: <20221101174255.54452-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221101174255.54452-1-andriy.shevchenko@linux.intel.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v1 2/3] pwm: core: Drop unneeded casting in pwm_seq_show()
+Message-ID: <Y2Fbwg99BWJ54q/w@smile.fi.intel.com>
 References: <20221101174255.54452-1-andriy.shevchenko@linux.intel.com>
+ <20221101174255.54452-2-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221101174255.54452-2-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The casting form void * to char * is not needed and done implicitly.
+On Tue, Nov 01, 2022 at 07:42:54PM +0200, Andy Shevchenko wrote:
+> The casting form void * to char * is not needed and done implicitly.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pwm/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch is wrong and it seems I have tried something like this in the past.
+The rest in the series is okay.
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 855abd0a776f..36128f3301ac 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -1158,7 +1158,7 @@ static int pwm_seq_show(struct seq_file *s, void *v)
- {
- 	struct pwm_chip *chip = list_entry(v, struct pwm_chip, list);
- 
--	seq_printf(s, "%s%s/%s, %d PWM device%s\n", (char *)s->private,
-+	seq_printf(s, "%s%s/%s, %d PWM device%s\n", s->private,
- 		   chip->dev->bus ? chip->dev->bus->name : "no-bus",
- 		   dev_name(chip->dev), chip->npwm,
- 		   (chip->npwm != 1) ? "s" : "");
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
