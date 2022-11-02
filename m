@@ -2,176 +2,426 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10BE9C433FE
-	for <linux-pwm@archiver.kernel.org>; Wed,  2 Nov 2022 06:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A9DC4332F
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Nov 2022 08:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbiKBGyy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 2 Nov 2022 02:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
+        id S230244AbiKBIgR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 2 Nov 2022 04:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiKBGyx (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Nov 2022 02:54:53 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2094.outbound.protection.outlook.com [40.107.255.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55EA423398;
-        Tue,  1 Nov 2022 23:54:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OX2vq56UUEpgqqIWe9LXOpiIuyUARLG9nBwI5oLn7BS3htmwANu7hkkqbp00OQPvtORd2E/JFXcJ/txsyAWVDJHP0HDMD1oQxvF8EZnQ/0QqA5jkasEi7A/cFLzstHqEPabbx5k52hXtgbBpPiRJ+TunnGklzOWyVkCzZsemfqd8IIGrFq8oYz3dY7JFCNQOA9v1Hst4mInTzfBw4WqrLWbxRPHF8ZJgbEGQq7k6PIHXpjOUzlkOQYu9aENRlzwKPuP7JslC6qwt/9opPRco4qWTSH+1sR+QS4MLXbaYGSnjGwIOfjzsBABx3AQafN5ojXtIKxeVp51CidwQGsnPsQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bV2HCPkCaFcUXZfY7XGCLPBI2vM9Km2epssA/QF2fIk=;
- b=WYo7iZPbPyeIvsAIvehc6eUahj3CqkJUVKG85XC2jf3QwdPjERs4GDDRUPNPlGfrCoDZccSipzgCxNXDq/fkXli+i9BNizPAJ+H7BZERu42CsURGrjjHDKvNnVfCNolPBa6d5HujZn06VYT1Cuw+up+eKOd7ICDrW+LEQnRWHVYFJYuNDxNL2SLpwyEZP5SZT19T0wTvHSr+53/wRifNZgicyk9FN5gBI0e+APcsaO9CgjBffyr7TcIz68+EuXL3dVOLNqeKMXzuwEGcYhGl6iw9RIfwtFB2uiFX3A0TrISVKBoJxdc7IdrOIldcZY8BjXgmct2oeI7P5EoosnSwdQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
- header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aspeedtech.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bV2HCPkCaFcUXZfY7XGCLPBI2vM9Km2epssA/QF2fIk=;
- b=LvxjV4qkNJGAra9RR0mY7tE0WqM15hatsG1HAh9LrOLw0lWuCJ8IuzahHnE+iMRm6VlwBpqz/4csd6jhzEEwZL0sruN6caLSFPgTRxCPmU8OvS1EywQBSIWdD91kZefLHiv8ZM5NLnYv9EQHbGDmtFVGMU7+Du3Mt0pzCKePcQCYEhuFaFOAaumEmQsbneuGJotNgklClE+93SPYQ0ssqX02/ugnsEnFAu4r18a+JT3/CicmGvsKN7+b38PjTXopUBbNyJyzF47GpZHsntBsiCvDSZzMFV4vPoZv6nzwqgCrNOy9VcyOFcq1Xat7zVlwZ1T3yevNKW5G9sZ6oWq3cQ==
-Received: from SG2PR06MB3365.apcprd06.prod.outlook.com (2603:1096:4:69::12) by
- PUZPR06MB6032.apcprd06.prod.outlook.com (2603:1096:301:116::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.20; Wed, 2 Nov
- 2022 06:54:43 +0000
-Received: from SG2PR06MB3365.apcprd06.prod.outlook.com
- ([fe80::dd5d:e720:e00f:831]) by SG2PR06MB3365.apcprd06.prod.outlook.com
- ([fe80::dd5d:e720:e00f:831%6]) with mapi id 15.20.5769.019; Wed, 2 Nov 2022
- 06:54:43 +0000
+        with ESMTP id S230210AbiKBIgR (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Nov 2022 04:36:17 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EDB60F1;
+        Wed,  2 Nov 2022 01:36:15 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 2A28BAHv072663;
+        Wed, 2 Nov 2022 16:11:11 +0800 (GMT-8)
+        (envelope-from billy_tsai@aspeedtech.com)
+Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 2 Nov
+ 2022 16:34:24 +0800
 From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-CC:     "jdelvare@suse.com" <jdelvare@suse.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <joel@jms.id.au>, <andrew@aj.id.au>, <lee.jones@linaro.org>,
+        <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <p.zabel@pengutronix.de>, <billy_tsai@aspeedtech.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>,
-        "garnermic@meta.com" <garnermic@meta.com>
-Subject: Re: [v2 3/3] hwmon: Add Aspeed ast2600 TACH support
-Thread-Topic: [v2 3/3] hwmon: Add Aspeed ast2600 TACH support
-Thread-Index: AQHY7ddiCLgpICHNHkaN+NgNt8n5/K4qDDAAgAGuNQA=
-Date:   Wed, 2 Nov 2022 06:54:43 +0000
-Message-ID: <271C521D-8F20-4C86-B3DA-9C0AD74242D4@aspeedtech.com>
-References: <20221101095156.30591-1-billy_tsai@aspeedtech.com>
- <20221101095156.30591-4-billy_tsai@aspeedtech.com>
- <20221101131456.GA1310110@roeck-us.net>
-In-Reply-To: <20221101131456.GA1310110@roeck-us.net>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/16.66.22101101
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=aspeedtech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SG2PR06MB3365:EE_|PUZPR06MB6032:EE_
-x-ms-office365-filtering-correlation-id: ba22b636-41c8-4cf1-791c-08dabc9f1f2a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hQNL2N3LfGCWJLcUa6tf9u+pvujfPcg2sZxbHTMmvwe568rbNVjgkWBybUNgj1fcVq8fdYNImsryv0t4Qchv8DPZO1y5avnSQlV++nKW/JjD+41XuOqpJLrvmUkVV3g2E5glMsJDN1EblsoNGtLhi9TRQj/D2+DJtcis/256tCA0RzYYZDNn1sRVlvNtGVCyxp69FvLsJdBxsAHr7kPDeTyfGuyV+wQach7FMzJ6EQ5lwf9zUZ5CoViSUpmYxvlcc7l+NAsTdCbDziN1L3E17GhpxzfG0rrmB9Bld1w3YBGUUSxGGZDkCHpgvOPTmySLEExJoWQQnF3FAeJSeMwpJYM214s14AETSx4Xf1hxKu55Mry64Ylmwr4hbr5WdGfRZi16JgTgX6ObojVVER0ZbTxhHdGu+I74F3rk51rMfMK6WzbC3jRw8C1O6qLmyfe61t+HR2jWWsfQj3fisZ/YRI8+7L7Fvv4yILOtJGspjv1R8Ihju/0y4+HRbYofY19LPSN9scejZBcjJLxOhr1JQSOJ4MrRS0l4k+l4O3EaVZcqFbocGSqZ00NxBme34QNqCCXKv19gsyz+QrBd/8Ziu9OZcObGtOzo37PJUItINlP0FjiIOdPthjB7/Jb+yMNVKDgTmUwQnLwnJH5KwIVkGON2QVm0schIGCWY3iAoYD7lz767lB1mepM8k61x994FkrAXiARu3ctqZuG00P8EHHjbZ7Y/ezMh7slZZr0KzEbR1M+MRncbhsaqYluVNLkDA3ok7Y7LxlPWSYKDVNsJHB8wnXcqKMo7T4cuJdhFoUs=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3365.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(136003)(346002)(366004)(396003)(39850400004)(451199015)(86362001)(36756003)(33656002)(122000001)(38100700002)(38070700005)(316002)(478600001)(66446008)(91956017)(54906003)(6916009)(71200400001)(66946007)(5660300002)(6512007)(2616005)(41300700001)(186003)(26005)(8936002)(7416002)(66556008)(66476007)(8676002)(6506007)(4326008)(64756008)(6486002)(53546011)(2906002)(76116006)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZEVKRkVGdTNNSlhzeWxzWEcrZnNtNzNSN3dRR1hKdlcwWE9OVHZDZ0xVbkNl?=
- =?utf-8?B?VG82Ung4aFpCeElPbVBHK090SmkrdHp4V2JUSVJBN0plUTJkUVZsa0lwWExB?=
- =?utf-8?B?WFQ3dGs1UzJvbXZnMWE3Z3hyeG9sdXQzNzY0dWpYN2JtSHdZSzByelh4TENy?=
- =?utf-8?B?c1U1azJ5YkdqcjloZDlmQ0JLTFhIMkxRNE0rUDVIdDZCVlR1bUkvOW1WUENL?=
- =?utf-8?B?U3ZLNkFvOEg0WEQ1L0p6cERPQTkyOFp6b0JxdzhuVG00Y3E3amtSZys4R3BO?=
- =?utf-8?B?TmsvNjhxQllwMmxKVkNlc1NWL2VRT2JDUk5vVlhqV0w3V2NxZjhBR2kxYjRr?=
- =?utf-8?B?MWIvajZ4c1NUcXRaVWdDNHluU3c5by9uWkh3dnVSeVA3bmVlOWIza1J6bHg0?=
- =?utf-8?B?TnhkWjBweU9pOVliR1RzVUFQM2M3cVRVK1lNMDRCQXBFWHRJRUNiK01WL3Ja?=
- =?utf-8?B?dHZFc1RmNTZ1UVNBbWxTcnZvUVQrR1ZlRUwxSUZqdzUzODdBMk5HUkwya1ZX?=
- =?utf-8?B?cjlSeHJhRTQxVFFzYjljV1ZWdnhITmJqdktESXBHQkw2Rkt0YWcxZThHTjls?=
- =?utf-8?B?Z0pwbjNwSlFpY2lqSEF3ejVBWW9RQ1E2dmdZcHVEODh1OVlMYXdFMm5KMTJO?=
- =?utf-8?B?dC92TUhxWFNXZzVVSFNkKzc1WktlajZqcGFsazZGVTQyQXdpbldEUHZtQmoz?=
- =?utf-8?B?WDlkbWZ2TGVrQjRJUnBOM29SS3p4SUNqZlFZb2dEaGFDakhQa1RKaGRIRVhl?=
- =?utf-8?B?WW1xeVl5enNzNmY0OWFQWUw5MnhxNDlldjRpOGRFeXhWNGRmdDZDbTFpa0hE?=
- =?utf-8?B?UmtUeG03Z0V4YnZwaDJ0bXVFLy9POWVxZE1CWnc4WTgxWE00d3BHai9XY2Vt?=
- =?utf-8?B?UjE4Nk1MOG1abzZlb2lEZ0xzM3I2c1crWDNJWHlCSURId20wSnh1ZmZ3MTg3?=
- =?utf-8?B?MTI0VU9seW9CWGFDaEVld1A0dEVuTzFlWDJ2OVRQQ01pNDJqVm90bnIrbHhN?=
- =?utf-8?B?TFh0ejB1ZkpsUFNHNG9LSXRsYWZpU21xTU9XbmFzdWlDNGdScCtlbk83bXR0?=
- =?utf-8?B?UXBZMUoxbGVuVWJvbzMxWlNvY2YraEhpYjFtaStzekhYQjNTamtQYkN2cHRx?=
- =?utf-8?B?SzMyRmVPdGUveU42b2NWMElLY1R2Zy9FbUxGQkdsUnlCOEk4dVFpRmlkNUY5?=
- =?utf-8?B?d2xqdDRFN2o0T0I3TmNSNDdxTGVDbHlGY1YwOG5XTDkwQS9RYm10TlNJd1VZ?=
- =?utf-8?B?MXJ6QThYN3plU1RrUGFrUWVJanU2SGI3RWNNK0EvUVB0UWx2Sm8vc3haVWtT?=
- =?utf-8?B?K0J5TXYwZ0dyNTY2OEFzQzVKMXVVM1FDeGtLbFVEeTVZZ0FLRkdZeEk1UlVm?=
- =?utf-8?B?VVVaZVZOTnQxa1lXU3FzNHN3NDF3bnRTbnJBcW5sOEZWeWF6ay92ZllxQWJq?=
- =?utf-8?B?dGp1QkZPQ29GUjNYWTV4eE1XM2hMLzB3UWgwOHNWR1pDTmlvTVZRMFdnSkli?=
- =?utf-8?B?MzVBazBsUHdBWnRjd01kUGplZC8zdmc3QmZHQUpJZS9OcTFIbzBpUExmVDB2?=
- =?utf-8?B?NDdJSUE1RWNCcHNJcmF3VnRMVHBtUnpYL29RTVU4WGpGd1hLNmUzUi9haGE5?=
- =?utf-8?B?Q0tLLzhMUVJ3dFpCK1AwdVU0RENNNXdkb2RlODN0Smc5eUMrZ2c0VUIvTjFs?=
- =?utf-8?B?R2todmJHbHREN2tWY3pCM01YNUNDS0hORUVtT2lPaithYk9RaCtVbWs4MWwv?=
- =?utf-8?B?UVFSeGZvTEdleElZUzhheVdDSGo0dTJGRVFteU1yYXR0S3hteVpIWEt1SDlI?=
- =?utf-8?B?b2tTcXJVVTlKd1BjYm1ZNTRxVitUTGhWNDk0YTd2RDdMd05pTFR1bDY2WDlK?=
- =?utf-8?B?UmhKbUtMVHB6d2d5QzJsb2k2bVFIQ1VQM3p1b0t0cSs0R0ppTTd0UlNGdEl0?=
- =?utf-8?B?TlBLeGkxdzYxWlpUQ0g2RTFheGJ2UCtqaWJWcmJiNmtublE0U3k5KzM2dk03?=
- =?utf-8?B?OGFsR0g4a0R2SXdMSndSYkZHUHlSTDd1ZXduWVVqWmRWS2xBK3pFQWNjSlc3?=
- =?utf-8?B?N2xMNXl5L3VxdzBJSWhyd3BLNVEzV3I4Um9kMGF3SzdNTThzOUgrVFBMVFow?=
- =?utf-8?B?S1h4b0Irb3NscXVPVEh5dHMwYkRIQncyRkxtWGwwcGp4TlFZTCtPT0VEenJB?=
- =?utf-8?B?QXc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8C9AC82443FBDB46A1865C06EAE224C1@apcprd06.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <BMC-SW@aspeedtech.com>,
+        <garnermic@meta.com>
+CC:     kernel test robot <lkp@intel.com>
+Subject: [v3 2/3] pwm: Add Aspeed ast2600 PWM support
+Date:   Wed, 2 Nov 2022 16:36:00 +0800
+Message-ID: <20221102083601.10456-3-billy_tsai@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20221102083601.10456-1-billy_tsai@aspeedtech.com>
+References: <20221102083601.10456-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-X-OriginatorOrg: aspeedtech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3365.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba22b636-41c8-4cf1-791c-08dabc9f1f2a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2022 06:54:43.4420
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: b1B8JSWLqHPUk99oEtU60OSUlSozlr7sy387S0HwgO4n0Umsn0vm9fLIJUx39puZ7K2nUr3w8ZA1l0NotfCoSwaa0Uu+yov655Vr2+XFHNo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PUZPR06MB6032
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.2.149]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 2A28BAHv072663
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-SGkgR3VlbnRlciwNCg0KT24gMjAyMi8xMS8xLCA5OjE1IFBNLCAiR3VlbnRlciBSb2VjayIgPGdy
-b2VjazdAZ21haWwuY29tIG9uIGJlaGFsZiBvZiBsaW51eEByb2Vjay11cy5uZXQ+IHdyb3RlOg0K
-DQogICAgT24gVHVlLCBOb3YgMDEsIDIwMjIgYXQgMDU6NTE6NTZQTSArMDgwMCwgQmlsbHkgVHNh
-aSB3cm90ZToNCiAgICA+ID4gKw0KICAgID4gPiArCS8qIFJlc3RhcnQgdGhlIFRhY2ggY2hhbm5l
-bCB0byBndWFyYW50ZWUgdGhlIHZhbHVlIGlzIGZyZXNoICovDQogICAgPiA+ICsJYXNwZWVkX3Rh
-Y2hfY2hfZW5hYmxlKHByaXYsIGZhbl90YWNoX2NoLCBmYWxzZSk7DQogICAgPiA+ICsJYXNwZWVk
-X3RhY2hfY2hfZW5hYmxlKHByaXYsIGZhbl90YWNoX2NoLCB0cnVlKTsNCg0KICAgID4gSXMgdGhh
-dCByZWFsbHkgbmVlZGVkID8gRG9lc24ndCB0aGUgY29udHJvbGxlciBtZWFzdXJlIHZhbHVlcyBj
-b250aW51b3VzbHkgPw0KDQpZZXMsIHRoZSBjb250cm9sbGVyIHdpbGwgbWVhc3VyZSB2YWx1ZXMg
-Y29udGludW91c2x5IGJ5IGhhcmR3YXJlLiBJIHdpbGwgcmVtb3ZlIGl0LiANCklmIHRoZSB1c2Vy
-IHdhbnQgdG8gZ2V0IHRoZSBmcmVzaCB2YWx1ZSwgaXQgc2hvdWxkIGJlIGRvbmUgYnkgdGhlIGFw
-cGxpY2F0aW9uIGxheWVyDQooZS5nLiByZWFkIHR3byB0aW1lcykuDQoNCiAgICA+ID4gKw0KICAg
-ID4gPiArCWlmIChyZXQpIHsNCiAgICA+ID4gKwkJLyogcmV0dXJuIDAgaWYgd2UgZGlkbid0IGdl
-dCBhbiBhbnN3ZXIgYmVjYXVzZSBvZiB0aW1lb3V0Ki8NCiAgICA+ID4gKwkJaWYgKHJldCA9PSAt
-RVRJTUVET1VUKQ0KICAgID4gPiArCQkJcmV0dXJuIDA7DQogICAgPiA+ICsJCWVsc2UNCiAgICA+
-ID4gKwkJCXJldHVybiByZXQ7DQoNCiAgICA+IGVsc2UgYWZ0ZXIgcmV0dXJuIGlzIHVubmVjZXNz
-YXJ5LCBhbmQgd2h5IHdvdWxkIGEgdGltZW91dCBiZSBiZSBpZ25vcmVkID8NCg0KV2hlbiB0aGUg
-dXNlciBzZXRzIHRoZSBjb3JyZWN0IGZhbiBpbmZvcm1hdGlvbiAoaS5lLiwgbWluX3JwbSwgbWF4
-X3JwbSksIHRoZSByZWFkDQpwb2xsIHRpbWVvdXQgd2lsbCBvbmx5IG9jY3VyIGlmIHRoZSB0YWNo
-IHBpbiBkb2VzIG5vdCBnZXQgYW55IHNpZ25hbCAoaS5lLiBycG09MCkuDQoNCiAgICA+ID4gKwl9
-DQogICAgPiA+ICsNCiAgICA+ID4gKwlyYXdfZGF0YSA9IHZhbCAmIFRBQ0hfQVNQRUVEX1ZBTFVF
-X01BU0s7DQogICAgPiA+ICsJLyoNCiAgICA+ID4gKwkgKiBXZSBuZWVkIHRoZSBtb2RlIHRvIGRl
-dGVybWluZSBpZiB0aGUgcmF3X2RhdGEgaXMgZG91YmxlIChmcm9tDQogICAgPiA+ICsJICogY291
-bnRpbmcgYm90aCBlZGdlcykuDQogICAgPiA+ICsJICovDQogICAgPiA+ICsJaWYgKHByaXYtPnRh
-Y2hfY2hhbm5lbFtmYW5fdGFjaF9jaF0udGFjaF9lZGdlID09IEJPVEhfRURHRVMpDQogICAgPiA+
-ICsJCXJhd19kYXRhIDw8PSAxOw0KICAgID4gPiArDQogICAgPiA+ICsJdGFjaF9kaXYgPSByYXdf
-ZGF0YSAqIChwcml2LT50YWNoX2NoYW5uZWxbZmFuX3RhY2hfY2hdLmRpdmlzb3IpICoNCiAgICA+
-ID4gKwkJICAgKHByaXYtPnRhY2hfY2hhbm5lbFtmYW5fdGFjaF9jaF0ucHVsc2VfcHIpOw0KICAg
-ID4gPiArDQogICAgPiA+ICsJY2xrX3NvdXJjZSA9IGNsa19nZXRfcmF0ZShwcml2LT5jbGspOw0K
-ICAgID4gPiArCWRldl9kYmcocHJpdi0+ZGV2LCAiY2xrICVsZCwgcmF3X2RhdGEgJWQgLCB0YWNo
-X2RpdiAlZFxuIiwgY2xrX3NvdXJjZSwNCiAgICA+ID4gKwkJcmF3X2RhdGEsIHRhY2hfZGl2KTsN
-CiAgICA+ID4gKw0KICAgID4gPiArCWlmICh0YWNoX2RpdiA9PSAwKQ0KICAgID4gPiArCQlyZXR1
-cm4gLUVET007DQoNCiAgICA+IElmIHRoZSBmYW4gaXMgb2ZmIG9yIG5vdCBjb25uZWN0ZWQsIHdv
-dWxkIHRoYXQgcmV0dXJuIGFuIGVycm9yID8NCiAgICA+IElmIHNvLCB0aGF0IHdvdWxkIGJlIGlu
-YXBwcm9wcmlhdGU7IGl0IHNob3VsZCByZXR1cm4gYSBzcGVlZA0KICAgID4gb2YgMCBpbiB0aGF0
-IGNhc2UuDQoNCkl0IHdpbGwgYmUgaGFuZGxlZCBieSB0aGUgcmVnbWFwX3JlYWRfcG9sbF90aW1l
-b3V0Lg0KDQpUaGFua3MNCg0KQmVzdCBSZWdhcmRzLA0KQmlsbHkgVHNhaQ0KDQo=
+This patch add the support of PWM controller which can be found at aspeed
+ast2600 soc. The pwm supoorts up to 16 channels and it's part function
+of multi-function device "pwm-tach controller".
+
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reported-by: kernel test robot <lkp@intel.com>
+---
+ drivers/pwm/Kconfig              |  10 +
+ drivers/pwm/Makefile             |   1 +
+ drivers/pwm/pwm-aspeed-ast2600.c | 319 +++++++++++++++++++++++++++++++
+ 3 files changed, 330 insertions(+)
+ create mode 100644 drivers/pwm/pwm-aspeed-ast2600.c
+
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index aa29841bbb79..3313f074f15e 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -51,6 +51,16 @@ config PWM_AB8500
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-ab8500.
+ 
++config PWM_ASPEED_AST2600
++	tristate "Aspeed ast2600 PWM support"
++	depends on ARCH_ASPEED || COMPILE_TEST
++	depends on HAVE_CLK && HAS_IOMEM
++	help
++	  This driver provides support for Aspeed ast2600 PWM controllers.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-aspeed-ast2600.
++
+ config PWM_ATMEL
+ 	tristate "Atmel PWM support"
+ 	depends on ARCH_AT91 || COMPILE_TEST
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 708840b7fba8..6be0c67bf08a 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -2,6 +2,7 @@
+ obj-$(CONFIG_PWM)		+= core.o
+ obj-$(CONFIG_PWM_SYSFS)		+= sysfs.o
+ obj-$(CONFIG_PWM_AB8500)	+= pwm-ab8500.o
++obj-$(CONFIG_PWM_ASPEED_AST2600)	+= pwm-aspeed-ast2600.o
+ obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
+ obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
+ obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
+diff --git a/drivers/pwm/pwm-aspeed-ast2600.c b/drivers/pwm/pwm-aspeed-ast2600.c
+new file mode 100644
+index 000000000000..e571e9fadf0f
+--- /dev/null
++++ b/drivers/pwm/pwm-aspeed-ast2600.c
+@@ -0,0 +1,319 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2021 Aspeed Technology Inc.
++ *
++ * PWM controller driver for Aspeed ast2600 SoCs.
++ * This drivers doesn't support earlier version of the IP.
++ *
++ * The hardware operates in time quantities of length
++ * Q := (DIV_L + 1) << DIV_H / input-clk
++ * The length of a PWM period is (DUTY_CYCLE_PERIOD + 1) * Q.
++ * The maximal value for DUTY_CYCLE_PERIOD is used here to provide
++ * a fine grained selection for the duty cycle.
++ *
++ * This driver uses DUTY_CYCLE_RISING_POINT = 0, so from the start of a
++ * period the output is active until DUTY_CYCLE_FALLING_POINT * Q. Note
++ * that if DUTY_CYCLE_RISING_POINT = DUTY_CYCLE_FALLING_POINT the output is
++ * always active.
++ *
++ * Register usage:
++ * PIN_ENABLE: When it is unset the pwm controller will emit inactive level to the external.
++ * Use to determine whether the PWM channel is enabled or disabled
++ * CLK_ENABLE: When it is unset the pwm controller will assert the duty counter reset and
++ * emit inactive level to the PIN_ENABLE mux after that the driver can still change the pwm period
++ * and duty and the value will apply when CLK_ENABLE be set again.
++ * Use to determine whether duty_cycle bigger than 0.
++ * PWM_ASPEED_CTRL_INVERSE: When it is toggled the output value will inverse immediately.
++ * PWM_ASPEED_DUTY_CYCLE_FALLING_POINT/PWM_ASPEED_DUTY_CYCLE_RISING_POINT: When these two
++ * values are equal it means the duty cycle = 100%.
++ *
++ * The glitch may generate at:
++ * - Enabled changing when the duty_cycle bigger than 0% and less than 100%.
++ * - Polarity changing when the duty_cycle bigger than 0% and less than 100%.
++ *
++ * Limitations:
++ * - When changing both duty cycle and period, we cannot prevent in
++ *   software that the output might produce a period with mixed
++ *   settings.
++ * - Disabling the PWM doesn't complete the current period.
++ *
++ * Improvements:
++ * - When only changing one of duty cycle or period, our pwm controller will not
++ *   generate the glitch, the configure will change at next cycle of pwm.
++ *   This improvement can disable/enable through PWM_ASPEED_CTRL_DUTY_SYNC_DISABLE.
++ */
++
++#include <linux/bitfield.h>
++#include <linux/clk.h>
++#include <linux/errno.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/math64.h>
++#include <linux/mfd/syscon.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++#include <linux/regmap.h>
++#include <linux/reset.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++
++/* The channel number of Aspeed pwm controller */
++#define PWM_ASPEED_NR_PWMS			16
++/* PWM Control Register */
++#define PWM_ASPEED_CTRL(ch)			((ch) * 0x10 + 0x00)
++#define PWM_ASPEED_CTRL_LOAD_SEL_RISING_AS_WDT	BIT(19)
++#define PWM_ASPEED_CTRL_DUTY_LOAD_AS_WDT_ENABLE	BIT(18)
++#define PWM_ASPEED_CTRL_DUTY_SYNC_DISABLE	BIT(17)
++#define PWM_ASPEED_CTRL_CLK_ENABLE		BIT(16)
++#define PWM_ASPEED_CTRL_LEVEL_OUTPUT		BIT(15)
++#define PWM_ASPEED_CTRL_INVERSE			BIT(14)
++#define PWM_ASPEED_CTRL_OPEN_DRAIN_ENABLE	BIT(13)
++#define PWM_ASPEED_CTRL_PIN_ENABLE		BIT(12)
++#define PWM_ASPEED_CTRL_CLK_DIV_H		GENMASK(11, 8)
++#define PWM_ASPEED_CTRL_CLK_DIV_L		GENMASK(7, 0)
++
++/* PWM Duty Cycle Register */
++#define PWM_ASPEED_DUTY_CYCLE(ch)		((ch) * 0x10 + 0x04)
++#define PWM_ASPEED_DUTY_CYCLE_PERIOD		GENMASK(31, 24)
++#define PWM_ASPEED_DUTY_CYCLE_POINT_AS_WDT	GENMASK(23, 16)
++#define PWM_ASPEED_DUTY_CYCLE_FALLING_POINT	GENMASK(15, 8)
++#define PWM_ASPEED_DUTY_CYCLE_RISING_POINT	GENMASK(7, 0)
++
++/* PWM fixed value */
++#define PWM_ASPEED_FIXED_PERIOD			FIELD_MAX(PWM_ASPEED_DUTY_CYCLE_PERIOD)
++
++struct aspeed_pwm_data {
++	struct pwm_chip chip;
++	struct clk *clk;
++	struct regmap *regmap;
++	struct reset_control *reset;
++};
++
++static inline struct aspeed_pwm_data *
++aspeed_pwm_chip_to_data(struct pwm_chip *chip)
++{
++	return container_of(chip, struct aspeed_pwm_data, chip);
++}
++
++static void aspeed_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
++				 struct pwm_state *state)
++{
++	struct device *dev = chip->dev;
++	struct aspeed_pwm_data *priv = aspeed_pwm_chip_to_data(chip);
++	u32 hwpwm = pwm->hwpwm;
++	bool polarity,	pin_en, clk_en;
++	u32 duty_pt, val;
++	unsigned long rate;
++	u64 div_h, div_l, duty_cycle_period, dividend;
++
++	regmap_read(priv->regmap, PWM_ASPEED_CTRL(hwpwm), &val);
++	polarity = FIELD_GET(PWM_ASPEED_CTRL_INVERSE, val);
++	pin_en = FIELD_GET(PWM_ASPEED_CTRL_PIN_ENABLE, val);
++	clk_en = FIELD_GET(PWM_ASPEED_CTRL_CLK_ENABLE, val);
++	div_h = FIELD_GET(PWM_ASPEED_CTRL_CLK_DIV_H, val);
++	div_l = FIELD_GET(PWM_ASPEED_CTRL_CLK_DIV_L, val);
++	regmap_read(priv->regmap, PWM_ASPEED_DUTY_CYCLE(hwpwm), &val);
++	duty_pt = FIELD_GET(PWM_ASPEED_DUTY_CYCLE_FALLING_POINT, val);
++	duty_cycle_period = FIELD_GET(PWM_ASPEED_DUTY_CYCLE_PERIOD, val);
++
++	rate = clk_get_rate(priv->clk);
++
++	/*
++	 * This multiplication doesn't overflow, the upper bound is
++	 * 1000000000 * 256 * 256 << 15 = 0x1dcd650000000000
++	 */
++	dividend = (u64)NSEC_PER_SEC * (div_l + 1) * (duty_cycle_period + 1)
++		       << div_h;
++	state->period = DIV_ROUND_UP_ULL(dividend, rate);
++
++	if (clk_en && duty_pt) {
++		dividend = (u64)NSEC_PER_SEC * (div_l + 1) * duty_pt
++				 << div_h;
++		state->duty_cycle = DIV_ROUND_UP_ULL(dividend, rate);
++	} else {
++		state->duty_cycle = clk_en ? state->period : 0;
++	}
++	state->polarity = polarity ? PWM_POLARITY_INVERSED : PWM_POLARITY_NORMAL;
++	state->enabled = pin_en;
++	dev_dbg(dev, "get period: %lldns, duty_cycle: %lldns", state->period,
++		state->duty_cycle);
++}
++
++static int aspeed_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			    const struct pwm_state *state)
++{
++	struct device *dev = chip->dev;
++	struct aspeed_pwm_data *priv = aspeed_pwm_chip_to_data(chip);
++	u32 hwpwm = pwm->hwpwm, duty_pt;
++	unsigned long rate;
++	u64 div_h, div_l, divisor, expect_period;
++	bool clk_en;
++
++	rate = clk_get_rate(priv->clk);
++	expect_period = min(div64_u64(ULLONG_MAX, (u64)rate), state->period);
++	dev_dbg(dev, "expect period: %lldns, duty_cycle: %lldns", expect_period,
++		state->duty_cycle);
++	/*
++	 * Pick the smallest value for div_h so that div_l can be the biggest
++	 * which results in a finer resolution near the target period value.
++	 */
++	divisor = (u64)NSEC_PER_SEC * (PWM_ASPEED_FIXED_PERIOD + 1) *
++		  (FIELD_MAX(PWM_ASPEED_CTRL_CLK_DIV_L) + 1);
++	div_h = order_base_2(DIV64_U64_ROUND_UP(rate * expect_period, divisor));
++	if (div_h > 0xf)
++		div_h = 0xf;
++
++	divisor = ((u64)NSEC_PER_SEC * (PWM_ASPEED_FIXED_PERIOD + 1)) << div_h;
++	div_l = div64_u64(rate * expect_period, divisor);
++
++	if (div_l == 0)
++		return -ERANGE;
++
++	div_l -= 1;
++
++	if (div_l > 255)
++		div_l = 255;
++
++	dev_dbg(dev, "clk source: %ld div_h %lld, div_l : %lld\n", rate, div_h,
++		div_l);
++	/* duty_pt = duty_cycle * (PERIOD + 1) / period */
++	duty_pt = div64_u64(state->duty_cycle * rate,
++			    (u64)NSEC_PER_SEC * (div_l + 1) << div_h);
++	dev_dbg(dev, "duty_cycle = %lld, duty_pt = %d\n", state->duty_cycle,
++		duty_pt);
++
++	/*
++	 * Fixed DUTY_CYCLE_PERIOD to its max value to get a
++	 * fine-grained resolution for duty_cycle at the expense of a
++	 * coarser period resolution.
++	 */
++	regmap_update_bits(priv->regmap, PWM_ASPEED_DUTY_CYCLE(hwpwm),
++			   PWM_ASPEED_DUTY_CYCLE_PERIOD,
++			   FIELD_PREP(PWM_ASPEED_DUTY_CYCLE_PERIOD,
++				      PWM_ASPEED_FIXED_PERIOD));
++	if (duty_pt == 0) {
++		/* emit inactive level and assert the duty counter reset */
++		clk_en = 0;
++	} else {
++		clk_en = 1;
++		if (duty_pt >= (PWM_ASPEED_FIXED_PERIOD + 1))
++			duty_pt = 0;
++		regmap_update_bits(priv->regmap, PWM_ASPEED_DUTY_CYCLE(hwpwm),
++				   PWM_ASPEED_DUTY_CYCLE_RISING_POINT |
++					   PWM_ASPEED_DUTY_CYCLE_FALLING_POINT,
++				   FIELD_PREP(PWM_ASPEED_DUTY_CYCLE_FALLING_POINT, duty_pt));
++	}
++
++	regmap_update_bits(priv->regmap, PWM_ASPEED_CTRL(hwpwm),
++			   PWM_ASPEED_CTRL_CLK_DIV_H | PWM_ASPEED_CTRL_CLK_DIV_L |
++				   PWM_ASPEED_CTRL_PIN_ENABLE | PWM_ASPEED_CTRL_CLK_ENABLE |
++				   PWM_ASPEED_CTRL_INVERSE,
++			   FIELD_PREP(PWM_ASPEED_CTRL_CLK_DIV_H, div_h) |
++				   FIELD_PREP(PWM_ASPEED_CTRL_CLK_DIV_L, div_l) |
++				   FIELD_PREP(PWM_ASPEED_CTRL_PIN_ENABLE, state->enabled) |
++				   FIELD_PREP(PWM_ASPEED_CTRL_CLK_ENABLE, clk_en) |
++				   FIELD_PREP(PWM_ASPEED_CTRL_INVERSE, state->polarity));
++	return 0;
++}
++
++static const struct pwm_ops aspeed_pwm_ops = {
++	.apply = aspeed_pwm_apply,
++	.get_state = aspeed_pwm_get_state,
++	.owner = THIS_MODULE,
++};
++
++static void aspeed_pwm_reset_assert(void *data)
++{
++	struct reset_control *rst = data;
++
++	reset_control_assert(rst);
++}
++
++static void aspeed_pwm_chip_remove(void *data)
++{
++	struct pwm_chip *chip = data;
++
++	pwmchip_remove(chip);
++}
++
++static int aspeed_pwm_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	int ret;
++	struct aspeed_pwm_data *priv;
++	struct device_node *np;
++	struct platform_device *parent_dev;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	np = pdev->dev.parent->of_node;
++	if (!of_device_is_compatible(np, "aspeed,ast2600-pwm-tach"))
++		return dev_err_probe(dev, -ENODEV,
++				     "Unsupported pwm device binding\n");
++
++	priv->regmap = syscon_node_to_regmap(np);
++	if (IS_ERR(priv->regmap))
++		return dev_err_probe(dev, PTR_ERR(priv->regmap),
++				     "Couldn't get regmap\n");
++
++	parent_dev = of_find_device_by_node(np);
++	priv->clk = devm_clk_get_enabled(&parent_dev->dev, NULL);
++	if (IS_ERR(priv->clk))
++		return dev_err_probe(dev, PTR_ERR(priv->clk),
++				     "Couldn't get clock\n");
++
++	priv->reset = devm_reset_control_get_shared(&parent_dev->dev, NULL);
++	if (IS_ERR(priv->reset))
++		return dev_err_probe(dev, PTR_ERR(priv->reset),
++				     "Couldn't get reset control\n");
++
++	ret = reset_control_deassert(priv->reset);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "Couldn't deassert reset control\n");
++
++	ret = devm_add_action_or_reset(dev, aspeed_pwm_reset_assert,
++				       priv->reset);
++	if (ret)
++		return ret;
++
++	priv->chip.dev = dev;
++	priv->chip.ops = &aspeed_pwm_ops;
++	priv->chip.npwm = PWM_ASPEED_NR_PWMS;
++
++	ret = pwmchip_add(&priv->chip);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Failed to add PWM chip\n");
++	ret = devm_add_action_or_reset(dev, aspeed_pwm_chip_remove,
++				       &priv->chip);
++	if (ret)
++		return ret;
++	return 0;
++}
++
++static const struct of_device_id of_pwm_match_table[] = {
++	{
++		.compatible = "aspeed,ast2600-pwm",
++	},
++	{},
++};
++MODULE_DEVICE_TABLE(of, of_pwm_match_table);
++
++static struct platform_driver aspeed_pwm_driver = {
++	.probe = aspeed_pwm_probe,
++	.driver	= {
++		.name = "aspeed-pwm",
++		.of_match_table = of_pwm_match_table,
++	},
++};
++
++module_platform_driver(aspeed_pwm_driver);
++
++MODULE_AUTHOR("Billy Tsai <billy_tsai@aspeedtech.com>");
++MODULE_DESCRIPTION("Aspeed ast2600 PWM device driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.25.1
+
