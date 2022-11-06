@@ -2,156 +2,115 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A459C433FE
-	for <linux-pwm@archiver.kernel.org>; Fri,  4 Nov 2022 17:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CF3C4332F
+	for <linux-pwm@archiver.kernel.org>; Sun,  6 Nov 2022 07:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231201AbiKDRKp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 4 Nov 2022 13:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
+        id S229547AbiKFH4f (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 6 Nov 2022 02:56:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231150AbiKDRKo (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Nov 2022 13:10:44 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985AB3F06C
-        for <linux-pwm@vger.kernel.org>; Fri,  4 Nov 2022 10:10:43 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id w4so3446721qts.0
-        for <linux-pwm@vger.kernel.org>; Fri, 04 Nov 2022 10:10:43 -0700 (PDT)
+        with ESMTP id S229463AbiKFH4e (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 6 Nov 2022 02:56:34 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F4B6246;
+        Sun,  6 Nov 2022 00:56:32 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id f7so13196194edc.6;
+        Sun, 06 Nov 2022 00:56:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=id/m4PJka4ak4GkQ5lhsmXVKkGfCwtyssjK4t6uoVVs=;
-        b=YpYUlOVpQsjVYotS+k/BFPz+cRTPQ5vTloCHMLkCjHLIfGt1sRcorDcdKrTfPQEiqk
-         tC2r7PFLRgUCwyg1yxnLs8A+9AIKQOcEOYgfr9Y+fSccJ8E33COJ0Wjy9lAcAOJvCvMX
-         loB9GS6Ij+dwj4Cx2LQrL7d14cRjVhkpy278zCiILi3y39khCqrq3MjXNlHREjjYIYnp
-         a1a3fSrFoD0I8zrZ0aYVEMBlWH+OVySQK2urEgSOpF/+5CXZhLmJxTfew+OHQNpw19jr
-         poS+XzDuYc/wZ8HPTLLkOvGfAoJYfWk64T9HxQJxZVkRKsXejYO5WnBGpiKXbFLObkOv
-         ERoQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Gkzrt0tLXNTRfLm2uFzAkX1Avhsv5RXjjNb/2WJUlik=;
+        b=DzrsiMeD6vgcQ6q/Fpth37UDork/jbuMdZxdFqi/9C+/66NmeFCXM19niKP92lHRck
+         LhiBjSj8zFFV0sGQk7oVq1MTzhbRaZYJACRyTF0EfQxVZvfjndJYAF/FtkCAUC3X4ols
+         DGI0+Z/BCOp1q0K00/Ps75MnolbSCs2QBYY9MDOLQcoUWyY7mavUCtVQP2BXMIh+9fIJ
+         E+F4nx2VwRRNvqCsUySYmsikfkkRK1//HhaFLtIP411hu2CsI9q180fm7/Uq2qfW+TSQ
+         K4mmflomiQTLnwrbO2uDDevf24nxsftByKhnmLFbzGwVsDXYNFgoye4vxXNYJ26aHdwo
+         NZCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=id/m4PJka4ak4GkQ5lhsmXVKkGfCwtyssjK4t6uoVVs=;
-        b=DZDm8IvqZfYsuiY7C6mukTx64SdMyhGKPB81iP1XWmjt0RYknugMXU4HLpaiipEsx1
-         GdrueQikKwrNe2tU0zEUcUgJuWcfn0OSwcOzyI4so/8WDkAUQgbRDPheTFEXeD7Q81uH
-         oPw5fAbDTIkDgkmnTzk/dOKm4CAyB86gIbZIOkMuU3bmbk0ddJOnsB2hWd++W3YHx9Ir
-         LF8RSsR/zBKee0YRaiiEk/Sf8nA8mm7W50c06Aep1jxDZfVJnCSQUU9eIHTm9nGdzf7z
-         2MfIwswr9TSdUH4YQhnKuXp4uui0HGxZqXsvMm7g/8WH6e2zpyVFgx4T0zIJDyVR3btr
-         T5aw==
-X-Gm-Message-State: ACrzQf1FV6B3z6vvTqZUvjbHSoRCYTKpA26tv7vYPqdQVi/x1K1IT+NZ
-        6ahjZOcrgIQ54fMIVJyXSuwE/g==
-X-Google-Smtp-Source: AMsMyM48TwKakdoi9XI56ZSm+s+EMx3vzp3w+5I2ovZFXE5AyQzdRvdUY24WMzPQKglZPH02FN/pCA==
-X-Received: by 2002:a05:622a:196:b0:3a5:40ab:592c with SMTP id s22-20020a05622a019600b003a540ab592cmr15386971qtw.103.1667581842757;
-        Fri, 04 Nov 2022 10:10:42 -0700 (PDT)
-Received: from ?IPV6:2601:586:5000:570:aad6:acd8:4ed9:299b? ([2601:586:5000:570:aad6:acd8:4ed9:299b])
-        by smtp.gmail.com with ESMTPSA id s9-20020a05620a29c900b006cec8001bf4sm3282124qkp.26.2022.11.04.10.10.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Nov 2022 10:10:42 -0700 (PDT)
-Message-ID: <c0a6a3a1-c12d-75b4-fe1d-026ab0740b58@linaro.org>
-Date:   Fri, 4 Nov 2022 13:10:40 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH 2/3] dt-bindings: pwm: rzg2l-gpt: Document renesas,poegs
- property
-Content-Language: en-US
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Gkzrt0tLXNTRfLm2uFzAkX1Avhsv5RXjjNb/2WJUlik=;
+        b=3sKVyNymTXNKynSctwzr4V3J4JfhbwlS9zXkfJOQQJ/kJ5qkC0ImW9tmtYqhP89Xp4
+         78umcFCBN1KOUixK0JVRj6mqe9v0oRmvn4/WeTmMmURNmopjAzPui222CG0xZPvr33NA
+         hTaoMfG3Lxa4kpuToUQNDjRNqz9B2Gue5MTU0G+d1eKpGOvko+AOgSP59x2hVZz7n1a2
+         h42ZwPULfZLfzvQe8RcfQaUhrA8VVb+9h1w4qOmraJtC64IkcpyYwkkWwm4sfRK4ArNi
+         EmutGC74SDNrDgUbqj1+MoGjnFOiYI3G2zWxx1u8HiotXjJyoArXM9lsKnrx5F+inwdT
+         IbvQ==
+X-Gm-Message-State: ACrzQf0Lc5ojukdgpKh5Cn432u9tRg9lhlCExes4/0VmDzgvmsZVEXgj
+        FZcw8BEoawaLrgnhevT5mg0=
+X-Google-Smtp-Source: AMsMyM7ak3tVRHLrcWvyw7Y3Cy7kh+ed4+8e2QUjoi4nw9UBbYSQ8Whe88vZGzla2/4KcXfkgTYFVQ==
+X-Received: by 2002:aa7:dcd5:0:b0:461:5fad:4215 with SMTP id w21-20020aa7dcd5000000b004615fad4215mr45981851edu.332.1667721391260;
+        Sun, 06 Nov 2022 00:56:31 -0700 (PDT)
+Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
+        by smtp.gmail.com with ESMTPSA id s8-20020a056402164800b004642b35f89esm2301685edx.9.2022.11.06.00.56.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Nov 2022 00:56:30 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-References: <20221104145938.1782464-1-biju.das.jz@bp.renesas.com>
- <20221104145938.1782464-3-biju.das.jz@bp.renesas.com>
- <dea44f32-e10f-0164-0175-4fe2e5d053a2@linaro.org>
- <OS0PR01MB5922D1D1143BB6F83A894D0E863B9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <OS0PR01MB5922D1D1143BB6F83A894D0E863B9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andre Przywara <andre.przywara@arm.com>
+Cc:     devicetree@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        Icenowy Zheng <uwu@icenowy.me>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 2/9] ARM: dts: suniv: f1c100s: add PWM node
+Date:   Sun, 06 Nov 2022 08:56:29 +0100
+Message-ID: <8176089.NyiUUSuA9g@jernej-laptop>
+In-Reply-To: <20221101141658.3631342-3-andre.przywara@arm.com>
+References: <20221101141658.3631342-1-andre.przywara@arm.com> <20221101141658.3631342-3-andre.przywara@arm.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 04/11/2022 12:52, Biju Das wrote:
-> Hi Krzysztof Kozlowski,
+Dne torek, 01. november 2022 ob 15:16:51 CET je Andre Przywara napisal(a):
+> The Allwinner F1C100s family of SoCs contain a PWM controller compatible
+> to the one used in the A20 chip.
+> Add the DT node so that any users can simply enable it in their board
+> DT.
 > 
->> -----Original Message-----
->> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> Subject: Re: [PATCH 2/3] dt-bindings: pwm: rzg2l-gpt: Document
->> renesas,poegs property
->>
->> On 04/11/2022 10:59, Biju Das wrote:
->>> RZ/G2L GPT IP supports output pin disable function by dead time
->> error
->>> and detecting short-circuits between output pins.
->>>
->>> Add documentation for the optional property renesas,poegs to link a
->>> pair of GPT IOs with POEG.
->>>
->>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->>> ---
->>>  .../bindings/pwm/renesas,rzg2l-gpt.yaml       | 19
->> +++++++++++++++++++
->>>  1 file changed, 19 insertions(+)
->>>
->>> diff --git
->>> a/Documentation/devicetree/bindings/pwm/renesas,rzg2l-gpt.yaml
->>> b/Documentation/devicetree/bindings/pwm/renesas,rzg2l-gpt.yaml
->>> index 620d5ae4ae30..32f9deae89e5 100644
->>> --- a/Documentation/devicetree/bindings/pwm/renesas,rzg2l-gpt.yaml
->>> +++ b/Documentation/devicetree/bindings/pwm/renesas,rzg2l-gpt.yaml
->>> @@ -245,6 +245,24 @@ properties:
->>>    resets:
->>>      maxItems: 1
->>>
->>> +  renesas,poegs:
->>> +    $ref: "/schemas/types.yaml#/definitions/phandle-array"
->>
->> No need for quotes.
->>
->>> +    items:
->>
->> You miss here maxItems... but if you have just one item, then below
->> "items" should be " - items"
->>
->>> +      items:
->>> +        - description: phandle to POEG instance that serves the
->> output disable
->>> +        - description: An index identifying pair of GPT channels.
->>> +                       <0> - GPT channels 0 and 1
->>> +                       <1> - GPT channels 2 and 3
->>> +                       <2> - GPT channels 4 and 5
->>> +                       <3> - GPT channels 6 and 7
->>> +                       <4> - GPT channels 8 and 9
->>> +                       <5> - GPT channels 10 and 11
->>> +                       <6> - GPT channels 12 and 13
->>> +                       <7> - GPT channels 14 and 15
->>
->> then this could bave enum or minimum/maximum. Can you try if these
->> work?
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> ---
+>  arch/arm/boot/dts/suniv-f1c100s.dtsi | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 > 
-> Yes, checks are passing with below changes.
-> Will send V2 later once I get feedback for driver changes/ from other reviewers.
+> diff --git a/arch/arm/boot/dts/suniv-f1c100s.dtsi
+> b/arch/arm/boot/dts/suniv-f1c100s.dtsi index 0edc1724407b3..d5a6324e76465
+> 100644
+> --- a/arch/arm/boot/dts/suniv-f1c100s.dtsi
+> +++ b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+> @@ -192,6 +192,15 @@ wdt: watchdog@1c20ca0 {
+>  			clocks = <&osc32k>;
+>  		};
 > 
-> renesas,poegs:
-> -    $ref: "/schemas/types.yaml#/definitions/phandle-array"
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->      items:
-> +      maxItems: 8
+> +		pwm: pwm@1c21000 {
+> +			compatible = "allwinner,suniv-f1c100s-pwm",
+> +				     "allwinner,sun7i-a20-pwm";
+> +			reg = <0x01c21000 0xc>;
 
-and it might also require minItems: 1
-
-Thank you for changes.
+According to documentation, size is 0x400.
 
 Best regards,
-Krzysztof
+Jernej
+
+> +			clocks = <&osc24M>;
+> +			#pwm-cells = <3>;
+> +			status = "disabled";
+> +		};
+> +
+>  		uart0: serial@1c25000 {
+>  			compatible = "snps,dw-apb-uart";
+>  			reg = <0x01c25000 0x400>;
+
+
+
 
