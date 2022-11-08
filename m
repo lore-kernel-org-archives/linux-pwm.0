@@ -2,100 +2,110 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D52C43217
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Nov 2022 11:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EE6C433FE
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Nov 2022 11:48:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbiKHLTv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Nov 2022 06:19:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
+        id S233635AbiKHLs3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Nov 2022 06:48:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233567AbiKHLTu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Nov 2022 06:19:50 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A34729CA1
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Nov 2022 03:19:47 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id ay14-20020a05600c1e0e00b003cf6ab34b61so11463644wmb.2
-        for <linux-pwm@vger.kernel.org>; Tue, 08 Nov 2022 03:19:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0O5AFmFKbf5PYRm9R8MhyT7qt2cdChWTACvWuLcX95M=;
-        b=OjCBz2IPywIkBv3uzNJP3UVKFlQjnWT+B+N3u6oyR0VareSpa8U138noJM8t3Qeiaf
-         S5bz3+CvI8N2l4XLjBbeNFSl99/VtAlq/b1TNTDBkh7CN9TcWpWFAYwIuwY5cKLcP06s
-         J94sWKfHire1QABTQN7tfixvGcQ/sIrRkr5zl1dJHvhqqQMduMIeb/biY/sIzYsO2HL2
-         bdlb9N7s2EgPd80KVRx/70a4QZv8i0dd6E8S0LBMYF7InOO5yvykKbnTgoyToBwZ5C+c
-         Ebg63ghNGuvYYCCnLU5EYpc1l+hfMPRX3EC+DQCB2LZCi4gJy9FTP2x/SGDkkx0RdCJV
-         LDVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0O5AFmFKbf5PYRm9R8MhyT7qt2cdChWTACvWuLcX95M=;
-        b=QZpH25GwUHqglAquw873WcmowDnDbY+ZjPCl78SoJivj0PInjTqAVRnfbmBCjgPszG
-         oWQ3jjt1N8KYCHo2PAehdCnBpXPXxH3gqgUukOrISOH35LTWl0I2goncpMfJNLpbaQRH
-         LQetyKs5aYEe9UFTSmq5vVltfaMiGiUMhTpcXUNVCSTQHf+Zva5yHwZiLmx08A9FPnyZ
-         st5do9NGn93EIRsIcCh0czoUgjlNaZMQj5CSn0g6nTkc0HKIEnExmBJzcQnqN+BqWImw
-         Ag5wUrobT71LRTSRi2YEVXpfdjAtAFOjn9Xjlss+HgvvMHdUGpInine0oSgGB/xGRZcj
-         h/2g==
-X-Gm-Message-State: ACrzQf2cnCabMugUaOgi60X2sfgX5uBzUgcsZBQsCfUtPhrbgKBXmFnI
-        C5N/zxzaUl8NqAsXTNoWz3I93w==
-X-Google-Smtp-Source: AMsMyM4eCr2wrpZvg4ZTSD7ggtb9LG/QUT1MpCMe+imumvbHfaiB1fw7DnYOlTIw9aKuY2jPvU/suw==
-X-Received: by 2002:a7b:c2aa:0:b0:3cf:9d25:9d76 with SMTP id c10-20020a7bc2aa000000b003cf9d259d76mr12989404wmk.192.1667906385998;
-        Tue, 08 Nov 2022 03:19:45 -0800 (PST)
-Received: from [192.168.0.17] (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net. [86.15.83.122])
-        by smtp.gmail.com with ESMTPSA id h7-20020a05600c314700b003a1980d55c4sm15114174wmo.47.2022.11.08.03.19.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Nov 2022 03:19:45 -0800 (PST)
-Message-ID: <bcd96d79-71b2-9d6a-6397-a47162e52acc@sifive.com>
-Date:   Tue, 8 Nov 2022 11:19:44 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH v6 00/10] Designware PWM driver updates for OF
-Content-Language: en-GB
-To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        linux-pwm@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        u.kleine-koenig@pengutronix.de,
+        with ESMTP id S233876AbiKHLs2 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Nov 2022 06:48:28 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1110236
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Nov 2022 03:48:26 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1osN5c-0004G3-TY; Tue, 08 Nov 2022 12:48:24 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1osN5a-0032nL-Gu; Tue, 08 Nov 2022 12:48:23 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1osN5a-00FAkq-8O; Tue, 08 Nov 2022 12:48:22 +0100
+Date:   Tue, 8 Nov 2022 12:48:22 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Ben Dooks <ben.dooks@sifive.com>
+Cc:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
         Thierry Reding <thierry.reding@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Greentime Hu <greentime.hu@sifive.com>,
         William Salmon <william.salmon@sifive.com>,
         Jude Onyenegecha <jude.onyenegecha@sifive.com>
+Subject: Re: [PATCH v6 00/10] Designware PWM driver updates for OF
+Message-ID: <20221108114822.7aktlzgbz7xziudb@pengutronix.de>
 References: <20221020151610.59443-1-ben.dooks@sifive.com>
  <623284c8-f4bb-1020-2f2e-a475f424c5b5@linux.intel.com>
-From:   Ben Dooks <ben.dooks@sifive.com>
-In-Reply-To: <623284c8-f4bb-1020-2f2e-a475f424c5b5@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+ <bcd96d79-71b2-9d6a-6397-a47162e52acc@sifive.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uk7th4v7jksyqa5r"
+Content-Disposition: inline
+In-Reply-To: <bcd96d79-71b2-9d6a-6397-a47162e52acc@sifive.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 24/10/2022 09:39, Jarkko Nikula wrote:
-> Hi
-> 
-> On 10/20/22 18:16, Ben Dooks wrote:
->> This is an updated version of the Designware PWM driver updates
->> for OF support, which now splits the driver into PCI and OF parts
->> as well as tries to sort out the review comments.
->>
->> Hopefully this can now be queued for the next kernel version.
->>
->> v6:
->>   - fix removal ordering of DWC_PERIOD_NS
-> 
-> I did a quick test on our HW and PWM was counting as before.
-> 
-> Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
 
-Just to follow up on this, should I post a v7 of this (given
-I think it is all just updates for review/tested) ?
+--uk7th4v7jksyqa5r
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Ben
+On Tue, Nov 08, 2022 at 11:19:44AM +0000, Ben Dooks wrote:
+> On 24/10/2022 09:39, Jarkko Nikula wrote:
+> > Hi
+> >=20
+> > On 10/20/22 18:16, Ben Dooks wrote:
+> > > This is an updated version of the Designware PWM driver updates
+> > > for OF support, which now splits the driver into PCI and OF parts
+> > > as well as tries to sort out the review comments.
+> > >=20
+> > > Hopefully this can now be queued for the next kernel version.
+> > >=20
+> > > v6:
+> > > =A0 - fix removal ordering of DWC_PERIOD_NS
+> >=20
+> > I did a quick test on our HW and PWM was counting as before.
+> >=20
+> > Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+>=20
+> Just to follow up on this, should I post a v7 of this (given
+> I think it is all just updates for review/tested) ?
 
+Just to add the tags doesn't justify a resend.
+
+Reviewing this is in my todo list, I hope to come to it later this week.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--uk7th4v7jksyqa5r
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmNqQgMACgkQwfwUeK3K
+7AkETQf/RblT34D1zc1x6a69+2ynE5hvgoKtdk6F0NfPyZwUe4GP67DEtg6NMvOw
+mhpqrVNR8LlxZ1RT55YruAJMGDaoCYaw6syw3KOyVU0d9vlDh8wJ7IUsBUADtxzY
+uGhPmqoa2DdghZZj1Pk4fwr9KL52pB0bh8ciUK+899e53nb632fIk0daicYtXrWO
+HiatrZIlxfr/7x5W7IzqnssTOTHP89RigbDfOoG4bYG5yN/++IxzhCYAfUmJ4n4J
+T0BZhL7Qul3YDzdc58pKQ0YxAWeQwjt3IWeluTT+UZdTEflwhOzHCinRiZ5IZYpm
+DU6DBQT/01s8L0lQuqcUUAGIPTV1lw==
+=5KdU
+-----END PGP SIGNATURE-----
+
+--uk7th4v7jksyqa5r--
