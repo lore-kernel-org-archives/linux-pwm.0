@@ -2,108 +2,95 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62CDC433FE
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Nov 2022 14:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7300EC43217
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Nov 2022 15:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234224AbiKHOWw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Nov 2022 09:22:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
+        id S233981AbiKHPIA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Nov 2022 10:08:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234352AbiKHOWT (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Nov 2022 09:22:19 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809DE54B2F;
-        Tue,  8 Nov 2022 06:22:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667917338; x=1699453338;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=E9ags/i2eDk5WiEL1lMfAOWBo+2EbAcbpeazBtcJaqI=;
-  b=IY8eOGG5AbGU/thfTYtpls063zxVpV5GhebaF0WBpN2XhwgrSwOyfsur
-   BRM61jpRSb4AobgbzZ+yG5nimeoU1d1v7Do86xiHmC/G6KJi9qOS9BQFv
-   Qq0ImAW8CxPffvRmL9vCtmOQK75sXKwYmaphjjLea5UZdu4zkguVYJrow
-   LSzqAE0zazYMulRy5y+mGWyHYLPYZrqlMDX4xmUDu1B973kBe9+nAcEVm
-   4RiIabUdg2lD8fJ1L1iTbSY48pDbzWmsXUNXTS4XlIgxeoAC8SUWH2RFK
-   pjS4y4T6biqEi/Id9/ILyH35ko5Mtlxx6KC4MU05w0g7TJaUAUJA3qmy4
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="310700753"
-X-IronPort-AV: E=Sophos;i="5.96,148,1665471600"; 
-   d="scan'208";a="310700753"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 06:22:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="587386418"
-X-IronPort-AV: E=Sophos;i="5.96,148,1665471600"; 
-   d="scan'208";a="587386418"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 08 Nov 2022 06:22:03 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 75ED429D; Tue,  8 Nov 2022 16:22:27 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        with ESMTP id S233976AbiKHPH7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Nov 2022 10:07:59 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C376058BF8
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Nov 2022 07:07:58 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1osQCM-0000UE-Cj; Tue, 08 Nov 2022 16:07:34 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1osQCJ-0034pj-Oe; Tue, 08 Nov 2022 16:07:32 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1osQCJ-00FCdk-Qe; Tue, 08 Nov 2022 16:07:31 +0100
+Date:   Tue, 8 Nov 2022 16:07:31 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
         Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
         Thierry Reding <thierry.reding@gmail.com>,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Cc:     Andy Shevchenko <andy@kernel.org>,
+        linux-pwm@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v2 2/6] pwm: lpss: Rename MAX_PWMS --> LPSS_MAX_PWMS
-Date:   Tue,  8 Nov 2022 16:22:22 +0200
-Message-Id: <20221108142226.63161-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221108142226.63161-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2 2/6] pwm: lpss: Rename MAX_PWMS --> LPSS_MAX_PWMS
+Message-ID: <20221108150731.obmwkiepwcewtdqm@pengutronix.de>
 References: <20221108142226.63161-1-andriy.shevchenko@linux.intel.com>
+ <20221108142226.63161-3-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dsjwetekhvvdedgm"
+Content-Disposition: inline
+In-Reply-To: <20221108142226.63161-3-andriy.shevchenko@linux.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The MAX_PWMS definition is already being used by PWM core.
-Using the same name in the certain driver confuses people
-and potentially can clash with it.
 
-Hence, rename it by adding LPSS prefix.
+--dsjwetekhvvdedgm
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
- drivers/pwm/pwm-lpss.c | 2 +-
- drivers/pwm/pwm-lpss.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On Tue, Nov 08, 2022 at 04:22:22PM +0200, Andy Shevchenko wrote:
+> The MAX_PWMS definition is already being used by PWM core.
+> Using the same name in the certain driver confuses people
+> and potentially can clash with it.
+>=20
+> Hence, rename it by adding LPSS prefix.
+>=20
+> Reported-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index accdef5dd58e..b8739cd2c235 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -252,7 +252,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
- 	int i, ret;
- 	u32 ctrl;
- 
--	if (WARN_ON(info->npwm > MAX_PWMS))
-+	if (WARN_ON(info->npwm > LPSS_MAX_PWMS))
- 		return ERR_PTR(-ENODEV);
- 
- 	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index 8e82eb5a7e00..2c746c51b883 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -13,7 +13,7 @@
- #include <linux/device.h>
- #include <linux/pwm.h>
- 
--#define MAX_PWMS			4
-+#define LPSS_MAX_PWMS			4
- 
- struct pwm_lpss_chip {
- 	struct pwm_chip chip;
--- 
-2.35.1
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--dsjwetekhvvdedgm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmNqcLAACgkQwfwUeK3K
+7AmxHgf+JkfoFFD1fhwIOpede6fH0CofrcKC1M3kPM29kliA/+/VD/S2mT6PRIAO
+AaysKqJp8Ha0mXBUYfsUXEQ17OCnveP1GgiFjqGzmhQFmqWvetqCQKYWM4LAK1SC
+kxHpVHdaDH4ILScJ5J0JanOaSoQuOZA2CvXE9P+kzzANaK8/4UbCCkyak3wPkic8
+qhAIxTBDPyUsMWqegzrl9L5PAmTwCTtbiOAtll5SsQ5WJA8/Qku/hnd9aKgbW21P
+jCp8tyAWE26h+pmdpsikVnhpw2/C6uQwNavlS/mXKGXM7abOUPvJAh3cYbwWMydc
++nO5SetlhLGYHHFIJdD76C0+UY7Lwg==
+=dmFr
+-----END PGP SIGNATURE-----
+
+--dsjwetekhvvdedgm--
