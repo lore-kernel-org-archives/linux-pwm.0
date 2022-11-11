@@ -2,101 +2,110 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2E5C4332F
-	for <linux-pwm@archiver.kernel.org>; Fri, 11 Nov 2022 17:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB18BC4332F
+	for <linux-pwm@archiver.kernel.org>; Fri, 11 Nov 2022 18:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234116AbiKKRed (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 11 Nov 2022 12:34:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
+        id S234116AbiKKSnQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 11 Nov 2022 13:43:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234137AbiKKRe2 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 11 Nov 2022 12:34:28 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FE5657C5;
-        Fri, 11 Nov 2022 09:34:23 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id q9so14249131ejd.0;
-        Fri, 11 Nov 2022 09:34:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WNL6IfTe0wzPq8NWBK/D96/5y8l3oPapGeg3sP1iP80=;
-        b=ZiUNfWdS+2kgkaKJuTKbf+3zGC6VlGeB9T3IBZAioQZkrkhbJwmO60/IQP7d4odxOd
-         UQ9P/NHEflrVY3Um9feS1Tq2bYLLXYUUmZOpTPgtpvRLA1a0cCvcG8zFNIWOKIwtyApR
-         kmw9g2Yj5pzFx2qaZzl2VuzjXA859mMBprMcsy+6rpX8mUKZO2UIi29+pX5+5QinRPnt
-         te6I9Y0Vl5WvYvNH/QQfWUziOp1hqe1GBkRFVW6YDYRjTnAxRe6pblWJkitt61N++Q8W
-         Yky075tee/8i0S7Jdvfa0RullX4+2DxdfuZRmvF2rrsmNWbH72mRmHlzDHiA+ltP6EE2
-         TFPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WNL6IfTe0wzPq8NWBK/D96/5y8l3oPapGeg3sP1iP80=;
-        b=l75qbZwtbERoAe1H1n9d1l9fFuFxVW+r4WTrf94poo8ZSUDhzpEttyk0ED4YkpmB/2
-         H97i5kEgTw6DpFJeWtHow7sqrdKAAPJKXFodtuwVy8WMLWyanLX2ijbd/TiDW6/D2+4L
-         0z4He6iZW7AkA1YVKQJu/K6ycxSXm4yVRHL82tWOk13j6h0sA0D0GtOQeq/htNx5q63I
-         GimMy11Ruk+N5E47FLeQ4Y+jVmrEsMiFjzqVFyrsVy9VXMA21OfLbJGmiHfN4n4FU13n
-         fW+Ot7UQgiqUrqXgSeXcDlMwojP9MDUAgAWIN/0ecCAJkRZ9y6kYSYNrRARcmBy2h+3a
-         4cnA==
-X-Gm-Message-State: ANoB5pke60/kgcviB5fGljVJ7w/OU6CnsY0eblDjxzozvJNOIi/eZOSn
-        0Pou8wsn1H8q3A002+RgnHs=
-X-Google-Smtp-Source: AA0mqf4WNUX8D3AJJ+yKFXFkOeOfQnJkafQvX4JqhdEVmSHraQl66sol6L5QnsfhPdMBvLHU7ww+uQ==
-X-Received: by 2002:a17:906:2852:b0:7ad:9f03:fd44 with SMTP id s18-20020a170906285200b007ad9f03fd44mr2722601ejc.73.1668188063262;
-        Fri, 11 Nov 2022 09:34:23 -0800 (PST)
-Received: from localhost ([85.153.204.139])
-        by smtp.gmail.com with UTF8SMTPSA id lb21-20020a170907785500b0073dbaeb50f6sm1072867ejc.169.2022.11.11.09.34.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Nov 2022 09:34:22 -0800 (PST)
-From:   Sasha Finkelstein <fnkl.kernel@gmail.com>
-To:     thierry.reding@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io,
-        asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sasha Finkelstein <fnkl.kernel@gmail.com>
-Subject: [PATCH v3 4/4] MAINTAINERS: Add entries for Apple PWM driver
-Date:   Fri, 11 Nov 2022 20:33:48 +0300
-Message-Id: <20221111173348.6537-5-fnkl.kernel@gmail.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20221111173348.6537-1-fnkl.kernel@gmail.com>
-References: <20221111173348.6537-1-fnkl.kernel@gmail.com>
+        with ESMTP id S234055AbiKKSnM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 11 Nov 2022 13:43:12 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A781B7A4;
+        Fri, 11 Nov 2022 10:43:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668192191; x=1699728191;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gGDtImubOcSLVP60+TzwKMDasoMDqFJiSB9lXa2+0Eg=;
+  b=EmU+LWuqPyBIA7FqRJnwLeOXs9kYFHjxGmnhDJ57GZcyRsSq6OtWQyl3
+   HtWQTNWDg+pZ1JnLeYxZL/CYnjMzRAmCbCOFS1sxBwpP81kksFP6Kb9VT
+   /3lZ2Pc3/8gbvU1zefFaXpZOn58iO9A1GfHIlKLhZ9H7x56oEx0FEIKsv
+   0Hzxw4nj6E5n2pJuN7w7OJsCeB1Y04BIuhv5DPlwvnbOdzUMooqU2d/gh
+   njuKKlltcHjfPrtxUd95ZwvZsbs10kDZntYqFBOSY9MzCtAVNNnlzCKNl
+   o1E7QVBHM8cD7jtJOXMDx9H3JOcUxYvT89V9hacFc8tFfabRZJmWkN9Sw
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="309274047"
+X-IronPort-AV: E=Sophos;i="5.96,157,1665471600"; 
+   d="scan'208";a="309274047"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 10:43:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="632103056"
+X-IronPort-AV: E=Sophos;i="5.96,157,1665471600"; 
+   d="scan'208";a="632103056"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga007.jf.intel.com with ESMTP; 11 Nov 2022 10:43:08 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 27B3315C; Fri, 11 Nov 2022 20:43:32 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Cc:     Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v3 2/6] pwm: lpss: Rename MAX_PWMS --> LPSS_MAX_PWMS
+Date:   Fri, 11 Nov 2022 20:43:24 +0200
+Message-Id: <20221111184328.58108-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221111184328.58108-1-andriy.shevchenko@linux.intel.com>
+References: <20221111184328.58108-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add the MAINTAINERS entries for the driver
+The MAX_PWMS definition is already being used by the PWM core.
+Using the same name in the certain driver confuses people
+and potentially can clash with it.
 
-Signed-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>
-Acked-by: Sven Peter <sven@svenpeter.dev>
+Hence, rename it by adding LPSS prefix.
+
+Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pwm/pwm-lpss.c | 2 +-
+ drivers/pwm/pwm-lpss.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 046ff06ff97f..69f56f7cf907 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1908,6 +1908,7 @@ F:	Documentation/devicetree/bindings/nvmem/apple,efuses.yaml
- F:	Documentation/devicetree/bindings/pci/apple,pcie.yaml
- F:	Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
- F:	Documentation/devicetree/bindings/power/apple*
-+F:	Documentation/devicetree/bindings/pwm/pwm-apple.yaml
- F:	Documentation/devicetree/bindings/watchdog/apple,wdt.yaml
- F:	arch/arm64/boot/dts/apple/
- F:	drivers/clk/clk-apple-nco.c
-@@ -1921,6 +1922,7 @@ F:	drivers/mailbox/apple-mailbox.c
- F:	drivers/nvme/host/apple.c
- F:	drivers/nvmem/apple-efuses.c
- F:	drivers/pinctrl/pinctrl-apple-gpio.c
-+F:	drivers/pwm/pwm-apple.c
- F:	drivers/soc/apple/*
- F:	drivers/watchdog/apple_wdt.c
- F:	include/dt-bindings/interrupt-controller/apple-aic.h
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index accdef5dd58e..b8739cd2c235 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -252,7 +252,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
+ 	int i, ret;
+ 	u32 ctrl;
+ 
+-	if (WARN_ON(info->npwm > MAX_PWMS))
++	if (WARN_ON(info->npwm > LPSS_MAX_PWMS))
+ 		return ERR_PTR(-ENODEV);
+ 
+ 	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index 8e82eb5a7e00..2c746c51b883 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -13,7 +13,7 @@
+ #include <linux/device.h>
+ #include <linux/pwm.h>
+ 
+-#define MAX_PWMS			4
++#define LPSS_MAX_PWMS			4
+ 
+ struct pwm_lpss_chip {
+ 	struct pwm_chip chip;
 -- 
-2.38.1
+2.35.1
 
