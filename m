@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF0D8C4332F
-	for <linux-pwm@archiver.kernel.org>; Thu, 17 Nov 2022 21:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C064C433FE
+	for <linux-pwm@archiver.kernel.org>; Thu, 17 Nov 2022 21:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiKQVMF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S240455AbiKQVMF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Thu, 17 Nov 2022 16:12:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240681AbiKQVLy (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Nov 2022 16:11:54 -0500
+        with ESMTP id S240695AbiKQVLz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Nov 2022 16:11:55 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B6A61525
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE4061527
         for <linux-pwm@vger.kernel.org>; Thu, 17 Nov 2022 13:11:54 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1ovmAp-0007On-Uh; Thu, 17 Nov 2022 22:11:52 +0100
+        id 1ovmAq-0007P1-Gt; Thu, 17 Nov 2022 22:11:52 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1ovmAo-004v5m-6M; Thu, 17 Nov 2022 22:11:51 +0100
+        id 1ovmAo-004v5t-Un; Thu, 17 Nov 2022 22:11:51 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1ovmAo-00HN0F-Dh; Thu, 17 Nov 2022 22:11:50 +0100
+        id 1ovmAo-00HN0L-RH; Thu, 17 Nov 2022 22:11:50 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 1/4] pwm: Document variables protected by pwm_lock
-Date:   Thu, 17 Nov 2022 22:11:40 +0100
-Message-Id: <20221117211143.3817381-2-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 3/4] pwm: Mark free pwm IDs as used in alloc_pwms()
+Date:   Thu, 17 Nov 2022 22:11:42 +0100
+Message-Id: <20221117211143.3817381-4-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221117211143.3817381-1-u.kleine-koenig@pengutronix.de>
 References: <20221117211143.3817381-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1336; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=gVppIEf/lpbSlfN4FOCkWayRJhongp4knJTqk4NtP9Q=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjdqN+8HG4Bay2je5Xh/cc1bSrfdvdcwF88fPwunKV FGDfVEKJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY3ajfgAKCRDB/BR4rcrsCZV5B/ 9+W4jlFDJayYkJPKxcszuItsiylo7wpidxU8YNXE9cYbwpw9aXu/eJ8gOOAjfs5i6/+QoofiLTTGkt 5CYqgvRLMpgvNir2eQKwgkINkJIvlzJQUzmnTTFJeTbpgi/RgfHDUszIXPQyEbgCXAXMDgiLo4UUBr c5kcgAICd0yyNvgELU6yXEzSvrUTNx3AXKzIhCl+Xsd81KTD/thUy6CqvlVYwEN3AAdlMs37u1lwkU cbsGobvw+yqbpoVuZ3+RHpOEZuyx+vjQ5VBsWSbLoKiFlxngfmULjIYCVWHfXVTBaLcl3ygzE/Y5ja Ieu0+bMI2x6YndkGlNKIHmqZPv+XNh
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1158; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=ZlStsEzR95pbO/ZmKK1BH2TWL3+UitzetoByqrewymQ=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjdqOFnLAl+llZa8VfE8hGENgCr2OBorW+EwWwj6Sc hxVKKIWJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY3ajhQAKCRDB/BR4rcrsCQvECA CODszKvUNGCAramGpOaGYzlu1hv/odKmef2JzgxlizzQv+z1poDO3IeRXSiuE7ybsHKdBuZvDVbQcY 1xGQQefeaKCttbIHkgWK6IICO/9tAGFpXAR94Ib5V6lJtD/KuDiq8slejxKqM7hsg4cp2zbdOd0Lh5 +bb/PFYPrZqdzjpgDNux7hnMXaoqSQqXTPWU349JUOul1vS3/NFdmzbp3s17/5kI8U+8jqWzOGQ9cO H1msrkwSlSspKerk+msMJKtsWsd/BDa/mH48HsXwy3+6b/S8stWqfNW08FohfLc2dsAOEyDOB1sqSA uT43cx+lM3hdfI+guzKUQrYK4Zq4Pm
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,47 +51,40 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-To simplify validation of the used locking, document for the global pwm
-mutex what it actually protects against concurrent access. Also note for
-two functions modifying these that pwm_lock is held by the caller.
+alloc_pwms() only identified a free range of IDs and this range was marked
+as used only later by pwmchip_add(). Instead let alloc_pwms() already do
+the marking (which makes the function actually allocating the range and so
+justifies the function name). This way access to the allocated_pwms
+bitfield is limited to two functions only.
 
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/core.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/pwm/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index d333e7422f4a..ebe06efe9de5 100644
+index 2338119a09d8..b43b24bd3c9f 100644
 --- a/drivers/pwm/core.c
 +++ b/drivers/pwm/core.c
-@@ -27,7 +27,10 @@
+@@ -51,6 +51,8 @@ static int alloc_pwms(unsigned int count)
+ 	if (start + count > MAX_PWMS)
+ 		return -ENOSPC;
  
- static DEFINE_MUTEX(pwm_lookup_lock);
- static LIST_HEAD(pwm_lookup_list);
++	bitmap_set(allocated_pwms, start, count);
 +
-+/* protects access to pwm_chips, allocated_pwms, and pwm_tree */
- static DEFINE_MUTEX(pwm_lock);
-+
- static LIST_HEAD(pwm_chips);
- static DECLARE_BITMAP(allocated_pwms, MAX_PWMS);
- static RADIX_TREE(pwm_tree, GFP_KERNEL);
-@@ -37,6 +40,7 @@ static struct pwm_device *pwm_to_device(unsigned int pwm)
- 	return radix_tree_lookup(&pwm_tree, pwm);
- }
- 
-+/* Called with pwm_lock held */
- static int alloc_pwms(unsigned int count)
- {
- 	unsigned int start;
-@@ -50,6 +54,7 @@ static int alloc_pwms(unsigned int count)
  	return start;
  }
  
-+/* Called with pwm_lock held */
- static void free_pwms(struct pwm_chip *chip)
- {
- 	unsigned int i;
+@@ -297,8 +299,6 @@ int pwmchip_add(struct pwm_chip *chip)
+ 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
+ 	}
+ 
+-	bitmap_set(allocated_pwms, chip->base, chip->npwm);
+-
+ 	INIT_LIST_HEAD(&chip->list);
+ 	list_add(&chip->list, &pwm_chips);
+ 
 -- 
 2.38.1
 
