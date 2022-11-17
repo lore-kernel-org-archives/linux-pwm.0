@@ -2,179 +2,139 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5841C46467
-	for <linux-pwm@archiver.kernel.org>; Thu, 17 Nov 2022 11:09:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7900C433FE
+	for <linux-pwm@archiver.kernel.org>; Thu, 17 Nov 2022 11:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239738AbiKQLIx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 17 Nov 2022 06:08:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+        id S239261AbiKQL2G (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 17 Nov 2022 06:28:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239772AbiKQLIQ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Nov 2022 06:08:16 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7EE69DEA;
-        Thu, 17 Nov 2022 03:08:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668683294; x=1700219294;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ozLU2nu1r74X7A+30A92Kia7Sm7wFG1fM/nv/pGjLco=;
-  b=KsmephcQBHc2JuRbkPzilXlr0ownOD869HdRe1oQQE/bikFHgjxg5LPV
-   W/50bSln3EgBuOOuRWJttOrvqJgNWiPxHW3Ms1A0897wvYutR8sxBAu7X
-   44GvzDnyeIe6v0VnzU5wKZ7L9x3eHwvTB/WuWEIYeYdcaUuS7P5eHF0Hm
-   jSCGwawsIYZC9AhBPvqFaRBjRftccuP3eq4kcpA9ZNG2L6CG0pxAQO+mH
-   bv/uYiami2ZhJ1a1bn1W20p/TlXknrYKHxV/3e2f3Wwurr4Vc7AigkAm7
-   TQuzVK/wtqJr2EH44APJ9IqwJ68UBFEGUGbS+vIoNVxkZgtlq9c4/6aJ2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="313971564"
-X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
-   d="scan'208";a="313971564"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 03:08:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="639763983"
-X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
-   d="scan'208";a="639763983"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 17 Nov 2022 03:08:11 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5E0E83B5; Thu, 17 Nov 2022 13:08:22 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v5 4/7] pwm: lpss: Allow other drivers to enable PWM LPSS
-Date:   Thu, 17 Nov 2022 13:08:03 +0200
-Message-Id: <20221117110806.65470-5-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221117110806.65470-1-andriy.shevchenko@linux.intel.com>
-References: <20221117110806.65470-1-andriy.shevchenko@linux.intel.com>
+        with ESMTP id S239203AbiKQL2F (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Nov 2022 06:28:05 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93EB745A24
+        for <linux-pwm@vger.kernel.org>; Thu, 17 Nov 2022 03:28:03 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ovd3o-0002Xd-9s; Thu, 17 Nov 2022 12:28:00 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ovd3m-004q6e-8H; Thu, 17 Nov 2022 12:27:59 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ovd3m-00HGXm-Gu; Thu, 17 Nov 2022 12:27:58 +0100
+Date:   Thu, 17 Nov 2022 12:27:58 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pwm: Add missing dummy for devm_pwmchip_add()
+Message-ID: <20221117112758.nsxfwh4ck23uln5a@pengutronix.de>
+References: <12f2142991690d2b1d6890821f6e7779a4d4bdc0.1666706435.git.geert+renesas@glider.be>
+ <20221026001713.kuu5mj6kogosvqnk@pengutronix.de>
+ <CAMuHMdW=h922855yyiiR2Bo+P2Dg7S7r1pVBF56S+Z0ytng3fA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4oa35okzj2bp3axr"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdW=h922855yyiiR2Bo+P2Dg7S7r1pVBF56S+Z0ytng3fA@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The PWM LPSS device can be embedded in another device.
-In order to enable it, allow that drivers to probe
-a corresponding device.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-lpss.h                        | 22 +--------------
- .../linux/platform_data/x86}/pwm-lpss.h       | 28 ++++---------------
- 2 files changed, 6 insertions(+), 44 deletions(-)
- copy {drivers/pwm => include/linux/platform_data/x86}/pwm-lpss.h (53%)
+--4oa35okzj2bp3axr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index 4ce6daa46ca8..bf841250385f 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -13,7 +13,7 @@
- #include <linux/pwm.h>
- #include <linux/types.h>
- 
--struct device;
-+#include <linux/platform_data/x86/pwm-lpss.h>
- 
- #define LPSS_MAX_PWMS			4
- 
-@@ -23,29 +23,9 @@ struct pwm_lpss_chip {
- 	const struct pwm_lpss_boardinfo *info;
- };
- 
--struct pwm_lpss_boardinfo {
--	unsigned long clk_rate;
--	unsigned int npwm;
--	unsigned long base_unit_bits;
--	/*
--	 * Some versions of the IP may stuck in the state machine if enable
--	 * bit is not set, and hence update bit will show busy status till
--	 * the reset. For the rest it may be otherwise.
--	 */
--	bool bypass;
--	/*
--	 * On some devices the _PS0/_PS3 AML code of the GPU (GFX0) device
--	 * messes with the PWM0 controllers state,
--	 */
--	bool other_devices_aml_touches_pwm_regs;
--};
--
- extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
- extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
- extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
- extern const struct pwm_lpss_boardinfo pwm_lpss_tng_info;
- 
--struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
--				     const struct pwm_lpss_boardinfo *info);
--
- #endif	/* __PWM_LPSS_H */
-diff --git a/drivers/pwm/pwm-lpss.h b/include/linux/platform_data/x86/pwm-lpss.h
-similarity index 53%
-copy from drivers/pwm/pwm-lpss.h
-copy to include/linux/platform_data/x86/pwm-lpss.h
-index 4ce6daa46ca8..296bd837ddbb 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/include/linux/platform_data/x86/pwm-lpss.h
-@@ -1,27 +1,14 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * Intel Low Power Subsystem PWM controller driver
-- *
-- * Copyright (C) 2014, Intel Corporation
-- *
-- * Derived from the original pwm-lpss.c
-- */
-+/* Intel Low Power Subsystem PWM controller driver */
- 
--#ifndef __PWM_LPSS_H
--#define __PWM_LPSS_H
-+#ifndef __PLATFORM_DATA_X86_PWM_LPSS_H
-+#define __PLATFORM_DATA_X86_PWM_LPSS_H
- 
--#include <linux/pwm.h>
- #include <linux/types.h>
- 
- struct device;
- 
--#define LPSS_MAX_PWMS			4
--
--struct pwm_lpss_chip {
--	struct pwm_chip chip;
--	void __iomem *regs;
--	const struct pwm_lpss_boardinfo *info;
--};
-+struct pwm_lpss_chip;
- 
- struct pwm_lpss_boardinfo {
- 	unsigned long clk_rate;
-@@ -40,12 +27,7 @@ struct pwm_lpss_boardinfo {
- 	bool other_devices_aml_touches_pwm_regs;
- };
- 
--extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
--extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
--extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
--extern const struct pwm_lpss_boardinfo pwm_lpss_tng_info;
--
- struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
- 				     const struct pwm_lpss_boardinfo *info);
- 
--#endif	/* __PWM_LPSS_H */
-+#endif	/* __PLATFORM_DATA_X86_PWM_LPSS_H */
--- 
-2.35.1
+Hello,
 
+On Wed, Oct 26, 2022 at 09:05:42AM +0200, Geert Uytterhoeven wrote:
+> On Wed, Oct 26, 2022 at 2:17 AM Uwe Kleine-K=F6nig
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > On Tue, Oct 25, 2022 at 04:03:42PM +0200, Geert Uytterhoeven wrote:
+> > > The PWM subsystem supports compile-testing if CONFIG_PWM is disabled.
+> > > However, no dummy is provided for devm_pwmchip_add(), which may lead =
+to
+> > > build failures.
+> > >
+> > > Fixes: bcda91bf86c1ff76 ("pwm: Add a device-managed function to add P=
+WM chips")
+> > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> >
+> > Is this a problem that today yields a failure to compile? As of v6.1-rc1
+> > and also in next all callers are below drivers/pwm/ which isn't included
+> > in the build without PWM=3Dy.
+>=20
+> So none of these support compile-testing with CONFIG_PWM=3Dn...
+
+There are not many pwm providers outside of drivers/pwm:
+
+ - drivers/gpio/gpio-mvebu.c
+ - drivers/gpu/drm/bridge/ti-sn65dsi86.c
+ - drivers/leds/rgb/leds-qcom-lpg.c
+ - drivers/staging/greybus/pwm.c
+
+These all call pwmchip_add() which has a dummy.
+
+gpio-mvebu only uses it in an if (IS_ENABLED(CONFIG_PWM)) block.
+ti-sn65dsi86 has it in a big #ifdef CONFIG_PWM block (and in a dedicated
+driver such that the returned error doesn't hurt).
+
+leds-qcom-lpg.c depends on PWM as does the greybus stuff.
+
+So the dummy isn't even needed. (Unless for the corner case GPIO_MVEBU=3Dy
++ PWM=3Dm which is probably a bug worth fixing. Maybe a similar issue
+exists for ti-sn65dsi86.)
+
+> > Am I missing something or is this just preparing that one of the drivers
+> > that doesn't live in drivers/pwm might call devm_pwmchip_add in the
+> > future?
+>=20
+> I saw it with the RZ/G2L MTU3 PWM driver[1], which is not yet applied.
+> After noticing its sibling counter driver lacked a dependency on
+> CONFIG_COUNTER, I tried disabling CONFIG_PWM...
+>=20
+> > In that case I wouldn't add that Fixes: line (and also oppose to
+> > backporting that commit to stable).
+>=20
+> I tend to disagree: more drivers may be converted to devm_pwmchip_add()
+> in the future, possibly as part of a fix, causing troubles for the
+> stable team when backporting such fixes.
+
+Please don't backport as a precaution not to miss to backport it in case
+there is another patch that depends on it. In my experience the stable
+maintainers are good at identifying such dependencies.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--4oa35okzj2bp3axr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmN2GrsACgkQwfwUeK3K
+7AlxUwgAoI6Bmom9R1BQ6dVKKaQSiiL4Q5yxOafXc1axVKC/IUCX60/RvBFUwEWq
+ABqvQ4ZqmDv+k24vyMHgnO4qcT4fBog9MFNReXm1won9Zkr1Sw0h0olvERymjiHj
+8CdXXXEMvjg6IOAbQ8jC3ZjU355baYdFVflRTO1k52dPRMzP32zBIF/avcRcrTaT
+YnKGw9wmDfZdIGWx5vfokNmSzYLGsZSNxv2SsBWXf3QJRWC6reBaAalL8AZkzXq+
+hqQDHwV7OQSZMc7UkQfoQmHvznyg/fPQxL2qIImziwgRN9+rvuWgVqrAJjcj8New
+DfMBkJnfxbqv4pHoqmKS3rL0MBiz9Q==
+=4Qj1
+-----END PGP SIGNATURE-----
+
+--4oa35okzj2bp3axr--
