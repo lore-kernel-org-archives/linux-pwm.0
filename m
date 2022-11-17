@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CE7C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5841C46467
 	for <linux-pwm@archiver.kernel.org>; Thu, 17 Nov 2022 11:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239653AbiKQLIv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 17 Nov 2022 06:08:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        id S239738AbiKQLIx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 17 Nov 2022 06:08:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239848AbiKQLII (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Nov 2022 06:08:08 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317095C74F;
-        Thu, 17 Nov 2022 03:08:02 -0800 (PST)
+        with ESMTP id S239772AbiKQLIQ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Nov 2022 06:08:16 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7EE69DEA;
+        Thu, 17 Nov 2022 03:08:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668683282; x=1700219282;
+  t=1668683294; x=1700219294;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RK+XGHZ2BELVVYkxCYeGM6RfxC8qsuOPoluHIaCRq2s=;
-  b=R+iJ5Cvo2Mki1IeRdhrlzG7Eu5NnQ6aEVYbVUCy5L5fXluZerCkwd8+r
-   9GKChPwrLeju5+dy0T2TNJEOYx4hEipV+XDBKjJ0Y7f0USWzipBfXaYwX
-   UkePNZBJsMYmb3KNSvaUhyz/VEgNbkbvogjM5YktSTtS/4jz5MkIv0h7f
-   aFgZK/vLqxrZ+GVl9qBX18+VPsvA//poqAN2x5IdiyR1tzvkEt1pdVft4
-   VtFdOdTwItiEwicb61V/M7J+H6dYr9wXUQbY3q2MRYYXN0QA3dQYC+qJd
-   JFk7bSukzzWKIinkCLEsPpQi6Q4EodErZSImjf8b6hPLRt9rSDUN9BSIr
+  bh=ozLU2nu1r74X7A+30A92Kia7Sm7wFG1fM/nv/pGjLco=;
+  b=KsmephcQBHc2JuRbkPzilXlr0ownOD869HdRe1oQQE/bikFHgjxg5LPV
+   W/50bSln3EgBuOOuRWJttOrvqJgNWiPxHW3Ms1A0897wvYutR8sxBAu7X
+   44GvzDnyeIe6v0VnzU5wKZ7L9x3eHwvTB/WuWEIYeYdcaUuS7P5eHF0Hm
+   jSCGwawsIYZC9AhBPvqFaRBjRftccuP3eq4kcpA9ZNG2L6CG0pxAQO+mH
+   bv/uYiami2ZhJ1a1bn1W20p/TlXknrYKHxV/3e2f3Wwurr4Vc7AigkAm7
+   TQuzVK/wtqJr2EH44APJ9IqwJ68UBFEGUGbS+vIoNVxkZgtlq9c4/6aJ2
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="314638732"
+X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="313971564"
 X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
-   d="scan'208";a="314638732"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 03:08:01 -0800
+   d="scan'208";a="313971564"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 03:08:13 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="617572346"
+X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="639763983"
 X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
-   d="scan'208";a="617572346"
+   d="scan'208";a="639763983"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 17 Nov 2022 03:07:59 -0800
+  by orsmga002.jf.intel.com with ESMTP; 17 Nov 2022 03:08:11 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 99CDF2B7; Thu, 17 Nov 2022 13:08:24 +0200 (EET)
+        id 5E0E83B5; Thu, 17 Nov 2022 13:08:22 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
@@ -51,9 +51,9 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-pwm@vger.kernel.org
 Cc:     Andy Shevchenko <andy@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v5 7/7] pinctrl: intel: Enumerate PWM device when community has a capability
-Date:   Thu, 17 Nov 2022 13:08:06 +0200
-Message-Id: <20221117110806.65470-8-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v5 4/7] pwm: lpss: Allow other drivers to enable PWM LPSS
+Date:   Thu, 17 Nov 2022 13:08:03 +0200
+Message-Id: <20221117110806.65470-5-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221117110806.65470-1-andriy.shevchenko@linux.intel.com>
 References: <20221117110806.65470-1-andriy.shevchenko@linux.intel.com>
@@ -64,81 +64,117 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Some of the Communities may have PWM capability. In such cases,
-enumerate the PWM device via respective driver. A user is still
-responsible for setting correct pin muxing for the line that
-needs to output the signal.
+The PWM LPSS device can be embedded in another device.
+In order to enable it, allow that drivers to probe
+a corresponding device.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Acked-by: Thierry Reding <thierry.reding@gmail.com>
 Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pinctrl/intel/pinctrl-intel.c | 29 +++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/pwm/pwm-lpss.h                        | 22 +--------------
+ .../linux/platform_data/x86}/pwm-lpss.h       | 28 ++++---------------
+ 2 files changed, 6 insertions(+), 44 deletions(-)
+ copy {drivers/pwm => include/linux/platform_data/x86}/pwm-lpss.h (53%)
 
-diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-index 52ecd66ce357..d74c8b650aa7 100644
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -21,6 +21,8 @@
- #include <linux/pinctrl/pinconf.h>
- #include <linux/pinctrl/pinconf-generic.h>
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index 4ce6daa46ca8..bf841250385f 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -13,7 +13,7 @@
+ #include <linux/pwm.h>
+ #include <linux/types.h>
  
+-struct device;
 +#include <linux/platform_data/x86/pwm-lpss.h>
-+
- #include "../core.h"
- #include "pinctrl-intel.h"
  
-@@ -46,6 +48,8 @@
- #define PADOWN_MASK(p)			(GENMASK(3, 0) << PADOWN_SHIFT(p))
- #define PADOWN_GPP(p)			((p) / 8)
+ #define LPSS_MAX_PWMS			4
  
-+#define PWMC				0x204
-+
- /* Offset from pad_regs */
- #define PADCFG0				0x000
- #define PADCFG0_RXEVCFG_SHIFT		25
-@@ -1499,6 +1503,27 @@ static int intel_pinctrl_pm_init(struct intel_pinctrl *pctrl)
- 	return 0;
- }
+@@ -23,29 +23,9 @@ struct pwm_lpss_chip {
+ 	const struct pwm_lpss_boardinfo *info;
+ };
  
-+static int intel_pinctrl_probe_pwm(struct intel_pinctrl *pctrl,
-+				   struct intel_community *community)
-+{
-+	static const struct pwm_lpss_boardinfo info = {
-+		.clk_rate = 19200000,
-+		.npwm = 1,
-+		.base_unit_bits = 22,
-+		.bypass = true,
-+	};
-+	struct pwm_lpss_chip *pwm;
-+
-+	if (!(community->features & PINCTRL_FEATURE_PWM))
-+		return 0;
-+
-+	if (!IS_REACHABLE(CONFIG_PWM_LPSS))
-+		return 0;
-+
-+	pwm = devm_pwm_lpss_probe(pctrl->dev, community->regs + PWMC, &info);
-+	return PTR_ERR_OR_ZERO(pwm);
-+}
-+
- static int intel_pinctrl_probe(struct platform_device *pdev,
- 			       const struct intel_pinctrl_soc_data *soc_data)
- {
-@@ -1584,6 +1609,10 @@ static int intel_pinctrl_probe(struct platform_device *pdev,
- 			ret = intel_pinctrl_add_padgroups_by_size(pctrl, community);
- 		if (ret)
- 			return ret;
-+
-+		ret = intel_pinctrl_probe_pwm(pctrl, community);
-+		if (ret)
-+			return ret;
- 	}
+-struct pwm_lpss_boardinfo {
+-	unsigned long clk_rate;
+-	unsigned int npwm;
+-	unsigned long base_unit_bits;
+-	/*
+-	 * Some versions of the IP may stuck in the state machine if enable
+-	 * bit is not set, and hence update bit will show busy status till
+-	 * the reset. For the rest it may be otherwise.
+-	 */
+-	bool bypass;
+-	/*
+-	 * On some devices the _PS0/_PS3 AML code of the GPU (GFX0) device
+-	 * messes with the PWM0 controllers state,
+-	 */
+-	bool other_devices_aml_touches_pwm_regs;
+-};
+-
+ extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
+ extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
+ extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
+ extern const struct pwm_lpss_boardinfo pwm_lpss_tng_info;
  
- 	irq = platform_get_irq(pdev, 0);
+-struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
+-				     const struct pwm_lpss_boardinfo *info);
+-
+ #endif	/* __PWM_LPSS_H */
+diff --git a/drivers/pwm/pwm-lpss.h b/include/linux/platform_data/x86/pwm-lpss.h
+similarity index 53%
+copy from drivers/pwm/pwm-lpss.h
+copy to include/linux/platform_data/x86/pwm-lpss.h
+index 4ce6daa46ca8..296bd837ddbb 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/include/linux/platform_data/x86/pwm-lpss.h
+@@ -1,27 +1,14 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * Intel Low Power Subsystem PWM controller driver
+- *
+- * Copyright (C) 2014, Intel Corporation
+- *
+- * Derived from the original pwm-lpss.c
+- */
++/* Intel Low Power Subsystem PWM controller driver */
+ 
+-#ifndef __PWM_LPSS_H
+-#define __PWM_LPSS_H
++#ifndef __PLATFORM_DATA_X86_PWM_LPSS_H
++#define __PLATFORM_DATA_X86_PWM_LPSS_H
+ 
+-#include <linux/pwm.h>
+ #include <linux/types.h>
+ 
+ struct device;
+ 
+-#define LPSS_MAX_PWMS			4
+-
+-struct pwm_lpss_chip {
+-	struct pwm_chip chip;
+-	void __iomem *regs;
+-	const struct pwm_lpss_boardinfo *info;
+-};
++struct pwm_lpss_chip;
+ 
+ struct pwm_lpss_boardinfo {
+ 	unsigned long clk_rate;
+@@ -40,12 +27,7 @@ struct pwm_lpss_boardinfo {
+ 	bool other_devices_aml_touches_pwm_regs;
+ };
+ 
+-extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
+-extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
+-extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
+-extern const struct pwm_lpss_boardinfo pwm_lpss_tng_info;
+-
+ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, void __iomem *base,
+ 				     const struct pwm_lpss_boardinfo *info);
+ 
+-#endif	/* __PWM_LPSS_H */
++#endif	/* __PLATFORM_DATA_X86_PWM_LPSS_H */
 -- 
 2.35.1
 
