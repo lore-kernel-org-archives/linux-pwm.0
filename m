@@ -2,53 +2,53 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 352B7C4332F
-	for <linux-pwm@archiver.kernel.org>; Mon, 21 Nov 2022 17:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E957EC4332F
+	for <linux-pwm@archiver.kernel.org>; Mon, 21 Nov 2022 17:45:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229996AbiKURpR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 21 Nov 2022 12:45:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36378 "EHLO
+        id S230052AbiKURp0 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 21 Nov 2022 12:45:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbiKURpL (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Nov 2022 12:45:11 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8685D5B87E;
-        Mon, 21 Nov 2022 09:45:09 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id bj12so30170446ejb.13;
-        Mon, 21 Nov 2022 09:45:09 -0800 (PST)
+        with ESMTP id S230115AbiKURpV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Nov 2022 12:45:21 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6B057B69;
+        Mon, 21 Nov 2022 09:45:19 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id v8so6285261edi.3;
+        Mon, 21 Nov 2022 09:45:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B+9IrtAc191rAMJ9lamUKYajmKH7hj/07wCLXl1AJ5g=;
-        b=F0N5VBAlSRuCK9dwIjBJ+sB4ejjY3jp7bnEHmkA1+3g4pr/YlxiLBAenlCQ1TR6svB
-         AVWoi9tdb7b7jGQIKNxIi54BWX8ZsXGhVgwlUbyHQ8mtiiUtcN8zLIWafSOdlBk/nt1y
-         fDYv0OxQt92tTSGkowqCjeuFXXBkdR7mAjfDL1qYCXFvAjC/m4gQptouJKpw2aI1Ags2
-         qz6QsdqFIRPOKQkJKbE7o0Uv4il02accd97GvIY70RqSLswcfwJsE05Biddj9SIljPbm
-         pvM9DHMU+y4lnZHa2Quz3W97Y/IzMv6dViiAhZ5tO8rQJ2L26HiyDL9EbiuUvj/qToAX
-         MBvw==
+        bh=WNL6IfTe0wzPq8NWBK/D96/5y8l3oPapGeg3sP1iP80=;
+        b=dLhwAvRFJe9dchF5SlF7ogMjH13Pn6iK4bxfoIQiE97ocKlAgrKq3Ar3GgtgtJKfGJ
+         s/O72OTVsNvv/EiYuci7viuu6cDSVg22gjpQLhVYJHIlvsVhHPTbmiber2ea9U9GrLb3
+         JsVBE1OojpPa1oX3NA0Bk1bmjuH/4QGz35S4ErMgIwB7uRJ8VKuFHWGECFZOB1dM6QcM
+         u8P32EeuImZq7VHnVYE0Ity0o12rE81sECLWAV5Z+2oKSbokt9Rxkn/lq8ymXNoZORno
+         RA/kd0GE//5CNTFYaKh0Ox/dgx1dQYtgjQN1ilhQil8pIApqLdb6WEkjdYHpG+p36LzT
+         TogQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=B+9IrtAc191rAMJ9lamUKYajmKH7hj/07wCLXl1AJ5g=;
-        b=6cffMnKmycbw5uyOT30tFJwZAKeSsnsFT/XlAT5xu9UGbXMeNAunjy5j52ceOoz0z9
-         kJ35kArxpFZ2vO2kfZ6pIcxNpLeWNzxyJsa7N97sCrFkM6ZGRaGBDCmpD0DeHirmwdyo
-         W7JpzTmfRX9S6LJ4qyp/MNoYeMOAolEYm0iOOW6cXd3P+xClqaWgWfXwGRLqzWWAMFec
-         zN9rYsjwIBv7MPykSTCFzEByn84SLa2mOUq9ZOxePhO9SGBQ4En2rqwAqcqmkH82UzGq
-         w6Y2KCevXXSrPqFAuHtiMZFIMTeZdzzC2TPdUsObTy/VXR+fiRugMdw93NcONJi5ScwI
-         HkiA==
-X-Gm-Message-State: ANoB5pmuC6EOrIzRIX7U3IYGloP5FAGQIigJTVpm5FVr5MY1HqHBjbiI
-        9/r5lTox+hVlmyFT4BjOqUc=
-X-Google-Smtp-Source: AA0mqf7WB//zz75XwT4qrUkl7f/GrEkUi04JkoSigEcForgwCnymKs9LkQFOa4IoRo21tv6ysPq7QA==
-X-Received: by 2002:a17:906:68db:b0:7b4:869f:f944 with SMTP id y27-20020a17090668db00b007b4869ff944mr6339155ejr.427.1669052707965;
-        Mon, 21 Nov 2022 09:45:07 -0800 (PST)
+        bh=WNL6IfTe0wzPq8NWBK/D96/5y8l3oPapGeg3sP1iP80=;
+        b=AbaM6D/ukKbftvZX0twQfL93er2P7ivN+I/aqDDWCMLJpesLJTCE+C7J4lJL7fgCeW
+         JWjqbz5A+358e8SMEex+rrCWPEzrOJO4WBF72LhTXCWiniCedc6tS9GvS0qV+556vzSY
+         6IpScXvekBSrrZnUzZT0iikf3mw53tr3eY0ByLH0xObpddsrdZb+5L4GhDIZOEN3mRsw
+         YCBAwUFih/4/qesZGTGAVBnPbCMbTOE+xsTYUPeqQKBYZFWsVilDB52RoI4LN9nWV+kX
+         jy+vJ4QXWUnid3Qh5AqRD1xcWPjUVmQSTHkpKP5kko6UYdeURd3KU2QFlMnuomYPsUdt
+         NCtw==
+X-Gm-Message-State: ANoB5plmhIqrGY+lTY1g9k7kliHu167TIWNfZsinmMnuHic4bLnPC8D+
+        MTSBLdSrNKuzgnglBmtj/Xg=
+X-Google-Smtp-Source: AA0mqf5tktH45X/K7WSst1WSDXG6NCTfMsMwbFnE94eu773Cg61+GPcdMqm0ADWd+wNyEsvR1EuCxg==
+X-Received: by 2002:aa7:db90:0:b0:459:aa70:d4fd with SMTP id u16-20020aa7db90000000b00459aa70d4fdmr16907330edt.162.1669052717948;
+        Mon, 21 Nov 2022 09:45:17 -0800 (PST)
 Received: from localhost ([217.131.81.52])
-        by smtp.gmail.com with UTF8SMTPSA id x10-20020a1709064a8a00b0078d3a075525sm5252834eju.56.2022.11.21.09.45.06
+        by smtp.gmail.com with UTF8SMTPSA id g2-20020a056402428200b0046146c730easm5464345edc.75.2022.11.21.09.45.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 09:45:07 -0800 (PST)
+        Mon, 21 Nov 2022 09:45:17 -0800 (PST)
 From:   Sasha Finkelstein <fnkl.kernel@gmail.com>
 To:     thierry.reding@gmail.com, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org
@@ -57,9 +57,9 @@ Cc:     marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io,
         linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Sasha Finkelstein <fnkl.kernel@gmail.com>
-Subject: [PATCH RESEND v3 2/4] pwm: Add Apple PWM controller
-Date:   Mon, 21 Nov 2022 20:42:26 +0300
-Message-Id: <20221121174228.93670-3-fnkl.kernel@gmail.com>
+Subject: [PATCH RESEND v3 4/4] MAINTAINERS: Add entries for Apple PWM driver
+Date:   Mon, 21 Nov 2022 20:42:28 +0300
+Message-Id: <20221121174228.93670-5-fnkl.kernel@gmail.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221121174228.93670-1-fnkl.kernel@gmail.com>
 References: <20221121174228.93670-1-fnkl.kernel@gmail.com>
@@ -69,185 +69,34 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Adds the Apple PWM controller driver.
+Add the MAINTAINERS entries for the driver
 
 Signed-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>
 Acked-by: Sven Peter <sven@svenpeter.dev>
 ---
- drivers/pwm/Kconfig     |  12 ++++
- drivers/pwm/Makefile    |   1 +
- drivers/pwm/pwm-apple.c | 127 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 140 insertions(+)
- create mode 100644 drivers/pwm/pwm-apple.c
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 60d13a949bc5..c3be11468414 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -51,6 +51,18 @@ config PWM_AB8500
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-ab8500.
- 
-+config PWM_APPLE
-+	tristate "Apple SoC PWM support"
-+	depends on ARCH_APPLE || COMPILE_TEST
-+	help
-+	  Generic PWM framework driver for PWM controller present on
-+	  Apple SoCs
-+
-+	  Say Y here if you have an ARM Apple laptop, otherwise say N
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-apple.
-+
- config PWM_ATMEL
- 	tristate "Atmel PWM support"
- 	depends on ARCH_AT91 || COMPILE_TEST
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 7bf1a29f02b8..19899b912e00 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -2,6 +2,7 @@
- obj-$(CONFIG_PWM)		+= core.o
- obj-$(CONFIG_PWM_SYSFS)		+= sysfs.o
- obj-$(CONFIG_PWM_AB8500)	+= pwm-ab8500.o
-+obj-$(CONFIG_PWM_APPLE)		+= pwm-apple.o
- obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
- obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
- obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
-diff --git a/drivers/pwm/pwm-apple.c b/drivers/pwm/pwm-apple.c
-new file mode 100644
-index 000000000000..b0c3f86fd578
---- /dev/null
-+++ b/drivers/pwm/pwm-apple.c
-@@ -0,0 +1,127 @@
-+// SPDX-License-Identifier: GPL-2.0 OR MIT
-+/*
-+ * Driver for the Apple SoC PWM controller
-+ *
-+ * Copyright The Asahi Linux Contributors
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/math64.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/pwm.h>
-+
-+#define PWM_CONTROL     0x00
-+#define PWM_ON_CYCLES   0x1c
-+#define PWM_OFF_CYCLES  0x18
-+
-+#define CTRL_ENABLE        BIT(0)
-+#define CTRL_MODE          BIT(2)
-+#define CTRL_UPDATE        BIT(5)
-+#define CTRL_TRIGGER       BIT(9)
-+#define CTRL_INVERT        BIT(10)
-+#define CTRL_OUTPUT_ENABLE BIT(14)
-+
-+struct apple_pwm {
-+	struct pwm_chip chip;
-+	void __iomem *base;
-+	u64 clkrate;
-+};
-+
-+static int apple_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			   const struct pwm_state *state)
-+{
-+	struct apple_pwm *fpwm;
-+	u64 on_cycles, off_cycles;
-+
-+	fpwm = container_of(chip, struct apple_pwm, chip);
-+	if (state->enabled) {
-+		on_cycles = mul_u64_u64_div_u64(fpwm->clkrate,
-+						state->duty_cycle, NSEC_PER_SEC);
-+		off_cycles = mul_u64_u64_div_u64(fpwm->clkrate,
-+						 state->period, NSEC_PER_SEC) - on_cycles;
-+		writel(on_cycles, fpwm->base + PWM_ON_CYCLES);
-+		writel(off_cycles, fpwm->base + PWM_OFF_CYCLES);
-+		writel(CTRL_ENABLE | CTRL_OUTPUT_ENABLE | CTRL_UPDATE,
-+		       fpwm->base + PWM_CONTROL);
-+	} else {
-+		writel(0, fpwm->base + PWM_CONTROL);
-+	}
-+	return 0;
-+}
-+
-+static void apple_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+			   struct pwm_state *state)
-+{
-+	struct apple_pwm *fpwm;
-+	u32 on_cycles, off_cycles, ctrl;
-+
-+	fpwm = container_of(chip, struct apple_pwm, chip);
-+
-+	ctrl = readl(fpwm->base + PWM_CONTROL);
-+	on_cycles = readl(fpwm->base + PWM_ON_CYCLES);
-+	off_cycles = readl(fpwm->base + PWM_OFF_CYCLES);
-+
-+	state->enabled = (ctrl & CTRL_ENABLE) && (ctrl & CTRL_OUTPUT_ENABLE);
-+	state->polarity = PWM_POLARITY_NORMAL;
-+	state->duty_cycle = div_u64(on_cycles, fpwm->clkrate) * NSEC_PER_SEC;
-+	state->period = div_u64(off_cycles + on_cycles, fpwm->clkrate) * NSEC_PER_SEC;
-+}
-+
-+static const struct pwm_ops apple_pwm_ops = {
-+	.apply = apple_pwm_apply,
-+	.get_state = apple_pwm_get_state,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int apple_pwm_probe(struct platform_device *pdev)
-+{
-+	struct apple_pwm *pwm;
-+	struct clk *clk;
-+	int ret;
-+
-+	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-+	if (!pwm)
-+		return -ENOMEM;
-+
-+	pwm->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(pwm->base))
-+		return PTR_ERR(pwm->base);
-+
-+	platform_set_drvdata(pdev, pwm);
-+
-+	clk = devm_clk_get_enabled(&pdev->dev, NULL);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
-+
-+	pwm->clkrate = clk_get_rate(clk);
-+	pwm->chip.dev = &pdev->dev;
-+	pwm->chip.npwm = 1;
-+	pwm->chip.ops = &apple_pwm_ops;
-+
-+	ret = devm_pwmchip_add(&pdev->dev, &pwm->chip);
-+	return ret;
-+}
-+
-+static const struct of_device_id apple_pwm_of_match[] = {
-+	{ .compatible = "apple,s5l-fpwm" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, apple_pwm_of_match);
-+
-+static struct platform_driver apple_pwm_driver = {
-+	.probe = apple_pwm_probe,
-+	.driver = {
-+		.name = "apple-pwm",
-+		.owner = THIS_MODULE,
-+		.of_match_table = apple_pwm_of_match,
-+	},
-+};
-+module_platform_driver(apple_pwm_driver);
-+
-+MODULE_DESCRIPTION("Apple SoC PWM driver");
-+MODULE_LICENSE("Dual MIT/GPL");
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 046ff06ff97f..69f56f7cf907 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1908,6 +1908,7 @@ F:	Documentation/devicetree/bindings/nvmem/apple,efuses.yaml
+ F:	Documentation/devicetree/bindings/pci/apple,pcie.yaml
+ F:	Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
+ F:	Documentation/devicetree/bindings/power/apple*
++F:	Documentation/devicetree/bindings/pwm/pwm-apple.yaml
+ F:	Documentation/devicetree/bindings/watchdog/apple,wdt.yaml
+ F:	arch/arm64/boot/dts/apple/
+ F:	drivers/clk/clk-apple-nco.c
+@@ -1921,6 +1922,7 @@ F:	drivers/mailbox/apple-mailbox.c
+ F:	drivers/nvme/host/apple.c
+ F:	drivers/nvmem/apple-efuses.c
+ F:	drivers/pinctrl/pinctrl-apple-gpio.c
++F:	drivers/pwm/pwm-apple.c
+ F:	drivers/soc/apple/*
+ F:	drivers/watchdog/apple_wdt.c
+ F:	include/dt-bindings/interrupt-controller/apple-aic.h
 -- 
 2.38.1
 
