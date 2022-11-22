@@ -2,90 +2,62 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A086BC43217
-	for <linux-pwm@archiver.kernel.org>; Mon, 21 Nov 2022 21:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56842C43217
+	for <linux-pwm@archiver.kernel.org>; Tue, 22 Nov 2022 09:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229482AbiKUVIB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 21 Nov 2022 16:08:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
+        id S232759AbiKVJgF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 22 Nov 2022 04:36:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiKUVIA (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Nov 2022 16:08:00 -0500
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B52F1EAC2
-        for <linux-pwm@vger.kernel.org>; Mon, 21 Nov 2022 13:07:59 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:73:8b7:7001:c8aa:b65f])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 49C64377;
-        Mon, 21 Nov 2022 21:07:56 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 49C64377
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1669064876; bh=yCT3qdPFZMMbQpyOfNtkv+ATOSt2TdhUrsnjVpcdEz8=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=Dh2SOPTCgrXma6eV3275pl6aT2I1xqIvtqXx2TkLA5niucFJWHpSrUEdZxjDo328U
-         qq0IcUbeXJGSXTCNZmyw7aJSjlyNbdr/Gm6d/DvmcMQXosJFFZ2JtLinXjLzRG7wOE
-         jKcXHFvsOKwwwL+W0LB2JcV7SuGI0znjEYGOJ5EfEZpA+BNMVnGXdhR9Q9bOcA6+o4
-         /QnG9ORRB/Jr9I95MtuMztMWD9+nbMz0iS4DmAA0bk6wXnjttwKRVjZvZ6PDY/nqYs
-         kAoC6RRPvuOWcYFKhdWeWEN3SUgiDdVCw16cfy70nLgVORTJIpNbnLgvIBEy6tFwdf
-         dJKldibQugDcQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] Documentation: devres: add missing PWM helper
-In-Reply-To: <20221117115950.mlzkipddy3qwwp2k@pengutronix.de>
-References: <20221102024430.1444714-1-yangyingliang@huawei.com>
- <20221117115950.mlzkipddy3qwwp2k@pengutronix.de>
-Date:   Mon, 21 Nov 2022 14:07:55 -0700
-Message-ID: <87k03o9ftg.fsf@meer.lwn.net>
+        with ESMTP id S232429AbiKVJgD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Nov 2022 04:36:03 -0500
+X-Greylist: delayed 1799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Nov 2022 01:36:02 PST
+Received: from mail.axisfairfi.com (mail.axisfairfi.com [94.177.230.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2274B9B9
+        for <linux-pwm@vger.kernel.org>; Tue, 22 Nov 2022 01:36:02 -0800 (PST)
+Received: by mail.axisfairfi.com (Postfix, from userid 1001)
+        id 6B7D2825B3; Tue, 22 Nov 2022 09:00:26 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=axisfairfi.com;
+        s=mail; t=1669107629;
+        bh=0BgaW9t8GFER5QecxVkFsHrVi3gO/4V5KAZgJaiRYBs=;
+        h=Date:From:To:Subject:From;
+        b=Dok2yQpRQFhPjsSFKbg9GCj6oeVzN1X5Cpmf57TPgQChlOIGO24uqrBFZl30uLvl8
+         3fUYFyrkQ0kL/g0AfxxAtzi7F49pMewWneZyEqS/yUbHyBfovrx5EkkZZSyek/NGR8
+         hFPQ+vEb6UmF1DAAjQXCX+4aA8elesDD2I2fxsf78U+NYmy3tZMWqnAUTJgbIKsIkB
+         LJaXpJ064N3KZZ6ih4j8D/KmDl700BFm9pN8JDgLoD7Ea+0vt+31hmF22fNNNHv4Cs
+         rGD7pmJMJoR4R+JK4U63nv/+ZRTYQh4LClNq6yK6JV7ECKGf+46r87qMlf09+3VcnL
+         qWegPL+oGQZMw==
+Received: by mail.axisfairfi.com for <linux-pwm@vger.kernel.org>; Tue, 22 Nov 2022 09:00:23 GMT
+Message-ID: <20221122074500-0.1.d.neg.0.c6d7fr77yg@axisfairfi.com>
+Date:   Tue, 22 Nov 2022 09:00:23 GMT
+From:   "Zbynek Spacek" <zbynek.spacek@axisfairfi.com>
+To:     <linux-pwm@vger.kernel.org>
+Subject: Silikonmischungen
+X-Mailer: mail.axisfairfi.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> writes:
+Good morning,
 
-> On Wed, Nov 02, 2022 at 10:44:30AM +0800, Yang Yingliang wrote:
->> Add missing devm_pwmchip_add() to devres.rst. It's introduced by
->> commit bcda91bf86c1 ("pwm: Add a device-managed function to add
->> PWM chips").
->>=20
->> Fixes: bcda91bf86c1 ("pwm: Add a device-managed function to add PWM chip=
-s")
->> Cc: Thierry Reding <thierry.reding@gmail.com>
->> Cc: "Uwe Kleine-K=C3=B6nig" <u.kleine-koenig@pengutronix.de>
->> Cc: Jonathan Corbet <corbet@lwn.net>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>  Documentation/driver-api/driver-model/devres.rst | 1 +
->>  1 file changed, 1 insertion(+)
->>=20
->> diff --git a/Documentation/driver-api/driver-model/devres.rst b/Document=
-ation/driver-api/driver-model/devres.rst
->> index aac9c1e39ebc..2bea236d6919 100644
->> --- a/Documentation/driver-api/driver-model/devres.rst
->> +++ b/Documentation/driver-api/driver-model/devres.rst
->> @@ -402,6 +402,7 @@ POWER
->>    devm_reboot_mode_unregister()
->>=20=20
->>  PWM
->> +  devm_pwmchip_add()
->>    devm_pwm_get()
->>    devm_fwnode_pwm_get()
->
-> Oh, didn't know that doc list.
->
-> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
->
-> Is this expected to go via the pwm tree, or will Jonathan pick it up?
+do you need intermediates for processing, plastics (e.g. rubber) or silic=
+one mixtures?
 
-I've applied it.
+We provide a wide range of silicone rubbers with various properties, sili=
+cone mixtures from renowned manufacturers such as Wacker, Elastosil LR an=
+d dyes, stabilizers, primers and anti-adhesive additives.
 
-Thanks,
+We also produce technical silicone compounds with increased resistance to=
+ oils, resistant to high temperatures and water vapor, conductive and man=
+y more.
 
-jon
+We provide fast order fulfillment, timely deliveries and cost optimizatio=
+n.
+
+Can I introduce what we can offer you?
+
+
+Zbynek Spacek
