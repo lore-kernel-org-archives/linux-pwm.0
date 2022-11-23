@@ -2,114 +2,122 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 343C1C4708D
-	for <linux-pwm@archiver.kernel.org>; Wed, 23 Nov 2022 04:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1E2C4332F
+	for <linux-pwm@archiver.kernel.org>; Wed, 23 Nov 2022 06:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235466AbiKWEkC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 22 Nov 2022 23:40:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56346 "EHLO
+        id S235966AbiKWGTN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 23 Nov 2022 01:19:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235952AbiKWEjo (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Nov 2022 23:39:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1811D9B386;
-        Tue, 22 Nov 2022 20:39:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B54961A3F;
-        Wed, 23 Nov 2022 04:39:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 225EEC433C1;
-        Wed, 23 Nov 2022 04:39:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669178381;
-        bh=EVw4Vc0/gYpVHxzZAdah2zLNd6pA0gTQaK+joP95BKw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QeBxZCprwCTU86Pqv1jbwEiUULNLeEVvPC1vdnFLEOwo4ZjJ9TnndaaoA5XZ55BlH
-         dFNUaBxj1NdIgxQuslei2pAmnW/Z2yQ9Ez0pbOGy0w60FJfyM8TQpvvGSwo4X/CPnL
-         iGkeDfTcaooUjn+RtR+b8weXzQXvnVb2mgoYJ2ygsOCLKSiOMGNGANIMuXfckChAz+
-         PyeRCc3K/Sfw5tX54bqUCF6lgw/E5TKozvtW8vmrDPLBxXa96QLuq80CiTdUw3XPSv
-         11aAf/r27UgMrIlh/qUbpu0OZ3U7Hl/Jm7U0evtgaaia6qFgX/rpiLMZNJZusN3NFD
-         cRxjZ+VpqSyfQ==
-Date:   Wed, 23 Nov 2022 10:09:36 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 5/9] dt-bindings: drop redundant part of title (end,
- part two)
-Message-ID: <Y32kCHhdLjQvSnE3@matsya>
-References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
- <20221121110615.97962-6-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S235903AbiKWGTL (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Nov 2022 01:19:11 -0500
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0225B748D2;
+        Tue, 22 Nov 2022 22:19:07 -0800 (PST)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 2AN5pU4J081940;
+        Wed, 23 Nov 2022 13:51:30 +0800 (GMT-8)
+        (envelope-from billy_tsai@aspeedtech.com)
+Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 23 Nov
+ 2022 14:15:55 +0800
+From:   Billy Tsai <billy_tsai@aspeedtech.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <joel@jms.id.au>,
+        <andrew@aj.id.au>, <lee@kernel.org>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <corbet@lwn.net>,
+        <p.zabel@pengutronix.de>, <billy_tsai@aspeedtech.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [v4 2/5] dt-bindings: pwm: Add bindings for aspeed pwm controller
+Date:   Wed, 23 Nov 2022 14:16:32 +0800
+Message-ID: <20221123061635.32025-3-billy_tsai@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20221123061635.32025-1-billy_tsai@aspeedtech.com>
+References: <20221123061635.32025-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-6-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.149]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 2AN5pU4J081940
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 21-11-22, 12:06, Krzysztof Kozlowski wrote:
-> The Devicetree bindings document does not have to say in the title that
-> it is a "binding", but instead just describe the hardware.
-> 
-> Drop trailing "Node|Tree|Generic bindings" in various forms (also with
-> trailling full stop):
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [nN]ode [bB]indings\?\.\?$/title: \1/' {} \;
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [tT]ree [bB]indings\?\.\?$/title: \1/' {} \;
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [gG]eneric [bB]indings\?\.\?$/title: \1/' {} \;
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [bB]indings\? description\.\?$/title: \1/' {} \;
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [bB]indings\? document\.\?$/title: \1/' {} \;
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Add the aspeed pwm device bindings which should be the child-node of
+pwm-tach mfd.
 
->  Documentation/devicetree/bindings/phy/brcm,ns2-pcie-phy.yaml    | 2 +-
->  Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml      | 2 +-
->  Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml      | 2 +-
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+---
+ .../bindings/pwm/aspeed,ast2600-pwm.yaml      | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
 
-Acked-By: Vinod Koul <vkoul@kernel.org>
-
+diff --git a/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
+new file mode 100644
+index 000000000000..68a60fc73902
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
+@@ -0,0 +1,54 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2021 Aspeed, Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/aspeed,ast2600-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Aspeed Ast2600 PWM controller
++
++maintainers:
++  - Billy Tsai <billy_tsai@aspeedtech.com>
++
++description: |
++  The Aspeed PWM controller supports up to 16 PWM outputs.
++  This module is part of the ast2600-pwm-tach multi-function device. For more
++  details see ../mfd/aspeed,ast2600-pwm-tach.yaml.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    enum:
++      - aspeed,ast2600-pwm
++
++  "#pwm-cells":
++    const: 3
++patternProperties:
++  "^pwm@[a-z0-9]+$":
++    description: Set extend properties for each pwm channel.
++    type: object
++    properties:
++      reg:
++        description:
++          The pwm channel index.
++        maxItems: 1
++
++      aspeed,wdt-reload-enable:
++        type: boolean
++        description:
++          Enable the function of wdt reset reload duty point.
++
++      aspeed,wdt-reload-duty-point:
++        description:
++          Define the duty point after wdt reset, 0 = 100%
++        minimum: 0
++        maximum: 255
++    required:
++      - reg
++
++required:
++  - compatible
++
++additionalProperties: false
 -- 
-~Vinod
+2.25.1
+
