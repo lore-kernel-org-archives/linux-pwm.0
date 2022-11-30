@@ -2,46 +2,46 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F66C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3BBC352A1
 	for <linux-pwm@archiver.kernel.org>; Wed, 30 Nov 2022 15:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229461AbiK3PWI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 30 Nov 2022 10:22:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
+        id S229720AbiK3PWJ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 30 Nov 2022 10:22:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbiK3PWE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Nov 2022 10:22:04 -0500
+        with ESMTP id S229658AbiK3PWH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Nov 2022 10:22:07 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BB67CA8E
-        for <linux-pwm@vger.kernel.org>; Wed, 30 Nov 2022 07:22:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0407E422
+        for <linux-pwm@vger.kernel.org>; Wed, 30 Nov 2022 07:22:06 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1p0OuM-00009u-7Y; Wed, 30 Nov 2022 16:21:58 +0100
+        id 1p0OuO-0000BM-53; Wed, 30 Nov 2022 16:22:00 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1p0OuJ-001LdV-UD; Wed, 30 Nov 2022 16:21:56 +0100
+        id 1p0OuM-001Le9-5q; Wed, 30 Nov 2022 16:21:58 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1p0OuK-001Vqf-0v; Wed, 30 Nov 2022 16:21:56 +0100
+        id 1p0OuL-001Vr8-SZ; Wed, 30 Nov 2022 16:21:57 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-pwm@vger.kernel.org
-Subject: [PATCH v2 02/11] pwm/tracing: Also record trace events for failed API calls
-Date:   Wed, 30 Nov 2022 16:21:39 +0100
-Message-Id: <20221130152148.2769768-3-u.kleine-koenig@pengutronix.de>
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, linux-pwm@vger.kernel.org
+Subject: [PATCH v2 10/11] pwm: sprd: Propagate errors in .get_state() to the caller
+Date:   Wed, 30 Nov 2022 16:21:47 +0100
+Message-Id: <20221130152148.2769768-11-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221130152148.2769768-1-u.kleine-koenig@pengutronix.de>
 References: <20221130152148.2769768-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3953; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=9blMbE4Qhm25E8KnV1+3r3jfQXRyNThzL9tMgLkiaho=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjh3Tl6C3LFR5tCeZnhBI55rd1AzRONrUw1bPpHpq4 /rA/AsmJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY4d05QAKCRDB/BR4rcrsCS1aB/ 0df1jN3Ck2hfdlwX5OYxr3tYfpiIp3ZmNCyI6ns1xtbym/tPD8GPkfhI8ZQ3kROnMF7Xw+pjOLMKgP mU9d8JmsoDAThifZrzNPrzz/cv9OwjcIJWuzroYgF880hgvmDiQdfWM9qydrkc+fEIj0mbmHlDAyde zCo7u1l7BjKxMBXU7qY9/ia7PMO8pzYml0gIadEXVwOvvEk3TA/WefqZ6Qs3sjcjMnslrWZij2Iw9W l7w/beCamGsyo5zslb8fyC4R61i6yZ7ME4nio1lHF8adbOANklwL31AeLKAW4HOrrqUXfEMAfJomzB GfcNeqirzxSWtBuQu8PihLV4I6Y64J
+X-Developer-Signature: v=1; a=openpgp-sha256; l=715; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=po5Jf2sbUy5TRP//519Gve5YpMjZVRA7VAjgr2Lxx68=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjh3UC9LtBh1xiE8aolWbqnBXElQg62zXpKCuP4wy6 /fPT21SJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY4d1AgAKCRDB/BR4rcrsCdYQCA CgfDPoRQBDf9U5NjoJzyMRsSsMFU6oFaoquTVDoqfZmow6t8yJkLFxWZaiIE7xz+yjuQAIaRgnHRtg 0eJdiWy4J0rr6+RwDEtzmoN57w0H/I7SJfetFm/RoDdmkBr0RVjPwBFacZUrzk99Qz8oU/gWBT9bib DXlm3cNvMJoOqZhutTLtGndCsF/efW5jkK6g2fEcN2BsWSIQ8aecK8OXUduVuaOqQeTOspU5Z4CYfP 8XBJhImmFhoBstg3WcCstvDYuu766Ky0ex1dXCVZmJJdrKCtju0EoHtitHbkLn4qW+y1k3x36s9lvU dVzQ8jsj7qBr4uJttcSr/mdjuD8b1Q
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,135 +52,27 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Record and report an error code for the events. This allows to report
-about failed calls without ambiguity and so gives a more complete
-picture.
+.get_state() can return an error indication. Make use of it to propagate
+failing hardware accesses.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/core.c         | 18 ++++++++----------
- include/trace/events/pwm.h | 20 ++++++++++----------
- 2 files changed, 18 insertions(+), 20 deletions(-)
+ drivers/pwm/pwm-sprd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index d333e7422f4a..21e1553495ee 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -108,8 +108,8 @@ static int pwm_device_request(struct pwm_device *pwm, const char *label)
+diff --git a/drivers/pwm/pwm-sprd.c b/drivers/pwm/pwm-sprd.c
+index bda8bc5af976..d866ce345f97 100644
+--- a/drivers/pwm/pwm-sprd.c
++++ b/drivers/pwm/pwm-sprd.c
+@@ -83,7 +83,7 @@ static int sprd_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (ret) {
+ 		dev_err(spc->dev, "failed to enable pwm%u clocks\n",
+ 			pwm->hwpwm);
+-		return 0;
++		return ret;
  	}
  
- 	if (pwm->chip->ops->get_state) {
--		pwm->chip->ops->get_state(pwm->chip, pwm, &pwm->state);
--		trace_pwm_get(pwm, &pwm->state);
-+		err = pwm->chip->ops->get_state(pwm->chip, pwm, &pwm->state);
-+		trace_pwm_get(pwm, &pwm->state, err);
- 
- 		if (IS_ENABLED(CONFIG_PWM_DEBUG))
- 			pwm->last = pwm->state;
-@@ -457,8 +457,8 @@ static void pwm_apply_state_debug(struct pwm_device *pwm,
- 	 * checks.
- 	 */
- 
--	chip->ops->get_state(chip, pwm, &s1);
--	trace_pwm_get(pwm, &s1);
-+	err = chip->ops->get_state(chip, pwm, &s1);
-+	trace_pwm_get(pwm, &s1, err);
- 
- 	/*
- 	 * The lowlevel driver either ignored .polarity (which is a bug) or as
-@@ -514,16 +514,15 @@ static void pwm_apply_state_debug(struct pwm_device *pwm,
- 
- 	/* reapply the state that the driver reported being configured. */
- 	err = chip->ops->apply(chip, pwm, &s1);
-+	trace_pwm_apply(pwm, &s1, err);
- 	if (err) {
- 		*last = s1;
- 		dev_err(chip->dev, "failed to reapply current setting\n");
- 		return;
- 	}
- 
--	trace_pwm_apply(pwm, &s1);
--
--	chip->ops->get_state(chip, pwm, last);
--	trace_pwm_get(pwm, last);
-+	err = chip->ops->get_state(chip, pwm, last);
-+	trace_pwm_get(pwm, last, err);
- 
- 	/* reapplication of the current state should give an exact match */
- 	if (s1.enabled != last->enabled ||
-@@ -571,11 +570,10 @@ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
- 		return 0;
- 
- 	err = chip->ops->apply(chip, pwm, state);
-+	trace_pwm_apply(pwm, state, err);
- 	if (err)
- 		return err;
- 
--	trace_pwm_apply(pwm, state);
--
- 	pwm->state = *state;
- 
- 	/*
-diff --git a/include/trace/events/pwm.h b/include/trace/events/pwm.h
-index cf243de41cc8..12b35e4ff917 100644
---- a/include/trace/events/pwm.h
-+++ b/include/trace/events/pwm.h
-@@ -10,9 +10,9 @@
- 
- DECLARE_EVENT_CLASS(pwm,
- 
--	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state),
-+	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state, int err),
- 
--	TP_ARGS(pwm, state),
-+	TP_ARGS(pwm, state, err),
- 
- 	TP_STRUCT__entry(
- 		__field(struct pwm_device *, pwm)
-@@ -20,6 +20,7 @@ DECLARE_EVENT_CLASS(pwm,
- 		__field(u64, duty_cycle)
- 		__field(enum pwm_polarity, polarity)
- 		__field(bool, enabled)
-+		__field(int, err)
- 	),
- 
- 	TP_fast_assign(
-@@ -28,28 +29,27 @@ DECLARE_EVENT_CLASS(pwm,
- 		__entry->duty_cycle = state->duty_cycle;
- 		__entry->polarity = state->polarity;
- 		__entry->enabled = state->enabled;
-+		__entry->err = err;
- 	),
- 
--	TP_printk("%p: period=%llu duty_cycle=%llu polarity=%d enabled=%d",
-+	TP_printk("%p: period=%llu duty_cycle=%llu polarity=%d enabled=%d err=%d",
- 		  __entry->pwm, __entry->period, __entry->duty_cycle,
--		  __entry->polarity, __entry->enabled)
-+		  __entry->polarity, __entry->enabled, __entry->err)
- 
- );
- 
- DEFINE_EVENT(pwm, pwm_apply,
- 
--	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state),
--
--	TP_ARGS(pwm, state)
-+	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state, int err),
- 
-+	TP_ARGS(pwm, state, err)
- );
- 
- DEFINE_EVENT(pwm, pwm_get,
- 
--	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state),
--
--	TP_ARGS(pwm, state)
-+	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state, int err),
- 
-+	TP_ARGS(pwm, state, err)
- );
- 
- #endif /* _TRACE_PWM_H */
+ 	val = sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_ENABLE);
 -- 
 2.38.1
 
