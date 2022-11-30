@@ -2,123 +2,82 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3168C352A1
-	for <linux-pwm@archiver.kernel.org>; Wed, 30 Nov 2022 11:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7DFC4332F
+	for <linux-pwm@archiver.kernel.org>; Wed, 30 Nov 2022 15:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbiK3LPg (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 30 Nov 2022 06:15:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
+        id S229813AbiK3PWD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 30 Nov 2022 10:22:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbiK3LPf (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Nov 2022 06:15:35 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DE728E14;
-        Wed, 30 Nov 2022 03:15:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1669806932; x=1701342932;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=h8e+dDcveIhXtv4l23Jh2CJfpqVLFmQPAuoBcBH7Hyk=;
-  b=tFwxku4b3ckw94Obe6IOGzG0ixxBoiGXkGEVNBSN6JhfSEIVr83ikMQv
-   xlVe0N5xREFbja6KY/4uNiHCd2QUZeN8sDMdgf1tbHgummOEvRr0XF5Xb
-   hnF3DBNHsp90X1G094SKYMAQKEt6FbLCjhbreJLR9K0Lc4s7kPwQ7LkCn
-   1/vVIkTAzVmwJSQRSgbBl4wAdh4kasQXbMdhbgFCQo1CFKxSOxIhXURMP
-   wXl0rl10wXtWW9fE+IpnSgK47v7zRSxGfRlXkBjb7/x5V/RmFQIQwnsIO
-   tGSLV5SGjJGgrqb5k8/mGSRgV2efcNG+L2OFRLtFwgdhrHqaEK/mNfl+9
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,206,1665471600"; 
-   d="scan'208";a="189334692"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Nov 2022 04:15:31 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 30 Nov 2022 04:15:30 -0700
-Received: from wendy (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
- Transport; Wed, 30 Nov 2022 04:15:29 -0700
-Date:   Wed, 30 Nov 2022 11:15:10 +0000
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        with ESMTP id S229735AbiK3PWC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Nov 2022 10:22:02 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557C37CAA9
+        for <linux-pwm@vger.kernel.org>; Wed, 30 Nov 2022 07:22:01 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1p0OuN-0000AX-07; Wed, 30 Nov 2022 16:21:59 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1p0OuL-001Le0-J5; Wed, 30 Nov 2022 16:21:58 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1p0OuL-001Vr4-Ld; Wed, 30 Nov 2022 16:21:57 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-CC:     Conor Dooley <conor@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-Subject: Re: [PATCH v12 1/2] pwm: add microchip soft ip corePWM driver
-Message-ID: <Y4c7PpgzAi+HPrET@wendy>
-References: <20221110093512.333881-1-conor.dooley@microchip.com>
- <20221110093512.333881-2-conor.dooley@microchip.com>
- <20221117164950.cssukd63fywzuwua@pengutronix.de>
- <Y3Zxkt3OSPQc46Q2@spud>
- <20221117210433.n5j7upqqksld42mu@pengutronix.de>
- <Y3avobkvYK3ydKTS@spud>
- <Y3uZY5mt/ZIWk3sS@wendy>
- <Y4coL74qQX80TNaT@wendy>
- <20221130103755.lhil2jaw3oufr2sf@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Conor Dooley <conor.dooley@microchip.com>,
+        Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH v2 09/11] pwm: rockchip: Propagate errors in .get_state() to the caller
+Date:   Wed, 30 Nov 2022 16:21:46 +0100
+Message-Id: <20221130152148.2769768-10-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221130152148.2769768-1-u.kleine-koenig@pengutronix.de>
+References: <20221130152148.2769768-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=730; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=pKEsqqELf8pqmyD4QAsi9Xpc86tdi7pQt9Er7E+Nu3o=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjh3T/bN1g1kVNiJ/v8SIOIucUrMidx7s9Upuf1Iv8 Q3S2XXCJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY4d0/wAKCRDB/BR4rcrsCVcQB/ 4o6RgFb19BY0wEs5wjZVFmTdgVeuclNrg1zVXaXOSCV6pNPDgj0IHt6CKqbCzd9BJq/yKEo3daI3Wr UhT78i6koC8btpmDDh7thoNUUlSayy1WTaOjxLgsqJ90PKjyG3oAIdIe8Fe3QT3P0mUDQKUUbc2x6M QxXDQpNH5NsetybZts2hi1OraEycQTiEO2Ff9fkUXAzuWBZ3nDp6eXiLN9ChkFuN6Q5M0Ir15DxvzC +iDh4mjN9H3LoLruxRGZt8uBb99fJ1uvv6SZu+5vPPcw8+amktlXtxxFN5NIY/HdvdxbGFUh1js227 sadEba0dTaPgZNjUj2pRzmF4jFBnv6
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221130103755.lhil2jaw3oufr2sf@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 11:37:55AM +0100, Uwe Kleine-König wrote:
-> Hello Conor,
+.get_state() can return an error indication. Make use of it to propagate
+failing hardware accesses.
 
-> > > get_state() returns void though, is it valid behaviour to wait for the
-> > > timeout there?
-> 
-> There was an approach to change that, see
-> https://lore.kernel.org/linux-pwm/20220916151506.298488-1-u.kleine-koenig@pengutronix.de
-> 
-> I need to send a v2.
+Signed-off-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-rockchip.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Ahh, yeah. That looks like a better idea. I'd much rather be able to
-return an actual error.
-
-> > > I had a check in the core code and found some places where the call in
-> > > looks like:
-> > > 	struct pwm_state s1, s2; 
-> > > 	chip->ops->get_state(chip, pwm, &s1);
-> > > In this case, exiting early would leave us with a completely wrong
-> > > idead of the state, if it was to time out.
-> > > 
-> > > Either way, it seems like either way we would be misleading the caller
-> > > of get_state() - perhaps the way around that is to do the wait & then
-> > > just carry on with get_state()?
-> > > In that scenario, you'd get the new settings where possible and the old ones
-> > > otherwise.
-> > > Returning if the timeout is hit would give you the new settings where possible
-> > > & otherwise you'd get whatever was passed to get_state().
-> > > I'm not really sure which of those two situations would be preferred?
-> 
-> Hmm, .get_state should not return the old state. We really want
-> .get_state to return an error code. Maybe postpone that question until
-> we have that?
-
-If get_state() can return an error, there's no need for the question I
-think. I'd rather return what's in the shadow registers *and* on the bus
-or an error than an inconsistent state.
-
-I'll send a v(N+1) based on the non-void get_state() at some point
-soon-ish.
-
-> > Apologies for bumping this, I was wondering if any thoughts on the
-> > above? I'm not sure which is the lesser evil here (or if I have
-> > misunderstood something).
-> 
-> That's fine. I'm sorry to be not more responsive. This development cycle
-> is somehow crazy and there are so many open mails in my inbox ... :-\
-
-Oh nw about that at all. I feel bad pinging stuff since I know everyone
-is busy.
-
-Thanks,
-Conor.
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 3ec7d1756903..7f084eb34092 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -70,11 +70,11 @@ static int rockchip_pwm_get_state(struct pwm_chip *chip,
+ 
+ 	ret = clk_enable(pc->pclk);
+ 	if (ret)
+-		return 0;
++		return ret;
+ 
+ 	ret = clk_enable(pc->clk);
+ 	if (ret)
+-		return 0;
++		return ret;
+ 
+ 	clk_rate = clk_get_rate(pc->clk);
+ 
+-- 
+2.38.1
 
