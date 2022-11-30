@@ -2,46 +2,44 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7DFC4332F
-	for <linux-pwm@archiver.kernel.org>; Wed, 30 Nov 2022 15:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89547C46467
+	for <linux-pwm@archiver.kernel.org>; Wed, 30 Nov 2022 15:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbiK3PWD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 30 Nov 2022 10:22:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45642 "EHLO
+        id S229449AbiK3PWF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 30 Nov 2022 10:22:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbiK3PWC (ORCPT
+        with ESMTP id S229750AbiK3PWC (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Nov 2022 10:22:02 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557C37CAA9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785D37CA8E
         for <linux-pwm@vger.kernel.org>; Wed, 30 Nov 2022 07:22:01 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1p0OuN-0000AX-07; Wed, 30 Nov 2022 16:21:59 +0100
+        id 1p0OuN-0000BL-IK; Wed, 30 Nov 2022 16:21:59 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1p0OuL-001Le0-J5; Wed, 30 Nov 2022 16:21:58 +0100
+        id 1p0OuM-001Le6-3J; Wed, 30 Nov 2022 16:21:58 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1p0OuL-001Vr4-Ld; Wed, 30 Nov 2022 16:21:57 +0100
+        id 1p0OuM-001VrC-3f; Wed, 30 Nov 2022 16:21:58 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH v2 09/11] pwm: rockchip: Propagate errors in .get_state() to the caller
-Date:   Wed, 30 Nov 2022 16:21:46 +0100
-Message-Id: <20221130152148.2769768-10-u.kleine-koenig@pengutronix.de>
+        linux-pwm@vger.kernel.org
+Subject: [PATCH v2 11/11] pwm: Handle .get_state() failures
+Date:   Wed, 30 Nov 2022 16:21:48 +0100
+Message-Id: <20221130152148.2769768-12-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221130152148.2769768-1-u.kleine-koenig@pengutronix.de>
 References: <20221130152148.2769768-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=730; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=pKEsqqELf8pqmyD4QAsi9Xpc86tdi7pQt9Er7E+Nu3o=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjh3T/bN1g1kVNiJ/v8SIOIucUrMidx7s9Upuf1Iv8 Q3S2XXCJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY4d0/wAKCRDB/BR4rcrsCVcQB/ 4o6RgFb19BY0wEs5wjZVFmTdgVeuclNrg1zVXaXOSCV6pNPDgj0IHt6CKqbCzd9BJq/yKEo3daI3Wr UhT78i6koC8btpmDDh7thoNUUlSayy1WTaOjxLgsqJ90PKjyG3oAIdIe8Fe3QT3P0mUDQKUUbc2x6M QxXDQpNH5NsetybZts2hi1OraEycQTiEO2Ff9fkUXAzuWBZ3nDp6eXiLN9ChkFuN6Q5M0Ir15DxvzC +iDh4mjN9H3LoLruxRGZt8uBb99fJ1uvv6SZu+5vPPcw8+amktlXtxxFN5NIY/HdvdxbGFUh1js227 sadEba0dTaPgZNjUj2pRzmF4jFBnv6
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1580; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Dpsx2cpxcM/yovBGi8fx3Iex7d+WQSEYUOlIA2zpYhU=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjh3UFl1zPf409UhK87JJpZodrjo1V4e//x4cwYusF bCxzWx+JATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY4d1BQAKCRDB/BR4rcrsCWgJCA CdtcY14YtkGlsfsaUTbc54MFOIeGRIx8fHJya9iieENUWdyIC9LxhZRXnrrKdMU1gPEnfrZGNNdAA1 LZV66vW6nLazFjF6e99AmA05IMay9c78THn4e7HN5G6k7K+2ipQ1CwkGjaboeH8lYk3URf2CFnTIXE mvKDJ1yVDKP8qilMfx+vfq3HrA7zTdINpjrgOXG2Zmy9RzB6jS1hkz63XPX8BjQnLIz6wjoe2ctfrd /YJ9LHSCazCfQrlupTYEHEXFskVddqz9NXteCUPzmLqCbzjACcqBZZpAKgjq/x41V+X7VHWltntO8y TSIGotw0IPWXkHeQsccO9osC52KaYI
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,32 +50,53 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-.get_state() can return an error indication. Make use of it to propagate
-failing hardware accesses.
+This suppresses diagnosis for PWM_DEBUG routines and makes sure that
+pwm->state isn't modified in pwm_device_request() if .get_state() fails.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-rockchip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/core.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index 3ec7d1756903..7f084eb34092 100644
---- a/drivers/pwm/pwm-rockchip.c
-+++ b/drivers/pwm/pwm-rockchip.c
-@@ -70,11 +70,11 @@ static int rockchip_pwm_get_state(struct pwm_chip *chip,
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 21e1553495ee..855c3885f94b 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -108,8 +108,13 @@ static int pwm_device_request(struct pwm_device *pwm, const char *label)
+ 	}
  
- 	ret = clk_enable(pc->pclk);
- 	if (ret)
--		return 0;
-+		return ret;
+ 	if (pwm->chip->ops->get_state) {
+-		err = pwm->chip->ops->get_state(pwm->chip, pwm, &pwm->state);
+-		trace_pwm_get(pwm, &pwm->state, err);
++		struct pwm_state state;
++
++		err = pwm->chip->ops->get_state(pwm->chip, pwm, &state);
++		trace_pwm_get(pwm, &state, err);
++
++		if (!err)
++			pwm->state = state;
  
- 	ret = clk_enable(pc->clk);
- 	if (ret)
--		return 0;
-+		return ret;
+ 		if (IS_ENABLED(CONFIG_PWM_DEBUG))
+ 			pwm->last = pwm->state;
+@@ -459,6 +464,9 @@ static void pwm_apply_state_debug(struct pwm_device *pwm,
  
- 	clk_rate = clk_get_rate(pc->clk);
+ 	err = chip->ops->get_state(chip, pwm, &s1);
+ 	trace_pwm_get(pwm, &s1, err);
++	if (err)
++		/* If that failed there isn't much to debug */
++		return;
  
+ 	/*
+ 	 * The lowlevel driver either ignored .polarity (which is a bug) or as
+@@ -523,6 +531,8 @@ static void pwm_apply_state_debug(struct pwm_device *pwm,
+ 
+ 	err = chip->ops->get_state(chip, pwm, last);
+ 	trace_pwm_get(pwm, last, err);
++	if (err)
++		return;
+ 
+ 	/* reapplication of the current state should give an exact match */
+ 	if (s1.enabled != last->enabled ||
 -- 
 2.38.1
 
