@@ -2,55 +2,55 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4AD8C4332F
-	for <linux-pwm@archiver.kernel.org>; Fri, 23 Dec 2022 15:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52436C3DA7C
+	for <linux-pwm@archiver.kernel.org>; Fri, 23 Dec 2022 15:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236503AbiLWPic (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 23 Dec 2022 10:38:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
+        id S236506AbiLWPie (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 23 Dec 2022 10:38:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiLWPi3 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 23 Dec 2022 10:38:29 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45B840835
+        with ESMTP id S236422AbiLWPia (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 23 Dec 2022 10:38:30 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CE337F90
         for <linux-pwm@vger.kernel.org>; Fri, 23 Dec 2022 07:38:28 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id o5so4917210wrm.1
+Received: by mail-wr1-x42d.google.com with SMTP id h7so4897155wrs.6
         for <linux-pwm@vger.kernel.org>; Fri, 23 Dec 2022 07:38:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=62ZS7JkYul2m8VHv1f4RSJBR/i75r0mH9YhXsFCm5ng=;
-        b=kkNBCyTDnoMYXmE+0z0ruJGNOmPedCYqRQg9Z2I2JpHduRO843zCdWs9Vio4cgOBw8
-         71h1Cvoyr+Z/YAM6n+4vvf+gYit3f0ffbrqKPs++M7j47yE7tKJ3nW+FVmn2jXOuaIi3
-         TjVYYo1ZWSGkuLdvZDStRP2MiDt0DsGFzS7ald0dbMv2sAAjNQ60aCyjyQYZ+q9pokpS
-         VNrbxnVU0BJfq8+nmJ3nSkTt8FoUUffj5xNVLA2XoQW3WtJpQIeZ0FPO1eU1RXsyUy12
-         0IQh07jo6D7zREz/vJ8EzeVI5tkztX3ndIotAOfE2TzQF8ZLBwIc6E2VSV3I3JkdiHF9
-         o+gw==
+        bh=3SdKoJam1KKdYl+ZS8hBn9qpHaB89KQkUoXzOnMw6QQ=;
+        b=eMHE3ifyHwq7DBESvLs+KwGR2m0Y40+X3Frl1shhGCohSAXv3eveeNglOqp/4TzAXC
+         HIQBR+9yfIwDQtGvmwVXNW/Fb5xLL6AAfyrC3OawLdGZFzhi7lGFGN8nCRCQ3OYRho5/
+         6BpkpttCeD+Js59R0Uf71Ug8omMmf3aN8X6YVDax81g08TBALpsqOUW0ZjoLjpMgrNXS
+         PT7d4YYAVmply/EjKxv6AX8D0+fXoTKNRTCh8kxJJaouL/pEphMi4CqDzgHHomDKiihB
+         HOT9UHEAsMmIZK1DqeBCkhWVrIcxBRNxb2Zcp3Sa1UWtszTfBH7t20+LIJuf1aTqLGg/
+         EVvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=62ZS7JkYul2m8VHv1f4RSJBR/i75r0mH9YhXsFCm5ng=;
-        b=VbWQ7iHvlbzSgMe5J7vteBRruw9qydC5Z1tVfR1PfY7gTM5d3UI8dwwCQ+uWg8QykY
-         gtnUzzRohIQPvmnOFk0CIW0nTBUqOxQ/kiQg5jhQ/r4OtLMq+ufd4jcsgEHp/zrJF8+Q
-         iYyEX8jwUOv9GE65EIRYVQpthKU8XYViqlkUltNCnsXCxNk+H/LUodTW+b84DGIxADPB
-         6ImjpHZaHiiziSWQBKkvgUB5gQ7jMcDQHwMJVApO+m4bJneJucuprqICx4iHIb5uiGdx
-         Tmu/vgfMSIk2OwcKL1SXXubvEMHPxsBmq+MlwBMcUj/8HybzJYDVslhqD0LTVvWS66ha
-         CBIA==
-X-Gm-Message-State: AFqh2kqvasoQqEVDTxfxVq9q5DPYedyFmbLE9YYds8aHstuy13l/BlIA
-        LjItoz4ze0eMF4nImmWC7H3Dv3BCVSMCahvQtjhe//e5ZZvzrlfhjzfSdgkqmsCWq3MQ//w8x0C
-        8tckivuS+9/c5oEaVldopOqR14ajNDOzJ4KlTTFACEKzN4sHcP1sSXA+mDiCOWKEARVLxPob8xj
-        PeEg==
-X-Google-Smtp-Source: AMrXdXuez67Czj0Gg1F7GnS0247uGtRGqJzpwsoZyvsWa1w5xuXBq2EhWRarnlCIkdwMsdLAe6yQdg==
-X-Received: by 2002:a5d:58fc:0:b0:242:7f6e:9192 with SMTP id f28-20020a5d58fc000000b002427f6e9192mr6618305wrd.52.1671809907978;
+        bh=3SdKoJam1KKdYl+ZS8hBn9qpHaB89KQkUoXzOnMw6QQ=;
+        b=XXFVvNnYOgzbBGmPSJLrOlG/iK8ZBxa5vnk/G4j+9c0KBwhEoXCUukorkwmTS+Su3O
+         8fhsY7t620wH/T9NMp1bPUNXSH7BvwHOPGgSQane6WhmBQV7h7TGLGQBMLFzJzvdk6ny
+         N7emMIvQr0Afx3AznKU/mB4pIKcu67/mwIjBnmpqeCf8fV0T0afxpGrTarn+pfwRWdvl
+         70Sdlz0wDkN5V+Ctx4Zthe5BmFv/YwAACIvb92VP5fkyaNkXv9UJcxBoflOWKy1ApYxq
+         C/Xo7gqn3T6QC1XQUv82kd+thRF7j1XUyH1U66icWEAse5ru3GodNhtYKInP0tbdZ3RF
+         4wog==
+X-Gm-Message-State: AFqh2kqs4/hrM1VJ2VRmA3ZNxnkSV4SMQ3ThVxGx6RMdzWEIfP7ZO8Kv
+        0ji4nr1+mVkirIWiJu/EI/vOVF4rGpBolDQbtOT60tRPJJiZJYFimtHOnh4yAEu3Jmj5Po3ZZu1
+        pQi75UU83WHp1q2fGVrbiBRlRomyPIxo5xJFiVatNac7KXxS7hM8qwL0YQPhVNjJM6IirdVXkH+
+        AUfQ==
+X-Google-Smtp-Source: AMrXdXv/HH3IlYJcA2aohjbZtgVWaSs3osRL51qncwx+0JP9cfrmd0SKMNjjQA30LiRZy3yixwncDQ==
+X-Received: by 2002:a05:6000:70a:b0:263:542c:5918 with SMTP id bs10-20020a056000070a00b00263542c5918mr7163867wrb.38.1671809907080;
         Fri, 23 Dec 2022 07:38:27 -0800 (PST)
 Received: from rainbowdash.. (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net. [86.15.83.122])
-        by smtp.gmail.com with ESMTPSA id m5-20020adfc585000000b00236488f62d6sm3491610wrg.79.2022.12.23.07.38.27
+        by smtp.gmail.com with ESMTPSA id m5-20020adfc585000000b00236488f62d6sm3491610wrg.79.2022.12.23.07.38.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Dec 2022 07:38:27 -0800 (PST)
+        Fri, 23 Dec 2022 07:38:26 -0800 (PST)
 From:   Ben Dooks <ben.dooks@sifive.com>
 To:     linux-pwm@vger.kernel.org
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -63,55 +63,74 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Salmon <william.salmon@sifive.com>,
         Jude Onyenegecha <jude.onyenegecha@sifive.com>,
         Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH v7 05/10] pwm: dwc: use devm_pwmchip_add
-Date:   Fri, 23 Dec 2022 15:38:15 +0000
-Message-Id: <20221223153820.404565-6-ben.dooks@sifive.com>
+Subject: [PATCH v7 04/10] pwm: dwc: move memory alloc to own function
+Date:   Fri, 23 Dec 2022 15:38:14 +0000
+Message-Id: <20221223153820.404565-5-ben.dooks@sifive.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221223153820.404565-1-ben.dooks@sifive.com>
 References: <20221223153820.404565-1-ben.dooks@sifive.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Use devm_pwmchip_add() to add the pwm chip to avoid having to manually
-remove it (useful for the next patch which adds the platform-device
-support).
+In preparation for adding other bus support, move the allocation
+of the pwm struct out of the main driver code.
 
 Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-dwc.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/pwm/pwm-dwc.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index 61f11e0a9319..56cde9da2c0e 100644
+index c706ef9a7ba1..61f11e0a9319 100644
 --- a/drivers/pwm/pwm-dwc.c
 +++ b/drivers/pwm/pwm-dwc.c
-@@ -242,7 +242,7 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
+@@ -196,13 +196,29 @@ static const struct pwm_ops dwc_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
+ 
++static struct dwc_pwm *dwc_pwm_alloc(struct device *dev)
++{
++	struct dwc_pwm *dwc;
++
++	dwc = devm_kzalloc(dev, sizeof(*dwc), GFP_KERNEL);
++	if (!dwc)
++		return NULL;
++
++	dwc->chip.dev = dev;
++	dwc->chip.ops = &dwc_pwm_ops;
++	dwc->chip.npwm = DWC_TIMERS_TOTAL;
++
++	dev_set_drvdata(dev, dwc);
++	return dwc;
++}
++
+ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ {
+ 	struct device *dev = &pci->dev;
+ 	struct dwc_pwm *dwc;
+ 	int ret;
+ 
+-	dwc = devm_kzalloc(dev, sizeof(*dwc), GFP_KERNEL);
++	dwc = dwc_pwm_alloc(dev);
+ 	if (!dwc)
+ 		return -ENOMEM;
+ 
+@@ -226,12 +242,6 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
  		return -ENOMEM;
  	}
  
--	ret = pwmchip_add(&dwc->chip);
-+	ret = devm_pwmchip_add(dev, &dwc->chip);
+-	pci_set_drvdata(pci, dwc);
+-
+-	dwc->chip.dev = dev;
+-	dwc->chip.ops = &dwc_pwm_ops;
+-	dwc->chip.npwm = DWC_TIMERS_TOTAL;
+-
+ 	ret = pwmchip_add(&dwc->chip);
  	if (ret)
  		return ret;
- 
-@@ -254,12 +254,8 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 
- static void dwc_pwm_remove(struct pci_dev *pci)
- {
--	struct dwc_pwm *dwc = pci_get_drvdata(pci);
--
- 	pm_runtime_forbid(&pci->dev);
- 	pm_runtime_get_noresume(&pci->dev);
--
--	pwmchip_remove(&dwc->chip);
- }
- 
- #ifdef CONFIG_PM_SLEEP
 -- 
 2.35.1
 
