@@ -2,260 +2,144 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DBDC54EBD
-	for <linux-pwm@archiver.kernel.org>; Fri, 13 Jan 2023 12:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32C4C54EBD
+	for <linux-pwm@archiver.kernel.org>; Fri, 13 Jan 2023 16:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241335AbjAMM0j (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 13 Jan 2023 07:26:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
+        id S230038AbjAMQZu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 13 Jan 2023 11:25:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241361AbjAMM0T (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Jan 2023 07:26:19 -0500
+        with ESMTP id S229961AbjAMQYh (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Jan 2023 11:24:37 -0500
 Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72A0778270;
-        Fri, 13 Jan 2023 04:23:58 -0800 (PST)
-X-IronPort-AV: E=Sophos;i="5.97,213,1669042800"; 
-   d="scan'208";a="146233439"
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C908360CC4;
+        Fri, 13 Jan 2023 08:18:20 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.97,214,1669042800"; 
+   d="scan'208";a="146246494"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 13 Jan 2023 21:23:57 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 14 Jan 2023 01:18:19 +0900
 Received: from localhost.localdomain (unknown [10.226.92.190])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 2AAE14454912;
-        Fri, 13 Jan 2023 21:23:54 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 4484F40189C8;
+        Sat, 14 Jan 2023 01:18:17 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Chris Paterson <chris.paterson2@renesas.com>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v13 2/2] pwm: Add support for RZ/G2L GPT
-Date:   Fri, 13 Jan 2023 12:23:43 +0000
-Message-Id: <20230113122343.769329-3-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v11 6/6] pwm: Add Renesas RZ/G2L MTU3a PWM driver
+Date:   Fri, 13 Jan 2023 16:17:53 +0000
+Message-Id: <20230113161753.1073706-7-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230113122343.769329-1-biju.das.jz@bp.renesas.com>
-References: <20230113122343.769329-1-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20230113161753.1073706-1-biju.das.jz@bp.renesas.com>
+References: <20230113161753.1073706-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-RZ/G2L General PWM Timer (GPT) composed of 8 channels with 32-bit timer
-(GPT32E). It supports the following functions
- * 32 bits × 8 channels
- * Up-counting or down-counting (saw waves) or up/down-counting
-   (triangle waves) for each counter.
- * Clock sources independently selectable for each channel
- * Two I/O pins per channel
- * Two output compare/input capture registers per channel
- * For the two output compare/input capture registers of each channel,
-   four registers are provided as buffer registers and are capable of
-   operating as comparison registers when buffering is not in use.
- * In output compare operation, buffer switching can be at crests or
-   troughs, enabling the generation of laterally asymmetric PWM waveforms.
- * Registers for setting up frame cycles in each channel (with capability
-   for generating interrupts at overflow or underflow)
- * Generation of dead times in PWM operation
- * Synchronous starting, stopping and clearing counters for arbitrary
-   channels
- * Starting, stopping, clearing and up/down counters in response to input
-   level comparison
- * Starting, clearing, stopping and up/down counters in response to a
-   maximum of four external triggers
- * Output pin disable function by dead time error and detected
-   short-circuits between output pins
- * A/D converter start triggers can be generated (GPT32E0 to GPT32E3)
- * Enables the noise filter for input capture and external trigger
-   operation
+Add support for RZ/G2L MTU3a PWM driver. The IP supports
+following PWM modes
 
-This patch adds basic pwm support for RZ/G2L GPT driver by creating
-separate logical channels for each IOs.
+1) PWM mode{1,2}
+2) Reset-synchronized PWM mode
+3) Complementary PWM mode{1,2,3}
+
+This patch adds basic pwm mode 1 support for RZ/G2L MTU3a pwm driver
+by creating separate logical channels for each IOs.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
-v12->v13:
- * Replaced Kconfig dependency from ARCH_RENESAS->ARCH_RZG2L
- * Sorted #include <linux/limits.h> alphabetically
- * Added a comment for mutex_lock to fix check patch warning
- * Replaced data type of duty_cycle from unsigned int->u32 as
-   the maximum value stored is U32_MAX.
- * Improved rzg2l_gpt_config() by removing unwanted duty_cycle related code.
- * Improved rzg2l_gpt_get_state() by setting "val = rzg2l_gpt->duty_cycle[pwm->hwpwm];", 
-   and factor "tmp = NSEC_PER_SEC * (u64)val;" out of the if-statement.
- * Started using DEFINE_RUNTIME_DEV_PM_OPS(), and dropped __maybe_unused
-   from the callbacks.
-v11->v12:
- * Added return code for get_state()
- * Cache duty cycle/prescale as the driver cannot read the current duty
-   cycle/prescale from the hardware if the hardware is disabled. Cache the
-   last programmed duty cycle/prescale value to return in that case.
- * Updated rzg2l_gpt_enable to enable the clocks.
- * Updated rzg2l_gpt_disable to disable the clocks.
- * Updated rzg2l_gpt_config() to cache duty cucle/prescale value
- * Updated rzg2l_gpt_get_state to use cached value of duty cycle/prescale,If the PWM
-   is disabled.
- * Simplified rzg2l_gpt_apply()
- * Added comments in rzg2l_gpt_reset_assert_pm_disable()
 v10->v11:
- * Used bitmap_zero for initializing bitmap varable.
- * Fixed clock imbalance during remove for the case bootloader turning
-   on PWM and module unload is called just after the boot.
- * Fixed over flow condition in get_state() for a prescale value of 2 & more.
- * Improved rzg2l_gpt_cntr_need_stop() based on prescale as it is the
-   only runtime variable.
- * Added array for Cache variables state_period and prescale
- * Probe caches the prescale value set by the bootloader.
- * Updated rzg2l_gpt_config() to make use of array variables.
+ * No change.
 v9->v10:
- * Updated the error handling in probe(), clk_disable_unprepare called
-   on the error path.
- * Removed ch_en array and started using bitmask instead.
+ * No change.
 v8->v9:
- * deassert after devm_clk_get() to avoid reset stays deasserted,in case
-   clk_get() fails.
- * Removed ch_offs from struct rzg2l_gpt_chip and use macro instead.
- * Updated error handling in probe()
+ * Added prescale/duty_cycle variables to struct rz_mtu3_pwm_chip and
+   cached this values in rz_mtu3_pwm_config and used this cached values
+   in get_state(), if PWM is disabled.
+ * Added return code for get_state()
 v7->v8:
- * Modelled as single PWM device handling multiple channels
- * Replaced shared reset->devm_reset_control_get_exclusive()
- * Replaced iowrite32->writel and ioread32->readl
- * Updated prescale calculation
- * Added PM runtime callbacks
- * Updated PM handling and removed "pwm_enabled_by_bootloader" variable
- * Introduced rzg2l_gpt_is_ch_enabled for checking enable status on both
-   IO's
- * Moved enable/disable output pins from config->enable/disable.
- * Added rzg2l_gpt_cntr_need_stop() for caching prescalar/mode values.
+ * Simplified rz_mtu3_pwm_request by calling rz_mtu3_request_channel()
+ * Simplified rz_mtu3_pwm_free by calling rz_mtu3_release_channel()
 v6->v7:
- * Added the comment for cacheing rzg2l_gpt->state_period.
- * Fixed boundary values for pv and dc.
- * Added comment for modifying mode, prescaler, timer counter and buffer enable
-   registers.
- * Fixed buffer overflow in get_state()
- * Removed unnecessary assignment of state->period value in get_state().
- * Fixed state->duty_cycle value in get_state().
- * Added a limitation for disabling the channels.
+ * Added channel specific mutex lock to avoid race between counter
+   device and rz_mtu3_pwm_{request,free}
+ * Added pm_runtime_resume_and_get in rz_mtu3_pwm_enable()
+ * Added pm_runtime_put_sync in rz_mtu3_pwm_disable()
+ * Updated rz_mtu3_pwm_config()
+ * Updated rz_mtu3_pwm_apply()
 v5->v6:
- * Updated macros RZG2L_GTIOR_GTIOB_OUT_HI_END_TOGGLE_CMP_MATCH and
-   RZG2L_GTIOR_GTIOB_OUT_LO_END_TOGGLE_CMP_MATCH with computation
-   involving FIELD_PREP macro.
- * Removed struct rzg2l_gpt_phase and started using RZG2L_GTCCR macro
-   for duty_offset.
- * replaced misnomer real_period->state_period.
- * Added handling for values >= (1024 << 32) for both period
-   and duty cycle.
- * Added comments for pwm {en,dis}abled by bootloader during probe.
+ * Updated commit and Kconfig description
+ * Sorted the header
+ * Replaced dev_get_drvdata from rz_mtu3_pwm_pm_disable()
+ * Replaced SET_RUNTIME_PM_OPS->DEFINE_RUNTIME_DEV_PM_OPS and removed
+   __maybe_unused from suspend/resume()
 v4->v5:
- * Added Hardware manual details
- * Replaced the comment GTCNT->Counter
- * Removed the macros RZG2L_GPT_IO_PER_CHANNEL and chip.npwm directly
-   used in probe.
- * Removed the unsed macro RZG2L_GTPR_MAX_VALUE
- * Added driver prefix for the type name and the variable.
- * Initialization of per_channel data moved from request->probe.
- * Updated clr parameter for rzg2l_gpt_modify for Start count.
- * Started using mutex and usage_count for handling shared
-   period and prescalar for the 2 channels.
- * Updated the comment cycle->period.
- * Removed clk_disable from rzg2l_gpt_reset_assert_pm_disable()
- * Replaced pc->rzg2l_gpt.
- * Updated prescale calculation.
- * Moved pm_runtime_{get_sync,put} from {request,free}->{enable,disable}
- * Removed platform_set_drvdata as it is unused
- * Removed the variable pwm_enabled_by_bootloader 
- * Added dev_err_probe in various error paths in probe.
- * Added an error message, if devm_pwmchip_add() fails.
+ * pwm device is instantiated by mtu3a core driver.
 v3->v4:
- * Changed the local variable type i from u16->u8 and prescaled_period_
-   cycles from u64->u32 in calculate_prescale().
- * Replaced mul_u64_u64_div_u64()->mul_u64_u32_div()
- * Dropped the comma after the sentinel.
- * Add a variable to track pwm enabled by bootloader and added comments
-   in probe().
- * Removed unnecessary rzg2l_gpt_reset_assert_pm_disable() from probe.
- * Replaced devm_clk_get()->devm_clk_get_prepared()
- * Removed devm_clk_get_optional_enabled()
+ * There is no resource associated with "rz-mtu3-pwm" compatible
+   and moved the code to mfd subsystem as it binds against "rz-mtu".
+ * Removed struct platform_driver rz_mtu3_pwm_driver.
 v2->v3:
- * Updated limitation section
- * Added prefix "RZG2L_" for all macros
- * Modified prescale calculation
- * Removed pwm_set_chip_data
- * Updated comment related to modifying Mode and Prescaler
- * Updated setting of prescale value in rzg2l_gpt_config()
- * Removed else branch from rzg2l_gpt_get_state()
- * removed the err label from rzg2l_gpt_apply()
- * Added devm_clk_get_optional_enabled() to retain clk on status,
-   in case bootloader turns on the clk of pwm.
- * Replaced devm_reset_control_get_exclusive->devm_reset_control_get_shared
-   as single reset shared between 8 channels.
+ * No change.
 v1->v2:
- * Added Limitations section
- * dropped "_MASK" from the define names.
- * used named initializer for struct phase
- * Added gpt_pwm_device into a flexible array member in rzg2l_gpt_chip
- * Revised the logic for prescale
- * Added .get_state callback
- * Improved error handling in rzg2l_gpt_apply
- * Removed .remove callback
- * Tested driver with PWM_DEBUG enabled
-RFC->V1:
- * Updated macros
- * replaced rzg2l_gpt_write_mask()->rzg2l_gpt_modify()
- * Added rzg2l_gpt_read()
+ * Modelled as a single PWM device handling multiple channles.
+ * Used PM framework to manage the clocks.
 ---
- drivers/pwm/Kconfig         |  11 +
- drivers/pwm/Makefile        |   1 +
- drivers/pwm/pwm-rzg2l-gpt.c | 564 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 576 insertions(+)
- create mode 100644 drivers/pwm/pwm-rzg2l-gpt.c
+ drivers/pwm/Kconfig       |  11 +
+ drivers/pwm/Makefile      |   1 +
+ drivers/pwm/pwm-rz-mtu3.c | 486 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 498 insertions(+)
+ create mode 100644 drivers/pwm/pwm-rz-mtu3.c
 
 diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index dae023d783a2..74cbc674d846 100644
+index dae023d783a2..ccc0299fd0dd 100644
 --- a/drivers/pwm/Kconfig
 +++ b/drivers/pwm/Kconfig
 @@ -481,6 +481,17 @@ config PWM_ROCKCHIP
  	  Generic PWM framework driver for the PWM controller found on
  	  Rockchip SoCs.
  
-+config PWM_RZG2L_GPT
-+	tristate "Renesas RZ/G2L General PWM Timer support"
-+	depends on ARCH_RZG2L || COMPILE_TEST
++config PWM_RZ_MTU3
++	tristate "Renesas RZ/G2L MTU3a PWM Timer support"
++	depends on RZ_MTU3 || COMPILE_TEST
 +	depends on HAS_IOMEM
 +	help
-+	  This driver exposes the General PWM Timer controller found in Renesas
++	  This driver exposes the MTU3a PWM Timer controller found in Renesas
 +	  RZ/G2L like chips through the PWM API.
 +
 +	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-rzg2l-gpt.
++	  will be called pwm-rz-mtu3.
 +
  config PWM_SAMSUNG
  	tristate "Samsung PWM support"
  	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
 diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 7bf1a29f02b8..cac39b18d1ee 100644
+index 7bf1a29f02b8..b85fc9fba326 100644
 --- a/drivers/pwm/Makefile
 +++ b/drivers/pwm/Makefile
 @@ -44,6 +44,7 @@ obj-$(CONFIG_PWM_RASPBERRYPI_POE)	+= pwm-raspberrypi-poe.o
  obj-$(CONFIG_PWM_RCAR)		+= pwm-rcar.o
  obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
  obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
-+obj-$(CONFIG_PWM_RZG2L_GPT)	+= pwm-rzg2l-gpt.o
++obj-$(CONFIG_PWM_RZ_MTU3)	+= pwm-rz-mtu3.o
  obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
  obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
  obj-$(CONFIG_PWM_SL28CPLD)	+= pwm-sl28cpld.o
-diff --git a/drivers/pwm/pwm-rzg2l-gpt.c b/drivers/pwm/pwm-rzg2l-gpt.c
+diff --git a/drivers/pwm/pwm-rz-mtu3.c b/drivers/pwm/pwm-rz-mtu3.c
 new file mode 100644
-index 000000000000..2a84bb9d35cb
+index 000000000000..fddff20c98a7
 --- /dev/null
-+++ b/drivers/pwm/pwm-rzg2l-gpt.c
-@@ -0,0 +1,564 @@
++++ b/drivers/pwm/pwm-rz-mtu3.c
+@@ -0,0 +1,486 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * Renesas RZ/G2L General PWM Timer (GPT) driver
++ * Renesas RZ/G2L MTU3a PWM Timer driver
 + *
 + * Copyright (C) 2022 Renesas Electronics Corporation
 + *
@@ -263,281 +147,280 @@ index 000000000000..2a84bb9d35cb
 + * https://www.renesas.com/eu/en/document/mah/rzg2l-group-rzg2lc-group-users-manual-hardware-0?language=en
 + *
 + * Limitations:
-+ * - Counter must be stopped before modifying Mode and Prescaler.
-+ * - When PWM is disabled, the output is driven to inactive.
++ * - When PWM is disabled, the output is driven to Hi-Z.
 + * - While the hardware supports both polarities, the driver (for now)
 + *   only handles normal polarity.
-+ * - When both channels are used, disabling the channel on one stops the
-+ *   other.
++ * - While the hardware supports pwm mode{1,2}, reset-synchronized pwm and
++ *   complementary pwm modes, the driver (for now) only handles pwm mode1.
 + */
 +
 +#include <linux/bitfield.h>
 +#include <linux/clk.h>
-+#include <linux/io.h>
 +#include <linux/limits.h>
 +#include <linux/module.h>
-+#include <linux/of.h>
 +#include <linux/platform_device.h>
 +#include <linux/pm_runtime.h>
 +#include <linux/pwm.h>
-+#include <linux/reset.h>
 +#include <linux/time.h>
 +
-+#define RZG2L_GTCR		0x2c
-+#define RZG2L_GTUDDTYC		0x30
-+#define RZG2L_GTIOR		0x34
-+#define RZG2L_GTBER		0x40
-+#define RZG2L_GTCNT		0x48
-+#define RZG2L_GTCCRA		0x4c
-+#define RZG2L_GTCCRB		0x50
-+#define RZG2L_GTPR		0x64
++#include <clocksource/rz-mtu3.h>
 +
-+#define RZG2L_GTCR_CST		BIT(0)
-+#define RZG2L_GTCR_MD		GENMASK(18, 16)
-+#define RZG2L_GTCR_TPCS		GENMASK(26, 24)
++#define RZ_MTU3_TMDR1_MD_NORMAL		(0)
++#define RZ_MTU3_TMDR1_MD_PWM_MODE_1	(2)
 +
-+#define RZG2L_GTCR_MD_SAW_WAVE_PWM_MODE	FIELD_PREP(RZG2L_GTCR_MD, 0)
++#define RZ_MTU3_TIOR_OC_RETAIN		(0)
++#define RZ_MTU3_TIOR_OC_0_H_COMP_MATCH	(2)
++#define RZ_MTU3_TIOR_OC_1_TOGGLE	(7)
++#define RZ_MTU3_TIOR_OC_IOA		GENMASK(3, 0)
 +
-+#define RZG2L_GTUDDTYC_UP	BIT(0)
-+#define RZG2L_GTUDDTYC_UDF	BIT(1)
-+#define RZG2L_UP_COUNTING	(RZG2L_GTUDDTYC_UP | RZG2L_GTUDDTYC_UDF)
++#define RZ_MTU3_TCR_CCLR_TGRC		(5 << 5)
++#define RZ_MTU3_TCR_CKEG_RISING		(0 << 3)
 +
-+#define RZG2L_GTIOR_GTIOA	GENMASK(4, 0)
-+#define RZG2L_GTIOR_GTIOB	GENMASK(20, 16)
-+#define RZG2L_GTIOR_OAE		BIT(8)
-+#define RZG2L_GTIOR_OBE		BIT(24)
++#define RZ_MTU3_TCR_TPCS		GENMASK(2, 0)
 +
-+#define RZG2L_INIT_OUT_LO_OUT_LO_END_TOGGLE	0x07
-+#define RZG2L_INIT_OUT_HI_OUT_HI_END_TOGGLE	0x1b
++#define RZ_MTU3_MAX_PWM_MODE1_CHANNELS	(12)
 +
-+#define RZG2L_GTIOR_GTIOA_OUT_HI_END_TOGGLE_CMP_MATCH \
-+	(RZG2L_INIT_OUT_HI_OUT_HI_END_TOGGLE | RZG2L_GTIOR_OAE)
-+#define RZG2L_GTIOR_GTIOA_OUT_LO_END_TOGGLE_CMP_MATCH \
-+	(RZG2L_INIT_OUT_LO_OUT_LO_END_TOGGLE | RZG2L_GTIOR_OAE)
-+#define RZG2L_GTIOR_GTIOB_OUT_HI_END_TOGGLE_CMP_MATCH \
-+	(FIELD_PREP(RZG2L_GTIOR_GTIOB, RZG2L_INIT_OUT_HI_OUT_HI_END_TOGGLE) | RZG2L_GTIOR_OBE)
-+#define RZG2L_GTIOR_GTIOB_OUT_LO_END_TOGGLE_CMP_MATCH \
-+	(FIELD_PREP(RZG2L_GTIOR_GTIOB, RZG2L_INIT_OUT_LO_OUT_LO_END_TOGGLE) | RZG2L_GTIOR_OBE)
++#define RZ_MTU3_MAX_HW_PWM_CHANNELS	(7)
 +
-+#define RZG2L_GTCCR(i) (0x4c + 4 * (i))
++static const u8 rz_mtu3_pwm_mode1_num_ios[] = { 2, 1, 1, 2, 2, 2, 2 };
 +
-+#define RZG2L_MAX_HW_CHANNELS	(8)
-+#define RZG2L_CHANNELS_PER_IO	(2)
-+#define RZG2L_MAX_PWM_CHANNELS	(RZG2L_MAX_HW_CHANNELS * RZG2L_CHANNELS_PER_IO)
++/**
++ * struct rz_mtu3_pwm_chip - MTU3 pwm private data
++ *
++ * @chip: MTU3 pwm chip data
++ * @clk: MTU3 module clock
++ * @lock: Lock to prevent concurrent access for usage count
++ * @rate: MTU3 clock rate
++ * @user_count: MTU3 usage count
++ * @rz_mtu3_channel: HW channels for the PWM
++ */
 +
-+#define RZG2L_IS_IOB(a) ((a) & 0x1)
-+#define RZG2L_GET_CH_INDEX(a) ((a) / 2)
-+
-+#define RZG2L_GET_CH_OFFS(i) (0x100 * (i))
-+
-+struct rzg2l_gpt_chip {
++struct rz_mtu3_pwm_chip {
 +	struct pwm_chip chip;
-+	void __iomem *mmio;
-+	struct reset_control *rstc;
 +	struct clk *clk;
-+	struct mutex lock; /* lock to protect shared channel resources */
++	struct mutex lock;
 +	unsigned long rate;
-+	u32 state_period[RZG2L_MAX_HW_CHANNELS];
-+	u32 user_count[RZG2L_MAX_HW_CHANNELS];
++	u32 user_count[RZ_MTU3_MAX_HW_PWM_CHANNELS];
++	struct rz_mtu3_channel *ch[RZ_MTU3_MAX_HW_PWM_CHANNELS];
++
 +	/*
 +	 * The driver cannot read the current duty cycle/prescale from the
 +	 * hardware if the hardware is disabled. Cache the last programmed
 +	 * duty cycle/prescale value to return in that case.
 +	 */
-+	u8 prescale[RZG2L_MAX_HW_CHANNELS];
-+	u32 duty_cycle[RZG2L_MAX_PWM_CHANNELS];
++	u8 prescale[RZ_MTU3_MAX_HW_PWM_CHANNELS];
++	unsigned int duty_cycle[RZ_MTU3_MAX_PWM_MODE1_CHANNELS];
 +};
 +
-+static inline struct rzg2l_gpt_chip *to_rzg2l_gpt_chip(struct pwm_chip *chip)
++static inline struct rz_mtu3_pwm_chip *to_rz_mtu3_pwm_chip(struct pwm_chip *chip)
 +{
-+	return container_of(chip, struct rzg2l_gpt_chip, chip);
++	return container_of(chip, struct rz_mtu3_pwm_chip, chip);
 +}
 +
-+static void rzg2l_gpt_write(struct rzg2l_gpt_chip *rzg2l_gpt, u32 reg, u32 data)
-+{
-+	writel(data, rzg2l_gpt->mmio + reg);
-+}
-+
-+static u32 rzg2l_gpt_read(struct rzg2l_gpt_chip *rzg2l_gpt, u32 reg)
-+{
-+	return readl(rzg2l_gpt->mmio + reg);
-+}
-+
-+static void rzg2l_gpt_modify(struct rzg2l_gpt_chip *rzg2l_gpt, u32 reg, u32 clr,
-+			     u32 set)
-+{
-+	rzg2l_gpt_write(rzg2l_gpt, reg,
-+			(rzg2l_gpt_read(rzg2l_gpt, reg) & ~clr) | set);
-+}
-+
-+static u8 rzg2l_gpt_calculate_prescale(struct rzg2l_gpt_chip *rzg2l_gpt,
-+				       u64 period_cycles)
++static u8 rz_mtu3_pwm_calculate_prescale(struct rz_mtu3_pwm_chip *rz_mtu3,
++					 u64 period_cycles)
 +{
 +	u32 prescaled_period_cycles;
 +	u8 prescale;
 +
-+	prescaled_period_cycles = period_cycles >> 32;
-+	if (prescaled_period_cycles >= 256)
-+		prescale = 5;
++	prescaled_period_cycles = period_cycles >> 16;
++	if (prescaled_period_cycles >= 16)
++		prescale = 3;
 +	else
 +		prescale = (fls(prescaled_period_cycles) + 1) / 2;
 +
 +	return prescale;
 +}
 +
-+static int rzg2l_gpt_request(struct pwm_chip *chip, struct pwm_device *pwm)
++static struct rz_mtu3_channel *
++rz_mtu3_get_hw_channel(struct rz_mtu3_pwm_chip *rz_mtu3_pwm, u32 channel)
 +{
-+	struct rzg2l_gpt_chip *rzg2l_gpt = to_rzg2l_gpt_chip(chip);
-+	u32 ch_index = RZG2L_GET_CH_INDEX(pwm->hwpwm);
++	unsigned int i, ch_index = 0;
 +
-+	mutex_lock(&rzg2l_gpt->lock);
-+	rzg2l_gpt->user_count[ch_index]++;
-+	mutex_unlock(&rzg2l_gpt->lock);
++	for (i = 0; i < ARRAY_SIZE(rz_mtu3_pwm_mode1_num_ios); i++) {
++		ch_index += rz_mtu3_pwm_mode1_num_ios[i];
++
++		if (ch_index > channel)
++			break;
++	}
++
++	return rz_mtu3_pwm->ch[i];
++}
++
++static u32 rz_mtu3_get_hw_channel_index(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
++					struct rz_mtu3_channel *ch)
++{
++	u32 i;
++
++	for (i = 0; i < ARRAY_SIZE(rz_mtu3_pwm_mode1_num_ios); i++) {
++		if (ch == rz_mtu3_pwm->ch[i])
++			break;
++	}
++
++	return i;
++}
++
++static bool rz_mtu3_pwm_is_second_channel(u32 ch_index, u32 hwpwm)
++{
++	u32 i, pwm_ch_index = 0;
++
++	for (i = 0; i < ch_index; i++)
++		pwm_ch_index += rz_mtu3_pwm_mode1_num_ios[i];
++
++	return pwm_ch_index != hwpwm;
++}
++
++static bool rz_mtu3_pwm_is_ch_enabled(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
++				      u32 hwpwm)
++{
++	struct rz_mtu3_channel *ch;
++	bool is_channel_en;
++	u32 ch_index;
++	u8 val;
++
++	ch = rz_mtu3_get_hw_channel(rz_mtu3_pwm, hwpwm);
++	ch_index = rz_mtu3_get_hw_channel_index(rz_mtu3_pwm, ch);
++	is_channel_en = rz_mtu3_is_enabled(ch);
++
++	if (rz_mtu3_pwm_is_second_channel(ch_index, hwpwm))
++		val = rz_mtu3_8bit_ch_read(ch, RZ_MTU3_TIORL);
++	else
++		val = rz_mtu3_8bit_ch_read(ch, RZ_MTU3_TIORH);
++
++	return (is_channel_en && (val & RZ_MTU3_TIOR_OC_IOA));
++}
++
++static int rz_mtu3_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
++	struct rz_mtu3_channel *ch;
++	u32 ch_index;
++
++	ch = rz_mtu3_get_hw_channel(rz_mtu3_pwm, pwm->hwpwm);
++	ch_index = rz_mtu3_get_hw_channel_index(rz_mtu3_pwm, ch);
++	if (!rz_mtu3_pwm->user_count[ch_index] && !rz_mtu3_request_channel(ch))
++		return -EBUSY;
++
++	mutex_lock(&rz_mtu3_pwm->lock);
++	rz_mtu3_pwm->user_count[ch_index]++;
++	mutex_unlock(&rz_mtu3_pwm->lock);
 +
 +	return 0;
 +}
 +
-+static void rzg2l_gpt_free(struct pwm_chip *chip, struct pwm_device *pwm)
++static void rz_mtu3_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
 +{
-+	struct rzg2l_gpt_chip *rzg2l_gpt = to_rzg2l_gpt_chip(chip);
-+	u32 ch_index = RZG2L_GET_CH_INDEX(pwm->hwpwm);
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
++	struct rz_mtu3_channel *ch;
++	u32 ch_index;
 +
-+	mutex_lock(&rzg2l_gpt->lock);
-+	rzg2l_gpt->user_count[ch_index]--;
-+	mutex_unlock(&rzg2l_gpt->lock);
++	ch = rz_mtu3_get_hw_channel(rz_mtu3_pwm, pwm->hwpwm);
++	ch_index = rz_mtu3_get_hw_channel_index(rz_mtu3_pwm, ch);
++
++	mutex_lock(&rz_mtu3_pwm->lock);
++	rz_mtu3_pwm->user_count[ch_index]--;
++	mutex_unlock(&rz_mtu3_pwm->lock);
++
++	if (!rz_mtu3_pwm->user_count[ch_index])
++		rz_mtu3_release_channel(ch);
 +}
 +
-+static bool rzg2l_gpt_is_ch_enabled(struct rzg2l_gpt_chip *rzg2l_gpt, u8 ch)
++static int rz_mtu3_pwm_enable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
++			      struct pwm_device *pwm)
 +{
-+	u8 ch_index = RZG2L_GET_CH_INDEX(ch);
-+	u32 offs = RZG2L_GET_CH_OFFS(ch_index);
-+	bool is_counter_running, is_output_en;
-+	u32 val;
-+
-+	val = rzg2l_gpt_read(rzg2l_gpt, offs + RZG2L_GTCR);
-+	is_counter_running = val & RZG2L_GTCR_CST;
-+
-+	val = rzg2l_gpt_read(rzg2l_gpt, offs + RZG2L_GTIOR);
-+	if (RZG2L_IS_IOB(ch))
-+		is_output_en = val & RZG2L_GTIOR_OBE;
-+	else
-+		is_output_en = val & RZG2L_GTIOR_OAE;
-+
-+	return (is_counter_running && is_output_en);
-+}
-+
-+static int rzg2l_gpt_enable(struct rzg2l_gpt_chip *rzg2l_gpt,
-+			    struct pwm_device *pwm)
-+{
-+	u8 ch_index = RZG2L_GET_CH_INDEX(pwm->hwpwm);
-+	u32 offs = RZG2L_GET_CH_OFFS(ch_index);
++	struct rz_mtu3_channel *ch;
++	u32 ch_index;
++	u8 val;
 +	int rc;
 +
-+	rc = pm_runtime_resume_and_get(rzg2l_gpt->chip.dev);
++	rc = pm_runtime_resume_and_get(rz_mtu3_pwm->chip.dev);
 +	if (rc)
 +		return rc;
 +
-+	/* Enable pin output */
-+	if (RZG2L_IS_IOB(pwm->hwpwm))
-+		rzg2l_gpt_modify(rzg2l_gpt, offs + RZG2L_GTIOR,
-+				 RZG2L_GTIOR_GTIOB | RZG2L_GTIOR_OBE,
-+				 RZG2L_GTIOR_GTIOB_OUT_HI_END_TOGGLE_CMP_MATCH);
-+	else
-+		rzg2l_gpt_modify(rzg2l_gpt, offs + RZG2L_GTIOR,
-+				 RZG2L_GTIOR_GTIOA | RZG2L_GTIOR_OAE,
-+				 RZG2L_GTIOR_GTIOA_OUT_HI_END_TOGGLE_CMP_MATCH);
++	ch = rz_mtu3_get_hw_channel(rz_mtu3_pwm, pwm->hwpwm);
++	ch_index = rz_mtu3_get_hw_channel_index(rz_mtu3_pwm, ch);
++	val = (RZ_MTU3_TIOR_OC_1_TOGGLE << 4) | RZ_MTU3_TIOR_OC_0_H_COMP_MATCH;
 +
-+	/* Start count */
-+	rzg2l_gpt_modify(rzg2l_gpt, offs + RZG2L_GTCR, 0, RZG2L_GTCR_CST);
++	rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, RZ_MTU3_TMDR1_MD_PWM_MODE_1);
++	if (rz_mtu3_pwm_is_second_channel(ch_index, pwm->hwpwm))
++		rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TIORL, val);
++	else
++		rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TIORH, val);
++
++	if (rz_mtu3_pwm->user_count[ch_index] <= 1)
++		rz_mtu3_enable(ch);
 +
 +	return 0;
 +}
 +
-+static void rzg2l_gpt_disable(struct rzg2l_gpt_chip *rzg2l_gpt,
-+			      struct pwm_device *pwm)
++static void rz_mtu3_pwm_disable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
++				struct pwm_device *pwm)
 +{
-+	u8 ch_index = RZG2L_GET_CH_INDEX(pwm->hwpwm);
-+	u32 offs = RZG2L_GET_CH_OFFS(ch_index);
++	struct rz_mtu3_channel *ch;
++	u32 ch_index;
 +
-+	/* Disable pin output */
-+	if (RZG2L_IS_IOB(pwm->hwpwm))
-+		rzg2l_gpt_modify(rzg2l_gpt, offs + RZG2L_GTIOR, RZG2L_GTIOR_OBE, 0);
++	ch = rz_mtu3_get_hw_channel(rz_mtu3_pwm, pwm->hwpwm);
++	ch_index = rz_mtu3_get_hw_channel_index(rz_mtu3_pwm, ch);
++
++	/* Return to normal mode and disable output pins of MTU3 channel */
++	if (rz_mtu3_pwm->user_count[ch_index] <= 1)
++		rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, RZ_MTU3_TMDR1_MD_NORMAL);
++
++	if (rz_mtu3_pwm_is_second_channel(ch_index, pwm->hwpwm))
++		rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TIORL, RZ_MTU3_TIOR_OC_RETAIN);
 +	else
-+		rzg2l_gpt_modify(rzg2l_gpt, offs + RZG2L_GTIOR, RZG2L_GTIOR_OAE, 0);
++		rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TIORH, RZ_MTU3_TIOR_OC_RETAIN);
 +
-+	/* Stop count, Output low on GTIOCx pin when counting stops */
-+	if (rzg2l_gpt->user_count[ch_index] <= 1)
-+		rzg2l_gpt_modify(rzg2l_gpt, offs + RZG2L_GTCR, RZG2L_GTCR_CST, 0);
++	if (rz_mtu3_pwm->user_count[ch_index] <= 1)
++		rz_mtu3_disable(ch);
 +
-+	pm_runtime_put_sync(rzg2l_gpt->chip.dev);
++	pm_runtime_put_sync(rz_mtu3_pwm->chip.dev);
 +}
 +
-+static bool rzg2l_gpt_cntr_need_stop(struct rzg2l_gpt_chip *rzg2l_gpt, u32 ch,
-+				     u8 prescale)
++static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			      const struct pwm_state *state)
 +{
-+	u8 ch_index = RZG2L_GET_CH_INDEX(ch);
-+
-+	return rzg2l_gpt->prescale[ch_index] != FIELD_PREP(RZG2L_GTCR_TPCS,
-+							   prescale);
-+}
-+
-+static int rzg2l_gpt_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    const struct pwm_state *state)
-+{
-+	struct rzg2l_gpt_chip *rzg2l_gpt = to_rzg2l_gpt_chip(chip);
-+	u8 ch_index = RZG2L_GET_CH_INDEX(pwm->hwpwm);
-+	u32 offs = RZG2L_GET_CH_OFFS(ch_index);
-+	bool is_counter_running;
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
++	struct rz_mtu3_channel *ch;
 +	unsigned long pv, dc;
 +	u64 period_cycles;
 +	u64 duty_cycles;
++	u32 ch_index;
 +	u8 prescale;
 +	int err;
++	u8 val;
 +
 +	/*
 +	 * Refuse clk rates > 1 GHz to prevent overflowing the following
 +	 * calculation.
 +	 */
-+	if (rzg2l_gpt->rate > NSEC_PER_SEC)
++	if (rz_mtu3_pwm->rate > NSEC_PER_SEC)
 +		return -EINVAL;
 +
-+	/*
-+	 * GPT counter is shared by multiple channels, so prescale and period
-+	 * can NOT be modified when there are multiple channels in use with
-+	 * different settings.
-+	 */
-+	if (state->period != rzg2l_gpt->state_period[ch_index] &&
-+	    rzg2l_gpt->user_count[ch_index] > 1)
-+		return -EBUSY;
++	ch = rz_mtu3_get_hw_channel(rz_mtu3_pwm, pwm->hwpwm);
++	ch_index = rz_mtu3_get_hw_channel_index(rz_mtu3_pwm, ch);
++	period_cycles = mul_u64_u32_div(state->period, rz_mtu3_pwm->rate,
++					NSEC_PER_SEC);
++	prescale = rz_mtu3_pwm_calculate_prescale(rz_mtu3_pwm, period_cycles);
 +
-+	/*
-+	 * GPT counter is shared by multiple channels, we cache the period value
-+	 * from the first enabled channel and use the same value for both
-+	 * channels.
-+	 */
-+	rzg2l_gpt->state_period[ch_index] = state->period;
-+
-+	period_cycles = mul_u64_u32_div(state->period, rzg2l_gpt->rate, NSEC_PER_SEC);
-+	prescale = rzg2l_gpt_calculate_prescale(rzg2l_gpt, period_cycles);
-+	rzg2l_gpt->prescale[ch_index] = prescale;
-+
-+	if (period_cycles >> (2 * prescale) <= U32_MAX)
++	if (period_cycles >> (2 * prescale) <= U16_MAX)
 +		pv = period_cycles >> (2 * prescale);
 +	else
-+		pv = U32_MAX;
++		pv = U16_MAX;
 +
-+	duty_cycles = mul_u64_u32_div(state->duty_cycle, rzg2l_gpt->rate, NSEC_PER_SEC);
-+	if (duty_cycles >> (2 * prescale) <= U32_MAX)
++	duty_cycles = mul_u64_u32_div(state->duty_cycle, rz_mtu3_pwm->rate,
++				      NSEC_PER_SEC);
++	if (duty_cycles >> (2 * prescale) <= U16_MAX)
 +		dc = duty_cycles >> (2 * prescale);
 +	else
-+		dc = U32_MAX;
++		dc = U16_MAX;
 +
 +	/*
 +	 * Store the duty cycle/prescale for future reference in cases where the
 +	 * corresponding registers can't be read (i.e. when the PWM is disabled).
 +	 */
-+	rzg2l_gpt->prescale[ch_index] = prescale;
-+	rzg2l_gpt->duty_cycle[pwm->hwpwm] = dc;
++	rz_mtu3_pwm->prescale[ch_index] = prescale;
++	rz_mtu3_pwm->duty_cycle[pwm->hwpwm] = dc;
 +
 +	/*
 +	 * If the PWM channel is disabled, make sure to turn on the clock
@@ -549,43 +432,17 @@ index 000000000000..2a84bb9d35cb
 +			return err;
 +	}
 +
-+	/*
-+	 * Counter must be stopped before modifying mode, prescaler, timer
-+	 * counter and buffer enable registers. These registers are shared
-+	 * between both channels. So allow updating these registers only for the
-+	 * first enabled channel.
-+	 */
-+	if (rzg2l_gpt->user_count[ch_index] <= 1 &&
-+	    rzg2l_gpt_cntr_need_stop(rzg2l_gpt, pwm->hwpwm, prescale))
-+		rzg2l_gpt_modify(rzg2l_gpt,
-+				 offs + RZG2L_GTCR, RZG2L_GTCR_CST, 0);
-+
-+	is_counter_running = rzg2l_gpt_read(rzg2l_gpt,
-+					    offs + RZG2L_GTCR) & RZG2L_GTCR_CST;
-+	if (!is_counter_running)
-+		/* GPT set operating mode (saw-wave up-counting) */
-+		rzg2l_gpt_modify(rzg2l_gpt, offs + RZG2L_GTCR, RZG2L_GTCR_MD,
-+				 RZG2L_GTCR_MD_SAW_WAVE_PWM_MODE);
-+
-+	/* Set count direction */
-+	rzg2l_gpt_write(rzg2l_gpt, offs + RZG2L_GTUDDTYC, RZG2L_UP_COUNTING);
-+	if (!is_counter_running)
-+		/* Select count clock */
-+		rzg2l_gpt_modify(rzg2l_gpt, offs + RZG2L_GTCR, RZG2L_GTCR_TPCS,
-+				 FIELD_PREP(RZG2L_GTCR_TPCS, prescale));
-+
-+	/* Set period */
-+	rzg2l_gpt_write(rzg2l_gpt, offs + RZG2L_GTPR, pv);
-+
-+	/* Set duty cycle */
-+	rzg2l_gpt_write(rzg2l_gpt, offs + RZG2L_GTCCR(RZG2L_IS_IOB(pwm->hwpwm)),
-+			dc);
-+	if (!is_counter_running) {
-+		/* Set initial value for counter */
-+		rzg2l_gpt_write(rzg2l_gpt, offs + RZG2L_GTCNT, 0);
-+
-+		/* Set no buffer operation */
-+		rzg2l_gpt_write(rzg2l_gpt, offs + RZG2L_GTBER, 0);
++	val = RZ_MTU3_TCR_CKEG_RISING | prescale;
++	if (rz_mtu3_pwm_is_second_channel(ch_index, pwm->hwpwm)) {
++		rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TCR,
++				      RZ_MTU3_TCR_CCLR_TGRC | val);
++		rz_mtu3_16bit_ch_write(ch, RZ_MTU3_TGRD, dc);
++		rz_mtu3_16bit_ch_write(ch, RZ_MTU3_TGRC, pv);
++	} else {
++		rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TCR,
++				      RZ_MTU3_TCR_CCLR_TGRA | val);
++		rz_mtu3_16bit_ch_write(ch, RZ_MTU3_TGRB, dc);
++		rz_mtu3_16bit_ch_write(ch, RZ_MTU3_TGRA, pv);
 +	}
 +
 +	/* If the PWM is not enabled, turn the clock off again to save power. */
@@ -595,45 +452,52 @@ index 000000000000..2a84bb9d35cb
 +	return 0;
 +}
 +
-+static int rzg2l_gpt_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+			       struct pwm_state *state)
++static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
++				 struct pwm_state *state)
 +{
-+	struct rzg2l_gpt_chip *rzg2l_gpt = to_rzg2l_gpt_chip(chip);
-+	u32 ch_index = RZG2L_GET_CH_INDEX(pwm->hwpwm);
-+	u32 offs = RZG2L_GET_CH_OFFS(ch_index);
-+	u8 prescale;
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
++	struct rz_mtu3_channel *ch;
++	u8 prescale, val;
++	u32 ch_index;
++	u16 dc, pv;
 +	u64 tmp;
-+	u32 val;
 +
++	ch = rz_mtu3_get_hw_channel(rz_mtu3_pwm, pwm->hwpwm);
++	ch_index = rz_mtu3_get_hw_channel_index(rz_mtu3_pwm, ch);
 +	pm_runtime_get_sync(chip->dev);
-+	val = rzg2l_gpt_read(rzg2l_gpt, offs + RZG2L_GTCR);
-+	state->enabled = rzg2l_gpt_is_ch_enabled(rzg2l_gpt, pwm->hwpwm);
++	state->enabled = rz_mtu3_pwm_is_ch_enabled(rz_mtu3_pwm, pwm->hwpwm);
 +	if (state->enabled) {
-+		prescale = FIELD_GET(RZG2L_GTCR_TPCS, val);
++		val = rz_mtu3_8bit_ch_read(ch, RZ_MTU3_TCR);
++		prescale = FIELD_GET(RZ_MTU3_TCR_TPCS, val);
 +
-+		val = rzg2l_gpt_read(rzg2l_gpt, offs + RZG2L_GTPR);
-+		tmp = NSEC_PER_SEC * (u64)val;
-+		state->period = DIV_ROUND_UP_ULL(tmp, rzg2l_gpt->rate) << (2 * prescale);
-+		val = rzg2l_gpt_read(rzg2l_gpt,
-+				     offs + RZG2L_GTCCR(RZG2L_IS_IOB(pwm->hwpwm)));
++		if (rz_mtu3_pwm_is_second_channel(ch_index, pwm->hwpwm)) {
++			dc = rz_mtu3_16bit_ch_read(ch, RZ_MTU3_TGRD);
++			pv = rz_mtu3_16bit_ch_read(ch, RZ_MTU3_TGRC);
++		} else {
++			dc = rz_mtu3_16bit_ch_read(ch, RZ_MTU3_TGRB);
++			pv = rz_mtu3_16bit_ch_read(ch, RZ_MTU3_TGRA);
++		}
++
++		tmp = NSEC_PER_SEC * (u64)pv << (2 * prescale);
++		state->period = DIV_ROUND_UP_ULL(tmp, rz_mtu3_pwm->rate);
 +	} else {
 +		/* If the PWM is disabled, use the cached value. */
-+		prescale = rzg2l_gpt->prescale[ch_index];
-+		val = rzg2l_gpt->duty_cycle[pwm->hwpwm];
++		prescale = rz_mtu3_pwm->prescale[ch_index];
++		dc = rz_mtu3_pwm->duty_cycle[pwm->hwpwm];
 +	}
 +
-+	tmp = NSEC_PER_SEC * (u64)val;
-+	state->duty_cycle = DIV_ROUND_UP_ULL(tmp, rzg2l_gpt->rate) << (2 * prescale);
++	tmp = NSEC_PER_SEC * (u64)dc << (2 * prescale);
++	state->duty_cycle = DIV_ROUND_UP_ULL(tmp, rz_mtu3_pwm->rate);
 +	state->polarity = PWM_POLARITY_NORMAL;
 +	pm_runtime_put(chip->dev);
 +
 +	return 0;
 +}
 +
-+static int rzg2l_gpt_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			   const struct pwm_state *state)
++static int rz_mtu3_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			     const struct pwm_state *state)
 +{
-+	struct rzg2l_gpt_chip *rzg2l_gpt = to_rzg2l_gpt_chip(chip);
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
 +	bool enabled = pwm->state.enabled;
 +	int ret;
 +
@@ -642,181 +506,123 @@ index 000000000000..2a84bb9d35cb
 +
 +	if (!state->enabled) {
 +		if (enabled)
-+			rzg2l_gpt_disable(rzg2l_gpt, pwm);
++			rz_mtu3_pwm_disable(rz_mtu3_pwm, pwm);
 +
 +		return 0;
 +	}
 +
-+	mutex_lock(&rzg2l_gpt->lock);
-+	ret = rzg2l_gpt_config(chip, pwm, state);
-+	mutex_unlock(&rzg2l_gpt->lock);
++	ret = rz_mtu3_pwm_config(chip, pwm, state);
 +	if (ret)
 +		return ret;
 +
 +	if (!enabled)
-+		ret = rzg2l_gpt_enable(rzg2l_gpt, pwm);
++		ret = rz_mtu3_pwm_enable(rz_mtu3_pwm, pwm);
 +
 +	return ret;
 +}
 +
-+static const struct pwm_ops rzg2l_gpt_ops = {
-+	.request = rzg2l_gpt_request,
-+	.free = rzg2l_gpt_free,
-+	.get_state = rzg2l_gpt_get_state,
-+	.apply = rzg2l_gpt_apply,
++static const struct pwm_ops rz_mtu3_pwm_ops = {
++	.request = rz_mtu3_pwm_request,
++	.free = rz_mtu3_pwm_free,
++	.get_state = rz_mtu3_pwm_get_state,
++	.apply = rz_mtu3_pwm_apply,
 +	.owner = THIS_MODULE,
 +};
 +
-+static const struct of_device_id rzg2l_gpt_of_table[] = {
-+	{ .compatible = "renesas,rzg2l-gpt", },
-+	{ /* Sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, rzg2l_gpt_of_table);
-+
-+static int rzg2l_gpt_pm_runtime_suspend(struct device *dev)
++static int rz_mtu3_pwm_pm_runtime_suspend(struct device *dev)
 +{
-+	struct rzg2l_gpt_chip *rzg2l_gpt = dev_get_drvdata(dev);
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = dev_get_drvdata(dev);
 +
-+	clk_disable_unprepare(rzg2l_gpt->clk);
++	clk_disable_unprepare(rz_mtu3_pwm->clk);
 +
 +	return 0;
 +}
 +
-+static int rzg2l_gpt_pm_runtime_resume(struct device *dev)
++static int rz_mtu3_pwm_pm_runtime_resume(struct device *dev)
 +{
-+	struct rzg2l_gpt_chip *rzg2l_gpt = dev_get_drvdata(dev);
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = dev_get_drvdata(dev);
 +
-+	clk_prepare_enable(rzg2l_gpt->clk);
++	clk_prepare_enable(rz_mtu3_pwm->clk);
 +
 +	return 0;
 +}
 +
-+static DEFINE_RUNTIME_DEV_PM_OPS(rzg2l_gpt_pm_ops,
-+				 rzg2l_gpt_pm_runtime_suspend,
-+				 rzg2l_gpt_pm_runtime_resume, NULL);
++static DEFINE_RUNTIME_DEV_PM_OPS(rz_mtu3_pwm_pm_ops,
++				 rz_mtu3_pwm_pm_runtime_suspend,
++				 rz_mtu3_pwm_pm_runtime_resume, NULL);
 +
-+static void rzg2l_gpt_reset_assert_pm_disable(void *data)
++static void rz_mtu3_pwm_pm_disable(void *data)
 +{
-+	struct rzg2l_gpt_chip *rzg2l_gpt = data;
-+	u32 i;
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = data;
 +
-+	/*
-+	 * The below check is for making balanced PM usage count
-+	 * eg: boot loader is turning on PWM and probe increments the PM usage
-+	 * count. Before apply, if there is unbind/remove callback we need to
-+	 * decrement the PM usage count.
-+	 */
-+
-+	clk_prepare_enable(rzg2l_gpt->clk);
-+	for (i = 0; i < RZG2L_MAX_PWM_CHANNELS; i++) {
-+		if (rzg2l_gpt_is_ch_enabled(rzg2l_gpt, i))
-+			pm_runtime_put(rzg2l_gpt->chip.dev);
-+	}
-+	clk_disable_unprepare(rzg2l_gpt->clk);
-+
-+	pm_runtime_disable(rzg2l_gpt->chip.dev);
-+	pm_runtime_set_suspended(rzg2l_gpt->chip.dev);
-+	reset_control_assert(rzg2l_gpt->rstc);
++	pm_runtime_disable(rz_mtu3_pwm->chip.dev);
++	pm_runtime_set_suspended(rz_mtu3_pwm->chip.dev);
 +}
 +
-+static int rzg2l_gpt_probe(struct platform_device *pdev)
++static int rz_mtu3_pwm_probe(struct platform_device *pdev)
 +{
-+	DECLARE_BITMAP(ch_en_bits, RZG2L_MAX_PWM_CHANNELS);
-+	struct rzg2l_gpt_chip *rzg2l_gpt;
-+	u32 ch_index, offs, val;
++	struct rz_mtu3 *ddata = dev_get_drvdata(pdev->dev.parent);
++	struct rz_mtu3_pwm_chip *rz_mtu3_pwm;
++	struct device *dev = &pdev->dev;
++	int num_pwm_hw_ch = 0;
++	unsigned int i;
 +	int ret;
-+	u32 i;
 +
-+	rzg2l_gpt = devm_kzalloc(&pdev->dev, sizeof(*rzg2l_gpt), GFP_KERNEL);
-+	if (!rzg2l_gpt)
++	rz_mtu3_pwm = devm_kzalloc(&pdev->dev, sizeof(*rz_mtu3_pwm), GFP_KERNEL);
++	if (!rz_mtu3_pwm)
 +		return -ENOMEM;
 +
-+	rzg2l_gpt->mmio = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(rzg2l_gpt->mmio))
-+		return PTR_ERR(rzg2l_gpt->mmio);
++	rz_mtu3_pwm->clk = ddata->clk;
++	rz_mtu3_pwm->rate = clk_get_rate(rz_mtu3_pwm->clk);
++	for (i = 0; i < RZ_MTU_NUM_CHANNELS; i++) {
++		if (i == RZ_MTU5 || i == RZ_MTU8)
++			continue;
 +
-+	rzg2l_gpt->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
-+	if (IS_ERR(rzg2l_gpt->rstc))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(rzg2l_gpt->rstc),
-+				     "get reset failed\n");
++		rz_mtu3_pwm->ch[num_pwm_hw_ch] = &ddata->channels[i];
++		rz_mtu3_pwm->ch[num_pwm_hw_ch]->dev = dev;
++		num_pwm_hw_ch++;
++	}
 +
-+	rzg2l_gpt->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(rzg2l_gpt->clk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(rzg2l_gpt->clk),
-+				     "cannot get clock\n");
-+
-+	ret = reset_control_deassert(rzg2l_gpt->rstc);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "cannot deassert reset control\n");
-+
-+	rzg2l_gpt->rate = clk_get_rate(rzg2l_gpt->clk);
-+
-+	clk_prepare_enable(rzg2l_gpt->clk);
++	mutex_init(&rz_mtu3_pwm->lock);
++	platform_set_drvdata(pdev, rz_mtu3_pwm);
++	clk_prepare_enable(rz_mtu3_pwm->clk);
 +	pm_runtime_set_active(&pdev->dev);
 +	pm_runtime_enable(&pdev->dev);
 +	ret = devm_add_action_or_reset(&pdev->dev,
-+				       rzg2l_gpt_reset_assert_pm_disable,
-+				       rzg2l_gpt);
++				       rz_mtu3_pwm_pm_disable,
++				       rz_mtu3_pwm);
 +	if (ret < 0)
-+		goto clk_disable;
++		goto disable_clock;
 +
-+	mutex_init(&rzg2l_gpt->lock);
-+	platform_set_drvdata(pdev, rzg2l_gpt);
-+	bitmap_zero(ch_en_bits, RZG2L_MAX_PWM_CHANNELS);
-+
-+	/*
-+	 *  We need to keep the clock on, in case the bootloader has enabled the
-+	 *  PWM and is running during probe().
-+	 */
-+	for (i = 0; i < RZG2L_MAX_PWM_CHANNELS; i++) {
-+		if (rzg2l_gpt_is_ch_enabled(rzg2l_gpt, i)) {
-+			ch_index = RZG2L_GET_CH_INDEX(i);
-+			offs = RZG2L_GET_CH_OFFS(ch_index);
-+			val = rzg2l_gpt_read(rzg2l_gpt, offs + RZG2L_GTCR);
-+			rzg2l_gpt->prescale[ch_index] = FIELD_PREP(RZG2L_GTCR_TPCS,
-+								   val);
-+			set_bit(i, ch_en_bits);
-+			pm_runtime_get_sync(&pdev->dev);
-+		}
-+	}
-+
-+	rzg2l_gpt->chip.dev = &pdev->dev;
-+	rzg2l_gpt->chip.ops = &rzg2l_gpt_ops;
-+	rzg2l_gpt->chip.npwm = RZG2L_MAX_PWM_CHANNELS;
-+
-+	ret = devm_pwmchip_add(&pdev->dev, &rzg2l_gpt->chip);
++	rz_mtu3_pwm->chip.dev = &pdev->dev;
++	rz_mtu3_pwm->chip.ops = &rz_mtu3_pwm_ops;
++	rz_mtu3_pwm->chip.npwm = RZ_MTU3_MAX_PWM_MODE1_CHANNELS;
++	ret = devm_pwmchip_add(&pdev->dev, &rz_mtu3_pwm->chip);
 +	if (ret) {
-+		for (i = 0; i < RZG2L_MAX_PWM_CHANNELS; i++) {
-+			if (test_bit(i, ch_en_bits))
-+				pm_runtime_put(&pdev->dev);
-+		}
-+
 +		dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
-+		goto clk_disable;
++		goto disable_clock;
 +	}
 +
 +	return 0;
 +
-+clk_disable:
-+	clk_disable_unprepare(rzg2l_gpt->clk);
++disable_clock:
++	clk_disable_unprepare(rz_mtu3_pwm->clk);
 +	return ret;
 +}
 +
-+static struct platform_driver rzg2l_gpt_driver = {
++static struct platform_driver rz_mtu3_pwm_driver = {
 +	.driver = {
-+		.name = "pwm-rzg2l-gpt",
-+		.pm = pm_ptr(&rzg2l_gpt_pm_ops),
-+		.of_match_table = of_match_ptr(rzg2l_gpt_of_table),
++		.name = "pwm-rz-mtu3",
++		.pm = pm_ptr(&rz_mtu3_pwm_pm_ops),
 +	},
-+	.probe = rzg2l_gpt_probe,
++	.probe = rz_mtu3_pwm_probe,
 +};
-+module_platform_driver(rzg2l_gpt_driver);
++module_platform_driver(rz_mtu3_pwm_driver);
 +
 +MODULE_AUTHOR("Biju Das <biju.das.jz@bp.renesas.com>");
-+MODULE_DESCRIPTION("Renesas RZ/G2L General PWM Timer (GPT) Driver");
++MODULE_ALIAS("platform:pwm-rz-mtu3");
++MODULE_DESCRIPTION("Renesas RZ/G2L MTU3a PWM Timer Driver");
 +MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:pwm-rzg2l-gpt");
 -- 
 2.25.1
 
