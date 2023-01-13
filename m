@@ -2,117 +2,98 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C0EC678D4
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Jan 2023 21:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18AA9C61DB3
+	for <linux-pwm@archiver.kernel.org>; Fri, 13 Jan 2023 07:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240685AbjALVia (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Jan 2023 16:38:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35898 "EHLO
+        id S240905AbjAMHVO (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 13 Jan 2023 02:21:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240564AbjALVhh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Jan 2023 16:37:37 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FFCE6E
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Jan 2023 13:30:24 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pG59N-0002VT-Mb; Thu, 12 Jan 2023 22:30:17 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pG59M-005coA-LE; Thu, 12 Jan 2023 22:30:16 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pG59M-00CN00-0U; Thu, 12 Jan 2023 22:30:16 +0100
-Date:   Thu, 12 Jan 2023 22:30:15 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Mubin Sayyed <mubin.sayyed@amd.com>
-Cc:     robh+dt@kernel.org, treding@nvidia.com, linux-pwm@vger.kernel.org,
+        with ESMTP id S240906AbjAMHUm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Jan 2023 02:20:42 -0500
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45914755D6;
+        Thu, 12 Jan 2023 23:06:08 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 5E21E80FA;
+        Fri, 13 Jan 2023 07:06:07 +0000 (UTC)
+Date:   Fri, 13 Jan 2023 09:06:06 +0200
+From:   Tony Lindgren <tony@atomide.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, git@amd.com, michal.simek@amd.com,
-        siva.durga.prasad.paladugu@amd.com, mubin10@gmail.com
-Subject: Re: [LINUX PATCH 1/3] clocksource: timer-cadence-ttc: Do not probe
- TTC device configured as PWM
-Message-ID: <20230112213015.sw5uxirsrltx3pih@pengutronix.de>
-References: <20230112071526.3035949-1-mubin.sayyed@amd.com>
- <20230112071526.3035949-2-mubin.sayyed@amd.com>
+        linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: pwm: Allow decimal format in
+ addition to hex format
+Message-ID: <Y8EC3jB2317ohUIB@atomide.com>
+References: <20221122123225.59106-1-tony@atomide.com>
+ <20221123024153.GB1026269-robh@kernel.org>
+ <Y33ErrigR4II6EYH@atomide.com>
+ <20221127182232.GA128974-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7qvaaxqaocpm7pj5"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230112071526.3035949-2-mubin.sayyed@amd.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+In-Reply-To: <20221127182232.GA128974-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Hi Rob,
 
---7qvaaxqaocpm7pj5
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+* Rob Herring <robh@kernel.org> [221127 18:22]:
+> On Wed, Nov 23, 2022 at 08:58:54AM +0200, Tony Lindgren wrote:
+> > * Rob Herring <robh@kernel.org> [221123 02:31]:
+> > > On Tue, Nov 22, 2022 at 02:32:24PM +0200, Tony Lindgren wrote:
+> > > > --- a/Documentation/devicetree/bindings/pwm/pwm.yaml
+> > > > +++ b/Documentation/devicetree/bindings/pwm/pwm.yaml
+> > > > @@ -13,7 +13,7 @@ select: false
+> > > >  
+> > > >  properties:
+> > > >    $nodename:
+> > > > -    pattern: "^pwm(@.*|-[0-9a-f])*$"
+> > > > +    pattern: "^pwm(@.+|-[0-9a-f]+)?$"
+> > > 
+> > > So now pwm-10 could be either?
+> > 
+> > Yes.
+> > 
+> > > I'm fine with decimal, but can we do that everywhere we do this -N 
+> > > naming?
+> > 
+> > Do you mean the '[0-9a-f]' users that don't use '[0-9af]+'?
+> 
+> No, I mean for all cases of <nodename>-N, can be we consistent. Either 
+> we use hex or we use decimal.
+>  
+> > 
+> > These can be found with:
+> > 
+> > $ find Documentation/devicetree/bindings/ -name \*.yaml | \
+> > 	xargs grep pattern: | grep '\[0-9a-f\]' | grep -v '\[0-9a-f\]+'
+> 
+> Not quite. It's just cases of '-N':
+> 
+> $ find Documentation/devicetree/bindings/ -name \*.yaml |         xargs grep pattern: | grep '\-\[0-9a-f\]' | grep -v '\[0-9a-f\]+'
+> Documentation/devicetree/bindings/phy/intel,combo-phy.yaml:    pattern: "combophy(@.*|-[0-9a-f])*$"
+> Documentation/devicetree/bindings/pwm/pwm.yaml:    pattern: "^pwm(@.*|-[0-9a-f])*$"
+> Documentation/devicetree/bindings/timestamp/hardware-timestamps-common.yaml:    pattern: "^timestamp(@.*|-[0-9a-f])?$"
+> Documentation/devicetree/bindings/watchdog/watchdog.yaml:    pattern: "^watchdog(@.*|-[0-9a-f])?$"
+> Documentation/devicetree/bindings/spi/spi-controller.yaml:    pattern: "^spi(@.*|-[0-9a-f])*$"
+> Documentation/devicetree/bindings/rtc/rtc.yaml:    pattern: "^rtc(@.*|-[0-9a-f])*$"
+> 
+> 
+> And there's probably some more in dtschema.
 
-On Thu, Jan 12, 2023 at 12:45:24PM +0530, Mubin Sayyed wrote:
-> TTC device can act either as clocksource/clockevent or
-> PWM generator, it would be decided by pwm-cells property.
-> TTC PWM feature would be supported through separate driver
-> based on PWM framework.
->=20
-> If pwm-cells property is present in TTC node, it would be
-> treated as PWM device, and clocksource driver should just
-> skip it.
->=20
-> Signed-off-by: Mubin Sayyed <mubin.sayyed@amd.com>
-> ---
->  drivers/clocksource/timer-cadence-ttc.c | 3 +++
->  1 file changed, 3 insertions(+)
->=20
-> diff --git a/drivers/clocksource/timer-cadence-ttc.c b/drivers/clocksourc=
-e/timer-cadence-ttc.c
-> index 4efd0cf3b602..ba46649148b1 100644
-> --- a/drivers/clocksource/timer-cadence-ttc.c
-> +++ b/drivers/clocksource/timer-cadence-ttc.c
-> @@ -476,6 +476,9 @@ static int __init ttc_timer_probe(struct platform_dev=
-ice *pdev)
->  	u32 timer_width =3D 16;
->  	struct device_node *timer =3D pdev->dev.of_node;
-> =20
-While it's more obvious here than in the PWM driver, a comment here
-would be good, too.
+Looking at this again, not exactly sure still what you want..
 
-> +	if (of_property_read_bool(timer, "#pwm-cells"))
-> +		return -ENODEV;
-> +
->  	if (initialized)
->  		return 0;
-> =20
-> --=20
-> 2.25.1
->=20
->=20
+Can you please post some initial patch maybe, verbal patches are
+a bit tricky :)
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Regards,
 
---7qvaaxqaocpm7pj5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmPAe+QACgkQwfwUeK3K
-7AkUDgf+KIetGF0gWW6g8OkoyM38lCShOVsRVSiy1HszSnswoz5btFRoyngs9aMs
-5GH9zt8BePcWiCzgm4uF2GWrz7221Us2orfw+FUf+44Dd5PvHFisuFT4l8rcxgui
-Q79H9PmsAigq5fH+fq8sVNLKGQqNbm4B5QfDBUDFknR5VU30PZwUMW0XgQ3zkcr6
-K6EoWKslmdEaHP7b5nBHRBeZll0PXnGnMwEaYgqcpLVnXl6uODCmVRi2RKLR0xAC
-boUHFwuHy8qxAw+eJYhkN6j/fJ8rSDfoa/TeO9mfAibdDIZeef+j8J6UipWSqO2F
-6vu68mcg2tSe56AlF7ITbg0uX8Qp3A==
-=e7Bd
------END PGP SIGNATURE-----
-
---7qvaaxqaocpm7pj5--
+Tony
