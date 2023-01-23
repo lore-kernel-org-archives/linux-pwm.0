@@ -2,123 +2,109 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F338DC38142
-	for <linux-pwm@archiver.kernel.org>; Mon, 23 Jan 2023 15:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD72C05027
+	for <linux-pwm@archiver.kernel.org>; Mon, 23 Jan 2023 16:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232190AbjAWPMV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 23 Jan 2023 10:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
+        id S231688AbjAWQGY (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 23 Jan 2023 11:06:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231371AbjAWPMU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Jan 2023 10:12:20 -0500
-Received: from mail-vk1-xa34.google.com (mail-vk1-xa34.google.com [IPv6:2607:f8b0:4864:20::a34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0AE976F
-        for <linux-pwm@vger.kernel.org>; Mon, 23 Jan 2023 07:12:20 -0800 (PST)
-Received: by mail-vk1-xa34.google.com with SMTP id b81so6092519vkf.1
-        for <linux-pwm@vger.kernel.org>; Mon, 23 Jan 2023 07:12:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tOYn37Kzz7UT5OjuarLO6dELvwi+HvDsiTTvNIZfI/c=;
-        b=p5/HBVV4nyFMzfpQL82ckv7xcrV855WYAulTjyVpKePTMC73WP/c5Ix3p4+j4EIv/7
-         FduUac7Q7quHSnRZlKHOn2LriPbIf1UQI3SDSgfYCwg55LBlumWKkJfViWjhXrc5gag1
-         J1BW/daUSvCzhUgzgRUh+W18TA1JHAqqYMirzLWMtdq6eVBu60dfIBVFZiM0pYY0zKWd
-         VuQGCiOyE72cLXoKDFTeK/qc7/qSn0AuwXkESBj+9PnS+a9paZDSLfO2da/7bnDjFNyp
-         FqtlY3jFPHA1Mhvk4XJrpq3WXyoRyyrkbEAWWvpUdGYwTrfPVdo99RWTO6AVmrMEpWGM
-         /8xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tOYn37Kzz7UT5OjuarLO6dELvwi+HvDsiTTvNIZfI/c=;
-        b=7XQzk3kRImQvM5lUE0E46skl8VaBCEv0TLK9FuQnNrWDTs9+5xHEcX22m1x+8P8Rz1
-         qDbbjUaJ6Zdv9EuPgdnTNvEuArYRhEXWiKZbKNij8hA474EZAS7F+mBZZIWh0qAK6dSU
-         jDG9nRaQiIAtzL1GqxWw7B3dzQA5+pPSOBS/59tuv/PskDrJXOcLGlOZKFQyU2lNeYzs
-         8VOBGNrAiw45kfBzXlBo+milxZwzz6sYYtDapFTJ2pLzkUDEyzxZSB/I8hDelA3FnHfJ
-         P0ygjlMk+Y4dot9nXH7KRpoc4ahFP1N5zfjZTkVN2b3PEr4IbCQQgXipE947ls1if03M
-         nySA==
-X-Gm-Message-State: AFqh2koeNaza+2oHL6F2eB2jJyNhJlIf8FE2zrw+vWsekQPyOTtZLb7Q
-        zWM5BsPf3QcKkQhQWDQMCg6wtbPlV6cLDe+PHxJKFg==
-X-Google-Smtp-Source: AMrXdXuxp9FC8rIx6ZdvOjegXM1mL5T8T9KdzILazCupaAewyGisElsh3TVHlQH65p4Skth7GVbO5NrIkZDZtBQc/As=
-X-Received: by 2002:a1f:9b53:0:b0:3e1:db78:6cd9 with SMTP id
- d80-20020a1f9b53000000b003e1db786cd9mr2007544vke.25.1674486739191; Mon, 23
- Jan 2023 07:12:19 -0800 (PST)
+        with ESMTP id S231659AbjAWQGY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Jan 2023 11:06:24 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6ECCDE7;
+        Mon, 23 Jan 2023 08:06:23 -0800 (PST)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5DDD86602E1B;
+        Mon, 23 Jan 2023 16:06:21 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1674489982;
+        bh=E4V4fApG7LhWq16TtQ6eUGLIDwf3PHKpT4N6BRwMD5k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=l5xAWlcWUx08oMvA/eWOdsbcrOR+U3pZbcBjQpt/BPWZXP/Z21nBhIWLQbkqj54c0
+         j/hIJ+LkGsFm01jMo7nggTEdPMsd3ONZ+oFesVc+Cp5dJNH3DBxKEYvRNhc6Hij8pI
+         GMn1mEzBCzkS5MKjK9TiEqL02e2WKAA36WLo9LGBNmHjeVoCMcWE8sl7KotR/rQaj2
+         CVohRzLs3nQeKYqs7RQ45Dkq9NAlv1BOHhdcPFWZSDMbmsq7S4dVFQ/7RmDgZJvSHW
+         6Oy6JPzdJ3qATiOKqWVdKepRX3zTiOg2I5/U2IwXX+Lljt64IBiXYrky3h43JmRML+
+         rkLbhMIZuMJ/Q==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     thierry.reding@gmail.com
+Cc:     u.kleine-koenig@pengutronix.de, matthias.bgg@gmail.com,
+        weiqing.kong@mediatek.com, jitao.shi@mediatek.com,
+        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 1/2] pwm: mtk-disp: Disable shadow registers before setting backlight values
+Date:   Mon, 23 Jan 2023 17:06:14 +0100
+Message-Id: <20230123160615.375969-2-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230123160615.375969-1-angelogioacchino.delregno@collabora.com>
+References: <20230123160615.375969-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-References: <20230120075333.142223-1-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20230120075333.142223-1-u.kleine-koenig@pengutronix.de>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Mon, 23 Jan 2023 16:12:08 +0100
-Message-ID: <CAMRc=MdX=2nMZ3AkWpzeh6zbB+QM66j1ieQT-r+EuRTaYRuFhg@mail.gmail.com>
-Subject: Re: [PATCH] gpio: mvebu: Use IS_REACHABLE instead of IS_ENABLED for CONFIG_PWM
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        kernel@pengutronix.de
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Fri, Jan 20, 2023 at 8:53 AM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> To check if a certain function (here e.g. pwmchip_add()) can be called
-> IS_REACHABLE is the better check. The relevant difference to IS_ENABLED
-> is that IS_REACHABLE evaluates to 0 if the current code is builtin but th=
-e
-> checked symbol is =3Dm and so must not be used.
->
-> Today there is no practical impact as CONFIG_PWM is a bool.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/gpio/gpio-mvebu.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-> index 91a4232ee58c..a68f682aec01 100644
-> --- a/drivers/gpio/gpio-mvebu.c
-> +++ b/drivers/gpio/gpio-mvebu.c
-> @@ -1002,7 +1002,7 @@ static int mvebu_gpio_suspend(struct platform_devic=
-e *pdev, pm_message_t state)
->                 BUG();
->         }
->
-> -       if (IS_ENABLED(CONFIG_PWM))
-> +       if (IS_REACHABLE(CONFIG_PWM))
->                 mvebu_pwm_suspend(mvchip);
->
->         return 0;
-> @@ -1054,7 +1054,7 @@ static int mvebu_gpio_resume(struct platform_device=
- *pdev)
->                 BUG();
->         }
->
-> -       if (IS_ENABLED(CONFIG_PWM))
-> +       if (IS_REACHABLE(CONFIG_PWM))
->                 mvebu_pwm_resume(mvchip);
->
->         return 0;
-> @@ -1228,7 +1228,7 @@ static int mvebu_gpio_probe(struct platform_device =
-*pdev)
->         devm_gpiochip_add_data(&pdev->dev, &mvchip->chip, mvchip);
->
->         /* Some MVEBU SoCs have simple PWM support for GPIO lines */
-> -       if (IS_ENABLED(CONFIG_PWM)) {
-> +       if (IS_REACHABLE(CONFIG_PWM)) {
->                 err =3D mvebu_pwm_probe(pdev, mvchip, id);
->                 if (err)
->                         return err;
-> --
-> 2.39.0
->
+If shadow registers usage is not desired, disable that before performing
+any write to CON0/1 registers in the .apply() callback, otherwise we may
+lose clkdiv or period/width updates.
 
-Applied, thanks!
+Fixes: cd4b45ac449a ("pwm: Add MediaTek MT2701 display PWM driver support")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/pwm/pwm-mtk-disp.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-Bart
+diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
+index 692a06121b28..82b430d881a2 100644
+--- a/drivers/pwm/pwm-mtk-disp.c
++++ b/drivers/pwm/pwm-mtk-disp.c
+@@ -138,6 +138,19 @@ static int mtk_disp_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	high_width = mul_u64_u64_div_u64(state->duty_cycle, rate, div);
+ 	value = period | (high_width << PWM_HIGH_WIDTH_SHIFT);
+ 
++	if (mdp->data->bls_debug && !mdp->data->has_commit) {
++		/*
++		 * For MT2701, disable double buffer before writing register
++		 * and select manual mode and use PWM_PERIOD/PWM_HIGH_WIDTH.
++		 */
++		mtk_disp_pwm_update_bits(mdp, mdp->data->bls_debug,
++					 mdp->data->bls_debug_mask,
++					 mdp->data->bls_debug_mask);
++		mtk_disp_pwm_update_bits(mdp, mdp->data->con0,
++					 mdp->data->con0_sel,
++					 mdp->data->con0_sel);
++	}
++
+ 	mtk_disp_pwm_update_bits(mdp, mdp->data->con0,
+ 				 PWM_CLKDIV_MASK,
+ 				 clk_div << PWM_CLKDIV_SHIFT);
+@@ -152,17 +165,6 @@ static int mtk_disp_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		mtk_disp_pwm_update_bits(mdp, mdp->data->commit,
+ 					 mdp->data->commit_mask,
+ 					 0x0);
+-	} else {
+-		/*
+-		 * For MT2701, disable double buffer before writing register
+-		 * and select manual mode and use PWM_PERIOD/PWM_HIGH_WIDTH.
+-		 */
+-		mtk_disp_pwm_update_bits(mdp, mdp->data->bls_debug,
+-					 mdp->data->bls_debug_mask,
+-					 mdp->data->bls_debug_mask);
+-		mtk_disp_pwm_update_bits(mdp, mdp->data->con0,
+-					 mdp->data->con0_sel,
+-					 mdp->data->con0_sel);
+ 	}
+ 
+ 	mtk_disp_pwm_update_bits(mdp, DISP_PWM_EN, mdp->data->enable_mask,
+-- 
+2.39.0
+
