@@ -2,186 +2,102 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B88ECC54E94
-	for <linux-pwm@archiver.kernel.org>; Thu, 26 Jan 2023 16:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DF3C54EED
+	for <linux-pwm@archiver.kernel.org>; Mon, 30 Jan 2023 09:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbjAZQQR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 26 Jan 2023 11:16:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
+        id S236390AbjA3Jef (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 30 Jan 2023 04:34:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjAZQQQ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 26 Jan 2023 11:16:16 -0500
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD4F359A;
-        Thu, 26 Jan 2023 08:16:15 -0800 (PST)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5CFAC6602E7A;
-        Thu, 26 Jan 2023 16:16:13 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1674749773;
-        bh=V0gLbpx5AMKGj7vJSigmDaOo8Wzyv86wPBOn8FimbE4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Q77sY0Tis2lsA5SbxnzsuZmN0xkug9r4USlDwoFZ5VBJDNVFhw5Ny0tsUW+wnByOx
-         tbn5ToaTzOJjZrl2M087Zz8I2m+Z4DImVkC3sKjb8EQuWskUySmLVMs6IYAsQqfRB4
-         APYWxGqowLryBr6RCJ6sDyJL8IltywJJOXVldYzOEjAKzVV9QsMf9MgN1MPyuOyDmu
-         yHsOVE2ZSIN9CW2i8I//G1SXMqfcYs0oC+AR3j+vwJ5/5dNpYlD7OlUI3xcrWgW6vF
-         2hMMxCZI4NE5DjVW31C8ZByEBt6zQIpAU3IBQSjaj/CYC4S2Uglg3GR1RxVfLX+pzk
-         JODVKxntoMbjg==
-Message-ID: <e9fc3199-234e-911e-fff8-734225c3f346@collabora.com>
-Date:   Thu, 26 Jan 2023 17:16:10 +0100
+        with ESMTP id S236494AbjA3JeN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2023 04:34:13 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E685865AB
+        for <linux-pwm@vger.kernel.org>; Mon, 30 Jan 2023 01:32:48 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id m2so5968937plg.4
+        for <linux-pwm@vger.kernel.org>; Mon, 30 Jan 2023 01:32:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=W7Rfwt1I+uGLH2WvGyjGS4z4+0W1oBU0PyN8+ybwBQM=;
+        b=hCnLQngH722sIEXN1Gho9Wj1ujABjTtK8JX/cG3wwwGaTKdAB+ey7HkETd6oZpO8tv
+         vLdoPzqJLerf49cPLSpjOorHVag3ybhXhpYr/77qmDgvjgzmFdT/0d3bxHOZj/e7n+bY
+         t8uSp9ikhaT89Y8/DDu/f6YmDsbqbCtH9SHKNmJGAis1CHdAD2Vg/Us25RsC2Vxm6SGm
+         6peI7uPrZelCCu4EcstZZseRCRQsCrohoNKVVIoWxmA+RdjN7nMbH43Kb9cIzmBoXo3D
+         OU6oU5ZwPVpKtUhF3UDUADSHTLP/R+4DWP3Ll5ImHlmOricvo99OaP/0pQI1SvA4a9R8
+         yMHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=W7Rfwt1I+uGLH2WvGyjGS4z4+0W1oBU0PyN8+ybwBQM=;
+        b=jHKEl03kKdTW27DfWp4CJG53KT03JjrXAChokAHB1C8jActAuGr6jvLH/BFS9P2TRW
+         KMbQ/f3iDvGY2kYw3tPsVFvWL0GurWWw4VprkCL8k4Z5YqUPlGa6aMtm1VXtKchXWVdS
+         oq4WZcTfzl+WY2cjC08d0KR2Iae94XVR1YQKEAU4CgM6X1QflAaoPY67Lsn5oYdU2/dw
+         rjnz1NKASkuPQLRmapJEuOJGf9CgLR5JF49TICPwRusgCYBkLv20mHypW7pP/JJ7lNI8
+         c0OXTpcI6fj/Cfwq/XcpKSGz+rVtBqJ56JpRmffhE6b3DG2CvBbG7nAoiXmLN0o1eK4a
+         ciAw==
+X-Gm-Message-State: AO0yUKXTNcVVVXfHzhnE83pGPQXJdtvOHK63lbELkjmiW3BtJnzPZRG4
+        s9UcjF+IjVvLyXO7wGZzpfP/sw==
+X-Google-Smtp-Source: AK7set9QLGZ+95SoqxDpz0fnhu2C6Btygt/5TP7yC/t6bY6mZyLjmV3rrULbqSgdQtIJkwB74RFyog==
+X-Received: by 2002:a17:902:c406:b0:196:e8e:cd28 with SMTP id k6-20020a170902c40600b001960e8ecd28mr30471930plk.15.1675071155816;
+        Mon, 30 Jan 2023 01:32:35 -0800 (PST)
+Received: from hsinchu15.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id t13-20020a6564cd000000b004db2b310f95sm6245704pgv.16.2023.01.30.01.32.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 01:32:35 -0800 (PST)
+From:   Nylon Chen <nylon.chen@sifive.com>
+To:     aou@eecs.berkeley.edu, conor@kernel.org,
+        emil.renner.berthing@canonical.com, geert+renesas@glider.be,
+        heiko@sntech.de, krzysztof.kozlowski+dt@linaro.org,
+        palmer@dabbelt.com, paul.walmsley@sifive.com, robh+dt@kernel.org,
+        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     nylon.chen@sifive.com, nylon7717@gmail.com, zong.li@sifive.com,
+        greentime.hu@sifive.com, vincent.chen@sifive.com
+Subject: [PATCH v2 0/2] Change PWM-controlled LED pin active mode and algorithm
+Date:   Mon, 30 Jan 2023 17:32:27 +0800
+Message-Id: <20230130093229.27489-1-nylon.chen@sifive.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 2/2] pwm: mtk-disp: Configure double buffering before
- reading in .get_state()
-Content-Language: en-US
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-Cc:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        matthias.bgg@gmail.com, weiqing.kong@mediatek.com,
-        jitao.shi@mediatek.com, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-References: <20230123160615.375969-1-angelogioacchino.delregno@collabora.com>
- <20230123160615.375969-3-angelogioacchino.delregno@collabora.com>
- <20230126151914.rhwhioz6yyhaq3z2@notapiano>
- <aa17fa46-0f16-2102-1bd3-6d76cee90ee1@collabora.com>
- <20230126160927.4hgifpmybvsgshro@notapiano>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230126160927.4hgifpmybvsgshro@notapiano>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Il 26/01/23 17:09, Nícolas F. R. A. Prado ha scritto:
-> On Thu, Jan 26, 2023 at 04:24:29PM +0100, AngeloGioacchino Del Regno wrote:
->> Il 26/01/23 16:19, Nícolas F. R. A. Prado ha scritto:
->>> On Mon, Jan 23, 2023 at 05:06:15PM +0100, AngeloGioacchino Del Regno wrote:
->>>> The DISP_PWM controller's default behavior is to always use register
->>>> double buffering: all reads/writes are then performed on shadow
->>>> registers instead of working registers and this becomes an issue
->>>> in case our chosen configuration in Linux is different from the
->>>> default (or from the one that was pre-applied by the bootloader).
->>>>
->>>> An example of broken behavior is when the controller is configured
->>>> to use shadow registers, but this driver wants to configure it
->>>> otherwise: what happens is that the .get_state() callback is called
->>>> right after registering the pwmchip and checks whether the PWM is
->>>> enabled by reading the DISP_PWM_EN register;
->>>> At this point, if shadow registers are enabled but their content
->>>> was not committed before booting Linux, we are *not* reading the
->>>> current PWM enablement status, leading to the kernel knowing that
->>>> the hardware is actually enabled when, in reality, it's not.
->>>>
->>>> The aforementioned issue emerged since this driver was fixed with
->>>> commit 0b5ef3429d8f ("pwm: mtk-disp: Fix the parameters calculated
->>>> by the enabled flag of disp_pwm") making it to read the enablement
->>>> status from the right register.
->>>>
->>>> Configure the controller in the .get_state() callback to avoid
->>>> this desync issue and get the backlight properly working again.
->>>>
->>>> Fixes: 3f2b16734914 ("pwm: mtk-disp: Implement atomic API .get_state()")
->>>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->>>> ---
->>>>    drivers/pwm/pwm-mtk-disp.c | 10 ++++++++++
->>>>    1 file changed, 10 insertions(+)
->>>>
->>>> diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
->>>> index 82b430d881a2..fe9593f968ee 100644
->>>> --- a/drivers/pwm/pwm-mtk-disp.c
->>>> +++ b/drivers/pwm/pwm-mtk-disp.c
->>>> @@ -196,6 +196,16 @@ static int mtk_disp_pwm_get_state(struct pwm_chip *chip,
->>>>    		return err;
->>>>    	}
->>>> +	/*
->>>> +	 * Apply DISP_PWM_DEBUG settings to choose whether to enable or disable
->>>> +	 * registers double buffer and manual commit to working register before
->>>> +	 * performing any read/write operation
->>>> +	 */
->>>> +	if (mdp->data->bls_debug)
->>>
->>> I feel like this condition should be the same as in the apply() callback, since
->>> they're doing the same write operation, so also have '&& !has_commit'.
->>>
->>
->> The bls_debug register is used to both enable and/or disable various features,
->> including the one that I'm targeting in this commit, which is disabling shadow
->> registers.
->>
->> As I explained in the commit message, we don't want to - and cannot - assume that
->> the bootloader doesn't *reset* the backlight controller before booting Linux: a
->> reset would re-enable the shadow registers, and this function being called as
->> first to check the backlight EN status may fail to do so.
->>
->> This is as well true in the opposite situation where, in the future, we may want
->> to set shadow registers ON, while the bootloader sets them OFF before booting:
->> adding a (x && !has_commit) check in this branch would defeat that purpose and
->> make this commit... well.. partially broken! :-)
-> 
-> Makes sense, but in that case shouldn't we drop the (&& !has_commit) in the
-> check of the previous commit too? I get that in the pwm's core current logic,
+According to the circuit diagram of User LEDs - RGB described in the
+manual hifive-unleashed-a00.pdf[0] and hifive-unmatched-schematics-v3.pdf[1].
+The behavior of PWM is acitve-high.
 
-No. The previous commit checks !has_commit to select a register write strategy
-between "shadow -> commit" and "working registers - no commit necessary".
+According to the descriptionof PWM for pwmcmp in SiFive FU740-C000 Manual[2].
+The pwm algorithm is (PW) pulse active time  = (D) duty * (T) period.
+The `frac` variable is pulse "inactive" time so we need to invert it.
 
-If you drop that check from the previous commit, how can you choose the write
-strategy to use?! :-)
+So this patchset removes active-low in DTS and adds reverse logic to the driver.
 
-You can't rely on reading the bls_debug register, either, because it may be
-holding different values compared to what we want due to, for example, a reset
-and you can't rely on checking bls_debug_mask because in the future this kind
-of selector may be residing in an entirely different register.
+[0]: https://sifive.cdn.prismic.io/sifive/c52a8e32-05ce-4aaf-95c8-7bf8453f8698_hifive-unleashed-a00-schematics-1.pdf
+[1]: https://sifive.cdn.prismic.io/sifive/6a06d6c0-6e66-49b5-8e9e-e68ce76f4192_hifive-unmatched-schematics-v3.pdf
+[2]: https://sifive.cdn.prismic.io/sifive/1a82e600-1f93-4f41-b2d8-86ed8b16acba_fu740-c000-manual-v1p6.pdf
 
-> get_state() is run before apply(), but given that we also write the debug
-> register in apply(), we're not relying on that. So as it currently stands, if in
-> the future the bootloader sets shadow registers OFF, and we want to set them ON,
-> and we call apply() before having called get_state(), we'd be back to the broken
-> behavior.
+Changed in v2:
+ - Convert the reference link to standard link.
+ - Fix typo: s/sifive unmatched:/sifive: unmatched:/.
+ - Remove active-low from hifive-unleashed-a00.dts.
+ - Include this reference link in the dts and pwm commit messages.
 
-No, because the default BLS_DEBUG register value at IP reset is 0 - where 0 means
-"do not disable commit, do not disable shadow register read, do not disable shadow
-register write" :-)
+Nylon Chen (2):
+  riscv: dts: sifive: unleashed/unmatched: Remove PWM controlled LED's
+    active-low properties
+  pwm: sifive: change the PWM controlled LED algorithm
 
-Cheers,
-Angelo
+ arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts | 4 ----
+ arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts | 4 ----
+ drivers/pwm/pwm-sifive.c                            | 1 +
+ 3 files changed, 1 insertion(+), 8 deletions(-)
 
-> 
-> Thanks,
-> Nícolas
-> 
->>
->> Cheers!
->> Angelo
->>
->>> Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
->>> Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
->>>
->>> On MT8192 Asurada Spherion.
->>>
->>> Thanks,
->>> Nícolas
->>>
->>>> +		mtk_disp_pwm_update_bits(mdp, mdp->data->bls_debug,
->>>> +					 mdp->data->bls_debug_mask,
->>>> +					 mdp->data->bls_debug_mask);
->>>> +
->>>>    	rate = clk_get_rate(mdp->clk_main);
->>>>    	con0 = readl(mdp->base + mdp->data->con0);
->>>>    	con1 = readl(mdp->base + mdp->data->con1);
->>>> -- 
->>>> 2.39.0
->>>>
->>>>
->>
->>
-
+-- 
+2.36.1
 
