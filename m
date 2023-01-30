@@ -2,52 +2,53 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DF3C54EED
-	for <linux-pwm@archiver.kernel.org>; Mon, 30 Jan 2023 09:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8CEC54EAA
+	for <linux-pwm@archiver.kernel.org>; Mon, 30 Jan 2023 09:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236390AbjA3Jef (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 30 Jan 2023 04:34:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        id S236518AbjA3Jer (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 30 Jan 2023 04:34:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236494AbjA3JeN (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2023 04:34:13 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E685865AB
-        for <linux-pwm@vger.kernel.org>; Mon, 30 Jan 2023 01:32:48 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id m2so5968937plg.4
-        for <linux-pwm@vger.kernel.org>; Mon, 30 Jan 2023 01:32:48 -0800 (PST)
+        with ESMTP id S236123AbjA3JeQ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2023 04:34:16 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED819768
+        for <linux-pwm@vger.kernel.org>; Mon, 30 Jan 2023 01:32:55 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id cl23-20020a17090af69700b0022c745bfdc3so3896225pjb.3
+        for <linux-pwm@vger.kernel.org>; Mon, 30 Jan 2023 01:32:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=W7Rfwt1I+uGLH2WvGyjGS4z4+0W1oBU0PyN8+ybwBQM=;
-        b=hCnLQngH722sIEXN1Gho9Wj1ujABjTtK8JX/cG3wwwGaTKdAB+ey7HkETd6oZpO8tv
-         vLdoPzqJLerf49cPLSpjOorHVag3ybhXhpYr/77qmDgvjgzmFdT/0d3bxHOZj/e7n+bY
-         t8uSp9ikhaT89Y8/DDu/f6YmDsbqbCtH9SHKNmJGAis1CHdAD2Vg/Us25RsC2Vxm6SGm
-         6peI7uPrZelCCu4EcstZZseRCRQsCrohoNKVVIoWxmA+RdjN7nMbH43Kb9cIzmBoXo3D
-         OU6oU5ZwPVpKtUhF3UDUADSHTLP/R+4DWP3Ll5ImHlmOricvo99OaP/0pQI1SvA4a9R8
-         yMHQ==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w06XLuTGv42ExA7kvsEzi3HmqNn0e+XIKH+7gH1xWFk=;
+        b=PPfshnuneZVuaGMsWsf0abmeP49jp4AxSkkBj/mh1QI/DzHKXdaR6hl+H+ItCxqyBK
+         8EvW4xXW6VegaasREhK2bUhShb9wvty8UOLr3wp/rbISnmKVHRVvA0rpCOSUt0MCj0ZR
+         oPhRoLukyOzJLiU4C/lp/aLdGjZGUoPkShPRj19HLGlGJVneY/5JrOxKgYSDAs+kHckA
+         ZbAar3Gjnh03WMx7A3k5Ncx3kq8vJdKp0fzptQZusU7UMj0/chZLjSo/ClNBAAPUYkSd
+         8bm/XpTxdY/MmYvytxFvGcJV04KPmAG08wqBrYkaeFcuRA8URaK7P1WcmVaJR2IZIpdw
+         jMhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=W7Rfwt1I+uGLH2WvGyjGS4z4+0W1oBU0PyN8+ybwBQM=;
-        b=jHKEl03kKdTW27DfWp4CJG53KT03JjrXAChokAHB1C8jActAuGr6jvLH/BFS9P2TRW
-         KMbQ/f3iDvGY2kYw3tPsVFvWL0GurWWw4VprkCL8k4Z5YqUPlGa6aMtm1VXtKchXWVdS
-         oq4WZcTfzl+WY2cjC08d0KR2Iae94XVR1YQKEAU4CgM6X1QflAaoPY67Lsn5oYdU2/dw
-         rjnz1NKASkuPQLRmapJEuOJGf9CgLR5JF49TICPwRusgCYBkLv20mHypW7pP/JJ7lNI8
-         c0OXTpcI6fj/Cfwq/XcpKSGz+rVtBqJ56JpRmffhE6b3DG2CvBbG7nAoiXmLN0o1eK4a
-         ciAw==
-X-Gm-Message-State: AO0yUKXTNcVVVXfHzhnE83pGPQXJdtvOHK63lbELkjmiW3BtJnzPZRG4
-        s9UcjF+IjVvLyXO7wGZzpfP/sw==
-X-Google-Smtp-Source: AK7set9QLGZ+95SoqxDpz0fnhu2C6Btygt/5TP7yC/t6bY6mZyLjmV3rrULbqSgdQtIJkwB74RFyog==
-X-Received: by 2002:a17:902:c406:b0:196:e8e:cd28 with SMTP id k6-20020a170902c40600b001960e8ecd28mr30471930plk.15.1675071155816;
-        Mon, 30 Jan 2023 01:32:35 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=w06XLuTGv42ExA7kvsEzi3HmqNn0e+XIKH+7gH1xWFk=;
+        b=eO2AvZk2QIV+BtPyB0yqqK66b5Ov5vyu5arDxePSMUGI6FSPnGy8wUDtDzIuUmjRpU
+         Sojf26tK5m9icuiwvmZ2ahHkhzC/V53aia1+usERpQeqq0ndCvbKhnu7czKtKq3Y2ZLS
+         0X679dPt7Cz/6QrbvU2x7htk932MSoOi300LjGVzx+6nHP5obDjnU56J2A8sVWNYGJIb
+         9T6nAiGUEweGn7CmpwPS8eEVw83QDkTQlzQ5FHH01M8CRMUe7e91A+Hoc3kS8wu86WQS
+         SJVxFzLcVv+XWFZgP1akqtjWWoty8aMMpSAr0N6n62QUkVFPAJOak9m1hcKKs8I+ZyXi
+         BZKg==
+X-Gm-Message-State: AFqh2kpJXVlIJBZH3VOO5Cy0IY+RXzsuMtfgm8TMd8unfrOvnIZzyhBT
+        zCTMQitiBDVCSSn3orRaEMquTg==
+X-Google-Smtp-Source: AMrXdXtS3CCualmkzbk7XdCqctKx3U6p6dFg1oHURin04Tlb0OJZb8OfiFW6kp53r9/H5XL1owCXrw==
+X-Received: by 2002:a05:6a20:1596:b0:b8:7905:b6c4 with SMTP id h22-20020a056a20159600b000b87905b6c4mr62293777pzj.61.1675071165340;
+        Mon, 30 Jan 2023 01:32:45 -0800 (PST)
 Received: from hsinchu15.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id t13-20020a6564cd000000b004db2b310f95sm6245704pgv.16.2023.01.30.01.32.32
+        by smtp.gmail.com with ESMTPSA id t13-20020a6564cd000000b004db2b310f95sm6245704pgv.16.2023.01.30.01.32.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 01:32:35 -0800 (PST)
+        Mon, 30 Jan 2023 01:32:44 -0800 (PST)
 From:   Nylon Chen <nylon.chen@sifive.com>
 To:     aou@eecs.berkeley.edu, conor@kernel.org,
         emil.renner.berthing@canonical.com, geert+renesas@glider.be,
@@ -58,46 +59,43 @@ To:     aou@eecs.berkeley.edu, conor@kernel.org,
         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     nylon.chen@sifive.com, nylon7717@gmail.com, zong.li@sifive.com,
         greentime.hu@sifive.com, vincent.chen@sifive.com
-Subject: [PATCH v2 0/2] Change PWM-controlled LED pin active mode and algorithm
-Date:   Mon, 30 Jan 2023 17:32:27 +0800
-Message-Id: <20230130093229.27489-1-nylon.chen@sifive.com>
+Subject: [PATCH v2 2/2] pwm: sifive: change the PWM controlled LED algorithm
+Date:   Mon, 30 Jan 2023 17:32:29 +0800
+Message-Id: <20230130093229.27489-3-nylon.chen@sifive.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20230130093229.27489-1-nylon.chen@sifive.com>
+References: <20230130093229.27489-1-nylon.chen@sifive.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-According to the circuit diagram of User LEDs - RGB described in the
-manual hifive-unleashed-a00.pdf[0] and hifive-unmatched-schematics-v3.pdf[1].
-The behavior of PWM is acitve-high.
+The `frac` variable represents the pulse inactive time, and the result of
+this algorithm is the pulse active time. Therefore, we must reverse the
+result.
 
-According to the descriptionof PWM for pwmcmp in SiFive FU740-C000 Manual[2].
-The pwm algorithm is (PW) pulse active time  = (D) duty * (T) period.
-The `frac` variable is pulse "inactive" time so we need to invert it.
+The reference is SiFive FU740-C000 Manual[0].
 
-So this patchset removes active-low in DTS and adds reverse logic to the driver.
+[0]: https://sifive.cdn.prismic.io/sifive/1a82e600-1f93-4f41-b2d8-86ed8b16acba_fu740-c000-manual-v1p6.pdf
 
-[0]: https://sifive.cdn.prismic.io/sifive/c52a8e32-05ce-4aaf-95c8-7bf8453f8698_hifive-unleashed-a00-schematics-1.pdf
-[1]: https://sifive.cdn.prismic.io/sifive/6a06d6c0-6e66-49b5-8e9e-e68ce76f4192_hifive-unmatched-schematics-v3.pdf
-[2]: https://sifive.cdn.prismic.io/sifive/1a82e600-1f93-4f41-b2d8-86ed8b16acba_fu740-c000-manual-v1p6.pdf
+Signed-off-by: Nylon Chen <nylon.chen@sifive.com>
+---
+ drivers/pwm/pwm-sifive.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changed in v2:
- - Convert the reference link to standard link.
- - Fix typo: s/sifive unmatched:/sifive: unmatched:/.
- - Remove active-low from hifive-unleashed-a00.dts.
- - Include this reference link in the dts and pwm commit messages.
-
-Nylon Chen (2):
-  riscv: dts: sifive: unleashed/unmatched: Remove PWM controlled LED's
-    active-low properties
-  pwm: sifive: change the PWM controlled LED algorithm
-
- arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts | 4 ----
- arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts | 4 ----
- drivers/pwm/pwm-sifive.c                            | 1 +
- 3 files changed, 1 insertion(+), 8 deletions(-)
-
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index 62b6acc6373d..a5eda165d071 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -158,6 +158,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	frac = DIV64_U64_ROUND_CLOSEST(num, state->period);
+ 	/* The hardware cannot generate a 100% duty cycle */
+ 	frac = min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
++	frac = (1U << PWM_SIFIVE_CMPWIDTH) - 1 - frac;
+ 
+ 	mutex_lock(&ddata->lock);
+ 	if (state->period != ddata->approx_period) {
 -- 
 2.36.1
 
