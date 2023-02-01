@@ -2,58 +2,92 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C9CC636CC
-	for <linux-pwm@archiver.kernel.org>; Wed,  8 Feb 2023 11:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3E5C61DA4
+	for <linux-pwm@archiver.kernel.org>; Thu,  2 Feb 2023 11:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbjBHLlO (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 8 Feb 2023 06:41:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36346 "EHLO
+        id S232094AbjBBLcD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 2 Feb 2023 06:32:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbjBHLlN (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Feb 2023 06:41:13 -0500
-Received: from mail.crawnon.pl (mail.crawnon.pl [51.68.198.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2F146147
-        for <linux-pwm@vger.kernel.org>; Wed,  8 Feb 2023 03:41:13 -0800 (PST)
-Received: by mail.crawnon.pl (Postfix, from userid 1002)
-        id 567F9A372F; Tue,  7 Feb 2023 09:15:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=crawnon.pl; s=mail;
-        t=1675761350; bh=C5hX24svv/9/TME4wPCHfYjl17BCtmuxEd1i9B4zdYs=;
-        h=Date:From:To:Subject:From;
-        b=NCbjzF4tbwUFYGHxB8Bbci6Ye/qOnFONoxs4+jK1+HidQNDRbsMytJTSsRDacnuFy
-         yVqCBsHkqOQznGdGtzzjJDudBzSq4KEgn2zc8XFmHWervvI252bwX4w+s5KTZm7N2N
-         QySaRwcuuhAOqBEhl0J9PeKcY2DKkuGTjXIriULJrHmEWNXj8O4ME67AcJmi8AcmVA
-         IuoxPuvdVaykl+jJoo9SCSPq5oxUzohll/FbSk7RS9GUY3e1QqE+Aoo1YrYU7dB0Nl
-         WJiVD3qeZp6K7hcX2kL5BZnQT9HKF3FIhZVGNCs/HxDpyncVkDbHIkKOuSv4tPS8V3
-         uSyKy2/QC14pw==
-Received: by mail.crawnon.pl for <linux-pwm@vger.kernel.org>; Tue,  7 Feb 2023 09:15:23 GMT
-Message-ID: <20230207074500-0.1.90.hvo1.0.3jbycpk2tk@crawnon.pl>
-Date:   Tue,  7 Feb 2023 09:15:23 GMT
-From:   =?UTF-8?Q? "Miko=C5=82aj_Fiodorczyk" ?= 
-        <mikolaj.fiodorczyk@crawnon.pl>
-To:     <linux-pwm@vger.kernel.org>
-Subject: Fotowoltaika - nowe warunki
-X-Mailer: mail.crawnon.pl
+        with ESMTP id S232103AbjBBLbc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Feb 2023 06:31:32 -0500
+X-Greylist: delayed 517 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Feb 2023 03:31:23 PST
+Received: from algol.kleine-koenig.org (algol.kleine-koenig.org [IPv6:2a01:4f8:c010:8611::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A0A8C1E7
+        for <linux-pwm@vger.kernel.org>; Thu,  2 Feb 2023 03:31:22 -0800 (PST)
+Received: by algol.kleine-koenig.org (Postfix, from userid 1000)
+        id 1CE76793DD2; Thu,  2 Feb 2023 12:22:43 +0100 (CET)
+Envelope-to: u.kleine-koenig@pengutronix.de
+Delivery-date: Wed, 01 Feb 2023 20:27:49 +0100
+Received: from fudo.makrotopia.org ([2a07:2ec0:3002::71])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pNIlm-0002Qu-88
+        for u.kleine-koenig@pengutronix.de; Wed, 01 Feb 2023 20:27:49 +0100
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pNIle-000267-2N;
+        Wed, 01 Feb 2023 20:27:38 +0100
+Date:   Wed, 1 Feb 2023 19:25:57 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Message-ID: <70fe0b606d988958b87f89828b8728e2f68eaace.1675278958.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-SA-Exim-Connect-IP: 2a07:2ec0:3002::71
+X-SA-Exim-Mail-From: daniel@makrotopia.org
+Subject: [PATCH] dt-bindings: pwm: mediatek: add mediatek,mt7986 compatible
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on metis.ext.pengutronix.de)
+X-PTX-Original-Recipient: u.kleine-koenig@pengutronix.de
+X-PTX-Original-Recipient: ukl@pengutronix.de
+X-TUID: 15dsyLTD+p3P
+Tags:   inbox pwm-ready
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Since commit 241eab76657f ("pwm: mediatek: Add support for MT7986")
+support for the 2 PWM channels implemented in MediaTek MT7986 SoCs has
+been added. Also add the compatible string to dt-bindings now that
+they have been converted to YAML.
 
-chcia=C5=82bym poinformowa=C4=87, i=C5=BC mog=C4=85 Pa=C5=84stwo uzyska=C4=
-=87 dofinansowanie na systemy fotowoltaiczne w ramach nowej edycji progra=
-mu M=C3=B3j Pr=C4=85d.
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+This patch has previously been submitted, but we decided to deferr it until
+after the conversion to YAML which has now been done via commit
+3e98855ca0cf ("dt-bindings: pwm: mediatek: Convert pwm-mediatek to DT schema")
+See
+https://patchwork.ozlabs.org/project/devicetree-bindings/patch/Y39PjU1BqBB8tZ98@makrotopia.org/
 
-Program zapewnia 6000 z=C5=82 dofinansowania na instalacj=C4=99 paneli i =
-16 000 z=C5=82 na magazyn energii, ni=C5=BCsze cen pr=C4=85du i mo=C5=BCl=
-iwo=C5=9B=C4=87 odliczenia koszt=C3=B3w zwi=C4=85zanych z instalacj=C4=85=
- fotowoltaiki w ramach rozliczenia PIT (tzw. ulga termomodernizacyjna).
+Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Czy s=C4=85 Pa=C5=84stwo otwarci na wst=C4=99pn=C4=85 rozmow=C4=99 w tym =
-temacie?
+diff --git a/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml b/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
+index dbc974bff9e9..8e176ba7a525 100644
+--- a/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
+@@ -22,6 +22,7 @@ properties:
+           - mediatek,mt7623-pwm
+           - mediatek,mt7628-pwm
+           - mediatek,mt7629-pwm
++          - mediatek,mt7986-pwm
+           - mediatek,mt8183-pwm
+           - mediatek,mt8365-pwm
+           - mediatek,mt8516-pwm
+
+base-commit: 66eee64b235411d512bed4d672c2d00683239daf
+-- 
+2.39.1
 
 
-Pozdrawiam,
-Miko=C5=82aj Fiodorczyk
