@@ -2,43 +2,43 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31895C7EE37
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE22C64EC4
 	for <linux-pwm@archiver.kernel.org>; Fri,  3 Mar 2023 18:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231675AbjCCSz2 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 3 Mar 2023 13:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
+        id S231320AbjCCSz3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 3 Mar 2023 13:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231320AbjCCSzS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Mar 2023 13:55:18 -0500
+        with ESMTP id S231433AbjCCSzT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Mar 2023 13:55:19 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D6D1EBF4
-        for <linux-pwm@vger.kernel.org>; Fri,  3 Mar 2023 10:55:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C611ACCC
+        for <linux-pwm@vger.kernel.org>; Fri,  3 Mar 2023 10:55:06 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1pYAYZ-0006Ny-Gs; Fri, 03 Mar 2023 19:55:03 +0100
+        id 1pYAYa-0006PJ-DT; Fri, 03 Mar 2023 19:55:04 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1pYAYY-001cUq-Pl; Fri, 03 Mar 2023 19:55:02 +0100
+        id 1pYAYZ-001cVG-Md; Fri, 03 Mar 2023 19:55:03 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1pYAYV-001ukH-Bv; Fri, 03 Mar 2023 19:54:59 +0100
+        id 1pYAYX-001ukr-Cw; Fri, 03 Mar 2023 19:55:01 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     kernel@pengutronix.de, linux-pwm@vger.kernel.org
-Subject: [PATCH 11/30] pwm: img: Convert to platform remove callback returning void
-Date:   Fri,  3 Mar 2023 19:54:26 +0100
-Message-Id: <20230303185445.2112695-12-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 21/30] pwm: spear: Convert to platform remove callback returning void
+Date:   Fri,  3 Mar 2023 19:54:36 +0100
+Message-Id: <20230303185445.2112695-22-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230303185445.2112695-1-u.kleine-koenig@pengutronix.de>
 References: <20230303185445.2112695-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1638; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=FMtcxFe304W5YzTIaOTjMd4FJwqApmPKC9sBedLTaFo=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBkAkIG501sz78j/RpkAkZ3YdmWUtbkLw8xNMNC4 XlV0Uyx1x2JATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCZAJCBgAKCRDB/BR4rcrs CekpCACLsQTOuKpGIPYzI5dmA3kNHuo49O/ImIPAXDufLjgIrRo/45idJTXsD3SwN+R2C5lt2s3 3j0XVktlVRamDSBlVJzH23QcRjlh/MnOFJGh/kU5IjF9Vyrzd191Kklw8DjnqprXqCdyxQeuh88 zpK8JFRbaGCbiMqLkhWLoctW5raBPb07tISe5tTv75w8DpzH0bOEnN87yoJhI2sV9ZN0ac7o4DW 9ptWw0xjw8Sx82ooF/cGmfz8qKOw820p0tFSLjqFCJ9Nke6jFhLFdNh8lfG4OO8rLp62keGpamo 87OSS5lx91INfq1N3xrztyz40vEQrjdiLNIjLGG6cbwTstTf
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1711; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=AnQy3+aGqdLgJcwBH+zSGXkGqniDymZgYzUEX08ayBA=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBkAkJLPvMKVsypBv7GNFW2i8TSue1kb2D9rdKyG Y3gwY57GLiJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCZAJCSwAKCRDB/BR4rcrs CYE+B/wP6M+mg2GH5gI85zeF6xJM81MZhBIDboGKrY1/MMU4IdWS13JWRlH3JSTl3x96ud3Pe06 he2/H+AhVpcGjtPzZxzGBACITfiIEAd1+wklaKWHvoW+15Tq7WP/WJeTbov4JGpAHPIK1EfrKeS DbVk41MhRjEKwvan7C27vg6PVnmjFUgwZffD6kDRHwZI8pnpH7W3WAEA48KzfxjBVZbTQ+CMV+E eg3ymq/yqF/U+ZGAZDGPFZsP8Dx0HtNAgFHkm65rJms2jCyhZY3QNFF3QFnGWw+lCs7Qu4ya+JL iQ1kXY/s8MYvjn7nU9u2iKLPMuTuocYQN97wLe/w4uuJMoX2
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -62,40 +62,40 @@ callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-img.c | 6 ++----
+ drivers/pwm/pwm-spear.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-index 89362afe3c91..326af85888e7 100644
---- a/drivers/pwm/pwm-img.c
-+++ b/drivers/pwm/pwm-img.c
-@@ -343,7 +343,7 @@ static int img_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
+index 54c7990967dd..4e1cfd8d7c03 100644
+--- a/drivers/pwm/pwm-spear.c
++++ b/drivers/pwm/pwm-spear.c
+@@ -247,7 +247,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
  	return ret;
  }
  
--static int img_pwm_remove(struct platform_device *pdev)
-+static void img_pwm_remove(struct platform_device *pdev)
+-static int spear_pwm_remove(struct platform_device *pdev)
++static void spear_pwm_remove(struct platform_device *pdev)
  {
- 	struct img_pwm_chip *imgchip = platform_get_drvdata(pdev);
+ 	struct spear_pwm_chip *pc = platform_get_drvdata(pdev);
  
-@@ -352,8 +352,6 @@ static int img_pwm_remove(struct platform_device *pdev)
- 		img_pwm_runtime_suspend(&pdev->dev);
+@@ -255,8 +255,6 @@ static int spear_pwm_remove(struct platform_device *pdev)
  
- 	pwmchip_remove(&imgchip->chip);
+ 	/* clk was prepared in probe, hence unprepare it here */
+ 	clk_unprepare(pc->clk);
 -
 -	return 0;
  }
  
- #ifdef CONFIG_PM_SLEEP
-@@ -423,7 +421,7 @@ static struct platform_driver img_pwm_driver = {
- 		.of_match_table = img_pwm_of_match,
+ static const struct of_device_id spear_pwm_of_match[] = {
+@@ -273,7 +271,7 @@ static struct platform_driver spear_pwm_driver = {
+ 		.of_match_table = spear_pwm_of_match,
  	},
- 	.probe = img_pwm_probe,
--	.remove = img_pwm_remove,
-+	.remove_new = img_pwm_remove,
+ 	.probe = spear_pwm_probe,
+-	.remove = spear_pwm_remove,
++	.remove_new = spear_pwm_remove,
  };
- module_platform_driver(img_pwm_driver);
  
+ module_platform_driver(spear_pwm_driver);
 -- 
 2.39.1
 
