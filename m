@@ -2,122 +2,139 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E04C5C7EE2F
-	for <linux-pwm@archiver.kernel.org>; Fri,  3 Mar 2023 19:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B39FFC64EC4
+	for <linux-pwm@archiver.kernel.org>; Fri,  3 Mar 2023 21:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231536AbjCCTOe (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 3 Mar 2023 14:14:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50710 "EHLO
+        id S231500AbjCCVRm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 3 Mar 2023 16:17:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231190AbjCCTOd (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Mar 2023 14:14:33 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7E616303
-        for <linux-pwm@vger.kernel.org>; Fri,  3 Mar 2023 11:14:32 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-53916ab0c6bso60275187b3.7
-        for <linux-pwm@vger.kernel.org>; Fri, 03 Mar 2023 11:14:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1677870871;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VRFCHBII5HxWnVKdRDrtgCThRX8/e7j76YPCdtgTTJE=;
-        b=m4oOiUB3+FZax2wPtoA+UBgc6k1LQdfyTtsseoG3abRFYOAUAgV68rye3BoA7iVcly
-         TI9q1TTspLr6KnS+qdbRpxlLQ49dnXbrpqR4WvIsJKVOakO+Px+fjaKehlzwEsAtvfpY
-         AUeYSXijPGIhMRgM3ohaBE0J8uo4iaL5SPFWjC43w99fqtnUDPoxAydc2GOCamrVqN+s
-         QyM4964RS7u/EY8Pe/ZPDdAzFesN9cOdJJpZwbTRyqxAqbFDlckozwNfWpUkkMLZY71+
-         vdGKlABM0U8gjLJTUUnl6vkFlx816cF5e/JYz1IUK2FLlW2YqnqojwpLBy51hG90fzPg
-         G2BQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677870871;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VRFCHBII5HxWnVKdRDrtgCThRX8/e7j76YPCdtgTTJE=;
-        b=tWq43X88AFub4x/gd0nm4Aft9bJAySrQ25w1RvfD+SG1kzoijidNWLPO9IOsCPRUL7
-         Km+Z+4IfCYInIfJOuBKBTsbSF+nWC6ESwdkjIxfmuAFbEMMTfGNVm9v6wMe2Svi3SFvy
-         5phPc1zOP1WePum7gBl0TBjOtN53v/8IVO+bo8jgmpkU94ThkBfyvXM8C+O0eQnFbS0j
-         G3HbeHGfcbF3EN7jEMkwGIESK5d4lO/RyA1CE8SFOrwMdba9G95actZCKEnhgEw8PMRQ
-         4ba3oB6JMB76LxJS9Aac4MSql2ccETo5Y/WQD3oTEE+F5BC6oe6R90NIW8MM0dpgwZmq
-         KxMw==
-X-Gm-Message-State: AO0yUKUCfLz5d9Tzq/QDLejcfekedec2g4ubkzGCadNQ8YGE+oI/Eytf
-        sY7zEx8cWkbtWRA8fYqRPIUCE7DE4aIWz93W/NkcAg==
-X-Google-Smtp-Source: AK7set/axDl9gJ4mM3BPIagqkhYshrlpCAhyrWEAIWhAZL0379oSCnbH0viYM733QwcOWhI5UkNCnMsMbWplCkYqHys=
-X-Received: by 2002:a81:af59:0:b0:535:5e8c:65ef with SMTP id
- x25-20020a81af59000000b005355e8c65efmr1549694ywj.6.1677870871418; Fri, 03 Mar
- 2023 11:14:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20230303185445.2112695-1-u.kleine-koenig@pengutronix.de> <20230303185445.2112695-10-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20230303185445.2112695-10-u.kleine-koenig@pengutronix.de>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Fri, 3 Mar 2023 11:14:20 -0800
-Message-ID: <CABXOdTddD34WJpTGzRi=KWGVG3uOdxdj_mwsfr8fFb99j3Y2SA@mail.gmail.com>
-Subject: Re: [PATCH 09/30] pwm: cros-ec: Convert to platform remove callback
- returning void
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
+        with ESMTP id S231605AbjCCVRl (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Mar 2023 16:17:41 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25546150E
+        for <linux-pwm@vger.kernel.org>; Fri,  3 Mar 2023 13:17:34 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pYCmQ-0006lb-TU; Fri, 03 Mar 2023 22:17:30 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pYCmP-001e60-Kf; Fri, 03 Mar 2023 22:17:29 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pYCmO-001wpF-Vd; Fri, 03 Mar 2023 22:17:28 +0100
+Date:   Fri, 3 Mar 2023 22:17:25 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Lorenz Brun <lorenz@brun.one>
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Benson Leung <bleung@chromium.org>, kernel@pengutronix.de,
-        Guenter Roeck <groeck@chromium.org>, linux-pwm@vger.kernel.org,
-        chrome-platform@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] pwm: mediatek: support inverted polarity
+Message-ID: <20230303211725.7wtxdxjqpxlrp77b@pengutronix.de>
+References: <20230303205821.2285418-1-lorenz@brun.one>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="n7hf6kwnvue2vkyt"
+Content-Disposition: inline
+In-Reply-To: <20230303205821.2285418-1-lorenz@brun.one>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Fri, Mar 3, 2023 at 10:55=E2=80=AFAM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> The .remove() callback for a platform driver returns an int which makes
-> many driver authors wrongly assume it's possible to do error handling by
-> returning an error code. However the value returned is (mostly) ignored
-> and this typically results in resource leaks. To improve here there is a
-> quest to make the remove callback return void. In the first step of this
-> quest all drivers are converted to .remove_new() which already returns
-> void.
->
-> Trivially convert this driver from always returning zero in the remove
-> callback to the void returning variant.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+--n7hf6kwnvue2vkyt
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Fri, Mar 03, 2023 at 09:58:21PM +0100, Lorenz Brun wrote:
+> According to the MT7986 Reference Manual the Mediatek  PWM controller
+> doesn't appear to have support for inverted polarity.
+>=20
+> This implements the same solution as in pwm-meson and just inverts the
+> duty cycle instead, which results in the same outcome.
+
+This idea is broken. This was recently discussed on the linux-pwm list
+and I hope will be fixed soon. See
+https://lore.kernel.org/linux-pwm/20230228093911.bh2sbp4tyfir2z5g@pengutron=
+ix.de/T/#meda75ffbd4ef2048991ea2cd091c0c14b1bb09c2
+
+So this patch won't be accepted, still pointing out a style problem
+below.
+
+> Signed-off-by: Lorenz Brun <lorenz@brun.one>
 > ---
->  drivers/pwm/pwm-cros-ec.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-> index 86df6702cb83..90afce212fb0 100644
-> --- a/drivers/pwm/pwm-cros-ec.c
-> +++ b/drivers/pwm/pwm-cros-ec.c
-> @@ -328,14 +328,12 @@ static int cros_ec_pwm_probe(struct platform_device=
- *pdev)
->         return ret;
->  }
->
-> -static int cros_ec_pwm_remove(struct platform_device *dev)
-> +static void cros_ec_pwm_remove(struct platform_device *dev)
+>  drivers/pwm/pwm-mediatek.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+> index 5b5eeaff35da..6f4a54c8299f 100644
+> --- a/drivers/pwm/pwm-mediatek.c
+> +++ b/drivers/pwm/pwm-mediatek.c
+> @@ -202,9 +202,7 @@ static int pwm_mediatek_apply(struct pwm_chip *chip, =
+struct pwm_device *pwm,
+>  			      const struct pwm_state *state)
 >  {
->         struct cros_ec_pwm_device *ec_pwm =3D platform_get_drvdata(dev);
->         struct pwm_chip *chip =3D &ec_pwm->chip;
->
->         pwmchip_remove(chip);
+>  	int err;
 > -
-> -       return 0;
->  }
->
->  #ifdef CONFIG_OF
-> @@ -349,7 +347,7 @@ MODULE_DEVICE_TABLE(of, cros_ec_pwm_of_match);
->
->  static struct platform_driver cros_ec_pwm_driver =3D {
->         .probe =3D cros_ec_pwm_probe,
-> -       .remove =3D cros_ec_pwm_remove,
-> +       .remove_new =3D cros_ec_pwm_remove,
->         .driver =3D {
->                 .name =3D "cros-ec-pwm",
->                 .of_match_table =3D of_match_ptr(cros_ec_pwm_of_match),
-> --
-> 2.39.1
->
+> -	if (state->polarity !=3D PWM_POLARITY_NORMAL)
+> -		return -EINVAL;
+> +	u64 duty_cycle;
+> =20
+>  	if (!state->enabled) {
+>  		if (pwm->state.enabled)
+> @@ -213,7 +211,14 @@ static int pwm_mediatek_apply(struct pwm_chip *chip,=
+ struct pwm_device *pwm,
+>  		return 0;
+>  	}
+> =20
+> -	err =3D pwm_mediatek_config(pwm->chip, pwm, state->duty_cycle, state->p=
+eriod);
+> +	// According to the MT7986 Reference Manual the peripheral does not
+> +	// appear to have the capability to invert the output. Instead just
+> +	// invert the duty cycle.
+
+Wrong commenting style, please stick to C-style comments (/* ... */)
+
+> +	duty_cycle =3D state->duty_cycle;
+> +	if (state->polarity =3D=3D PWM_POLARITY_INVERSED)
+> +		duty_cycle =3D state->period - state->duty_cycle;
+> +
+> +	err =3D pwm_mediatek_config(pwm->chip, pwm, duty_cycle, state->period);
+>  	if (err)
+>  		return err;
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--n7hf6kwnvue2vkyt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmQCY+IACgkQwfwUeK3K
+7An4QAf/VVzJ1G1vLm5fgqHWXuxXbRYDJjva5NFicH4hK041/2hnM4z6BbR6dAI1
+YvBRLNTRTj6Wacfz19kTKht1KUHyJFo+0rXvm7OTVE2Kk+QonHuoWWDxkEYphlhG
+IYbl7xuHl42c4cQ2qyA2+j4pItly7UrZVEwm20UGTgEf04V3pZdjhtZ41BOMk/mN
+m4XRjJMwp/UURdNcj1D1a0LptvzNdqohH8t8y5RtIV8m6IRH2BdCyJsWi3iRyWNp
+A748CqKSRhN1gj1ow0zPZO+nNQ4N91ZAb6AM3PLnaUoL+r69lG3355uaj/5H6bjW
+ovEzhU8TABbvhEVdstiMVHpOulLcDg==
+=6bfG
+-----END PGP SIGNATURE-----
+
+--n7hf6kwnvue2vkyt--
