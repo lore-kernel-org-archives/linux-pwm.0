@@ -2,46 +2,43 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0D0C7EE2D
-	for <linux-pwm@archiver.kernel.org>; Fri,  3 Mar 2023 18:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31895C7EE37
+	for <linux-pwm@archiver.kernel.org>; Fri,  3 Mar 2023 18:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbjCCSz1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 3 Mar 2023 13:55:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
+        id S231675AbjCCSz2 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 3 Mar 2023 13:55:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231901AbjCCSzS (ORCPT
+        with ESMTP id S231320AbjCCSzS (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Mar 2023 13:55:18 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47951F5CB
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D6D1EBF4
         for <linux-pwm@vger.kernel.org>; Fri,  3 Mar 2023 10:55:05 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1pYAYZ-0006OB-Pd; Fri, 03 Mar 2023 19:55:03 +0100
+        id 1pYAYZ-0006Ny-Gs; Fri, 03 Mar 2023 19:55:03 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1pYAYZ-001cV1-1y; Fri, 03 Mar 2023 19:55:03 +0100
+        id 1pYAYY-001cUq-Pl; Fri, 03 Mar 2023 19:55:02 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1pYAYW-001ukg-RA; Fri, 03 Mar 2023 19:55:00 +0100
+        id 1pYAYV-001ukH-Bv; Fri, 03 Mar 2023 19:54:59 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     kernel@pengutronix.de, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH 18/30] pwm: rockchip: Convert to platform remove callback returning void
-Date:   Fri,  3 Mar 2023 19:54:33 +0100
-Message-Id: <20230303185445.2112695-19-u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     kernel@pengutronix.de, linux-pwm@vger.kernel.org
+Subject: [PATCH 11/30] pwm: img: Convert to platform remove callback returning void
+Date:   Fri,  3 Mar 2023 19:54:26 +0100
+Message-Id: <20230303185445.2112695-12-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230303185445.2112695-1-u.kleine-koenig@pengutronix.de>
 References: <20230303185445.2112695-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1721; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=BA5tBz3RDO+orps9Y8Wko0quf5LMj8+YSMYVNzVlmtU=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBkAkI/53UCg8nISaMHiQ4+6ZzNDpKtLgpeheIWj JXmDV1274mJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCZAJCPwAKCRDB/BR4rcrs CRYnB/956EuHuoq0uYM1tAohD8oJ5deZmHNw5BQU3ZYryxd5Qgo/oR3pqM+6lVF1esDKM5dP07h 9HcJngDvvnuZ09M+m1HvcrgBIe/1mF9b+y7qKwO7vGfXZHR+CA39vVepDQa0WbIG5bWo8JFF4wd RbtnaijBEOZVb3fApvM7qeGW+nFWrr9Fvx17XDNAIlXIHtf2BnFPAgJ4NVuugGhTJdp6epBAouY 2pskEFCFb4W+0zKrrdo1c+ezjfqW6EFWdDSwLOSvCtoxfxHKesGBcbq63iOvcTtWltA7/FHuVPo awIhMIyGoxrrBBbAth5LDK1TGe6WqTEiASb0IqRH9IKGA6Ke
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1638; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=FMtcxFe304W5YzTIaOTjMd4FJwqApmPKC9sBedLTaFo=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBkAkIG501sz78j/RpkAkZ3YdmWUtbkLw8xNMNC4 XlV0Uyx1x2JATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCZAJCBgAKCRDB/BR4rcrs CekpCACLsQTOuKpGIPYzI5dmA3kNHuo49O/ImIPAXDufLjgIrRo/45idJTXsD3SwN+R2C5lt2s3 3j0XVktlVRamDSBlVJzH23QcRjlh/MnOFJGh/kU5IjF9Vyrzd191Kklw8DjnqprXqCdyxQeuh88 zpK8JFRbaGCbiMqLkhWLoctW5raBPb07tISe5tTv75w8DpzH0bOEnN87yoJhI2sV9ZN0ac7o4DW 9ptWw0xjw8Sx82ooF/cGmfz8qKOw820p0tFSLjqFCJ9Nke6jFhLFdNh8lfG4OO8rLp62keGpamo 87OSS5lx91INfq1N3xrztyz40vEQrjdiLNIjLGG6cbwTstTf
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -65,39 +62,39 @@ callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-rockchip.c | 6 ++----
+ drivers/pwm/pwm-img.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index 7f084eb34092..c1a1f2d864b5 100644
---- a/drivers/pwm/pwm-rockchip.c
-+++ b/drivers/pwm/pwm-rockchip.c
-@@ -376,7 +376,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
+index 89362afe3c91..326af85888e7 100644
+--- a/drivers/pwm/pwm-img.c
++++ b/drivers/pwm/pwm-img.c
+@@ -343,7 +343,7 @@ static int img_pwm_probe(struct platform_device *pdev)
  	return ret;
  }
  
--static int rockchip_pwm_remove(struct platform_device *pdev)
-+static void rockchip_pwm_remove(struct platform_device *pdev)
+-static int img_pwm_remove(struct platform_device *pdev)
++static void img_pwm_remove(struct platform_device *pdev)
  {
- 	struct rockchip_pwm_chip *pc = platform_get_drvdata(pdev);
+ 	struct img_pwm_chip *imgchip = platform_get_drvdata(pdev);
  
-@@ -384,8 +384,6 @@ static int rockchip_pwm_remove(struct platform_device *pdev)
+@@ -352,8 +352,6 @@ static int img_pwm_remove(struct platform_device *pdev)
+ 		img_pwm_runtime_suspend(&pdev->dev);
  
- 	clk_unprepare(pc->pclk);
- 	clk_unprepare(pc->clk);
+ 	pwmchip_remove(&imgchip->chip);
 -
 -	return 0;
  }
  
- static struct platform_driver rockchip_pwm_driver = {
-@@ -394,7 +392,7 @@ static struct platform_driver rockchip_pwm_driver = {
- 		.of_match_table = rockchip_pwm_dt_ids,
+ #ifdef CONFIG_PM_SLEEP
+@@ -423,7 +421,7 @@ static struct platform_driver img_pwm_driver = {
+ 		.of_match_table = img_pwm_of_match,
  	},
- 	.probe = rockchip_pwm_probe,
--	.remove = rockchip_pwm_remove,
-+	.remove_new = rockchip_pwm_remove,
+ 	.probe = img_pwm_probe,
+-	.remove = img_pwm_remove,
++	.remove_new = img_pwm_remove,
  };
- module_platform_driver(rockchip_pwm_driver);
+ module_platform_driver(img_pwm_driver);
  
 -- 
 2.39.1
