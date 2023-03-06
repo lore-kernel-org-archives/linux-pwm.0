@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 791F9C76188
-	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F88C64EC4
+	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbjCFTzo (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 6 Mar 2023 14:55:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
+        id S230170AbjCFTzm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Mar 2023 14:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbjCFTzl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:55:41 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0980E65118;
-        Mon,  6 Mar 2023 11:55:40 -0800 (PST)
+        with ESMTP id S230163AbjCFTzk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:55:40 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA65256522;
+        Mon,  6 Mar 2023 11:55:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678132541; x=1709668541;
+  t=1678132539; x=1709668539;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=89ohLboU1a/2JdE0Dw4HbVrvYKShu90dTe4vbBA2XKY=;
-  b=DaT3ANVONlrbjp1EzScXqyEpFCqBwVhuB/axhzLXc/DJpR0xF4epipTa
-   hxgxR5V3ckFe+g72FDAtXOZTVlnlXnVE2rfQBuWCiKOwrNca1SkyS+P86
-   KSq/4tIP0ZWk3om27DojiOipmEBhzDx1Uk2+Qx5KX4omOKsUlp4DKd5yY
-   6y2BBu5xt7nJGRhI6sj9YRlS4xACrcFGrGGzcOBVth4M2j7WH/x4r55u9
-   EbNVivj/sGWUo2ZX0hICmk2ecxGPDoVPt+zhQlrSLZTtYP0ZlGMoKNhku
-   d+mWVXtEEQP+PA2yj11Mp56CibJ3bUZAYwAqlIYtnC+/DYqFW3U2APNB+
+  bh=kqgmkF6/LXf8ZTPjacKEJCrkdjdR/gKDvDdM5DRJJDo=;
+  b=M8oDdntv+9UpQtYk5qzoJH7JFWjdMGIAbklgz13ZXpmCoKTW7YSLPwcO
+   jsEetOsNV35aA0aIoQTMSqX56fHK5j7AKKUvMZjoH/ji/30rUQUgtVexm
+   l//OVMAuJIXLy2FdThuKuIvUH9GIwOGCOXVh2cX3ejQmkJfMJcaLiiBl3
+   Pa6dEreOcBtPOGtl3UMg+VYjVhe7AsXTdnOI4CwEr7fELSXsiCZmh6bwM
+   Dm1/vfULvwGHGnXvaybyq03aWecIGf8XnK6HDKl0qyymYy9ReUGwYNdvw
+   aDny+kmEL+kPzCpYIKFxCxP6FM0VlixffyVQazILUVm7NSwh8H+I9wWKH
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="333128953"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="398240771"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="333128953"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:39 -0800
+   d="scan'208";a="398240771"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:35 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="745185190"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="819423553"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="745185190"
+   d="scan'208";a="819423553"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 06 Mar 2023 11:55:34 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 06 Mar 2023 11:55:28 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id A15835A7; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
+        id 61EF6367; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Schspa Shi <schspa@gmail.com>, Marc Zyngier <maz@kernel.org>,
@@ -63,9 +63,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         <sathyanarayanan.kuppuswamy@linux.intel.com>,
         Nandor Han <nandor.han@ge.com>,
         Semi Malinen <semi.malinen@ge.com>
-Subject: [PATCH v1 09/16] gpio: grgpio: Utilize helpers from string_choices.h
-Date:   Mon,  6 Mar 2023 21:55:49 +0200
-Message-Id: <20230306195556.55475-10-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 03/16] lib/string_choices: Add str_high_low() helper
+Date:   Mon,  6 Mar 2023 21:55:43 +0200
+Message-Id: <20230306195556.55475-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
 References: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
@@ -75,36 +75,39 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-There are a few helpers available to convert a boolean variable
-to the dedicated string literals depending on the application.
-Use them in the driver.
+Add str_high_low() helper to return 'high' or 'low' string literal.
+Also add an inversed variant, i.e. str_low_high().
+
+All the same for str_hi_low().
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/gpio/gpio-grgpio.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/string_choices.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/gpio/gpio-grgpio.c b/drivers/gpio/gpio-grgpio.c
-index bea0e32c195d..ccd942109f6a 100644
---- a/drivers/gpio/gpio-grgpio.c
-+++ b/drivers/gpio/gpio-grgpio.c
-@@ -30,6 +30,7 @@
- #include <linux/irq.h>
- #include <linux/irqdomain.h>
- #include <linux/bitops.h>
-+#include <linux/string_choices.h>
- 
- #define GRGPIO_MAX_NGPIO 32
- 
-@@ -426,7 +427,7 @@ static int grgpio_probe(struct platform_device *ofdev)
- 	}
- 
- 	dev_info(&ofdev->dev, "regs=0x%p, base=%d, ngpio=%d, irqs=%s\n",
--		 priv->regs, gc->base, gc->ngpio, priv->domain ? "on" : "off");
-+		 priv->regs, gc->base, gc->ngpio, str_on_off(priv->domain));
- 
- 	return 0;
+diff --git a/include/linux/string_choices.h b/include/linux/string_choices.h
+index b7e7b9fd098c..48120222b9b2 100644
+--- a/include/linux/string_choices.h
++++ b/include/linux/string_choices.h
+@@ -14,6 +14,18 @@ static inline const char *str_enabled_disabled(bool v)
+ 	return v ? "enabled" : "disabled";
  }
+ 
++static inline const char *str_hi_lo(bool v)
++{
++	return v ? "hi" : "lo";
++}
++#define str_lo_hi(v)		str_hi_lo(!(v))
++
++static inline const char *str_high_low(bool v)
++{
++	return v ? "high" : "low";
++}
++#define str_low_high(v)		str_high_low(!(v))
++
+ static inline const char *str_read_write(bool v)
+ {
+ 	return v ? "read" : "write";
 -- 
 2.39.1
 
