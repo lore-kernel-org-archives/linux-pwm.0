@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FE8C61DA4
-	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F02B6C6FD1C
+	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbjCFT4d (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 6 Mar 2023 14:56:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58078 "EHLO
+        id S230344AbjCFT4e (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Mar 2023 14:56:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbjCFT4P (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:56:15 -0500
+        with ESMTP id S230096AbjCFT4Q (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:56:16 -0500
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D1874A61;
-        Mon,  6 Mar 2023 11:55:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8D7664C7;
+        Mon,  6 Mar 2023 11:55:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678132550; x=1709668550;
+  t=1678132552; x=1709668552;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jf/vTVPAzC30zKR0ZUsN6jr/4cQFfkw43STBYea8M0I=;
-  b=k3CVGC5xyALFHyqjoLIKUI5rjXyvajzGt757PmOi2FvcyaYlrfr/YSMS
-   2PXTsLn05NprAm3X35oYjDVhGiyqFNOjwlF6D41EbrOf+8PUBkk5/x6C5
-   FgjFiCD+94x40oTuXiXOMXBLfu+iUTt0/uOE/JL2Ugh3ljhAoEjskStx9
-   qVeX1iUHL86fmHZJI7gkUkcSJyzCcpQBLo0iSpCwCZzgBLg5Iszlz0Yky
-   mcD2icMW2voY1vCPNeEil1CsnzR7ZnsWWLiqVjq8oiAzttT6Eg+PUGxlF
-   NSjKd9DlB6mtMTwBTDiRSDW3NOmAJ1ywkZ75J2Rf2e4mK1d7qksiuonsw
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="333129033"
+  bh=z9mXunzTxFtyQxWYx0D3ZdzQzJ0LQXRYVBzePKOyr2Y=;
+  b=Ih5XHDYMjtD0cz0TMSQiXyHKSDKfnufpV//bJv0nhLgh5Wbn6VNAkcXw
+   bpYN+QoLmOa9H7/Lm0940umiZUNAJZIwFQaJ2HcreJpdGOzM5fFaYOHem
+   xiV8QTV28OLCjWT14GoTtXIx4bd4TdYV7Sg7/86jtGwC4CWWa8NCDiwbz
+   3MAGB+5ke+hfAaTIchNwV/1+nfWWu08UXf9sxQpWekfdAfnQliH+Ohy+R
+   6I4g1VUZ4hqLFOk69zK60pfoUz11VVNM32ZIvrk5DENmn9wNxUYOWAB1x
+   2r7bC38Wq2lUyO+R1d64CHuzasZKvhYqHGi6LJ+vXOXjhZBvPIvCRV/68
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="333129039"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="333129033"
+   d="scan'208";a="333129039"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:40 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:41 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="745185196"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="745185205"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="745185196"
+   d="scan'208";a="745185205"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 06 Mar 2023 11:55:34 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 06 Mar 2023 11:55:36 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id B81905B3; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
+        id EDC5787; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Schspa Shi <schspa@gmail.com>, Marc Zyngier <maz@kernel.org>,
@@ -63,9 +63,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         <sathyanarayanan.kuppuswamy@linux.intel.com>,
         Nandor Han <nandor.han@ge.com>,
         Semi Malinen <semi.malinen@ge.com>
-Subject: [PATCH v1 11/16] gpio: pl061: Utilize helpers from string_choices.h
-Date:   Mon,  6 Mar 2023 21:55:51 +0200
-Message-Id: <20230306195556.55475-12-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 16/16] gpio: xra1403: Utilize helpers from string_choices.h
+Date:   Mon,  6 Mar 2023 21:55:56 +0200
+Message-Id: <20230306195556.55475-17-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
 References: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
@@ -81,31 +81,32 @@ Use them in the driver.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/gpio/gpio-pl061.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-xra1403.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpio/gpio-pl061.c b/drivers/gpio/gpio-pl061.c
-index 9fc1f3dd4190..99e71b4490a1 100644
---- a/drivers/gpio/gpio-pl061.c
-+++ b/drivers/gpio/gpio-pl061.c
-@@ -25,6 +25,7 @@
+diff --git a/drivers/gpio/gpio-xra1403.c b/drivers/gpio/gpio-xra1403.c
+index 49c878cfd5c6..bc17beaba9e7 100644
+--- a/drivers/gpio/gpio-xra1403.c
++++ b/drivers/gpio/gpio-xra1403.c
+@@ -15,6 +15,7 @@
  #include <linux/seq_file.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
+ #include <linux/spi/spi.h>
+ #include <linux/regmap.h>
 +#include <linux/string_choices.h>
  
- #define GPIODIR 0x400
- #define GPIOIS  0x404
-@@ -165,8 +166,7 @@ static int pl061_irq_type(struct irq_data *d, unsigned trigger)
- 			gpioiev &= ~bit;
- 		irq_set_handler_locked(d, handle_level_irq);
- 		dev_dbg(gc->parent, "line %d: IRQ on %s level\n",
--			offset,
--			polarity ? "HIGH" : "LOW");
-+			offset, str_high_low(polarity));
- 	} else if ((trigger & IRQ_TYPE_EDGE_BOTH) == IRQ_TYPE_EDGE_BOTH) {
- 		/* Disable level detection */
- 		gpiois &= ~bit;
+ /* XRA1403 registers */
+ #define XRA_GSR   0x00 /* GPIO State */
+@@ -140,8 +141,8 @@ static void xra1403_dbg_show(struct seq_file *s, struct gpio_chip *chip)
+ 	for_each_requested_gpio(chip, i, label) {
+ 		seq_printf(s, " gpio-%-3d (%-12s) %s %s\n",
+ 			   chip->base + i, label,
+-			   (gcr & BIT(i)) ? "in" : "out",
+-			   (gsr & BIT(i)) ? "hi" : "lo");
++			   str_in_out(gcr & BIT(i)),
++			   str_hi_lo(gsr & BIT(i)));
+ 	}
+ }
+ #else
 -- 
 2.39.1
 
