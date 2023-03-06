@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 205CBC74A5B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 791F9C76188
 	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:55:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230189AbjCFTzn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 6 Mar 2023 14:55:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
+        id S230064AbjCFTzo (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Mar 2023 14:55:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbjCFTzl (ORCPT
+        with ESMTP id S230168AbjCFTzl (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:55:41 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E898D59427;
-        Mon,  6 Mar 2023 11:55:39 -0800 (PST)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0980E65118;
+        Mon,  6 Mar 2023 11:55:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678132540; x=1709668540;
+  t=1678132541; x=1709668541;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EDvZyVrBDVc7Nwzs9i+qoHy3DJw3++NSTTOOF+lSAxI=;
-  b=elBBbmFOveSrjoKIlVza1kPML3XJ5AJUUtkLgfZNLpnRkRuHjhVbfdJe
-   rQctpexiGsmUo6FV68vzAAFz6RyIULnAlT5M8Zg2MhcfaMA9aS43upntQ
-   abIg7o/rcOYiGhqQwSgc2y04OZyYbp9IykiEbWtxG1sjthg04FHkw8QNE
-   d3LxlNLJgFxLi0/gAHzpDCqTF5IvPdfm7gbKl+QAHeV+Xq4t0mDfi0Gip
-   gLLfI45hSwTDMeksA80JlY3Cy/wXS5PMP4e7JFqj/sJlh2buhUNuNo+uu
-   9Y8M0YwrtogbtbwZY5uwW+mwkRuD3ga5XZt3wO7ooqHIOMAUQBHXNi2JJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="400483922"
+  bh=89ohLboU1a/2JdE0Dw4HbVrvYKShu90dTe4vbBA2XKY=;
+  b=DaT3ANVONlrbjp1EzScXqyEpFCqBwVhuB/axhzLXc/DJpR0xF4epipTa
+   hxgxR5V3ckFe+g72FDAtXOZTVlnlXnVE2rfQBuWCiKOwrNca1SkyS+P86
+   KSq/4tIP0ZWk3om27DojiOipmEBhzDx1Uk2+Qx5KX4omOKsUlp4DKd5yY
+   6y2BBu5xt7nJGRhI6sj9YRlS4xACrcFGrGGzcOBVth4M2j7WH/x4r55u9
+   EbNVivj/sGWUo2ZX0hICmk2ecxGPDoVPt+zhQlrSLZTtYP0ZlGMoKNhku
+   d+mWVXtEEQP+PA2yj11Mp56CibJ3bUZAYwAqlIYtnC+/DYqFW3U2APNB+
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="333128953"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="400483922"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:39 -0800
+   d="scan'208";a="333128953"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="1005549582"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="745185190"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="1005549582"
+   d="scan'208";a="745185190"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 06 Mar 2023 11:55:34 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 06 Mar 2023 11:55:34 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id C33FB5F8; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
+        id A15835A7; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Schspa Shi <schspa@gmail.com>, Marc Zyngier <maz@kernel.org>,
@@ -63,9 +63,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         <sathyanarayanan.kuppuswamy@linux.intel.com>,
         Nandor Han <nandor.han@ge.com>,
         Semi Malinen <semi.malinen@ge.com>
-Subject: [PATCH v1 12/16] gpio: stmpe: Utilize helpers from string_choices.h
-Date:   Mon,  6 Mar 2023 21:55:52 +0200
-Message-Id: <20230306195556.55475-13-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 09/16] gpio: grgpio: Utilize helpers from string_choices.h
+Date:   Mon,  6 Mar 2023 21:55:49 +0200
+Message-Id: <20230306195556.55475-10-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
 References: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
@@ -79,69 +79,32 @@ There are a few helpers available to convert a boolean variable
 to the dedicated string literals depending on the application.
 Use them in the driver.
 
-While at, utilize specifier field for padding the strings where
-it's required.
-
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/gpio/gpio-stmpe.c | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+ drivers/gpio/gpio-grgpio.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/gpio-stmpe.c b/drivers/gpio/gpio-stmpe.c
-index 0fa4f0a93378..ca8a98b252c2 100644
---- a/drivers/gpio/gpio-stmpe.c
-+++ b/drivers/gpio/gpio-stmpe.c
-@@ -14,6 +14,7 @@
- #include <linux/mfd/stmpe.h>
- #include <linux/seq_file.h>
+diff --git a/drivers/gpio/gpio-grgpio.c b/drivers/gpio/gpio-grgpio.c
+index bea0e32c195d..ccd942109f6a 100644
+--- a/drivers/gpio/gpio-grgpio.c
++++ b/drivers/gpio/gpio-grgpio.c
+@@ -30,6 +30,7 @@
+ #include <linux/irq.h>
+ #include <linux/irqdomain.h>
  #include <linux/bitops.h>
 +#include <linux/string_choices.h>
  
- /*
-  * These registers are modified under the irq bus lock and cached to avoid
-@@ -264,12 +265,12 @@ static void stmpe_dbg_show_one(struct seq_file *s,
- 	ret = stmpe_reg_read(stmpe, dir_reg);
- 	if (ret < 0)
- 		return;
--	dir = !!(ret & mask);
+ #define GRGPIO_MAX_NGPIO 32
  
-+	dir = !!(ret & mask);
-+	seq_printf(s, " gpio-%-3d (%-20.20s) %-3.3s %-2.2s ", gpio,
-+		   label ?: "(none)", str_out_in(dir), str_hi_lo(val));
- 	if (dir) {
--		seq_printf(s, " gpio-%-3d (%-20.20s) out %s",
--			   gpio, label ?: "(none)",
--			   val ? "hi" : "lo");
-+		seq_putc(s, '\n');
- 	} else {
- 		u8 edge_det_reg;
- 		u8 rise_reg;
-@@ -336,11 +337,9 @@ static void stmpe_dbg_show_one(struct seq_file *s,
- 			return;
- 		irqen = !!(ret & mask);
- 
--		seq_printf(s, " gpio-%-3d (%-20.20s) in  %s %13s %13s %25s %25s",
--			   gpio, label ?: "(none)",
--			   val ? "hi" : "lo",
-+		seq_printf(s, "%13s IRQ-%9s %25s %25s\n",
- 			   edge_det_values[edge_det],
--			   irqen ? "IRQ-enabled" : "IRQ-disabled",
-+			   str_enabled_disabled(irqen),
- 			   rise_values[rise],
- 			   fall_values[fall]);
+@@ -426,7 +427,7 @@ static int grgpio_probe(struct platform_device *ofdev)
  	}
-@@ -351,10 +350,8 @@ static void stmpe_dbg_show(struct seq_file *s, struct gpio_chip *gc)
- 	unsigned i;
- 	unsigned gpio = gc->base;
  
--	for (i = 0; i < gc->ngpio; i++, gpio++) {
-+	for (i = 0; i < gc->ngpio; i++, gpio++)
- 		stmpe_dbg_show_one(s, gc, i, gpio);
--		seq_putc(s, '\n');
--	}
+ 	dev_info(&ofdev->dev, "regs=0x%p, base=%d, ngpio=%d, irqs=%s\n",
+-		 priv->regs, gc->base, gc->ngpio, priv->domain ? "on" : "off");
++		 priv->regs, gc->base, gc->ngpio, str_on_off(priv->domain));
+ 
+ 	return 0;
  }
- 
- static struct irq_chip stmpe_gpio_irq_chip = {
 -- 
 2.39.1
 
