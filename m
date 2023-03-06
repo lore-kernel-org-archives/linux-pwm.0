@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFFCC61DA4
-	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDB7C6FD20
+	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbjCFTzj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 6 Mar 2023 14:55:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
+        id S229660AbjCFTzl (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Mar 2023 14:55:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbjCFTzh (ORCPT
+        with ESMTP id S230160AbjCFTzh (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:55:37 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD4A6A047;
-        Mon,  6 Mar 2023 11:55:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C681664C6;
+        Mon,  6 Mar 2023 11:55:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678132534; x=1709668534;
+  t=1678132536; x=1709668536;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=oNHVpcFZrYbfI1Ngidi0XIrUh6MQDoXmEl3L94PnfHU=;
-  b=XfhWqvcyPsRKzmhAdVrKDvjnA2LlpiSOVcEuIaWKqEo1O8yQhG7giLOT
-   IQ3W8lvAmA9eC3DJaOOP20WK5SS1Yzh0Pu7+x3vSmG1AdJDcV+nXJ4x38
-   l5HZrIIIDxVLKbhCZdRBAmJWRY6rLKRjqYbwVO6RmFxiDwA/llLZCzbkq
-   OQ1GDi0c0yL6vxEa4syE5myMRP6ydF5WRtxkVuFuzGtOzH8va3wZITDC+
-   dgp+xyYqRY+LY3wsqkmRrdQlQ+2Tt0dW2h0qV8Jn6VfOrN2UycCeJjfcH
-   D/VBSxWTjXneCmPsvyd8RluMTkSpmaOIFYQ/iR0tKE7zEVa4g58/u/eOD
+  bh=tShFWIVCdDeqrNoh0yuO5Gnio4e4ieLf0f/Lj6I9KNA=;
+  b=iWklsGNCdF7Ojl6Kg8e0oXm2Nx7aPDdgCHsQh1fJKxL2Lh07gg47Kq2d
+   8VFTbdrUsY+CgTuyiHJjAfsTEsKMEdWtODqG18yOTPLl0y3/klNgkON2K
+   tx91bJ0jUUXz0eZ91VDs8cSwEvvTaWoCvt5V8P1+fIqgc8/G8hMi1bf0b
+   DHAH5CdwLW4rSqvf91WpJYwMbI0Re5I7sLtOYFXoDG7T9HPyG4VRhYKrQ
+   riZgxayVbjdEHRGLIijYZB17T8YZSitikw8Hbn4XUI9iP0jTdpCgL0etm
+   18IKiTRXw7QZxzpiHTdeeHFPd7sYjRHNtB34bLPBu9ZJvye5npleBB/Vb
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="400483882"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="400483899"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="400483882"
+   d="scan'208";a="400483899"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:34 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="1005549561"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="1005549565"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="1005549561"
+   d="scan'208";a="1005549565"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 06 Mar 2023 11:55:28 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 06 Mar 2023 11:55:29 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 57F61354; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
+        id 8366246E; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Schspa Shi <schspa@gmail.com>, Marc Zyngier <maz@kernel.org>,
@@ -63,9 +63,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         <sathyanarayanan.kuppuswamy@linux.intel.com>,
         Nandor Han <nandor.han@ge.com>,
         Semi Malinen <semi.malinen@ge.com>
-Subject: [PATCH v1 02/16] lib/string_helpers: Split out string_choices.h
-Date:   Mon,  6 Mar 2023 21:55:42 +0200
-Message-Id: <20230306195556.55475-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 06/16] gpio: adnp: Utilize helpers from string_choices.h
+Date:   Mon,  6 Mar 2023 21:55:46 +0200
+Message-Id: <20230306195556.55475-7-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
 References: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
@@ -75,110 +75,61 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Some users may only need the string choice APIs. Split
-the respective header, i.e. string_choices.h. Include
-it in the string_helpers.h for backward compatibility.
+There are a few helpers available to convert a boolean variable
+to the dedicated string literals depending on the application.
+Use them in the driver.
+
+While at, utilize specifier field for padding the strings where
+it's required.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- MAINTAINERS                    |  1 +
- include/linux/string_choices.h | 32 ++++++++++++++++++++++++++++++++
- include/linux/string_helpers.h | 26 +-------------------------
- 3 files changed, 34 insertions(+), 25 deletions(-)
- create mode 100644 include/linux/string_choices.h
+ drivers/gpio/gpio-adnp.c | 24 ++++++------------------
+ 1 file changed, 6 insertions(+), 18 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ee157981c4cf..64f19e200191 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8616,6 +8616,7 @@ GENERIC STRING LIBRARY
- R:	Andy Shevchenko <andy@kernel.org>
- S:	Maintained
- F:	include/linux/string.h
-+F:	include/linux/string_choices.h
- F:	include/linux/string_helpers.h
- F:	lib/string.c
- F:	lib/string_helpers.c
-diff --git a/include/linux/string_choices.h b/include/linux/string_choices.h
-new file mode 100644
-index 000000000000..b7e7b9fd098c
---- /dev/null
-+++ b/include/linux/string_choices.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_STRING_CHOICES_H_
-+#define _LINUX_STRING_CHOICES_H_
-+
-+#include <linux/types.h>
-+
-+static inline const char *str_enable_disable(bool v)
-+{
-+	return v ? "enable" : "disable";
-+}
-+
-+static inline const char *str_enabled_disabled(bool v)
-+{
-+	return v ? "enabled" : "disabled";
-+}
-+
-+static inline const char *str_read_write(bool v)
-+{
-+	return v ? "read" : "write";
-+}
-+
-+static inline const char *str_on_off(bool v)
-+{
-+	return v ? "on" : "off";
-+}
-+
-+static inline const char *str_yes_no(bool v)
-+{
-+	return v ? "yes" : "no";
-+}
-+
-+#endif
-diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.h
-index fae6beaaa217..0f2255738940 100644
---- a/include/linux/string_helpers.h
-+++ b/include/linux/string_helpers.h
-@@ -5,6 +5,7 @@
- #include <linux/bits.h>
- #include <linux/ctype.h>
- #include <linux/string.h>
+diff --git a/drivers/gpio/gpio-adnp.c b/drivers/gpio/gpio-adnp.c
+index a6439e3daff0..823cad855ee8 100644
+--- a/drivers/gpio/gpio-adnp.c
++++ b/drivers/gpio/gpio-adnp.c
+@@ -11,6 +11,7 @@
+ #include <linux/property.h>
+ #include <linux/seq_file.h>
+ #include <linux/slab.h>
 +#include <linux/string_choices.h>
- #include <linux/types.h>
  
- struct device;
-@@ -113,29 +114,4 @@ void kfree_strarray(char **array, size_t n);
+ #define GPIO_DDR(gpio) (0x00 << (gpio)->reg_shift)
+ #define GPIO_PLR(gpio) (0x01 << (gpio)->reg_shift)
+@@ -211,25 +212,12 @@ static void adnp_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
  
- char **devm_kasprintf_strarray(struct device *dev, const char *prefix, size_t n);
+ 		for (j = 0; j < 8; j++) {
+ 			unsigned int bit = (i << adnp->reg_shift) + j;
+-			const char *direction = "input ";
+-			const char *level = "low ";
+-			const char *interrupt = "disabled";
+-			const char *pending = "";
  
--static inline const char *str_yes_no(bool v)
--{
--	return v ? "yes" : "no";
--}
+-			if (ddr & BIT(j))
+-				direction = "output";
 -
--static inline const char *str_on_off(bool v)
--{
--	return v ? "on" : "off";
--}
+-			if (plr & BIT(j))
+-				level = "high";
 -
--static inline const char *str_enable_disable(bool v)
--{
--	return v ? "enable" : "disable";
--}
+-			if (ier & BIT(j))
+-				interrupt = "enabled ";
 -
--static inline const char *str_enabled_disabled(bool v)
--{
--	return v ? "enabled" : "disabled";
--}
+-			if (isr & BIT(j))
+-				pending = "pending";
 -
--static inline const char *str_read_write(bool v)
--{
--	return v ? "read" : "write";
--}
--
- #endif
+-			seq_printf(s, "%2u: %s %s IRQ %s %s\n", bit,
+-				   direction, level, interrupt, pending);
++			seq_printf(s, "%2u: %-6.6s %-4.4s IRQ %-8.8s %s\n", bit,
++				   str_output_input(ddr & BIT(j)),
++				   str_high_low(plr & BIT(j)),
++				   str_enabled_disabled(ier & BIT(j)),
++				   (isr & BIT(j)) ? "pending" : "");
+ 		}
+ 	}
+ 
 -- 
 2.39.1
 
