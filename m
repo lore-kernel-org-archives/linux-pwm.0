@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BDCDC6FD1C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1467C6FD1D
 	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbjCFTzv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 6 Mar 2023 14:55:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
+        id S229457AbjCFTzw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Mar 2023 14:55:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230180AbjCFTzq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:55:46 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8F169238;
-        Mon,  6 Mar 2023 11:55:41 -0800 (PST)
+        with ESMTP id S229646AbjCFTzr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:55:47 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CE96BC3E;
+        Mon,  6 Mar 2023 11:55:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678132541; x=1709668541;
+  t=1678132542; x=1709668542;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Dt4pdLMszFVaAbdqwI08UXnnW0vBxyo1Sqmq45vpnHo=;
-  b=f+3A19+Sb1OHKZkOqtkN6wV8qFdXllCAYLRw2MPd1v98muXw5HMOfJTn
-   qBT0tuwqpF4pWrYRhzD8otAeR55A7uYAfnS4EYrk/XLt8pE7TCqYllvzX
-   1WUHIIQXcXlq3tSPLBpEauCAy0wFYx4VhaLvez6DNMiqLiOZK66sB2xdo
-   eGKq7mtUJ2N31g1c0mFgjjCyDCDMk+zF1uvML5yiSzmIbJ/AM2rjXq3v/
-   FmZ/MeGZJHmToWnGtVxSr9TGvncDE2DWHUZbq/qB+9ULTCxn+hcoc6Jsf
-   f7cVQjKfvyo09tqrdL4GZCJpsL8OrL5FHNTN68VXqb3A7IzpNEPsYIgr0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="398240789"
+  bh=QkJilS+dwGD4FvKKeEiSHbIXGMw2cebK2jx0ihhp9MY=;
+  b=bQFBSjbA1O63VyFiqxH+Re8QDSlT8fBH1nIv+NjCSeX3c394RVIDXOj9
+   lfWEuPhedLMWHaqz8+yhckHMBLWfhMc94a6owa0Uo8udgbNjk0Sbh1Lt9
+   i9l5u2uZHfAIwidDQ/rE8td+O8Hvs06k08smCKSMyW26o/k9AXB8xFhA0
+   9kTSnK0iDEPzUHCTzRM0jXUcHjN6LXtWMVBxDDq0pIVoQpTRYlNfZqVbH
+   ikQWHLAUNQgHFozG+P8LvC9s6B743/CdrYJEinirOzE28xmjFlDzHzmr2
+   Y300ZykWeRbIDXOiGTgn5xJfssBV/5dadz2OJNkSqFKvU4oxrfsJURh94
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="333128974"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="398240789"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:35 -0800
+   d="scan'208";a="333128974"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="819423558"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="745185191"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="819423558"
+   d="scan'208";a="745185191"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Mar 2023 11:55:29 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 06 Mar 2023 11:55:34 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7A2E93CB; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
+        id 95E3959E; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Schspa Shi <schspa@gmail.com>, Marc Zyngier <maz@kernel.org>,
@@ -63,9 +63,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         <sathyanarayanan.kuppuswamy@linux.intel.com>,
         Nandor Han <nandor.han@ge.com>,
         Semi Malinen <semi.malinen@ge.com>
-Subject: [PATCH v1 05/16] gpiolib: Utilize helpers from string_choices.h
-Date:   Mon,  6 Mar 2023 21:55:45 +0200
-Message-Id: <20230306195556.55475-6-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 08/16] gpio: crystalcove: Utilize helpers from string_choices.h
+Date:   Mon,  6 Mar 2023 21:55:48 +0200
+Message-Id: <20230306195556.55475-9-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
 References: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
@@ -84,77 +84,45 @@ it's required.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/gpio/gpiolib-sysfs.c |  3 ++-
- drivers/gpio/gpiolib.c       | 13 ++++++-------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/gpio/gpio-crystalcove.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpio/gpiolib-sysfs.c b/drivers/gpio/gpiolib-sysfs.c
-index c1cbf71329f0..54dc53b74dc4 100644
---- a/drivers/gpio/gpiolib-sysfs.c
-+++ b/drivers/gpio/gpiolib-sysfs.c
-@@ -13,6 +13,7 @@
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/string.h>
+diff --git a/drivers/gpio/gpio-crystalcove.c b/drivers/gpio/gpio-crystalcove.c
+index 1ee62cd58582..56d628b18397 100644
+--- a/drivers/gpio/gpio-crystalcove.c
++++ b/drivers/gpio/gpio-crystalcove.c
+@@ -15,6 +15,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/seq_file.h>
 +#include <linux/string_choices.h>
- #include <linux/sysfs.h>
  #include <linux/types.h>
  
-@@ -82,7 +83,7 @@ static ssize_t direction_show(struct device *dev,
+ #define CRYSTALCOVE_GPIO_NUM	16
+@@ -315,15 +316,15 @@ static void crystalcove_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip
+ 			    &irq);
  
- 	mutex_unlock(&data->mutex);
- 
--	return sysfs_emit(buf, "%s\n", value ? "out" : "in");
-+	return sysfs_emit(buf, "%s\n", str_out_in(value));
+ 		offset = gpio % 8;
+-		seq_printf(s, " gpio-%-2d %s %s %s %s ctlo=%2x,%s %s %s\n",
+-			   gpio, ctlo & CTLO_DIR_OUT ? "out" : "in ",
+-			   ctli & 0x1 ? "hi" : "lo",
+-			   ctli & CTLI_INTCNT_NE ? "fall" : "    ",
+-			   ctli & CTLI_INTCNT_PE ? "rise" : "    ",
++		seq_printf(s, " gpio-%-2d %-3.3s %-2.2s %-4.4s %-4.4s ctlo=%2x,%-9.9s %-9.9s %s\n",
++			   gpio, str_out_in(ctlo & CTLO_DIR_OUT),
++			   str_hi_lo(ctli & BIT(0)),
++			   ctli & CTLI_INTCNT_NE ? "fall" : "",
++			   ctli & CTLI_INTCNT_PE ? "rise" : "",
+ 			   ctlo,
+-			   mirqs0 & BIT(offset) ? "s0 mask  " : "s0 unmask",
+-			   mirqsx & BIT(offset) ? "sx mask  " : "sx unmask",
+-			   irq & BIT(offset) ? "pending" : "       ");
++			   mirqs0 & BIT(offset) ? "s0 mask" : "s0 unmask",
++			   mirqsx & BIT(offset) ? "sx mask" : "sx unmask",
++			   irq & BIT(offset) ? "pending" : "");
+ 	}
  }
  
- static ssize_t direction_store(struct device *dev,
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index 700195a1faae..b554ad435245 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -20,6 +20,7 @@
- #include <linux/seq_file.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
-+#include <linux/string_choices.h>
- 
- #include <linux/gpio.h>
- #include <linux/gpio/driver.h>
-@@ -4198,6 +4199,8 @@ EXPORT_SYMBOL_GPL(gpiod_get_index_optional);
- int gpiod_hog(struct gpio_desc *desc, const char *name,
- 	      unsigned long lflags, enum gpiod_flags dflags)
- {
-+	bool out = dflags & GPIOD_FLAGS_BIT_DIR_OUT;
-+	bool hi = dflags & GPIOD_FLAGS_BIT_DIR_VAL;
- 	struct gpio_chip *gc;
- 	struct gpio_desc *local_desc;
- 	int hwnum;
-@@ -4218,10 +4221,7 @@ int gpiod_hog(struct gpio_desc *desc, const char *name,
- 	/* Mark GPIO as hogged so it can be identified and removed later */
- 	set_bit(FLAG_IS_HOGGED, &desc->flags);
- 
--	gpiod_info(desc, "hogged as %s%s\n",
--		(dflags & GPIOD_FLAGS_BIT_DIR_OUT) ? "output" : "input",
--		(dflags & GPIOD_FLAGS_BIT_DIR_OUT) ?
--		  (dflags & GPIOD_FLAGS_BIT_DIR_VAL) ? "/high" : "/low" : "");
-+	gpiod_info(desc, "hogged as %s/%s\n", str_output_input(out), out ? str_high_low(hi) : "?");
- 
- 	return 0;
- }
-@@ -4509,10 +4509,9 @@ static void gpiolib_dbg_show(struct seq_file *s, struct gpio_device *gdev)
- 			value = gpio_chip_get_value(gc, desc);
- 			is_irq = test_bit(FLAG_USED_AS_IRQ, &desc->flags);
- 			active_low = test_bit(FLAG_ACTIVE_LOW, &desc->flags);
--			seq_printf(s, " gpio-%-3d (%-20.20s|%-20.20s) %s %s %s%s\n",
-+			seq_printf(s, " gpio-%-3d (%-20.20s|%-20.20s) %-3.3s %-2.2s %s%s\n",
- 				   gpio, desc->name ?: "", desc->label,
--				   is_out ? "out" : "in ",
--				   value >= 0 ? (value ? "hi" : "lo") : "?  ",
-+				   str_out_in(is_out), value < 0 ? "?" : str_hi_lo(value),
- 				   is_irq ? "IRQ " : "",
- 				   active_low ? "ACTIVE LOW" : "");
- 		} else if (desc->name) {
 -- 
 2.39.1
 
