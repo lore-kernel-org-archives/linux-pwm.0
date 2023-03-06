@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE46C6FD1A
-	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15256C6FD1B
+	for <linux-pwm@archiver.kernel.org>; Mon,  6 Mar 2023 19:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbjCFTzi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 6 Mar 2023 14:55:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
+        id S229493AbjCFTzk (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Mar 2023 14:55:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbjCFTzg (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:55:36 -0500
+        with ESMTP id S229483AbjCFTzh (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Mar 2023 14:55:37 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4E967015;
-        Mon,  6 Mar 2023 11:55:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A77A64A93;
+        Mon,  6 Mar 2023 11:55:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678132534; x=1709668534;
+  t=1678132536; x=1709668536;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8ZrKn/GVsbCbQusAgr1EBS9ndoJY9gSV2vmluFfDt5o=;
-  b=gAKe6b7sIh15P7c7vUId1A069KlEP95UVSND0VQcq3rtgZibCklAvLdz
-   PETqpbBZ8a34iHB1LaY1SR7DTHxu5lwT2453IRA8iOGz2uzxsRN9EgX30
-   IaCTbOsfhU8684PTnKnauK6yNPKfG/nQe8nWROcyWmbVnZdXjcypwlRFx
-   ZR2lUVVrvxEcRPc1glCi8PN+PduK2dgcaX8WVSEgJDudAASuM6HnGyU+i
-   xGFvAlZhfCiyFa2ralWomq7fjO45BxlgtJPMkSi6nQ12LdnGjgifINOfq
-   4C7hhQOUDJj9mjFvfhZrYv1tMD9CJh7/DJGTpfPhNqAhYruiVhDD8PEzo
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="400483867"
+  bh=x77bSH20Ou4EihSoiJQDgs4+5OFy75brI2gUDSEqixA=;
+  b=cMryF/q2DkCkGdjn36ecf/XF5C/Kdn/qJO3rQFe5iTgajiG6nR5bLnlJ
+   pgA5t5nWmhjnQLHfBGmau/ZeYXdMrQKxh491XwFjlKqzfyb/BU+o/PCDv
+   oUQ2B8N22aJh0yF4wWDoSWG4hSRZkjtHARIMv4blbIjTCRbTmhEm8rdix
+   adiWN0u4mfDQzWas5FerAK/fBnGfBMSVkSUKRbF82hp+Z57y8Cm4HUSFz
+   teN6rr9gStnG8Pjv4NDmditY057hyrt0+VwRgz7iyLpZPZgK+9ijInGvS
+   ckR7VRvvq54Kko+G78+LQuK8iKq+CRgYuuayM3VBBSbqcqAg2WzIlQzqI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="400483892"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="400483867"
+   d="scan'208";a="400483892"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:33 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:55:34 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="1005549560"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="1005549562"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="1005549560"
+   d="scan'208";a="1005549562"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga005.fm.intel.com with ESMTP; 06 Mar 2023 11:55:28 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 491E9154; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
+        id 6B292398; Mon,  6 Mar 2023 21:56:12 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Schspa Shi <schspa@gmail.com>, Marc Zyngier <maz@kernel.org>,
@@ -63,9 +63,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         <sathyanarayanan.kuppuswamy@linux.intel.com>,
         Nandor Han <nandor.han@ge.com>,
         Semi Malinen <semi.malinen@ge.com>
-Subject: [PATCH v1 01/16] lib/string_helpers: Add missing header files to MAINTAINERS database
-Date:   Mon,  6 Mar 2023 21:55:41 +0200
-Message-Id: <20230306195556.55475-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 04/16] lib/string_choices: Add str_input_output() helper
+Date:   Mon,  6 Mar 2023 21:55:44 +0200
+Message-Id: <20230306195556.55475-5-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
 References: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
@@ -75,27 +75,39 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The header files string.h and string_helpers.h are missing in
-the MAINTAINERS. Add them.
+Add str_input_output() helper to return 'input' or 'output' string literal.
+Also add an inversed variant, i.e. str_output_input().
+
+All the same for str_in_out().
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/string_choices.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 20544cbdace9..ee157981c4cf 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8615,6 +8615,8 @@ F:	drivers/input/touchscreen/resistive-adc-touch.c
- GENERIC STRING LIBRARY
- R:	Andy Shevchenko <andy@kernel.org>
- S:	Maintained
-+F:	include/linux/string.h
-+F:	include/linux/string_helpers.h
- F:	lib/string.c
- F:	lib/string_helpers.c
- F:	lib/test_string.c
+diff --git a/include/linux/string_choices.h b/include/linux/string_choices.h
+index 48120222b9b2..ad345df325ec 100644
+--- a/include/linux/string_choices.h
++++ b/include/linux/string_choices.h
+@@ -26,6 +26,18 @@ static inline const char *str_high_low(bool v)
+ }
+ #define str_low_high(v)		str_high_low(!(v))
+ 
++static inline const char *str_in_out(bool v)
++{
++	return v ? "in" : "out";
++}
++#define str_out_in(v)		str_in_out(!(v))
++
++static inline const char *str_input_output(bool v)
++{
++	return v ? "input" : "output";
++}
++#define str_output_input(v)	str_input_output(!(v))
++
+ static inline const char *str_read_write(bool v)
+ {
+ 	return v ? "read" : "write";
 -- 
 2.39.1
 
