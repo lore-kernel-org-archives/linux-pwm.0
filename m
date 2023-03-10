@@ -2,124 +2,124 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F22C6FD19
-	for <linux-pwm@archiver.kernel.org>; Fri, 10 Mar 2023 07:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 481A9C64EC4
+	for <linux-pwm@archiver.kernel.org>; Fri, 10 Mar 2023 07:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbjCJHdC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 10 Mar 2023 02:33:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
+        id S230456AbjCJHqT convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 10 Mar 2023 02:46:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbjCJHcZ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Mar 2023 02:32:25 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A362DF0C7A
-        for <linux-pwm@vger.kernel.org>; Thu,  9 Mar 2023 23:32:18 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1paXEX-0002G3-W2; Fri, 10 Mar 2023 08:32:10 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1paXES-0037ox-Nl; Fri, 10 Mar 2023 08:32:04 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1paXES-003jf4-1H; Fri, 10 Mar 2023 08:32:04 +0100
-Date:   Fri, 10 Mar 2023 08:32:03 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Schspa Shi <schspa@gmail.com>, Marc Zyngier <maz@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        patches@opensource.cirrus.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Andy Shevchenko <andy@kernel.org>,
+        with ESMTP id S229843AbjCJHqD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Mar 2023 02:46:03 -0500
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2882E38010;
+        Thu,  9 Mar 2023 23:45:07 -0800 (PST)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id A37EB24E17F;
+        Fri, 10 Mar 2023 15:45:05 +0800 (CST)
+Received: from EXMBX068.cuchost.com (172.16.6.68) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 10 Mar
+ 2023 15:45:05 +0800
+Received: from williamqiu-virtual-machine.starfivetech.com (171.223.208.138)
+ by EXMBX068.cuchost.com (172.16.6.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.42; Fri, 10 Mar 2023 15:45:04 +0800
+From:   William Qiu <william.qiu@starfivetech.com>
+To:     <devicetree@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Nandor Han <nandor.han@ge.com>,
-        Semi Malinen <semi.malinen@ge.com>
-Subject: Re: [PATCH v1 00/16] gpio: Use string_choices.h
-Message-ID: <20230310073203.2mpd24pxe5rvm4e7@pengutronix.de>
-References: <20230306195556.55475-1-andriy.shevchenko@linux.intel.com>
- <CAMRc=Me-FMZ3e=EaUA1kimEonz=HVHBp7coxCz53bJK9NYBuFg@mail.gmail.com>
+        William Qiu <william.qiu@starfivetech.com>,
+        Hal Feng <hal.feng@starfivetech.com>
+Subject: [PATCH v2 1/2] dt-bindings: PWM: Add StarFive PWM module
+Date:   Fri, 10 Mar 2023 15:45:02 +0800
+Message-ID: <20230310074503.155131-2-william.qiu@starfivetech.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230310074503.155131-1-william.qiu@starfivetech.com>
+References: <20230310074503.155131-1-william.qiu@starfivetech.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vlcr3xdkx227as3g"
-Content-Disposition: inline
-In-Reply-To: <CAMRc=Me-FMZ3e=EaUA1kimEonz=HVHBp7coxCz53bJK9NYBuFg@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX068.cuchost.com
+ (172.16.6.68)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Add documentation to describe StarFive Pulse Width Modulation
+controller driver.
 
---vlcr3xdkx227as3g
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: William Qiu <william.qiu@starfivetech.com>
+---
+ .../bindings/pwm/starfive,jh7110-pwm.yaml     | 53 +++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/starfive,jh7110-pwm.yaml
 
-Hi Bart, hi Andy,
+diff --git a/Documentation/devicetree/bindings/pwm/starfive,jh7110-pwm.yaml b/Documentation/devicetree/bindings/pwm/starfive,jh7110-pwm.yaml
+new file mode 100644
+index 000000000000..b66aa4b6eca8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/starfive,jh7110-pwm.yaml
+@@ -0,0 +1,53 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/starfive,jh7110-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: StarFive PWM controller
++
++maintainers:
++  - William Qiu <william.qiu@starfivetech.com>
++
++description:
++  StarFive SoCs contain PWM and when operating in PWM mode, the PTC core generates
++  binary signal with user-programmable low and high periods. Clock source for the
++  PWM can be either system clockor external clock. Each PWM timer block provides 8
++  PWM channels.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    const: starfive,jh7110-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - resets
++
++additionalProperties: false
++
++examples:
++  - |
++    pwm@120d0000 {
++        compatible = "starfive,jh7110-pwm";
++        reg = <0x120d0000 0x10000>;
++        clocks = <&syscrg 121>;
++        resets = <&syscrg 108>;
++        #pwm-cells=<3>;
++    };
+-- 
+2.34.1
 
-On Thu, Mar 09, 2023 at 04:22:19PM +0100, Bartosz Golaszewski wrote:
-> I've been thinking about this and I must say it doesn't make much
-> sense to me. Not only does it NOT reduce the code size (even if we
-> assume the unlikely case where we'd build all those modules that use
-> the helpers) but also decreases the readability for anyone not
-> familiar with the new interfaces (meaning time spent looking up the
-> new function). The "%s", x ? "if" : "else" statement is concise and
-> clear already, I don't see much improvement with this series. And I'm
-> saying it from the position of someone who loves factoring out common
-> code. :)
->=20
-> I'll wait to hear what others have to say but if it were up to me, I'd
-> politely say no.
-
-Interpreting this as request to share my view: I'm having the same
-doubts. While I'm not a big fan of the ?: operator, it's semantic is
-more obvious here.
-
-What I find most difficult about
-
-	str_high_low(plr & BIT(j))
-
-(from patch #6) is: Does this give me "high" or "low" if the argument is
-zero? You could tell me, and judging from the patch I'd hope that it
-would give me "low". But if I stumble over this code in two weeks I
-have probably forgotten and have to look it up again.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---vlcr3xdkx227as3g
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmQK3PAACgkQwfwUeK3K
-7AmKrQgAi8eFePklYAe1Wkc5DrOA8FgxUuMACZnge32N4GuJ70WGZLkl0kmPTU1b
-ljClqGfUibetO51uLK9T73BwZNJYXSjcEQ70XwdyiSIronRbhlzw13m6+/JdGD6y
-b//gxazdUU3qw70JoLbKZwfBHea/9CPDEJdcb6OvqkrVbH6GMjg5Lsyf3SW4dfRe
-Td4CSACc7My0VurOCjOPWw0Ui3gUws20Zs5/dKgZCHzjYlykGC9rS2mmn5CZP2oB
-L5AriYmEQodEt6FLgbkYhp1gDE2ONqYwm64RsHUJcWcBKZahBDFuXAoGZLVjgeXo
-YMvSCemK36RkwM5w3AHNzK63ETBAIA==
-=s9xY
------END PGP SIGNATURE-----
-
---vlcr3xdkx227as3g--
