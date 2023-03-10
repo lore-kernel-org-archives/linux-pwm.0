@@ -2,131 +2,94 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73457C74A5B
-	for <linux-pwm@archiver.kernel.org>; Fri, 10 Mar 2023 18:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE87C6FA99
+	for <linux-pwm@archiver.kernel.org>; Fri, 10 Mar 2023 18:48:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231148AbjCJSoX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 10 Mar 2023 13:44:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
+        id S229589AbjCJSsY (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 10 Mar 2023 13:48:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbjCJSoP (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Mar 2023 13:44:15 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFC1123CE7;
-        Fri, 10 Mar 2023 10:44:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0ABDDCE2A34;
-        Fri, 10 Mar 2023 18:44:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2B88BC433D2;
-        Fri, 10 Mar 2023 18:44:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678473850;
-        bh=9VDi+rkGZZUEFOqtKV0WoGhoAKQoF41aoKOynoKNy1I=;
-        h=From:Subject:Date:To:Cc:Reply-To:From;
-        b=pGOD7ll63guptCpU4PUV9EL3fSArAR3eHXjg4qP8BZn2Kz7OuYLf885jT4cJYAFdX
-         s9vheZjXZfFaLpsVzut0fwiZ3hG9AHlv9meJocR2CHbG3DLw2WZHyNYsqpZb9yqe3Z
-         lAQiWY39okZvKsR3kWrrjgeFUTnUhhr5/q0bz54xtpY2jeWd4Ll0RW4sCd+hMTIaLH
-         w36YiZnJzprnpANTvIbax7hxRJWjqdUPDCaW3zVR+PrzmVTXeUDT1WkrhN3LrWqM0Q
-         KMhYpYSF6s2UrrVttbkZtqVuNSe556vbpjEnJRkM2JpUl8epdadZqhENw+DVF+p2z6
-         Re/PKtaezoozg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8CAC6FD19;
-        Fri, 10 Mar 2023 18:44:10 +0000 (UTC)
-From:   Sasha Finkelstein via B4 Relay 
-        <devnull+fnkl.kernel.gmail.com@kernel.org>
-Subject: [PATCH v8 0/5] PWM and keyboard backlight driver for ARM Macs
-Date:   Fri, 10 Mar 2023 19:44:06 +0100
-Message-Id: <20230214-fpwm-v8-0-65518a0d4944@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAHd6C2QC/12Nyw6DIBREf8XcdWkQGyFd9T8aFzwucpOiBgxtY
- /z3ossuz8zJzAYZE2GGe7NBwkKZ5qmCujRgg55GZOQqg+Ci46K9Mb+8I3PKy95Y5ZxtoapGZ2Q
- m6cmGQ446r5iOYkno6XPuP4fKgfI6p+95V+SR/i0XyTjzhuveeON4Jx9j1PS62jnCsO/7Dznun
- 7uxAAAA
+        with ESMTP id S230102AbjCJSsX (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Mar 2023 13:48:23 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABDBC2D8A
+        for <linux-pwm@vger.kernel.org>; Fri, 10 Mar 2023 10:48:21 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pahms-0008G3-CF; Fri, 10 Mar 2023 19:48:18 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pahmr-003EbG-9O; Fri, 10 Mar 2023 19:48:17 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pahmq-003rel-KD; Fri, 10 Mar 2023 19:48:16 +0100
+Date:   Fri, 10 Mar 2023 19:48:15 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        - <asahi@lists.linux.dev>,
-        Sasha Finkelstein <fnkl.kernel@gmail.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sasha Finkelstein <7d578vix8hzw@opayq.net>
-X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1678473848; l=1982;
- i=fnkl.kernel@gmail.com; s=20230213; h=from:subject:message-id;
- bh=9VDi+rkGZZUEFOqtKV0WoGhoAKQoF41aoKOynoKNy1I=;
- b=j8gEc4haSzTfWjUIbkJAmBECKuP2NdZuJHbm/V0WBmaoqeVu5goVUQ4iQv6PhTytAwDEDJE1N
- x6izkUJvLT2Db7DIafMNJL//cJ5FYVl0j5mhintszd5kZ31Wo+mhT4m
-X-Developer-Key: i=fnkl.kernel@gmail.com; a=ed25519;
- pk=7LFSAJtxIWAs9LzCIyX0sSvCZy2wQTyEIu1zch6o804=
-X-Endpoint-Received: by B4 Relay for fnkl.kernel@gmail.com/20230213 with auth_id=28
-X-Original-From: Sasha Finkelstein <fnkl.kernel@gmail.com>
-Reply-To: <fnkl.kernel@gmail.com>
+        Munehisa Kamata <kamatam@amazon.com>,
+        Jeff LaBundy <jeff@labundy.com>
+Cc:     linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH 3/4] pwm: iqs620a: Explicitly set .polarity in
+ .get_state()
+Message-ID: <20230310184815.x5v2ysyeyshnapm5@pengutronix.de>
+References: <20230228135508.1798428-1-u.kleine-koenig@pengutronix.de>
+ <20230228135508.1798428-4-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="urnuj6hhjjyzctov"
+Content-Disposition: inline
+In-Reply-To: <20230228135508.1798428-4-u.kleine-koenig@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi,
 
-This is the v8 of the patch series to add PWM and keyboard
-backlight driver for ARM macs. 
+--urnuj6hhjjyzctov
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes in v1:
-Addressing the review comments.
+[To +=3D Jeff LaBundy]
 
-Changes in v2:
-Added the reviewed-by and acked-by tags.
-Addressing a review comment.
+On Tue, Feb 28, 2023 at 02:55:07PM +0100, Uwe Kleine-K=F6nig wrote:
+> The driver only supports normal polarity. Complete the implementation of
+> .get_state() by setting .polarity accordingly.
+>=20
+> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-Changes in v3 and v4:
-Addressing the review comments.
+I think we should apply this patch as a fix to prevent similar failures
+as reported for the meson driver. To justify that:
 
-Changes in v5:
-Added t600x device tree changes
+Fixes: 6f0841a8197b ("pwm: Add support for Azoteq IQS620A PWM generator")
 
-Changes in v8:
-Changed the overflow handling to clamp instead of erroring.
+Best regards
+Uwe
 
-v1: https://www.spinics.net/lists/linux-pwm/msg19500.html
-v2: https://www.spinics.net/lists/linux-pwm/msg19562.html
-v3: https://www.spinics.net/lists/linux-pwm/msg19901.html
-v4: https://www.spinics.net/lists/linux-pwm/msg20093.html
-v5: https://www.spinics.net/lists/linux-pwm/msg20150.html
-v6: https://www.spinics.net/lists/linux-pwm/msg20190.html
-v7: https://lore.kernel.org/r/20230214-fpwm-v7-0-fb0a6bfbd037@gmail.com
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
----
-Sasha Finkelstein (5):
-      dt-bindings: pwm: Add Apple PWM controller
-      pwm: Add Apple PWM controller
-      arm64: dts: apple: t8103: Add PWM controller
-      arm64: dts: apple: t600x: Add PWM controller
-      MAINTAINERS: Add entries for Apple PWM driver
+--urnuj6hhjjyzctov
+Content-Type: application/pgp-signature; name="signature.asc"
 
- .../devicetree/bindings/pwm/apple,s5l-fpwm.yaml    |  51 +++++++
- MAINTAINERS                                        |   2 +
- arch/arm64/boot/dts/apple/t600x-die0.dtsi          |   9 ++
- arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi     |  18 +++
- arch/arm64/boot/dts/apple/t8103-j293.dts           |  17 +++
- arch/arm64/boot/dts/apple/t8103-j313.dts           |  17 +++
- arch/arm64/boot/dts/apple/t8103.dtsi               |   9 ++
- drivers/pwm/Kconfig                                |  12 ++
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-apple.c                            | 159 +++++++++++++++++++++
- 10 files changed, 295 insertions(+)
----
-base-commit: fe15c26ee26efa11741a7b632e9f23b01aca4cc6
-change-id: 20230214-fpwm-d8f76bc8ddc1
+-----BEGIN PGP SIGNATURE-----
 
-Best regards,
--- 
-Sasha Finkelstein <fnkl.kernel@gmail.com>
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmQLe2wACgkQwfwUeK3K
+7Am9oQf+I5fTetCUNCq/nWdbgg/pRPZdkPQ5KvuuzxIgJaDgHTcJWbuak1Kzp2eD
+BVwMxOwu2xqa6dnfxgTOrjRokZX3+l14Yi34bbWWGYlxRwHDI8Aa+HEUg2gJRqdE
+d+BkQc8PquottmutKxdX8LY/hvbViGucbK24PyDGUhMi/+kKb8wOGPOtbW1s9YJ2
+MlmbouNRVaFubZ3g8+MSvd9sQ5rjGlRKlwpL3W4vYxkYSiuBg6IUPXLfnvyLb9yP
+ARZhhCxuXFE1ptVZuMp6bQdn9vipmlqabS9s6SIG6z3vEtAh2oNXj64rj45PNzlf
+jr/ykwYrxgIVRVQUHIQHyYeStEa9Ww==
+=PVCG
+-----END PGP SIGNATURE-----
 
+--urnuj6hhjjyzctov--
