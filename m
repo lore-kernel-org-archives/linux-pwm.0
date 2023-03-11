@@ -2,149 +2,98 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C18FBC678D5
-	for <linux-pwm@archiver.kernel.org>; Sat, 11 Mar 2023 05:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F21C6FD1C
+	for <linux-pwm@archiver.kernel.org>; Sat, 11 Mar 2023 17:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbjCKFLU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 11 Mar 2023 00:11:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37120 "EHLO
+        id S230468AbjCKRjO (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 11 Mar 2023 12:39:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbjCKFLR (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 11 Mar 2023 00:11:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEE11CADB;
-        Fri, 10 Mar 2023 21:11:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D7A2B8242B;
-        Sat, 11 Mar 2023 05:11:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F3D2AC433A4;
-        Sat, 11 Mar 2023 05:11:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678511473;
-        bh=T0yrlYh6fLNBmEygIOf06ax4LoeO/yfEvilUDk3ALb0=;
-        h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-        b=EczB40LA5lG5C/S5UeFdMS1zGEk3pTe/UgogIJIP5LYX8BCVaIe8LWqi5o69FTM0H
-         QcIoBPiSy+j+pE7vzwBqs2co/XVb3MZcIx708cWY1pnG/RP0LABFu88lZt3f5Asxr0
-         xgCQfCIiFXU0M7OSJVpOri6LlQW4VS8ncqEtUGXg/70sDLnEzicscMmmZtB79IGc67
-         OX+a8sLAg9q0P2ME4mBY60FRVWoScOXpmCTm1aHV35sNps/91lXq27a6Dh6mcQFe3a
-         k62FVCUUhKnVaoC0piRXgzkeLsb5k1NcCoHQ7j4ZFF1AfBW0A+nVJgTMk0AqpaoCry
-         16lCdVQ2Y/x+w==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.lore.kernel.org (Postfix) with ESMTP id DEA84C6FD1C;
-        Sat, 11 Mar 2023 05:11:12 +0000 (UTC)
-From:   Sasha Finkelstein via B4 Relay 
-        <devnull+fnkl.kernel.gmail.com@kernel.org>
-Date:   Sat, 11 Mar 2023 06:11:12 +0100
-Subject: [PATCH v9 4/5] arm64: dts: apple: t600x: Add PWM controller
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230214-fpwm-v9-4-dbe26bccabd6@gmail.com>
-References: <20230214-fpwm-v9-0-dbe26bccabd6@gmail.com>
-In-Reply-To: <20230214-fpwm-v9-0-dbe26bccabd6@gmail.com>
+        with ESMTP id S230294AbjCKRi7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 11 Mar 2023 12:38:59 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BC31DBB1
+        for <linux-pwm@vger.kernel.org>; Sat, 11 Mar 2023 09:38:15 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id i34so33006394eda.7
+        for <linux-pwm@vger.kernel.org>; Sat, 11 Mar 2023 09:38:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678556257;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=B0p0qqpSJoTCtFb+Kr7i0GNnHTIvTQKai2vdNlxuKcM=;
+        b=WK3QS4sDwcl1MqsLZ8ZlJxBQN83C2NF1ZVUas7Zl16IihZuW8nnIiAdMlXVMQstawm
+         aSFXBEdoeRHAIlLChzTvHtvDu26dyUkunrmDxTMVkpIkxs2BkyC5bOVJyCR0YxQLFJSa
+         x/depFRKep/anvIBotssZD8NTUXO1cfEOd3ZXEFJ+un3wIKGeIS6yibWWrSKqBTEAjOl
+         jMN+Ct87AroeiHIqPLojAgVZZ733+E8IUZ9Ap1uT5gT3PezCbTk4W3g+bIL9RAnHRdMV
+         S8ODEW3VD0b9RaZmdAiddu87FtWTOM6/TrhR9jBcOi7tV9E9yJruCRrsSBcqNiHs7KPm
+         6nxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678556257;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=B0p0qqpSJoTCtFb+Kr7i0GNnHTIvTQKai2vdNlxuKcM=;
+        b=KVjppT1QPssvE2nL2C4Bt2hbKfTr4C+GQdzOX+G7XrADRJ+/Bp3+/SdG0g+ue1mDVD
+         2P++wmAkwhCiis6I2DWIKhADfPgztG4ux4YEyZFoaDKsPN+hPtD5Dmow3wZEUCpPy7kE
+         vqfqVNcnzLsklVAxPvb2hf+3G9+va34PRLLmiVVbqdTeJc8Ofc92rkvVroz3XrUpcOd4
+         QZcIAXkGaJPN2EqQNN3/Pjp1Ns9/F0dC/ivQtfW5/FFdpoE8aw60+WplALoP4HEUjOlx
+         LDAXwDf6a3Qfnsu/F4QT5wOk/w7ShjVxPHdSL/Ygf31y6VKGYlMXfyq8zDjTP2oxYcVA
+         fGbA==
+X-Gm-Message-State: AO0yUKX7TsNMMggu1QtkIcFIZhyOPGt65zcB7GLkZGY1CI4u7FSm053A
+        ZabiobhneIPvbnDR4xLLdSBK7Q==
+X-Google-Smtp-Source: AK7set8RZc0nvHdqJFDMyISOImOTBaMDNv5a9BgnTgUHSP/vQIbWUHqUGpilsm9lUqmtf3eDSf0ZFg==
+X-Received: by 2002:a05:6402:10c9:b0:4f9:9be3:a538 with SMTP id p9-20020a05640210c900b004f99be3a538mr3722729edu.13.1678556257370;
+        Sat, 11 Mar 2023 09:37:37 -0800 (PST)
+Received: from krzk-bin.. ([2a02:810d:15c0:828:6927:e94d:fc63:9d6e])
+        by smtp.gmail.com with ESMTPSA id k15-20020a50ce4f000000b004d8287c775fsm1444903edj.8.2023.03.11.09.37.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Mar 2023 09:37:37 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        - <asahi@lists.linux.dev>,
-        Sasha Finkelstein <fnkl.kernel@gmail.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Sasha Finkelstein <7d578vix8hzw@opayq.net>
-X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1678511469; l=2061;
- i=fnkl.kernel@gmail.com; s=20230213; h=from:subject:message-id;
- bh=kC8e0IqG+WMbKwdUXKBwuQCvwcxm5IAUASQM0mxJcPI=;
- b=ylBTfjRjGzHWvEqIWhhn18jeSZMEbiaeiZg+M/rcRcOJhWSSI10M/YUir9QQPA/sTAAL13MGP
- lmTlMYqmrZgCLZym5lvq6Ad9O/zAvhiaf6Rbbtb4MUvfKfkLO1OyK5n
-X-Developer-Key: i=fnkl.kernel@gmail.com; a=ed25519;
- pk=7LFSAJtxIWAs9LzCIyX0sSvCZy2wQTyEIu1zch6o804=
-X-Endpoint-Received: by B4 Relay for fnkl.kernel@gmail.com/20230213 with auth_id=28
-X-Original-From: Sasha Finkelstein <fnkl.kernel@gmail.com>
-Reply-To: <fnkl.kernel@gmail.com>
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/2] pwm: rcar: drop of_match_ptr for ID table
+Date:   Sat, 11 Mar 2023 18:37:34 +0100
+Message-Id: <20230311173735.263293-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Sasha Finkelstein <7d578vix8hzw@opayq.net>
+The driver can match only via the DT table so the table should be always
+used and the of_match_ptr does not have any sense (this also allows ACPI
+matching via PRP0001, even though it might not be relevant here).
 
-Adds PWM controller and keyboard backlight bindings for M1 Pro/Max MacBook Pros
+  drivers/pwm/pwm-rcar.c:252:34: error: ‘rcar_pwm_of_table’ defined but not used [-Werror=unused-const-variable=]
 
-Signed-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>
-Acked-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/apple/t600x-die0.dtsi      |  9 +++++++++
- arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi | 18 ++++++++++++++++++
- 2 files changed, 27 insertions(+)
+ drivers/pwm/pwm-rcar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/apple/t600x-die0.dtsi b/arch/arm64/boot/dts/apple/t600x-die0.dtsi
-index 1c41954e3899..9157ae2a9f7f 100644
---- a/arch/arm64/boot/dts/apple/t600x-die0.dtsi
-+++ b/arch/arm64/boot/dts/apple/t600x-die0.dtsi
-@@ -71,6 +71,15 @@ sio_dart_1: iommu@39b008000 {
- 		power-domains = <&ps_sio_cpu>;
- 	};
- 
-+	fpwm0: pwm@39b030000 {
-+		compatible = "apple,t6000-fpwm", "apple,s5l-fpwm";
-+		reg = <0x3 0x9b030000 0x0 0x4000>;
-+		power-domains = <&ps_fpwm0>;
-+		clocks = <&clkref>;
-+		#pwm-cells = <2>;
-+		status = "disabled";
-+	};
-+
- 	i2c0: i2c@39b040000 {
- 		compatible = "apple,t6000-i2c", "apple,i2c";
- 		reg = <0x3 0x9b040000 0x0 0x4000>;
-diff --git a/arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi b/arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi
-index 34906d522f0a..96de7165df6d 100644
---- a/arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi
-+++ b/arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi
-@@ -9,6 +9,8 @@
-  * Copyright The Asahi Linux Contributors
-  */
- 
-+#include <dt-bindings/leds/common.h>
-+
- / {
- 	aliases {
- 		serial0 = &serial0;
-@@ -34,6 +36,18 @@ memory@10000000000 {
- 		device_type = "memory";
- 		reg = <0x100 0 0x2 0>; /* To be filled by loader */
- 	};
-+
-+	led-controller {
-+		compatible = "pwm-leds";
-+		led-0 {
-+			pwms = <&fpwm0 0 40000>;
-+			label = "kbd_backlight";
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
-+			color = <LED_COLOR_ID_WHITE>;
-+			max-brightness = <255>;
-+			default-state = "keep";
-+		};
-+	};
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 55f46d09602b..8f31f3cc93d5 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -260,7 +260,7 @@ static struct platform_driver rcar_pwm_driver = {
+ 	.remove = rcar_pwm_remove,
+ 	.driver = {
+ 		.name = "pwm-rcar",
+-		.of_match_table = of_match_ptr(rcar_pwm_of_table),
++		.of_match_table = rcar_pwm_of_table,
+ 	}
  };
- 
- &serial0 {
-@@ -110,5 +124,9 @@ &pcie0_dart_3 {
- 	status = "disabled";
- };
- 
-+&fpwm0 {
-+	status = "okay";
-+};
-+
- /delete-node/ &port02;
- /delete-node/ &port03;
-
+ module_platform_driver(rcar_pwm_driver);
 -- 
-Git-137.1)
+2.34.1
 
