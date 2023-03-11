@@ -2,50 +2,48 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D7BEC6FD1C
-	for <linux-pwm@archiver.kernel.org>; Sat, 11 Mar 2023 05:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B38F0C7618B
+	for <linux-pwm@archiver.kernel.org>; Sat, 11 Mar 2023 05:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbjCKFLR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 11 Mar 2023 00:11:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
+        id S229774AbjCKFLS (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 11 Mar 2023 00:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbjCKFLP (ORCPT
+        with ESMTP id S229614AbjCKFLP (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Sat, 11 Mar 2023 00:11:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22591CADB;
-        Fri, 10 Mar 2023 21:11:13 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952F7135B31;
+        Fri, 10 Mar 2023 21:11:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7103860B8C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08C0160BA7;
+        Sat, 11 Mar 2023 05:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0E63FC4339E;
         Sat, 11 Mar 2023 05:11:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B885CC433EF;
-        Sat, 11 Mar 2023 05:11:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678511472;
-        bh=cb5irgm1G4DAU5Vt0m927jUYDxIYKozT423yaayaW8s=;
-        h=From:Subject:Date:To:Cc:Reply-To:From;
-        b=rtYoiWNQLIm2M+k7cMe4Dob25bwDeX+SnahuKBC3SXbMfucH58dIqb1iFNVBM7hnH
-         NYgpBBDjganhI2lpQahOeI1/o+zIUILS1QTVerPQVfx4o28enUVZfyvuOWHyi7M8id
-         WdHIapUt7c54sRcBFAIAnvGDSw2kX7J9/vTtegmuvfoAEum+1NhGB4TeYPlVm1fZfv
-         2xOLp7lx/R27avMOdgDCI3MWWrAu3i+oVit/1HX5QY6p3ExvaUaah7+UfM4GsrwjdH
-         RfOnhAeWDDPjN+Z0apVaJQys+E0r0pjNwoFqcK15Hx3L/GciWyYMP974OyMdETWZvT
-         e+l7OvC6/thmA==
+        s=k20201202; t=1678511473;
+        bh=DxASz2lknCh6bcl9lub36jkmurw78TkqTmOu4olxjho=;
+        h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+        b=DPIgP4rd3920N27XufeRw2+qPTF5PuD3gMqXC9clFGVPEaWTxHG6kCwEKZTO4Aggk
+         SBPriM5P85IJwVLJ6H3w3C75/KR6nC0tEyB1hfEBMKlHT85jh8a8hNhUyEsK+EIQcb
+         7UXAFdmjQxrO7RGd53PqrQjWQZc+zdGsObBhmb8urxGBo1QjsrL2c3IBj9YfNDQMx4
+         zko3q1Wp4wjK28r3sg9jpT9C3G6lL+OoTO4nLW3L/12BBULbwNskxhrPXtoUbQ6Ikd
+         McZnHF3GR5pl0iGA2ron42vYwa82ewbDWMYALfKC7/oG3kBqIGCQN6XRvCMaBNlIQn
+         GLASpYWqFiH9w==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.lore.kernel.org (Postfix) with ESMTP id 93A17C678D5;
+        by smtp.lore.kernel.org (Postfix) with ESMTP id EC1EDC678D5;
         Sat, 11 Mar 2023 05:11:12 +0000 (UTC)
 From:   Sasha Finkelstein via B4 Relay 
         <devnull+fnkl.kernel.gmail.com@kernel.org>
-Subject: [PATCH v9 0/5] PWM and keyboard backlight driver for ARM Macs
-Date:   Sat, 11 Mar 2023 06:11:08 +0100
-Message-Id: <20230214-fpwm-v9-0-dbe26bccabd6@gmail.com>
+Date:   Sat, 11 Mar 2023 06:11:13 +0100
+Subject: [PATCH v9 5/5] MAINTAINERS: Add entries for Apple PWM driver
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAGwNDGQC/22Nyw6DIBBFf8WwLg0qCnbV/2i64DEoSREDhrYx/
- nvBVdN0ee/cc2ZDEYKFiC7VhgIkG62fcxhOFVKTmEfAVueMGtK0pKkpNsvTYc0N66XiWqsa5ak
- UEbAMYlZTGTsRVwjlsAQw9nX4b/ecJxtXH97Hu8RK+2NODBNsJBG9NFKTll1HJ+zjrLxDRZD4P
- 4hnqO+6mgui6UDpN7Tv+weMR6Z/5gAAAA==
+Message-Id: <20230214-fpwm-v9-5-dbe26bccabd6@gmail.com>
+References: <20230214-fpwm-v9-0-dbe26bccabd6@gmail.com>
+In-Reply-To: <20230214-fpwm-v9-0-dbe26bccabd6@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
@@ -56,15 +54,13 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         Sven Peter <sven@svenpeter.dev>,
         Alyssa Rosenzweig <alyssa@rosenzweig.io>
 Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sasha Finkelstein <7d578vix8hzw@opayq.net>
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1678511469; l=2133;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1678511469; l=1109;
  i=fnkl.kernel@gmail.com; s=20230213; h=from:subject:message-id;
- bh=cb5irgm1G4DAU5Vt0m927jUYDxIYKozT423yaayaW8s=;
- b=DD418MqqObwyR9NLdrnm0IOz7ab33zBMKOvaaamKf3FL6VPmoIacpE7GnO0bCEhpYhzEhASDW
- J+2WDCdMHKCBax2yGKOHWZU2lvibFL/Y77ILM9y3z6NwFoTRr3zCo9E
+ bh=H0yqy74irk0iRnaCY9EguySiHLNBuNpFanSkZMAqDr0=;
+ b=XwoGQYfCG0nhebSIi6bZqylI139vfZRnNb5i3ffwsoD6hC3VPSnJR7/CCGK2csjgK4K8JKrs+
+ JkUOEjeyKU4Agrc6a+IceoLTgo8Y+zHDvlWdJixf2xENShxDXGBnZc1
 X-Developer-Key: i=fnkl.kernel@gmail.com; a=ed25519;
  pk=7LFSAJtxIWAs9LzCIyX0sSvCZy2wQTyEIu1zch6o804=
 X-Endpoint-Received: by B4 Relay for fnkl.kernel@gmail.com/20230213 with auth_id=28
@@ -74,63 +70,37 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi,
+From: Sasha Finkelstein <fnkl.kernel@gmail.com>
 
-This is the v9 of the patch series to add PWM and keyboard
-backlight driver for ARM macs.
+Add the MAINTAINERS entries for the driver
 
-Changes in v1:
-Addressing the review comments.
-
-Changes in v2:
-Added the reviewed-by and acked-by tags.
-Addressing a review comment.
-
-Changes in v3 and v4:
-Addressing the review comments.
-
-Changes in v5:
-Added t600x device tree changes
-
-Changes in v8:
-Changed the overflow handling to clamp instead of erroring.
-
-Changes in v9:
-Missed a spot where clamping should be applied. Fixed that.
-
-v1: https://www.spinics.net/lists/linux-pwm/msg19500.html
-v2: https://www.spinics.net/lists/linux-pwm/msg19562.html
-v3: https://www.spinics.net/lists/linux-pwm/msg19901.html
-v4: https://www.spinics.net/lists/linux-pwm/msg20093.html
-v5: https://www.spinics.net/lists/linux-pwm/msg20150.html
-v6: https://www.spinics.net/lists/linux-pwm/msg20190.html
-v7: https://lore.kernel.org/r/20230214-fpwm-v7-0-fb0a6bfbd037@gmail.com
-v8: https://lore.kernel.org/r/20230214-fpwm-v8-0-65518a0d4944@gmail.com
-
+Signed-off-by: Sasha Finkelstein <fnkl.kernel@gmail.com>
+Acked-by: Sven Peter <sven@svenpeter.dev>
 ---
-Sasha Finkelstein (5):
-      dt-bindings: pwm: Add Apple PWM controller
-      pwm: Add Apple PWM controller
-      arm64: dts: apple: t8103: Add PWM controller
-      arm64: dts: apple: t600x: Add PWM controller
-      MAINTAINERS: Add entries for Apple PWM driver
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
- .../devicetree/bindings/pwm/apple,s5l-fpwm.yaml    |  51 +++++++
- MAINTAINERS                                        |   2 +
- arch/arm64/boot/dts/apple/t600x-die0.dtsi          |   9 ++
- arch/arm64/boot/dts/apple/t600x-j314-j316.dtsi     |  18 +++
- arch/arm64/boot/dts/apple/t8103-j293.dts           |  17 +++
- arch/arm64/boot/dts/apple/t8103-j313.dts           |  17 +++
- arch/arm64/boot/dts/apple/t8103.dtsi               |   9 ++
- drivers/pwm/Kconfig                                |  12 ++
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-apple.c                            | 159 +++++++++++++++++++++
- 10 files changed, 295 insertions(+)
----
-base-commit: fe15c26ee26efa11741a7b632e9f23b01aca4cc6
-change-id: 20230214-fpwm-d8f76bc8ddc1
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8d5bc223f305..7c0b7c2bb55f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1955,6 +1955,7 @@ F:	Documentation/devicetree/bindings/nvmem/apple,efuses.yaml
+ F:	Documentation/devicetree/bindings/pci/apple,pcie.yaml
+ F:	Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
+ F:	Documentation/devicetree/bindings/power/apple*
++F:	Documentation/devicetree/bindings/pwm/pwm-apple.yaml
+ F:	Documentation/devicetree/bindings/watchdog/apple,wdt.yaml
+ F:	arch/arm64/boot/dts/apple/
+ F:	drivers/bluetooth/hci_bcm4377.c
+@@ -1970,6 +1971,7 @@ F:	drivers/mailbox/apple-mailbox.c
+ F:	drivers/nvme/host/apple.c
+ F:	drivers/nvmem/apple-efuses.c
+ F:	drivers/pinctrl/pinctrl-apple-gpio.c
++F:	drivers/pwm/pwm-apple.c
+ F:	drivers/soc/apple/*
+ F:	drivers/watchdog/apple_wdt.c
+ F:	include/dt-bindings/interrupt-controller/apple-aic.h
 
-Best regards,
 -- 
-Sasha Finkelstein <fnkl.kernel@gmail.com>
+Git-137.1)
 
