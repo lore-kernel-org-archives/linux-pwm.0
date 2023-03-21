@@ -2,122 +2,95 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09DFAC74A5B
-	for <linux-pwm@archiver.kernel.org>; Tue, 21 Mar 2023 16:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78D6C74A5B
+	for <linux-pwm@archiver.kernel.org>; Tue, 21 Mar 2023 16:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbjCUQZh (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 21 Mar 2023 12:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58032 "EHLO
+        id S229487AbjCUQ0r (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 21 Mar 2023 12:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbjCUQZg (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 21 Mar 2023 12:25:36 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFAC2CFF9;
-        Tue, 21 Mar 2023 09:25:33 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id i5so15043041eda.0;
-        Tue, 21 Mar 2023 09:25:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679415932;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hHMT9Xr2+W+0aZObi2mrOj/GJsmUfVzdBpDa2xFjqFw=;
-        b=fFzSM5JkCjlmXiD09LOwSN9/IftvYM/eJdR+B6K1aOMJB2NIqughDWOlTBdy53jryF
-         6Zqjemy9MJO0nRzqV0XcXaZg5lLbncmqTAYaA8SBl0fwdqPo7a5oibu9TkvOwnTz5xYS
-         2uKemtqGytoIiQqBSD5Ku4rCma+jT0XbPU44/tCYvM9WypBtgnJCfvq4k6/GRDHKLRLk
-         scK/YfIkqowJ3bVi0wG890w4I2UCIAi+VZKVDtZrziSqv5bQJkB78eoCMnYqcg8yJf3l
-         bUDRQYG0KFAeBFpFj64r5v9UCNr9+Vco/Ra786LiwPpqD4B33raDG85crulo3voxj9tB
-         +tWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679415932;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hHMT9Xr2+W+0aZObi2mrOj/GJsmUfVzdBpDa2xFjqFw=;
-        b=JUgp+4KPulyrsbr+UdG8QYjK6IRy80/XWawtnRuCswM9rBbyEbYrDC28YRLS0lJcfH
-         HKChMRxZMnWcn5EEvzR6LXIX90xxoc13jYDRSzjtMO4qnzXP0SB3gHkREgZMy1/K+sc/
-         E7ArX60Vazq4bWEnGBy+LEnbQlNOx2/S3ezRvbddVxX9hNCMsrTva/uR3BuKP4gWOUw7
-         YD90xTKPYvisTE+Lpr21y38P32mwqig+a2Cc/z9g5PCVxITVbZvZHeE2tMs51ZUNCU5q
-         cySepNCrNKnwjvZ9k0zajQLrxiDzMoPcFAzhWdYpEpkekyRYwTePhJvc0nim5xseDhv+
-         tfMw==
-X-Gm-Message-State: AO0yUKVRMuaTyUId1zV8CwxWyKfayl4h4Skeq2EeXAwWJDi+USMBGX1Q
-        g63NLnThvKl+z4mrqoyVPyV+NDdzwyk=
-X-Google-Smtp-Source: AK7set9s5dirn8v7ylCH0oBwYIq+eEI2x+SguvYsPnh+vHgtJ9ZDva1ItQo9ylvDURpwutqCgjRDSg==
-X-Received: by 2002:aa7:c7d4:0:b0:4fa:7679:d44c with SMTP id o20-20020aa7c7d4000000b004fa7679d44cmr3402124eds.11.1679415932175;
-        Tue, 21 Mar 2023 09:25:32 -0700 (PDT)
-Received: from [192.168.1.16] ([41.42.177.251])
-        by smtp.gmail.com with ESMTPSA id a13-20020a509e8d000000b00501d73cfc86sm1483658edf.9.2023.03.21.09.25.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Mar 2023 09:25:31 -0700 (PDT)
-Message-ID: <7c883bac-382c-b429-ab21-4675dce02474@gmail.com>
-Date:   Tue, 21 Mar 2023 18:25:29 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH 2/3] staging: greybus: use inline function for macros
-Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     gregkh@linuxfoundation.org, outreachy@lists.linux.dev,
+        with ESMTP id S229583AbjCUQ0q (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 21 Mar 2023 12:26:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04151367CA;
+        Tue, 21 Mar 2023 09:26:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCD4C61D1B;
+        Tue, 21 Mar 2023 16:26:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4C4C433D2;
+        Tue, 21 Mar 2023 16:26:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1679416003;
+        bh=tKkWKaI2vB8Y3uT5D+N8CfXzL37wrUQjbZ1WKGqRlGI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AKFeVjHsPQS6dAl6zd96IZOCGHqrPcab2l3l9yTBLAqJICxz3pLG0ytby4K5Vu++u
+         EwENZ9OiiTSX31CXM/bCq5C0KstSrArKmAg3KSeKnlil+6+WUCIK6D0Mn3wlJgGzMs
+         e7Ln2zF7W0W/KZOpUHrs5W6OPI7kIcp4mM9yyiGM=
+Date:   Tue, 21 Mar 2023 17:26:40 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Menna Mahmoud <eng.mennamahmoud.mm@gmail.com>
+Cc:     Julia Lawall <julia.lawall@inria.fr>, outreachy@lists.linux.dev,
         johan@kernel.org, elder@kernel.org, vireshk@kernel.org,
-        thierry.reding@gmail.com, greybus-dev@lists.linaro.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-pwm@vger.kernel.org, Julia Lawall <julia.lawall@inria.fr>
+        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        greybus-dev@lists.linaro.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 0/3] edits in greybus driver
+Message-ID: <ZBnawJvBVkgyVh78@kroah.com>
 References: <cover.1679352669.git.eng.mennamahmoud.mm@gmail.com>
- <1274302b52ae905dab6f75377d625598facbbdf1.1679352669.git.eng.mennamahmoud.mm@gmail.com>
- <20230321154728.3r7ut3rl2pccmo2e@pengutronix.de>
-From:   Menna Mahmoud <eng.mennamahmoud.mm@gmail.com>
-In-Reply-To: <20230321154728.3r7ut3rl2pccmo2e@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <ee77a227-13bd-70ad-1d8e-f9719970e0f8@inria.fr>
+ <196b5d53-701f-e2dd-596c-9fdb6a59f5cd@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <196b5d53-701f-e2dd-596c-9fdb6a59f5cd@gmail.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+On Tue, Mar 21, 2023 at 06:22:44PM +0200, Menna Mahmoud wrote:
+> 
+> On ٢١‏/٣‏/٢٠٢٣ ١٣:٤٦, Julia Lawall wrote:
+> > 
+> > On Tue, 21 Mar 2023, Menna Mahmoud wrote:
+> > 
+> > > This patchset includes change happened in greybus driver in three
+> > > different files two of them patch one and three related to
+> > > checkpatch issue and in second patch convert two
+> > > `container_of` macros into inline functions.
+> > > 
+> > > Menna Mahmoud (3):
+> > >    staging: greybus: remove unnecessary blank line
+> > >    staging: greybus: use inline function for macros
+> > >    staging: greybus: remove unnecessary blank line
+> > Different patches should have different subject lines.
+> But I have already the same edit in both file, so should I re-write the
+> subject for one of them?
+> >    You need to either
+> > be more specific about the file affected or merge the two patches with the
+> > same subject into one.
+> 
+> each patch related to different file. So, Can I to merge two commits for
+> different files but have the same edit in one patch?
 
-On ٢١‏/٣‏/٢٠٢٣ ١٧:٤٧, Uwe Kleine-König wrote:
-> Hello,
->
-> just some nitpicks:
->
-> On Tue, Mar 21, 2023 at 01:04:33AM +0200, Menna Mahmoud wrote:
->> Convert `to_gbphy_dev` and `to_gbphy_driver` macros into a
->> static inline function.
->>
->> it is not great to have macro that use `container_of` macro,
-> s/it/It/; s/macro/macros/; s/use/use the/;
-Okay, I will fix it.
->
->> because from looking at the definition one cannot tell what type
->> it applies to.
->> [...]
->> -#define to_gbphy_dev(d) container_of(d, struct gbphy_device, dev)
->> +static inline struct gbphy_device *to_gbphy_dev(const struct device *d)
-> drivers/staging/greybus/gbphy.c always passes a variable named
-> "dev" to this macro. So I'd call the parameter "dev", too, instead of
-> "d". This is also a more typical name for variables of that type.
->
->> +{
->> +	return container_of(d, struct gbphy_device, dev);
->> +}
->> [...]
->>   };
->> -#define to_gbphy_driver(d) container_of(d, struct gbphy_driver, driver)
->> +static inline struct gbphy_driver *to_gbphy_driver(struct device_driver *d)
->> +{
->> +	return container_of(d, struct gbphy_driver, driver);
->> +}
-> With a similar reasoning (and also to not have "d"s that are either
-> device or device_driver) I'd recommend "drv" here.
+Yes, or make 2 different patches with 2 different subject lines as they
+are obviously doing different things.
 
+> but in this case no need to create patchset for all changes in `greybus`
+> driver, right?
+> 
+> If okay with that, should I versioning the patches to resend them again, or
+> should add "RESEND" subject prefix?
+> 
+> please tell me the best way to resend these patches, appreciate your help.
 
-please check this with Julia, because she said they should different.
+What would you want to see if you had to review and apply loads of
+patches like this?
 
+(hint, it's not a resend, but a new version...)
 
-Thanks,
+thanks,
 
-Menna
-
->
-> Best regards
-> Uwe
->
+greg k-h
