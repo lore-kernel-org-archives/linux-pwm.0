@@ -2,25 +2,25 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71330C76195
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCDA3C77B62
 	for <linux-pwm@archiver.kernel.org>; Tue, 28 Mar 2023 10:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232893AbjC1KL2 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 28 Mar 2023 06:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
+        id S232548AbjC1KL3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 28 Mar 2023 06:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232709AbjC1KLY (ORCPT
+        with ESMTP id S232988AbjC1KLY (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Tue, 28 Mar 2023 06:11:24 -0400
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05AA683C2;
-        Tue, 28 Mar 2023 03:11:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EEFA07EEA;
+        Tue, 28 Mar 2023 03:11:01 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.98,297,1673881200"; 
-   d="scan'208";a="157440708"
+   d="scan'208";a="157440694"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 28 Mar 2023 19:10:50 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 28 Mar 2023 19:10:43 +0900
 Received: from localhost.localdomain (unknown [10.226.92.2])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 5326640071EC;
-        Tue, 28 Mar 2023 19:10:47 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 32D9440078D3;
+        Tue, 28 Mar 2023 19:10:39 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Thierry Reding <thierry.reding@gmail.com>
@@ -31,9 +31,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Magnus Damm <magnus.damm@gmail.com>, linux-pwm@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [DO NOT APPLY PATCH v7 09/10] pinctrl: renesas: rzg2l-poeg: output-disable request by external pin
-Date:   Tue, 28 Mar 2023 11:10:10 +0100
-Message-Id: <20230328101011.185594-10-biju.das.jz@bp.renesas.com>
+Subject: [DO NOT APPLY PATCH v7 07/10] pwm: rzg2l-gpt: Add support for output disable on dead time error
+Date:   Tue, 28 Mar 2023 11:10:08 +0100
+Message-Id: <20230328101011.185594-8-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230328101011.185594-1-biju.das.jz@bp.renesas.com>
 References: <20230328101011.185594-1-biju.das.jz@bp.renesas.com>
@@ -43,73 +43,66 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add support for output-disable request by external pin.
+This patch adds support for output disable request from gpt,
+when dead time error occurred.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
- drivers/pinctrl/renesas/poeg/rzg2l-poeg.c | 9 +++++++++
- include/linux/pinctrl/rzg2l-poeg.h        | 2 ++
- 2 files changed, 11 insertions(+)
+ drivers/pwm/pwm-rzg2l-gpt.c   | 9 +++++++++
+ include/linux/pwm/rzg2l-gpt.h | 6 ++++++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/pinctrl/renesas/poeg/rzg2l-poeg.c b/drivers/pinctrl/renesas/poeg/rzg2l-poeg.c
-index 7576f756af3c..5d93a0be33f3 100644
---- a/drivers/pinctrl/renesas/poeg/rzg2l-poeg.c
-+++ b/drivers/pinctrl/renesas/poeg/rzg2l-poeg.c
-@@ -15,13 +15,16 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/pwm/rzg2l-gpt.h>
-+#include <linux/pinctrl/rzg2l-poeg.h>
- #include <linux/poll.h>
- #include <linux/reset.h>
- #include <linux/wait.h>
+diff --git a/drivers/pwm/pwm-rzg2l-gpt.c b/drivers/pwm/pwm-rzg2l-gpt.c
+index 2291cc3cff39..c88a5bf9e31d 100644
+--- a/drivers/pwm/pwm-rzg2l-gpt.c
++++ b/drivers/pwm/pwm-rzg2l-gpt.c
+@@ -74,6 +74,7 @@
+ 	(FIELD_PREP(RZG2L_GTIOR_GTIOB, RZG2L_INIT_OUT_LO_OUT_LO_END_TOGGLE) | RZG2L_GTIOR_OBE)
  
- #define POEGG_IOCE	BIT(5)
-+#define POEGG_PIDE	BIT(4)
- #define POEGG_SSF	BIT(3)
- #define POEGG_IOCF	BIT(1)
-+#define POEGG_PIDF	BIT(0)
+ #define RZG2L_GTINTAD_GRP_MASK			GENMASK(25, 24)
++#define RZG2L_GTINTAD_OUTPUT_DISABLE_DEADTIME_ERROR	BIT(28)
+ #define RZG2L_GTINTAD_OUTPUT_DISABLE_SAME_LEVEL_HIGH	BIT(29)
+ #define RZG2L_GTINTAD_OUTPUT_DISABLE_SAME_LEVEL_LOW	BIT(30)
  
- #define RZG2L_POEG_MAX_INDEX		3
+@@ -551,6 +552,14 @@ int rzg2l_gpt_poeg_disable_req_both_low(void *dev, u8 grp, bool on)
+ }
+ EXPORT_SYMBOL_GPL(rzg2l_gpt_poeg_disable_req_both_low);
  
-@@ -113,6 +116,9 @@ static irqreturn_t rzg2l_poeg_irq(int irq, void *ptr)
- 	if (val & POEGG_IOCF)
- 		val &= ~POEGG_IOCF;
- 
-+	if (val & POEGG_PIDF)
-+		val &= ~POEGG_PIDF;
++int rzg2l_gpt_poeg_disable_req_deadtime_error(void *dev, u8 grp, bool on)
++{
++	int id = RZG2L_GTINTAD_OUTPUT_DISABLE_DEADTIME_ERROR;
 +
- 	rzg2l_poeg_write(chip, val);
++	return rzg2l_gpt_poeg_disable_req_endisable(dev, grp, id, on);
++}
++EXPORT_SYMBOL_GPL(rzg2l_gpt_poeg_disable_req_deadtime_error);
++
+ static void rzg2l_gpt_reset_assert_pm_disable(void *data)
+ {
+ 	struct rzg2l_gpt_chip *rzg2l_gpt = data;
+diff --git a/include/linux/pwm/rzg2l-gpt.h b/include/linux/pwm/rzg2l-gpt.h
+index 592bc2900c9e..8a004c690c2a 100644
+--- a/include/linux/pwm/rzg2l-gpt.h
++++ b/include/linux/pwm/rzg2l-gpt.h
+@@ -8,6 +8,7 @@ int rzg2l_gpt_poeg_disable_req_clr(void *gpt_device, u8 grp);
+ int rzg2l_gpt_pin_reenable(void *gpt_device, u8 grp);
+ int rzg2l_gpt_poeg_disable_req_both_high(void *gpt_device, u8 grp, bool on);
+ int rzg2l_gpt_poeg_disable_req_both_low(void *gpt_device, u8 grp, bool on);
++int rzg2l_gpt_poeg_disable_req_deadtime_error(void *gpt_device, u8 grp, bool on);
+ #else
+ static inline u32 rzg2l_gpt_poeg_disable_req_irq_status(void *dev, u8 grp)
+ {
+@@ -33,6 +34,11 @@ static inline int rzg2l_gpt_poeg_disable_req_both_low(void *gpt_device, u8 grp,
+ {
+ 	return -ENODEV;
+ }
++
++static inline int rzg2l_gpt_poeg_disable_req_deadtime_err(void *gpt_device, u8 grp, bool on)
++{
++	return -ENODEV;
++}
+ #endif
  
- 	return IRQ_HANDLED;
-@@ -378,6 +384,9 @@ static int rzg2l_poeg_probe(struct platform_device *pdev)
- 			assign_bit(RZG2L_GPT_OABLF, chip->gpt_irq, true);
- 			assign_bit(RZG2L_GPT_DTEF, chip->gpt_irq, true);
- 			break;
-+		case POEG_EXT_PIN_CTRL:
-+			rzg2l_poeg_write(chip, POEGG_PIDE);
-+			break;
- 		default:
- 			ret = -EINVAL;
- 			goto err_pm;
-diff --git a/include/linux/pinctrl/rzg2l-poeg.h b/include/linux/pinctrl/rzg2l-poeg.h
-index 5441de7f3751..359849fea6a0 100644
---- a/include/linux/pinctrl/rzg2l-poeg.h
-+++ b/include/linux/pinctrl/rzg2l-poeg.h
-@@ -7,11 +7,13 @@
- #define RZG2L_GPT_DTEF	0
- #define RZG2L_GPT_OABHF	1
- #define RZG2L_GPT_OABLF	2
-+#define RZG2L_POEG_EXT_PIN_CTRL	3
- 
- #define RZG2L_POEG_USR_CTRL_ENABLE_CMD	0
- #define RZG2L_POEG_USR_CTRL_DISABLE_CMD	1
- #define RZG2L_POEG_GPT_CFG_IRQ_CMD		2
- #define RZG2L_POEG_GPT_FAULT_CLR_CMD		3
-+#define RZG2L_POEG_EXT_PIN_CTRL_FAULT_CLR_CMD	4
- 
- struct poeg_event {
- 	__u32 gpt_disable_irq_status;
+ #endif /* __LINUX_PWM_RZG2L_GPT_H__ */
 -- 
 2.25.1
 
