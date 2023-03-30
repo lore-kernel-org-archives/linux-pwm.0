@@ -2,105 +2,84 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED85C6FD18
-	for <linux-pwm@archiver.kernel.org>; Wed, 29 Mar 2023 20:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1049BC77B61
+	for <linux-pwm@archiver.kernel.org>; Thu, 30 Mar 2023 07:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbjC2Uwj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 29 Mar 2023 16:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58190 "EHLO
+        id S230500AbjC3HMs (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 30 Mar 2023 03:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbjC2Uw2 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 29 Mar 2023 16:52:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9B66EBD
-        for <linux-pwm@vger.kernel.org>; Wed, 29 Mar 2023 13:52:04 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1phclu-0001zE-G2; Wed, 29 Mar 2023 22:51:54 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1phcls-007cAt-7M; Wed, 29 Mar 2023 22:51:52 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1phclr-0091Ek-A4; Wed, 29 Mar 2023 22:51:51 +0200
-Date:   Wed, 29 Mar 2023 22:51:50 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        Lee Jones <lee@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v14 6/6] pwm: Add Renesas RZ/G2L MTU3a PWM driver
-Message-ID: <20230329205150.a4tdosjlojppigc6@pengutronix.de>
-References: <20230310170654.268047-1-biju.das.jz@bp.renesas.com>
- <20230310170654.268047-7-biju.das.jz@bp.renesas.com>
- <20230327204000.x67sybfbp34udwfg@pengutronix.de>
- <OS0PR01MB5922B1D75AF03CA851572AB586899@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+        with ESMTP id S230519AbjC3HMn (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 30 Mar 2023 03:12:43 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C768B6EB2;
+        Thu, 30 Mar 2023 00:12:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1680160359; x=1711696359;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gVYx9+DVF2GF+A4bANXLI3OWUXhLfRnRmzz023oqQG4=;
+  b=ezu2dR3UI36rPTpXutmGCDk0mmx6px0vj6k/9TwXe8GcsFJl5HKvWkxF
+   AS3lJY0qpqmk+BZ6JdZIhjRoIzmHYTiq0M34wwDvwS3OGyaz3eharyZo2
+   DvpXbmqF6LlgdQDvH2XSpicd7sdQ5cv0oR/IIXiSsXPLFifVCxAPmLeAq
+   S/mUOFRsmrdis/wzBykpyBWI/R+pSmCnMZaGJSVijcMuzZeB6euAf1+jb
+   9diwAzFtuqGO7wNMgGv22U9pMEdUQ9KasArHj8x2CFNm+65p0uBtBApRS
+   d/MXCjVGOj/XqLMYuzGdRd6NbC7UXT+k+9/w1J1pIhm9XcI1wxQ+N2Iov
+   w==;
+X-IronPort-AV: E=Sophos;i="5.98,303,1673938800"; 
+   d="scan'208";a="218644803"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Mar 2023 00:12:39 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 30 Mar 2023 00:12:38 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Thu, 30 Mar 2023 00:12:37 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+CC:     Daire McNamara <daire.mcnamara@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v15 2/2] MAINTAINERS: add pwm to PolarFire SoC entry
+Date:   Thu, 30 Mar 2023 08:12:04 +0100
+Message-ID: <20230330071203.286972-3-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230330071203.286972-1-conor.dooley@microchip.com>
+References: <20230330071203.286972-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6z6brxp2giiq35mf"
-Content-Disposition: inline
-In-Reply-To: <OS0PR01MB5922B1D75AF03CA851572AB586899@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+X-Developer-Signature: v=1; a=openpgp-sha256; l=668; i=conor.dooley@microchip.com; h=from:subject; bh=gVYx9+DVF2GF+A4bANXLI3OWUXhLfRnRmzz023oqQG4=; b=owGbwMvMwCFWscWwfUFT0iXG02pJDCmqZs7FklxF+hvPh86PrriyPY3jxIejC2cdT076wnxYSm3L kqKXHaUsDGIcDLJiiiyJt/tapNb/cdnh3PMWZg4rE8gQBi5OAZiIBwvDXznORqe4w71nCtbdk4+4xf Mo/mr6UoW9CWsPz9++cn19aTXD/8q2+tO3xYTV5fKWeT+Wvcr0tf7wHeXNF0Uf/d21tv/ke34A
+X-Developer-Key: i=conor.dooley@microchip.com; a=openpgp; fpr=F9ECA03CF54F12CD01F1655722E2C55B37CF380C
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Add the newly introduced pwm driver to the existing PolarFire SoC entry.
 
---6z6brxp2giiq35mf
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-Hello Biju,
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8d5bc223f305..128cc89a47d8 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17993,6 +17993,7 @@ F:	drivers/clk/microchip/clk-mpfs.c
+ F:	drivers/i2c/busses/i2c-microchip-corei2c.c
+ F:	drivers/mailbox/mailbox-mpfs.c
+ F:	drivers/pci/controller/pcie-microchip-host.c
++F:	drivers/pwm/pwm-microchip-core.c
+ F:	drivers/reset/reset-mpfs.c
+ F:	drivers/rtc/rtc-mpfs.c
+ F:	drivers/soc/microchip/mpfs-sys-controller.c
+-- 
+2.39.2
 
-On Wed, Mar 29, 2023 at 05:40:17PM +0000, Biju Das wrote:
-> [...]
-
-IMHO it's easier to send a v15 instead of discussing what you made of my
-suggestions in prosa.
-
-> > .probe() enables rz_mtu3_pwm->clk, but there is no .remove() that cares
-> > about disabling it again.
->=20
-> I believe it is ok. I have added WARN_ON for double checking.
-> Please correct me, if it is wrong.
-
-I might have missed some details in the runtime pm stuff. I'll happily
-recheck if you resend with the other things we agreed on fixed.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---6z6brxp2giiq35mf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEyBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmQkpOUACgkQj4D7WH0S
-/k7PHwf3Up6s6QHp3k7DgWe8QdKCFjJVWpf97pwB60EzM4cym+vDAtT+znVGsg1A
-IINmRwmCADerl0nDeLQWQGV+zegneCi3H4dTPO1162hk619NbAbYf3znoA0h+2yB
-d2bBYda9JuIx4t4fzn3tYMdEliecCcaXX2zmwV24+m7MRhs2mxFhKRwzHO50ELEJ
-cfZSsJVqZ1DA4SyJXjh2LdwkCmFpEe5ykveyn0wXFEJ0ruw5TplMbyF6tD+569Ui
-coJc3SxHjADL6Al/vKE79f9HwHmLygJk39Dq/E1OGNN+Vkuop99dk83bgyHfTDwQ
-s3VprgasWoIpUBSnN5OfhDTKIpG+
-=uR9f
------END PGP SIGNATURE-----
-
---6z6brxp2giiq35mf--
