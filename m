@@ -2,182 +2,153 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F62C6FD1D
-	for <linux-pwm@archiver.kernel.org>; Thu, 30 Mar 2023 07:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E2BC761AF
+	for <linux-pwm@archiver.kernel.org>; Thu, 30 Mar 2023 11:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbjC3HNe (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 30 Mar 2023 03:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
+        id S231460AbjC3LEn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 30 Mar 2023 07:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230482AbjC3HNc (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 30 Mar 2023 03:13:32 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0959326A4;
-        Thu, 30 Mar 2023 00:13:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1680160386; x=1711696386;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Yhc7Flvtw7DygHF2DgeNSHPYJ8ZzS+g4efc4mrx+3WI=;
-  b=w5bqRV/I1ETRn1oJyo7iBcjYV0f60FTFuVKYtlSJTwcNWISnhTfkFaXQ
-   R6uKFq/rHbVNkt5IKxHAqoxsD9YjtirLhoJHKzKJfHZn+SePFxSjpz/j+
-   aV6WVqBCbFvnJMPCI0GFw5m0MKe1TgTDijhJL//RKuJJjQfomiUV0Q0lw
-   5KFd0UcILSa7jSM5U1Aw4XUMDkuK8t3a3YFiIymHmePk60uXoUVcFY78M
-   LTZMxH0uZ1Jc086VxrNIKyYP+rH8LtK5hlxmYfmjSnujQ199J5oG4n8wz
-   q9YOpcFvKv0zfDto33j7cr86FrfvM1FfNBQ9HPEXS8ydWD7BSvUdGCe7V
-   w==;
-X-IronPort-AV: E=Sophos;i="5.98,303,1673938800"; 
-   d="scan'208";a="144635864"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Mar 2023 00:12:37 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 30 Mar 2023 00:12:35 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Thu, 30 Mar 2023 00:12:34 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        with ESMTP id S231344AbjC3LEm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 30 Mar 2023 07:04:42 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2097.outbound.protection.outlook.com [40.107.114.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9471724;
+        Thu, 30 Mar 2023 04:04:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NyQ9d+SmqBZd0wPF6wzVaITpCfQKmAOFt5pvsYs92PbD5NwLC1ZVMjvAeVk44JoTjm9nb92XT4ku5zkChrmsI9fLrEVFEwZ+qeI6Gi70pM2PSBA/0tL332zCzhrugmNZ/Ixs5J5dGzt3o3kLJbvjQ2wKRIblq0XSuQY8UeXDX0sJzRmCe5yy3VeHaqMF5TcZVmb9O/ComlA//9L6YAmCLztEy13EzY4j2qO2JjhI2GZX2l/9C09FK8ZDTNfdZJSAUm6SnaoqtwnPdBWcaURqCNmsBmNpoUDFT4zU2i3Gmv49tvtCbP9OANQMIjoCKwo0IkgUwQdhoZCB5ZFn1FFCpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5SyrZuUCiDnt10RLaLEy0gS9KyXn9DxTble9wqgL+q4=;
+ b=BAMVmeURMKeQJDRBVCWue9ceEtpqDCfT2gd2CJENLWje7BqNvbrLpoUlkrXBcsKDO8haPKn/gAwTDubKELUCv6ooAoImy+wFDwQgG0eTs7U6sKK9jh9yQH2FSI+qT5A0seDJlbcrVf9DcdFPoX0OHhNMOuvaTgoA3EvygD9ETY8ZDNUc4bcuiB4LzMoM3WN6rudaYHCmfxXi+5YDh6B82kxIiSAGvMlcM494/8ykId1HVvyxngve2nKg7q0mwO8gAL9GsJANK509vFHc7w08HD6xkWwXgeI2yLZuRof3/Ig8mADiTWqtmeb/o0m7Pk5c95D2r7evGgegdomTEVIQ6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5SyrZuUCiDnt10RLaLEy0gS9KyXn9DxTble9wqgL+q4=;
+ b=pznbwKDF9maT+5zWVSbyrEbpDbUAQtBFYeKvLJA9YUI0Nw/9VFjtd89yDs9IQ/xCNZ/OiKacNdKNFoACkLTuiN6fXpGCwHLpdtIuG1u1EUYL/UPG9UbfEn9RSmmaO/pmrnIF6aP5xZwCjuzOdtWiGzvjv6/RbccfAMSMiYXq63U=
+Received: from TYCPR01MB5933.jpnprd01.prod.outlook.com (2603:1096:400:47::11)
+ by TYCPR01MB10214.jpnprd01.prod.outlook.com (2603:1096:400:1ee::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20; Thu, 30 Mar
+ 2023 11:04:37 +0000
+Received: from TYCPR01MB5933.jpnprd01.prod.outlook.com
+ ([fe80::831b:77c4:7538:9f90]) by TYCPR01MB5933.jpnprd01.prod.outlook.com
+ ([fe80::831b:77c4:7538:9f90%5]) with mapi id 15.20.6254.020; Thu, 30 Mar 2023
+ 11:04:37 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v15 0/2] Microchip Soft IP corePWM driver
-Date:   Thu, 30 Mar 2023 08:12:02 +0100
-Message-ID: <20230330071203.286972-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.39.2
+CC:     Thierry Reding <thierry.reding@gmail.com>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        Lee Jones <lee@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        William Breathitt Gray <william.gray@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v14 6/6] pwm: Add Renesas RZ/G2L MTU3a PWM driver
+Thread-Topic: [PATCH v14 6/6] pwm: Add Renesas RZ/G2L MTU3a PWM driver
+Thread-Index: AQHZU3LMHTd9Hvc0bUWzblzJbkvYRK8PMbMAgALss3CAADtFAIAA7gig
+Date:   Thu, 30 Mar 2023 11:04:37 +0000
+Message-ID: <TYCPR01MB59331C96644595A095ABAB1D868E9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
+References: <20230310170654.268047-1-biju.das.jz@bp.renesas.com>
+ <20230310170654.268047-7-biju.das.jz@bp.renesas.com>
+ <20230327204000.x67sybfbp34udwfg@pengutronix.de>
+ <OS0PR01MB5922B1D75AF03CA851572AB586899@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <20230329205150.a4tdosjlojppigc6@pengutronix.de>
+In-Reply-To: <20230329205150.a4tdosjlojppigc6@pengutronix.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYCPR01MB5933:EE_|TYCPR01MB10214:EE_
+x-ms-office365-filtering-correlation-id: 49e4de37-eada-4fab-2f74-08db310e8d4e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kY3SDhRuRErDotphMIO5DYrbza3R7oRYfOROiLyeS7VHQh7tymyghcOKwRMAxW3eBMqPUHCy3MQdDuQRrB8TH4Q1Lja+79PWpWqzyzYU2HKtL4fsFsGZIIAZwhB9wqGnMnHCe5NiJ++d+7YJcNHITTkZZPEJPiciP2i2wlvdjh5eVmW8vVlyZKVGrjlnTRrslAnX9ucNeYR2+MAwWbMtRXueC9VbZjb+jdECJFhWl9tAM8xGU7JxiaEgytFNUNu5WG8J6Mwm3ybMoiZgj/zgSQwaIJM5RSp3dojg2+GhdL2QupKuZ3Vv+w4Ru6/grSwnsBEZshbhU6U4lWC45SpJzBem7UmRds7GZuIzJ3z2hC/2v/Vo74P6/DTHLyvmSG6YE0udkN8Cei5OvILDcCCmW3rq27ZktQicQspTAaMXUESgIrxSXN8yFxHtdiHg6PrlnPIsJTvw9QuPtbUfRgBahCrIowRFEkfGZSUcPqcotrhqa+pukNjMIowWbQVvQ0v6yX7VQGRS/39NTeoQP+FXsHECz2VuY2w587Mh30Op41csETPLUrTdVt5k6OiZ7ht/w62WDu32OVWBMfER9nRjWa9WD7+XYzHd99ohpLRx4kiRftXQujgUpRzp74fvmcG12aA1Jr7GWH4xsOg+WjiQNQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB5933.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(376002)(136003)(346002)(451199021)(186003)(6506007)(26005)(9686003)(478600001)(7696005)(71200400001)(4326008)(8676002)(316002)(66476007)(76116006)(64756008)(41300700001)(66556008)(66946007)(66446008)(122000001)(6916009)(2906002)(5660300002)(38100700002)(8936002)(4744005)(38070700005)(52536014)(86362001)(33656002)(55016003)(54906003)(32563001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?S3Kk+ZlpUmZaX5HN5PSqy8p8st89sQRQdZ+OKMDmrVLLb/O6x6EDYztzdb?=
+ =?iso-8859-1?Q?JhATg6ikznDUMi+h9BLQmt4TDYH3XVRY/VpmMlPZMTuP+ZlpqqVaHE6M0z?=
+ =?iso-8859-1?Q?VtYUaza3TX2gwhcjxfbQSQ4VFVqbL5LAP/r2BSTuYxHA4NQkFDq07ShPyy?=
+ =?iso-8859-1?Q?Udb+7n6+O1K3vz4gzIr49O60BXyHs8uYi4cOt4O7ONtw8DpRhIaBLFQRQH?=
+ =?iso-8859-1?Q?C5fWOTCgluzGpKckNgaWZGHaXQ35VMt1TKRxc3+MPe/1r2uHkOZXOwft48?=
+ =?iso-8859-1?Q?VZllZ0EpqermIH63kCVSdN+yBnwyJDGueAEbdG6dhmibD0CB5W4cQbapBW?=
+ =?iso-8859-1?Q?LeNpE1rfFtAApK0bzlzTOXHA/yv75GhFgxSVT9jGIFUXRv7NrRVXz3LO73?=
+ =?iso-8859-1?Q?rYRNDvcgkJer5kuT62gysXbWjnRecJkZUGDDcHc6D+bnZSo7V5OjNOrhar?=
+ =?iso-8859-1?Q?6cC+YVV58dF+wZ0R1sC9LWHjEtsFnpaT8EkhSmkZ8dFESOU83zRMZRLa49?=
+ =?iso-8859-1?Q?gYdPDLDQ73u09CKS8pNGLuavJ7UZK2Qa1K+qt/YO99E2PdMCKRU6MeS0IU?=
+ =?iso-8859-1?Q?TaqD7Ztx6fTJASWTl9HPHPSjL7jBi0d68vWSrROx/vNhWu2cOU8Aka8tpx?=
+ =?iso-8859-1?Q?zNDkjEYKamfenZEe/2d4x3gO97M0vm77dgzd9aICL3/LCIGiJuIoQHVBRu?=
+ =?iso-8859-1?Q?ijLAlQY8qtwjKZBDYlhoWWEZJSAX+1LPGSFzDdkoA9rFTVxEUdkmGjbZGS?=
+ =?iso-8859-1?Q?kkumc8SQgtWHnkESWJJS5E5R2QH6WDQUsCdXTbEN08N+3OiIFUAKa460+K?=
+ =?iso-8859-1?Q?uuCmtiq4W1r/3EuoeqY4lmnMM96NMt2NVwZFV1cjBreETpo+wkirY0++m8?=
+ =?iso-8859-1?Q?Zg5G8jXEO1ctzRVTTK9HIgr/Uep+jP9oZ2NUKNcsGGnWjTUTDMOdvHmqxc?=
+ =?iso-8859-1?Q?XwnvSvK/ad3ayYdGqjHv/aErAK/atjZag+Sa64dvy2gO43HWSo7LIecuog?=
+ =?iso-8859-1?Q?CR+ZdFJh6kYKwWrwMdPfrlw/7SdaWuqoGbfsYtQgdXbVbJexrd/m1VEs0g?=
+ =?iso-8859-1?Q?H8ORWiq+hCYBFFtTTsRKfRUiSiDYOqsh2wBezXektR5U9WECrNbZJgae/X?=
+ =?iso-8859-1?Q?z8+9Ny/EbmzKXTL79ehrUepEfB0ui18GmuqGLoGEsil6hFJi2YLMa64Gd9?=
+ =?iso-8859-1?Q?gtOGhtb7mHEs8rYvm96ZTXKDHcRk3S9r9yTi5VhTz+gaSwY4E6Mk5iUBpf?=
+ =?iso-8859-1?Q?xPBAxMP5ptX+UaXJrZMCXBSL4DDVBiTJmd1lFtE2aNN8lqMNj/gAT3CXRc?=
+ =?iso-8859-1?Q?hKyVxH80GV+1cz/GrVj2yrU9r4kTV/qlZhM29jqGHT+xuu27H/ezkJtVtt?=
+ =?iso-8859-1?Q?CX5HTG6rYcyewXBLmo+XVcwp/E0NlfHcQkiNeSi/iUdh4gQ+tAEGj25JaC?=
+ =?iso-8859-1?Q?loNjiLANrurxPtWqyQYGyYJsLB6ftSUiZzAFIq44OV6NEDkhr0mL7w00RV?=
+ =?iso-8859-1?Q?AVs7zY4+x2j/33Kwa6dAcbEOd3qsW3egTxVIFs1f2zPBZvcgRSZnOR4suc?=
+ =?iso-8859-1?Q?osA3Rsg7NM4GdhqvVrSOAq7WfSq9uhiwGpAcwFxhJeenamDEli9WQJQgMd?=
+ =?iso-8859-1?Q?zFSiiJPOQW2CE7HYYc4zXEoZM1o+UHL00DJOT9qxD08pJI65kaw9xNWA?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5109; i=conor.dooley@microchip.com; h=from:subject; bh=Yhc7Flvtw7DygHF2DgeNSHPYJ8ZzS+g4efc4mrx+3WI=; b=owGbwMvMwCFWscWwfUFT0iXG02pJDCmqZs7M+sffl+YqNccp2R9ZWMzUv3TuQmXmXzJzchwy3EO5 rrJ1lLIwiHEwyIopsiTe7muRWv/HZYdzz1uYOaxMIEMYuDgFYCI9Zxn+Cofu3t5W8nyKp8Lytj9XAg 8qNYatvmn7PH3F8WXzXoUXVTAyXKo8NTnDNym99USnUvubO73bHQ3P3Qh1/nA9ov2E5KF6PgA=
-X-Developer-Key: i=conor.dooley@microchip.com; a=openpgp; fpr=F9ECA03CF54F12CD01F1655722E2C55B37CF380C
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYCPR01MB5933.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49e4de37-eada-4fab-2f74-08db310e8d4e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2023 11:04:37.2866
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: V+6anLWQMdGw3Un87hLT5uo8v7aYCaXiEwPiscT7Gof43FZN6NNms8tAxqhQ6RuFShM5m+6USrbmSsfXbnzLGxPBGtUrAIm6DqJZ2GOeMI8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB10214
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hey Uwe, all,
+Hi Uwe,
 
-Uwe & I had a long back and forth about period calculations on v13,
-my ultimate conclusion being that, after some testing of the "corrected"
-calculation in hardware, the original calculation was correct.
-I think we had gotten sucked into discussion the calculation of the
-period itself, when we were in fact trying to calculate a bound on the
-period instead. That discussion is here:
-https://lore.kernel.org/linux-pwm/Y+ow8tfAHo1yv1XL@wendy/
+Thanks for the feedback.
 
-There was, of course, another chat about the niche bits of this
-calculation on v14 too:
-https://lore.kernel.org/linux-pwm/20230322105536.kgt3ffowefqlg6eu@pengutronix.de/
+> Subject: Re: [PATCH v14 6/6] pwm: Add Renesas RZ/G2L MTU3a PWM driver
+>=20
+> Hello Biju,
+>=20
+> On Wed, Mar 29, 2023 at 05:40:17PM +0000, Biju Das wrote:
+> > [...]
+>=20
+> IMHO it's easier to send a v15 instead of discussing what you made of my
+> suggestions in prosa.
+
+Ok, will send v15.
+
+>=20
+> > > .probe() enables rz_mtu3_pwm->clk, but there is no .remove() that
+> > > cares about disabling it again.
+> >
+> > I believe it is ok. I have added WARN_ON for double checking.
+> > Please correct me, if it is wrong.
+>=20
+> I might have missed some details in the runtime pm stuff. I'll happily
+> recheck if you resend with the other things we agreed on fixed.
 
 Thanks,
-Conor.
-
-Changes since v14:
-- change period_steps calculation logic to correctly handle the cases
-  where tmp % (254 + 1) == 0, by swapping implicit truncation for
-  explicit rounding upwards and subtracting zero
-- special case periods < 1/clk_rate & add a note in limitations about
-  this, although I think this issue wasn't present prior to v15's
-  changes
-- check for smaller suitable values of prescale, which picks the "more
-  correct" value in about half of all cases, particularly those where
-  tmp is large.
-- explain what I mean by the "optimal" values for prescale/period steps
-  re-fix use of defines
-- add a comment about how sync_upd mode works
-- make the use of period_steps and prescale consistently refer to the
-  register values rather than, in comments, using these to mean the
-  resulting values after 1 has been added
-- drop the PREG_TO_VAL() macro, as most of its users are now gone & it
-  only added to the register value versus "real" value problem
-- report pwmchip_add() failures
-
-Changes since v13:
-- couple bits of cleanup to apply_locked(), suggested by Uwe
-- move the overhead waiting for a change to be applied, for channels
-  with shadow registers, to subsequent calls to apply(). This has the
-  benefit of only waiting when two calls to apply() are close in time
-  rather than eating the delay in every call.
-
-Changes since v11:
-- swap a "bare" multiply & divide for the corresponding helper to
-  prevent overflow
-- factor out duplicate clk rate acquisition & period calculation
-- make the period calculation return void by checking the validity of
-  the clock rate in the caller
-- drop the binding & dt patch, they're on-track for v6.2 via my tree
-
-Changes since v10:
-- reword some comments
-- try to assign the period if a disable is requested
-- drop a cast around a u8 -> u16 conversion
-- fix a check on period_steps that should be on the hw_ variant
-- split up the period calculation in get_state() to fix the result on
-  32 bit
-- add a rate variable in get_state() to only call get_rate() once
-- redo the locking as suggested to make it more straightforward.
-- stop checking for enablement in get_state() that was working around
- intended behaviour of the sysfs interface
-
-Changes since v9:
-- fixed the missing unlock that Dan reported
-
-Changes since v8:
-- fixed a(nother) raw 64 bit division (& built it for riscv32!)
-- added a check to make sure we don't try to sleep for 0 us
-
-Changes since v7:
-- rebased on 6.0-rc1
-- reworded comments you highlighted in v7
-- fixed the overkill sleeping
-- removed the unused variables in calc_duty
-- added some extra comments to explain behaviours you questioned in v7
-- make the mutexes un-interruptible
-- fixed added the 1s you suggested for the if(period_locked) logic
-- added setup of the channel_enabled shadowing
-- fixed the period reporting for the negedge == posedge case in
-  get_state() I had to add the enabled check, as otherwise it broke
-  setting the period for the first time out of reset.
-- added a test for invalid PERIOD_STEPS values, in which case we abort
-  if we cannot fix the period
-
-Changes from v6:
-- Dropped an unused variable that I'd missed
-- Actually check the return values of the mutex lock()s
-- Re-rebased on -next for the MAINTAINERS patch (again...)
-
-Changes from v5:
-- switched to a mutex b/c we must sleep with the lock taken
-- simplified the locking in apply() and added locking to get_state()
-- reworked apply() as requested
-- removed the loop in the period calculation (thanks Uwe!)
-- add a copy of the enable registers in the driver to save on reads.
-- remove the second (useless) write to sync_update
-- added some missing rounding in get_state()
-- couple other minor cleanups as requested in:
-https://lore.kernel.org/linux-riscv/20220709160206.cw5luo7kxdshoiua@pengutronix.de/
-
-Changes from v4:
-- dropped some accidentally added files
-
-Changes before v4:
-https://lore.kernel.org/linux-pwm/20220721172109.941900-1-mail@conchuod.ie
-
-Conor Dooley (2):
-  pwm: add microchip soft ip corePWM driver
-  MAINTAINERS: add pwm to PolarFire SoC entry
-
- MAINTAINERS                      |   1 +
- drivers/pwm/Kconfig              |  10 +
- drivers/pwm/Makefile             |   1 +
- drivers/pwm/pwm-microchip-core.c | 507 +++++++++++++++++++++++++++++++
- 4 files changed, 519 insertions(+)
- create mode 100644 drivers/pwm/pwm-microchip-core.c
-
--- 
-2.39.2
-
+Biju
