@@ -2,104 +2,86 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E27C77B61
-	for <linux-pwm@archiver.kernel.org>; Sun,  9 Apr 2023 15:16:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0EC9C76196
+	for <linux-pwm@archiver.kernel.org>; Mon, 10 Apr 2023 21:17:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbjDIPQA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 9 Apr 2023 11:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
+        id S229626AbjDJVRy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 10 Apr 2023 17:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjDIPP7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 9 Apr 2023 11:15:59 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C8A3A8D
-        for <linux-pwm@vger.kernel.org>; Sun,  9 Apr 2023 08:15:57 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-504718a2265so1908417a12.2
-        for <linux-pwm@vger.kernel.org>; Sun, 09 Apr 2023 08:15:57 -0700 (PDT)
+        with ESMTP id S229507AbjDJVRx (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 10 Apr 2023 17:17:53 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7727B1BF7
+        for <linux-pwm@vger.kernel.org>; Mon, 10 Apr 2023 14:17:52 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ud9so15229300ejc.7
+        for <linux-pwm@vger.kernel.org>; Mon, 10 Apr 2023 14:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1681053356; x=1683645356;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+        d=googlemail.com; s=20210112; t=1681161471;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5Al1LHFrT9+plpcBLVRezELznyWJyVoaJnaezPUgcF4=;
-        b=WZTnRVtyyCX3XAI/9IXuHB3b6RrNv/SsBkmFPmc68C/MltXlia1eje7s30qBBY9oHF
-         su40ISV+YoCe66oWNBpN+v4LMYFz9lcMinZaofFaHmazM4RRgLFicNGjlhTMeD8XmST2
-         cGQY65wOGOzpcs2qQSQ1aTpqWWQCP6xDODafMAx8DDWSkDQ7NydbfyIhhlrU+V9zzLHp
-         5j/FdwFCeE2AZR1i9LzmTMTgZkTSORCw5spZxcizhxfQIboiqxCU4r0M7erSwL/hRfZQ
-         v5ddtTUKO63fhTB3cI1SuqIl/Hvj5KicbnOS5WLNjh8KQcpyJsdtllAXFpDuwJayGx6G
-         qRVQ==
+        bh=HX4pMm0HUYEgd2HxlMec5J8tdhlQ5dZZpC9ZyoRDBIw=;
+        b=Mf/2sJDz+Q4/r6ZzIqgYpTRIMkeidgGXr5qgvkaW0hCi1LnR/EN45FJeDOZGhdmn9Z
+         qYqbrpBGAhFgBHngNfpROJXLRi/Ggsuh3bhekiBgZhJz6Yf2FNqzuRt0R5s5TYLbUDBG
+         0C/nLRQpZiIUpxAVu4BySNEh+mYV4SY4fNOoBxEttoOtX1nq6C6+4qum/rEemEJ/3mjV
+         1IC2gBBSjHCR9h7G/x0n9qksEZ7ckpaDnw5ZPUdunTdlGqG2oJjyI4JvkiLAjqq2bBZ3
+         12E7YZKDtYFDSz2i0LqM5svjqWfFThBkqHw6DEDcM1sIf6bcTz72EY2deds3/QONc9GI
+         IWhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681053356; x=1683645356;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=5Al1LHFrT9+plpcBLVRezELznyWJyVoaJnaezPUgcF4=;
-        b=tIN0IQwq04SD3yJgOHUDKqFzgpygpk5E6Omsd64w1kuiWwwE0skz/T+MnXzM17tvHc
-         BnCYst4sucKkckKyoAf3tnK8BcpwSUDFdYlzuVJGNz3M8BJfM74TpqzxxemYhCtEFbKf
-         G2lKpp7NpJfNbQJ8b3WnjpzNxJGzpFmzlPaeAYJSzVTqB/dyw1MObekP4YFHazg3kA/d
-         VbHi7BgB1oK3P+msAGADXRCja1O3q3D+tkMsh4rpluFiDvBcTQ+f5pSuLDHmSmpf7wbT
-         FhEKs2r2uq9TttRCep+dJzgyfdeXZGa1/LsFsBQzuu+2CWFXQLzoYNSB/13ssV4Irp0D
-         uczA==
-X-Gm-Message-State: AAQBX9eBdtW7lUrfh/bEdNI1XLCtltMIrIHBZw2dI212MM+PZULtx4Kb
-        vs7A/1wjmhSD0owUtZHrM/E=
-X-Google-Smtp-Source: AKy350b4nVjPPZSIcozRDhxLFOvnIY8jbn9Nshb1z6he5aS2hFU/rxY9WWwskx+5UiANKmuW/wsEcA==
-X-Received: by 2002:a05:6402:746:b0:4fd:2b13:b20e with SMTP id p6-20020a056402074600b004fd2b13b20emr3592714edy.30.1681053356184;
-        Sun, 09 Apr 2023 08:15:56 -0700 (PDT)
-Received: from ?IPV6:2a01:c22:7ab2:4700:19e6:ecdf:3dcc:c731? (dynamic-2a01-0c22-7ab2-4700-19e6-ecdf-3dcc-c731.c22.pool.telefonica.de. [2a01:c22:7ab2:4700:19e6:ecdf:3dcc:c731])
-        by smtp.googlemail.com with ESMTPSA id i13-20020a50c3cd000000b004fa012332ecsm2583301edf.1.2023.04.09.08.15.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 Apr 2023 08:15:54 -0700 (PDT)
-Message-ID: <ffc3e4e7-b2ea-1a56-4fff-6554ad3775c0@gmail.com>
-Date:   Sun, 9 Apr 2023 17:15:52 +0200
+        d=1e100.net; s=20210112; t=1681161471;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HX4pMm0HUYEgd2HxlMec5J8tdhlQ5dZZpC9ZyoRDBIw=;
+        b=HLyrQXM3aWQPvJE5soXnvuGB+Bv0gMEEKfjgfUFNNvelFEu0/MT+2hRolQBgt2S6ZX
+         e9Hd/LyJ/b3/GM8F6CQ1X9CYxRPXegZpL15Vj9aiGqKSLDkwbS3gB8ciG+uhdkCNDgc9
+         iPqxt4pseJKunEXhqcLymUqosUE5i3Em0NUHoTJfRARdITi3qxhCeiL/hhT6ZHzSHSU1
+         SxIVCOz16IkGD74tjyov7+Ijrx871o75CuN36f5fqvNHFNFIIwY+s3kEVUqXsQEn/7b9
+         vug939LoTLrGUDP4GtLevBH5HqF+ZSDn9Od0WeLG/+HggGmp6c3wl0vPo8jtzifOVx8L
+         RBmQ==
+X-Gm-Message-State: AAQBX9cmUEje0ZmY+Ftpk+azZ9HS011ISCvgJ67McJqiNY+rz/PygvbV
+        HqKqzWp7tvuaUWQ+LiBSP/3rM5Kf9F+sQqYacRc=
+X-Google-Smtp-Source: AKy350YXOtyl8kqEN+naCYoiJKtnE7t02F/SyPuKcF33pzLILbum3kNrqoFNlOANdeMKlYMnoqA1VBXvBdAwgJAstFw=
+X-Received: by 2002:a17:906:b301:b0:930:90ce:a1a6 with SMTP id
+ n1-20020a170906b30100b0093090cea1a6mr3288633ejz.6.1681161470764; Mon, 10 Apr
+ 2023 14:17:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Content-Language: en-US
-To:     Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+References: <ffc3e4e7-b2ea-1a56-4fff-6554ad3775c0@gmail.com>
+In-Reply-To: <ffc3e4e7-b2ea-1a56-4fff-6554ad3775c0@gmail.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 10 Apr 2023 23:17:40 +0200
+Message-ID: <CAFBinCAbG1apYVgaMuegk=aT67YXer9dfc3NEuLbjxDwPEJR0Q@mail.gmail.com>
+Subject: Re: [PATCH v2] pwm: meson: fix axg ao mux parents
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jerome Brunet <jbrunet@baylibre.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
         Kevin Hilman <khilman@baylibre.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>
-Cc:     "linux-arm-kernel@lists.infradead.org" 
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
         "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
         linux-pwm@vger.kernel.org, Jian Hu <jian.hu@amlogic.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2] pwm: meson: fix axg ao mux parents
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This fix is basically the same as 9bce02ef0dfa ("pwm: meson: Fix the
-G12A AO clock parents order"). Vendor driver referenced there has
-xtal as first parent also for axg ao. In addition fix the name
-of the aoclk81 clock. Apparently name aoclk81 as used by the vendor
-driver was changed when mainlining the axg clock driver.
-
-Fixes: bccaa3f917c9 ("pwm: meson: Add clock source configuration for Meson-AXG")
-Cc: stable@vger.kernel.org
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/pwm/pwm-meson.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index b5c746fab..0fe0400c2 100644
---- a/drivers/pwm/pwm-meson.c
-+++ b/drivers/pwm/pwm-meson.c
-@@ -381,7 +381,7 @@ static const struct meson_pwm_data pwm_axg_ee_data = {
- };
- 
- static const char * const pwm_axg_ao_parent_names[] = {
--	"aoclk81", "xtal", "fclk_div4", "fclk_div5"
-+	"xtal", "axg_ao_clk81", "fclk_div4", "fclk_div5"
- };
- 
- static const struct meson_pwm_data pwm_axg_ao_data = {
--- 
-2.40.0
-
+On Sun, Apr 9, 2023 at 5:15=E2=80=AFPM Heiner Kallweit <hkallweit1@gmail.co=
+m> wrote:
+>
+> This fix is basically the same as 9bce02ef0dfa ("pwm: meson: Fix the
+> G12A AO clock parents order"). Vendor driver referenced there has
+> xtal as first parent also for axg ao. In addition fix the name
+> of the aoclk81 clock. Apparently name aoclk81 as used by the vendor
+> driver was changed when mainlining the axg clock driver.
+>
+> Fixes: bccaa3f917c9 ("pwm: meson: Add clock source configuration for Meso=
+n-AXG")
+> Cc: stable@vger.kernel.org
+>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
