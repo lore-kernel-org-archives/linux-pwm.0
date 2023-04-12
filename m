@@ -2,35 +2,35 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB783C77B7F
-	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 11:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 599B9C7619A
+	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 11:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230313AbjDLL2F (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 12 Apr 2023 07:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
+        id S230332AbjDLL2G (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 12 Apr 2023 07:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230224AbjDLL2D (ORCPT
+        with ESMTP id S230286AbjDLL2D (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 07:28:03 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809002D40;
-        Wed, 12 Apr 2023 04:27:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABF22D55;
+        Wed, 12 Apr 2023 04:27:52 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id D08DA660320D;
-        Wed, 12 Apr 2023 12:27:46 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id A92A8660321B;
+        Wed, 12 Apr 2023 12:27:49 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1681298868;
-        bh=NzUsNWSsVvvmJv02n7djBLkN0Zq4SqWAI0O2gjnIL7g=;
+        s=mail; t=1681298871;
+        bh=ldbfDeNpQ5/zM9eHSB8JeIaBEL0OQKQfjXn1SCCi2DU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TaSKHO3sqFHwQzFrGRDBpls+rHV/AP954ERZJw6yABDWUD5PIT4SKcKRFKQDqKDqF
-         Cx57kdOJOjloHkvOGcyxZjFZa/CdgAJ9H8BYQ4L6FBhm7kjkcYJj4ToOTQQX/yxLag
-         vc51ZMhp7l2xesHnA98ycICf28mCxFwhY02T9Qx/c4guG59O7y63UxwJ5B2Tc7XTr5
-         K9BdKBAVQujJ6o/z6dFYkN8P4arc0kpaB3BowYxcjqOiJ5ZbHmVf05YG38M06NytC3
-         /I9+60MfGHs92i3dGaXq3PgkHgi+hGUExGMNiNtDQwzHJft4thyWZE6LNM9VjPK4lQ
-         zzCWvsYIj8CDw==
+        b=mxXjiJZ7p1YY1OBLjncsrhMXEP05TZ0vQDDw0eNavUZTqfIUSBJNLAPI/rIf/1mBq
+         fW8TNlmIwFwmGQfnFIQf05/YA2CPZVCyesNm6ws6hfc0FknxVQR6pzmR9dot980XC4
+         pWZ6jir2AzEAzQ9AHpJLlrT0sXC/TCV9e9WLeWaKkQhhWaCvE7xD6KueZe4vjo25HE
+         /01O4v6h5nBb8/KUU8c/v8uqAY3B1YccUB4i8RTLhfvuE87uV6ei8Q1lZL4t2vYIYx
+         yB/4gBkWRSWVVX1eelHbULStSTgwINvWXqhXuWzIK3HPlsjrHXwvNzvRz0la2VFOc9
+         bLAKwfRYagZeA==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     matthias.bgg@gmail.com
@@ -47,9 +47,9 @@ Cc:     p.zabel@pengutronix.de, airlied@gmail.com, daniel@ffwll.ch,
         linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org,
         kernel@collabora.com, phone-devel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 02/27] dt-bindings: phy: mediatek,dsi-phy: Add compatible for MT6795 Helio X10
-Date:   Wed, 12 Apr 2023 13:27:14 +0200
-Message-Id: <20230412112739.160376-3-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 04/27] dt-bindings: display: mediatek: aal: Add compatible for MediaTek MT6795
+Date:   Wed, 12 Apr 2023 13:27:16 +0200
+Message-Id: <20230412112739.160376-5-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
 References: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
@@ -59,29 +59,26 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add a compatible string for MediaTek Helio X10 MT6795: this SoC uses
-the same DSI PHY as MT8173.
+Add a compatible string for MediaTek Helio X10 MT6795: similarly to
+MT8173, this SoC has the gamma LUT registers in DISP_AAL.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- Documentation/devicetree/bindings/phy/mediatek,dsi-phy.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../devicetree/bindings/display/mediatek/mediatek,aal.yaml       | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/phy/mediatek,dsi-phy.yaml b/Documentation/devicetree/bindings/phy/mediatek,dsi-phy.yaml
-index 26f2b887cfc1..a9f78344efdb 100644
---- a/Documentation/devicetree/bindings/phy/mediatek,dsi-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/mediatek,dsi-phy.yaml
-@@ -24,6 +24,10 @@ properties:
-           - enum:
-               - mediatek,mt7623-mipi-tx
-           - const: mediatek,mt2701-mipi-tx
-+      - items:
-+          - enum:
-+              - mediatek,mt6795-mipi-tx
-+          - const: mediatek,mt8173-mipi-tx
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+index 92741486c24d..7fd42c8fdc32 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+@@ -27,6 +27,7 @@ properties:
        - items:
            - enum:
-               - mediatek,mt8365-mipi-tx
+               - mediatek,mt2712-disp-aal
++              - mediatek,mt6795-disp-aal
+           - const: mediatek,mt8173-disp-aal
+       - items:
+           - enum:
 -- 
 2.40.0
 
