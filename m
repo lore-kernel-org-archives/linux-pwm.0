@@ -2,35 +2,35 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6998FC7619A
-	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 11:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06577C77B72
+	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 11:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231321AbjDLL21 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 12 Apr 2023 07:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        id S231335AbjDLL22 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 12 Apr 2023 07:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbjDLL2O (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 07:28:14 -0400
+        with ESMTP id S230385AbjDLL2P (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 07:28:15 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F0B2D40;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5273C2A;
         Wed, 12 Apr 2023 04:28:04 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id BD5396603222;
-        Wed, 12 Apr 2023 12:27:56 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9942C660323A;
+        Wed, 12 Apr 2023 12:27:59 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1681298878;
-        bh=xWx6EegFN/Cbl8Z4PW24l4hQjXItZf81rLKoJwUO+Qo=;
+        s=mail; t=1681298880;
+        bh=PAEIMzwoCtkdbqGv4A8L/iPGet0PclfpZuqMQPM2HcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=en1fQNlpo7h26/3IGRfMpiL0JCdY+sdr34CvR3a22Mg5ATikZObWikLJOC5tP/Zq8
-         yeNSzjV2lluyQoldlcc351dLO/sfJIWdfEtvAmFU/daLTEr18dweZIbLx0uyyEBD0d
-         VI9oB28mqgxMHs6Erw1BBiXpgRJjHV7j0WrfaGcaGhalGxcCqtEseHI4F/XQpcq9Oc
-         zyAh6aIfUVyaaTH2A8HCzS8Kyt9Kx3Yxx0LMqZ2Hb1X+lD1tOJRnF79Z4zdEOGxV3r
-         4BP5lZkpcjNQcHoSt2Cj0D5weFNsgCx7Q8y4+lRBRubKn3Y2Q21jHLcQVWe/sCt7nZ
-         b2pQWmeXfT2AA==
+        b=J9Ppv5/sBFmqMx+rakSqPF3CVQOMG6s1dku5Gwthks6GTOKqI5N0oq+Kry+gZ07m6
+         S+a8w5uHwRjrz+B0rokshjSpr/KSyXkOxcPTtm5pw6bRYlYxhuAFkRLhP+/k27OVyZ
+         W0T7g4ABXRDy0biYk0Sfncyl2dYnCSG92G3wAmuHFqZjyeXHNxl9/ZVtKF0tE0gwR/
+         sW8ZocQE3Hh1VGAuJbZMi5dQfAcOJfcS27itNqI7D2z/j7Tx8NFj7NlyZB8wK5sRlG
+         d1mMeyhn/4LryWoPj+/g7kv/wExgm1rjo7PnnGFZL+c4VFb2/2LVWP12rp1Rd9mhPE
+         WQaNaDdgT7Lbw==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     matthias.bgg@gmail.com
@@ -47,9 +47,9 @@ Cc:     p.zabel@pengutronix.de, airlied@gmail.com, daniel@ffwll.ch,
         linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org,
         kernel@collabora.com, phone-devel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 09/27] dt-bindings: display: mediatek: color: Add compatible for MediaTek MT6795
-Date:   Wed, 12 Apr 2023 13:27:21 +0200
-Message-Id: <20230412112739.160376-10-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 11/27] dt-bindings: display: mediatek: merge: Add compatible for MediaTek MT6795
+Date:   Wed, 12 Apr 2023 13:27:23 +0200
+Message-Id: <20230412112739.160376-12-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
 References: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
@@ -59,26 +59,28 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add a compatible string for MediaTek Helio X10 MT6795's COLOR block: this
+Add a compatible string for MediaTek Helio X10 MT6795's MERGE block: this
 is the same as MT8173.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../devicetree/bindings/display/mediatek/mediatek,color.yaml     | 1 +
- 1 file changed, 1 insertion(+)
+ .../devicetree/bindings/display/mediatek/mediatek,merge.yaml   | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
-index 62306c88f485..449b37c7560f 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
-@@ -35,6 +35,7 @@ properties:
-           - const: mediatek,mt2701-disp-color
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.yaml
+index 69ba75777dac..be330be1399a 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.yaml
+@@ -25,6 +25,9 @@ properties:
+           - const: mediatek,mt8173-disp-merge
        - items:
-           - enum:
-+              - mediatek,mt6795-disp-color
-               - mediatek,mt8183-disp-color
-               - mediatek,mt8186-disp-color
-               - mediatek,mt8188-disp-color
+           - const: mediatek,mt8195-disp-merge
++      - items:
++          - const: mediatek,mt6795-disp-merge
++          - const: mediatek,mt8173-disp-merge
+ 
+   reg:
+     maxItems: 1
 -- 
 2.40.0
 
