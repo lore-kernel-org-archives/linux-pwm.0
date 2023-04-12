@@ -2,42 +2,42 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08209C77B6C
-	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 21:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 994F0C77B78
+	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 21:04:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbjDLVEV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 12 Apr 2023 17:04:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37206 "EHLO
+        id S230271AbjDLVEg (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 12 Apr 2023 17:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbjDLVEM (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 17:04:12 -0400
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8927D85;
-        Wed, 12 Apr 2023 14:04:10 -0700 (PDT)
-Received: by mail-ot1-f46.google.com with SMTP id w15-20020a056830410f00b006a386a0568dso13538665ott.4;
-        Wed, 12 Apr 2023 14:04:10 -0700 (PDT)
+        with ESMTP id S229812AbjDLVEV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 17:04:21 -0400
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203C4729F;
+        Wed, 12 Apr 2023 14:04:20 -0700 (PDT)
+Received: by mail-ot1-f51.google.com with SMTP id u24-20020a9d7218000000b006a413c893c8so2422985otj.10;
+        Wed, 12 Apr 2023 14:04:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681333436; x=1683925436;
+        d=1e100.net; s=20221208; t=1681333438; x=1683925438;
         h=date:subject:message-id:references:in-reply-to:cc:to:from
          :mime-version:content-transfer-encoding:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=djvELGPiz2X7+nxWdiXWHHU3TDK+TW+pNOfsGeO7c30=;
-        b=LPsfdSZt1544Hfk+c2nIC0SSBq6FaXkNJXH528FLmP4/VsQCClCZeY/SsemUs7pH3F
-         ReErn+d1Bgy3Kw9mYMqPLYkmjJCZkcsVQN1diwEycPjqkC+mE/HH+Ywh5MNHjKofljlJ
-         xNZFIhV/knh3up/7T3w04tWBwmPQakb0Zy6Ty/9ibRWyItsMKBiCmrAZIp7bKsvDSsae
-         7R5KEa3na85Hz1CR4XqfrVMS+NeejBcXEzaCRFhC1BiuZttwHyplvgLcBqEXfCchcW1d
-         3ML5x3RX68QnxEfTm94ovkO1e0Antv3vlzQ9DlLRRkCF19kQeXRz0g/tmYCAQROpxSnL
-         Xl6w==
-X-Gm-Message-State: AAQBX9czWe+3TZtpwA4jMPXC7mULP29GsVe0kB/JoX2Ph/v8tCJqw+l1
-        iEozRaDZN2vjDJ3qtCbHVg==
-X-Google-Smtp-Source: AKy350ZPaxQqCIVs+haHZm96AVYtUTY7Qo26AYMJnx+qKKJp/dAi3OmoVXf+cund9KGn0KbJXB+BWw==
-X-Received: by 2002:a9d:7d0e:0:b0:6a1:42ee:1f5e with SMTP id v14-20020a9d7d0e000000b006a142ee1f5emr6568051otn.0.1681333436323;
-        Wed, 12 Apr 2023 14:03:56 -0700 (PDT)
+        bh=xhMw93yysyOYrwKp1hI3dRgsA4+S2zDf16pTeQ0jQhE=;
+        b=QKsxqnYMxAuUvtO1qHS9bWSWE0Z0d3gsFYhGzxIzne7t/MRIRbpKffRXZRwY+tGYxz
+         2KQ/LRuUMKRGv4sn3aJNWxfSpn2HjvZKIVpLsLO0//MVao9TPphSzISUCC/ifS5e4Vk9
+         G5HctMEPlzaXH0D58F8Xd2ZS6kuwRX3mz92GLZ9w5ahgL/grz5vbECO67KPSO/WpxQ4v
+         egXgcy5Pk+cU4A/hYMwV+KEGyJSH6KHZTGmlfzdQl3rBt6IoYCewDcfygQpy78ErgVS4
+         frP2egEThgctaxxioxUmGOT41Z6Ashr8PQVxmrXx939zhO0HY6DQt2+LGLaTOyHxkOQu
+         Yzog==
+X-Gm-Message-State: AAQBX9c0f0WTayzkekXCkamQdt63QBKavhcMrq+w5GKOxbMBrLSebXN0
+        l/xbHN3flfSVzOx7rLRT+g==
+X-Google-Smtp-Source: AKy350bDX+UH3xmkYuUvscW0CL6cCSZRAiDFFLGLOqiUOEqq1NjVCfl2xG/WT5gMBlmEZh0qKgWGKg==
+X-Received: by 2002:a05:6830:146:b0:6a1:3101:8e29 with SMTP id j6-20020a056830014600b006a131018e29mr9619627otp.18.1681333437931;
+        Wed, 12 Apr 2023 14:03:57 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q22-20020a056830019600b0069d602841e7sm20803ota.72.2023.04.12.14.03.55
+        by smtp.gmail.com with ESMTPSA id e26-20020a0568301e5a00b0069fa776d3c2sm54079otj.18.2023.04.12.14.03.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 14:03:56 -0700 (PDT)
-Received: (nullmailer pid 3200539 invoked by uid 1000);
+        Wed, 12 Apr 2023 14:03:57 -0700 (PDT)
+Received: (nullmailer pid 3200535 invoked by uid 1000);
         Wed, 12 Apr 2023 21:03:44 -0000
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -45,25 +45,25 @@ MIME-Version: 1.0
 From:   Rob Herring <robh@kernel.org>
 To:     AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Cc:     daniel@ffwll.ch, xinlei.lee@mediatek.com,
-        dri-devel@lists.freedesktop.org, jitao.shi@mediatek.com,
-        thierry.reding@gmail.com, phone-devel@vger.kernel.org,
-        matthias.bgg@gmail.com, kernel@collabora.com,
-        jassisinghbrar@gmail.com, robh+dt@kernel.org,
+Cc:     linux-arm-kernel@lists.infradead.org, chunfeng.yun@mediatek.com,
+        kishon@kernel.org, chunkuang.hu@kernel.org,
         krzysztof.kozlowski+dt@linaro.org,
-        linux-mediatek@lists.infradead.org, u.kleine-koenig@pengutronix.de,
+        linux-mediatek@lists.infradead.org,
+        ~postmarketos/upstreaming@lists.sr.ht, matthias.bgg@gmail.com,
+        thierry.reding@gmail.com, devicetree@vger.kernel.org,
+        kernel@collabora.com, u.kleine-koenig@pengutronix.de,
+        daniel@ffwll.ch, jitao.shi@mediatek.com, linux-pwm@vger.kernel.org,
+        robh+dt@kernel.org, jassisinghbrar@gmail.com,
+        phone-devel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        airlied@gmail.com, ck.hu@mediatek.com, vkoul@kernel.org,
+        houlong.wei@mediatek.com, linux-kernel@vger.kernel.org,
         linux-phy@lists.infradead.org, p.zabel@pengutronix.de,
-        airlied@gmail.com, linux-arm-kernel@lists.infradead.org,
-        houlong.wei@mediatek.com, chunkuang.hu@kernel.org,
-        chunfeng.yun@mediatek.com, ck.hu@mediatek.com,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kishon@kernel.org, vkoul@kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, devicetree@vger.kernel.org
-In-Reply-To: <20230412112739.160376-14-angelogioacchino.delregno@collabora.com>
+        xinlei.lee@mediatek.com
+In-Reply-To: <20230412112739.160376-8-angelogioacchino.delregno@collabora.com>
 References: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
- <20230412112739.160376-14-angelogioacchino.delregno@collabora.com>
-Message-Id: <168133319867.3191434.734350328370744826.robh@kernel.org>
-Subject: Re: [PATCH 13/27] dt-bindings: display: mediatek: ufoe: Add
+ <20230412112739.160376-8-angelogioacchino.delregno@collabora.com>
+Message-Id: <168133319439.3191194.3289065027670891182.robh@kernel.org>
+Subject: Re: [PATCH 07/27] dt-bindings: display: mediatek: rdma: Add
  compatible for MediaTek MT6795
 Date:   Wed, 12 Apr 2023 16:03:44 -0500
 Precedence: bulk
@@ -71,14 +71,14 @@ List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
-On Wed, 12 Apr 2023 13:27:25 +0200, AngeloGioacchino Del Regno wrote:
-> Add a compatible string for MediaTek Helio X10 MT6795's UFOE block: this
+On Wed, 12 Apr 2023 13:27:19 +0200, AngeloGioacchino Del Regno wrote:
+> Add a compatible string for MediaTek Helio X10 MT6795's RDMA block: this
 > is the same as MT8173.
 > 
 > Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  .../devicetree/bindings/display/mediatek/mediatek,ufoe.yaml    | 3 +++
->  1 file changed, 3 insertions(+)
+>  .../devicetree/bindings/display/mediatek/mediatek,rdma.yaml   | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
 
 Running 'make dtbs_check' with the schema in this patch gives the
@@ -88,12 +88,14 @@ incorrect. These may not be new warnings.
 Note that it is not yet a requirement to have 0 warnings for dtbs_check.
 This will change in the future.
 
-Full log is available here: https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230412112739.160376-14-angelogioacchino.delregno@collabora.com
+Full log is available here: https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230412112739.160376-8-angelogioacchino.delregno@collabora.com
 
 
-ufoe@1401a000: 'mediatek,gce-client-reg' does not match any of the regexes: 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/mediatek/mt8173-elm.dtb
-	arch/arm64/boot/dts/mediatek/mt8173-elm-hana.dtb
-	arch/arm64/boot/dts/mediatek/mt8173-elm-hana-rev7.dtb
-	arch/arm64/boot/dts/mediatek/mt8173-evb.dtb
+rdma@14008000: 'power-domains' is a required property
+	arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb
+	arch/arm/boot/dts/mt7623n-rfb-emmc.dtb
+
+rdma@14012000: 'power-domains' is a required property
+	arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb
+	arch/arm/boot/dts/mt7623n-rfb-emmc.dtb
 
