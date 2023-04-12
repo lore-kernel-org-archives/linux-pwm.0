@@ -2,35 +2,35 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7DEC77B78
-	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 11:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D91C77B71
+	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 11:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230455AbjDLL2T (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 12 Apr 2023 07:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
+        id S231185AbjDLL2X (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 12 Apr 2023 07:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbjDLL2J (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 07:28:09 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FE449C7;
-        Wed, 12 Apr 2023 04:28:03 -0700 (PDT)
+        with ESMTP id S230370AbjDLL2K (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 07:28:10 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F634C2E;
+        Wed, 12 Apr 2023 04:28:04 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 231636603213;
-        Wed, 12 Apr 2023 12:27:51 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 626796603246;
+        Wed, 12 Apr 2023 12:27:55 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1681298872;
-        bh=lu2YqjszT6GAQfheSYtmuPDjTI03Qls3ZRurM5/bzdk=;
+        s=mail; t=1681298876;
+        bh=/nr515MQrSV6wPJ0nOqHA4/ts+hd9gZh930X4zNFcK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UOZnOw2J87HqYSwK3AmmugMo0zxjvfBq7HlkaMBwgOEibqfmGDylJYzvoabSKOCFm
-         Gpoq95VCcoNzMiyLhc7EfhZG3PMNDwkHi/tcs3brHC6NcLq51IzjMrFIEH32AQERie
-         aAbFzQA2Gbw6p1jjT5A8naU3ZQT5iGBGvMXf4kSSMwFrp5KWaLzDTPMtcnEoFj2jJ4
-         gX2agOSfKZpLT5d7dueZvC46+auOanKQOKTidisZWyYDhZvdaD+jVTKlYLJsAzIf9O
-         3J2Fy7OkjNMDm3rNwSbwUDncpPbyhmbdg67VZglnh/xgdtnIn5QfrMFV3n+IPvWmeo
-         yIpS2GztN7+0g==
+        b=liKeWPdnCzkgOpOcdSoox+hQIFk3KrNnhAlYX5GaRDjE/U1nsApu8XhVgG6ZEA946
+         61WYHCLpok3pWq7lw/IEHoe8xUBC/UO6IYOEQQrxf1gixrZxoe/pmgZArwDKsOPo1b
+         CLbjjH5Sf2qpxU+zc9V5wW7vLRiLct+bey6Kh/s+IF/q0oRb8jf1oFPod+hanX1hMs
+         FgaH5hEy5I/I2vPMk1v4Xzo3O/zfVcQGSJp596c50b5GgrJKIrJKpPIvuri6u8YM/1
+         u5NW3fp1Tb+QdD0Y4p+04baBqq2k7Dq8TMZe2AgrG9+yrS9LIFDPH6/9hHs6lUm0w9
+         49u1/Jj6dfJNw==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     matthias.bgg@gmail.com
@@ -47,9 +47,9 @@ Cc:     p.zabel@pengutronix.de, airlied@gmail.com, daniel@ffwll.ch,
         linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org,
         kernel@collabora.com, phone-devel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 05/27] dt-bindings: display: mediatek: dsi: Add compatible for MediaTek MT6795
-Date:   Wed, 12 Apr 2023 13:27:17 +0200
-Message-Id: <20230412112739.160376-6-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 08/27] dt-bindings: display: mediatek: wdma: Add compatible for MediaTek MT6795
+Date:   Wed, 12 Apr 2023 13:27:20 +0200
+Message-Id: <20230412112739.160376-9-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
 References: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
@@ -59,41 +59,25 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add a compatible string for MediaTek Helio X10 MT6795, using the same
-DSI block as MT8173.
+Add a compatible string for MediaTek Helio X10 MT6795's WDMA block: this
+is the same as MT8173.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../display/mediatek/mediatek,dsi.yaml        | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ .../devicetree/bindings/display/mediatek/mediatek,wdma.yaml    | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-index 4707b60238b0..12441b937684 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-@@ -22,13 +22,18 @@ allOf:
- 
- properties:
-   compatible:
--    enum:
--      - mediatek,mt2701-dsi
--      - mediatek,mt7623-dsi
--      - mediatek,mt8167-dsi
--      - mediatek,mt8173-dsi
--      - mediatek,mt8183-dsi
--      - mediatek,mt8186-dsi
-+    oneOf:
-+      - enum:
-+          - mediatek,mt2701-dsi
-+          - mediatek,mt7623-dsi
-+          - mediatek,mt8167-dsi
-+          - mediatek,mt8173-dsi
-+          - mediatek,mt8183-dsi
-+          - mediatek,mt8186-dsi
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,wdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,wdma.yaml
+index 7d7cc1ab526b..1a19b3ef036f 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,wdma.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,wdma.yaml
+@@ -23,6 +23,9 @@ properties:
+     oneOf:
+       - items:
+           - const: mediatek,mt8173-disp-wdma
 +      - items:
-+          - enum:
-+              - mediatek,mt6795-dsi
-+          - const: mediatek,mt8173-dsi
++          - const: mediatek,mt6795-disp-wdma
++          - const: mediatek,mt8173-disp-wdma
  
    reg:
      maxItems: 1
