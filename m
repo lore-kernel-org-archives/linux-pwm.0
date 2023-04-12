@@ -2,35 +2,35 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED9EC77B71
-	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 11:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AC7C77B72
+	for <linux-pwm@archiver.kernel.org>; Wed, 12 Apr 2023 11:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230360AbjDLL2I (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 12 Apr 2023 07:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
+        id S230450AbjDLL2T (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 12 Apr 2023 07:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230288AbjDLL2D (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 07:28:03 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB262D50;
-        Wed, 12 Apr 2023 04:27:50 -0700 (PDT)
+        with ESMTP id S230365AbjDLL2I (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2023 07:28:08 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20A21FEA;
+        Wed, 12 Apr 2023 04:28:03 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3F7C06603214;
-        Wed, 12 Apr 2023 12:27:48 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 826DF6603215;
+        Wed, 12 Apr 2023 12:27:52 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1681298869;
-        bh=6Azvcn4i0Hycg0xDnvRheRJ+soYYO+v1kBon9Mg6Dyw=;
+        s=mail; t=1681298873;
+        bh=j/AmnqcUgZwbS3Y0n+C2WF0SZPlM1NGbL/O9iXx8hnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DrLbBoxkdz6ThJrt/c0Qxsir2AKyllHvXERWqJregc/3Ce0deMgfYXYzn62NK5ABR
-         JzwrpTqb0fsOT2izOuJPyv600oPn6JzxZ/OERDoL1n1kByF5T0Tb2uRWQiFIp/vsi8
-         rmJc00mOMM351G2ENBwfjk8VzYJl6YJ/BIVMY+2BO8ucRR6o/cu7XLQA93DlW9rtQ4
-         JY4zZ/gXADUViX46yeHWNFn7DyZBn6/c4okYDoSWfvxW+5TY5c7VRgGVdEJ2gvodIq
-         dL+i1U6iTPV0vxz8nhPmo8AxSMRJlehg0mRtWxfuvj5RlEgcfllulJxsdVeKaK8qy0
-         MpDkSw2kIjE2Q==
+        b=HlN3auaDUklNJexPh4RU+RZt4NmSau6riHAu2X9cJ0vHgdkteMsTLQkCd9wLUgkdB
+         QFZDMVNF/yPletXBBn4J2hNmk1LIsQ4RGXDxEGeR3SoogP1yWD3MbEbyyW1ZPA5CwL
+         88C4fziaBdzDAaGiZBTJ628cYGM6x+znf4+erLt8jx4XDCENYYdY1XzVBDc8+Pxy0c
+         K/D9UJMsdVL367+q7WJS6v/ezb2Y6ZJKwa6NQa1TbkCtAB7njQQ+/9WCho8l/J5yQw
+         CUTWqbhHv2mTTNixtpQ/TtbXh2cRez6F23yv6CPpw8NU8vB2AnOFzIf9h6rhf+tJLB
+         ZZtVelP8+L7Wg==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     matthias.bgg@gmail.com
@@ -47,9 +47,9 @@ Cc:     p.zabel@pengutronix.de, airlied@gmail.com, daniel@ffwll.ch,
         linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org,
         kernel@collabora.com, phone-devel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 03/27] dt-bindings: display: mediatek: dpi: Add compatible for MediaTek MT6795
-Date:   Wed, 12 Apr 2023 13:27:15 +0200
-Message-Id: <20230412112739.160376-4-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 06/27] dt-bindings: display: mediatek: ovl: Add compatible for MediaTek MT6795
+Date:   Wed, 12 Apr 2023 13:27:18 +0200
+Message-Id: <20230412112739.160376-7-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
 References: <20230412112739.160376-1-angelogioacchino.delregno@collabora.com>
@@ -59,48 +59,29 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add a compatible string for the MediaTek Helio X10 MT6795 SoC, using
-the same parameters as MT8183.
+Add a compatible string for MediaTek Helio X10 MT6795's OVL block: this
+is the same as MT8173.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../display/mediatek/mediatek,dpi.yaml        | 23 +++++++++++--------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ .../devicetree/bindings/display/mediatek/mediatek,ovl.yaml    | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-index d976380801e3..803c00f26206 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-@@ -17,15 +17,20 @@ description: |
- 
- properties:
-   compatible:
--    enum:
--      - mediatek,mt2701-dpi
--      - mediatek,mt7623-dpi
--      - mediatek,mt8173-dpi
--      - mediatek,mt8183-dpi
--      - mediatek,mt8186-dpi
--      - mediatek,mt8188-dp-intf
--      - mediatek,mt8192-dpi
--      - mediatek,mt8195-dp-intf
-+    oneOf:
-+      - enum:
-+          - mediatek,mt2701-dpi
-+          - mediatek,mt7623-dpi
-+          - mediatek,mt8173-dpi
-+          - mediatek,mt8183-dpi
-+          - mediatek,mt8186-dpi
-+          - mediatek,mt8188-dp-intf
-+          - mediatek,mt8192-dpi
-+          - mediatek,mt8195-dp-intf
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
+index 065e526f950e..7671c01dabdd 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
+@@ -34,6 +34,10 @@ properties:
+               - mediatek,mt7623-disp-ovl
+               - mediatek,mt2712-disp-ovl
+           - const: mediatek,mt2701-disp-ovl
 +      - items:
 +          - enum:
-+              - mediatek,mt6795-dpi
-+          - const: mediatek,mt8183-dpi
- 
-   reg:
-     maxItems: 1
++              - mediatek,mt6795-disp-ovl
++          - const: mediatek,mt8173-disp-ovl
+       - items:
+           - enum:
+               - mediatek,mt8188-disp-ovl
 -- 
 2.40.0
 
