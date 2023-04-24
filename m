@@ -2,223 +2,135 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39556C7618E
-	for <linux-pwm@archiver.kernel.org>; Mon, 24 Apr 2023 12:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7605C77B61
+	for <linux-pwm@archiver.kernel.org>; Mon, 24 Apr 2023 16:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231710AbjDXM3L (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 24 Apr 2023 08:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37134 "EHLO
+        id S232005AbjDXQDH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 24 Apr 2023 12:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231422AbjDXM3K (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Apr 2023 08:29:10 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29742D79;
-        Mon, 24 Apr 2023 05:28:58 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id ffacd0b85a97d-2fc3f1d6f8cso2706655f8f.3;
-        Mon, 24 Apr 2023 05:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682339337; x=1684931337;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4btwjmDtWOTvKFh0kR1iGmSPDebnG97zaZbOKyWXPl8=;
-        b=NWqzOabt7g5a2aRxakDGgrWWeChfEg+FmyKj0ygzBgSA8CDGw05VghIIDZgdeIEAwQ
-         RQYZCD9+Qu8Ywqw24e5+AmENg7iqveIMmnLaghK3HJXoc34QVGeNv+pKF93CtBmEiHPw
-         9SUOUnhjFyi6foZ2C2PxpoaNpzL3EjmO6LsH6BUuv/ZYQ/hH1QxpkbNEu01rmuT6l01l
-         0z+RzJ1FCKvp63KaXE1RS/UvJ13Z4KEqftHGHwiAFpmpK/yFeOSt1bjN81v/CmiPb2zi
-         ESrFnK+1Jt+mERMRqPdrTxsH47yF89oFG3agh9ahRUC1joetW8y95Cqid/JdmL0h22OD
-         CVpw==
+        with ESMTP id S231898AbjDXQDC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Apr 2023 12:03:02 -0400
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0119072BD;
+        Mon, 24 Apr 2023 09:02:54 -0700 (PDT)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-18e26c08349so2408893fac.0;
+        Mon, 24 Apr 2023 09:02:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682339337; x=1684931337;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4btwjmDtWOTvKFh0kR1iGmSPDebnG97zaZbOKyWXPl8=;
-        b=V0xQRix5iqKcTtxwV0dDVrqHMDqFYCiDTLouCdzl0iSFK5P++ts3XUbMmtMZ/OMey4
-         tGd0b9bbvy7tagQoxt/tzNyxwk9FQjUGa1zxcpBsPBgSHutnung6Xh7sXD2579IjGVdC
-         Z5wsRXQJFPZLiK6ka55iRWXU9UfFGcNU8t5dE7cJOe+uHU+mwbMFZvvkxSZmUzx8c4A5
-         lD2u8ziJ2UqK1f4I7MBftZtoEhqvUEdkGKA8RNuEl+vRht4XDRjzbaHGBLr3bQGrajhM
-         kYVEjBiem6GG33SQBKBuH3F/xFarH2WQVLvtGFovR5n1y1+AbJXxundMxbmuSPvfLlUL
-         p8SA==
-X-Gm-Message-State: AAQBX9d2LygGWIQBhtwl1J/qpr7qUU1dBdgwo04tvaNnnzhZduIu1XdQ
-        3AzGJHXuubUkRKHLpyi4P9Y=
-X-Google-Smtp-Source: AKy350agHdXEnenUeIKkyBX5s87gm3E29BhXOq6syhGfdpmGCZ8I0JFt4vEj810whEGRo1V/rkG4Sg==
-X-Received: by 2002:adf:f30a:0:b0:2f1:78ca:cdea with SMTP id i10-20020adff30a000000b002f178cacdeamr9726712wro.52.1682339336905;
-        Mon, 24 Apr 2023 05:28:56 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id k6-20020a5d5246000000b002fe87e0706bsm10662937wrc.97.2023.04.24.05.28.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Apr 2023 05:28:55 -0700 (PDT)
-Message-ID: <16cf2101-b9ba-154a-9932-3115e2447c82@gmail.com>
-Date:   Mon, 24 Apr 2023 14:28:54 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v3 2/2] pwm: mediatek: Add support for MT7981
-Content-Language: en-US
-To:     Daniel Golle <daniel@makrotopia.org>, linux-pwm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        d=1e100.net; s=20221208; t=1682352174; x=1684944174;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LnzfYEatrJSwokCAbLh8ogw9ZFGMSla77/kxbiv4hOM=;
+        b=aweU4cCR0IPirBYORTCFBygRX9Wcsqoq8lDtjgJpBpWQiUoLuX49EDL9sxrXcDE2M4
+         kj+8MGKNU/2MToUBFfWRqxDx8hWPLscQcrMeijmroi5AYxGAu3gLr1ZUXr+KVKoWCqWe
+         GAzlY8JBX0gqRhUHvsylPo7YtBNePqFr9IXHlWO1VArzEN7QDOMHVGkWw6b5nwaTbY9e
+         5e+tPOBEEyyui9ynBb4zNij8Yf1wpM6EL0QbPmO+GGABzWjUyZ2PfFRL/0dfRMQwlk46
+         mBNXHJ2rfZ6flubYDqBdjJqLD5qKFAf9lfHC9NL9ZBY5DoSKjH8h4uxxqQESoeuwcuHf
+         gAwA==
+X-Gm-Message-State: AAQBX9fOd0Z6YeWrOC1DwmCAXBn4rBGaEzTyIZe2HCwow5BhDRykaT5e
+        9m8InN+MDtspBVWR8p8Y7hRGjIEm7A==
+X-Google-Smtp-Source: AKy350YFprky0QexCA+YNuK9/WujoCDaw7Udk1v+D5cUN5ctLb84vKBwYCYQ9n67gbZyOlPwf0q5vQ==
+X-Received: by 2002:a05:6870:b491:b0:187:e5c4:4a50 with SMTP id y17-20020a056870b49100b00187e5c44a50mr10330412oap.17.1682352174290;
+        Mon, 24 Apr 2023 09:02:54 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id c2-20020ae9ed02000000b007339c5114a9sm3660638qkg.103.2023.04.24.09.02.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Apr 2023 09:02:53 -0700 (PDT)
+Received: (nullmailer pid 2717300 invoked by uid 1000);
+        Mon, 24 Apr 2023 16:02:52 -0000
+Date:   Mon, 24 Apr 2023 11:02:52 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        John Crispin <john@phrozen.org>
-References: <cover.1682007088.git.daniel@makrotopia.org>
- <7f404164337a2e06a6026c5c7e066e0cfba1fb32.1682007088.git.daniel@makrotopia.org>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <7f404164337a2e06a6026c5c7e066e0cfba1fb32.1682007088.git.daniel@makrotopia.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 14/43] dt-bindings: pwm: Add DT bindings ep93xx PWM
+Message-ID: <20230424160252.GC2701399-robh@kernel.org>
+References: <20230424123522.18302-1-nikita.shubin@maquefel.me>
+ <20230424123522.18302-15-nikita.shubin@maquefel.me>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230424123522.18302-15-nikita.shubin@maquefel.me>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-
-
-On 21/04/2023 01:23, Daniel Golle wrote:
-> The PWM unit on MT7981 uses different register offsets than previous
-> MediaTek PWM units. Add support for these new offsets and add support
-> for PWM on MT7981 which has 3 PWM channels, one of them is typically
-> used for a temperature controlled fan.
-> While at it, also reorder pwm_mediatek_of_data entries to restore
-> alphabetic order.
+On Mon, Apr 24, 2023 at 03:34:30PM +0300, Nikita Shubin wrote:
+> Add YAML bindings for ep93xx SoC.
 > 
-> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-
+> Signed-off-by: Nikita Shubin <nikita.shubin@maquefel.me>
 > ---
->   drivers/pwm/pwm-mediatek.c | 39 ++++++++++++++++++++++++++++++--------
->   1 file changed, 31 insertions(+), 8 deletions(-)
+>  .../bindings/pwm/cirrus,ep93xx-pwm.yaml       | 45 +++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/cirrus,ep93xx-pwm.yaml
 > 
-> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index 5b5eeaff35da6..7a51d210a8778 100644
-> --- a/drivers/pwm/pwm-mediatek.c
-> +++ b/drivers/pwm/pwm-mediatek.c
-> @@ -38,6 +38,7 @@ struct pwm_mediatek_of_data {
->   	unsigned int num_pwms;
->   	bool pwm45_fixup;
->   	bool has_ck_26m_sel;
-> +	const unsigned int *reg_offset;
->   };
->   
->   /**
-> @@ -59,10 +60,14 @@ struct pwm_mediatek_chip {
->   	const struct pwm_mediatek_of_data *soc;
->   };
->   
-> -static const unsigned int pwm_mediatek_reg_offset[] = {
-> +static const unsigned int mtk_pwm_reg_offset_v1[] = {
->   	0x0010, 0x0050, 0x0090, 0x00d0, 0x0110, 0x0150, 0x0190, 0x0220
->   };
->   
-> +static const unsigned int mtk_pwm_reg_offset_v2[] = {
-> +	0x0080, 0x00c0, 0x0100, 0x0140, 0x0180, 0x01c0, 0x0200, 0x0240
-> +};
+> diff --git a/Documentation/devicetree/bindings/pwm/cirrus,ep93xx-pwm.yaml b/Documentation/devicetree/bindings/pwm/cirrus,ep93xx-pwm.yaml
+> new file mode 100644
+> index 000000000000..8f67eb152f8b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/cirrus,ep93xx-pwm.yaml
+> @@ -0,0 +1,45 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pwm/cirrus,ep93xx-pwm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->   static inline struct pwm_mediatek_chip *
->   to_pwm_mediatek_chip(struct pwm_chip *chip)
->   {
-> @@ -111,7 +116,7 @@ static inline void pwm_mediatek_writel(struct pwm_mediatek_chip *chip,
->   				       unsigned int num, unsigned int offset,
->   				       u32 value)
->   {
-> -	writel(value, chip->regs + pwm_mediatek_reg_offset[num] + offset);
-> +	writel(value, chip->regs + chip->soc->reg_offset[num] + offset);
->   }
->   
->   static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> @@ -285,60 +290,77 @@ static const struct pwm_mediatek_of_data mt2712_pwm_data = {
->   	.num_pwms = 8,
->   	.pwm45_fixup = false,
->   	.has_ck_26m_sel = false,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
->   static const struct pwm_mediatek_of_data mt6795_pwm_data = {
->   	.num_pwms = 7,
->   	.pwm45_fixup = false,
->   	.has_ck_26m_sel = false,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
->   static const struct pwm_mediatek_of_data mt7622_pwm_data = {
->   	.num_pwms = 6,
->   	.pwm45_fixup = false,
->   	.has_ck_26m_sel = true,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
->   static const struct pwm_mediatek_of_data mt7623_pwm_data = {
->   	.num_pwms = 5,
->   	.pwm45_fixup = true,
->   	.has_ck_26m_sel = false,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
->   static const struct pwm_mediatek_of_data mt7628_pwm_data = {
->   	.num_pwms = 4,
->   	.pwm45_fixup = true,
->   	.has_ck_26m_sel = false,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
->   static const struct pwm_mediatek_of_data mt7629_pwm_data = {
->   	.num_pwms = 1,
->   	.pwm45_fixup = false,
->   	.has_ck_26m_sel = false,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
-> -static const struct pwm_mediatek_of_data mt8183_pwm_data = {
-> -	.num_pwms = 4,
-> +static const struct pwm_mediatek_of_data mt7981_pwm_data = {
-> +	.num_pwms = 3,
->   	.pwm45_fixup = false,
->   	.has_ck_26m_sel = true,
-> +	.reg_offset = mtk_pwm_reg_offset_v2,
->   };
->   
-> -static const struct pwm_mediatek_of_data mt8365_pwm_data = {
-> -	.num_pwms = 3,
-> +static const struct pwm_mediatek_of_data mt7986_pwm_data = {
-> +	.num_pwms = 2,
->   	.pwm45_fixup = false,
->   	.has_ck_26m_sel = true,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
-> -static const struct pwm_mediatek_of_data mt7986_pwm_data = {
-> -	.num_pwms = 2,
-> +static const struct pwm_mediatek_of_data mt8183_pwm_data = {
-> +	.num_pwms = 4,
-> +	.pwm45_fixup = false,
-> +	.has_ck_26m_sel = true,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
-> +};
+> +title: Cirrus Logick ep93xx PWM controller
 > +
-> +static const struct pwm_mediatek_of_data mt8365_pwm_data = {
-> +	.num_pwms = 3,
->   	.pwm45_fixup = false,
->   	.has_ck_26m_sel = true,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
->   static const struct pwm_mediatek_of_data mt8516_pwm_data = {
->   	.num_pwms = 5,
->   	.pwm45_fixup = false,
->   	.has_ck_26m_sel = true,
-> +	.reg_offset = mtk_pwm_reg_offset_v1,
->   };
->   
->   static const struct of_device_id pwm_mediatek_of_match[] = {
-> @@ -348,6 +370,7 @@ static const struct of_device_id pwm_mediatek_of_match[] = {
->   	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
->   	{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
->   	{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
-> +	{ .compatible = "mediatek,mt7981-pwm", .data = &mt7981_pwm_data },
->   	{ .compatible = "mediatek,mt7986-pwm", .data = &mt7986_pwm_data },
->   	{ .compatible = "mediatek,mt8183-pwm", .data = &mt8183_pwm_data },
->   	{ .compatible = "mediatek,mt8365-pwm", .data = &mt8365_pwm_data },
+> +maintainers:
+> +  - Thierry Reding <thierry.reding@gmail.com>
+
+This is someone that cares about this platform/binding, not who applies 
+patches. Same thing elsewhere.
+
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - cirrus,ep9301-pwm
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    items:
+> +      - description: SoC PWM clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: pwm_clk
+
+*-names is kind of pointless with only 1 entry. And 'pwm' is redundant 
+because names are local to the device. 'clk' is redundant because it's 
+all clocks.
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/cirrus,ep93xx-clock.h>
+> +    pwm0: pwm@80910000 {
+> +        compatible = "cirrus,ep9301-pwm";
+> +        reg = <0x80910000 0x10>;
+> +        clocks = <&syscon EP93XX_CLK_PWM>;
+> +        clock-names = "pwm_clk";
+> +    };
+> +
+> +...
+> -- 
+> 2.39.2
+> 
