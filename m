@@ -2,41 +2,41 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4216EC77B60
-	for <linux-pwm@archiver.kernel.org>; Sat, 29 Apr 2023 18:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC77FC77B7F
+	for <linux-pwm@archiver.kernel.org>; Sat, 29 Apr 2023 18:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbjD2SQ7 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 29 Apr 2023 14:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
+        id S229892AbjD2SRB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 29 Apr 2023 14:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbjD2SQ7 (ORCPT
+        with ESMTP id S229882AbjD2SQ7 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Sat, 29 Apr 2023 14:16:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41272127
-        for <linux-pwm@vger.kernel.org>; Sat, 29 Apr 2023 11:16:12 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEC91BF4
+        for <linux-pwm@vger.kernel.org>; Sat, 29 Apr 2023 11:16:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682792171;
+        s=mimecast20190719; t=1682792166;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oz4KO3+uxpqK+I2MFg3l3I+tW/82/aRp7KvnPl4qUEU=;
-        b=aP81WHlqF3qn0dmcjTQ0lqGevza4Nmishu+g+thynikqHN6/plZ8AzUqWIgfXAne7lo0P4
-        gSVyFNE58gqUqCKWpqTgn7Smwxln+forwD6kjwODrNt8aTRUyslf6jeLlKesO4EyJOt67M
-        /whN7zMEZj3kCKJvFrvIMuRs8H2lyXs=
+        bh=mCBm5jOnhjJEt6pe1UKwQEu4teSD01GVaLjt+SyOQmE=;
+        b=UoE3XWi9TL6kIEP58jAjd2g92av01Yu18u5OV1NqXD2nr+7sPlbjhSk6EcOyoqTrVKuFZd
+        OcgjjO+7EST+/XA8hLYMsQ6NUqpxKDcz4ZpscdFxGqBVeaFeewMsBHvxdeZDk0MEZfj1+E
+        LbOUjuuKwR58CcFA7Td16hMveOqMm50=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-269-3ZkQdGwWOZuZpb5AkuKsGw-1; Sat, 29 Apr 2023 14:16:08 -0400
-X-MC-Unique: 3ZkQdGwWOZuZpb5AkuKsGw-1
+ us-mta-112-UQ1SQ7OUPZaaUD70OvASSg-1; Sat, 29 Apr 2023 14:16:03 -0400
+X-MC-Unique: UQ1SQ7OUPZaaUD70OvASSg-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9BBC185A588;
-        Sat, 29 Apr 2023 18:16:07 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5CCA0101A550;
+        Sat, 29 Apr 2023 18:16:02 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.39.192.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F13E2027043;
-        Sat, 29 Apr 2023 18:16:06 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 44F972027043;
+        Sat, 29 Apr 2023 18:16:01 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andy@kernel.org>,
@@ -46,9 +46,9 @@ To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 Cc:     Hans de Goede <hdegoede@redhat.com>,
         Yauhen Kharuzhy <jekhor@gmail.com>,
         platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: [PATCH 05/19] platform/x86: lenovo-yogabook: Simplify gpio lookup table cleanup
-Date:   Sat, 29 Apr 2023 20:15:37 +0200
-Message-Id: <20230429181551.98201-6-hdegoede@redhat.com>
+Subject: [PATCH 01/19] pwm: Export pwm_add_table() / pwm_remove_table()
+Date:   Sat, 29 Apr 2023 20:15:33 +0200
+Message-Id: <20230429181551.98201-2-hdegoede@redhat.com>
 In-Reply-To: <20230429181551.98201-1-hdegoede@redhat.com>
 References: <20230429181551.98201-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -58,49 +58,43 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-After the devm_gpiod_get("backside_hall_sw") call the gpio lookup table
-is no longer necessary.
+Lenovo Yoga Book 1 (yb1-x90f/l) models have a backlit keyboard where
+the brightness is directly controlled by one of the Intel Cherry Trail
+SoCs PWM controllers.
 
-Remove it directly after this call instead using a devm reset-action
-for this.
+To control the backlight the drivers/platform/lenovo-yogabook.c needs
+to add a pwm_lookup table entry so that it can call pwm_get() to get
+a reference to the PWM controller.
+
+The lenovo-yogabook driver can be build as a module, export
+pwm_add_table() and pwm_remove_table() so that the lenovo-yogabook
+driver can use them when build as a module.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/platform/x86/lenovo-yogabook-wmi.c | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+ drivers/pwm/core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/platform/x86/lenovo-yogabook-wmi.c b/drivers/platform/x86/lenovo-yogabook-wmi.c
-index 727e3ae5e8f5..62db455218a5 100644
---- a/drivers/platform/x86/lenovo-yogabook-wmi.c
-+++ b/drivers/platform/x86/lenovo-yogabook-wmi.c
-@@ -228,11 +228,6 @@ static struct gpiod_lookup_table yogabook_wmi_gpios = {
- 	},
- };
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 474725714a05..c66daac6154f 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -881,6 +881,7 @@ void pwm_add_table(struct pwm_lookup *table, size_t num)
  
--static void yogabook_wmi_rm_gpio_lookup(void *unused)
--{
--	gpiod_remove_lookup_table(&yogabook_wmi_gpios);
--}
--
- static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
- {
- 	struct yogabook_wmi *data;
-@@ -276,13 +271,9 @@ static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
- 	}
+ 	mutex_unlock(&pwm_lookup_lock);
+ }
++EXPORT_SYMBOL_GPL(pwm_add_table);
  
- 	gpiod_add_lookup_table(&yogabook_wmi_gpios);
-+	data->backside_hall_gpio = devm_gpiod_get(&wdev->dev, "backside_hall_sw", GPIOD_IN);
-+	gpiod_remove_lookup_table(&yogabook_wmi_gpios);
+ /**
+  * pwm_remove_table() - unregister PWM device consumers
+@@ -898,6 +899,7 @@ void pwm_remove_table(struct pwm_lookup *table, size_t num)
  
--	r = devm_add_action_or_reset(&wdev->dev, yogabook_wmi_rm_gpio_lookup, NULL);
--	if (r)
--		goto error_put_devs;
--
--	data->backside_hall_gpio =
--		devm_gpiod_get(&wdev->dev, "backside_hall_sw", GPIOD_IN);
- 	if (IS_ERR(data->backside_hall_gpio)) {
- 		r = PTR_ERR(data->backside_hall_gpio);
- 		dev_err_probe(&wdev->dev, r, "Getting backside_hall_sw GPIO\n");
+ 	mutex_unlock(&pwm_lookup_lock);
+ }
++EXPORT_SYMBOL_GPL(pwm_remove_table);
+ 
+ /**
+  * pwm_get() - look up and request a PWM device
 -- 
 2.39.2
 
