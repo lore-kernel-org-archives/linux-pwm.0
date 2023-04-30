@@ -2,141 +2,104 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DCEC77B7F
-	for <linux-pwm@archiver.kernel.org>; Sat, 29 Apr 2023 18:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5439C77B60
+	for <linux-pwm@archiver.kernel.org>; Sun, 30 Apr 2023 10:32:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230013AbjD2SRr (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 29 Apr 2023 14:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
+        id S230114AbjD3KcN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 30 Apr 2023 06:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbjD2SRp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 29 Apr 2023 14:17:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EB61FDD
-        for <linux-pwm@vger.kernel.org>; Sat, 29 Apr 2023 11:16:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682792214;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VI8KFPBEode1Ja3mAtQlDz4gzrYpRITAbj+ORHjEuAQ=;
-        b=gdiN1lSE9nS58QMQm0iovunn+k6RP2911qjtiD828qWjmZOjOcW8wDbKGFruIU0Wq2MCWp
-        ya3B7DP/MBJtGioBKQO0/MeQ2/hWTwrCl1rj7zhBU1nEOl70sZSmZX0SBNrE4PaE12Vf4D
-        iNgg/Uegt9iPLFSDo/n/LQI8Aajm72s=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-223-4E9_S1-JP46viUO1NgugTA-1; Sat, 29 Apr 2023 14:16:50 -0400
-X-MC-Unique: 4E9_S1-JP46viUO1NgugTA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DA757811E7B;
-        Sat, 29 Apr 2023 18:16:49 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.192.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BC3672027043;
-        Sat, 29 Apr 2023 18:16:48 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        with ESMTP id S229461AbjD3KcM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Apr 2023 06:32:12 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF41F10F7;
+        Sun, 30 Apr 2023 03:32:10 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id d75a77b69052e-3f0b30f240eso15261071cf.3;
+        Sun, 30 Apr 2023 03:32:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682850730; x=1685442730;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=88q4cylknUGQPnEgNEkNRWSqoVDq4Wpv4/ce7oxcsTc=;
+        b=kwhnndqIX0ZTJfd2uwcPbrvZe69FW1o8V0XDQDVxmihIUueUKcakv62k/R7fv/Uasj
+         EqTd/iTZb1Mw4oNWFC1FI+DycR9chzm8XkOgZ2z1UPrnit0GtZ8v3U3cPopbTCKIdNF9
+         Xc5L5O3pkReOqvWSgHcMPDr8xrI7JdPI/IjqkhG/9ft7flTrwJctcukDPr66wmSWOetw
+         s7cEHD8szfVLdKYdeiuQRjQwynomYFWKZQTXmPYw7ZZHv7dqGiOryfbZ8Pv6F07HUBlC
+         /mgzrIaMydWoMQK/L+8QMFH++IKQPrlMFbXiVmjMfCNYwgfgbjunBlZrxCdRv07Z9lWF
+         poLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682850730; x=1685442730;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=88q4cylknUGQPnEgNEkNRWSqoVDq4Wpv4/ce7oxcsTc=;
+        b=H/iRrRqTf2DhJoOCGfKS7dxvT16Jk3BrNs0Cz2X77TWO10HtZ3IAX0iiwvGxX+Ht3Y
+         QPaJaYzqlAQf3rFTiNzT0vHQqR6qKzNiKqxJAkqKvDO3gMC0TQPzoYOqJVWsxvHXMp3x
+         1dj4yOs3kpiI9VthaT8MnbsBnHtRk9Nt3AUm9KiIv6YP87Afzq5v3WbGmdquW2shOzFp
+         EcFp+NMWyKV8iPDZ5Fy0e36nVm40qErlomOtX4o4KlQOI/d65RP4SZqhxvlikK6Ok8YB
+         u179YikvhAcoBywUONKriLEHC1aaLHrU+3oXl2jtUROpTAa9cZaBTUiNybxo0PaKVA55
+         Ixkw==
+X-Gm-Message-State: AC+VfDyR0vyihW+9oU7GfSeBCUWCbH6ldhq0bHxp+PNCDtBB2ke8o44M
+        HZEVBt9wlz9NMh/sppAjIUV1uEbTQjzSYbJXvocaS46nbA253P3m
+X-Google-Smtp-Source: ACHHUZ7ysxDRJIXIwqloEdjOfVBZum8r3YnorFjgTjRWt92Mm4xXaqE6MvspwQHpLXGJw9W/clktoBj3h4LTDpG6tXM=
+X-Received: by 2002:ac8:5d86:0:b0:3eb:6892:2930 with SMTP id
+ d6-20020ac85d86000000b003eb68922930mr17155324qtx.39.1682850729848; Sun, 30
+ Apr 2023 03:32:09 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230429181551.98201-1-hdegoede@redhat.com> <20230429181551.98201-9-hdegoede@redhat.com>
+In-Reply-To: <20230429181551.98201-9-hdegoede@redhat.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 30 Apr 2023 13:31:33 +0300
+Message-ID: <CAHp75Vctex-8_1jOx3jaaCj9MH=d4oMoeCYdw5AYv+F=nzK1Kw@mail.gmail.com>
+Subject: Re: [PATCH 08/19] platform/x86: lenovo-yogabook: Add dev local
+ variable to probe()
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andy@kernel.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
         Yauhen Kharuzhy <jekhor@gmail.com>,
         platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: [PATCH 18/19] platform/x86: lenovo-yogabook: Add keyboard backlight control to platform driver
-Date:   Sat, 29 Apr 2023 20:15:50 +0200
-Message-Id: <20230429181551.98201-19-hdegoede@redhat.com>
-In-Reply-To: <20230429181551.98201-1-hdegoede@redhat.com>
-References: <20230429181551.98201-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On the Android yb1-x90f/l models there is not ACPI method to control
-the keyboard backlight brightness. Instead the second PWM controller
-is exposed directly to the OS there.
+On Sat, Apr 29, 2023 at 9:16=E2=80=AFPM Hans de Goede <hdegoede@redhat.com>=
+ wrote:
+>
+> Add a "struct device *dev" local variable to probe().
+>
+> This is a preparation patch for making lenovo-yogabook-wmi also work
+> on the Android version of the Yoga Book 1 which does not have a WMI
+> interface to deal with toggling the keyboard half between
+> touch-keyboard and wacom-digitizer mode.
 
-Add support for controlling keyboard backlight brightness on the Android
-model by using the PWM subsystem to directly control the PWM.
+...
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/platform/x86/lenovo-yogabook-wmi.c | 26 ++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+> -       data =3D devm_kzalloc(&wdev->dev, sizeof(struct yogabook_wmi), GF=
+P_KERNEL);
+> +       data =3D devm_kzalloc(dev, sizeof(struct yogabook_wmi), GFP_KERNE=
+L);
+>         if (data =3D=3D NULL)
+>                 return -ENOMEM;
 
-diff --git a/drivers/platform/x86/lenovo-yogabook-wmi.c b/drivers/platform/x86/lenovo-yogabook-wmi.c
-index afb11d25abc8..8e12a625ee65 100644
---- a/drivers/platform/x86/lenovo-yogabook-wmi.c
-+++ b/drivers/platform/x86/lenovo-yogabook-wmi.c
-@@ -20,6 +20,7 @@
- #include <linux/leds.h>
- #include <linux/module.h>
- #include <linux/platform_device.h>
-+#include <linux/pwm.h>
- #include <linux/wmi.h>
- #include <linux/workqueue.h>
- 
-@@ -27,6 +28,7 @@
- 
- #define YB_KBD_BL_DEFAULT	128
- #define YB_KBD_BL_MAX		255
-+#define YB_KBD_BL_PWM_PERIOD	13333
- 
- #define YB_PDEV_NAME		"yogabook-touch-kbd-digitizer-switch"
- 
-@@ -49,6 +51,7 @@ struct yogabook_data {
- 	struct gpio_desc *pen_touch_event;
- 	struct gpio_desc *kbd_bl_led_enable;
- 	struct gpio_desc *backside_hall_gpio;
-+	struct pwm_device *kbd_bl_pwm;
- 	int (*set_kbd_backlight)(struct yogabook_data *data, u8 level);
- 	int pen_touch_irq;
- 	int backside_hall_irq;
-@@ -433,8 +436,21 @@ static struct gpiod_lookup_table yogabook_pdev_gpios = {
- 	},
- };
- 
-+static struct pwm_lookup yogabook_pdev_pwm_lookup[] = {
-+	PWM_LOOKUP_WITH_MODULE("80862289:00", 0, YB_PDEV_NAME,
-+			       "kbd_bl_pwm", 13333, PWM_POLARITY_NORMAL,
-+			       "pwm-lpss-platform"),
-+};
-+
- static int yogabook_pdev_set_kbd_backlight(struct yogabook_data *data, u8 level)
- {
-+	struct pwm_state state = {
-+		.period = YB_KBD_BL_PWM_PERIOD,
-+		.duty_cycle = YB_KBD_BL_PWM_PERIOD * level / YB_KBD_BL_MAX,
-+		.enabled = level,
-+	};
-+
-+	pwm_apply_state(data->kbd_bl_pwm, &state);
- 	gpiod_set_value(data->kbd_bl_led_enable, level ? 1 : 0);
- 	return 0;
- }
-@@ -484,6 +500,16 @@ static int yogabook_pdev_probe(struct platform_device *pdev)
- 		goto error_put_devs;
- 	}
- 
-+	pwm_add_table(yogabook_pdev_pwm_lookup, ARRAY_SIZE(yogabook_pdev_pwm_lookup));
-+	data->kbd_bl_pwm = devm_pwm_get(dev, "kbd_bl_pwm");
-+	pwm_remove_table(yogabook_pdev_pwm_lookup, ARRAY_SIZE(yogabook_pdev_pwm_lookup));
-+
-+	if (IS_ERR(data->kbd_bl_pwm)) {
-+		r = PTR_ERR(data->kbd_bl_pwm);
-+		dev_err_probe(dev, r, "Getting keyboard backlight PWM\n");
-+		goto error_put_devs;
-+	}
-+
- 	r = gpiod_to_irq(data->pen_touch_event);
- 	if (r < 0) {
- 		dev_err_probe(dev, r, "Getting pen_touch_event IRQ\n");
--- 
-2.39.2
+> -       dev_set_drvdata(&wdev->dev, data);
+> +       dev_set_drvdata(dev, data);
 
+For robustness' sake I would at the same time move this a bit down to
+have (some? at least dev seems to be important) fields in data to be
+initialized. Yes, this won't change anything, I hope.
+
+> -       data->dev =3D &wdev->dev;
+> +       data->dev =3D dev;
+>         data->brightness =3D YB_KBD_BL_DEFAULT;
+>         set_bit(YB_KBD_IS_ON, &data->flags);
+>         set_bit(YB_DIGITIZER_IS_ON, &data->flags);
+
+--=20
+With Best Regards,
+Andy Shevchenko
