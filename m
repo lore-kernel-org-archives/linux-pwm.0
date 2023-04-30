@@ -2,41 +2,41 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59754C7EE21
-	for <linux-pwm@archiver.kernel.org>; Sun, 30 Apr 2023 16:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9483FC77B60
+	for <linux-pwm@archiver.kernel.org>; Sun, 30 Apr 2023 16:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230416AbjD3Q7D (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 30 Apr 2023 12:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
+        id S230432AbjD3Q7K (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 30 Apr 2023 12:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbjD3Q7C (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Apr 2023 12:59:02 -0400
+        with ESMTP id S229478AbjD3Q7J (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Apr 2023 12:59:09 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F911BFF
-        for <linux-pwm@vger.kernel.org>; Sun, 30 Apr 2023 09:58:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051432693
+        for <linux-pwm@vger.kernel.org>; Sun, 30 Apr 2023 09:58:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682873900;
+        s=mimecast20190719; t=1682873906;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mCBm5jOnhjJEt6pe1UKwQEu4teSD01GVaLjt+SyOQmE=;
-        b=hNSksyL3wWt5bOXvCfL6paVn/unOUIrZSGzeIenOpbao49G7rpddIg72zKQHPU6RVlm5/d
-        9jvEFRLcTv6vBpo9B2RUN884ft+Um0re9BgVURVi/4ZqHyTR3Apz+izW7JEscCkC8+JVe+
-        zjQoPGjbXQD2RXz+tW/ON+bd5wI1LYI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=j47T03mSJNmFM0nSRpUoxlZmIGdmkMYlP32wgG6jzVI=;
+        b=UChKb/W/g0U7Z3TD05I9spceAzXQ2SpToJMYjfthZ249fC6RHMmT9VoqGN6QwuE/ZqEsHf
+        1d0QcxUW/1rDDi8EuV/QOry4iHpHcBzXpgR5jngaKBs1oPm1uAFYza61bNxRb3q/4z7ghy
+        +CVcUz4RnMIgjqzIVeDJwpi2rLgiib8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-641-lf4Ik5L4OJSoaWzigonaxA-1; Sun, 30 Apr 2023 12:58:19 -0400
-X-MC-Unique: lf4Ik5L4OJSoaWzigonaxA-1
+ us-mta-657-DwUclbVgMseewkJ5Meof-g-1; Sun, 30 Apr 2023 12:58:21 -0400
+X-MC-Unique: DwUclbVgMseewkJ5Meof-g-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 769212A59553;
-        Sun, 30 Apr 2023 16:58:18 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1CD4F8828C0;
+        Sun, 30 Apr 2023 16:58:21 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.39.192.59])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A1832166B26;
-        Sun, 30 Apr 2023 16:58:17 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 03C222166B26;
+        Sun, 30 Apr 2023 16:58:19 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andy@kernel.org>,
@@ -46,9 +46,9 @@ To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 Cc:     Hans de Goede <hdegoede@redhat.com>,
         Yauhen Kharuzhy <jekhor@gmail.com>,
         platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: [PATCH v2 01/19] pwm: Export pwm_add_table() / pwm_remove_table()
-Date:   Sun, 30 Apr 2023 18:57:49 +0200
-Message-Id: <20230430165807.472798-2-hdegoede@redhat.com>
+Subject: [PATCH v2 03/19] platform/x86: lenovo-yogabook: Reprobe devices on remove()
+Date:   Sun, 30 Apr 2023 18:57:51 +0200
+Message-Id: <20230430165807.472798-4-hdegoede@redhat.com>
 In-Reply-To: <20230430165807.472798-1-hdegoede@redhat.com>
 References: <20230430165807.472798-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -58,43 +58,42 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Lenovo Yoga Book 1 (yb1-x90f/l) models have a backlit keyboard where
-the brightness is directly controlled by one of the Intel Cherry Trail
-SoCs PWM controllers.
+Ensure that both the keyboard touchscreen and the digitizer have their
+driver bound after remove(). Without this modprobing lenovo-yogabook-wmi
+after a rmmod fails because lenovo-yogabook-wmi defers probing until
+both devices have their driver bound.
 
-To control the backlight the drivers/platform/lenovo-yogabook.c needs
-to add a pwm_lookup table entry so that it can call pwm_get() to get
-a reference to the PWM controller.
-
-The lenovo-yogabook driver can be build as a module, export
-pwm_add_table() and pwm_remove_table() so that the lenovo-yogabook
-driver can use them when build as a module.
-
+Fixes: c0549b72d99d ("platform/x86: lenovo-yogabook-wmi: Add driver for Lenovo Yoga Book")
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/platform/x86/lenovo-yogabook-wmi.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 474725714a05..c66daac6154f 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -881,6 +881,7 @@ void pwm_add_table(struct pwm_lookup *table, size_t num)
+diff --git a/drivers/platform/x86/lenovo-yogabook-wmi.c b/drivers/platform/x86/lenovo-yogabook-wmi.c
+index 3a6de4ab74a4..5948ffa74acd 100644
+--- a/drivers/platform/x86/lenovo-yogabook-wmi.c
++++ b/drivers/platform/x86/lenovo-yogabook-wmi.c
+@@ -332,9 +332,20 @@ static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
+ static void yogabook_wmi_remove(struct wmi_device *wdev)
+ {
+ 	struct yogabook_wmi *data = dev_get_drvdata(&wdev->dev);
++	int r = 0;
  
- 	mutex_unlock(&pwm_lookup_lock);
- }
-+EXPORT_SYMBOL_GPL(pwm_add_table);
- 
- /**
-  * pwm_remove_table() - unregister PWM device consumers
-@@ -898,6 +899,7 @@ void pwm_remove_table(struct pwm_lookup *table, size_t num)
- 
- 	mutex_unlock(&pwm_lookup_lock);
- }
-+EXPORT_SYMBOL_GPL(pwm_remove_table);
- 
- /**
-  * pwm_get() - look up and request a PWM device
+ 	free_irq(data->backside_hall_irq, data);
+ 	cancel_work_sync(&data->work);
++
++	if (!test_bit(YB_KBD_IS_ON, &data->flags))
++		r |= device_reprobe(data->kbd_dev);
++
++	if (!test_bit(YB_DIGITIZER_IS_ON, &data->flags))
++		r |= device_reprobe(data->dig_dev);
++
++	if (r)
++		dev_warn(&wdev->dev, "Reprobe of devices failed\n");
++
+ 	put_device(data->dig_dev);
+ 	put_device(data->kbd_dev);
+ 	acpi_dev_put(data->dig_adev);
 -- 
 2.39.2
 
