@@ -2,41 +2,41 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA78AC7EE21
-	for <linux-pwm@archiver.kernel.org>; Sun, 30 Apr 2023 17:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D1FC7EE24
+	for <linux-pwm@archiver.kernel.org>; Sun, 30 Apr 2023 17:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbjD3RAh (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 30 Apr 2023 13:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
+        id S231244AbjD3RAi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 30 Apr 2023 13:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbjD3RAg (ORCPT
+        with ESMTP id S230525AbjD3RAg (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Apr 2023 13:00:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB1535A4
-        for <linux-pwm@vger.kernel.org>; Sun, 30 Apr 2023 09:58:38 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2AFB30ED
+        for <linux-pwm@vger.kernel.org>; Sun, 30 Apr 2023 09:58:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682873917;
+        s=mimecast20190719; t=1682873915;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VXHwsCXKeMn1KRwGbgqGGqTyQsRETIoDYs3QhSTfM0c=;
-        b=NUnxA9ALUctgzPkSk/9+41q5glVdxdJzwx0dM9ypzIO0XiKKcXFBQL9d+/51g3RnW4Tjfl
-        bVnu68bxY7dXA62xQk2kwzWHLbPvWIjkW0GJzVMcHbpFs3foYXL5y0FhLoCWpHW1qdJIaV
-        dp8jLMCWQtoimoiG7qx6Hput48sgCzg=
+        bh=y2Uo1i+eLG74vBzADXNF7vLaMYH1S8dd92pyB0j92Ng=;
+        b=GsEXT1qiaX4+LAzp23MO1lXt0G1l2u/VnwrBnfWutn9fKlNGftfwdJNE1sgmD2GaPXMLxq
+        gvuOdtvhNaj2ujbeJK7Or4pBOceXdi+lXO9wm0HEc7h4T4ZI57QyOY+FPYbEQG8dmYNF+/
+        yGX7zN96UnR81ficJiUv8KmSfN4/u28=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-16-p88xneZUMDKCDxpZuh7mDw-1; Sun, 30 Apr 2023 12:58:30 -0400
-X-MC-Unique: p88xneZUMDKCDxpZuh7mDw-1
+ us-mta-73-0kXCQxbuMoy8ShikvdHU_w-1; Sun, 30 Apr 2023 12:58:26 -0400
+X-MC-Unique: 0kXCQxbuMoy8ShikvdHU_w-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 596CC1C06EC1;
-        Sun, 30 Apr 2023 16:58:30 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5C9722A59553;
+        Sun, 30 Apr 2023 16:58:26 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.39.192.59])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3DEE62166B26;
-        Sun, 30 Apr 2023 16:58:29 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 42C7C2166B26;
+        Sun, 30 Apr 2023 16:58:25 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andy@kernel.org>,
@@ -46,9 +46,9 @@ To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 Cc:     Hans de Goede <hdegoede@redhat.com>,
         Yauhen Kharuzhy <jekhor@gmail.com>,
         platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: [PATCH v2 10/19] platform/x86: lenovo-yogabook: Split probe() into generic and WMI specific parts
-Date:   Sun, 30 Apr 2023 18:57:58 +0200
-Message-Id: <20230430165807.472798-11-hdegoede@redhat.com>
+Subject: [PATCH v2 07/19] platform/x86: lenovo-yogabook: Store dev instead of wdev in drvdata struct
+Date:   Sun, 30 Apr 2023 18:57:55 +0200
+Message-Id: <20230430165807.472798-8-hdegoede@redhat.com>
 In-Reply-To: <20230430165807.472798-1-hdegoede@redhat.com>
 References: <20230430165807.472798-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -58,7 +58,8 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Split probe() and remove() into generic and WMI specific parts.
+Store a "struct device *dev" instead of a "struct wmi_device *wdev;"
+in the "struct yogabook_wmi" driver-data.
 
 This is a preparation patch for making lenovo-yogabook-wmi also work
 on the Android version of the Yoga Book 1 which does not have a WMI
@@ -67,196 +68,209 @@ touch-keyboard and wacom-digitizer mode.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
-Changes in v2:
-- Use "return dev_err_probe(...);" in several places to simplify
-  error-exits in the new yogabook_probe() function
----
- drivers/platform/x86/lenovo-yogabook-wmi.c | 118 ++++++++++++---------
- 1 file changed, 65 insertions(+), 53 deletions(-)
+ drivers/platform/x86/lenovo-yogabook-wmi.c | 47 ++++++++++------------
+ 1 file changed, 21 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/platform/x86/lenovo-yogabook-wmi.c b/drivers/platform/x86/lenovo-yogabook-wmi.c
-index 68057150f465..e583ae146323 100644
+index 2a46e19893e8..1bbdc48aef5b 100644
 --- a/drivers/platform/x86/lenovo-yogabook-wmi.c
 +++ b/drivers/platform/x86/lenovo-yogabook-wmi.c
-@@ -199,74 +199,38 @@ static struct led_lookup_data yogabook_pen_led = {
- 	.con_id = "pen-icon-led",
+@@ -29,7 +29,7 @@ enum {
  };
  
--static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
-+static int yogabook_probe(struct device *dev, struct yogabook_wmi *data,
-+			  const char *kbd_bl_led_name)
+ struct yogabook_wmi {
+-	struct wmi_device *wdev;
++	struct device *dev;
+ 	struct acpi_device *kbd_adev;
+ 	struct acpi_device *dig_adev;
+ 	struct device *kbd_dev;
+@@ -42,14 +42,14 @@ struct yogabook_wmi {
+ 	uint8_t brightness;
+ };
+ 
+-static int yogabook_wmi_do_action(struct wmi_device *wdev, int action)
++static int yogabook_wmi_do_action(struct yogabook_wmi *data, int action)
  {
--	struct device *dev = &wdev->dev;
--	struct yogabook_wmi *data;
+ 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
+ 	struct acpi_buffer input;
+ 	acpi_status status;
+ 	u32 dummy_arg = 0;
+ 
+-	dev_dbg(&wdev->dev, "Do action: %d\n", action);
++	dev_dbg(data->dev, "Do action: %d\n", action);
+ 
+ 	input.pointer = &dummy_arg;
+ 	input.length = sizeof(dummy_arg);
+@@ -57,7 +57,7 @@ static int yogabook_wmi_do_action(struct wmi_device *wdev, int action)
+ 	status = wmi_evaluate_method(YB_MBTN_METHOD_GUID, 0, action, &input,
+ 				     &output);
+ 	if (ACPI_FAILURE(status)) {
+-		dev_err(&wdev->dev, "Calling WMI method failure: 0x%x\n",
++		dev_err(data->dev, "Calling WMI method failure: 0x%x\n",
+ 			status);
+ 		return status;
+ 	}
+@@ -71,21 +71,20 @@ static int yogabook_wmi_do_action(struct wmi_device *wdev, int action)
+  * To control keyboard backlight, call the method KBLC() of the TCS1 ACPI
+  * device (Goodix touchpad acts as virtual sensor keyboard).
+  */
+-static int yogabook_wmi_set_kbd_backlight(struct wmi_device *wdev,
++static int yogabook_wmi_set_kbd_backlight(struct yogabook_wmi *data,
+ 					  uint8_t level)
+ {
+-	struct yogabook_wmi *data = dev_get_drvdata(&wdev->dev);
+ 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
+ 	struct acpi_object_list input;
+ 	union acpi_object param;
+ 	acpi_status status;
+ 
+ 	if (data->kbd_adev->power.state != ACPI_STATE_D0) {
+-		dev_warn(&wdev->dev, "keyboard touchscreen not in D0, cannot set brightness\n");
++		dev_warn(data->dev, "keyboard touchscreen not in D0, cannot set brightness\n");
+ 		return -ENXIO;
+ 	}
+ 
+-	dev_dbg(&wdev->dev, "Set KBLC level to %u\n", level);
++	dev_dbg(data->dev, "Set KBLC level to %u\n", level);
+ 
+ 	input.count = 1;
+ 	input.pointer = &param;
+@@ -96,7 +95,7 @@ static int yogabook_wmi_set_kbd_backlight(struct wmi_device *wdev,
+ 	status = acpi_evaluate_object(acpi_device_handle(data->kbd_adev), "KBLC",
+ 				      &input, &output);
+ 	if (ACPI_FAILURE(status)) {
+-		dev_err(&wdev->dev, "Failed to call KBLC method: 0x%x\n", status);
++		dev_err(data->dev, "Failed to call KBLC method: 0x%x\n", status);
+ 		return status;
+ 	}
+ 
+@@ -107,7 +106,6 @@ static int yogabook_wmi_set_kbd_backlight(struct wmi_device *wdev,
+ static void yogabook_wmi_work(struct work_struct *work)
+ {
+ 	struct yogabook_wmi *data = container_of(work, struct yogabook_wmi, work);
+-	struct device *dev = &data->wdev->dev;
+ 	bool kbd_on, digitizer_on;
  	int r;
  
--	data = devm_kzalloc(dev, sizeof(struct yogabook_wmi), GFP_KERNEL);
--	if (data == NULL)
--		return -ENOMEM;
--
- 	data->dev = dev;
+@@ -130,13 +128,13 @@ static void yogabook_wmi_work(struct work_struct *work)
+ 		 * Must be done before releasing the keyboard touchscreen driver,
+ 		 * so that the keyboard touchscreen dev is still in D0.
+ 		 */
+-		yogabook_wmi_set_kbd_backlight(data->wdev, 0);
++		yogabook_wmi_set_kbd_backlight(data, 0);
+ 		device_release_driver(data->kbd_dev);
+ 		clear_bit(YB_KBD_IS_ON, &data->flags);
+ 	}
+ 
+ 	if (!digitizer_on && test_bit(YB_DIGITIZER_IS_ON, &data->flags)) {
+-		yogabook_wmi_do_action(data->wdev, YB_PAD_DISABLE);
++		yogabook_wmi_do_action(data, YB_PAD_DISABLE);
+ 		device_release_driver(data->dig_dev);
+ 		clear_bit(YB_DIGITIZER_IS_ON, &data->flags);
+ 	}
+@@ -144,18 +142,18 @@ static void yogabook_wmi_work(struct work_struct *work)
+ 	if (kbd_on && !test_bit(YB_KBD_IS_ON, &data->flags)) {
+ 		r = device_reprobe(data->kbd_dev);
+ 		if (r)
+-			dev_warn(dev, "Reprobe of keyboard touchscreen failed: %d\n", r);
++			dev_warn(data->dev, "Reprobe of keyboard touchscreen failed: %d\n", r);
+ 
+-		yogabook_wmi_set_kbd_backlight(data->wdev, data->brightness);
++		yogabook_wmi_set_kbd_backlight(data, data->brightness);
+ 		set_bit(YB_KBD_IS_ON, &data->flags);
+ 	}
+ 
+ 	if (digitizer_on && !test_bit(YB_DIGITIZER_IS_ON, &data->flags)) {
+ 		r = device_reprobe(data->dig_dev);
+ 		if (r)
+-			dev_warn(dev, "Reprobe of digitizer failed: %d\n", r);
++			dev_warn(data->dev, "Reprobe of digitizer failed: %d\n", r);
+ 
+-		yogabook_wmi_do_action(data->wdev, YB_PAD_ENABLE);
++		yogabook_wmi_do_action(data, YB_PAD_ENABLE);
+ 		set_bit(YB_DIGITIZER_IS_ON, &data->flags);
+ 	}
+ }
+@@ -206,7 +204,6 @@ static int kbd_brightness_set(struct led_classdev *cdev,
+ {
+ 	struct yogabook_wmi *data =
+ 		container_of(cdev, struct yogabook_wmi, kbd_bl_led);
+-	struct wmi_device *wdev = data->wdev;
+ 
+ 	if ((value < 0) || (value > 255))
+ 		return -EINVAL;
+@@ -216,7 +213,7 @@ static int kbd_brightness_set(struct led_classdev *cdev,
+ 	if (data->kbd_adev->power.state != ACPI_STATE_D0)
+ 		return 0;
+ 
+-	return yogabook_wmi_set_kbd_backlight(wdev, data->brightness);
++	return yogabook_wmi_set_kbd_backlight(data, data->brightness);
+ }
+ 
+ static struct gpiod_lookup_table yogabook_wmi_gpios = {
+@@ -238,7 +235,7 @@ static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
+ 
+ 	dev_set_drvdata(&wdev->dev, data);
+ 
+-	data->wdev = wdev;
++	data->dev = &wdev->dev;
  	data->brightness = YB_KBD_BL_DEFAULT;
  	set_bit(YB_KBD_IS_ON, &data->flags);
  	set_bit(YB_DIGITIZER_IS_ON, &data->flags);
- 	INIT_WORK(&data->work, yogabook_wmi_work);
- 
--	data->kbd_adev = acpi_dev_get_first_match_dev("GDIX1001", NULL, -1);
--	if (!data->kbd_adev) {
--		dev_err(dev, "Cannot find the touchpad device in ACPI tables\n");
--		return -ENODEV;
--	}
--
--	data->dig_adev = acpi_dev_get_first_match_dev("WCOM0019", NULL, -1);
--	if (!data->dig_adev) {
--		dev_err(dev, "Cannot find the digitizer device in ACPI tables\n");
--		r = -ENODEV;
--		goto error_put_devs;
--	}
--
--	data->kbd_dev = get_device(acpi_get_first_physical_node(data->kbd_adev));
--	if (!data->kbd_dev || !data->kbd_dev->driver) {
--		r = -EPROBE_DEFER;
--		goto error_put_devs;
--	}
--
--	data->dig_dev = get_device(acpi_get_first_physical_node(data->dig_adev));
--	if (!data->dig_dev || !data->dig_dev->driver) {
--		r = -EPROBE_DEFER;
--		goto error_put_devs;
--	}
--
- 	yogabook_pen_led.dev_id = dev_name(dev);
- 	led_add_lookup(&yogabook_pen_led);
- 	data->pen_led = devm_led_get(dev, "pen-icon-led");
- 	led_remove_lookup(&yogabook_pen_led);
- 
--	if (IS_ERR(data->pen_led)) {
--		r = PTR_ERR(data->pen_led);
--		dev_err_probe(dev, r, "Getting pen icon LED\n");
--		goto error_put_devs;
--	}
-+	if (IS_ERR(data->pen_led))
-+		return dev_err_probe(dev, PTR_ERR(data->pen_led), "Getting pen icon LED\n");
- 
- 	yogabook_wmi_gpios.dev_id = dev_name(dev);
- 	gpiod_add_lookup_table(&yogabook_wmi_gpios);
- 	data->backside_hall_gpio = devm_gpiod_get(dev, "backside_hall_sw", GPIOD_IN);
- 	gpiod_remove_lookup_table(&yogabook_wmi_gpios);
- 
--	if (IS_ERR(data->backside_hall_gpio)) {
--		r = PTR_ERR(data->backside_hall_gpio);
--		dev_err_probe(dev, r, "Getting backside_hall_sw GPIO\n");
--		goto error_put_devs;
--	}
-+	if (IS_ERR(data->backside_hall_gpio))
-+		return dev_err_probe(dev, PTR_ERR(data->backside_hall_gpio),
-+				     "Getting backside_hall_sw GPIO\n");
- 
- 	r = gpiod_to_irq(data->backside_hall_gpio);
--	if (r < 0) {
--		dev_err_probe(dev, r, "Getting backside_hall_sw IRQ\n");
--		goto error_put_devs;
--	}
-+	if (r < 0)
-+		return dev_err_probe(dev, r, "Getting backside_hall_sw IRQ\n");
-+
+@@ -287,7 +284,7 @@ static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
  	data->backside_hall_irq = r;
  
  	/* Set default brightness before enabling the IRQ */
-@@ -275,14 +239,12 @@ static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
+-	yogabook_wmi_set_kbd_backlight(data->wdev, YB_KBD_BL_DEFAULT);
++	yogabook_wmi_set_kbd_backlight(data, YB_KBD_BL_DEFAULT);
+ 
  	r = request_irq(data->backside_hall_irq, yogabook_backside_hall_irq,
  			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
- 			"backside_hall_sw", data);
--	if (r) {
--		dev_err_probe(dev, r, "Requesting backside_hall_sw IRQ\n");
--		goto error_put_devs;
--	}
-+	if (r)
-+		return dev_err_probe(dev, r, "Requesting backside_hall_sw IRQ\n");
- 
- 	schedule_work(&data->work);
- 
--	data->kbd_bl_led.name = "ybwmi::kbd_backlight";
-+	data->kbd_bl_led.name = kbd_bl_led_name;
- 	data->kbd_bl_led.brightness_set_blocking = kbd_brightness_set;
- 	data->kbd_bl_led.brightness_get = kbd_brightness_get;
- 	data->kbd_bl_led.max_brightness = 255;
-@@ -299,6 +261,50 @@ static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
- error_free_irq:
- 	free_irq(data->backside_hall_irq, data);
- 	cancel_work_sync(&data->work);
-+	return r;
-+}
-+
-+static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
-+{
-+	struct device *dev = &wdev->dev;
-+	struct yogabook_wmi *data;
-+	int r;
-+
-+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+	if (data == NULL)
-+		return -ENOMEM;
-+
-+	data->kbd_adev = acpi_dev_get_first_match_dev("GDIX1001", NULL, -1);
-+	if (!data->kbd_adev) {
-+		dev_err(dev, "Cannot find the touchpad device in ACPI tables\n");
-+		return -ENODEV;
-+	}
-+
-+	data->dig_adev = acpi_dev_get_first_match_dev("WCOM0019", NULL, -1);
-+	if (!data->dig_adev) {
-+		dev_err(dev, "Cannot find the digitizer device in ACPI tables\n");
-+		r = -ENODEV;
-+		goto error_put_devs;
-+	}
-+
-+	data->kbd_dev = get_device(acpi_get_first_physical_node(data->kbd_adev));
-+	if (!data->kbd_dev || !data->kbd_dev->driver) {
-+		r = -EPROBE_DEFER;
-+		goto error_put_devs;
-+	}
-+
-+	data->dig_dev = get_device(acpi_get_first_physical_node(data->dig_adev));
-+	if (!data->dig_dev || !data->dig_dev->driver) {
-+		r = -EPROBE_DEFER;
-+		goto error_put_devs;
-+	}
-+
-+	r = yogabook_probe(dev, data, "ybwmi::kbd_backlight");
-+	if (r)
-+		goto error_put_devs;
-+
-+	return 0;
-+
- error_put_devs:
- 	put_device(data->dig_dev);
- 	put_device(data->kbd_dev);
-@@ -307,9 +313,8 @@ static int yogabook_wmi_probe(struct wmi_device *wdev, const void *context)
- 	return r;
- }
- 
--static void yogabook_wmi_remove(struct wmi_device *wdev)
-+static void yogabook_remove(struct yogabook_wmi *data)
- {
--	struct yogabook_wmi *data = dev_get_drvdata(&wdev->dev);
- 	int r = 0;
- 
- 	free_irq(data->backside_hall_irq, data);
-@@ -323,6 +328,13 @@ static void yogabook_wmi_remove(struct wmi_device *wdev)
+@@ -338,7 +335,7 @@ static void yogabook_wmi_remove(struct wmi_device *wdev)
+ 		r |= device_reprobe(data->dig_dev);
  
  	if (r)
- 		dev_warn(data->dev, "Reprobe of devices failed\n");
-+}
-+
-+static void yogabook_wmi_remove(struct wmi_device *wdev)
-+{
-+	struct yogabook_wmi *data = dev_get_drvdata(&wdev->dev);
-+
-+	yogabook_remove(data);
+-		dev_warn(&wdev->dev, "Reprobe of devices failed\n");
++		dev_warn(data->dev, "Reprobe of devices failed\n");
  
  	put_device(data->dig_dev);
  	put_device(data->kbd_dev);
+@@ -348,7 +345,6 @@ static void yogabook_wmi_remove(struct wmi_device *wdev)
+ 
+ static int yogabook_suspend(struct device *dev)
+ {
+-	struct wmi_device *wdev = container_of(dev, struct wmi_device, dev);
+ 	struct yogabook_wmi *data = dev_get_drvdata(dev);
+ 
+ 	set_bit(YB_SUSPENDED, &data->flags);
+@@ -357,24 +353,23 @@ static int yogabook_suspend(struct device *dev)
+ 
+ 	/* Turn off the pen button at sleep */
+ 	if (test_bit(YB_DIGITIZER_IS_ON, &data->flags))
+-		yogabook_wmi_do_action(wdev, YB_PAD_DISABLE);
++		yogabook_wmi_do_action(data, YB_PAD_DISABLE);
+ 
+ 	return 0;
+ }
+ 
+ static int yogabook_resume(struct device *dev)
+ {
+-	struct wmi_device *wdev = container_of(dev, struct wmi_device, dev);
+ 	struct yogabook_wmi *data = dev_get_drvdata(dev);
+ 
+ 	if (test_bit(YB_KBD_IS_ON, &data->flags)) {
+ 		/* Ensure keyboard touchpad is on before we call KBLC() */
+ 		acpi_device_set_power(data->kbd_adev, ACPI_STATE_D0);
+-		yogabook_wmi_set_kbd_backlight(wdev, data->brightness);
++		yogabook_wmi_set_kbd_backlight(data, data->brightness);
+ 	}
+ 
+ 	if (test_bit(YB_DIGITIZER_IS_ON, &data->flags))
+-		yogabook_wmi_do_action(wdev, YB_PAD_ENABLE);
++		yogabook_wmi_do_action(data, YB_PAD_ENABLE);
+ 
+ 	clear_bit(YB_SUSPENDED, &data->flags);
+ 
 -- 
 2.39.2
 
