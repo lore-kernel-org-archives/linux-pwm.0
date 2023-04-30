@@ -2,140 +2,99 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 037DEC77B60
-	for <linux-pwm@archiver.kernel.org>; Sun, 30 Apr 2023 15:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59754C7EE21
+	for <linux-pwm@archiver.kernel.org>; Sun, 30 Apr 2023 16:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbjD3Pkv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 30 Apr 2023 11:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
+        id S230416AbjD3Q7D (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 30 Apr 2023 12:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbjD3Pku (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Apr 2023 11:40:50 -0400
+        with ESMTP id S230272AbjD3Q7C (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Apr 2023 12:59:02 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD991739
-        for <linux-pwm@vger.kernel.org>; Sun, 30 Apr 2023 08:40:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F911BFF
+        for <linux-pwm@vger.kernel.org>; Sun, 30 Apr 2023 09:58:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682869202;
+        s=mimecast20190719; t=1682873900;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wQ16pmB1gtE1KSPBErTmJ1zb6H8Xmxi2VyW+gGOxZdw=;
-        b=IPdn9t0AXUQR0pMgOjUlQlRzylavdoY/5d2YUDnl/b15yyukJf3tS/cMLpKfzxqCc2BTdG
-        ysJMDJz/s7zswzdi8DICCrdwsSC+8lxGP23JGqOer7nEQEsVa+IN4gfN8j691glSighWd+
-        gY29NrmuBcqBhfff3BXuxUNIYIZN9dM=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-215-2ZI0TbtHOd68LVgpv_DweA-1; Sun, 30 Apr 2023 11:39:53 -0400
-X-MC-Unique: 2ZI0TbtHOd68LVgpv_DweA-1
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-94a355c9028so205860366b.3
-        for <linux-pwm@vger.kernel.org>; Sun, 30 Apr 2023 08:39:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682869191; x=1685461191;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wQ16pmB1gtE1KSPBErTmJ1zb6H8Xmxi2VyW+gGOxZdw=;
-        b=hnfzs4cMHU3TFI/kW2SX9uhBSd8eEepem9i7Y+Ka4WDea5nCkO60v9hI3eOxd8Znnw
-         5uV69KlZfQK1hxccw7D5MZT/BD6b++nhBFVL1HjejP50dYFOAXx42aXaA4SUz4HHjrsJ
-         8sqkRsqgWDu9tcxDNuM9KtgfAMrOCZTOUzlvGN9MlTuzdn/zIKp0y/yh4MuTq+tTs0Mu
-         cOFJ1hsCeeckUq5i7vfB3wp1dv1qN57rZCcjEYg23aSlJkBG9FGuzkPIMcEkG/8w0HCm
-         yFubDjMYIuZtP2lOi+hpg1uYZZgnqB7VRdpk31txWqhM/6Pj+CeFmZ2NSdvo0/I/fEtq
-         14WQ==
-X-Gm-Message-State: AC+VfDxdRZOTxjq5RigR4clbRCpeQYnv+TID4bLwrdNw+ct/SPqHPBJJ
-        57ZXPRNQ3UjmuvMcn6UKC2LmvO/kXT760hpw4YAukT4Dj/cGYjhz2rhVH54aCmrkc2CWfR90k2p
-        VPVu1ZXvG4FNExK3RL62F
-X-Received: by 2002:a17:907:9807:b0:94b:4a4:2836 with SMTP id ji7-20020a170907980700b0094b04a42836mr11939102ejc.69.1682869191769;
-        Sun, 30 Apr 2023 08:39:51 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4dJeI8z1d3dV3690wn9/BaNN+x/IpTVnmozRHk5O8lqujWDaTlhkgxjAo7mSAw5ua7zixzBQ==
-X-Received: by 2002:a17:907:9807:b0:94b:4a4:2836 with SMTP id ji7-20020a170907980700b0094b04a42836mr11939080ejc.69.1682869191458;
-        Sun, 30 Apr 2023 08:39:51 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c32:7800:5bfa:a036:83f0:f9ec? (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
-        by smtp.gmail.com with ESMTPSA id jz9-20020a17090775e900b0096152a82ef3sm1629877ejc.213.2023.04.30.08.39.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 30 Apr 2023 08:39:50 -0700 (PDT)
-Message-ID: <44e88d4d-388c-17c6-e1ec-fad7df2cb246@redhat.com>
-Date:   Sun, 30 Apr 2023 17:39:50 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH 17/19] platform/x86: lenovo-yogabook: Add platform driver
- support
-Content-Language: en-US, nl
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        bh=mCBm5jOnhjJEt6pe1UKwQEu4teSD01GVaLjt+SyOQmE=;
+        b=hNSksyL3wWt5bOXvCfL6paVn/unOUIrZSGzeIenOpbao49G7rpddIg72zKQHPU6RVlm5/d
+        9jvEFRLcTv6vBpo9B2RUN884ft+Um0re9BgVURVi/4ZqHyTR3Apz+izW7JEscCkC8+JVe+
+        zjQoPGjbXQD2RXz+tW/ON+bd5wI1LYI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-641-lf4Ik5L4OJSoaWzigonaxA-1; Sun, 30 Apr 2023 12:58:19 -0400
+X-MC-Unique: lf4Ik5L4OJSoaWzigonaxA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 769212A59553;
+        Sun, 30 Apr 2023 16:58:18 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.192.59])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A1832166B26;
+        Sun, 30 Apr 2023 16:58:17 +0000 (UTC)
+From:   Hans de Goede <hdegoede@redhat.com>
+To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andy@kernel.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
         Yauhen Kharuzhy <jekhor@gmail.com>,
         platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org
-References: <20230429181551.98201-1-hdegoede@redhat.com>
- <20230429181551.98201-18-hdegoede@redhat.com>
- <CAHp75VfCzm+ZS=Q4jmeww_12UeU0YKHFqURBfJiSFX-MxxbFbg@mail.gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <CAHp75VfCzm+ZS=Q4jmeww_12UeU0YKHFqURBfJiSFX-MxxbFbg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v2 01/19] pwm: Export pwm_add_table() / pwm_remove_table()
+Date:   Sun, 30 Apr 2023 18:57:49 +0200
+Message-Id: <20230430165807.472798-2-hdegoede@redhat.com>
+In-Reply-To: <20230430165807.472798-1-hdegoede@redhat.com>
+References: <20230430165807.472798-1-hdegoede@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Andy,
+Lenovo Yoga Book 1 (yb1-x90f/l) models have a backlit keyboard where
+the brightness is directly controlled by one of the Intel Cherry Trail
+SoCs PWM controllers.
 
-Thank you for all the reviews.
+To control the backlight the drivers/platform/lenovo-yogabook.c needs
+to add a pwm_lookup table entry so that it can call pwm_get() to get
+a reference to the PWM controller.
 
-I agree with all your comments and I will fix them
-all for version 2 of this series.
+The lenovo-yogabook driver can be build as a module, export
+pwm_add_table() and pwm_remove_table() so that the lenovo-yogabook
+driver can use them when build as a module.
 
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/pwm/core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On 4/30/23 12:49, Andy Shevchenko wrote:
-
-<snip>
-
->> +       r = gpiod_to_irq(data->pen_touch_event);
->> +       if (r < 0) {
->> +               dev_err_probe(dev, r, "Getting pen_touch_event IRQ\n");
->> +               return r;
-> 
-> return dev_err_probe();
-> 
->> +       }
->> +       data->pen_touch_irq = r;
->> +
->> +       r = request_irq(data->pen_touch_irq, yogabook_pen_touch_irq, IRQF_TRIGGER_FALLING,
->> +                       "pen_touch_event", data);
->> +       if (r) {
->> +               dev_err_probe(dev, r, "Requesting backside_hall_sw IRQ\n");
->> +               return r;
-> 
-> Ditto.
-
-Actually this block has 2 copy and paste errors:
-
-1. The second error message
-2. Both "return r;" statements need to be replaced with goto error_put_devs.
-
-I'll fix this both for version 2.
-
-> 
->> +       }
-> 
-> ...
-> 
->> +MODULE_ALIAS("platform:" YB_PDEV_NAME);
-> 
-> Hmm... Do we need this?
-
-Yes simple platform_drivers like this one typically don't have
-a device-id table (they simply match by name) and thus they also
-don't have a MODULE_DEVICE_TABLE(platform, ...); statement so
-they need an explicit MODULE_ALIAS to correctly auto-load.
-
-Regards,
-
-Hans
-
-
-> 
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 474725714a05..c66daac6154f 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -881,6 +881,7 @@ void pwm_add_table(struct pwm_lookup *table, size_t num)
+ 
+ 	mutex_unlock(&pwm_lookup_lock);
+ }
++EXPORT_SYMBOL_GPL(pwm_add_table);
+ 
+ /**
+  * pwm_remove_table() - unregister PWM device consumers
+@@ -898,6 +899,7 @@ void pwm_remove_table(struct pwm_lookup *table, size_t num)
+ 
+ 	mutex_unlock(&pwm_lookup_lock);
+ }
++EXPORT_SYMBOL_GPL(pwm_remove_table);
+ 
+ /**
+  * pwm_get() - look up and request a PWM device
+-- 
+2.39.2
 
