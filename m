@@ -2,124 +2,111 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 730D8C7EE23
-	for <linux-pwm@archiver.kernel.org>; Thu, 11 May 2023 14:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D23C77B7F
+	for <linux-pwm@archiver.kernel.org>; Thu, 11 May 2023 18:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238597AbjEKOft (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 11 May 2023 10:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
+        id S238860AbjEKSTG (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 11 May 2023 14:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238238AbjEKOfe (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 11 May 2023 10:35:34 -0400
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BB02D59
-        for <linux-pwm@vger.kernel.org>; Thu, 11 May 2023 07:34:54 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id A21F95FD0C;
-        Thu, 11 May 2023 17:34:50 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1683815690;
-        bh=4aqcbnYtmMYM6DF+qqc6A/zLY11dMjaBVIb3KYwKcAs=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=kQh7e2fjBiFc9d5WuMGnXSn3GxKHauY7o11uTXLbxpXcs6JCJrA3XFTlVbb2hRDtp
-         5xLos42S2iUllEFKQmalIcwktDVcHrC8k/qZsBsAYY6pxGiaKQe0ZsQOBvt6qnprKL
-         waZDbujSSA1iAVDhslFCk8fphcFr/2u/FBB+NSTzbcAqKPdCcXqeUTC2LD30mdDyJ7
-         7Duc72ptdHtTCEkhRZNUvad2f0Iz/b0IhOT+RV9aLZ7yjpxi7UjtuHb45ELw0RAfun
-         9pys3TXsGupyv4dx/4GzGcfgZqQtBhWlxX531jZlffVO9QPhOCsQFXcEtsPDwKltWa
-         zIgYt/W3GP1YA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 11 May 2023 17:34:50 +0300 (MSK)
-Date:   Thu, 11 May 2023 17:34:49 +0300
-From:   Dmitry Rokosov <ddrokosov@sberdevices.ru>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        with ESMTP id S238819AbjEKSTF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 11 May 2023 14:19:05 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FED30FB
+        for <linux-pwm@vger.kernel.org>; Thu, 11 May 2023 11:19:04 -0700 (PDT)
+Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id D8C2E8619B;
+        Thu, 11 May 2023 20:19:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1683829142;
+        bh=5c87M5Mlyt4IPwxZPGG6d+KSyENTxxKXvZ/14g99J2U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MUxbAN0RW2wtIp+R1atD+l+52gp1fO9Eag3z/vzg5XZRaFtfFNQJQtp9ZNOkf8HdA
+         mxywf2ytfceCs9uoNyY1hB50F19Vj2Yr27meeMwBMYFC2ZKVJEhYtbp9GIu77E1E1P
+         ITeviZMM9TdhO4DGgDKIHmYTFj2/g/n2zMTB36YOx6xjIYBJvRNGQnb8TURT7jicZ5
+         DQ3G4AIG5uUrgAWP0Z9C31tHmhSDIVh0SS6YV6+0y8f4BjfKnqxmFOUdKW9vs+bF60
+         o1zPbvyzZTlOe9+Uew5xz3tjvdQza5SFhtWIvUPHSGbdx6XHjco/AjbAw/I7ivG1FH
+         iT7lLP4NnbukA==
+From:   Marek Vasut <marex@denx.de>
+To:     linux-pwm@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        Brian Norris <briannorris@chromium.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        <linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH v3] pwm: meson: modify and simplify calculation in
- meson_pwm_get_state
-Message-ID: <20230511143449.lcreswddwqe4c5zb@CAB-WSD-L081021>
-References: <23fe625e-dc23-4db8-3dce-83167cd3b206@gmail.com>
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH] pwm: core: Permit unset period when applying configuration of disabled PWMs
+Date:   Thu, 11 May 2023 20:18:53 +0200
+Message-Id: <20230511181853.185685-1-marex@denx.de>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <23fe625e-dc23-4db8-3dce-83167cd3b206@gmail.com>
-User-Agent: NeoMutt/20220415
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/05/11 10:21:00 #21259776
-X-KSMG-AntiVirus-Status: Clean, skipped
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Tue, May 02, 2023 at 10:33:42PM +0200, Heiner Kallweit wrote:
-> I don't see a reason why we should treat the case lo < hi differently
-> and return 0 as period and duty_cycle. The current logic was added with
-> c375bcbaabdb ("pwm: meson: Read the full hardware state in
-> meson_pwm_get_state()"), Martin as original author doesn't remember why
-> it was implemented this way back then.
-> So let's handle it as normal use case and also remove the optimization
-> for lo == 0. I think the improved readability is worth it.
-> 
-> Fixes: c375bcbaabdb ("pwm: meson: Read the full hardware state in meson_pwm_get_state()")
-> Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
-> v2:
-> - improve commit description
-> v3:
-> - make patch a fix
-> ---
->  drivers/pwm/pwm-meson.c | 14 ++------------
->  1 file changed, 2 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index 5732300eb..3865538dd 100644
-> --- a/drivers/pwm/pwm-meson.c
-> +++ b/drivers/pwm/pwm-meson.c
-> @@ -351,18 +351,8 @@ static int meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
->  	channel->lo = FIELD_GET(PWM_LOW_MASK, value);
->  	channel->hi = FIELD_GET(PWM_HIGH_MASK, value);
->  
-> -	if (channel->lo == 0) {
-> -		state->period = meson_pwm_cnt_to_ns(chip, pwm, channel->hi);
-> -		state->duty_cycle = state->period;
-> -	} else if (channel->lo >= channel->hi) {
-> -		state->period = meson_pwm_cnt_to_ns(chip, pwm,
-> -						    channel->lo + channel->hi);
-> -		state->duty_cycle = meson_pwm_cnt_to_ns(chip, pwm,
-> -							channel->hi);
-> -	} else {
-> -		state->period = 0;
-> -		state->duty_cycle = 0;
-> -	}
-> +	state->period = meson_pwm_cnt_to_ns(chip, pwm, channel->lo + channel->hi);
-> +	state->duty_cycle = meson_pwm_cnt_to_ns(chip, pwm, channel->hi);
->  
->  	state->polarity = PWM_POLARITY_NORMAL;
->  
-> -- 
-> 2.40.0
+In case the PWM is not enabled, the period can still be left unconfigured,
+i.e. zero . Currently the pwm_class_apply_state() errors out in such a case.
+This e.g. makes suspend fail on systems where pwmchip has been exported via
+sysfs interface, but left unconfigured before suspend occurred.
 
-Reviewed-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Failing case:
+"
+$ echo 1 > /sys/class/pwm/pwmchip4/export
+$ echo mem > /sys/power/state
+...
+pwm pwmchip4: PM: dpm_run_callback(): pwm_class_suspend+0x1/0xa8 returns -22
+pwm pwmchip4: PM: failed to suspend: error -22
+PM: Some devices failed to suspend, or early wake event detected
+"
 
+Working case:
+"
+$ echo 1 > /sys/class/pwm/pwmchip4/export
+$ echo 100 > /sys/class/pwm/pwmchip4/pwm1/period
+$ echo 10 > /sys/class/pwm/pwmchip4/pwm1/duty_cycle
+$ echo mem > /sys/power/state
+...
+"
+
+Permit unset period in pwm_class_apply_state() in case the PWM is disabled
+to fix this issue.
+
+Fixes: ef2bf4997f7d ("pwm: Improve args checking in pwm_apply_state()")
+Signed-off-by: Marek Vasut <marex@denx.de>
+---
+Cc: Brian Norris <briannorris@chromium.org>
+Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: linux-pwm@vger.kernel.org
+---
+ drivers/pwm/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 3dacceaef4a9b..87252b70f1c81 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -510,8 +510,8 @@ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
+ 	 */
+ 	might_sleep();
+ 
+-	if (!pwm || !state || !state->period ||
+-	    state->duty_cycle > state->period)
++	if (!pwm || !state || (state->enabled &&
++	    (!state->period || state->duty_cycle > state->period)))
+ 		return -EINVAL;
+ 
+ 	chip = pwm->chip;
 -- 
-Thank you,
-Dmitry
+2.39.2
+
