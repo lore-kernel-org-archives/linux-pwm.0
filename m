@@ -2,61 +2,108 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C111C77B7A
-	for <linux-pwm@archiver.kernel.org>; Wed, 17 May 2023 07:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5F5C77B7F
+	for <linux-pwm@archiver.kernel.org>; Wed, 17 May 2023 10:20:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbjEQHvv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 17 May 2023 03:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
+        id S230282AbjEQKUq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 17 May 2023 06:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbjEQHvv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 17 May 2023 03:51:51 -0400
-Received: from mail.feshiecree.pl (mail.feshiecree.pl [89.40.114.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4878410F5
-        for <linux-pwm@vger.kernel.org>; Wed, 17 May 2023 00:51:46 -0700 (PDT)
-Received: by mail.feshiecree.pl (Postfix, from userid 1001)
-        id A4FC5831F3; Wed, 17 May 2023 08:51:30 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=feshiecree.pl;
-        s=mail; t=1684309904;
-        bh=hFxZwVw4rIL+JwfEOGI47p+fdoVOAeqVswP6NWoHSHQ=;
-        h=Date:From:To:Subject:From;
-        b=UucwdtL4Z8WeTlmL4qD8nBrAJYr4PPgiuFiaB0BBl77LLmW9BcHPKaZekBDCX7AZN
-         7IGkRklw9iG0qQVF/WhSglmzPUSSJyfIhsAnBx3Ww9Yd+YCHWMrzI8vcVXTtpUtd3Z
-         Y1bsVEdFUdHD7h9NAJRhyK9CqExhO71blaVXVvv4AZygLSIV9x1dHP/tBUyYLizxIO
-         2GvB4K1jtAy4Xkux/D4vTnuzY01ZpQ+RieqpY+kSmXemHghPnliHisYwufAnclFztD
-         QUwF3IjR2/hjXpg0mcUM/90jG9QwYAipepBXUN1WShjBMzPgZYOBoh6l+RU47zpQit
-         HSW3cvXYR9o1A==
-Received: by mail.feshiecree.pl for <linux-pwm@vger.kernel.org>; Wed, 17 May 2023 07:51:09 GMT
-Message-ID: <20230517074502-0.1.2m.ht8b.0.jhaf627owf@feshiecree.pl>
-Date:   Wed, 17 May 2023 07:51:09 GMT
-From:   "Krystian Wieczorek" <krystian.wieczorek@feshiecree.pl>
-To:     <linux-pwm@vger.kernel.org>
-Subject: W sprawie samochodu
-X-Mailer: mail.feshiecree.pl
+        with ESMTP id S229937AbjEQKUp (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 17 May 2023 06:20:45 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A06035AB
+        for <linux-pwm@vger.kernel.org>; Wed, 17 May 2023 03:20:44 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pzEGm-0001Nd-Hf; Wed, 17 May 2023 12:20:32 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pzEGl-000opd-MS; Wed, 17 May 2023 12:20:31 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pzEGk-005JDj-UP; Wed, 17 May 2023 12:20:30 +0200
+Date:   Wed, 17 May 2023 12:20:30 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Conor Dooley <conor.dooley@microchip.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v17 1/2] pwm: add microchip soft ip corePWM driver
+Message-ID: <20230517102030.b4nyo2dmpfl7v7fk@pengutronix.de>
+References: <20230421-neurology-trapezoid-b4fa29923a23@wendy>
+ <20230421-sleek-bottom-88b867f56609@wendy>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="qa5qm3wv35pmobau"
+Content-Disposition: inline
+In-Reply-To: <20230421-sleek-bottom-88b867f56609@wendy>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Dzie=C5=84 dobry,
 
-chcieliby=C5=9Bmy zapewni=C4=87 Pa=C5=84stwu kompleksowe rozwi=C4=85zania=
-, je=C5=9Bli chodzi o system monitoringu GPS.
+--qa5qm3wv35pmobau
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Precyzyjne monitorowanie pojazd=C3=B3w na mapach cyfrowych, =C5=9Bledzeni=
-e ich parametr=C3=B3w eksploatacyjnych w czasie rzeczywistym oraz kontrol=
-a paliwa to kluczowe funkcjonalno=C5=9Bci naszego systemu.=20
+Hello Conor,
 
-Organizowanie pracy pracownik=C3=B3w jest dzi=C4=99ki temu prostsze i bar=
-dziej efektywne, a oszcz=C4=99dno=C5=9Bci i optymalizacja w zakresie pono=
-szonych koszt=C3=B3w, maj=C4=85 dla ka=C5=BCdego przedsi=C4=99biorcy ogro=
-mne znaczenie.
+I found one remaining issue:
 
-Dopasujemy nasz=C4=85 ofert=C4=99 do Pa=C5=84stwa oczekiwa=C5=84 i potrze=
-b organizacji. Czy mogliby=C5=9Bmy porozmawia=C4=87 o naszej propozycji?
+On Fri, Apr 21, 2023 at 10:27:09AM +0100, Conor Dooley wrote:
+> +static u64 mchp_core_pwm_calc_duty(const struct pwm_state *state, u64 cl=
+k_rate,
+> +				   u8 prescale, u8 period_steps)
+> +{
+> +	u64 duty_steps, tmp;
+> +
+> +	/*
+> +	 * Calculate the duty cycle in multiples of the prescaled period:
+> +	 * duty_steps =3D duty_in_ns / step_in_ns
+> +	 * step_in_ns =3D (prescale * NSEC_PER_SEC) / clk_rate
+> +	 * The code below is rearranged slightly to only divide once.
+> +	 */
+> +	tmp =3D (prescale + 1) * NSEC_PER_SEC;
 
+If prescale > 4 this overflows on 32bit archs, doesn't it?
+(I think prescale + 1 is promoted to unsigned int, then the
+multiplication is done and only then the range is extended to u64.
 
-Pozdrawiam
-Krystian Wieczorek
+> +	duty_steps =3D mul_u64_u64_div_u64(state->duty_cycle, clk_rate, tmp);
+> +
+> +	return duty_steps;
+> +}
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--qa5qm3wv35pmobau
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmRkqm4ACgkQj4D7WH0S
+/k6E4Af9GpPg42BTohU1ij/TFyI2WSTeDS3OHXIV92tExb/HLhS7FSfKT6abkvKE
+ypK/1B9fnczOdqCjkkU1EetSh+RpLL7D9iQTmpbVKiH6RNP4yzpluiURsYPs/FkX
+l13ixd0Twqfdm/YJC+I9bMxZMkSH/nQfz211qQXxdFDQ7gluRdNllcz0FZzx9goT
+naOJE1VjjAqzXEpcuSojE7ghI/ZG8zQihqmYgSRQV88rQoqupN7u69vvAKS/ji9g
+StJ3wFnLC3l5flUPz1ye32ZtXO/l7f7dewi+IpkDpcM54EY765Jiu4Mw53MTGUWm
+1b8HNXWdrt2LqRG9/l/0pUd6nJAJkQ==
+=4RDi
+-----END PGP SIGNATURE-----
+
+--qa5qm3wv35pmobau--
