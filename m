@@ -2,53 +2,53 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A9F6C7EE29
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC44C77B7A
 	for <linux-pwm@archiver.kernel.org>; Fri, 19 May 2023 18:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbjESSJa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S231340AbjESSJa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Fri, 19 May 2023 14:09:30 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231340AbjESSJ0 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 19 May 2023 14:09:26 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C537E13D;
-        Fri, 19 May 2023 11:09:23 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-50bcb4a81ceso6215488a12.2;
-        Fri, 19 May 2023 11:09:23 -0700 (PDT)
+        with ESMTP id S231663AbjESSJ2 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 19 May 2023 14:09:28 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63C5139;
+        Fri, 19 May 2023 11:09:27 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-510d92184faso5472452a12.1;
+        Fri, 19 May 2023 11:09:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684519762; x=1687111762;
+        d=gmail.com; s=20221208; t=1684519766; x=1687111766;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Wa4GrAhOE8Ip1cfBaEizrnK5it7+wALvb2m6cKMWkr8=;
-        b=PjsDBdWqzXzuWYohuR4TtfYGn0lvJdCvz56mbJsAebNLvs9Y7yEXnEvei99fYs7x1T
-         C8zGFiYkQZ/yPfM3KIuIht5qLZX+Em9AShhJHA72aLShq60p2bzW6Ogrj7P0z0U2GdRj
-         +PK4Q3QNCK26u614Jop1jnPDfarQub8anU4jrtG8wMCBUMr3rIqjJbHLyc6qdTg0Gmnr
-         J/ciu1SrMAqgWFo8M9zLmrdf4Zv+mMGp1jx31AdNHlFXKQ+USET3IcVorJegcFkz7Gsw
-         50pCq1zuIsbGXm/RM35wt2nd0qFq+npqyZqaBISZVn1xNUshEiCo1SBZuupu3cN5GRev
-         C/Gg==
+        bh=+d7PbSuYoLaRDWMlMC+jLFLlA199/veHtp6NNGsVDoc=;
+        b=gcQTbnmDPp2/Gb2su0qH27Cgs0F2g1Thm8mh9FNIKJm0oVuWfADVDmYW4S0L/BK8+o
+         a3kVhiDBd4o54uoRD7sp0IrRDfs3pfeg/SNyFKjAdblu6Ht4gb3IPvd2GMeO02U3gysx
+         B7ZE8QxzdS0Mec6P1B8zNcr+Fh8yiAoPQMJ1yYGqpUy19Wptg2PvOGX2y5mQt8Mll+aR
+         XBvSXRbCkp/SVV6ti/QWRr4WHfxvz+fdSWMLN02t2+823/rE6XWCLu1ag1HeoW4jVgbG
+         K7Ko9Ct/ypYjQZOP7mkZyEVgV59MYRy59bdLdpyRUEOObSce6eGRgyKDjmZ4RQQPTpu7
+         qUHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684519762; x=1687111762;
+        d=1e100.net; s=20221208; t=1684519766; x=1687111766;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Wa4GrAhOE8Ip1cfBaEizrnK5it7+wALvb2m6cKMWkr8=;
-        b=ZEpDisgmps9QIPxADkBvuRAEV155n5n8foByIEK3FekZyVT5NeygmZyUiWkSeul4rD
-         J2Y4ewY8wwmaRFyUqret5F0Gj9qp85UX09K6i0JYDSDeTo1hStGrA98GKBl5xp56kxL2
-         decZYAH1Eu8phzf8JVsuWOvnfHvTaB0VPT+Ednxp6/qOIWQNJ//pGKNQk7SDzudOpAOK
-         oLRN48SIH4L6ldAI1AcuTab+m7vZZmuQwT4+OVqBYwFLFdBZ9Hr339ahZ+jLxKC1Ns+B
-         sggmDPbXLlbUIAvkOPygovagPnWBzgwdVUBmIoIl0Mj1KysE2E94TX+pq9MVXt21tzgK
-         Ec/g==
-X-Gm-Message-State: AC+VfDytXxh+3dWp8syaLv6uHGbl5mULhnYXGosu91gQNWGO8gB3bWnk
-        +EMugaK8B4SDK8+Fj4lAYvM=
-X-Google-Smtp-Source: ACHHUZ6u2a9Lr9cYq4NaOedPUdAUAaoP0VKuR6scPJCvErQGvWxvv92EU6jX2N5Mfo22SCLxomNc0A==
-X-Received: by 2002:a05:6402:2cb:b0:50d:fcfb:861b with SMTP id b11-20020a05640202cb00b0050dfcfb861bmr2712993edx.0.1684519761880;
-        Fri, 19 May 2023 11:09:21 -0700 (PDT)
+        bh=+d7PbSuYoLaRDWMlMC+jLFLlA199/veHtp6NNGsVDoc=;
+        b=eeoqfylw8CzuKL1DH1bAeMkn+B26pZs0ir+Xa67awYwE+5jZjx8ScDyR6aLQIIyZB1
+         omcDliZjQHw5ZTa/xQpSqJYFvnLRGgGl54SJ0/WnTzeQO0aoebI/TIvSz/nIG//dfA3N
+         Z4ZC3SsVAIUYwwGPqJKL4ldWlS/arWWA7S3PyO9uqdM0jAp7/jwkUqU+AwNIwZdW2GXY
+         odrwLB7G2xLPnxhS38fe8iI2Qco6e47ZIJkUEcB5dsHRrm5LpSAM7eLuENtDIGJcKrjG
+         dwMSAUMg662e6n6ECyNU/CdJvLAkAU0IJ8/63HVvLw08/7aKJXp9c5/vKHSYYMzxkXl7
+         qepQ==
+X-Gm-Message-State: AC+VfDzb16rr3wHpFVtbkwiYShZS8q+PxvqA2IQM+dUCpWBMmMGB5eeO
+        oj9id/grdh644x6XV9VXaOY=
+X-Google-Smtp-Source: ACHHUZ7rLnbizAEqYNWScE2PGJGpJKPdJtBcR0QqvyY0pfJthrs/TixsUA/eAKRegeklwChoSIzfNw==
+X-Received: by 2002:aa7:d8d8:0:b0:50d:bb87:247c with SMTP id k24-20020aa7d8d8000000b0050dbb87247cmr2359065eds.1.1684519765877;
+        Fri, 19 May 2023 11:09:25 -0700 (PDT)
 Received: from localhost.my.domain (83.11.222.198.ipv4.supernova.orange.pl. [83.11.222.198])
-        by smtp.gmail.com with ESMTPSA id g26-20020aa7c85a000000b0050690bc07a3sm19824edt.18.2023.05.19.11.09.14
+        by smtp.gmail.com with ESMTPSA id g26-20020aa7c85a000000b0050690bc07a3sm19824edt.18.2023.05.19.11.09.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 May 2023 11:09:21 -0700 (PDT)
+        Fri, 19 May 2023 11:09:25 -0700 (PDT)
 From:   Artur Weber <aweber.kernel@gmail.com>
 To:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -67,11 +67,10 @@ Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 1/4] dt-bindings: backlight: lp855x: convert to YAML and modernize
-Date:   Fri, 19 May 2023 20:07:25 +0200
-Message-Id: <20230519180728.2281-2-aweber.kernel@gmail.com>
+        ~postmarketos/upstreaming@lists.sr.ht
+Subject: [PATCH v2 3/4] ARM: dts: adapt to LP855X bindings changes
+Date:   Fri, 19 May 2023 20:07:27 +0200
+Message-Id: <20230519180728.2281-4-aweber.kernel@gmail.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230519180728.2281-1-aweber.kernel@gmail.com>
 References: <20230519180728.2281-1-aweber.kernel@gmail.com>
@@ -81,259 +80,92 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Notable changes:
-- ROM child nodes use dashes instead of underscores; the driver
-  reads all child nodes regardless of their names, so this doesn't
-  break ABI.
-- pwm-period argument is deprecated, as it effectively duplicates
-  the period value provided in pwms. The driver continues to accept
-  the property, so this should not break ABI.
+Change underscores in ROM node names to dashes, and remove deprecated
+pwm-period property.
 
 Signed-off-by: Artur Weber <aweber.kernel@gmail.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Luca Weiss <luca@z3ntu.xyz>
 ---
-Changed in v2:
- - Added additionalProperties to ROM patternProperties
----
- .../leds/backlight/lp855x-backlight.yaml      | 149 ++++++++++++++++++
- .../bindings/leds/backlight/lp855x.txt        |  72 ---------
- 2 files changed, 149 insertions(+), 72 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/leds/backlight/lp855x-backlight.yaml
- delete mode 100644 Documentation/devicetree/bindings/leds/backlight/lp855x.txt
+ .../dts/qcom-apq8026-samsung-matisse-wifi.dts |  1 -
+ ...-msm8974pro-sony-xperia-shinano-castor.dts | 23 ++++++++++---------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/leds/backlight/lp855x-backlight.yaml b/Documentation/devicetree/bindings/leds/backlight/lp855x-backlight.yaml
-new file mode 100644
-index 000000000000..9416e1bfab92
---- /dev/null
-+++ b/Documentation/devicetree/bindings/leds/backlight/lp855x-backlight.yaml
-@@ -0,0 +1,149 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/leds/backlight/lp855x-backlight.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/arm/boot/dts/qcom-apq8026-samsung-matisse-wifi.dts b/arch/arm/boot/dts/qcom-apq8026-samsung-matisse-wifi.dts
+index 91b860e24681..884d99297d4c 100644
+--- a/arch/arm/boot/dts/qcom-apq8026-samsung-matisse-wifi.dts
++++ b/arch/arm/boot/dts/qcom-apq8026-samsung-matisse-wifi.dts
+@@ -99,7 +99,6 @@ backlight@2c {
+ 
+ 			dev-ctrl = /bits/ 8 <0x80>;
+ 			init-brt = /bits/ 8 <0x3f>;
+-			pwm-period = <100000>;
+ 
+ 			pwms = <&backlight_pwm 0 100000>;
+ 			pwm-names = "lp8556";
+diff --git a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
+index 04bc58d87abf..2396253f953a 100644
+--- a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
++++ b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
+@@ -150,47 +150,48 @@ lp8566_wled: backlight@2c {
+ 		bl-name = "backlight";
+ 		dev-ctrl = /bits/ 8 <0x05>;
+ 		init-brt = /bits/ 8 <0x3f>;
+-		rom_a0h {
 +
-+title: Texas Instruments LP855X backlight controllers
-+
-+maintainers:
-+  - Artur Weber <aweber.kernel@gmail.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,lp8550
-+      - ti,lp8551
-+      - ti,lp8552
-+      - ti,lp8553
-+      - ti,lp8555
-+      - ti,lp8556
-+      - ti,lp8557
-+
-+  reg:
-+    maxItems: 1
-+
-+  dev-ctrl:
-+    $ref: /schemas/types.yaml#/definitions/uint8
-+    description:
-+      Value of device control register. This is a device-specific value.
-+
-+  bl-name:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: Backlight device name.
-+
-+  init-brt:
-+    $ref: /schemas/types.yaml#/definitions/uint8
-+    description: Initial value of backlight brightness.
-+
-+  power-supply:
-+    description: Regulator which controls the 3V rail.
-+
-+  enable-supply:
-+    description: Regulator which controls the EN/VDDIO input.
-+
-+  pwms:
-+    maxItems: 1
-+    description: |
-+      PWM channel to use for controlling the backlight; setting this
-+      enables the PWM-based backlight control mode.
-+
-+  pwm-names: true
-+
-+  pwm-period:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      PWM period value. Deprecated; set the period value in the pwms
-+      property instead.
-+    deprecated: true
-+
-+patternProperties:
-+  "^rom-[0-9a-f]{2}h$":
-+    type: object
-+    description: Nodes containing the values of configuration registers.
-+    additionalProperties: false
-+    properties:
-+      rom-addr:
-+        $ref: /schemas/types.yaml#/definitions/uint8
-+        description: Register address of ROM area to be updated.
-+
-+      rom-val:
-+        $ref: /schemas/types.yaml#/definitions/uint8
-+        description: Value to write to the ROM register.
-+
-+required:
-+  - compatible
-+  - reg
-+  - dev-ctrl
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        backlight@2c {
-+            compatible = "ti,lp8555";
-+            reg = <0x2c>;
-+
-+            dev-ctrl = /bits/ 8 <0x00>;
-+
-+            pwms = <&pwm 0 10000>;
-+            pwm-names = "lp8555";
-+
-+            /* 4V OV, 4 output LED0 string enabled */
-+            rom-14h {
-+              rom-addr = /bits/ 8 <0x14>;
-+              rom-val = /bits/ 8 <0xcf>;
-+            };
-+
-+            /* Heavy smoothing, 24ms ramp time step */
-+            rom-15h {
-+              rom-addr = /bits/ 8 <0x15>;
-+              rom-val = /bits/ 8 <0xc7>;
-+            };
-+
-+            /* 4 output LED1 string enabled */
-+            rom-19h {
-+              rom-addr = /bits/ 8 <0x19>;
-+              rom-val = /bits/ 8 <0x0f>;
-+            };
-+        };
-+    };
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        backlight@2c {
-+            compatible = "ti,lp8556";
-+            reg = <0x2c>;
-+
-+            bl-name = "lcd-bl";
-+            dev-ctrl = /bits/ 8 <0x85>;
-+            init-brt = /bits/ 8 <0x10>;
-+        };
-+      };
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        backlight@2c {
-+            compatible = "ti,lp8557";
-+            reg = <0x2c>;
-+            enable-supply = <&backlight_vddio>;
-+            power-supply = <&backlight_vdd>;
-+
-+            dev-ctrl = /bits/ 8 <0x41>;
-+            init-brt = /bits/ 8 <0x0a>;
-+
-+            /* 4V OV, 4 output LED string enabled */
-+            rom-14h {
-+              rom-addr = /bits/ 8 <0x14>;
-+              rom-val = /bits/ 8 <0xcf>;
-+            };
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/leds/backlight/lp855x.txt b/Documentation/devicetree/bindings/leds/backlight/lp855x.txt
-deleted file mode 100644
-index 88f56641fc28..000000000000
---- a/Documentation/devicetree/bindings/leds/backlight/lp855x.txt
-+++ /dev/null
-@@ -1,72 +0,0 @@
--lp855x bindings
--
--Required properties:
--  - compatible: "ti,lp8550", "ti,lp8551", "ti,lp8552", "ti,lp8553",
--                "ti,lp8555", "ti,lp8556", "ti,lp8557"
--  - reg: I2C slave address (u8)
--  - dev-ctrl: Value of DEVICE CONTROL register (u8). It depends on the device.
--
--Optional properties:
--  - bl-name: Backlight device name (string)
--  - init-brt: Initial value of backlight brightness (u8)
--  - pwm-period: PWM period value. Set only PWM input mode used (u32)
--  - rom-addr: Register address of ROM area to be updated (u8)
--  - rom-val: Register value to be updated (u8)
--  - power-supply: Regulator which controls the 3V rail
--  - enable-supply: Regulator which controls the EN/VDDIO input
--
--Example:
--
--	/* LP8555 */
--	backlight@2c {
--		compatible = "ti,lp8555";
--		reg = <0x2c>;
--
--		dev-ctrl = /bits/ 8 <0x00>;
--		pwm-period = <10000>;
--
--		/* 4V OV, 4 output LED0 string enabled */
--		rom_14h {
--			rom-addr = /bits/ 8 <0x14>;
--			rom-val = /bits/ 8 <0xcf>;
--		};
--
--		/* Heavy smoothing, 24ms ramp time step */
--		rom_15h {
--			rom-addr = /bits/ 8 <0x15>;
--			rom-val = /bits/ 8 <0xc7>;
--		};
--
--		/* 4 output LED1 string enabled */
--		rom_19h {
--			rom-addr = /bits/ 8 <0x19>;
--			rom-val = /bits/ 8 <0x0f>;
--		};
--	};
--
--	/* LP8556 */
--	backlight@2c {
--		compatible = "ti,lp8556";
--		reg = <0x2c>;
--
--		bl-name = "lcd-bl";
--		dev-ctrl = /bits/ 8 <0x85>;
--		init-brt = /bits/ 8 <0x10>;
--	};
--
--	/* LP8557 */
--	backlight@2c {
--		compatible = "ti,lp8557";
--		reg = <0x2c>;
--		enable-supply = <&backlight_vddio>;
--		power-supply = <&backlight_vdd>;
--
--		dev-ctrl = /bits/ 8 <0x41>;
--		init-brt = /bits/ 8 <0x0a>;
--
--		/* 4V OV, 4 output LED string enabled */
--		rom_14h {
--			rom-addr = /bits/ 8 <0x14>;
--			rom-val = /bits/ 8 <0xcf>;
--		};
--	};
++		rom-a0h {
+ 			rom-addr = /bits/ 8 <0xa0>;
+ 			rom-val = /bits/ 8 <0xff>;
+ 		};
+-		rom_a1h {
++		rom-a1h {
+ 			rom-addr = /bits/ 8 <0xa1>;
+ 			rom-val = /bits/ 8 <0x3f>;
+ 		};
+-		rom_a2h {
++		rom-a2h {
+ 			rom-addr = /bits/ 8 <0xa2>;
+ 			rom-val = /bits/ 8 <0x20>;
+ 		};
+-		rom_a3h {
++		rom-a3h {
+ 			rom-addr = /bits/ 8 <0xa3>;
+ 			rom-val = /bits/ 8 <0x5e>;
+ 		};
+-		rom_a4h {
++		rom-a4h {
+ 			rom-addr = /bits/ 8 <0xa4>;
+ 			rom-val = /bits/ 8 <0x02>;
+ 		};
+-		rom_a5h {
++		rom-a5h {
+ 			rom-addr = /bits/ 8 <0xa5>;
+ 			rom-val = /bits/ 8 <0x04>;
+ 		};
+-		rom_a6h {
++		rom-a6h {
+ 			rom-addr = /bits/ 8 <0xa6>;
+ 			rom-val = /bits/ 8 <0x80>;
+ 		};
+-		rom_a7h {
++		rom-a7h {
+ 			rom-addr = /bits/ 8 <0xa7>;
+ 			rom-val = /bits/ 8 <0xf7>;
+ 		};
+-		rom_a9h {
++		rom-a9h {
+ 			rom-addr = /bits/ 8 <0xa9>;
+ 			rom-val = /bits/ 8 <0x80>;
+ 		};
+-		rom_aah {
++		rom-aah {
+ 			rom-addr = /bits/ 8 <0xaa>;
+ 			rom-val = /bits/ 8 <0x0f>;
+ 		};
+-		rom_aeh {
++		rom-aeh {
+ 			rom-addr = /bits/ 8 <0xae>;
+ 			rom-val = /bits/ 8 <0x0f>;
+ 		};
 -- 
 2.40.1
 
