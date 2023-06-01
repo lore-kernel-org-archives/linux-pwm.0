@@ -2,30 +2,30 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C394FC7EE2A
-	for <linux-pwm@archiver.kernel.org>; Thu,  1 Jun 2023 08:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C520C7EE2F
+	for <linux-pwm@archiver.kernel.org>; Thu,  1 Jun 2023 08:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232326AbjFAIwF convert rfc822-to-8bit (ORCPT
+        id S231420AbjFAIwF convert rfc822-to-8bit (ORCPT
         <rfc822;linux-pwm@archiver.kernel.org>);
         Thu, 1 Jun 2023 04:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232314AbjFAIwD (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 1 Jun 2023 04:52:03 -0400
+        with ESMTP id S231667AbjFAIwE (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 1 Jun 2023 04:52:04 -0400
 Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B64B133;
-        Thu,  1 Jun 2023 01:51:59 -0700 (PDT)
-Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153B713D;
+        Thu,  1 Jun 2023 01:52:00 -0700 (PDT)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
         (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 3EA9624DC28;
-        Thu,  1 Jun 2023 16:51:56 +0800 (CST)
-Received: from EXMBX168.cuchost.com (172.16.6.78) by EXMBX165.cuchost.com
- (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 1 Jun
- 2023 16:51:56 +0800
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 712BC7FD6;
+        Thu,  1 Jun 2023 16:51:58 +0800 (CST)
+Received: from EXMBX168.cuchost.com (172.16.6.78) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 1 Jun
+ 2023 16:51:58 +0800
 Received: from williamqiu-virtual-machine.starfivetech.com (171.223.208.138)
  by EXMBX168.cuchost.com (172.16.6.78) with Microsoft SMTP Server (TLS) id
- 15.0.1497.42; Thu, 1 Jun 2023 16:51:55 +0800
+ 15.0.1497.42; Thu, 1 Jun 2023 16:51:57 +0800
 From:   William Qiu <william.qiu@starfivetech.com>
 To:     <devicetree@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>
@@ -37,10 +37,12 @@ CC:     Thierry Reding <thierry.reding@gmail.com>,
         Emil Renner Berthing <kernel@esmil.dk>,
         Hal Feng <hal.feng@starfivetech.com>,
         William Qiu <william.qiu@starfivetech.com>
-Subject: [PATCH v4 0/4] StarFive's Pulse Width Modulation driver support
-Date:   Thu, 1 Jun 2023 16:51:50 +0800
-Message-ID: <20230601085154.36938-1-william.qiu@starfivetech.com>
+Subject: [PATCH v4 3/4] riscv: dts: starfive: jh7110: Add PWM node and pins configuration
+Date:   Thu, 1 Jun 2023 16:51:53 +0800
+Message-ID: <20230601085154.36938-4-william.qiu@starfivetech.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230601085154.36938-1-william.qiu@starfivetech.com>
+References: <20230601085154.36938-1-william.qiu@starfivetech.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [171.223.208.138]
@@ -52,59 +54,76 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi,
+Add StarFive JH7110 PWM controller node and add PWM pins configuration
+on VisionFive 2 board.
 
-This patchset adds initial rudimentary support for the StarFive
-Pulse Width Modulation controller driver. And this driver will
-be used in StarFive's VisionFive 2 board.The first patch add
-Documentations for the device and Patch 2 adds device probe for
-the module.
+Reviewed-by: Hal Feng <hal.feng@starfivetech.com>
+Signed-off-by: William Qiu <william.qiu@starfivetech.com>
+---
+ .../jh7110-starfive-visionfive-2.dtsi         | 22 +++++++++++++++++++
+ arch/riscv/boot/dts/starfive/jh7110.dtsi      |  9 ++++++++
+ 2 files changed, 31 insertions(+)
 
-Changes v2->v3:
-- Rebased to v6.4rc3.
-- Sorted the header files in alphabetic order.
-- Changed iowrite32() to writel().
-- Added a way to turn off.
-- Moified polarity inversion implementation.
-- Added 7100 support.
-- Added dts patches.
-- Used the various helpers in linux/math.h.
-- Corrected formatting problems.
-- Renamed dtbinding  to 'starfive,jh7100-pwm.yaml'.
-- Dropped the redundant code.
-
-Changes v2->v3:
-- Fixed some formatting issues.
-
-Changes v1->v2:
-- Renamed the dt-binding 'pwm-starfive.yaml' to 'starfive,jh7110-pwm.yaml'.
-- Dropped the compatible's Items.
-- Dropped the unuse defines.
-- Modified the code to follow the Linux coding style.
-- Changed return value to dev_err_probe.
-- Dropped the unnecessary local variable.
-
-The patch series is based on v6.4rc3.
-
-William Qiu (4):
-  dt-bindings: pwm: Add StarFive PWM module
-  pwm: starfive: Add PWM driver support
-  riscv: dts: starfive: jh7110: Add PWM node and pins configuration
-  riscv: dts: starfive: jh7100: Add PWM node and pins configuration
-
- .../bindings/pwm/starfive,jh7100-pwm.yaml     |  55 +++++
- MAINTAINERS                                   |   7 +
- .../boot/dts/starfive/jh7100-common.dtsi      |  24 +++
- arch/riscv/boot/dts/starfive/jh7100.dtsi      |   9 +
- .../jh7110-starfive-visionfive-2.dtsi         |  22 ++
- arch/riscv/boot/dts/starfive/jh7110.dtsi      |   9 +
- drivers/pwm/Kconfig                           |   9 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-starfive-ptc.c                | 192 ++++++++++++++++++
- 9 files changed, 328 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/starfive,jh7100-pwm.yaml
- create mode 100644 drivers/pwm/pwm-starfive-ptc.c
-
---
+diff --git a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2.dtsi b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2.dtsi
+index 2a6d81609284..bbc2531999bc 100644
+--- a/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7110-starfive-visionfive-2.dtsi
+@@ -126,6 +126,12 @@ &i2c6 {
+ 	status = "okay";
+ };
+ 
++&ptc {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm_pins>;
++	status = "okay";
++};
++
+ &sysgpio {
+ 	i2c0_pins: i2c0-0 {
+ 		i2c-pins {
+@@ -183,6 +189,22 @@ GPOEN_SYS_I2C6_DATA,
+ 		};
+ 	};
+ 
++	pwm_pins: pwm-0 {
++		pwm-pins {
++			pinmux = <GPIOMUX(46, GPOUT_SYS_PWM_CHANNEL0,
++					      GPOEN_SYS_PWM0_CHANNEL0,
++					      GPI_NONE)>,
++				 <GPIOMUX(59, GPOUT_SYS_PWM_CHANNEL1,
++					      GPOEN_SYS_PWM0_CHANNEL1,
++					      GPI_NONE)>;
++			bias-disable;
++			drive-strength = <12>;
++			input-disable;
++			input-schmitt-disable;
++			slew-rate = <0>;
++		};
++	};
++
+ 	uart0_pins: uart0-0 {
+ 		tx-pins {
+ 			pinmux = <GPIOMUX(5, GPOUT_SYS_UART0_TX,
+diff --git a/arch/riscv/boot/dts/starfive/jh7110.dtsi b/arch/riscv/boot/dts/starfive/jh7110.dtsi
+index 4c5fdb905da8..a82b81d07d88 100644
+--- a/arch/riscv/boot/dts/starfive/jh7110.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7110.dtsi
+@@ -440,6 +440,15 @@ i2c6: i2c@12060000 {
+ 			status = "disabled";
+ 		};
+ 
++		ptc: pwm@120d0000 {
++			compatible = "starfive,jh7110-pwm";
++			reg = <0x0 0x120d0000 0x0 0x10000>;
++			clocks = <&syscrg JH7110_SYSCLK_PWM_APB>;
++			resets = <&syscrg JH7110_SYSRST_PWM_APB>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
+ 		syscrg: clock-controller@13020000 {
+ 			compatible = "starfive,jh7110-syscrg";
+ 			reg = <0x0 0x13020000 0x0 0x10000>;
+-- 
 2.34.1
 
