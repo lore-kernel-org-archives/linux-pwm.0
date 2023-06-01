@@ -2,99 +2,130 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F0AC7EE23
-	for <linux-pwm@archiver.kernel.org>; Thu,  1 Jun 2023 07:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCDAC7EE23
+	for <linux-pwm@archiver.kernel.org>; Thu,  1 Jun 2023 08:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231494AbjFAHCA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 1 Jun 2023 03:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
+        id S232320AbjFAIwE convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 1 Jun 2023 04:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231786AbjFAHBj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 1 Jun 2023 03:01:39 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF3013D
-        for <linux-pwm@vger.kernel.org>; Thu,  1 Jun 2023 00:01:36 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q4cJO-0007Dw-Vh; Thu, 01 Jun 2023 09:01:31 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q4cJN-004IDz-79; Thu, 01 Jun 2023 09:01:29 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q4cJM-00A4Tj-Ho; Thu, 01 Jun 2023 09:01:28 +0200
-Date:   Thu, 1 Jun 2023 09:01:28 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Michael Peters <mpeters@embeddedTS.com>,
-        Kris Bahnsen <kris@embeddedTS.com>, linux-pwm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 16/43] pwm: ep93xx: add DT support for Cirrus EP93xx
-Message-ID: <20230601070128.ejvigvxwm6cg4izf@pengutronix.de>
-References: <20230424123522.18302-1-nikita.shubin@maquefel.me>
- <20230601053546.9574-17-nikita.shubin@maquefel.me>
+        with ESMTP id S232070AbjFAIwD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 1 Jun 2023 04:52:03 -0400
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFC7132;
+        Thu,  1 Jun 2023 01:51:59 -0700 (PDT)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id EA52D7FC9;
+        Thu,  1 Jun 2023 16:51:56 +0800 (CST)
+Received: from EXMBX168.cuchost.com (172.16.6.78) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 1 Jun
+ 2023 16:51:56 +0800
+Received: from williamqiu-virtual-machine.starfivetech.com (171.223.208.138)
+ by EXMBX168.cuchost.com (172.16.6.78) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.42; Thu, 1 Jun 2023 16:51:56 +0800
+From:   William Qiu <william.qiu@starfivetech.com>
+To:     <devicetree@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+CC:     Thierry Reding <thierry.reding@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Hal Feng <hal.feng@starfivetech.com>,
+        William Qiu <william.qiu@starfivetech.com>
+Subject: [PATCH v4 1/4] dt-bindings: pwm: Add StarFive PWM module
+Date:   Thu, 1 Jun 2023 16:51:51 +0800
+Message-ID: <20230601085154.36938-2-william.qiu@starfivetech.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230601085154.36938-1-william.qiu@starfivetech.com>
+References: <20230601085154.36938-1-william.qiu@starfivetech.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dt4scfjwkljqxhzi"
-Content-Disposition: inline
-In-Reply-To: <20230601053546.9574-17-nikita.shubin@maquefel.me>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS062.cuchost.com (172.16.6.22) To EXMBX168.cuchost.com
+ (172.16.6.78)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Add documentation to describe StarFive Pulse Width Modulation
+controller driver.
 
---dt4scfjwkljqxhzi
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: William Qiu <william.qiu@starfivetech.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Hal Feng <hal.feng@starfivetech.com>
+---
+ .../bindings/pwm/starfive,jh7100-pwm.yaml     | 55 +++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/starfive,jh7100-pwm.yaml
 
-Hello,
+diff --git a/Documentation/devicetree/bindings/pwm/starfive,jh7100-pwm.yaml b/Documentation/devicetree/bindings/pwm/starfive,jh7100-pwm.yaml
+new file mode 100644
+index 000000000000..6f1937beb962
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/starfive,jh7100-pwm.yaml
+@@ -0,0 +1,55 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/starfive,jh7100-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: StarFive JH7100 and JH7110 PWM controller
++
++maintainers:
++  - William Qiu <william.qiu@starfivetech.com>
++
++description:
++  StarFive SoCs contain PWM and when operating in PWM mode, the PTC core generates
++  binary signal with user-programmable low and high periods. Clock source for the
++  PWM can be either system clock or external clock. Each PWM timer block provides 8
++  PWM channels.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    enum:
++      - starfive,jh7100-pwm
++      - starfive,jh7110-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - resets
++
++additionalProperties: false
++
++examples:
++  - |
++    pwm@12490000 {
++        compatible = "starfive,jh7100-pwm";
++        reg = <0x12490000 0x10000>;
++        clocks = <&clkgen 181>;
++        resets = <&rstgen 109>;
++        #pwm-cells = <3>;
++    };
+-- 
+2.34.1
 
-On Thu, Jun 01, 2023 at 08:34:07AM +0300, Nikita Shubin wrote:
-> - find register range from the device tree
-> - provide clock access via of
->=20
-> Signed-off-by: Nikita Shubin <nikita.shubin@maquefel.me>
-
-Looks good to me,
-
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-There don't seem to be dependencies interdependencies to other patches
-in this series?! What is the merge plan here. Should this patch go in
-via the PWM tree, or will the whole series go in via armsoc?
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---dt4scfjwkljqxhzi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmR4QkcACgkQj4D7WH0S
-/k7Ppgf9FE8ViunZriA8NiwQZBRDAbOoeEfMRRVEJCnnl2nGe9fkiIvnlxySyCKR
-gU6/vMYFiG8ZA79hGpOKRbYgBnAfzC7UKa9rlw6aEBT9EhFglyROB8aSt4nnyAD6
-7auM9CixNVWVK7kuTx+hJDGY/cL8u41msjKfN7ydLPGZx6s7m5qZOyihT1VtPEPH
-0UrqZQXLqqC3GowyVQ88Ms8/vp6jPCb4uDNgd+D8sAJccLQlrqM9j+Lyo3+fACOG
-v73usLULZ/dJzOxP94G5HQb2r+eLcwVCMtFcUalcGQn9W/cJIxx3OC0V/t+/91xJ
-z6BtZid6W1DR0jMpcjPBMP6eCULj+g==
-=CipR
------END PGP SIGNATURE-----
-
---dt4scfjwkljqxhzi--
