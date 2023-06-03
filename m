@@ -2,63 +2,104 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8856C7EE2D
-	for <linux-pwm@archiver.kernel.org>; Sat,  3 Jun 2023 09:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0199C7EE24
+	for <linux-pwm@archiver.kernel.org>; Sat,  3 Jun 2023 20:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbjFCJ36 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 3 Jun 2023 05:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        id S230335AbjFCUNH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 3 Jun 2023 16:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231432AbjFCJ35 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 3 Jun 2023 05:29:57 -0400
-X-Greylist: delayed 89044 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 03 Jun 2023 02:29:55 PDT
-Received: from mail.webtopbits.pl (mail.webtopbits.pl [195.231.64.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AA4E56
-        for <linux-pwm@vger.kernel.org>; Sat,  3 Jun 2023 02:29:55 -0700 (PDT)
-Received: by mail.webtopbits.pl (Postfix, from userid 1001)
-        id DAB31A38E6; Fri,  2 Jun 2023 09:45:40 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=webtopbits.pl;
-        s=mail; t=1685695549;
-        bh=Eh8ECMiYd4baGAwPAzhz8mhJACXX7NSRkYjh+plaY18=;
-        h=Date:From:To:Subject:From;
-        b=AlpT0O6QrOMM3pvfOsLK5BStybVjvANsZBFwHW56M1Txld+K4EP29R3u6dvG1Dqz6
-         W9WbMIa/5WZqd/bc+gaM6JGlDsfFYWqI7Cn7/Saoppp/uHicRAVDpGsRsBVMHe0T6L
-         sPi+eEr9mSok9iekWXkOROTXH9R7YaHgQIixsG2a8AEcc+WT1qHFkQakE9UV4kIGwK
-         epzeQdkEeNg7gLwAtdz3xPoaKxLeDjHDpFhWceO7ctPkraHRzVaPtg85EHpYtMUepF
-         F+i50rLjoZRrIPRDdAkjMVat0ZaqmCHxJyvmK/n3jyXyrDE0aUEBWh7GauzxS2wPis
-         Zc610nEO7EB6g==
-Received: by mail.webtopbits.pl for <linux-pwm@vger.kernel.org>; Fri,  2 Jun 2023 08:45:39 GMT
-Message-ID: <20230602085530-0.1.8w.5ki2.0.zelab1gtz9@webtopbits.pl>
-Date:   Fri,  2 Jun 2023 08:45:39 GMT
-From:   "Kamil Durjasz" <kamil.durjasz@webtopbits.pl>
-To:     <linux-pwm@vger.kernel.org>
-Subject: =?UTF-8?Q?Wy=C5=BCsza_konwersja_w_e-sklepie_?=
-X-Mailer: mail.webtopbits.pl
+        with ESMTP id S229933AbjFCUNF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 3 Jun 2023 16:13:05 -0400
+Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAE6E5B
+        for <linux-pwm@vger.kernel.org>; Sat,  3 Jun 2023 13:12:43 -0700 (PDT)
+Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
+        by fgw22.mail.saunalahti.fi (Halon) with ESMTP
+        id e97ac4d9-024a-11ee-a9de-005056bdf889;
+        Sat, 03 Jun 2023 23:12:06 +0300 (EEST)
+From:   andy.shevchenko@gmail.com
+Date:   Sat, 3 Jun 2023 23:12:06 +0300
+To:     Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Michael Peters <mpeters@embeddedts.com>,
+        Kris Bahnsen <kris@embeddedts.com>, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 16/43] pwm: ep93xx: add DT support for Cirrus EP93xx
+Message-ID: <ZHuelv6mZFhYXpPm@surfacebook>
+References: <20230424123522.18302-1-nikita.shubin@maquefel.me>
+ <20230601053546.9574-17-nikita.shubin@maquefel.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230601053546.9574-17-nikita.shubin@maquefel.me>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Thu, Jun 01, 2023 at 08:34:07AM +0300, Nikita Shubin kirjoitti:
+> - find register range from the device tree
 
-w jaki spos=C3=B3b docieraj=C4=85 Pa=C5=84stwo do odbiorc=C3=B3w?
+> - provide clock access via of
 
-Tworzymy pot=C4=99=C5=BCne narz=C4=99dzia sprzeda=C5=BCy, kt=C3=B3re pozw=
-alaj=C4=85 kompleksowo rozwi=C4=85za=C4=87 problemy potencjalnych klient=C3=
-=B3w i skutecznie wp=C5=82yn=C4=85=C4=87 na ich decyzje zakupowe.=20
+Not sure what does this supose to mean. Copy'n'paste mistake?
 
-Skupiamy si=C4=99 na Pa=C5=84stwa potrzebach zwi=C4=85zanych z obs=C5=82u=
-g=C4=85 sklepu, oczekiwaniach i planach sprzeda=C5=BCowych. Szczeg=C3=B3=C5=
-=82owo dopasowujemy grafik=C4=99, funkcjonalno=C5=9Bci, struktur=C4=99 i =
-mikrointerakcje do Pa=C5=84stwa grupy docelowej, co przek=C5=82ada si=C4=99=
- na oczekiwane rezultaty.
+Please, revisit commit messages in *all* your patches.
+With this addressed, for this patch
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-Ch=C4=99tnie przedstawi=C4=99 dotychczasowe realizacje, aby mogli Pa=C5=84=
-stwo przekona=C4=87 si=C4=99 o naszych mo=C5=BCliwo=C5=9Bciach. Mog=C4=99=
- si=C4=99 skontaktowa=C4=87?
+> Signed-off-by: Nikita Shubin <nikita.shubin@maquefel.me>
+> ---
+> 
+> Notes:
+>     v0 -> v1:
+>     
+>     - fixed headers
+>     - fixed id table
+> 
+>  drivers/pwm/pwm-ep93xx.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/pwm/pwm-ep93xx.c b/drivers/pwm/pwm-ep93xx.c
+> index c45a75e65c86..361984ef4c0b 100644
+> --- a/drivers/pwm/pwm-ep93xx.c
+> +++ b/drivers/pwm/pwm-ep93xx.c
+> @@ -17,6 +17,7 @@
+>   */
+>  
+>  #include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/slab.h>
+>  #include <linux/clk.h>
+> @@ -190,9 +191,16 @@ static int ep93xx_pwm_probe(struct platform_device *pdev)
+>  	return 0;
+>  }
+>  
+> +static const struct of_device_id ep93xx_pwm_of_ids[] = {
+> +	{ .compatible = "cirrus,ep9301-pwm" },
+> +	{ /* sentinel */}
+> +};
+> +MODULE_DEVICE_TABLE(of, ep93xx_pwm_of_ids);
+> +
+>  static struct platform_driver ep93xx_pwm_driver = {
+>  	.driver = {
+>  		.name = "ep93xx-pwm",
+> +		.of_match_table = ep93xx_pwm_of_ids,
+>  	},
+>  	.probe = ep93xx_pwm_probe,
+>  };
+> -- 
+> 2.37.4
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Pozdrawiam
-Kamil Durjasz
