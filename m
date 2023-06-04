@@ -2,164 +2,129 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2C6C83005
-	for <linux-pwm@archiver.kernel.org>; Sun,  4 Jun 2023 12:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F28C7EE33
+	for <linux-pwm@archiver.kernel.org>; Sun,  4 Jun 2023 15:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbjFDMNd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 4 Jun 2023 08:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        id S231887AbjFDPye (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 4 Jun 2023 11:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231833AbjFDMNa (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 4 Jun 2023 08:13:30 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2E1E3;
-        Sun,  4 Jun 2023 05:13:29 -0700 (PDT)
-Received: from stefanw-SCHENKER ([37.4.248.58]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MBmI6-1ptdVR1w9U-00C7LT; Sun, 04 Jun 2023 14:12:45 +0200
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Florian Fainelli <florian.fainelli@broadcom.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        with ESMTP id S229904AbjFDPyd (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 4 Jun 2023 11:54:33 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1727BB;
+        Sun,  4 Jun 2023 08:54:31 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id 4fb4d7f45d1cf-5147e8972a1so5975198a12.0;
+        Sun, 04 Jun 2023 08:54:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685894070; x=1688486070;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=TsvcyukdSS1lKPeAFb0MO21Iif9mAo0wy8+BZHk6XCA=;
+        b=r9RnHmU6Pa0FtsM/qHVFqFiCYlBYyvtIkLeKoNPRIk8smrMsqYFJGWCQjT7VU72eDe
+         BlragftM9BcqClhhfhrjXu+KMSBuqSe+KNwPFU0KBNJlL713GE9o6QJnGFo2MVVjPP+P
+         tQT4bqbQqIIjRH39Ls+d3YC1mLwWHW3tHKnUmfhzbMfPeeq5TIZAMtwSAuYi3ZYPbltW
+         zBx3Pm7HZhbXZBrcB4iAF+MkhkDQusDxPerLMNjJ9M9evb0iQB/WGEScO2q3pwVkwkGJ
+         xiks1hYnTowy+2gYSWDJ+qp4ig7OfRGINcmiTLnuJchPscxcbqDF/ro1Gt8cNoeiUHiy
+         SK0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685894070; x=1688486070;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TsvcyukdSS1lKPeAFb0MO21Iif9mAo0wy8+BZHk6XCA=;
+        b=QdjS9YW+NB/nZfOXhs5NvVuHKMm+ZsgU88hN7z3SHbZX49pfaJOf/yYd7KX5+ZJjkq
+         DXndWVuz2i+vSckuvlupYlCwVWUfOIJY/KXoHFUTjei9QO1nWUSs9Wgns+ZZ6Wx8ykLt
+         RzmpHIX3ZDUAiADbVtpMJHT0jk0uy1l1aPvSyp4MaFLgqxUob21WxbDbGnJr9zSAS+VI
+         mlWem+Cgp+TuWH1uflprDVuWcJeXnKFDYrwfvMcU9NdsA9QAn7hoDUJAuEvqa6zbow3u
+         PpPQKQdV1E/hm0aqz9nr5m+71BH70okfp6MZ4HDoXnjNwkpX8fyHWsDrSt09KHzSKQK2
+         O5Mg==
+X-Gm-Message-State: AC+VfDytwp4pLZVnnfiRdfjebawSFrLgcsIOaK272Er3P5dwV1A3LPlH
+        7s+jYlBF3kiOuaGQZZrxtwY=
+X-Google-Smtp-Source: ACHHUZ6AHXuZcLeVYAiKN3Lakw7/5eyPw2g9gXmYKU2Z87ULJVZcNauonQPfi8yZtMpFNZvTXucpWg==
+X-Received: by 2002:a17:907:6d08:b0:974:5e2c:8721 with SMTP id sa8-20020a1709076d0800b009745e2c8721mr4687955ejc.38.1685894070095;
+        Sun, 04 Jun 2023 08:54:30 -0700 (PDT)
+Received: from giga-mm.home ([2a02:1210:8629:800:82ee:73ff:feb8:99e3])
+        by smtp.gmail.com with ESMTPSA id h21-20020a170906111500b00974530bd213sm3241020eja.143.2023.06.04.08.54.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Jun 2023 08:54:29 -0700 (PDT)
+Message-ID: <1492a131cd474c47e2a2b14defd46284f695b0ef.camel@gmail.com>
+Subject: Re: [PATCH v1 00/43] ep93xx device tree conversion
+From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
+To:     Nikita Shubin <nikita.shubin@maquefel.me>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+        Jean Delvare <jdelvare@suse.de>, Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jonathan =?ISO-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Le Moal <dlemoal@kernel.org>,
+        Liang Yang <liang.yang@amlogic.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH 05/10] dt-bindings: pwm: convert pwm-bcm2835 bindings to YAML
-Date:   Sun,  4 Jun 2023 14:12:18 +0200
-Message-Id: <20230604121223.9625-6-stefan.wahren@i2se.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230604121223.9625-1-stefan.wahren@i2se.com>
-References: <20230604121223.9625-1-stefan.wahren@i2se.com>
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Walker Chen <walker.chen@starfivetech.com>,
+        Yinbo Zhu <zhuyinbo@loongson.cn>
+Cc:     Michael Peters <mpeters@embeddedTS.com>,
+        Kris Bahnsen <kris@embeddedTS.com>,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, netdev@vger.kernel.org
+Date:   Sun, 04 Jun 2023 17:54:27 +0200
+In-Reply-To: <20230601053546.9574-1-nikita.shubin@maquefel.me>
+References: <20230601053546.9574-1-nikita.shubin@maquefel.me>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:yEqjFtXc/3vGmTSJ7Dy2Z8p775o68ILE0NDuwSUWovXrpTHthm4
- FKr5gNBh7xasgmosXf5YxVHhdkWm9XJLb/gjD/NCM93yHuAn2oc+MbZn36mQEOhyiyYVp5b
- 8he2l2knb/bZlBQMolO6Nc2WJqnUIl9OgzIyJ84oR++6vQEA0K2SiW/HCxcstvBUV/QE6Fo
- A7TZp7Q7AdvNk5Gm6fQWQ==
-UI-OutboundReport: notjunk:1;M01:P0:H0tTJbhnCxM=;5C7Ip//JOF9H88HOGXhCQghs37M
- +2AOYrTihZ9ogAa1Ld5EC4aM/ovwSFqOt3HWhh1WE6Y/4rFyQEnL6JBzbE+d2Fnx2HJr7DtpM
- zgRnuJdbtDrX+EKVIHG8WZ/j6COsghNMrJCK8YjaONRDPjSrlnDpOy4Ge+zWRXlKiokW8gOdG
- kAKkWECaBUYN75zKL/rOcJvH4jhrPIivMWD3UG1UkLCaYb9mLSKTz772MIqmzcHrlX5kXbl5q
- PLm5K49yHrVqAm+/0grw0cdAk5WC4UDDSVPY5UUU+LSWBV+vLxf6NrrUEtOrlImJd56X6K8In
- ruldsRb13XcA5MscluhQfHzFbY5ts0RaPxuh1NRNy1MHbwCAT2H689XX4DCLkgCYvNaWy8GUG
- moD29tyADPmIX7hd6x42HsnC6wQLOraKaqqM0FojfHnZOxQLSabAPgmcJqA3LyymN/Q3cs+qg
- i/m7rTpcqiDPjP+4nocPwLq+iRSolvb1dDQSrAzgjVmLZkYCAtbcngL1VoyVYdMVonmjqLcUN
- 9MtNipE9vkwJEGkgeuwm6WIoO41dnB9wBAmZ5KRBRG9P4Ss2iqlWCWKfM6gejwKnH6jZ2dBIf
- WxAJKepGsIHkGpESWOqN6fFV5ypOiPfiSrCRXeDYFeXgs7a6cFH0QxblcwZs4+fs/UMqjRwFM
- Rr684lCeLd9artVpCgO9t/ReWce0Ls2xbzr9Kg1JCw==
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Convert the DT binding document for pwm-bcm2835 from .txt to YAML.
+Hi Nikita,
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- .../devicetree/bindings/pwm/pwm-bcm2835.txt   | 30 -------------
- .../devicetree/bindings/pwm/pwm-bcm2835.yaml  | 43 +++++++++++++++++++
- 2 files changed, 43 insertions(+), 30 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml
+On Thu, 2023-06-01 at 08:33 +0300, Nikita Shubin wrote:
+> This series aims to convert ep93xx from platform to full device tree supp=
+ort.
+>=20
+> Alexander, Kris - there are some significant changes in clk and pinctrl s=
+o can i ask you to tests all once again.
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
-deleted file mode 100644
-index f5753b3f79df..000000000000
---- a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
-+++ /dev/null
-@@ -1,30 +0,0 @@
--BCM2835 PWM controller (Raspberry Pi controller)
--
--Required properties:
--- compatible: should be "brcm,bcm2835-pwm"
--- reg: physical base address and length of the controller's registers
--- clocks: This clock defines the base clock frequency of the PWM hardware
--  system, the period and the duty_cycle of the PWM signal is a multiple of
--  the base period.
--- #pwm-cells: Should be 3. See pwm.yaml in this directory for a description of
--  the cells format.
--
--Examples:
--
--pwm@2020c000 {
--	compatible = "brcm,bcm2835-pwm";
--	reg = <0x2020c000 0x28>;
--	clocks = <&clk_pwm>;
--	#pwm-cells = <3>;
--};
--
--clocks {
--	....
--		clk_pwm: pwm {
--			compatible = "fixed-clock";
--			reg = <3>;
--			#clock-cells = <0>;
--			clock-frequency = <9200000>;
--		};
--	....
--};
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml
-new file mode 100644
-index 000000000000..15e7fd98defc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml
-@@ -0,0 +1,43 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/pwm-bcm2835.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: BCM2835 PWM controller (Raspberry Pi controller)
-+
-+maintainers:
-+  - Stefan Wahren <stefan.wahren@i2se.com>
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: brcm,bcm2835-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - "#pwm-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pwm@2020c000 {
-+      compatible = "brcm,bcm2835-pwm";
-+      reg = <0x2020c000 0x28>;
-+      clocks = <&clk_pwm>;
-+      #pwm-cells = <3>;
-+    };
--- 
-2.34.1
+I have quickly tested network and sound on EDB9302 and I neither have probl=
+ems with
+these functions, nor did I spot any new error messages, overall looks good =
+to me,
+thanks for your efforts!
+
+--=20
+Alexander Sverdlin.
 
