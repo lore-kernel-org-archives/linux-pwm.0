@@ -2,120 +2,113 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0094C77B73
-	for <linux-pwm@archiver.kernel.org>; Sun,  4 Jun 2023 09:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 138C7C7EE29
+	for <linux-pwm@archiver.kernel.org>; Sun,  4 Jun 2023 12:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230209AbjFDJuy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 4 Jun 2023 05:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        id S231747AbjFDMNZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 4 Jun 2023 08:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbjFDJux (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 4 Jun 2023 05:50:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA939DF;
-        Sun,  4 Jun 2023 02:50:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 479C160C4C;
-        Sun,  4 Jun 2023 09:50:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6D41C433EF;
-        Sun,  4 Jun 2023 09:50:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1685872251;
-        bh=IgRN8Lu8fQwHnW6QBReccrez4UTFIqy7/PxHxvotA+o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GgcyXvalCKCV5LticVpRbbuyR84124r30m/DjsEVG3jFZzwilFfE5UOo2DLiTBq+S
-         4RswMKDjLfr5Pz89xfjdc7Saz1glBPbC++F12NFGRsEFG1RmlfFMAsGZu8GigvV9Xm
-         wm8QGh+I6JknY3FIJT8rQv1qj2kbuV3b0gPRaPUY4KWAWloJ+XH0zfdx9fTsR1Llb3
-         DyBg1JhyAAy3vH4xtjk38g5AJu2cKbfZC7yxyJc/h9zL9SwO7ZzAaOrE8y8GRH1VrF
-         6Lf87ZVHk6IIhZliXVYiW5c0BZMCrCer3RyDHMrWrxKw99Qq/kan0iq3AK90pwTc6x
-         lm9+lPpNBexZA==
-Date:   Sun, 4 Jun 2023 17:50:38 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
+        with ESMTP id S229903AbjFDMNY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 4 Jun 2023 08:13:24 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98484CA;
+        Sun,  4 Jun 2023 05:13:21 -0700 (PDT)
+Received: from stefanw-SCHENKER ([37.4.248.58]) by mrelayeu.kundenserver.de
+ (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1Mcp7M-1qffJY2DxK-00Zx5t; Sun, 04 Jun 2023 14:12:42 +0200
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 2/2] arm64: dts: imx8qxp: add adma_pwm in adma
-Message-ID: <20230604095038.GA4199@dragon>
-References: <20230424082108.26512-1-alexander.stein@ew.tq-group.com>
- <20230424082108.26512-2-alexander.stein@ew.tq-group.com>
+        Conor Dooley <conor+dt@kernel.org>,
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        John Stultz <john.stultz@linaro.org>
+Subject: [PATCH 02/10] dmaengine: bcm2835: also support generic dma-channel-mask
+Date:   Sun,  4 Jun 2023 14:12:15 +0200
+Message-Id: <20230604121223.9625-3-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230604121223.9625-1-stefan.wahren@i2se.com>
+References: <20230604121223.9625-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230424082108.26512-2-alexander.stein@ew.tq-group.com>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:KxozCg8oOnQt3q5mPq0HbQmy7gi7fAIS5EtgBua5Q0tEKepPwM4
+ ThwXX6hVibrvtiDk4KSOo1i5qFwNGWAgDBCECMdgx99Cz2gDbAB22klR7Ok4sC5IRkIUeEM
+ mmTaqvDKrjvtDo4JxaeHOtZaxmXJKxbDLbNa1x5uRrtE11Qm5okqHnknE4MvezqO+3byol4
+ tHPvCKsEZCFDD4h+F4nDA==
+UI-OutboundReport: notjunk:1;M01:P0:+kYEE+ZQyz4=;RtH81khKORI85HByj5ZYkPReo/I
+ STW/PQS3ERuAkrJh/N2ZQABRkZDVuLch7HQ6MCtKykWAxd1wELzuk9EplU7RFQ58M59EnCaSu
+ ZEAggFm5MO6eIRKXEekcgRwRJz9Ncsw0z5OKIIlI/LBCAKwezdC3g6mzfR8RdBu/5m3/0Lece
+ kmdPP5dvwhEGlrYO4HfH5z1Fj+qqsnYNZHJohJbVXBGVFOAo9chTmQeR0L0ST3vTYLRFQ+S5J
+ WDkI2UKcbc2wrw1eJ32v+47ub0Y2N5wIuh1U94q5ulMP+wLYO8G/fxWc/tzl3grAdal93CwKZ
+ Ote7f5Jvx9TjWNiJjYMNrPN7wdjy3EjWSAlf6yXXpEYhlmOnHW7CwI/Ob/VX5cgFqmXFEkCbr
+ aPU3w2z7vy/rPYLJ4QEGqThrxQFABDZwn4Ld+MiyrhMlJ/lvFzaN36owiksOSGlOvEzZJvG5h
+ pTLqv36TvzWaxLSndGSbuICmbdHw1wtcDPkvxvUEqklUkPhutcQQTGIyvC9vXTQ//IBgO3Tnb
+ Wi8CX4+LaqRpcEUeYbwp9/UvsRV8UZuZXjWUwOlq/yBqMPzfJ7Nkp1vGah+kDKi1T0Ea8sLNn
+ +cZ2rio0AAizNtEACKzu2NC5Pg3SEJvNpSGXkmm5rxf0u//UcAfndWokWSk2GqprNrWyKdbIL
+ Ry+CFeqzsNb1afwQbjZr2jLgFaHlMkaqS2QSgtxP3g==
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 10:21:08AM +0200, Alexander Stein wrote:
-> Add PWM device and the corresponding clock gating device in adma subsystem.
-> 
-> Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Since commit e2d896c08ca3 ("Documentation: bindings: dma: Add
+binding for dma-channel-mask") there is a generic property to list
+available DMA channels for the kernel to use. The generic property
+has been implemented by some other platforms.
+So implement support for the generic one and consider the
+vendor specific one as deprecated. This also simplifies the YAML
+conversion of the BCM2835 DMA DT bindings a little bit.
 
-Looks good to me.  I will pick it up after dt-bindings one gets
-accepted/picked first.
+Cc: John Stultz <john.stultz@linaro.org>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/dma/bcm2835-dma.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Shawn
+diff --git a/drivers/dma/bcm2835-dma.c b/drivers/dma/bcm2835-dma.c
+index 0807fb9eb262..a0573977a373 100644
+--- a/drivers/dma/bcm2835-dma.c
++++ b/drivers/dma/bcm2835-dma.c
+@@ -941,12 +941,18 @@ static int bcm2835_dma_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* Request DMA channel mask from device tree */
+-	if (of_property_read_u32(pdev->dev.of_node,
+-			"brcm,dma-channel-mask",
+-			&chans_available)) {
+-		dev_err(&pdev->dev, "Failed to get channel mask\n");
+-		rc = -EINVAL;
+-		goto err_no_dma;
++	if (of_property_read_u32(pdev->dev.of_node, "dma-channel-mask",
++				 &chans_available)) {
++		if (of_property_read_u32(pdev->dev.of_node,
++					 "brcm,dma-channel-mask",
++					 &chans_available)) {
++			dev_err(&pdev->dev, "Failed to get channel mask\n");
++			rc = -EINVAL;
++			goto err_no_dma;
++		} else {
++			dev_warn(&pdev->dev,
++				 "brcm,dma-channel-mask is deprecated, update your device-tree\n");
++		}
+ 	}
+ 
+ 	/* get irqs for each channel that we support */
+-- 
+2.34.1
 
-> ---
-> * New in v2
-> 
->  .../arm64/boot/dts/freescale/imx8-ss-dma.dtsi | 25 +++++++++++++++++++
->  1 file changed, 25 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8-ss-dma.dtsi b/arch/arm64/boot/dts/freescale/imx8-ss-dma.dtsi
-> index 2dce8f2ee3ea..7d5f96c99020 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8-ss-dma.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/imx8-ss-dma.dtsi
-> @@ -124,6 +124,19 @@ lpuart3: serial@5a090000 {
->  		status = "disabled";
->  	};
->  
-> +	adma_pwm: pwm@5a190000 {
-> +		compatible = "fsl,imx8qxp-pwm", "fsl,imx27-pwm";
-> +		reg = <0x5a190000 0x1000>;
-> +		interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>;
-> +		clocks = <&adma_pwm_lpcg 1>,
-> +			 <&adma_pwm_lpcg 0>;
-> +		clock-names = "ipg", "per";
-> +		assigned-clocks = <&clk IMX_SC_R_LCD_0_PWM_0 IMX_SC_PM_CLK_PER>;
-> +		assigned-clock-rates = <24000000>;
-> +		#pwm-cells = <2>;
-> +		power-domains = <&pd IMX_SC_R_LCD_0_PWM_0>;
-> +	};
-> +
->  	spi0_lpcg: clock-controller@5a400000 {
->  		compatible = "fsl,imx8qxp-lpcg";
->  		reg = <0x5a400000 0x10000>;
-> @@ -220,6 +233,18 @@ uart3_lpcg: clock-controller@5a490000 {
->  		power-domains = <&pd IMX_SC_R_UART_3>;
->  	};
->  
-> +	adma_pwm_lpcg: clock-controller@5a590000 {
-> +		compatible = "fsl,imx8qxp-lpcg";
-> +		reg = <0x5a590000 0x10000>;
-> +		#clock-cells = <1>;
-> +		clocks = <&clk IMX_SC_R_LCD_0_PWM_0 IMX_SC_PM_CLK_PER>,
-> +			 <&dma_ipg_clk>;
-> +		clock-indices = <IMX_LPCG_CLK_0>, <IMX_LPCG_CLK_4>;
-> +		clock-output-names = "adma_pwm_lpcg_clk",
-> +				     "adma_pwm_lpcg_ipg_clk";
-> +		power-domains = <&pd IMX_SC_R_LCD_0_PWM_0>;
-> +	};
-> +
->  	i2c0: i2c@5a800000 {
->  		reg = <0x5a800000 0x4000>;
->  		interrupts = <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH>;
-> -- 
-> 2.34.1
-> 
