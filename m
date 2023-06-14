@@ -2,113 +2,150 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA44EB64DB
-	for <linux-pwm@archiver.kernel.org>; Wed, 14 Jun 2023 11:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F19F5EB64DB
+	for <linux-pwm@archiver.kernel.org>; Wed, 14 Jun 2023 17:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235800AbjFNLSO (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 14 Jun 2023 07:18:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38584 "EHLO
+        id S231969AbjFNRPK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 14 Jun 2023 13:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243731AbjFNLR7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Jun 2023 07:17:59 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31312698
-        for <linux-pwm@vger.kernel.org>; Wed, 14 Jun 2023 04:17:38 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-3f8c5d0b216so5280575e9.1
-        for <linux-pwm@vger.kernel.org>; Wed, 14 Jun 2023 04:17:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1686741457; x=1689333457;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZqM7S8NVl5TgVH/SCkBnKovDNoLn6CHQRP6NUvEVbFA=;
-        b=QOBvNJ4SK+SNbyk8XDYPoIiRQQGEReadorv2ByIf2r/Pgn2pEZzITLNMrdIZW4Uja1
-         FrPl+kL8JMgwnFvefo4gM4ADtDjXYBkoOJsodiAp/P4NWHr47LelPoqg5Z5eIZPbl5ed
-         W+A/T2K2m6EepXPnoOFsFcNjYboMPE6S5vb039RIEtYnbJEHi+qcmJOuHNQ9Z4kyLIDn
-         h3yI9XWwjJpwSdLsfp4+8K7SkLOYf7q8jLrVDRDO5cnHRdpbQS4PxIclh/2KWezLs+Pp
-         AEPdwu44Gi7WPkNp8s+L3l6mY+YlZ+dvDnubAgTdRxAOQJHTLNoCdo+HmjJBvjqPeCYE
-         jZmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686741457; x=1689333457;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZqM7S8NVl5TgVH/SCkBnKovDNoLn6CHQRP6NUvEVbFA=;
-        b=kGQ04xBufbRe2Uvgb1AF83rUgYq2FuFrq5WVsRotHQM0lCWZ4h+l0cKWKxcYWkdEMY
-         MAT3+yLdjH12TRcz+slQQT2NKnROH65YDRbOCH6rdP4ULnaR+n1xwrDT91AKvKfdvEZy
-         2eDD6rSnkxviENBFC03ofwiujDybiAS63V4G2laMBP8ToPseTLfed42LaeAsOb5cwlAp
-         Lh/nen6c0VB7uWonZKsxSnQbruSk3yZoenIW5kZLFpRTTWjv7DaRiHzxpAnZFYelyIBH
-         kehwHl2KH6pG5yxuzSpgbXGcOpYLwT9gRzP6UHiBVYUQb3BRXJONbsr0W1J+2kIayFEy
-         +jCA==
-X-Gm-Message-State: AC+VfDw4nH/DF1VNVQ5RoBzbpAhty4MclhZpF+z3MnghhtRXZVBwcWCz
-        DuAVLWMNMvklKh8+gV330tTFHg==
-X-Google-Smtp-Source: ACHHUZ4VV/u+wNY65vkMGqcqRpOJrnrIRBctK0IPefzUqdfJtG2Faq8wP4fbJml7xLdM6nEjARrruQ==
-X-Received: by 2002:a05:600c:2212:b0:3f7:865d:ce63 with SMTP id z18-20020a05600c221200b003f7865dce63mr10498832wml.21.1686741456811;
-        Wed, 14 Jun 2023 04:17:36 -0700 (PDT)
-Received: from [10.35.6.111] ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id x25-20020a05600c21d900b003f60faa4612sm17154520wmj.22.2023.06.14.04.17.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Jun 2023 04:17:36 -0700 (PDT)
-Message-ID: <f993a71b-69ff-3047-9a56-d04fd583431a@sifive.com>
-Date:   Wed, 14 Jun 2023 12:17:35 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v7 10/10] pwm: dwc: use clock rate in hz to avoid rounding
- issues
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        with ESMTP id S235579AbjFNRPF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Jun 2023 13:15:05 -0400
+Received: from imap4.hz.codethink.co.uk (imap4.hz.codethink.co.uk [188.40.203.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AD22103;
+        Wed, 14 Jun 2023 10:15:03 -0700 (PDT)
+Received: from [167.98.27.226] (helo=rainbowdash)
+        by imap4.hz.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
+        id 1q9U5C-00Exj4-UY; Wed, 14 Jun 2023 18:14:59 +0100
+Received: from ben by rainbowdash with local (Exim 4.96)
+        (envelope-from <ben@rainbowdash>)
+        id 1q9U5C-000I0x-12;
+        Wed, 14 Jun 2023 18:14:58 +0100
+From:   Ben Dooks <ben.dooks@sifive.com>
+To:     linux-pwm@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ben.dooks@codethink.co.uk, u.kleine-koenig@pengutronix.de,
         Thierry Reding <thierry.reding@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Greentime Hu <greentime.hu@sifive.com>,
         jarkko.nikula@linux.intel.com,
         William Salmon <william.salmon@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>
-References: <20221223153820.404565-1-ben.dooks@sifive.com>
- <20221223153820.404565-11-ben.dooks@sifive.com>
- <20230216213927.r3lvjz6u7d62y4pb@pengutronix.de>
-Content-Language: en-GB
-From:   Ben Dooks <ben.dooks@sifive.com>
-In-Reply-To: <20230216213927.r3lvjz6u7d62y4pb@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
+        Ben Dooks <ben.dooks@sifive.com>
+Subject: [PATCH v8 4/5] pwm: dwc: use clock rate in hz to avoid rounding issues
+Date:   Wed, 14 Jun 2023 18:14:56 +0100
+Message-Id: <20230614171457.69191-5-ben.dooks@sifive.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230614171457.69191-1-ben.dooks@sifive.com>
+References: <20230614171457.69191-1-ben.dooks@sifive.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 16/02/2023 21:39, Uwe Kleine-König wrote:
-> On Fri, Dec 23, 2022 at 03:38:20PM +0000, Ben Dooks wrote:
->> As noted, the clock-rate when not a nice multiple of ns is probably
->> going to end up with inacurate caculations, as well as on a non pci
-> 
-> Given that such a non-nice ca*l*culation only happens in the of case
-> that is introduced here, it would be nice to move this patch before the
-> introduction of the of-support.
+As noted, the clock-rate when not a nice multiple of ns is probably
+going to end up with inacurate caculations, as well as on a non pci
+system the rate may change (although we've not put a clock rate
+change notifier in this code yet) so we also add some quick checks
+of the rate when we do any calculations with it.
 
-I've moved of support to the end of the series
-you
->> system the rate may change (although we've not put a clock rate
->> change notifier in this code yet) so we also add some quick checks
->> of the rate when we do any calculations with it.
-> 
-> If the clk rate changes while the PWM is on, this modifies the output.
-> This is unfortunate and so it justifies adding a call to
-> clk_rate_exclusive_get() when the PWM is on.
+Signed-off-by; Ben Dooks <ben.dooks@sifive.com>
+Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+v8:
+ - fixup post rename
+ - move to earlier in series
+---
+ drivers/pwm/pwm-dwc-core.c | 24 +++++++++++++++---------
+ drivers/pwm/pwm-dwc.h      |  2 +-
+ 2 files changed, 16 insertions(+), 10 deletions(-)
 
-I can't really test things any more as the hardware has been returned
-to the client and I'm technically off the project (and awaiting this
-email address to be closed down).
-
-Could this either be solved by the clk_rate_exclusive_get() or adding
-a clock change notifier? Either way I would prefer this to be work for
-another patch.
-
-I'll send v8 out later as it has had some re-works due to moving
-things around.
-
-Thank you for the review.
-
---
-Ben
+diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
+index 38cd2163fe01..0f07e26e6c30 100644
+--- a/drivers/pwm/pwm-dwc-core.c
++++ b/drivers/pwm/pwm-dwc-core.c
+@@ -49,13 +49,14 @@ static int __dwc_pwm_configure_timer(struct dwc_pwm *dwc,
+ 	 * periods and check are the result within HW limits between 1 and
+ 	 * 2^32 periods.
+ 	 */
+-	tmp = DIV_ROUND_CLOSEST_ULL(state->duty_cycle, dwc->clk_ns);
++	tmp = state->duty_cycle * dwc->clk_rate;
++	tmp = DIV_ROUND_CLOSEST_ULL(tmp, NSEC_PER_SEC);
+ 	if (tmp < 1 || tmp > (1ULL << 32))
+ 		return -ERANGE;
+ 	low = tmp - 1;
+ 
+-	tmp = DIV_ROUND_CLOSEST_ULL(state->period - state->duty_cycle,
+-				    dwc->clk_ns);
++	tmp = (state->period - state->duty_cycle) * dwc->clk_rate;
++	tmp = DIV_ROUND_CLOSEST_ULL(tmp, NSEC_PER_SEC);
+ 	if (tmp < 1 || tmp > (1ULL << 32))
+ 		return -ERANGE;
+ 	high = tmp - 1;
+@@ -121,11 +122,14 @@ static int dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			     struct pwm_state *state)
+ {
+ 	struct dwc_pwm *dwc = to_dwc_pwm(chip);
++	unsigned long clk_rate;
+ 	u64 duty, period;
+ 	u32 ctrl, ld, ld2;
+ 
+ 	pm_runtime_get_sync(chip->dev);
+ 
++	clk_rate = dwc->clk_rate;
++
+ 	ctrl = dwc_pwm_readl(dwc, DWC_TIM_CTRL(pwm->hwpwm));
+ 	ld = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(pwm->hwpwm));
+ 	ld2 = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(pwm->hwpwm));
+@@ -136,17 +140,19 @@ static int dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * based on the timer load-count only.
+ 	 */
+ 	if (ctrl & DWC_TIM_CTRL_PWM) {
+-		duty = (ld + 1) * dwc->clk_ns;
+-		period = (ld2 + 1)  * dwc->clk_ns;
++		duty = ld + 1;
++		period = ld2 + 1;
+ 		period += duty;
+ 	} else {
+-		duty = (ld + 1) * dwc->clk_ns;
++		duty = ld + 1;
+ 		period = duty * 2;
+ 	}
+ 
++	duty *= NSEC_PER_SEC;
++	period *= NSEC_PER_SEC;
++	state->period = DIV_ROUND_CLOSEST_ULL(period, clk_rate);
++	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(duty, clk_rate);
+ 	state->polarity = PWM_POLARITY_INVERSED;
+-	state->period = period;
+-	state->duty_cycle = duty;
+ 
+ 	pm_runtime_put_sync(chip->dev);
+ 
+@@ -167,7 +173,7 @@ struct dwc_pwm *dwc_pwm_alloc(struct device *dev)
+ 	if (!dwc)
+ 		return NULL;
+ 
+-	dwc->clk_ns = 10;
++	dwc->clk_rate = NSEC_PER_SEC / 10;
+ 	dwc->chip.dev = dev;
+ 	dwc->chip.ops = &dwc_pwm_ops;
+ 	dwc->chip.npwm = DWC_TIMERS_TOTAL;
+diff --git a/drivers/pwm/pwm-dwc.h b/drivers/pwm/pwm-dwc.h
+index 64795247c54c..e0a940fd6e87 100644
+--- a/drivers/pwm/pwm-dwc.h
++++ b/drivers/pwm/pwm-dwc.h
+@@ -42,7 +42,7 @@ struct dwc_pwm_ctx {
+ struct dwc_pwm {
+ 	struct pwm_chip chip;
+ 	void __iomem *base;
+-	unsigned int clk_ns;
++	unsigned long clk_rate;
+ 	struct dwc_pwm_ctx ctx[DWC_TIMERS_TOTAL];
+ };
+ #define to_dwc_pwm(p)	(container_of((p), struct dwc_pwm, chip))
+-- 
+2.39.2
 
