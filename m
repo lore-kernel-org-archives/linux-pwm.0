@@ -2,255 +2,103 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6681FEB64D8
-	for <linux-pwm@archiver.kernel.org>; Wed, 14 Jun 2023 18:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50783EB64DB
+	for <linux-pwm@archiver.kernel.org>; Thu, 15 Jun 2023 14:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbjFNShA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 14 Jun 2023 14:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
+        id S239165AbjFOOoi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 15 Jun 2023 10:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbjFNSg7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Jun 2023 14:36:59 -0400
-Received: from imap5.colo.codethink.co.uk (imap5.colo.codethink.co.uk [78.40.148.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BC0B3;
-        Wed, 14 Jun 2023 11:36:58 -0700 (PDT)
-Received: from [167.98.27.226] (helo=rainbowdash)
-        by imap5.colo.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
-        id 1q9U5B-008GBC-Va; Wed, 14 Jun 2023 18:14:58 +0100
-Received: from ben by rainbowdash with local (Exim 4.96)
-        (envelope-from <ben@rainbowdash>)
-        id 1q9U5C-000I11-16;
-        Wed, 14 Jun 2023 18:14:58 +0100
-From:   Ben Dooks <ben.dooks@sifive.com>
-To:     linux-pwm@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ben.dooks@codethink.co.uk, u.kleine-koenig@pengutronix.de,
+        with ESMTP id S241034AbjFOOoh (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 15 Jun 2023 10:44:37 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5012D2736;
+        Thu, 15 Jun 2023 07:44:35 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id 2adb3069b0e04-4f5f728c4aaso1098132e87.0;
+        Thu, 15 Jun 2023 07:44:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686840273; x=1689432273;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3OVYFBud63oBmzgiKeGVku/0LMDSys68f5xBbeb6bPY=;
+        b=gvJvlhyz6mGHxA6nEwkgEECKteCPa2XcgRP0HBANaI9uGOK4+v7YqzECwuC3X++sJX
+         hmcfk1TB7MorQ53pXiXkFZwE2SnZ5yQzfR5IZkW3JROxBQKCJDev02f6ceBfUnJi/rAN
+         wgUhMIn1iEQYRglCfEFTaaeiIMNYZmsFK9TiX7QIXc44bPvXovr0hRQ92G1VaCWX5YtM
+         XKkpbbX6WZRNoclcYpz4CdcmOFpXy6eTajJ73BHS6wwvX8QG1gi2AvEEHO37TKs40+5l
+         WE76EUYGaOl1joKIc2rXgiudqb8+ZYuylTmuEG7i0D/Kjj1c2WBpnWX0BcZ8+9KeFqr+
+         ehGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686840273; x=1689432273;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3OVYFBud63oBmzgiKeGVku/0LMDSys68f5xBbeb6bPY=;
+        b=VqNi7hgcrgKNKjZCMj+HSZaYL98fDrovt0tB4jzK8fInyV8EPymWbtE8MnE6tDdxGN
+         StcCRIsVvbbQxLaE3wIpsGahhhGuHhmovRSjNCgzQ9lYTCYJ6IlcWitB3LdwYFj8za5E
+         JzeOXb+xks1AQohK8pXoE75ogpRTWoZfnXcCEQwaZ4WWhpkeXz4/3lXBtqvB2TD3k0U4
+         Pg5EZm0pxPLfWi2zReH6cygnd35M4Fb3mjcWf4cZ//29r8QP3ZcSPIsx8513f7uk38Zw
+         jeMLzVybKUn5l8Oszaa8t1ZTV1KhG5/S4yGEtfsWKH+BrXAjBWzRiBQGefNiGyI/GeTX
+         FoVA==
+X-Gm-Message-State: AC+VfDyW6s1H2J+5Q+D85TTlJpgafJL6K/PxhXAiBAlrVavbMfHqpQ+B
+        vYowK2qwnxSXq5zzyBRYIvajQVmCAO5e/bKs0A==
+X-Google-Smtp-Source: ACHHUZ6DbPaMv5ulJSq95WK2pTU4k2Fu5q20+cJlSAw29Dpc0bbyrB4k2JLeuY6MVfaHWXKm0JpdEA==
+X-Received: by 2002:a19:645b:0:b0:4f4:2717:7e6f with SMTP id b27-20020a19645b000000b004f427177e6fmr1101587lfj.23.1686840272990;
+        Thu, 15 Jun 2023 07:44:32 -0700 (PDT)
+Received: from localhost.localdomain (mail.pulsar-telecom.ru. [94.181.180.60])
+        by smtp.gmail.com with ESMTPSA id h7-20020ac25967000000b004f13f4ec267sm244451lfp.186.2023.06.15.07.44.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Jun 2023 07:44:32 -0700 (PDT)
+From:   Aleksandr Shubin <privatesub2@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Aleksandr Shubin <privatesub2@gmail.com>,
         Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        jarkko.nikula@linux.intel.com,
-        William Salmon <william.salmon@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-        Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH v8 5/5] pwm: dwc: add of/platform support
-Date:   Wed, 14 Jun 2023 18:14:57 +0100
-Message-Id: <20230614171457.69191-6-ben.dooks@sifive.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230614171457.69191-1-ben.dooks@sifive.com>
-References: <20230614171457.69191-1-ben.dooks@sifive.com>
+        Conor Dooley <conor+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Maxime Ripard <mripard@kernel.org>, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-riscv@lists.infradead.org
+Subject: [PATCH v1 0/3] Add support for Allwinner PWM on D1/T113s/R329 SoCs
+Date:   Thu, 15 Jun 2023 17:43:55 +0300
+Message-Id: <20230615144423.828698-1-privatesub2@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The dwc pwm controller can be used in non-PCI systems, so allow
-either platform or OF based probing.
+Hi,
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
----
-v8:
- - add compile test for of-case
- - add module namespace
- - move later in the series
-v7:
- - fixup kconfig from previous pcie changes
-v5:
- - fix missing " in kconfig
- - remove .remove method, devm already sorts this.
- - merge pwm-number code
- - split the of code out of the core
- - get bus clock
-v4:
- - moved the compile test code earlier
- - fixed review comments
- - used NS_PER_SEC
- - use devm_clk_get_enabled
- - ensure we get the bus clock
-v3:
- - changed compatible name
----
- drivers/pwm/Kconfig        | 10 +++++
- drivers/pwm/Makefile       |  1 +
- drivers/pwm/pwm-dwc-core.c |  6 +++
- drivers/pwm/pwm-dwc-of.c   | 78 ++++++++++++++++++++++++++++++++++++++
- drivers/pwm/pwm-dwc.c      |  1 +
- drivers/pwm/pwm-dwc.h      |  1 +
- 6 files changed, 97 insertions(+)
- create mode 100644 drivers/pwm/pwm-dwc-of.c
+This series adds support for PWM controller on new
+Allwinner's SoCs, such as D1, T113s and R329. The implemented driver
+provides basic functionality for control PWM channels.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 7c54cdcb97a0..61f5d3f30fd7 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -205,6 +205,16 @@ config PWM_DWC
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-dwc.
- 
-+config PWM_DWC_OF
-+	tristate "DesignWare PWM Controller (OF bus)"
-+	depends on HAS_IOMEM && (OF || COMPILE_TEST)
-+	select PWM_DWC_CORE
-+	help
-+	  PWM driver for Synopsys DWC PWM Controller on an OF bus.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-dwc-of.
-+
- config PWM_EP93XX
- 	tristate "Cirrus Logic EP93xx PWM support"
- 	depends on ARCH_EP93XX || COMPILE_TEST
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index de3ed77e8d7c..d27dfbb850b7 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
- obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
- obj-$(CONFIG_PWM_DWC_CORE)	+= pwm-dwc-core.o
- obj-$(CONFIG_PWM_DWC)		+= pwm-dwc.o
-+obj-$(CONFIG_PWM_DWC_OF)	+= pwm-dwc-of.o
- obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
- obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
- obj-$(CONFIG_PWM_HIBVT)		+= pwm-hibvt.o
-diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
-index 0f07e26e6c30..ed102fc4b30a 100644
---- a/drivers/pwm/pwm-dwc-core.c
-+++ b/drivers/pwm/pwm-dwc-core.c
-@@ -16,6 +16,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/clk.h>
- #include <linux/pm_runtime.h>
- #include <linux/pwm.h>
- 
-@@ -44,6 +45,9 @@ static int __dwc_pwm_configure_timer(struct dwc_pwm *dwc,
- 	u32 high;
- 	u32 low;
- 
-+	if (dwc->clk)
-+		dwc->clk_rate = clk_get_rate(dwc->clk);
-+
- 	/*
- 	 * Calculate width of low and high period in terms of input clock
- 	 * periods and check are the result within HW limits between 1 and
-@@ -128,6 +132,8 @@ static int dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	pm_runtime_get_sync(chip->dev);
- 
-+	if (dwc->clk)
-+		dwc->clk_rate = clk_get_rate(dwc->clk);
- 	clk_rate = dwc->clk_rate;
- 
- 	ctrl = dwc_pwm_readl(dwc, DWC_TIM_CTRL(pwm->hwpwm));
-diff --git a/drivers/pwm/pwm-dwc-of.c b/drivers/pwm/pwm-dwc-of.c
-new file mode 100644
-index 000000000000..13a0b534b383
---- /dev/null
-+++ b/drivers/pwm/pwm-dwc-of.c
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * DesignWare PWM Controller driver OF
-+ *
-+ * Copyright (C) 2022 SiFive, Inc.
-+ */
-+
-+#define DEFAULT_MODULE_NAMESACE dwc_pwm
-+
-+#include <linux/bitops.h>
-+#include <linux/export.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/clk.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/pwm.h>
-+#include <linux/io.h>
-+
-+#include "pwm-dwc.h"
-+
-+static int dwc_pwm_plat_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct dwc_pwm *dwc;
-+	struct clk *bus;
-+	u32 nr_pwm;
-+
-+	dwc = dwc_pwm_alloc(dev);
-+	if (!dwc)
-+		return -ENOMEM;
-+
-+	if (!device_property_read_u32(dev, "snps,pwm-number", &nr_pwm)) {
-+		if (nr_pwm > DWC_TIMERS_TOTAL)
-+			dev_err(dev, "too many PWMs (%d) specified, capping at %d\n",
-+				nr_pwm, dwc->chip.npwm);
-+		else
-+			dwc->chip.npwm = nr_pwm;
-+	}
-+
-+	dwc->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(dwc->base))
-+		return PTR_ERR(dwc->base);
-+
-+	bus = devm_clk_get_enabled(dev, NULL);
-+	if (IS_ERR(bus))
-+		return dev_err_probe(dev, PTR_ERR(bus),
-+				     "failed to get clock\n");
-+
-+	dwc->clk = devm_clk_get_enabled(dev, "timer");
-+	if (IS_ERR(dwc->clk))
-+		return dev_err_probe(dev, PTR_ERR(dwc->clk),
-+				     "failed to get timer clock\n");
-+
-+	dwc->clk_rate = clk_get_rate(dwc->clk);
-+	return devm_pwmchip_add(dev, &dwc->chip);
-+}
-+
-+static const struct of_device_id dwc_pwm_dt_ids[] = {
-+	{ .compatible = "snps,dw-apb-timers-pwm2" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, dwc_pwm_dt_ids);
-+
-+static struct platform_driver dwc_pwm_plat_driver = {
-+	.driver = {
-+		.name		= "dwc-pwm",
-+		.of_match_table  = dwc_pwm_dt_ids,
-+	},
-+	.probe	= dwc_pwm_plat_probe,
-+};
-+
-+module_platform_driver(dwc_pwm_plat_driver);
-+
-+MODULE_ALIAS("platform:dwc-pwm-of");
-+MODULE_AUTHOR("Ben Dooks <ben.dooks@sifive.com>");
-+MODULE_DESCRIPTION("DesignWare PWM Controller");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index bd9cadb497d7..7c32bd06ed33 100644
---- a/drivers/pwm/pwm-dwc.c
-+++ b/drivers/pwm/pwm-dwc.c
-@@ -20,6 +20,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/clk.h>
- #include <linux/pm_runtime.h>
- #include <linux/pwm.h>
- 
-diff --git a/drivers/pwm/pwm-dwc.h b/drivers/pwm/pwm-dwc.h
-index e0a940fd6e87..18e98c2c07d7 100644
---- a/drivers/pwm/pwm-dwc.h
-+++ b/drivers/pwm/pwm-dwc.h
-@@ -42,6 +42,7 @@ struct dwc_pwm_ctx {
- struct dwc_pwm {
- 	struct pwm_chip chip;
- 	void __iomem *base;
-+	struct clk *clk;
- 	unsigned long clk_rate;
- 	struct dwc_pwm_ctx ctx[DWC_TIMERS_TOTAL];
- };
+Aleksandr Shubin (3):
+  dt-bindings: pwm: Add binding for Allwinner D1/T113-S3/R329 PWM
+    controller
+  pwm: Add Allwinner's D1/T113-S3/R329 SoCs PWM support
+  riscv: dts: allwinner: d1: Add pwm node
+
+ .../bindings/pwm/allwinner,sun20i-pwm.yaml    |  70 ++++
+ .../boot/dts/allwinner/sunxi-d1s-t113.dtsi    |  12 +
+ drivers/pwm/Kconfig                           |  12 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-sun20i.c                      | 364 ++++++++++++++++++
+ 5 files changed, 459 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/allwinner,sun20i-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-sun20i.c
+
 -- 
-2.39.2
+2.25.1
 
