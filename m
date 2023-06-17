@@ -2,122 +2,251 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AC7EB64D7
-	for <linux-pwm@archiver.kernel.org>; Fri, 16 Jun 2023 18:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93985EB64D9
+	for <linux-pwm@archiver.kernel.org>; Sat, 17 Jun 2023 13:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbjFPS5O (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 16 Jun 2023 14:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
+        id S234668AbjFQNhI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 17 Jun 2023 09:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbjFPS5N (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 16 Jun 2023 14:57:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893DDC3;
-        Fri, 16 Jun 2023 11:57:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED5E62938;
-        Fri, 16 Jun 2023 18:57:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C397C433C8;
-        Fri, 16 Jun 2023 18:57:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1686941831;
-        bh=vv/cmdovIkwrhLiTwDyTYR3pLEAnNU7iGqvbKxXb4LE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cjwtWBQ8DQYPMPpoGd9LEI3YSXNa1CDIjV9EAL4LDAkFKlQOEB/tXjPb8ev9Vyluy
-         5cNqBGbbhNpt0hQcQOarx7D2uDbvD90VmwKjFDfYrBwuWl/TtuBJwJO4z0JxYi6hG0
-         W+kChJ+xObPABXkazzq/IhEY+PwSpz8oeMh04RmYmhDzja5UfqGXo/Bj2IL+e5KYl7
-         IcsUJZtNS929pvmcwsFhBiyFnTyDWViPXlv1+0BSkZRMngMGH+sB5Tho6YoV4Tm+pV
-         09Wrey2BxRVZDGJIhr6okUOYHHyps/rd7kzn5t5MZvKDJC0j9erRpKBZAQ3BX1TinK
-         IhRXOKWiV4hmQ==
-Date:   Fri, 16 Jun 2023 19:57:05 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     =?utf-8?B?0JDQu9C10LrRgdCw0L3QtNGAINCo0YPQsdC40L0=?= 
-        <privatesub2@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
+        with ESMTP id S232091AbjFQNhH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 17 Jun 2023 09:37:07 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9067B5;
+        Sat, 17 Jun 2023 06:37:05 -0700 (PDT)
+Received: from stefanw-SCHENKER ([37.4.248.58]) by mrelayeu.kundenserver.de
+ (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1N49Yn-1q1L6f0zC5-0108qe; Sat, 17 Jun 2023 15:36:40 +0200
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
-        Maxime Ripard <mripard@kernel.org>, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v1 1/3] dt-bindings: pwm: Add binding for Allwinner
- D1/T113-S3/R329 PWM controller
-Message-ID: <20230616-stopped-bunny-619cf684c9cb@spud>
-References: <20230615144423.828698-1-privatesub2@gmail.com>
- <20230615144423.828698-2-privatesub2@gmail.com>
- <20230615-display-encounter-9a7a78562ff8@spud>
- <CAF4idNksCzkh0WMhvb7ecqYfJRLw33GrpT1+eL5S9ydS8Uu-BA@mail.gmail.com>
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH V2 1/7] ARM: dts: bcm283x: Fix pinctrl groups
+Date:   Sat, 17 Jun 2023 15:36:14 +0200
+Message-Id: <20230617133620.53129-2-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230617133620.53129-1-stefan.wahren@i2se.com>
+References: <20230617133620.53129-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="BTfG3I7wYmbJRwEO"
-Content-Disposition: inline
-In-Reply-To: <CAF4idNksCzkh0WMhvb7ecqYfJRLw33GrpT1+eL5S9ydS8Uu-BA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:IY3M0xwlJcn1MHHWzufLssN2h75OOWkxST7zRVe3Aze71fo0TWI
+ AizeCsOGFtCvGGHrVqALKQoNzZh067DQ1DvzT1zXzcOkvCHzqSXS2n3CZov4nF+NF2J+YRB
+ Lf9MvTXQnWdMhfolPqD34KHbxjxPBsyXT27TiMBlPm1XXMc/5R0VQwoA2YocbR6BZ1m9CbU
+ p9IlT0LhX6SryE7po8d6g==
+UI-OutboundReport: notjunk:1;M01:P0:X6pAvDBu4OQ=;zyoofsDWMG++GvPo1YfB/u8FFOH
+ HlE1XYcUeGzAusqDKVYGThsSfTkS9xjxIQcRw50iNYNdDN/kwNgK2pmuUhNIQCs1AsMtM7BXz
+ +7uddUuEklqA6gG5ok3rvcgyHV2Nl+XDIjdSvXc8P3pPZyodcYgsIrLD/7ZvzG91wYRcWIM9q
+ p3QIDfbwcgwNJeNnActWD8MNfDfA8bqTmAm7kNlwvw39dzUagkymZ9ciqwbmUKZxssGLO5Doj
+ r++nwI2Wti96Mcaphs9bU9ry9SaEkGCD9kgvgOPvSkmkwHjSJ0wtLQNhqhL6UTT5/ghM5ehK+
+ KwoEw+FmgJ+vsbRiMX+KbA8D8aeSXMMIWhyX1Kbwiy4c9Khswwd99NmKutPeCUcXoCvNX8If6
+ YcUOadgz665HIVmLER4kbYCIb7m6p/Td2vLGydxLC4z7GGQl/EVVnbFeKTq+QHy/2Wa2ZFQve
+ Er4vqaRHGKiB/SflZvVw/8zyF+C3PKA7dcmb4fcNIyQd3VFYBm4hqRWOV2UrO2YAqj9ksBUSn
+ JMsREY2bMHUBW1LqNIC36cVy9yesGlJISGFcCG2ljK7/VFDaWTEoGDY82pmGnOSzE3aWZWGni
+ BXq62Uj36JM2AMtYwEizaK/fkowddq20TUfJEwBguWREi8PClZjJuvUYU0SjC+a/MIqznRsys
+ +Na6/QOos0m7OL5wWRAUvkpYsTtyh6E61nUks5YQ1A==
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Currently the dtbs_check for bcm2837 generates warnings like this:
 
---BTfG3I7wYmbJRwEO
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+gpio@7e200000: 'pinctrl-0' is a dependency of 'pinctrl-names'
 
-On Fri, Jun 16, 2023 at 11:02:12AM +0300, =D0=90=D0=BB=D0=B5=D0=BA=D1=81=D0=
-=B0=D0=BD=D0=B4=D1=80 =D0=A8=D1=83=D0=B1=D0=B8=D0=BD wrote:
-> =D1=87=D1=82, 15 =D0=B8=D1=8E=D0=BD. 2023=E2=80=AF=D0=B3. =D0=B2 19:37, C=
-onor Dooley <conor@kernel.org>:
-> > On Thu, Jun 15, 2023 at 05:43:56PM +0300, Aleksandr Shubin wrote:
-> > > Allwinner's D1, T113-S3 and R329 SoCs have a new pwm
-> > > controller witch is different from the previous pwm-sun4i.
-> > >
-> > > D1 and T113s SoCs have one PWM controller with 8 channels.
-> > > R329 SoC has two PWM controllers in both power domains, one of
-> > > them has 9 channels (CPUX one) and the other has 6 (CPUS one).
-> >
-> > It would be good to note that the D1 and T113 are identical in terms of
-> > peripherals, they differ only in the architecture of the CPU core, and
-> > even share the majority of their DT. Because of that, using the same
-> > compatible makes sense.
-> > The R329 is a different SoC though, and should have a different
-> > compatible string added, especially as there is a difference in the
-> > number of channels. It would be fine to use the current compatible for
-> > the D1 as a fallback.
-> > The allwinner,pwm-channels property should probably only be allowed on
-> > the R329 and only allow the values of 6 & 9.
->=20
->=20
-> Maybe would it be better to allow only 8 channels for D1 and only 6 and 9
-> channels for R329?
+This is caused by the definition of pinctrl-names without matching
+pinctrl group and vice versa. So defining both at the same place
+make the dts files easier to review.
 
-If you're on a D1, you don't need a dt property to tell you the number
-of channels, you already know it to be 8. Couple ways driver could
-implement that, for example: if the dt-binding requires the property on
-the R329, you could set 8 as the default and overwrite it if the
-property exists - which would only be permitted on the R329.
-Up to you.
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ arch/arm/boot/dts/bcm2835-rpi-a-plus.dts   | 1 +
+ arch/arm/boot/dts/bcm2835-rpi-a.dts        | 1 +
+ arch/arm/boot/dts/bcm2835-rpi-b-plus.dts   | 1 +
+ arch/arm/boot/dts/bcm2835-rpi-b-rev2.dts   | 1 +
+ arch/arm/boot/dts/bcm2835-rpi-b.dts        | 1 +
+ arch/arm/boot/dts/bcm2835-rpi-cm1-io1.dts  | 1 +
+ arch/arm/boot/dts/bcm2835-rpi-zero-w.dts   | 2 ++
+ arch/arm/boot/dts/bcm2835-rpi-zero.dts     | 1 +
+ arch/arm/boot/dts/bcm2835-rpi.dtsi         | 2 --
+ arch/arm/boot/dts/bcm2836-rpi-2-b.dts      | 1 +
+ arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts  | 1 +
+ arch/arm/boot/dts/bcm2837-rpi-zero-2-w.dts | 2 ++
+ 12 files changed, 13 insertions(+), 2 deletions(-)
 
---BTfG3I7wYmbJRwEO
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-a-plus.dts b/arch/arm/boot/dts/bcm2835-rpi-a-plus.dts
+index 02ce817868ba..069b48272aa5 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-a-plus.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-a-plus.dts
+@@ -81,6 +81,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0 &i2s_alt0>;
+ 
+ 	/* I2S interface */
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-a.dts b/arch/arm/boot/dts/bcm2835-rpi-a.dts
+index 3fdf60eb11dc..2726c00431e8 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-a.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-a.dts
+@@ -83,6 +83,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0 &i2s_alt2>;
+ 
+ 	/* I2S interface */
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-b-plus.dts b/arch/arm/boot/dts/bcm2835-rpi-b-plus.dts
+index 9956fd06a4b6..c57b999a4520 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-b-plus.dts
+@@ -83,6 +83,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0 &i2s_alt0>;
+ 
+ 	/* I2S interface */
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-b-rev2.dts b/arch/arm/boot/dts/bcm2835-rpi-b-rev2.dts
+index 4e1770afb145..ae6d3a9586ab 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-b-rev2.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-b-rev2.dts
+@@ -83,6 +83,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0 &i2s_alt2>;
+ 
+ 	/* I2S interface */
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-b.dts b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+index eec1d0892d33..72764be75a79 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-b.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+@@ -83,6 +83,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0>;
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-cm1-io1.dts b/arch/arm/boot/dts/bcm2835-rpi-cm1-io1.dts
+index 87958a96c3e0..3f9d198ac3ab 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-cm1-io1.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-cm1-io1.dts
+@@ -73,6 +73,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0>;
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
+index dbf825985ec0..1f0b163e400c 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
+@@ -97,6 +97,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0>;
+ };
+ 
+@@ -111,6 +112,7 @@ &led_act {
+ };
+ 
+ &sdhci {
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&emmc_gpio34 &gpclk2_gpio43>;
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-zero.dts b/arch/arm/boot/dts/bcm2835-rpi-zero.dts
+index f80e65a825fd..539c19c10946 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-zero.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-zero.dts
+@@ -85,6 +85,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0 &i2s_alt0>;
+ 
+ 	/* I2S interface */
+diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+index ee9ee9d1fe65..f0acc9390f31 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+@@ -26,8 +26,6 @@ vchiq: mailbox@7e00b840 {
+ };
+ 
+ &gpio {
+-	pinctrl-names = "default";
+-
+ 	gpioout: gpioout {
+ 		brcm,pins = <6>;
+ 		brcm,function = <BCM2835_FSEL_GPIO_OUT>;
+diff --git a/arch/arm/boot/dts/bcm2836-rpi-2-b.dts b/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
+index 6068ec390081..79918033750e 100644
+--- a/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
++++ b/arch/arm/boot/dts/bcm2836-rpi-2-b.dts
+@@ -82,6 +82,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0 &i2s_alt0>;
+ 
+ 	/* I2S interface */
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
+index cf84e69fced8..72d26d130efa 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
+@@ -72,6 +72,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0>;
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-zero-2-w.dts b/arch/arm/boot/dts/bcm2837-rpi-zero-2-w.dts
+index b9cc4594398b..85cf594724ef 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-zero-2-w.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-zero-2-w.dts
+@@ -95,6 +95,7 @@ &gpio {
+ 			  "SD_DATA2_R",
+ 			  "SD_DATA3_R";
+ 
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&gpioout &alt0>;
+ };
+ 
+@@ -109,6 +110,7 @@ &led_act {
+ };
+ 
+ &sdhci {
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&emmc_gpio34 &gpclk2_gpio43>;
+ };
+ 
+-- 
+2.34.1
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZIywgQAKCRB4tDGHoIJi
-0iUSAQC6ORafqrG5LIGTBeO7kYUGeuQKemVu5IOojEnUDdNgzQD/XD0jXcAx7S8i
-OAlzQpXZMNiBbh73ztIgkb5Xk2l1RAU=
-=GAvr
------END PGP SIGNATURE-----
-
---BTfG3I7wYmbJRwEO--
