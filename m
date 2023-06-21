@@ -2,42 +2,42 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1D6C001DD
-	for <linux-pwm@archiver.kernel.org>; Wed, 21 Jun 2023 19:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BC2C001DF
+	for <linux-pwm@archiver.kernel.org>; Wed, 21 Jun 2023 19:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbjFUTB0 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 21 Jun 2023 15:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
+        id S231869AbjFUTBa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 21 Jun 2023 15:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231770AbjFUTBW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 21 Jun 2023 15:01:22 -0400
+        with ESMTP id S231799AbjFUTBY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 21 Jun 2023 15:01:24 -0400
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254EC19AE;
-        Wed, 21 Jun 2023 12:01:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3D019AF;
+        Wed, 21 Jun 2023 12:01:15 -0700 (PDT)
 Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35LHtnZ9025332;
-        Wed, 21 Jun 2023 19:01:05 GMT
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35LHtGD4024028;
+        Wed, 21 Jun 2023 19:01:07 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=qcppdkim1;
- bh=JNDvHrJcBwSNYnhKgx/HUiz9vMf3BUzZE8R70/ojfEg=;
- b=fj4Nz2VaBZm4X/jc50WsHCjRw1JMOifSnzpocp7k5ya/j+GUpkcs8mx4IYmDzTGeip88
- oP7GtpDLChBXUOkUr7Zmu8vrrjb9yLqEi7z3oM7bkZGfX6a3v8XcjrCw6dMvQk8Zz7yR
- uRj6sPqELMsL2KDhv8tn4o+OfhTJNGxvUBrGzQ7u3NqdcUMeTHrm0qMaMVjlFQbcrLKc
- RHfaQvOtk776OknnWytBtJ2ldwphqRG3dhk3KV1/hCihqf8tfVENPOcYO+1elPEwqxlX
- 9zec+sZNjNFm1BtVQhZ/uJM6evPlnVpKHGoqkFsg3aYpU3Hv9hT/uKr6WQBA7vEjL2vO QA== 
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3rbvr1hkh9-1
+ bh=akQ9QEQoqbutkjlrjiBqJmRXYROOKQGiFl//a5RKGkU=;
+ b=gPD9qlpbJEHNEEz+taluWwVp4DO+yEQhssxfX5oYRk6aZUow86y4oAkA0hGag6FnH7o8
+ yVJdH/nLn8Ff44rn8PXfh0AI6v4uUfAWIJwulcfDKHPGN3MHRo0sXXjzv4R3RLzWtlNp
+ czRAHSOL9eIqWI/E6pgtAKHP41A1Q5VT5PIq6xR+DQVvCjXKwdO/zrzqwCnnCbpFkll0
+ HjY10IKoSP8rI4iL/iFSh9ceQoJ8JF1uSZKTZowVY4FoxVV6g2OHnDlsKzMXMZcUcc9I
+ C7DiveIqxQC7HDLXLNHobWxA5W15+4Qnjz+BBhndSYZWhov4wPayWG5AVvjX/T/8vBgt qQ== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3rbvr1hkhe-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 21 Jun 2023 19:01:05 +0000
+        Wed, 21 Jun 2023 19:01:07 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 35LJ140S007329
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 35LJ16kr026837
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 21 Jun 2023 19:01:04 GMT
+        Wed, 21 Jun 2023 19:01:06 GMT
 Received: from hu-amelende-lv.qualcomm.com (10.49.16.6) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.42; Wed, 21 Jun 2023 12:01:03 -0700
+ 15.2.986.42; Wed, 21 Jun 2023 12:01:05 -0700
 From:   Anjelique Melendez <quic_amelende@quicinc.com>
 To:     <pavel@ucw.cz>, <lee@kernel.org>, <thierry.reding@gmail.com>,
         <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
@@ -46,10 +46,11 @@ CC:     <konrad.dybcio@linaro.org>, <u.kleine-koenig@pengutronix.de>,
         <linux-leds@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
         <linux-pwm@vger.kernel.org>,
-        Anjelique Melendez <quic_amelende@quicinc.com>
-Subject: [PATCH 4/7] leds: rgb: leds-qcom-lpg: Add support for LUT pattern through single SDAM
-Date:   Wed, 21 Jun 2023 11:59:48 -0700
-Message-ID: <20230621185949.2068-5-quic_amelende@quicinc.com>
+        Anjelique Melendez <quic_amelende@quicinc.com>,
+        Guru Das Srinagesh <quic_gurus@quicinc.com>
+Subject: [PATCH 6/7] leds: rgb: leds-qcom-lpg: Support two-nvmem PPG Scheme
+Date:   Wed, 21 Jun 2023 11:59:50 -0700
+Message-ID: <20230621185949.2068-7-quic_amelende@quicinc.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230621185949.2068-1-quic_amelende@quicinc.com>
 References: <20230621185949.2068-1-quic_amelende@quicinc.com>
@@ -61,8 +62,8 @@ X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: g_MJgLpG-jDzrOBTMgLJJ4-nH1LOop3x
-X-Proofpoint-ORIG-GUID: g_MJgLpG-jDzrOBTMgLJJ4-nH1LOop3x
+X-Proofpoint-GUID: XEpbdcmkysnXx3maq5-r_Vxnn9cpv5GE
+X-Proofpoint-ORIG-GUID: XEpbdcmkysnXx3maq5-r_Vxnn9cpv5GE
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
  definitions=2023-06-21_11,2023-06-16_01,2023-05-22_02
@@ -75,563 +76,264 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-In some PMICs like pmi632, the LUT pattern and LPG configuration can be
-stored in a single SDAM module instead of LUT peripheral. This feature is
-called PPG.
+On PMICs such as PM8350C, the lookup table containing the pattern data
+is stored in a separate nvmem device from the one where the per-channel
+data is stored.
 
-Add support for configuring and using LUT pattern from SDAM.
+Add support for two separate nvmems to handle this case while maintaining
+backward compatibility for those targets that use only a single nvmem
+device.
 
+Signed-off-by: Guru Das Srinagesh <quic_gurus@quicinc.com>
 Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
 ---
- drivers/leds/rgb/leds-qcom-lpg.c | 307 ++++++++++++++++++++++++++++---
- 1 file changed, 282 insertions(+), 25 deletions(-)
+ drivers/leds/rgb/leds-qcom-lpg.c | 112 ++++++++++++++++++++++++-------
+ 1 file changed, 89 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
-index 20469200961f..b60d920c67c4 100644
+index ac814a509781..273cb81260e7 100644
 --- a/drivers/leds/rgb/leds-qcom-lpg.c
 +++ b/drivers/leds/rgb/leds-qcom-lpg.c
-@@ -8,12 +8,14 @@
- #include <linux/bitfield.h>
- #include <linux/led-class-multicolor.h>
- #include <linux/module.h>
-+#include <linux/nvmem-consumer.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/pwm.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
-+#include <linux/soc/qcom/qcom-pbs.h>
+@@ -60,6 +60,7 @@
+ #define RAMP_STEP_DURATION(x)		(((x) * 1000 / DEFAULT_TICK_DURATION_US) & 0xff)
  
- #define LPG_SUBTYPE_REG		0x05
- #define  LPG_SUBTYPE_LPG	0x2
-@@ -49,9 +51,25 @@
+ /* LPG common config settings for PPG */
++#define SDAM_START_BASE			0x40
+ #define SDAM_REG_RAMP_STEP_DURATION		0x47
+ #define SDAM_LUT_COUNT_MAX			64
  
- #define LPG_RESOLUTION_9BIT	BIT(9)
- #define LPG_RESOLUTION_15BIT	BIT(15)
-+#define PPG_MAX_LED_BRIGHTNESS	255
-+
- #define LPG_MAX_M		7
- #define LPG_MAX_PREDIV		6
+@@ -69,6 +70,8 @@
+ #define SDAM_END_INDEX_OFFSET			0x3
+ #define SDAM_START_INDEX_OFFSET		0x4
+ #define SDAM_PBS_SCRATCH_LUT_COUNTER_OFFSET	0x6
++#define SDAM_PAUSE_HI_MULTIPLIER_OFFSET	0x8
++#define SDAM_PAUSE_LO_MULTIPLIER_OFFSET	0x9
  
-+#define DEFAULT_TICK_DURATION_US	7800
-+#define RAMP_STEP_DURATION(x)		(((x) * 1000 / DEFAULT_TICK_DURATION_US) & 0xff)
-+
-+/* LPG common config settings for PPG */
-+#define SDAM_REG_RAMP_STEP_DURATION		0x47
-+#define SDAM_LUT_COUNT_MAX			64
-+
-+/* LPG per channel config settings for PPG */
-+#define SDAM_LUT_EN_OFFSET			0x0
-+#define SDAM_PATTERN_CONFIG_OFFSET		0x1
-+#define SDAM_END_INDEX_OFFSET			0x3
-+#define SDAM_START_INDEX_OFFSET		0x4
-+#define SDAM_PBS_SCRATCH_LUT_COUNTER_OFFSET	0x6
-+
  struct lpg_channel;
  struct lpg_data;
- 
-@@ -65,7 +83,12 @@ struct lpg_data;
-  * @lut_base:	base address of the LUT block (optional)
-  * @lut_size:	number of entries in the LUT block
+@@ -85,7 +88,9 @@ struct lpg_data;
   * @lut_bitmap:	allocation bitmap for LUT entries
-- * @triled_base: base address of the TRILED block (optional)
-+ * @pbs_dev:	PBS client device
-+ * @lpg_chan_nvmem:	LPG nvmem peripheral device
-+ * @pbs_en_bitmap:	bitmap for tracking PBS triggers
-+ * @lut_sdam_base:	offset where LUT pattern begins in nvmem
-+ * @ppg_en:	Flag indicating whether PPG is enabled/used
-+ * @triled_base:	base address of the TRILED block (optional)
-  * @triled_src:	power-source for the TRILED
-  * @triled_has_atc_ctl:	true if there is TRI_LED_ATC_CTL register
-  * @triled_has_src_sel:	true if there is TRI_LED_SRC_SEL register
-@@ -86,6 +109,12 @@ struct lpg {
- 	u32 lut_size;
- 	unsigned long *lut_bitmap;
- 
-+	struct pbs_dev *pbs_dev;
-+	struct nvmem_device *lpg_chan_nvmem;
-+	unsigned long pbs_en_bitmap;
-+	u32 lut_sdam_base;
-+	bool ppg_en;
-+
- 	u32 triled_base;
- 	u32 triled_src;
- 	bool triled_has_atc_ctl;
-@@ -102,6 +131,8 @@ struct lpg {
-  * @triled_mask: mask in TRILED to enable this channel
-  * @lut_mask:	mask in LUT to start pattern generator for this channel
-  * @subtype:	PMIC hardware block subtype
-+ * @sdam_offset:	Channel offset in LPG nvmem
-+ * @lpg_idx:	index of the channel
-  * @in_use:	channel is exposed to LED framework
-  * @color:	color of the LED attached to this channel
-  * @dtest_line:	DTEST line for output, or 0 if disabled
-@@ -113,6 +144,7 @@ struct lpg {
-  * @pre_div_sel: divider selector of the reference clock
-  * @pre_div_exp: exponential divider of the reference clock
-  * @pwm_resolution_sel:	pwm resolution selector
-+ * @pattern_set: true when setting pattern
-  * @ramp_enabled: duty cycle is driven by iterating over lookup table
-  * @ramp_ping_pong: reverse through pattern, rather than wrapping to start
-  * @ramp_oneshot: perform only a single pass over the pattern
-@@ -130,6 +162,8 @@ struct lpg_channel {
- 	unsigned int triled_mask;
- 	unsigned int lut_mask;
- 	unsigned int subtype;
-+	u32 sdam_offset;
-+	u32 lpg_idx;
- 
- 	bool in_use;
- 
-@@ -147,6 +181,7 @@ struct lpg_channel {
- 	unsigned int pre_div_exp;
- 	unsigned int pwm_resolution_sel;
- 
-+	bool pattern_set;
- 	bool ramp_enabled;
- 	bool ramp_ping_pong;
- 	bool ramp_oneshot;
-@@ -181,10 +216,12 @@ struct lpg_led {
-  * struct lpg_channel_data - per channel initialization data
-  * @base:		base address for PWM channel registers
-  * @triled_mask:	bitmask for controlling this channel in TRILED
-+ * @sdam_offset:	Channel offset in LPG nvmem
-  */
- struct lpg_channel_data {
- 	unsigned int base;
- 	u8 triled_mask;
-+	unsigned int sdam_offset;
- };
- 
- /**
-@@ -192,21 +229,87 @@ struct lpg_channel_data {
-  * @lut_base:		base address of LUT block
-  * @lut_size:		number of entries in LUT
-  * @triled_base:	base address of TRILED
-+ * @lut_sdam_base:	base address where LUT pattern begins in nvmem device
-  * @triled_has_atc_ctl:	true if there is TRI_LED_ATC_CTL register
-  * @triled_has_src_sel:	true if there is TRI_LED_SRC_SEL register
-  * @num_channels:	number of channels in LPG
+  * @pbs_dev:	PBS client device
+  * @lpg_chan_nvmem:	LPG nvmem peripheral device
++ * @lut_nvmem:	LUT nvmem peripheral device
+  * @pbs_en_bitmap:	bitmap for tracking PBS triggers
 + * @nvmem_count:	number of nvmems used for LUT and PPG config
-  * @channels:		list of channel initialization data
-  */
- struct lpg_data {
- 	unsigned int lut_base;
- 	unsigned int lut_size;
- 	unsigned int triled_base;
-+	unsigned int lut_sdam_base;
- 	bool triled_has_atc_ctl;
- 	bool triled_has_src_sel;
- 	int num_channels;
-+	int nvmem_count;
- 	const struct lpg_channel_data *channels;
- };
+  * @lut_sdam_base:	offset where LUT pattern begins in nvmem
+  * @ppg_en:	Flag indicating whether PPG is enabled/used
+  * @triled_base:	base address of the TRILED block (optional)
+@@ -111,7 +116,9 @@ struct lpg {
  
-+static int lpg_sdam_write(struct lpg *lpg, u16 addr, u8 val)
-+{
-+	int rc;
-+
-+	rc = nvmem_device_write(lpg->lpg_chan_nvmem, addr, 1, &val);
-+	if (rc < 0)
-+		dev_err(lpg->dev, "writing %u to SDAM addr %#x failed, rc=%d\n",
-+			val, addr, rc);
-+
-+	return rc > 0 ? 0 : rc;
-+}
-+
-+#define SDAM_REG_PBS_SEQ_EN		0x42
-+#define PBS_SW_TRIG_BIT		BIT(0)
-+
-+static int lpg_clear_pbs_trigger(struct lpg_channel *chan)
-+{
-+	int rc;
-+
-+	clear_bit(chan->lpg_idx, &chan->lpg->pbs_en_bitmap);
-+	if (!chan->lpg->pbs_en_bitmap) {
-+		rc = lpg_sdam_write(chan->lpg, SDAM_REG_PBS_SEQ_EN, 0);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	return 0;
-+}
-+
-+static int lpg_set_pbs_trigger(struct lpg_channel *chan)
-+{
-+	int rc;
-+
-+	if (!chan->lpg->pbs_en_bitmap) {
-+		rc = lpg_sdam_write(chan->lpg, SDAM_REG_PBS_SEQ_EN, PBS_SW_TRIG_BIT);
-+		if (rc < 0)
-+			return rc;
-+
-+		rc = qcom_pbs_trigger_event(chan->lpg->pbs_dev, PBS_SW_TRIG_BIT);
-+		if (rc < 0)
-+			return rc;
-+	}
-+	set_bit(chan->lpg_idx, &chan->lpg->pbs_en_bitmap);
-+
-+	return 0;
-+}
-+
-+static void lpg_sdam_configure_triggers(struct lpg_channel *chan)
-+{
-+	if (!chan->lpg->ppg_en)
-+		return;
-+
-+	if (chan->enabled && chan->pattern_set) {
-+		lpg_sdam_write(chan->lpg, SDAM_LUT_EN_OFFSET + chan->sdam_offset, 1);
-+		lpg_set_pbs_trigger(chan);
-+		chan->pattern_set = false;
-+	} else {
-+		lpg_sdam_write(chan->lpg, SDAM_LUT_EN_OFFSET + chan->sdam_offset, 0);
-+		lpg_clear_pbs_trigger(chan);
-+	}
-+}
-+
- static int triled_set(struct lpg *lpg, unsigned int mask, unsigned int enable)
- {
- 	/* Skip if we don't have a triled block */
-@@ -217,6 +320,41 @@ static int triled_set(struct lpg *lpg, unsigned int mask, unsigned int enable)
- 				  mask, enable);
+ 	struct pbs_dev *pbs_dev;
+ 	struct nvmem_device *lpg_chan_nvmem;
++	struct nvmem_device *lut_nvmem;
+ 	unsigned long pbs_en_bitmap;
++	unsigned int nvmem_count;
+ 	u32 lut_sdam_base;
+ 	bool ppg_en;
+ 
+@@ -261,6 +268,8 @@ static int lpg_sdam_write(struct lpg *lpg, u16 addr, u8 val)
  }
  
-+static int lpg_lut_store_sdam(struct lpg *lpg, struct led_pattern *pattern,
-+			 size_t len, unsigned int *lo_idx, unsigned int *hi_idx)
-+{
-+	u8 brightness;
-+	u16 addr;
-+	unsigned int idx;
-+	int i, rc;
+ #define SDAM_REG_PBS_SEQ_EN		0x42
++#define SDAM_PBS_TRIG_SET		0xe5
++#define SDAM_PBS_TRIG_CLR		0xe6
+ #define PBS_SW_TRIG_BIT		BIT(0)
+ 
+ static int lpg_clear_pbs_trigger(struct lpg_channel *chan)
+@@ -272,6 +281,12 @@ static int lpg_clear_pbs_trigger(struct lpg_channel *chan)
+ 		rc = lpg_sdam_write(chan->lpg, SDAM_REG_PBS_SEQ_EN, 0);
+ 		if (rc < 0)
+ 			return rc;
 +
-+	if (len > SDAM_LUT_COUNT_MAX) {
-+		dev_err(lpg->dev, "Pattern length (%zu) exceeds maximum pattern length (%d)\n",
-+			len, SDAM_LUT_COUNT_MAX);
-+		return -EINVAL;
-+	}
++		if (chan->lpg->nvmem_count == 2) {
++			rc = lpg_sdam_write(chan->lpg, SDAM_PBS_TRIG_CLR, PBS_SW_TRIG_BIT);
++			if (rc < 0)
++				return rc;
++		}
+ 	}
+ 
+ 	return 0;
+@@ -286,9 +301,15 @@ static int lpg_set_pbs_trigger(struct lpg_channel *chan)
+ 		if (rc < 0)
+ 			return rc;
+ 
+-		rc = qcom_pbs_trigger_event(chan->lpg->pbs_dev, PBS_SW_TRIG_BIT);
+-		if (rc < 0)
+-			return rc;
++		if (chan->lpg->nvmem_count == 1) {
++			rc = qcom_pbs_trigger_event(chan->lpg->pbs_dev, PBS_SW_TRIG_BIT);
++			if (rc < 0)
++				return rc;
++		} else {
++			rc = lpg_sdam_write(chan->lpg, SDAM_PBS_TRIG_SET, PBS_SW_TRIG_BIT);
++			if (rc < 0)
++				return rc;
++		}
+ 	}
+ 	set_bit(chan->lpg_idx, &chan->lpg->pbs_en_bitmap);
+ 
+@@ -342,7 +363,12 @@ static int lpg_lut_store_sdam(struct lpg *lpg, struct led_pattern *pattern,
+ 	for (i = 0; i < len; i++) {
+ 		brightness = pattern[i].brightness;
+ 		addr = lpg->lut_sdam_base + i + idx;
+-		rc = lpg_sdam_write(lpg, addr, brightness);
 +
-+	idx = bitmap_find_next_zero_area(lpg->lut_bitmap, lpg->lut_size,
-+					 0, len, 0);
-+	if (idx >= lpg->lut_size)
-+		return -ENOSPC;
++		if (lpg->nvmem_count == 1)
++			rc = lpg_sdam_write(lpg, addr, brightness);
++		else
++			rc = nvmem_device_write(lpg->lut_nvmem, addr, 1, &brightness);
 +
-+	for (i = 0; i < len; i++) {
-+		brightness = pattern[i].brightness;
-+		addr = lpg->lut_sdam_base + i + idx;
-+		rc = lpg_sdam_write(lpg, addr, brightness);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	bitmap_set(lpg->lut_bitmap, idx, len);
-+
-+	*lo_idx = idx;
-+	*hi_idx = idx + len - 1;
-+
-+	return 0;
-+}
-+
- static int lpg_lut_store(struct lpg *lpg, struct led_pattern *pattern,
- 			 size_t len, unsigned int *lo_idx, unsigned int *hi_idx)
- {
-@@ -463,6 +601,26 @@ static void lpg_apply_pwm_value(struct lpg_channel *chan)
+ 		if (rc < 0)
+ 			return rc;
+ 	}
+@@ -601,24 +627,48 @@ static void lpg_apply_pwm_value(struct lpg_channel *chan)
  #define LPG_PATTERN_CONFIG_PAUSE_HI	BIT(1)
  #define LPG_PATTERN_CONFIG_PAUSE_LO	BIT(0)
  
-+static void lpg_sdam_apply_lut_control(struct lpg_channel *chan)
++static u8 lpg_get_sdam_lut_idx(struct lpg_channel *chan, u8 idx)
 +{
-+	u8 val, conf = 0;
-+	struct lpg *lpg = chan->lpg;
-+
-+	if (!chan->ramp_oneshot)
-+		conf |= LPG_PATTERN_CONFIG_REPEAT;
-+
-+	lpg_sdam_write(lpg, SDAM_PBS_SCRATCH_LUT_COUNTER_OFFSET + chan->sdam_offset, 0);
-+	lpg_sdam_write(lpg, SDAM_PATTERN_CONFIG_OFFSET + chan->sdam_offset, conf);
-+
-+	lpg_sdam_write(lpg, SDAM_END_INDEX_OFFSET + chan->sdam_offset, chan->pattern_hi_idx);
-+	lpg_sdam_write(lpg, SDAM_START_INDEX_OFFSET + chan->sdam_offset, chan->pattern_lo_idx);
-+
-+	val = RAMP_STEP_DURATION(chan->ramp_tick_ms);
-+	if (val > 0)
-+		val--;
-+	lpg_sdam_write(lpg, SDAM_REG_RAMP_STEP_DURATION, val);
++	if (chan->lpg->nvmem_count == 2)
++		return chan->lpg->lut_sdam_base - SDAM_START_BASE + idx;
++	return idx;
 +}
 +
- static void lpg_apply_lut_control(struct lpg_channel *chan)
+ static void lpg_sdam_apply_lut_control(struct lpg_channel *chan)
  {
+ 	u8 val, conf = 0;
++	unsigned int hi_pause, lo_pause;
  	struct lpg *lpg = chan->lpg;
-@@ -476,6 +634,9 @@ static void lpg_apply_lut_control(struct lpg_channel *chan)
- 	if (!chan->ramp_enabled || chan->pattern_lo_idx == chan->pattern_hi_idx)
- 		return;
  
-+	if (lpg->ppg_en)
-+		return lpg_sdam_apply_lut_control(chan);
++	hi_pause = DIV_ROUND_UP(chan->ramp_hi_pause_ms, chan->ramp_tick_ms);
++	lo_pause = DIV_ROUND_UP(chan->ramp_lo_pause_ms, chan->ramp_tick_ms);
 +
- 	hi_pause = DIV_ROUND_UP(chan->ramp_hi_pause_ms, step);
- 	lo_pause = DIV_ROUND_UP(chan->ramp_lo_pause_ms, step);
+ 	if (!chan->ramp_oneshot)
+ 		conf |= LPG_PATTERN_CONFIG_REPEAT;
++	if (chan->ramp_hi_pause_ms && lpg->nvmem_count != 1)
++		conf |= LPG_PATTERN_CONFIG_PAUSE_HI;
++	if (chan->ramp_lo_pause_ms && lpg->nvmem_count != 1)
++		conf |= LPG_PATTERN_CONFIG_PAUSE_LO;
  
-@@ -632,7 +793,7 @@ static void lpg_brightness_set(struct lpg_led *led, struct led_classdev *cdev,
- 		} else {
- 			lpg_calc_freq(chan, NSEC_PER_MSEC);
+ 	lpg_sdam_write(lpg, SDAM_PBS_SCRATCH_LUT_COUNTER_OFFSET + chan->sdam_offset, 0);
+ 	lpg_sdam_write(lpg, SDAM_PATTERN_CONFIG_OFFSET + chan->sdam_offset, conf);
  
--			duty = div_u64(brightness * chan->period, cdev->max_brightness);
-+			duty = div_u64(brightness * chan->period, LPG_RESOLUTION_9BIT);
- 			lpg_calc_duty(chan, duty);
- 			chan->enabled = true;
- 			chan->ramp_enabled = false;
-@@ -643,6 +804,7 @@ static void lpg_brightness_set(struct lpg_led *led, struct led_classdev *cdev,
- 		triled_mask |= chan->triled_mask;
+-	lpg_sdam_write(lpg, SDAM_END_INDEX_OFFSET + chan->sdam_offset, chan->pattern_hi_idx);
+-	lpg_sdam_write(lpg, SDAM_START_INDEX_OFFSET + chan->sdam_offset, chan->pattern_lo_idx);
++	val = lpg_get_sdam_lut_idx(chan, chan->pattern_hi_idx);
++	lpg_sdam_write(lpg, SDAM_END_INDEX_OFFSET + chan->sdam_offset, val);
++
++	val = lpg_get_sdam_lut_idx(chan, chan->pattern_lo_idx);
++	lpg_sdam_write(lpg, SDAM_START_INDEX_OFFSET + chan->sdam_offset, val);
  
- 		lpg_apply(chan);
-+		lpg_sdam_configure_triggers(chan);
- 	}
+ 	val = RAMP_STEP_DURATION(chan->ramp_tick_ms);
+ 	if (val > 0)
+ 		val--;
+ 	lpg_sdam_write(lpg, SDAM_REG_RAMP_STEP_DURATION, val);
++
++	if (lpg->nvmem_count != 1) {
++		lpg_sdam_write(lpg, SDAM_PAUSE_HI_MULTIPLIER_OFFSET + chan->sdam_offset, hi_pause);
++		lpg_sdam_write(lpg, SDAM_PAUSE_LO_MULTIPLIER_OFFSET + chan->sdam_offset, lo_pause);
++	}
++
+ }
  
- 	/* Toggle triled lines */
-@@ -775,7 +937,7 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
- 	unsigned int lo_idx;
- 	unsigned int hi_idx;
- 	unsigned int i;
--	bool ping_pong = true;
-+	bool ping_pong = false;
- 	int ret = -EINVAL;
- 
- 	/* Hardware only support oneshot or indefinite loops */
-@@ -837,16 +999,22 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
- 	 * If the specified pattern is a palindrome the ping pong mode is
+ static void lpg_apply_lut_control(struct lpg_channel *chan)
+@@ -1000,8 +1050,8 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
  	 * enabled. In this scenario the delta_t of the middle entry (i.e. the
  	 * last in the programmed pattern) determines the "high pause".
-+	 *
-+	 * NVMEM devices supporting LUT do not support "low pause", "high pause"
-+	 * or "ping pong"
+ 	 *
+-	 * NVMEM devices supporting LUT do not support "low pause", "high pause"
+-	 * or "ping pong"
++	 * All NVMEM devices supporting LUT do not support "ping pong"
++	 * Single NVMEM devices supporting LUT do not support "low pause" and "high pause"
  	 */
  
  	/* Detect palindromes and use "ping pong" to reduce LUT usage */
--	for (i = 0; i < len / 2; i++) {
--		brightness_a = pattern[i].brightness;
--		brightness_b = pattern[len - i - 1].brightness;
--
--		if (brightness_a != brightness_b) {
--			ping_pong = false;
--			break;
-+	if (lpg->lut_base) {
-+		ping_pong = true;
-+		for (i = 0; i < len / 2; i++) {
-+			brightness_a = pattern[i].brightness;
-+			brightness_b = pattern[len - i - 1].brightness;
-+
-+			if (brightness_a != brightness_b) {
-+				ping_pong = false;
-+				break;
-+			}
- 		}
- 	}
- 
-@@ -860,14 +1028,21 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
+@@ -1028,7 +1078,7 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
  	 * Validate that all delta_t in the pattern are the same, with the
  	 * exception of the middle element in case of ping_pong.
  	 */
--	delta_t = pattern[1].delta_t;
--	for (i = 2; i < len; i++) {
-+	if (lpg->ppg_en) {
-+		i = 1;
-+		delta_t = pattern[0].delta_t;
-+	} else {
-+		i = 2;
-+		delta_t = pattern[1].delta_t;
-+	}
-+
-+	for (; i < len; i++) {
- 		if (pattern[i].delta_t != delta_t) {
- 			/*
+-	if (lpg->ppg_en) {
++	if (lpg->nvmem_count == 1) {
+ 		i = 1;
+ 		delta_t = pattern[0].delta_t;
+ 	} else {
+@@ -1042,7 +1092,7 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
  			 * Allow last entry in the full or shortened pattern to
  			 * specify hi pause. Reject other variations.
  			 */
--			if (i != actual_len - 1)
-+			if (i != actual_len - 1 || lpg->ppg_en)
+-			if (i != actual_len - 1 || lpg->ppg_en)
++			if (i != actual_len - 1 || lpg->nvmem_count == 1)
  				goto out_free_pattern;
  		}
  	}
-@@ -876,12 +1051,19 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
+@@ -1051,8 +1101,8 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
  	if (delta_t >= BIT(9))
  		goto out_free_pattern;
  
--	/* Find "low pause" and "high pause" in the pattern */
--	lo_pause = pattern[0].delta_t;
--	hi_pause = pattern[actual_len - 1].delta_t;
-+	/* Find "low pause" and "high pause" in the pattern if not an NVMEM device*/
-+	if (!lpg->ppg_en) {
-+		lo_pause = pattern[0].delta_t;
-+		hi_pause = pattern[actual_len - 1].delta_t;
-+	}
- 
- 	mutex_lock(&lpg->lock);
--	ret = lpg_lut_store(lpg, pattern, actual_len, &lo_idx, &hi_idx);
-+
-+	if (lpg->ppg_en)
-+		ret = lpg_lut_store_sdam(lpg, pattern, actual_len, &lo_idx, &hi_idx);
-+	else
-+		ret = lpg_lut_store(lpg, pattern, actual_len, &lo_idx, &hi_idx);
-+
- 	if (ret < 0)
- 		goto out_unlock;
- 
-@@ -897,6 +1079,8 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
- 
- 		chan->pattern_lo_idx = lo_idx;
- 		chan->pattern_hi_idx = hi_idx;
-+
-+		chan->pattern_set = lpg->ppg_en;
+-	/* Find "low pause" and "high pause" in the pattern if not an NVMEM device*/
+-	if (!lpg->ppg_en) {
++	/* Find "low pause" and "high pause" in the pattern if not a single NVMEM device*/
++	if (lpg->nvmem_count != 1) {
+ 		lo_pause = pattern[0].delta_t;
+ 		hi_pause = pattern[actual_len - 1].delta_t;
  	}
- 
- out_unlock:
-@@ -1190,8 +1374,8 @@ static int lpg_add_led(struct lpg *lpg, struct device_node *np)
- 		cdev->brightness_set_blocking = lpg_brightness_mc_set;
- 		cdev->blink_set = lpg_blink_mc_set;
- 
--		/* Register pattern accessors only if we have a LUT block */
--		if (lpg->lut_base) {
-+		/* Register pattern accessors if we have a LUT block or when using PPG */
-+		if (lpg->lut_base || lpg->ppg_en) {
- 			cdev->pattern_set = lpg_pattern_mc_set;
- 			cdev->pattern_clear = lpg_pattern_mc_clear;
- 		}
-@@ -1204,15 +1388,19 @@ static int lpg_add_led(struct lpg *lpg, struct device_node *np)
- 		cdev->brightness_set_blocking = lpg_brightness_single_set;
- 		cdev->blink_set = lpg_blink_single_set;
- 
--		/* Register pattern accessors only if we have a LUT block */
--		if (lpg->lut_base) {
-+		/* Register pattern accessors if we have a LUT block or when using PPG */
-+		if (lpg->lut_base || lpg->ppg_en) {
- 			cdev->pattern_set = lpg_pattern_single_set;
- 			cdev->pattern_clear = lpg_pattern_single_clear;
- 		}
- 	}
- 
- 	cdev->default_trigger = of_get_property(np, "linux,default-trigger", NULL);
--	cdev->max_brightness = LPG_RESOLUTION_9BIT - 1;
-+
-+	if (lpg->ppg_en)
-+		cdev->max_brightness = PPG_MAX_LED_BRIGHTNESS;
-+	else
-+		cdev->max_brightness = LPG_RESOLUTION_9BIT - 1;
- 
- 	if (!of_property_read_string(np, "default-state", &state) &&
- 	    !strcmp(state, "on"))
-@@ -1253,6 +1441,8 @@ static int lpg_init_channels(struct lpg *lpg)
- 		chan->base = data->channels[i].base;
- 		chan->triled_mask = data->channels[i].triled_mask;
- 		chan->lut_mask = BIT(i);
-+		chan->sdam_offset = data->channels[i].sdam_offset;
-+		chan->lpg_idx = i;
- 
- 		regmap_read(lpg->map, chan->base + LPG_SUBTYPE_REG, &chan->subtype);
- 	}
-@@ -1299,10 +1489,13 @@ static int lpg_init_lut(struct lpg *lpg)
+@@ -1509,29 +1559,45 @@ static int lpg_parse_sdam(struct lpg *lpg)
  {
- 	const struct lpg_data *data = lpg->data;
+ 	int rc = 0;
  
--	if (!data->lut_base)
-+	if (data->lut_base)
-+		lpg->lut_base = data->lut_base;
-+	else if (lpg->ppg_en)
-+		lpg->lut_sdam_base = data->lut_sdam_base;
-+	else
+-	if (lpg->data->nvmem_count == 0)
++	lpg->nvmem_count = lpg->data->nvmem_count;
++	if (lpg->nvmem_count == 0)
  		return 0;
  
--	lpg->lut_base = data->lut_base;
- 	lpg->lut_size = data->lut_size;
+-	/* get the nvmem device for LPG/LUT config */
++	if (lpg->nvmem_count > 2)
++		return -EINVAL;
++
++	/* get the 1st nvmem device for LPG/LUT config */
+ 	lpg->lpg_chan_nvmem = devm_nvmem_device_get(lpg->dev, "lpg_chan_sdam");
+ 	if (IS_ERR(lpg->lpg_chan_nvmem)) {
+ 		rc = PTR_ERR(lpg->lpg_chan_nvmem);
+-		if (rc != -EPROBE_DEFER)
+-			dev_err(lpg->dev, "Failed to get nvmem device, rc=%d\n", rc);
+-		return rc;
++		goto err;
+ 	}
  
- 	lpg->lut_bitmap = devm_bitmap_zalloc(lpg->dev, lpg->lut_size, GFP_KERNEL);
-@@ -1312,6 +1505,60 @@ static int lpg_init_lut(struct lpg *lpg)
- 	return 0;
- }
- 
-+static int lpg_parse_sdam(struct lpg *lpg)
-+{
-+	int rc = 0;
-+
-+	if (lpg->data->nvmem_count == 0)
-+		return 0;
-+
-+	/* get the nvmem device for LPG/LUT config */
-+	lpg->lpg_chan_nvmem = devm_nvmem_device_get(lpg->dev, "lpg_chan_sdam");
-+	if (IS_ERR(lpg->lpg_chan_nvmem)) {
-+		rc = PTR_ERR(lpg->lpg_chan_nvmem);
-+		if (rc != -EPROBE_DEFER)
-+			dev_err(lpg->dev, "Failed to get nvmem device, rc=%d\n", rc);
-+		return rc;
-+	}
-+
-+	lpg->pbs_dev = get_pbs_client_device(lpg->dev);
-+	if (IS_ERR(lpg->pbs_dev)) {
-+		rc = PTR_ERR(lpg->pbs_dev);
-+		if (rc != -EPROBE_DEFER)
-+			dev_err(lpg->dev, "Failed to get PBS client device, rc=%d\n", rc);
-+		return rc;
-+	}
-+
-+	lpg->ppg_en = true;
-+
-+	return rc;
-+}
-+
-+static int lpg_init_sdam(struct lpg *lpg)
-+{
-+	struct lpg_channel *chan;
-+	int i, rc;
-+
-+	if (!lpg->ppg_en)
-+		return 0;
-+
-+	for (i = 0; i < lpg->num_channels; i++) {
-+		chan = &lpg->channels[i];
-+		if (chan->sdam_offset) {
-+			rc = lpg_sdam_write(lpg, SDAM_LUT_EN_OFFSET + chan->sdam_offset, 0);
-+			if (rc < 0)
-+				break;
-+
-+			rc = lpg_sdam_write(lpg,
-+					SDAM_PBS_SCRATCH_LUT_COUNTER_OFFSET + chan->sdam_offset, 0);
-+			if (rc < 0)
-+				break;
+-	lpg->pbs_dev = get_pbs_client_device(lpg->dev);
+-	if (IS_ERR(lpg->pbs_dev)) {
+-		rc = PTR_ERR(lpg->pbs_dev);
+-		if (rc != -EPROBE_DEFER)
+-			dev_err(lpg->dev, "Failed to get PBS client device, rc=%d\n", rc);
+-		return rc;
++	if (lpg->nvmem_count == 1) {
++		/* get PBS device node if single NVMEM device */
++		lpg->pbs_dev = get_pbs_client_device(lpg->dev);
++		if (IS_ERR(lpg->pbs_dev)) {
++			rc = PTR_ERR(lpg->pbs_dev);
++			if (rc != -EPROBE_DEFER)
++				dev_err(lpg->dev, "Failed to get PBS client device, rc=%d\n", rc);
++			return rc;
 +		}
-+	}
-+
++	} else if (lpg->nvmem_count == 2) {
++		/* get the 2nd nvmem device for LUT pattern */
++		lpg->lut_nvmem = devm_nvmem_device_get(lpg->dev, "lut_sdam");
++		if (IS_ERR(lpg->lut_nvmem)) {
++			rc = PTR_ERR(lpg->lut_nvmem);
++			goto err;
++		}
+ 	}
+ 
+ 	lpg->ppg_en = true;
+ 
+ 	return rc;
++err:
++	if (rc != -EPROBE_DEFER)
++		dev_err(lpg->dev, "Failed to get nvmem device, rc=%d\n", rc);
 +	return rc;
-+}
-+
- static int lpg_probe(struct platform_device *pdev)
- {
- 	struct device_node *np;
-@@ -1348,6 +1595,14 @@ static int lpg_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		return ret;
- 
-+	ret = lpg_parse_sdam(lpg);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = lpg_init_sdam(lpg);
-+	if (ret < 0)
-+		return ret;
-+
- 	ret = lpg_init_lut(lpg);
- 	if (ret < 0)
- 		return ret;
-@@ -1363,7 +1618,9 @@ static int lpg_probe(struct platform_device *pdev)
- 	for (i = 0; i < lpg->num_channels; i++)
- 		lpg_apply_dtest(&lpg->channels[i]);
- 
--	return lpg_add_pwm(lpg);
-+	ret = lpg_add_pwm(lpg);
-+
-+	return ret;
  }
  
- static int lpg_remove(struct platform_device *pdev)
+ static int lpg_init_sdam(struct lpg *lpg)
 -- 
 2.40.0
 
