@@ -2,43 +2,43 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC58EB64D9
-	for <linux-pwm@archiver.kernel.org>; Thu, 29 Jun 2023 09:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F33C0015E
+	for <linux-pwm@archiver.kernel.org>; Thu, 29 Jun 2023 09:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbjF2JtA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 29 Jun 2023 05:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44416 "EHLO
+        id S231821AbjF2Js7 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 29 Jun 2023 05:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbjF2Js4 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 29 Jun 2023 05:48:56 -0400
+        with ESMTP id S231918AbjF2Jsz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 29 Jun 2023 05:48:55 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFDF2D4A
-        for <linux-pwm@vger.kernel.org>; Thu, 29 Jun 2023 02:48:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D78297B
+        for <linux-pwm@vger.kernel.org>; Thu, 29 Jun 2023 02:48:52 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qEoGh-0006VA-Ti; Thu, 29 Jun 2023 11:48:51 +0200
+        id 1qEoGh-0006US-0Q; Thu, 29 Jun 2023 11:48:51 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qEoGh-00AroS-84; Thu, 29 Jun 2023 11:48:51 +0200
+        id 1qEoGg-00AroB-9Y; Thu, 29 Jun 2023 11:48:50 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qEoGg-000kx6-A6; Thu, 29 Jun 2023 11:48:50 +0200
+        id 1qEoGf-000kwq-GX; Thu, 29 Jun 2023 11:48:49 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 8/8] pwm: Drop pwm_[sg]et_chip_data()
-Date:   Thu, 29 Jun 2023 11:48:39 +0200
-Message-Id: <20230629094839.757092-9-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 4/8] pwm: lp3943: Drop usage of pwm_[gs]et_chip_data()
+Date:   Thu, 29 Jun 2023 11:48:35 +0200
+Message-Id: <20230629094839.757092-5-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230629094839.757092-1-u.kleine-koenig@pengutronix.de>
 References: <20230629094839.757092-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3229; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=jCj64Dr962MGXIB2t6e7AE+GZySDaxkJIOR2UbZO9wk=; b=owGbwMvMwMXY3/A7olbonx/jabUkhpS5wbnq+wV74gNjzPmCKmbfS/57MCpHs7SwcG7eG59Vc 8Nm7nzbyWjMwsDIxSArpshi37gm06pKLrJz7b/LMINYmUCmMHBxCsBE9n1l/5+ifpnZMuewKueZ pb1VH1e+iZ/l69NVeKPb0S0uf/atpTqVl+rDzv1feEO2OPtk148nHROqTOp/Fx2VOGxiqv/E8Pa kAxJv9P2Lp1YcE7IrLbI2598fl563t32+r4r2tbv27QejHWcvV+Et5OAvVtm8R+BzwPSrJd+Lfh gvjFnYkv3ce4av/mbj2JYtSspmf86ypZjkSFZKl0oo7Rb1uiPVeSu6q9vhqE7nGeG1FkL3T78Ki HK5FbqidHNBj40e7zuG9Z0/BY3kb02oj9vGoP577bYPT0pYXa8m346/15S5do1VlqJ9I4vfH+2L 2/0Ny3PCZt3X+bBhUnrF+zXfeqRmnxDTv8qh5yVz5c0/AA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3606; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Chtu/7SKo1s7BYNWtUexjtR/JbqbTxDcAOZQOjuIFp0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBknVNoyrR5IWsEDqkf5ytUtH5NChG2MScbZGoTx cIjx03dHWCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZJ1TaAAKCRCPgPtYfRL+ TrvNCACprQYLNBHgZ7r81OjPUBZPddFjfIEi2AHhSwAy+LAZV4WK4t1fobUcx9WhppJmezgS5Tl 3N3c5ulaYATwRtZ6fTvmb1CgoYmbW2dk++TjZk2qhNvF2bB2gakyIGCt0v6xhIfAuPJwyAtTIQC uKYtvi53FlyU4tBKhGytsU2xtfeOLbhzsSD+IV5OKODq1jG+lq9hLiJZGW8EraZIP7tt6eRMPjN u70NQ2s126tnOF3ekIR1buR2sD6BJPiDBjP/aYBjFLPUCBLt2EYDN1hKqmtzhSC14qzcFq4wwqX fYGL8rvKJ9fG9Y23f6A54Z+J/ofSqAQC6DbCFUZNK/+rTJeW
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -49,114 +49,101 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The semantic of chip_data is a bit surprising as it's cleared when
-pwm_put() is called. Also there is a big overlap with the standard driver
-data.
-
-All drivers were adapted to not make use of chip_data any more, so it can
-go away.
+Instead of distributing the driver's bookkeeping over 3 (i.e.
+LP3943_NUM_PWMS + 1) separately allocated memory chunks, put all
+together in struct lp3943_pwm. This reduces the number of memory
+allocations and so fragmentation and maybe even the number of cache
+misses. Also &lp3943_pwm->pwm_map[pwm->hwpwm] is cheaper to evaluate
+than pwm_get_chip_data(pwm) as the former is just an addition in machine
+code while the latter involves a function call.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/core.c  | 31 -------------------------------
- include/linux/pwm.h | 14 --------------
- 2 files changed, 45 deletions(-)
+ drivers/pwm/pwm-lp3943.c | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 3dacceaef4a9..2a786f3b6780 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -208,36 +208,6 @@ static void of_pwmchip_remove(struct pwm_chip *chip)
- 		of_node_put(chip->dev->of_node);
+diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
+index 35675e4058c6..00e7f63a73fe 100644
+--- a/drivers/pwm/pwm-lp3943.c
++++ b/drivers/pwm/pwm-lp3943.c
+@@ -22,6 +22,7 @@ struct lp3943_pwm {
+ 	struct pwm_chip chip;
+ 	struct lp3943 *lp3943;
+ 	struct lp3943_platform_data *pdata;
++	struct lp3943_pwm_map pwm_map[LP3943_NUM_PWMS];
+ };
+ 
+ static inline struct lp3943_pwm *to_lp3943_pwm(struct pwm_chip *_chip)
+@@ -34,13 +35,9 @@ lp3943_pwm_request_map(struct lp3943_pwm *lp3943_pwm, int hwpwm)
+ {
+ 	struct lp3943_platform_data *pdata = lp3943_pwm->pdata;
+ 	struct lp3943 *lp3943 = lp3943_pwm->lp3943;
+-	struct lp3943_pwm_map *pwm_map;
++	struct lp3943_pwm_map *pwm_map = &lp3943_pwm->pwm_map[hwpwm];
+ 	int i, offset;
+ 
+-	pwm_map = kzalloc(sizeof(*pwm_map), GFP_KERNEL);
+-	if (!pwm_map)
+-		return ERR_PTR(-ENOMEM);
+-
+ 	pwm_map->output = pdata->pwms[hwpwm]->output;
+ 	pwm_map->num_outputs = pdata->pwms[hwpwm]->num_outputs;
+ 
+@@ -48,10 +45,8 @@ lp3943_pwm_request_map(struct lp3943_pwm *lp3943_pwm, int hwpwm)
+ 		offset = pwm_map->output[i];
+ 
+ 		/* Return an error if the pin is already assigned */
+-		if (test_and_set_bit(offset, &lp3943->pin_used)) {
+-			kfree(pwm_map);
++		if (test_and_set_bit(offset, &lp3943->pin_used))
+ 			return ERR_PTR(-EBUSY);
+-		}
+ 	}
+ 
+ 	return pwm_map;
+@@ -66,7 +61,7 @@ static int lp3943_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	if (IS_ERR(pwm_map))
+ 		return PTR_ERR(pwm_map);
+ 
+-	return pwm_set_chip_data(pwm, pwm_map);
++	return 0;
  }
  
--/**
-- * pwm_set_chip_data() - set private chip data for a PWM
-- * @pwm: PWM device
-- * @data: pointer to chip-specific data
-- *
-- * Returns: 0 on success or a negative error code on failure.
-- */
--int pwm_set_chip_data(struct pwm_device *pwm, void *data)
--{
--	if (!pwm)
--		return -EINVAL;
+ static void lp3943_pwm_free_map(struct lp3943_pwm *lp3943_pwm,
+@@ -79,14 +74,12 @@ static void lp3943_pwm_free_map(struct lp3943_pwm *lp3943_pwm,
+ 		offset = pwm_map->output[i];
+ 		clear_bit(offset, &lp3943->pin_used);
+ 	}
 -
--	pwm->chip_data = data;
--
--	return 0;
--}
--EXPORT_SYMBOL_GPL(pwm_set_chip_data);
--
--/**
-- * pwm_get_chip_data() - get private chip data for a PWM
-- * @pwm: PWM device
-- *
-- * Returns: A pointer to the chip-private data for the PWM device.
-- */
--void *pwm_get_chip_data(struct pwm_device *pwm)
--{
--	return pwm ? pwm->chip_data : NULL;
--}
--EXPORT_SYMBOL_GPL(pwm_get_chip_data);
--
- static bool pwm_ops_check(const struct pwm_chip *chip)
- {
- 	const struct pwm_ops *ops = chip->ops;
-@@ -979,7 +949,6 @@ void pwm_put(struct pwm_device *pwm)
- 	if (pwm->chip->ops->free)
- 		pwm->chip->ops->free(pwm->chip, pwm);
- 
--	pwm_set_chip_data(pwm, NULL);
- 	pwm->label = NULL;
- 
- 	module_put(pwm->chip->ops->owner);
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 04ae1d9073a7..e0cc42aafb1c 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -71,7 +71,6 @@ struct pwm_state {
-  * @hwpwm: per-chip relative index of the PWM device
-  * @pwm: global index of the PWM device
-  * @chip: PWM chip providing this PWM device
-- * @chip_data: chip-private data associated with the PWM device
-  * @args: PWM arguments
-  * @state: last applied state
-  * @last: last implemented state (for PWM_DEBUG)
-@@ -82,7 +81,6 @@ struct pwm_device {
- 	unsigned int hwpwm;
- 	unsigned int pwm;
- 	struct pwm_chip *chip;
--	void *chip_data;
- 
- 	struct pwm_args args;
- 	struct pwm_state state;
-@@ -383,8 +381,6 @@ static inline void pwm_disable(struct pwm_device *pwm)
- /* PWM provider APIs */
- int pwm_capture(struct pwm_device *pwm, struct pwm_capture *result,
- 		unsigned long timeout);
--int pwm_set_chip_data(struct pwm_device *pwm, void *data);
--void *pwm_get_chip_data(struct pwm_device *pwm);
- 
- int pwmchip_add(struct pwm_chip *chip);
- void pwmchip_remove(struct pwm_chip *chip);
-@@ -445,16 +441,6 @@ static inline int pwm_capture(struct pwm_device *pwm,
- 	return -EINVAL;
+-	kfree(pwm_map);
  }
  
--static inline int pwm_set_chip_data(struct pwm_device *pwm, void *data)
--{
--	return -EINVAL;
--}
--
--static inline void *pwm_get_chip_data(struct pwm_device *pwm)
--{
--	return NULL;
--}
--
- static inline int pwmchip_add(struct pwm_chip *chip)
+ static void lp3943_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
  {
- 	return -EINVAL;
+ 	struct lp3943_pwm *lp3943_pwm = to_lp3943_pwm(chip);
+-	struct lp3943_pwm_map *pwm_map = pwm_get_chip_data(pwm);
++	struct lp3943_pwm_map *pwm_map = &lp3943_pwm->pwm_map[pwm->hwpwm];
+ 
+ 	lp3943_pwm_free_map(lp3943_pwm, pwm_map);
+ }
+@@ -158,7 +151,7 @@ static int lp3943_pwm_set_mode(struct lp3943_pwm *lp3943_pwm,
+ static int lp3943_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct lp3943_pwm *lp3943_pwm = to_lp3943_pwm(chip);
+-	struct lp3943_pwm_map *pwm_map = pwm_get_chip_data(pwm);
++	struct lp3943_pwm_map *pwm_map = &lp3943_pwm->pwm_map[pwm->hwpwm];
+ 	u8 val;
+ 
+ 	if (pwm->hwpwm == 0)
+@@ -177,7 +170,7 @@ static int lp3943_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ static void lp3943_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct lp3943_pwm *lp3943_pwm = to_lp3943_pwm(chip);
+-	struct lp3943_pwm_map *pwm_map = pwm_get_chip_data(pwm);
++	struct lp3943_pwm_map *pwm_map = &lp3943_pwm->pwm_map[pwm->hwpwm];
+ 
+ 	/*
+ 	 * LP3943 outputs are open-drain, so the pin should be configured
 -- 
 2.39.2
 
