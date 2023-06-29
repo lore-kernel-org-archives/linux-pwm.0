@@ -2,49 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC3D8C0015E
-	for <linux-pwm@archiver.kernel.org>; Thu, 29 Jun 2023 09:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB2A1EB64DD
+	for <linux-pwm@archiver.kernel.org>; Thu, 29 Jun 2023 14:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232022AbjF2JtG (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 29 Jun 2023 05:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44458 "EHLO
+        id S232194AbjF2OHz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 29 Jun 2023 10:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231950AbjF2JtD (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 29 Jun 2023 05:49:03 -0400
+        with ESMTP id S231443AbjF2OHz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 29 Jun 2023 10:07:55 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56D8268F
-        for <linux-pwm@vger.kernel.org>; Thu, 29 Jun 2023 02:49:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B622972
+        for <linux-pwm@vger.kernel.org>; Thu, 29 Jun 2023 07:07:50 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qEoGj-0006UQ-AH; Thu, 29 Jun 2023 11:48:53 +0200
+        id 1qEsJH-0004AX-9P; Thu, 29 Jun 2023 16:07:47 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qEoGf-00Aro2-Nu; Thu, 29 Jun 2023 11:48:49 +0200
+        id 1qEsJG-00AvCP-Hv; Thu, 29 Jun 2023 16:07:46 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qEoGf-000kwk-3q; Thu, 29 Jun 2023 11:48:49 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH 2/8] pwm: samsung: Put channel data into driver data
-Date:   Thu, 29 Jun 2023 11:48:33 +0200
-Message-Id: <20230629094839.757092-3-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230629094839.757092-1-u.kleine-koenig@pengutronix.de>
-References: <20230629094839.757092-1-u.kleine-koenig@pengutronix.de>
+        id 1qEsJF-000nt6-T6; Thu, 29 Jun 2023 16:07:45 +0200
+Date:   Thu, 29 Jun 2023 16:07:45 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH 3/8] pwm: jz4740: Put per-channel clk into driver data
+Message-ID: <20230629140745.fknzjerunbl2wr3k@pengutronix.de>
+References: <notmuch-sha1-d2bb15a9dcb5470a6eebca0b1a01c57918a22695>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3039; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=WbiUwtPhzGh+pbselDpueT/s8UBjYMzeiRbx+5zTqq4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBknVNm/uMvgR/b3BMuQ+RcGpDIxGu3oIyMe/LqR T3irbak8xyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZJ1TZgAKCRCPgPtYfRL+ TqykCAC7D7aswRRo9VGyRfniwK8mS44LbqKzNpGm/Qa3AqpAtTux4Pm5Qu9aVnWbx3aAQQ7KiYU AfmxeA/RVcnv+d3nwUXq+X4yYtjXaJhHKWMBj4yfT0v7hGDBUabiEGgTtbchBSKsebhQl3KQBvo lY1dfrbHUFNTSkckdQ7XU32ad/5uyFGyZ1W4oDc11vHaAqdAqjlbLPv3J8zSGILuNb4xgd9c7/U 4pfQZB4oeSgB2ZDLmVLTYLTLrXn041jQrsBInOFB2O44Zc9zNQr9BQKhyEgUwor8Wdqaum5XsBO olQHzZSDaZeiE/96SYpRsLlWnSzd7sNozOEuO7urgRFHbwV0
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wljg7bv56o5fj4s5"
+Content-Disposition: inline
+In-Reply-To: <notmuch-sha1-d2bb15a9dcb5470a6eebca0b1a01c57918a22695>
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -53,87 +48,113 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Instead of allocating extra data in .request() provide the needed memory
-in struct samsung_pwm_chip. This reduces the number of allocations. Even
-though now all 5 channel structs are allocated this is probably
-outweighed by the reduced overhead to track up to 6 smaller allocations.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-samsung.c | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+--wljg7bv56o5fj4s5
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index e8828f57ab15..d1a2bc01071b 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -88,6 +88,7 @@ struct samsung_pwm_chip {
- 	struct clk *base_clk;
- 	struct clk *tclk0;
- 	struct clk *tclk1;
-+	struct samsung_pwm_channel channel[SAMSUNG_PWM_NUM];
- };
- 
- #ifndef CONFIG_CLKSRC_SAMSUNG_PWM
-@@ -228,7 +229,6 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *chip,
- static int pwm_samsung_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
--	struct samsung_pwm_channel *our_chan;
- 
- 	if (!(our_chip->variant.output_mask & BIT(pwm->hwpwm))) {
- 		dev_warn(chip->dev,
-@@ -237,20 +237,11 @@ static int pwm_samsung_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 		return -EINVAL;
- 	}
- 
--	our_chan = kzalloc(sizeof(*our_chan), GFP_KERNEL);
--	if (!our_chan)
--		return -ENOMEM;
--
--	pwm_set_chip_data(pwm, our_chan);
-+	memset(&our_chip->channel[pwm->hwpwm], 0, sizeof(our_chip->channel[pwm->hwpwm]));
- 
- 	return 0;
- }
- 
--static void pwm_samsung_free(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	kfree(pwm_get_chip_data(pwm));
--}
--
- static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
-@@ -318,7 +309,7 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 				int duty_ns, int period_ns, bool force_period)
- {
- 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
--	struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
-+	struct samsung_pwm_channel *chan = &our_chip->channel[pwm->hwpwm];
- 	u32 tin_ns = chan->tin_ns, tcnt, tcmp, oldtcmp;
- 
- 	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
-@@ -473,7 +464,6 @@ static int pwm_samsung_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- static const struct pwm_ops pwm_samsung_ops = {
- 	.request	= pwm_samsung_request,
--	.free		= pwm_samsung_free,
- 	.apply		= pwm_samsung_apply,
- 	.owner		= THIS_MODULE,
- };
-@@ -639,9 +629,9 @@ static int pwm_samsung_resume(struct device *dev)
- 
- 	for (i = 0; i < SAMSUNG_PWM_NUM; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
--		struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
-+		struct samsung_pwm_channel *chan = &our_chip->channel[i];
- 
--		if (!chan)
-+		if (!(pwm->flags & PWMF_REQUESTED))
- 			continue;
- 
- 		if (our_chip->variant.output_mask & BIT(i))
--- 
-2.39.2
+Hello Paul,
 
+first of all, your mail is strange. I think the problem is that it
+doesn't contain a Message-Id. The result is that I got it twice and in
+return vger.kernel.org seems to have refused to take it. At least it's
+neither in lore.kernel.org nor in
+https://patchwork.ozlabs.org/project/linux-pwm/patch/20230629094839.757092-=
+4-u.kleine-koenig@pengutronix.de/
+=2E
+
+On Thu, Jun 29, 2023 at 01:12:25PM +0200, Paul Cercueil wrote:
+> Le 29 juin 2023 11:48, Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de=
+> a =E9crit :
+> >
+> > Stop using chip_data which is about to go away. Instead track the=20
+> > per-channel clk in struct jz4740_pwm_chip.=20
+> >
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>=20
+> > ---=20
+> > drivers/pwm/pwm-jz4740.c | 11 +++++++----=20
+> > 1 file changed, 7 insertions(+), 4 deletions(-)=20
+> >
+> > diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c=20
+> > index 3b7067f6cd0d..e0a57d71a60c 100644=20
+> > --- a/drivers/pwm/pwm-jz4740.c=20
+> > +++ b/drivers/pwm/pwm-jz4740.c=20
+> > @@ -27,6 +27,7 @@ struct soc_info {=20
+> > struct jz4740_pwm_chip {=20
+> > struct pwm_chip chip;=20
+> > struct regmap *map;=20
+> > + struct clk *clk[];=20
+> > };=20
+> >
+> > static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)=
+=20
+> > @@ -70,14 +71,15 @@ static int jz4740_pwm_request(struct pwm_chip *chip=
+, struct pwm_device *pwm)=20
+> > return err;=20
+> > }=20
+> >
+> > - pwm_set_chip_data(pwm, clk);=20
+> > + jz->clk[pwm->hwpwm] =3D clk;=20
+> >
+> > return 0;=20
+> > }=20
+> >
+> > static void jz4740_pwm_free(struct pwm_chip *chip, struct pwm_device *p=
+wm)=20
+> > {=20
+> > - struct clk *clk =3D pwm_get_chip_data(pwm);=20
+> > + struct jz4740_pwm_chip *jz =3D to_jz4740(chip);=20
+> > + struct clk *clk =3D jz->clk[pwm->hwpwm];=20
+> >
+> > clk_disable_unprepare(clk);=20
+> > clk_put(clk);=20
+> > @@ -123,7 +125,7 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, =
+struct pwm_device *pwm,=20
+> > {=20
+> > struct jz4740_pwm_chip *jz4740 =3D to_jz4740(pwm->chip);=20
+> > unsigned long long tmp =3D 0xffffull * NSEC_PER_SEC;=20
+> > - struct clk *clk =3D pwm_get_chip_data(pwm);=20
+> > + struct clk *clk =3D jz4740->clk[pwm->hwpwm];=20
+> > unsigned long period, duty;=20
+> > long rate;=20
+> > int err;=20
+> > @@ -229,7 +231,8 @@ static int jz4740_pwm_probe(struct platform_device =
+*pdev)=20
+> > if (!info)=20
+> > return -EINVAL;=20
+> >
+> > - jz4740 =3D devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);=20
+> > + jz4740 =3D devm_kzalloc(dev, sizeof(*jz4740) + info->num_pwms * sizeo=
+f(jz4740->clk[0]),=20
+> > + =A0=A0=A0=A0=A0 GFP_KERNEL);=20
+>=20
+> LGTM, but please use struct_size() from <linux/overflow.h>.
+
+Ah, I thought there is such a macro, but I didn't find it neither by
+grepping nor by asking in #kernelnewbies. Thanks, will respin the series
+in a few days.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--wljg7bv56o5fj4s5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmSdkDEACgkQj4D7WH0S
+/k4CWQf5AR+UGq3YoDMlRby6ypTdN4uJvofxaSs65alvczNoXx3KreoOSmEld+MC
+TsmGYDKYb+B/CKCc4VCtiMNKMyUT+urvylbsVTtY7CWZIjx7l5+3R+KTSBE2lgG/
+vhEp8ZjgaQDodCjWpVDXTzVmaUklW49kKucKCPDX9gYL4BLaehvsk+NN6lrxcrGH
+aESLTqAn8aM2y35hxatPkro8v2oxfdKi/zgqtp+cXGMh62UdszMae3BVadtvuP8z
+YK+DYIjHbK1qK3OkTYq09RbG+66bl/JmPSeeTrmsivApEB31QL+8+Taf06gmrqsl
++NhbCg7xd1YKtA7Iy6y2VPcsvvnq8Q==
+=Q0mH
+-----END PGP SIGNATURE-----
+
+--wljg7bv56o5fj4s5--
