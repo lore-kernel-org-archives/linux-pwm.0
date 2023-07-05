@@ -2,46 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A0BFC04A6A
-	for <linux-pwm@archiver.kernel.org>; Wed,  5 Jul 2023 08:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1679C0015E
+	for <linux-pwm@archiver.kernel.org>; Wed,  5 Jul 2023 08:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230195AbjGEIHN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 5 Jul 2023 04:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
+        id S232429AbjGEIHM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 5 Jul 2023 04:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232413AbjGEIHK (ORCPT
+        with ESMTP id S232399AbjGEIHK (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Wed, 5 Jul 2023 04:07:10 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7411717
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A4A1715
         for <linux-pwm@vger.kernel.org>; Wed,  5 Jul 2023 01:07:06 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qGxXN-0003pE-5h; Wed, 05 Jul 2023 10:06:57 +0200
+        id 1qGxXO-0003pw-Rn; Wed, 05 Jul 2023 10:06:58 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qGxXM-00CDNF-6i; Wed, 05 Jul 2023 10:06:56 +0200
+        id 1qGxXN-00CDNb-Ev; Wed, 05 Jul 2023 10:06:57 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qGxXL-002Ob0-8J; Wed, 05 Jul 2023 10:06:55 +0200
+        id 1qGxXL-002ObA-UE; Wed, 05 Jul 2023 10:06:55 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Paul Cercueil <paul@crapouillou.net>,
-        =?utf-8?q?Philippe_Mathieu-Daud=C3=A9?= <philmd@linaro.org>,
-        linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH v2 3/8] pwm: jz4740: Put per-channel clk into driver data
-Date:   Wed,  5 Jul 2023 10:06:45 +0200
-Message-Id: <20230705080650.2353391-4-u.kleine-koenig@pengutronix.de>
+Cc:     Lee Jones <lee@kernel.org>, linux-pwm@vger.kernel.org,
+        kernel@pengutronix.de, George Stark <gnstark@sberdevices.ru>
+Subject: [PATCH v2 6/8] pwm: sti: Reduce number of allocations and drop usage of chip_data
+Date:   Wed,  5 Jul 2023 10:06:48 +0200
+Message-Id: <20230705080650.2353391-7-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230705080650.2353391-1-u.kleine-koenig@pengutronix.de>
 References: <20230705080650.2353391-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1884; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=X7RU3MBp/iCxYXwRbGqtkm5an8LKIPGwfp19wJYuFEg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkpSSQUrnMMqQB9sb9Wx7QwilFKhSmjx/wTwq1O rKT2JxBCDeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZKUkkAAKCRCPgPtYfRL+ Tl7eB/9Ew8rmwAGX2vfpOdayuDiKvPHdBVZH7kpFeJvCqpxYDCXe1aXSJNn9skjmLY3AiO1G6Rq qny893Hn05STsz1LLehDSn3vIGuCV9BpjT2ilzIPz8lNRmQOi+I2zfYn6o9SSSSPMta7zbKE74/ spj3+SNXXmTLADzhXj53kLgaxc8ODaPZTRyGGtXcTnK1i7cijvxCGHD4LL3Im/CLHnBv+hmOqfI xVWamugt86WVlG/ZFzKywd1lEs0kh064gg/jlVsyey7P1/oAzVtic5EvTkfBtI6Oe+qB5p52+kY Nmm5qMvf+lYcD92dp+k3M1fZFpyKO8ucz+R8qrrnbj/KFt5S
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3263; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=LKTme2shBGCg8JTtjUic/zTxcmDNyEbdLibY2qKrTTw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkpSSTgRJpD3uSBvcbX69uX8Cs6aqPfW/4F6w7j 0Bxz03zgDCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZKUkkwAKCRCPgPtYfRL+ ThDjCACnOeDn0X7zAKuOrZRNHdLvdJAFYvsRptDu2TOEma60vAKNnvO18CSzar7e6Q5WzGOQn3G k2fUaPXns/pO//0r2+vDR5zb8YwU9coSm+DbessG4HNfykclOQK9stC+NqiKEo0Er9u71Ebv7n1 qYGvVA//mXjYtMC1p2pl5i6lk024A58YIH6ovDUnKhnIvQ4zg+eFBZdx7jwyveFC5sFMyD/Htk7 WnZ7q1ZDjvGYXj2xTTLYHw3r3PFji8R8pe37A1KO8xC/ZY0k8lbix8IHUs9xHqOnnjaiWneCQyZ K67nrIXwowZoG3t/BzAz1Z82a7q8h5n7bpBZGEvqhcxmKDd2
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,64 +50,105 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Stop using chip_data which is about to go away. Instead track the
-per-channel clk in struct jz4740_pwm_chip.
+Instead of using one allocation per capture channel, use a single one. Also
+store it in driver data instead of chip data.
 
-Reviewed-by: Philippe Mathieu-Daudé <philmd@linaro.org>
+This has several advantages:
+
+ - driver data isn't cleared when pwm_put() is called
+ - Reduces memory fragmentation
+
+Also register the pwm chip only after the per capture channel data is
+initialized as the capture callback relies on this initialization and it
+might be called even before pwmchip_add() returns.
+
+It would be still better to have struct sti_pwm_compat_data and the
+per-channel data struct sti_cpt_ddata in a single memory chunk, but that's
+not easily possible because the number of capture channels isn't known yet
+when the driver data struct is allocated.
+
+Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
+Reported-by: George Stark <gnstark@sberdevices.ru>
+Fixes: c97267ae831d ("pwm: sti: Add PWM capture callback")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-jz4740.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-sti.c | 29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index 3b7067f6cd0d..8b01819df67d 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -27,6 +27,7 @@ struct soc_info {
- struct jz4740_pwm_chip {
- 	struct pwm_chip chip;
- 	struct regmap *map;
-+	struct clk *clk[];
+diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
+index b1d1373648a3..c8800f84b917 100644
+--- a/drivers/pwm/pwm-sti.c
++++ b/drivers/pwm/pwm-sti.c
+@@ -79,6 +79,7 @@ struct sti_pwm_compat_data {
+ 	unsigned int cpt_num_devs;
+ 	unsigned int max_pwm_cnt;
+ 	unsigned int max_prescale;
++	struct sti_cpt_ddata *ddata;
  };
  
- static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
-@@ -70,14 +71,15 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 		return err;
+ struct sti_pwm_chip {
+@@ -314,7 +315,7 @@ static int sti_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
+ {
+ 	struct sti_pwm_chip *pc = to_sti_pwmchip(chip);
+ 	struct sti_pwm_compat_data *cdata = pc->cdata;
+-	struct sti_cpt_ddata *ddata = pwm_get_chip_data(pwm);
++	struct sti_cpt_ddata *ddata = &cdata->ddata[pwm->hwpwm];
+ 	struct device *dev = pc->dev;
+ 	unsigned int effective_ticks;
+ 	unsigned long long high, low;
+@@ -440,7 +441,7 @@ static irqreturn_t sti_pwm_interrupt(int irq, void *data)
+ 	while (cpt_int_stat) {
+ 		devicenum = ffs(cpt_int_stat) - 1;
+ 
+-		ddata = pwm_get_chip_data(&pc->chip.pwms[devicenum]);
++		ddata = &pc->cdata->ddata[devicenum];
+ 
+ 		/*
+ 		 * Capture input:
+@@ -638,12 +639,23 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 			dev_err(dev, "failed to prepare clock\n");
+ 			return ret;
+ 		}
++
++		cdata->ddata = devm_kzalloc(dev, cdata->cpt_num_devs * sizeof(*cdata->ddata), GFP_KERNEL);
++		if (!cdata->ddata)
++			return -ENOMEM;
  	}
  
--	pwm_set_chip_data(pwm, clk);
-+	jz->clk[pwm->hwpwm] = clk;
+ 	pc->chip.dev = dev;
+ 	pc->chip.ops = &sti_pwm_ops;
+ 	pc->chip.npwm = pc->cdata->pwm_num_devs;
+ 
++	for (i = 0; i < cdata->cpt_num_devs; i++) {
++		struct sti_cpt_ddata *ddata = &cdata->ddata[i];
++
++		init_waitqueue_head(&ddata->wait);
++		mutex_init(&ddata->lock);
++	}
++
+ 	ret = pwmchip_add(&pc->chip);
+ 	if (ret < 0) {
+ 		clk_unprepare(pc->pwm_clk);
+@@ -651,19 +663,6 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	for (i = 0; i < cdata->cpt_num_devs; i++) {
+-		struct sti_cpt_ddata *ddata;
+-
+-		ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
+-		if (!ddata)
+-			return -ENOMEM;
+-
+-		init_waitqueue_head(&ddata->wait);
+-		mutex_init(&ddata->lock);
+-
+-		pwm_set_chip_data(&pc->chip.pwms[i], ddata);
+-	}
+-
+ 	platform_set_drvdata(pdev, pc);
  
  	return 0;
- }
- 
- static void jz4740_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
--	struct clk *clk = pwm_get_chip_data(pwm);
-+	struct jz4740_pwm_chip *jz = to_jz4740(chip);
-+	struct clk *clk = jz->clk[pwm->hwpwm];
- 
- 	clk_disable_unprepare(clk);
- 	clk_put(clk);
-@@ -123,7 +125,7 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
- 	unsigned long long tmp = 0xffffull * NSEC_PER_SEC;
--	struct clk *clk = pwm_get_chip_data(pwm);
-+	struct clk *clk = jz4740->clk[pwm->hwpwm];
- 	unsigned long period, duty;
- 	long rate;
- 	int err;
-@@ -229,7 +231,8 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
- 	if (!info)
- 		return -EINVAL;
- 
--	jz4740 = devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
-+	jz4740 = devm_kzalloc(dev, struct_size(jz4740, clk, info->num_pwms),
-+			      GFP_KERNEL);
- 	if (!jz4740)
- 		return -ENOMEM;
- 
 -- 
 2.39.2
 
