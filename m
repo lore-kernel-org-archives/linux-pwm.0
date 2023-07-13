@@ -2,30 +2,30 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE522C0015E
-	for <linux-pwm@archiver.kernel.org>; Thu, 13 Jul 2023 15:51:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C92E5C001DD
+	for <linux-pwm@archiver.kernel.org>; Thu, 13 Jul 2023 15:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234709AbjGMPvy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 13 Jul 2023 11:51:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
+        id S229707AbjGMPvz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 13 Jul 2023 11:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbjGMPvx (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Jul 2023 11:51:53 -0400
+        with ESMTP id S235064AbjGMPvy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Jul 2023 11:51:54 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73222117
-        for <linux-pwm@vger.kernel.org>; Thu, 13 Jul 2023 08:51:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441F02689
+        for <linux-pwm@vger.kernel.org>; Thu, 13 Jul 2023 08:51:53 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qJybd-0004ij-9i; Thu, 13 Jul 2023 17:51:49 +0200
+        id 1qJybd-0004il-9k; Thu, 13 Jul 2023 17:51:49 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qJybb-00E9K5-Nf; Thu, 13 Jul 2023 17:51:47 +0200
+        id 1qJybc-00E9KB-3U; Thu, 13 Jul 2023 17:51:48 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qJyba-004abb-R2; Thu, 13 Jul 2023 17:51:46 +0200
+        id 1qJybb-004abh-9x; Thu, 13 Jul 2023 17:51:47 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
@@ -35,13 +35,15 @@ Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 0/2] pwm: stm32: A (small) fix and a cleanup
-Date:   Thu, 13 Jul 2023 17:51:40 +0200
-Message-Id: <20230713155142.2454010-1-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 2/2] pwm: stm32: Simplify using devm_pwmchip_add()
+Date:   Thu, 13 Jul 2023 17:51:42 +0200
+Message-Id: <20230713155142.2454010-3-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230713155142.2454010-1-u.kleine-koenig@pengutronix.de>
+References: <20230713155142.2454010-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=468; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=//lOGqdNdXNCdEeL8d8m/BvDxCXBlJuLn/WpNm1m1/k=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksB2Lt1WziiSIi+81Xpx9JCYCfHe3gdspXzrYC DWnPfcd3O6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLAdiwAKCRCPgPtYfRL+ TqqaB/0fRuKIFfsar/dMe4rsZk4UX+K/D47KCukO7yjzAtpiAX2EM4ji7eLGM3PM5ufJfY/Be9o PbDwdJ6fBnJqYY/wdI/cXUS6b2omSti7pTTg9vtqVRlHih72jmXEDK9D4xkR29NOU0BQsGWlnAs d3204t079pt0TTwb4VJRVct3mte+Ae9x9GkpzB798mcEmedTKef7V2t8vVwk+FxLIg71eJ/gZB3 5Qh7AjY3qFVGHnWcadm1wWNJiNY6qiIVR27SBh/x7QbUKPl0zjJuksJLl+MKa0nBsXJLBKO7T6O i9UOpDlYX80/OtXjQzAw4Ukcf8Vq4CrOO/OKcgQxga6khjNL
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1342; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=apBYvwQ8Xvzmv3dzNjz7fDsp+SOzPk4mArfRVsDwhU4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksB2N6DlpaPS3SS+ZcmJGhd7ysiMqTSeyyJ1Bz QLQ8bm6PziJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLAdjQAKCRCPgPtYfRL+ ToSCCACIrNWk/VA/bapZ39Eum/kzghluzIhE1Hp/a+FHN+p+xuW/rhzoCj4lqogYH3CsFcYjpI3 JkaS7z03qMv9ZLkhG0GsDXK48Tplvb13b4KzwSqzb6bF/6gvXVJrdfRzDt257jbzFyycOzYnfx4 XRUv2ldHOV/PtP/Ttop/BTJH3wYwZ5GMBXl6Pkzri2BopKXmskPLFSgXjxx34gF0ZZ2jy4dfxAl DZN10tJi9KYMZB7Cu6fwAT9rKexws5wUwv8Qgnsi0fhnoN9XBcEMugdrvzGbUGNvPJIBKqSw4hA SuaSiYzwxZSPVGI2P2pIonDMzEU3A5veySG+hQbyg0rIZ2eG
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,22 +54,48 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hello,
+This allows to drop the platform_driver's remove function.
 
-I was surprised when I spotted the stm32 calling pwm_disable() in the
-remove callback. I thought I fixed all drivers in this regard.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-stm32.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-Best regards
-Uwe
-
-Uwe Kleine-König (2):
-  pwm: stm32: Don't modify HW state in .remove() callback
-  pwm: stm32: Simplify using devm_pwmchip_add()
-
- drivers/pwm/pwm-stm32.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
-
-base-commit: 06c2afb862f9da8dc5efa4b6076a0e48c3fbaaa5
+diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+index 687967d3265f..3d6be7749e23 100644
+--- a/drivers/pwm/pwm-stm32.c
++++ b/drivers/pwm/pwm-stm32.c
+@@ -637,7 +637,7 @@ static int stm32_pwm_probe(struct platform_device *pdev)
+ 	priv->chip.ops = &stm32pwm_ops;
+ 	priv->chip.npwm = stm32_pwm_detect_channels(priv);
+ 
+-	ret = pwmchip_add(&priv->chip);
++	ret = devm_pwmchip_add(dev, &priv->chip);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -646,13 +646,6 @@ static int stm32_pwm_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static void stm32_pwm_remove(struct platform_device *pdev)
+-{
+-	struct stm32_pwm *priv = platform_get_drvdata(pdev);
+-
+-	pwmchip_remove(&priv->chip);
+-}
+-
+ static int __maybe_unused stm32_pwm_suspend(struct device *dev)
+ {
+ 	struct stm32_pwm *priv = dev_get_drvdata(dev);
+@@ -697,7 +690,6 @@ MODULE_DEVICE_TABLE(of, stm32_pwm_of_match);
+ 
+ static struct platform_driver stm32_pwm_driver = {
+ 	.probe	= stm32_pwm_probe,
+-	.remove_new = stm32_pwm_remove,
+ 	.driver	= {
+ 		.name = "stm32-pwm",
+ 		.of_match_table = stm32_pwm_of_match,
 -- 
 2.39.2
 
