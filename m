@@ -2,130 +2,137 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5C5C001DD
-	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 09:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FFE2C001DD
+	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 10:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235203AbjGNJ7q (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 14 Jul 2023 05:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
+        id S236101AbjGNKPK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 14 Jul 2023 06:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234881AbjGNJ7p (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 05:59:45 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C328E211E;
-        Fri, 14 Jul 2023 02:59:43 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id d9443c01a7336-1b852785a65so11004165ad.0;
-        Fri, 14 Jul 2023 02:59:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1689328783; x=1691920783;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=vShZQMcarPkzUmWVXK6Ziq55LsnSbqaxjxY6sf8cpZQ=;
-        b=K4QzBf7A6YFEWHUA6ixpR5W1HoUYkbJ4J1W17P4+oIwAt4hv00eR5M3A3DYwAiyYjl
-         Cjhii1S2FLEqAefU1CBl2X9rFNItYL/fGQlJMxPXKPyUGG4FDXri1Ih33KHD/9hn/lMN
-         NQ0G9M7ye3B4cQl1ZvnapuP2jXPAHTKFlVrBt23TKLyNNc7zAp1PHl7yViwtSvzO0bqV
-         liXLvZ3vVOMKUviDUwGEALJnSnSmTuxXNrUATYeEnDbMAiHwPUvuzG43gGffELywmCcf
-         jM7gPAux+Gc5dhxfbdaHdPyoX6/L4dCz+Kxd4eSHxIoem3MZU0hK60IE1u6b6YMy7vw2
-         L/Fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689328783; x=1691920783;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vShZQMcarPkzUmWVXK6Ziq55LsnSbqaxjxY6sf8cpZQ=;
-        b=XldzDDrr4CkKSAT2cNl+Umw9pKrYOMV6pTANsp0fzuQEcJbraD5zTUSvF2h3Mc4Y0b
-         pDMTNLHySh+eFteNHOZriopV5ObS9drBSTTJuTAB2ClC/mK04nI+aRWne1hGoEgA3e0I
-         SaUTHfQ8EzZTjupeN24qV9EgYSBZpciKWueXtQvxKQxrCru2CZgyf+Ke1SGPXqcax99c
-         RsgK1kLS9RghdehPCsYp4g/46eBUHWSSHPQd6UulWCeOCWSL+Wtn4dtHTrbKir4Alrkt
-         lP+pjAXqiEtKnP9WFSGHIiTwKx9IQ8tCRQdFmiGNkREpotZpbc+zfdZ6aJMIIDQFvtVm
-         WOgw==
-X-Gm-Message-State: ABy/qLbu87vwBhWz6nrcpPirWkr7y///AC7NYNMUGmdvJkO4qEPUo2Fm
-        BfogrxC6rQg5MO8WagpSNhk=
-X-Google-Smtp-Source: APBJJlHHDmGNSykHBKxMZGwxSLLnEVvuoPUPo9OdWpoStDfN/OVYQwEXP4FINTJblZuIsfG93KAeHQ==
-X-Received: by 2002:a17:902:f2d4:b0:1b8:a39e:ff4b with SMTP id h20-20020a170902f2d400b001b8a39eff4bmr1847417plc.32.1689328782949;
-        Fri, 14 Jul 2023 02:59:42 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id c1-20020a170902848100b001b801044466sm7400745plo.114.2023.07.14.02.59.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jul 2023 02:59:42 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <0ba3767c-d481-6e2c-2d32-b79af0e1efd8@roeck-us.net>
-Date:   Fri, 14 Jul 2023 02:59:40 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [v6 2/4] dt-bindings: hwmon: Add ASPEED TACH Control
- documentation
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        =?UTF-8?B?6JSh5om/6YGU?= <billyking19920205@gmail.com>,
-        "jdelvare@suse.com" <jdelvare@suse.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "patrick@stwcx.xyz" <patrick@stwcx.xyz>,
-        Billy Tsai <billy_tsai@aspeedtech.com>
-References: <CAGUgbhCqOJaEPjS96o2au21uW4NhqFScm4Ayd8PzOQvqxQ94SQ@mail.gmail.com>
- <0b9dd5cf-f4ca-2e6b-624d-0b451bbc2f30@linaro.org>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <0b9dd5cf-f4ca-2e6b-624d-0b451bbc2f30@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S236091AbjGNKPH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 06:15:07 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C6B3586
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 03:14:37 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20230714101436epoutp02cab68e665bdcc0c1ba7a21c75ef7af42~xtGPURfzu2316023160epoutp02q
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 10:14:36 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20230714101436epoutp02cab68e665bdcc0c1ba7a21c75ef7af42~xtGPURfzu2316023160epoutp02q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1689329676;
+        bh=BUueTlTb1GY44yfxXatx1oK5LtS9J3wrB4ATu5iHCOw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=anLk/lIjdijFmnS+utmBp1wSoI/LlEFuwiXfWkRW8tKTkXSSZcjvyr4z8Htpqcl72
+         bLyBBakFSYNYIBdYDy8Km3/48vhJrRiGnzGYq1lsmp7fI8tpiZNlN/Tr/oa/v9UnUV
+         mXoQ34SSC6jeC84KnQ58ltpaatqoRijh9gTJECy0=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20230714101435epcas2p3b2a1986051f6adc541e33336e32d6fd1~xtGOm9PEF0818708187epcas2p3R;
+        Fri, 14 Jul 2023 10:14:35 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4R2S570Bgcz4x9Pp; Fri, 14 Jul
+        2023 10:14:35 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F6.8B.49913.A0021B46; Fri, 14 Jul 2023 19:14:34 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20230714101434epcas2p3e2475698c527ca72dee797225d3dad37~xtGNedua00818708187epcas2p3P;
+        Fri, 14 Jul 2023 10:14:34 +0000 (GMT)
+Received: from epsmgmcp1.samsung.com (unknown [182.195.42.82]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20230714101434epsmtrp1e978c725921bcfca415f5a51b811ad95~xtGNdwh6N1161511615epsmtrp1i;
+        Fri, 14 Jul 2023 10:14:34 +0000 (GMT)
+X-AuditID: b6c32a45-5cfff7000000c2f9-95-64b1200a172d
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgmcp1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        5D.E9.64355.90021B46; Fri, 14 Jul 2023 19:14:34 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.229.9.55]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20230714101433epsmtip1c6794cab3d2c11f4be5799b9bd8640b6~xtGNQKFAY0144301443epsmtip1K;
+        Fri, 14 Jul 2023 10:14:33 +0000 (GMT)
+From:   Jaewon Kim <jaewon02.kim@samsung.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Chanho Park <chanho61.park@samsung.com>,
+        Jaewon Kim <jaewon02.kim@samsung.com>
+Subject: [PATCH v2 2/3] pwm: samsung: Add compatible for ExynosAutov9 SoC
+Date:   Fri, 14 Jul 2023 19:09:28 +0900
+Message-Id: <20230714100929.94563-3-jaewon02.kim@samsung.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20230714100929.94563-1-jaewon02.kim@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpgk+LIzCtJLcpLzFFi42LZdljTQpdLYWOKwfGpVhYP5m1js7i8X9ti
+        zd5zTBbzj5xjtdjRcITVou/FQ2aLTY+vsVpc3jWHzeLu3VWMFjPO72OyaN17hN3i5655LBa3
+        J05mdOD12DnrLrvHplWdbB53ru1h89i8pN6j/6+BR9+WVYwenzfJBbBHZdtkpCampBYppOYl
+        56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXmAN2qpFCWmFMKFApILC5W0rez
+        KcovLUlVyMgvLrFVSi1IySkwL9ArTswtLs1L18tLLbEyNDAwMgUqTMjOOPHmO3vBEraKU5vk
+        GxhXs3YxcnJICJhIPDm1iL2LkYtDSGAHo0Tvxc/MEM4nRok3896xwjlb2/8wwrTMvfiCESKx
+        k1Hi5uNeqKqPjBIzpnSDDWYT0Jb4vn4xmC0isJBJ4tn9MhCbWeAbo8TkPzwgtrCAp8TmC4tZ
+        QGwWAVWJax/vgG3gFbCVmLZtERPENnmJ1RsOMIPYnAJ2Es/+bWIDWSYh8JNd4u6/z1AnuUjM
+        2XMfqkFY4tXxLewQtpTEy/42KDtbon36H6ivKyQubpjNBmEbS8x61g40hwPoOE2J9bv0QUwJ
+        AWWJI7dYIE7mk+g4/JcdIswr0dEmBNGoJnF/6jmoITISk46shDrAQ+LEgTvQIJkIDJK/hxkn
+        MMrNQliwgJFxFaNYakFxbnpqsVGBITzCkvNzNzGCk6KW6w7GyW8/6B1iZOJgPMQowcGsJMKr
+        sm1dihBvSmJlVWpRfnxRaU5q8SFGU2DYTWSWEk3OB6blvJJ4QxNLAxMzM0NzI1MDcyVx3nut
+        c1OEBNITS1KzU1MLUotg+pg4OKUamNL2OXGclY3Uvi3PLv629+y8Z4fqpdYcPvzw/cno2Ufm
+        8voteLNgV8Uzk+lOgtPnXXh34+TlDpt4RvdzWkrccQam7x4divd9+zDL1OTCv4dx5j+KWbbs
+        dF5e2HnJtUnpxa5Tm25eW7dHnvWtbIiSR8qb8qIMLk6lSRsMvuj9nlt68bLBdT/Nidp1V8WE
+        /ZVkNjVvLL+UsPX9Im62T9dLJuXtszx7X7f4+9ae2s7u8/+qPp5dFHlR48bft7sm7+ouKu1K
+        /8WhVxpSnadv86axTWn50e1BRt+OqQfM3dJ18FTijquOsR5PlwvUpfra269t+vPweUZtV6/m
+        dd2N+Zee5318YDff5OdEJaZHehJL7E8rsRRnJBpqMRcVJwIA/S9NKRMEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrJLMWRmVeSWpSXmKPExsWy7bCSnC6XwsYUg8Z2JosH87axWVzer22x
+        Zu85Jov5R86xWuxoOMJq0ffiIbPFpsfXWC0u75rDZnH37ipGixnn9zFZtO49wm7xc9c8Fovb
+        EyczOvB67Jx1l91j06pONo871/aweWxeUu/R/9fAo2/LKkaPz5vkAtijuGxSUnMyy1KL9O0S
+        uDJOvPnOXrCEreLUJvkGxtWsXYycHBICJhJzL75g7GLk4hAS2M4o8WvJYRaIhIzE8md9bBC2
+        sMT9liOsEEXvGSWWrp3IBJJgE9CW+L5+MVhCRGAxk8Sb7odgDrPAH0aJ/qYVYDuEBTwlNl9Y
+        DDaWRUBV4trHO4wgNq+ArcS0bYuYIFbIS6zecIAZxOYUsJN49m8T2GohoJoPj38wTWDkW8DI
+        sIpRNLWgODc9N7nAUK84Mbe4NC9dLzk/dxMjOHS1gnYwLlv/V+8QIxMH4yFGCQ5mJRFelW3r
+        UoR4UxIrq1KL8uOLSnNSiw8xSnOwKInzKud0pggJpCeWpGanphakFsFkmTg4pRqYNDQsvNb+
+        SQtuVH8e+NjPvPN8zdTrCd4v6wyOqF1MWMH2a/fT8lTRzXpq2xZZL7P1tou5lPtA48nG10w7
+        vkRtNq56mz5lvoO16/3POZuc929xTPzLIFrxhkVgscdDuWY5E6Xapvt5guYmETLx2559scpg
+        t0xIvfR138EnjSwdd29K/5hs1a+otj1s29k+9nccW2TTMhKrX/uf4friMSFt2t0DPx/7m4vJ
+        JwktV8lfYfpCyHy1wmmW6FvvGIo3TZuotPdUv9XUkrfO651rxKujf04/xvA7ouP2C36W9avv
+        2/kaWK9miVs2WXZdsela+2g1M3aB4y1yd2onO7xR9N4rLlN8q+XRPD6tuZ6afn+VWIozEg21
+        mIuKEwEK9A30zAIAAA==
+X-CMS-MailID: 20230714101434epcas2p3e2475698c527ca72dee797225d3dad37
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20230714101434epcas2p3e2475698c527ca72dee797225d3dad37
+References: <20230714100929.94563-1-jaewon02.kim@samsung.com>
+        <CGME20230714101434epcas2p3e2475698c527ca72dee797225d3dad37@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 7/14/23 00:13, Krzysztof Kozlowski wrote:
-> On 14/07/2023 09:04, 蔡承達 wrote:
-> 
->>          > This is because our register layout for PWM and Tach is not
->> continuous.
->>
->>          > PWM0 used 0x0 0x4, Tach0 used 0x8 0xc
->>
->>          > PWM1 used 0x10 0x14, Tach1 used 0x18 0x1c
->>
->>          > ...
->>
->>          > Each PWM/Tach instance has its own controller register and is not
->> dependent on others.
-> 
-> Your email reply quoting style is very difficult to read.
-> 
->>
->>
->>
->> Hi Guenter,
->>
->>
->>
->> Did you receive a response to my previous email?
->>
->> I would like to inquire if you have any further concerns regarding the PWM
->> and Tach with 16 instances.
-> 
-> But isn't like this in all PWMs in all SoCs?
-> 
+Add new compatible string to support ExynosAutov9 SoC.
 
-Correct, pretty much every fan controller is implemented that way.
-I don't understand the logic.
+Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+---
+ drivers/pwm/pwm-samsung.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Guenter
-
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index e8828f57ab15..50a88565c440 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -513,6 +513,7 @@ static const struct of_device_id samsung_pwm_matches[] = {
+ 	{ .compatible = "samsung,s5p6440-pwm", .data = &s5p64x0_variant },
+ 	{ .compatible = "samsung,s5pc100-pwm", .data = &s5pc100_variant },
+ 	{ .compatible = "samsung,exynos4210-pwm", .data = &s5p64x0_variant },
++	{ .compatible = "samsung,exynosautov9-pwm", .data = &s5p64x0_variant },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, samsung_pwm_matches);
+-- 
+2.17.1
 
