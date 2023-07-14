@@ -2,127 +2,179 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6CCAEB64DC
-	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 20:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B70EB64DC
+	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 20:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236189AbjGNUdE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 14 Jul 2023 16:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
+        id S235829AbjGNU4g (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 14 Jul 2023 16:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235954AbjGNUc7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 16:32:59 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EC535AD;
-        Fri, 14 Jul 2023 13:32:58 -0700 (PDT)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36EJRF0V032181;
-        Fri, 14 Jul 2023 20:32:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=wOEuZ0axDfpKHVOu0u/ZkL+Xp0dWtcUrVMCcIi3yLtQ=;
- b=T3n94NJgFrWm5u6CDeOYjOsRLB05FcOfMssSwbQiD2+n/HI02B+rhTEvXyQhrC4IjLtJ
- 8gP/zKLi6feqdMr3kj2UJwrDHaAIbTVb3OOIbRFISeVKNlWNAg4zt1uhIV7OSH09TK/1
- AejVXUfoRwrIlBEk2j7frnVm+h+jNw8QDp7VAPD9I2VB7Tx5waFZN9RPb3JG1ONsW+Uk
- pQv8uWgot/M0sqDbIGoTQ+Ny8v/VkNhZtJY12JPWIqyhQ6YjbDxSQ90+pLka70BAGWgw
- QFQBkXebOkZhvscGMWXGSL5LK6AViyvbZ+a2TfY43IRTzINUpUElqTRVJMIV4bHC5uFa Iw== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3rtpu92t68-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 14 Jul 2023 20:32:46 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 36EKWiTf012707
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 14 Jul 2023 20:32:44 GMT
-Received: from [10.110.52.193] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Fri, 14 Jul
- 2023 13:32:43 -0700
-Message-ID: <511a84a8-ecb4-13bb-2eab-982b19758ba5@quicinc.com>
-Date:   Fri, 14 Jul 2023 13:32:33 -0700
+        with ESMTP id S235416AbjGNU4f (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 16:56:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929A31BD
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 13:56:34 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qKPq4-000843-Cu; Fri, 14 Jul 2023 22:56:32 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qKPq3-00EQSL-MQ; Fri, 14 Jul 2023 22:56:31 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qKPq2-004u3l-JY; Fri, 14 Jul 2023 22:56:30 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH 01/10] pwm: Use a consistent name for pwm_chip pointers in the core
+Date:   Fri, 14 Jul 2023 22:56:14 +0200
+Message-Id: <20230714205623.2496590-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230714205623.2496590-1-u.kleine-koenig@pengutronix.de>
+References: <20230714205623.2496590-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/7] dt-bindings: soc: qcom: Add qcom-pbs bindings
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC:     Rob Herring <robh@kernel.org>, <pavel@ucw.cz>, <lee@kernel.org>,
-        <thierry.reding@gmail.com>, <krzysztof.kozlowski+dt@linaro.org>,
-        <conor+dt@kernel.org>, <agross@kernel.org>, <andersson@kernel.org>,
-        <konrad.dybcio@linaro.org>, <u.kleine-koenig@pengutronix.de>,
-        <linux-leds@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-References: <20230621185949.2068-1-quic_amelende@quicinc.com>
- <20230621185949.2068-2-quic_amelende@quicinc.com>
- <20230626135857.GA3118929-robh@kernel.org>
- <2e871e21-a81d-0d7d-993b-9a9d7bd9d962@quicinc.com>
- <e7298704-5a03-0961-90a3-dab4af60c326@linaro.org>
- <32e9a512-fd74-b2f6-6b8a-fefb9ad5912d@quicinc.com>
- <431faa87-d152-5f7a-40fd-8b6fe26f0bb9@linaro.org>
- <71e1f36f-8fd8-9d61-d563-577d4fb54f10@quicinc.com>
- <69c01f0f-4eb0-bb44-a238-5c9ce5beede9@linaro.org>
- <CAA8EJppCSnEg1GjX8CavxRPiiE19JwVAOTspjWJR-OzdQMcu+g@mail.gmail.com>
- <7ecf968b-45b2-c6b7-86a7-8d8caccf5002@linaro.org>
-From:   Anjelique Melendez <quic_amelende@quicinc.com>
-In-Reply-To: <7ecf968b-45b2-c6b7-86a7-8d8caccf5002@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: FpwwqSAF9ChKQNg_KKIZS6HGqS4kVtvO
-X-Proofpoint-ORIG-GUID: FpwwqSAF9ChKQNg_KKIZS6HGqS4kVtvO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-14_10,2023-07-13_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- priorityscore=1501 mlxlogscore=781 clxscore=1011 adultscore=0 spamscore=0
- impostorscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0 phishscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2306200000 definitions=main-2307140188
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4227; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=mEWA9Jkb0Bf8N5tqYx1h6r7HN1WqhQMQeQ2SizptQls=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksbZnbiuWExRPNeRnQGXXd5iNHnc8pc+CGFDjL Qm3M/nRaqeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLG2ZwAKCRCPgPtYfRL+ TsUmB/0Sd7lidZRoRipLxDEJUgrRT9ccSkgSDTQfXviDzzvFm95i8FM97yoqNz2DXCe9Vp5HETD HTbTjrtK14xH/nS8AQOyoU1mdYxNK18hXmng1Tnp/Ot+6K0GwwFl7pMUVt4uNuGG7unXYxvhgaD 79z5go3lPyRiaZzC6QiRvNtKoc7QWSUXXFgdOqaS7zSrmPnfWpwxUq1/uw/HbNShm1bAQPC1ple 4yAEb4wRVQRJrRLB1CdGPCi8zTopEJQkCMEaklmS/Q0kb5VYB5N4sALP1AmfunhQACFCLERCvHv YLnHpmtT0b8W2Vjq/LF6qQLlo9JdafnJbM5gOvfh+vDd2+fN
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Most variables of type struct pwm_chip * are named "chip", there are
+only three outliers called "pc". Change these three to "chip", too, for
+consistency.
 
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/core.c  | 28 ++++++++++++++--------------
+ include/linux/pwm.h |  6 +++---
+ 2 files changed, 17 insertions(+), 17 deletions(-)
 
-On 7/12/2023 1:11 PM, Krzysztof Kozlowski wrote:
-> On 12/07/2023 16:35, Dmitry Baryshkov wrote:
->>>>> Rob asked you - "Is there more than 1 instance in a PMIC?" - and you did
->>>>> not answer positively, just mentioned something about drivers in
->>>>> downstream, which do not matter. So is the answer for that question:
->>>>> yes, you have two instances of the same PMIC differing by presence of
->>>>> PBS and other features"?
->>>>>
->>>> Sorry that was a misunderstanding on my part.
->>>> Yes, answer to Rob's question should have been "We have two instances of PMI632,
->>>> where one instance holds the pbs peripheral and the other holds the lpg
->>>> peripherals. The child node for pbs is needed so lpg client can access
->>>> the PMI632 regmap which contains the pbs peripheral."
->>>
->>> I guess I miss here something. What is "LPG client"? I don't understand
->>> why this LPG client needs existence of PBS node, to be able to get the
->>> regmap.
->>>
->>> PBS is a child of PMIC, so it can get regmap from the parent. What's
->>> more, which DT property passes the regmap from PMIC to LPG client?
->>
->> There are some PMICs which claim two SPMI SIDs. For such PMICs, each
->> SID is a separate device, so it is not directly possible to get the
->> regmap of the other SID.
-> 
-> OK, maybe after implementing all the review changes - including dropping
-> that singleton pattern - this will be clearer. Please send new version
-> and we will discuss it from there.
-> 
-Sure, will work on getting that new version sent but I did just have clarifying question.
-When you say "dropping that singleton pattern" are you referring to dropping the 
-PBS node?
-Want to make sure we are all on the same page with what the next version will include :)
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 3dacceaef4a9..8c798753c016 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -127,28 +127,28 @@ static int pwm_device_request(struct pwm_device *pwm, const char *label)
+ }
+ 
+ struct pwm_device *
+-of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_args *args)
++of_pwm_xlate_with_flags(struct pwm_chip *chip, const struct of_phandle_args *args)
+ {
+ 	struct pwm_device *pwm;
+ 
+-	if (pc->of_pwm_n_cells < 2)
++	if (chip->of_pwm_n_cells < 2)
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	/* flags in the third cell are optional */
+ 	if (args->args_count < 2)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	if (args->args[0] >= pc->npwm)
++	if (args->args[0] >= chip->npwm)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	pwm = pwm_request_from_chip(pc, args->args[0], NULL);
++	pwm = pwm_request_from_chip(chip, args->args[0], NULL);
+ 	if (IS_ERR(pwm))
+ 		return pwm;
+ 
+ 	pwm->args.period = args->args[1];
+ 	pwm->args.polarity = PWM_POLARITY_NORMAL;
+ 
+-	if (pc->of_pwm_n_cells >= 3) {
++	if (chip->of_pwm_n_cells >= 3) {
+ 		if (args->args_count > 2 && args->args[2] & PWM_POLARITY_INVERTED)
+ 			pwm->args.polarity = PWM_POLARITY_INVERSED;
+ 	}
+@@ -158,18 +158,18 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_args *args)
+ EXPORT_SYMBOL_GPL(of_pwm_xlate_with_flags);
+ 
+ struct pwm_device *
+-of_pwm_single_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
++of_pwm_single_xlate(struct pwm_chip *chip, const struct of_phandle_args *args)
+ {
+ 	struct pwm_device *pwm;
+ 
+-	if (pc->of_pwm_n_cells < 1)
++	if (chip->of_pwm_n_cells < 1)
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	/* validate that one cell is specified, optionally with flags */
+ 	if (args->args_count != 1 && args->args_count != 2)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	pwm = pwm_request_from_chip(pc, 0, NULL);
++	pwm = pwm_request_from_chip(chip, 0, NULL);
+ 	if (IS_ERR(pwm))
+ 		return pwm;
+ 
+@@ -692,7 +692,7 @@ static struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
+ 	struct pwm_device *pwm = NULL;
+ 	struct of_phandle_args args;
+ 	struct device_link *dl;
+-	struct pwm_chip *pc;
++	struct pwm_chip *chip;
+ 	int index = 0;
+ 	int err;
+ 
+@@ -709,16 +709,16 @@ static struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
+ 		return ERR_PTR(err);
+ 	}
+ 
+-	pc = fwnode_to_pwmchip(of_fwnode_handle(args.np));
+-	if (IS_ERR(pc)) {
+-		if (PTR_ERR(pc) != -EPROBE_DEFER)
++	chip = fwnode_to_pwmchip(of_fwnode_handle(args.np));
++	if (IS_ERR(chip)) {
++		if (PTR_ERR(chip) != -EPROBE_DEFER)
+ 			pr_err("%s(): PWM chip not found\n", __func__);
+ 
+-		pwm = ERR_CAST(pc);
++		pwm = ERR_CAST(chip);
+ 		goto put;
+ 	}
+ 
+-	pwm = pc->of_xlate(pc, &args);
++	pwm = chip->of_xlate(chip, &args);
+ 	if (IS_ERR(pwm))
+ 		goto put;
+ 
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 04ae1d9073a7..d2f9f690a9c1 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -298,7 +298,7 @@ struct pwm_chip {
+ 	int base;
+ 	unsigned int npwm;
+ 
+-	struct pwm_device * (*of_xlate)(struct pwm_chip *pc,
++	struct pwm_device * (*of_xlate)(struct pwm_chip *chip,
+ 					const struct of_phandle_args *args);
+ 	unsigned int of_pwm_n_cells;
+ 
+@@ -395,9 +395,9 @@ struct pwm_device *pwm_request_from_chip(struct pwm_chip *chip,
+ 					 unsigned int index,
+ 					 const char *label);
+ 
+-struct pwm_device *of_pwm_xlate_with_flags(struct pwm_chip *pc,
++struct pwm_device *of_pwm_xlate_with_flags(struct pwm_chip *chip,
+ 		const struct of_phandle_args *args);
+-struct pwm_device *of_pwm_single_xlate(struct pwm_chip *pc,
++struct pwm_device *of_pwm_single_xlate(struct pwm_chip *chip,
+ 				       const struct of_phandle_args *args);
+ 
+ struct pwm_device *pwm_get(struct device *dev, const char *con_id);
+-- 
+2.39.2
 
-Thanks,
-Anjelique
