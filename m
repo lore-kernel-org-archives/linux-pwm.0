@@ -2,84 +2,122 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E926C001E0
-	for <linux-pwm@archiver.kernel.org>; Thu, 13 Jul 2023 15:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 719B1EB64DA
+	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 07:14:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235064AbjGMPvz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 13 Jul 2023 11:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50886 "EHLO
+        id S235281AbjGNHOI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 14 Jul 2023 03:14:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235051AbjGMPvy (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Jul 2023 11:51:54 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396B72686
-        for <linux-pwm@vger.kernel.org>; Thu, 13 Jul 2023 08:51:53 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qJybd-0004ik-9i; Thu, 13 Jul 2023 17:51:49 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qJybb-00E9K8-Ux; Thu, 13 Jul 2023 17:51:47 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qJybb-004abe-2w; Thu, 13 Jul 2023 17:51:47 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Thierry Reding <thierry.reding@gmail.com>
-Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-pwm@vger.kernel.org, kernel@pengutronix.de,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 1/2] pwm: stm32: Don't modify HW state in .remove() callback
-Date:   Thu, 13 Jul 2023 17:51:41 +0200
-Message-Id: <20230713155142.2454010-2-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230713155142.2454010-1-u.kleine-koenig@pengutronix.de>
-References: <20230713155142.2454010-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S235303AbjGNHOC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 03:14:02 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EB2271E
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 00:13:59 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-3fbc54cab6fso14587635e9.0
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 00:13:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1689318837; x=1691910837;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=8K9L3dLhDzQTv7y7e0RVrZSX+FOOeLwX47IYpkosCNQ=;
+        b=OC+YjhwBAquXA8bRTVqSc71oDkaWMW+X/CVE2b19QZwxMyZMKHAvPRMmvfaxAc4qjH
+         wS7bNaVBc65aNTvjFBCqH8OBSvvBxi62KVint4c5u3f5LPVie/jV2eC+Cnb++NzUzrAA
+         1WmPu1XVuNiQma+6ojXOFZSB2R3c3FD2ObygN3AbnrskivYYp264Mt3hLNiGN3o7ziS9
+         Zp5AMIbOkQqdPvl3/2powKYJl/VMwFZs6r91+UKudYvK4oe5VoTtD+WXIvp3zAO3GKEB
+         KYIRZB0B2uxWT66+BqOdlF2MALmKB4mznl4YuvMyV5H2X5vRACwCik0jnwWm2Fe4fqtO
+         tEZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689318837; x=1691910837;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8K9L3dLhDzQTv7y7e0RVrZSX+FOOeLwX47IYpkosCNQ=;
+        b=VdzytTx96/nwDjoq8VwvKUns5n5hdI54MMaE4Y9sTor8vwzxCUj5bfdtyX0T14D5Ou
+         Z5r3bZTYGMUrHoiCh++Z1UMhyBNFMBmwY0ytLRE/v5FCcHbThMYpGMAvYX5YsE9EFYDJ
+         iEp9ylevR2mhRWzSk70gXrgNF2zIm+Vonq/twIYF/ESYVaKBrJMmL1Pd/KvFRp6qlRji
+         xLPm4gUFCTZ/77grkKMTPb9X8Q/LWAuD4y/C+z8lriOmAoT85kiPbLmUK/Dv1FY2L0kE
+         P9M9MDJaqj1A17gPCRAVAzwD/M9BFvhR3D9xEnKxXmhFjE3N4AFOrusE/5+z1f+RKpV4
+         As+Q==
+X-Gm-Message-State: ABy/qLbKP7jt0mW2c2WKPZlYzGAoBehOpSyuhLK92u0xcZo2zpQOggSD
+        tJ9H25kxLLWOY3BvA/L7b6KVcA==
+X-Google-Smtp-Source: APBJJlFlh8jTiL5Fqlv9Labt5kPhUqu1Mydh9K2EVtifJxi6rOHGarAs9UJGSqlz51WFJVdcIGWexg==
+X-Received: by 2002:a5d:67c9:0:b0:313:ece8:e05c with SMTP id n9-20020a5d67c9000000b00313ece8e05cmr3230412wrw.33.1689318837343;
+        Fri, 14 Jul 2023 00:13:57 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.223.104])
+        by smtp.gmail.com with ESMTPSA id f14-20020a5d58ee000000b003143c532431sm10042716wrd.27.2023.07.14.00.13.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jul 2023 00:13:56 -0700 (PDT)
+Message-ID: <0b9dd5cf-f4ca-2e6b-624d-0b451bbc2f30@linaro.org>
+Date:   Fri, 14 Jul 2023 09:13:53 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [v6 2/4] dt-bindings: hwmon: Add ASPEED TACH Control
+ documentation
+To:     =?UTF-8?B?6JSh5om/6YGU?= <billyking19920205@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "jdelvare@suse.com" <jdelvare@suse.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "joel@jms.id.au" <joel@jms.id.au>,
+        "andrew@aj.id.au" <andrew@aj.id.au>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "patrick@stwcx.xyz" <patrick@stwcx.xyz>,
+        Billy Tsai <billy_tsai@aspeedtech.com>
+References: <CAGUgbhCqOJaEPjS96o2au21uW4NhqFScm4Ayd8PzOQvqxQ94SQ@mail.gmail.com>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAGUgbhCqOJaEPjS96o2au21uW4NhqFScm4Ayd8PzOQvqxQ94SQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=960; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=roYStbkk1k9kd6bMiRdxym5fMMZxiZG1Gx7zZMzyyms=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksB2M89QNNqHnbV4EJeLcuzOQoURLQsl6THfDG XMMl7qJUeWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLAdjAAKCRCPgPtYfRL+ TspWB/wPt8DYaolcgPPyUUlRb8s6zVDpmXGNGelyQv/6R5N+iQWowqI8lZ3w4tJY1xh0tpKCvmW 6wbVZfJoqHy/8QsE0+WA0hwiYM5JqCzlORhgJC0aVkCPyzsEEr4A4qkyGHVhg1HN3Jd6jjMfUww s6X1AcU9jfbs0lj3L73Rl2atzVSwZ2A/xXUDucdq+LT6PgNU6DVW5beiASLFqyRjCK7ZH9oiy3+ bRLXjgdCplak2iRaYCSYD5ttGMLdJhhVMMAr0Y6S/zdu/KNdBcEfGYx7NoyVFqUt39X8aggZ+DP a6Q1+A5xilV52E7GUYRLPoe6MJ6l5dUasTa5eNKCErzzc3ao
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-A consumer is expected to disable a PWM before calling pwm_put(). And if
-they didn't there is hopefully a good reason (or the consumer needs
-fixing). Also if disabling an enabled PWM was the right thing to do,
-this should better be done in the framework instead of in each low level
-driver.
+On 14/07/2023 09:04, 蔡承達 wrote:
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-stm32.c | 4 ----
- 1 file changed, 4 deletions(-)
+>         > This is because our register layout for PWM and Tach is not
+> continuous.
+> 
+>         > PWM0 used 0x0 0x4, Tach0 used 0x8 0xc
+> 
+>         > PWM1 used 0x10 0x14, Tach1 used 0x18 0x1c
+> 
+>         > ...
+> 
+>         > Each PWM/Tach instance has its own controller register and is not
+> dependent on others.
 
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index 62e397aeb9aa..687967d3265f 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -649,10 +649,6 @@ static int stm32_pwm_probe(struct platform_device *pdev)
- static void stm32_pwm_remove(struct platform_device *pdev)
- {
- 	struct stm32_pwm *priv = platform_get_drvdata(pdev);
--	unsigned int i;
--
--	for (i = 0; i < priv->chip.npwm; i++)
--		pwm_disable(&priv->chip.pwms[i]);
- 
- 	pwmchip_remove(&priv->chip);
- }
--- 
-2.39.2
+Your email reply quoting style is very difficult to read.
+
+> 
+> 
+> 
+> Hi Guenter,
+> 
+> 
+> 
+> Did you receive a response to my previous email?
+> 
+> I would like to inquire if you have any further concerns regarding the PWM
+> and Tach with 16 instances.
+
+But isn't like this in all PWMs in all SoCs?
+
+Best regards,
+Krzysztof
 
