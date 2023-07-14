@@ -2,62 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A95EAEB64DC
-	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 20:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C31C0015E
+	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 21:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236173AbjGNU4t (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 14 Jul 2023 16:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
+        id S229965AbjGNVpe (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 14 Jul 2023 17:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236023AbjGNU4s (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 16:56:48 -0400
+        with ESMTP id S229574AbjGNVpd (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 17:45:33 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7275B2690
-        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 13:56:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D2335A6
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 14:45:31 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq6-000842-LE; Fri, 14 Jul 2023 22:56:34 +0200
+        id 1qKQbR-0004IW-Il; Fri, 14 Jul 2023 23:45:29 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq3-00EQSG-90; Fri, 14 Jul 2023 22:56:31 +0200
+        id 1qKQbP-00ER0X-JW; Fri, 14 Jul 2023 23:45:27 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq2-004u3i-Cn; Fri, 14 Jul 2023 22:56:30 +0200
+        id 1qKQbO-004ugD-UR; Fri, 14 Jul 2023 23:45:26 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Florian Fainelli <florian.fainelli@broadcom.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Benson Leung <bleung@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Michael Walle <michael@walle.cc>,
-        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev,
-        linux-rockchip@lists.infradead.org,
-        linux-riscv@lists.infradead.org, greybus-dev@lists.linaro.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH 00/10] pwm: Constistenly name pwm_chip variables "chip"
-Date:   Fri, 14 Jul 2023 22:56:13 +0200
-Message-Id: <20230714205623.2496590-1-u.kleine-koenig@pengutronix.de>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     linux-pwm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de
+Subject: [PATCH 1/2] pwm: stmpe: Handle errors when disabling the signal
+Date:   Fri, 14 Jul 2023 23:45:18 +0200
+Message-Id: <20230714214519.2503468-1-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2799; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=V7W84rybwTdl40fJ1/AnlC1GGwwH+0UF4315YjbNZQU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksbZmu/FZ2fPKgYn+/w94O57gxudeeMLxEF38z Ka6/i36EPaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLG2ZgAKCRCPgPtYfRL+ Tr4aB/4kqY/a6BiMImBSLY61OyPOnkuRIsinCl91rdovh7+kgX2bxm4NOx2HpmLCkpbLgvTTGfe pVoVy7stf8h8nsV1bDVdAvTTRwse8oJGC/KcNH/sHxM3suaq6DIGhGo1Nb32+md2vc1LlWLslH2 mszcZlFV4BmYbl1jQUVOQ8KxfllFgtJPyHa/nvdjgeu2YzuxgkbzF/M2GD5dVEhcFao9uRXgbBy JgeRdj3szzC/ywFnL+GeqYi7Zi0gJ+OPi6SPnmUpUbfh1BKgTJJbF7+vSqoiSXx5vHLr3j7azgv tTi4ObF/obQigO4ODWvuMSwUJ01I3X/+sHgjtV0FaFfolv/W
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2206; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=/NLXX93dNegW8/RPV4eZsWEDxqUOClEE95P3xGBbnoQ=; b=owGbwMvMwMXY3/A7olbonx/jabUkhpSNB9/qR6tP29mU8sfOXsF5tjCXtvrcM1xxU792d99c3 D6Nd6p0J6MxCwMjF4OsmCKLfeOaTKsqucjOtf8uwwxiZQKZwsDFKQATyT7M/lcuy1E8snLV60VP ky5NdlpRXXbm2LZ7+SVaxzxS9CaFfJss2pJ6feUJORs2tj/RHm4pf4S/K3S2TxI7LVi45s3nuXy dxZN8c/2i55VL64Xo9TFvlX7d6rg3rGnm3FkatR7tXvZx0hfDbf7r74wUepGY9oJ/oceLpzXJT3 jiJiq9P+tn+Z2fo+g1o7KZbbad5dp7Qe+bNv016Z2tt5Bjj7yYcp7Pput8UqXrpez1GsWd8+qV3 S58WH9p1xv9Q080HgZOiluc8GSuhOd6NfnN2epfF325bFaw5u3V5plZKwu1ttVU6t/584tLUHS6 o8uqpdPqTONCVX+dnOVwtuuj5dcU+Q1r7EzKa7Skoix8AQ==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -68,67 +50,74 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-while working on an extension for the pwm framework, I noticed that some
-drivers and even the core only nearly consistently named all variables
-and struct members holding a pointer to a struct pwm_chip "chip":
+Before the pwm framework implementedatomic updates (with the .apply()
+callback) the .disable() callback returned void. This is still visible
+in the stmpe driver which drops errors in the disable path.
 
-$ git grep -Pho 'struct pwm_chip \**[a-z0-9_]+(*nla:[\(a-z0-9_])' v6.5-rc1 | sort | uniq -c | sort -n
-      1 struct pwm_chip *pwm
-      1 struct pwm_chip pwm
-      1 struct pwm_chip pwm_chip
-      2 struct pwm_chip *_chip
-      4 struct pwm_chip *c
-      8 struct pwm_chip *pc
-     57 struct pwm_chip chip
-    358 struct pwm_chip *chip
+Improve the driver to forward failures in stmpe_24xx_pwm_disable() to
+the caller of pwm_apply_state().
 
-With this series applied these are all called "chip" with one exception:
-The led driver drivers/leds/rgb/leds-qcom-lpg.c uses "pwm". Maybe
-"pwmchip" would be a better name, but I'm not sure that using "chip" was
-an improvement there as this isn't a pure pwm driver. I'm not touching
-that one.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-stmpe.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-The first offenders I found were the core and the atmel-hlcdc driver.
-After I found these I optimistically assumed these were the only ones
-with the unusual names and send patches for these out individually
-before checking systematically.
-
-The atmel-hlcdc patch is included here unchanged, the core patch now
-also adapted the declaration of the changed functions in <linux/pwm.h>.
-I marked these two as "superseded" in patchwork already.
-
-All patches in this series are pairwise independent of each other. I
-don't know if the staging patch should better go in via the greybus tree
-or via pwm. Both is possible without needing coordination.
-
-Best regards
-Uwe
-
-
-Uwe Kleine-König (10):
-  pwm: Use a consistent name for pwm_chip pointers in the core
-  pwm: atmel-hlcdc: Use consistent variable naming
-  pwm: bcm-kona: Consistenly name pwm_chip variables "chip"
-  pwm: crc: Consistenly name pwm_chip variables "chip"
-  pwm: cros-ec: Consistenly name pwm_chip variables "chip"
-  pwm: lp3943: Consistenly name pwm_chip variables "chip"
-  pwm: rockchip: Consistenly name pwm_chip variables "chip"
-  pwm: sifive: Consistenly name pwm_chip variables "chip"
-  pwm: sl28cpld: Consistenly name pwm_chip variables "chip"
-  staging: greybus: pwm: Consistenly name pwm_chip variables "chip"
-
- drivers/pwm/core.c            | 28 +++++++--------
- drivers/pwm/pwm-atmel-hlcdc.c | 64 +++++++++++++++++------------------
- drivers/pwm/pwm-bcm-kona.c    |  4 +--
- drivers/pwm/pwm-crc.c         |  4 +--
- drivers/pwm/pwm-cros-ec.c     | 10 +++---
- drivers/pwm/pwm-lp3943.c      |  4 +--
- drivers/pwm/pwm-rockchip.c    |  4 +--
- drivers/pwm/pwm-sifive.c      |  4 +--
- drivers/pwm/pwm-sl28cpld.c    | 10 +++---
- drivers/staging/greybus/pwm.c | 12 +++----
- include/linux/pwm.h           |  6 ++--
- 11 files changed, 75 insertions(+), 75 deletions(-)
+diff --git a/drivers/pwm/pwm-stmpe.c b/drivers/pwm/pwm-stmpe.c
+index 5d4a4762ce0c..e205405c4828 100644
+--- a/drivers/pwm/pwm-stmpe.c
++++ b/drivers/pwm/pwm-stmpe.c
+@@ -61,8 +61,8 @@ static int stmpe_24xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	return 0;
+ }
+ 
+-static void stmpe_24xx_pwm_disable(struct pwm_chip *chip,
+-				   struct pwm_device *pwm)
++static int stmpe_24xx_pwm_disable(struct pwm_chip *chip,
++				  struct pwm_device *pwm)
+ {
+ 	struct stmpe_pwm *stmpe_pwm = to_stmpe_pwm(chip);
+ 	u8 value;
+@@ -72,17 +72,16 @@ static void stmpe_24xx_pwm_disable(struct pwm_chip *chip,
+ 	if (ret < 0) {
+ 		dev_err(chip->dev, "error reading PWM#%u control\n",
+ 			pwm->hwpwm);
+-		return;
++		return ret;
+ 	}
+ 
+ 	value = ret & ~BIT(pwm->hwpwm);
+ 
+ 	ret = stmpe_reg_write(stmpe_pwm->stmpe, STMPE24XX_PWMCS, value);
+-	if (ret) {
++	if (ret)
+ 		dev_err(chip->dev, "error writing PWM#%u control\n",
+ 			pwm->hwpwm);
+-		return;
+-	}
++	return ret;
+ }
+ 
+ /* STMPE 24xx PWM instructions */
+@@ -111,7 +110,9 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	/* Make sure we are disabled */
+ 	if (pwm_is_enabled(pwm)) {
+-		stmpe_24xx_pwm_disable(chip, pwm);
++		ret = stmpe_24xx_pwm_disable(chip, pwm);
++		if (ret)
++			return ret;
+ 	} else {
+ 		/* Connect the PWM to the pin */
+ 		pin = pwm->hwpwm;
+@@ -269,7 +270,7 @@ static int stmpe_24xx_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	if (!state->enabled) {
+ 		if (pwm->state.enabled)
+-			stmpe_24xx_pwm_disable(chip, pwm);
++			return stmpe_24xx_pwm_disable(chip, pwm);
+ 
+ 		return 0;
+ 	}
 
 base-commit: 06c2afb862f9da8dc5efa4b6076a0e48c3fbaaa5
 -- 
