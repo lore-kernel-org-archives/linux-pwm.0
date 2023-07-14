@@ -2,45 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBED4EB64DC
-	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 20:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1538FC00528
+	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 20:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235997AbjGNU4k (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S235982AbjGNU4k (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Fri, 14 Jul 2023 16:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39376 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235982AbjGNU4h (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 16:56:37 -0400
+        with ESMTP id S233424AbjGNU4i (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 16:56:38 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BE42690
-        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 13:56:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A76B35AE
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 13:56:37 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq6-00084f-9H; Fri, 14 Jul 2023 22:56:34 +0200
+        id 1qKPq7-00086r-1B; Fri, 14 Jul 2023 22:56:35 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq5-00EQSi-EE; Fri, 14 Jul 2023 22:56:33 +0200
+        id 1qKPq6-00EQSu-8D; Fri, 14 Jul 2023 22:56:34 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq4-004u40-7w; Fri, 14 Jul 2023 22:56:32 +0200
+        id 1qKPq5-004u4E-Cj; Fri, 14 Jul 2023 22:56:33 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Benson Leung <bleung@chromium.org>
-Cc:     Guenter Roeck <groeck@chromium.org>, linux-pwm@vger.kernel.org,
-        chrome-platform@lists.linux.dev, kernel@pengutronix.de
-Subject: [PATCH 05/10] pwm: cros-ec: Consistenly name pwm_chip variables "chip"
-Date:   Fri, 14 Jul 2023 22:56:18 +0200
-Message-Id: <20230714205623.2496590-6-u.kleine-koenig@pengutronix.de>
+To:     Michael Walle <michael@walle.cc>,
+        Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH 09/10] pwm: sl28cpld: Consistenly name pwm_chip variables "chip"
+Date:   Fri, 14 Jul 2023 22:56:22 +0200
+Message-Id: <20230714205623.2496590-10-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230714205623.2496590-1-u.kleine-koenig@pengutronix.de>
 References: <20230714205623.2496590-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1612; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=/XQEq+e5W3KSA0lJPIW8P70ch6JNuOC7ep9WZ2SJtN0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksbZsernZYc1YfffBzA7jbAo4jX983pyAi3rjS 9rALaNGCduJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLG2bAAKCRCPgPtYfRL+ ToqCB/0UxIcSEKwlzmVQnXkMFwc1BjdbTtsBGU5YSl1KdSiCkp/5Wi8Yl+MsRclctEbHuKL8QP/ r57MmJ7oa9fThSRBhKGZ4GNcmlq4AaIrqCLhubcJjSgZzwc8uPU6NfDh1o1iq1KrJcKUjGuPzC0 zUgm85uI5uFNBeFZnSUEuhQiKluzIX1KcGx2kvSi+SOq9gGH57FLbaTXSJ4ssIah+bDTnWpmXNL aXnbg8eqZDaD1LeCaSNEk1Zd8jz+jvSp+aYe/mdGnXKoLup7QYm2KPkc2KvP1cEESRP0dVqlPj6 5qEGqVRhmDWyTCoPdQJU4E5hNTtH4hkMVK75B5XdOGH8xbyM
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1639; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=SJjW17FBiHxP3Y8vj01SqXzTORFrpwS9wr9b6xSM75U=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksbZwDvNLmoDKHzo0CRLIlABxtnccR4EbGTRnW dEXwyHmfmOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLG2cAAKCRCPgPtYfRL+ TvE3B/9RybQX/FULwrVe+GidmZEcZkGGbBVcuYP0/tN2Z7m8HOLGeKMpaaTruW50J1l0e/Fc52e tPMRyieoV5ffIbIaZ+N3E8Gcf63A9u/Mt5NXfRSmOzUh56Lqg+fxQWcUIpusc7HHumxK54g0PhL RP06zKJYV1IfWo2xo3XhfYSy6Kw9L5HV54h3GxwAJzbFFRWqg6QuPxNE5UHoy5GTglWRMzJMzyy g2yAPAk+Rdf03tvDjiWS13sueVjkFCmSF8H1YHCRknL0OrqZWj9fd5Qv2wAlo3d9mBV6DvqeVT7 I14zFtZ4RonTZlTpqyeHNdJVFlNNUTuuNNSVeA6yseXhLags
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,50 +50,53 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Most variables holding a pointer to a pwm_chip are called "chip" which
-is also the usual name in most other pwm drivers. Rename the two
-variables that have a different name to be called "chip", too, for
-consistency.
+Nearly all pwm drivers use the name "chip" for the member in the driver
+struct pointing to the pwm_chip. Also all local variables and function
+parameters with this type use this name. Rename the struct pwm_chip
+member accordingly for consistency.
+
+Also rename the parameter of the macro sl28cpld_pwm_from_chip to "chip".
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-cros-ec.c | 10 +++++-----
+ drivers/pwm/pwm-sl28cpld.c | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-index 74e863aa1d8d..154ca0f90847 100644
---- a/drivers/pwm/pwm-cros-ec.c
-+++ b/drivers/pwm/pwm-cros-ec.c
-@@ -37,9 +37,9 @@ struct cros_ec_pwm {
- 	u16 duty_cycle;
+diff --git a/drivers/pwm/pwm-sl28cpld.c b/drivers/pwm/pwm-sl28cpld.c
+index e64900ad4ba1..98b0024f9658 100644
+--- a/drivers/pwm/pwm-sl28cpld.c
++++ b/drivers/pwm/pwm-sl28cpld.c
+@@ -80,12 +80,12 @@
+ 	regmap_write((priv)->regmap, (priv)->offset + (reg), (val))
+ 
+ struct sl28cpld_pwm {
+-	struct pwm_chip pwm_chip;
++	struct pwm_chip chip;
+ 	struct regmap *regmap;
+ 	u32 offset;
  };
+-#define sl28cpld_pwm_from_chip(_chip) \
+-	container_of(_chip, struct sl28cpld_pwm, pwm_chip)
++#define sl28cpld_pwm_from_chip(chip) \
++	container_of(chip, struct sl28cpld_pwm, chip)
  
--static inline struct cros_ec_pwm_device *pwm_to_cros_ec_pwm(struct pwm_chip *c)
-+static inline struct cros_ec_pwm_device *pwm_to_cros_ec_pwm(struct pwm_chip *chip)
- {
--	return container_of(c, struct cros_ec_pwm_device, chip);
-+	return container_of(chip, struct cros_ec_pwm_device, chip);
- }
+ static int sl28cpld_pwm_get_state(struct pwm_chip *chip,
+ 				  struct pwm_device *pwm,
+@@ -228,12 +228,12 @@ static int sl28cpld_pwm_probe(struct platform_device *pdev)
+ 	}
  
- static int cros_ec_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
-@@ -218,14 +218,14 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- }
+ 	/* Initialize the pwm_chip structure */
+-	chip = &priv->pwm_chip;
++	chip = &priv->chip;
+ 	chip->dev = &pdev->dev;
+ 	chip->ops = &sl28cpld_pwm_ops;
+ 	chip->npwm = 1;
  
- static struct pwm_device *
--cros_ec_pwm_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
-+cros_ec_pwm_xlate(struct pwm_chip *chip, const struct of_phandle_args *args)
- {
- 	struct pwm_device *pwm;
- 
--	if (args->args[0] >= pc->npwm)
-+	if (args->args[0] >= chip->npwm)
- 		return ERR_PTR(-EINVAL);
- 
--	pwm = pwm_request_from_chip(pc, args->args[0], NULL);
-+	pwm = pwm_request_from_chip(chip, args->args[0], NULL);
- 	if (IS_ERR(pwm))
- 		return pwm;
- 
+-	ret = devm_pwmchip_add(&pdev->dev, &priv->pwm_chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to add PWM chip (%pe)",
+ 			ERR_PTR(ret));
 -- 
 2.39.2
 
