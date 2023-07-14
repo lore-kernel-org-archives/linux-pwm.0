@@ -2,43 +2,43 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9C2C001DD
-	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 20:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE55C001B0
+	for <linux-pwm@archiver.kernel.org>; Fri, 14 Jul 2023 20:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235416AbjGNU4h (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 14 Jul 2023 16:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
+        id S236085AbjGNU4i (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 14 Jul 2023 16:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233424AbjGNU4f (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 16:56:35 -0400
+        with ESMTP id S235924AbjGNU4g (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Jul 2023 16:56:36 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F066A2690
-        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 13:56:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8452D55
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Jul 2023 13:56:35 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq5-00084K-A7; Fri, 14 Jul 2023 22:56:33 +0200
+        id 1qKPq6-00084e-0x; Fri, 14 Jul 2023 22:56:34 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq4-00EQSU-LV; Fri, 14 Jul 2023 22:56:32 +0200
+        id 1qKPq5-00EQSd-BJ; Fri, 14 Jul 2023 22:56:33 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qKPq3-004u3w-QK; Fri, 14 Jul 2023 22:56:31 +0200
+        id 1qKPq4-004u43-Ku; Fri, 14 Jul 2023 22:56:32 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 04/10] pwm: crc: Consistenly name pwm_chip variables "chip"
-Date:   Fri, 14 Jul 2023 22:56:17 +0200
-Message-Id: <20230714205623.2496590-5-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 06/10] pwm: lp3943: Consistenly name pwm_chip variables "chip"
+Date:   Fri, 14 Jul 2023 22:56:19 +0200
+Message-Id: <20230714205623.2496590-7-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230714205623.2496590-1-u.kleine-koenig@pengutronix.de>
 References: <20230714205623.2496590-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=955; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=DGpagzOQQWScVSMO2FdGrPGN0r3oXGpCrthVu6NG7Jg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksbZrnDfEZdoR8Jrb3nlwnC5fS1ZGuCo5CDNF7 Irb3v+YECKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLG2awAKCRCPgPtYfRL+ TnHqB/9g+rOWCGctg4MbC7ylrd6oTb98Vv51bkRiEhM4je9shI8sWpF+z9LBzMzaTQoKcWbeQ+o 3Wh+Fto9KzLsYNOI26gpj6VQl6h0woCjiekX/yRGFCo4xiI9oqgi/En9ZrFWP8OJsqpJvvDvH+T dOKkoUlXsiVbvwlsEwYuKnCxW2TqgxXF8lLUGX/rZFAtNFECbpNzTHNgKkyItGN31OeuDsfCoi4 q7TOILNNp1qOPMeAcKA3j5c8cZVdfMyAq/8CS42Vn8W1nxDw745bLCcDq00UtTN4MPsTCGVIZrI +xkR96Xb+HMc1v3A9fyup0AgTOkC9mCSreIQveoOMYDAXrDO
+X-Developer-Signature: v=1; a=openpgp-sha256; l=954; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=7DtDH1z9F6WLjXpcvC+bFF+KQPKuiR1MWLgTFK6z4j8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBksbZt0HewbfplSY7UMIYeU1MnywBXwRqy35PQF mrAO4wL3XiJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLG2bQAKCRCPgPtYfRL+ TjzlB/4goTa38C/13y+toERC/ND/hwB/JqHL4wv3kZ025D1cxWCotDJNY6f+sDfrH7qbKFdCi9f CzDloVsZ+dNEpkZmb69FSgSHyW+4QUqCW17cSSXm9u4wlhNWiCQeMQFbVn5ecFxAnRRBYWP8nen 2RuUOfnx5NbxFVtnUp6ENjy0+xDobgfNzhbvqg3r04Lnf6vUAwyjvDM4YWmyquyUbVkn9X8rWRM BBijRT6KIwZ6Hv29ZI/sUXpWtOcUwahZlM67F4vYnulYZCW1SpwN76euUClvHSU8Bf5Lip5fDxh LwCxHMG6RNA9/OBRJs+JFUGtfnHiHY/j0hUTF+QHHWoZw46u
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,25 +56,25 @@ consistency.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-crc.c | 4 ++--
+ drivers/pwm/pwm-lp3943.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
-index 4703b4a0b6e4..b9f063dc6b5f 100644
---- a/drivers/pwm/pwm-crc.c
-+++ b/drivers/pwm/pwm-crc.c
-@@ -34,9 +34,9 @@ struct crystalcove_pwm {
- 	struct regmap *regmap;
+diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
+index 35675e4058c6..a39411b87e19 100644
+--- a/drivers/pwm/pwm-lp3943.c
++++ b/drivers/pwm/pwm-lp3943.c
+@@ -24,9 +24,9 @@ struct lp3943_pwm {
+ 	struct lp3943_platform_data *pdata;
  };
  
--static inline struct crystalcove_pwm *to_crc_pwm(struct pwm_chip *pc)
-+static inline struct crystalcove_pwm *to_crc_pwm(struct pwm_chip *chip)
+-static inline struct lp3943_pwm *to_lp3943_pwm(struct pwm_chip *_chip)
++static inline struct lp3943_pwm *to_lp3943_pwm(struct pwm_chip *chip)
  {
--	return container_of(pc, struct crystalcove_pwm, chip);
-+	return container_of(chip, struct crystalcove_pwm, chip);
+-	return container_of(_chip, struct lp3943_pwm, chip);
++	return container_of(chip, struct lp3943_pwm, chip);
  }
  
- static int crc_pwm_calc_clk_div(int period_ns)
+ static struct lp3943_pwm_map *
 -- 
 2.39.2
 
