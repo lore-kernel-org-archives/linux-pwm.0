@@ -2,43 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDE6C04E69
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1924C04A94
 	for <linux-pwm@archiver.kernel.org>; Tue, 18 Jul 2023 18:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbjGRSTM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 18 Jul 2023 14:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
+        id S229679AbjGRSTN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 18 Jul 2023 14:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbjGRSTH (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Jul 2023 14:19:07 -0400
+        with ESMTP id S229499AbjGRSTI (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Jul 2023 14:19:08 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB755FC
-        for <linux-pwm@vger.kernel.org>; Tue, 18 Jul 2023 11:19:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E81E4C
+        for <linux-pwm@vger.kernel.org>; Tue, 18 Jul 2023 11:19:02 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qLpHm-0001pB-NT; Tue, 18 Jul 2023 20:18:58 +0200
+        id 1qLpHn-0001sH-OA; Tue, 18 Jul 2023 20:18:59 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qLpHm-000QnB-2H; Tue, 18 Jul 2023 20:18:58 +0200
+        id 1qLpHm-000QnS-Q2; Tue, 18 Jul 2023 20:18:58 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qLpHl-005uo3-85; Tue, 18 Jul 2023 20:18:57 +0200
+        id 1qLpHm-005uoK-0h; Tue, 18 Jul 2023 20:18:58 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>
+To:     =?utf-8?q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 11/18] pwm: keembay: Make use of devm_pwmchip_alloc() function
-Date:   Tue, 18 Jul 2023 20:18:42 +0200
-Message-Id: <20230718181849.3947851-12-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 15/18] pwm: ntxec: Make use of devm_pwmchip_alloc() function
+Date:   Tue, 18 Jul 2023 20:18:46 +0200
+Message-Id: <20230718181849.3947851-16-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230718181849.3947851-1-u.kleine-koenig@pengutronix.de>
 References: <20230718181849.3947851-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1992; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=uoekT70U4Zudq+P9umavLUrCK4krsurwuumNwfuMzFg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkttbz0J/IEa9k4sO8iTH2cQgChvYcbjkVtAwez 17cAHcHVMmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLbW8wAKCRCPgPtYfRL+ TgDOCACR7t3rMsiUp3waDscwc2WkrM8pqGrmMxKKxsr7k7xZ4pbtfUQy2/x7a1b81Ue+CrhAq33 YMhxf9h2mIMBRDagYN6ygEqmpVJDSsGvIpNI64e7w+2/Ukc/g+QqOzAPhB1ukJg0Kf6kJMjaN5z idYTNA6BLia21KU9clpc5c+2fNRXJ3S4bxKT4zeICsof5HBzyvkuwGPNBBVzn27VYsJgGdXmLo3 dlOXnin1V26ax+pD1Ztomp8pX81mZByEYwBwclDOJ/7yP2p3ofvVnkPqX15viAnvEWYfxTXYeCt Lg1a+sK+fVy+rL6A+MgNuiVM8mt1T1Z3iYGv+Ul6T30+EdvV
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3410; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=cfkxe4/PGU/s4RvWZbKOhSBqE0JWvWZ0SuIUChZb3lA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkttb4HQIGdDxv5tifsjFNeQ0UZGrO48c0t4cfo wiW3eDaF3GJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLbW+AAKCRCPgPtYfRL+ TpS4B/9e3MydUte6KtnEZAil83qD5wx+eUT3Cv3a3BDU/Zc4zJAVv+mSkxlQVE6yLUJA8UvB7zF 1s9yCkk72IANLquXfqGnAxVtAAxjqWfaGhEf6uuNdAUk89iGLn8GtmUQRJaVlhZCoHL8mEFbU0x YTXPDxqTBivq0Ae5SPsO4zvJNXat4dZt0irxq9HSHrgjqdZPLb7K2AvYfCzQ8ZLRl3ZEp3Pvcjn jNSbtsYHR5tY/pcvWa3TPojMsymUD7ouxMtAjfVb3WiLJwp9Ek7/SdJlNGuPZ6OFdq7lZljmKbj XfZZsGkLt+BnWTnLX/hhwNsAneC7prju68iGniM74pAUGa/w
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -49,67 +50,105 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-keembay driver to further changes of the pwm core
+This prepares the pwm-ntxec driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-keembay.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-ntxec.c | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/pwm-keembay.c b/drivers/pwm/pwm-keembay.c
-index ac02d8bb4a0b..ceef94080823 100644
---- a/drivers/pwm/pwm-keembay.c
-+++ b/drivers/pwm/pwm-keembay.c
-@@ -36,7 +36,6 @@
- #define KMB_PWM_HIGHLOW_OFFSET(ch)	(0x20 + 4 * (ch))
+diff --git a/drivers/pwm/pwm-ntxec.c b/drivers/pwm/pwm-ntxec.c
+index 7514ea384ec5..6f266c24d012 100644
+--- a/drivers/pwm/pwm-ntxec.c
++++ b/drivers/pwm/pwm-ntxec.c
+@@ -25,12 +25,11 @@
  
- struct keembay_pwm {
+ struct ntxec_pwm {
+ 	struct ntxec *ec;
 -	struct pwm_chip chip;
- 	struct device *dev;
- 	struct clk *clk;
- 	void __iomem *base;
-@@ -44,7 +43,7 @@ struct keembay_pwm {
+ };
  
- static inline struct keembay_pwm *to_keembay_pwm_dev(struct pwm_chip *chip)
+ static struct ntxec_pwm *ntxec_pwm_from_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct keembay_pwm, chip);
+-	return container_of(chip, struct ntxec_pwm, chip);
 +	return pwmchip_priv(chip);
  }
  
- static void keembay_clk_unprepare(void *data)
-@@ -186,12 +185,14 @@ static const struct pwm_ops keembay_pwm_ops = {
- static int keembay_pwm_probe(struct platform_device *pdev)
+ #define NTXEC_REG_AUTO_OFF_HI	0xa1
+@@ -57,7 +56,7 @@ static struct ntxec_pwm *ntxec_pwm_from_chip(struct pwm_chip *chip)
+ static int ntxec_pwm_set_raw_period_and_duty_cycle(struct pwm_chip *chip,
+ 						   int period, int duty)
  {
- 	struct device *dev = &pdev->dev;
-+	struct pwm_chip *chip;
- 	struct keembay_pwm *priv;
- 	int ret;
+-	struct ntxec_pwm *priv = ntxec_pwm_from_chip(chip);
++	struct ntxec *ec = ntxec_pwm_from_chip(chip)->ec;
  
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 	/*
+ 	 * Changes to the period and duty cycle take effect as soon as the
+@@ -77,13 +76,13 @@ static int ntxec_pwm_set_raw_period_and_duty_cycle(struct pwm_chip *chip,
+ 		{ NTXEC_REG_DUTY_LOW, ntxec_reg8(duty) },
+ 	};
+ 
+-	return regmap_multi_reg_write(priv->ec->regmap, regs, ARRAY_SIZE(regs));
++	return regmap_multi_reg_write(ec->regmap, regs, ARRAY_SIZE(regs));
+ }
+ 
+ static int ntxec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm_dev,
+ 			   const struct pwm_state *state)
+ {
+-	struct ntxec_pwm *priv = ntxec_pwm_from_chip(chip);
++	struct ntxec *ec = ntxec_pwm_from_chip(chip)->ec;
+ 	unsigned int period, duty;
+ 	int res;
+ 
+@@ -110,18 +109,18 @@ static int ntxec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm_dev,
+ 		if (res)
+ 			return res;
+ 
+-		res = regmap_write(priv->ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(1));
++		res = regmap_write(ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(1));
+ 		if (res)
+ 			return res;
+ 
+ 		/* Disable the auto-off timer */
+-		res = regmap_write(priv->ec->regmap, NTXEC_REG_AUTO_OFF_HI, ntxec_reg8(0xff));
++		res = regmap_write(ec->regmap, NTXEC_REG_AUTO_OFF_HI, ntxec_reg8(0xff));
+ 		if (res)
+ 			return res;
+ 
+-		return regmap_write(priv->ec->regmap, NTXEC_REG_AUTO_OFF_LO, ntxec_reg8(0xff));
++		return regmap_write(ec->regmap, NTXEC_REG_AUTO_OFF_LO, ntxec_reg8(0xff));
+ 	} else {
+-		return regmap_write(priv->ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(0));
++		return regmap_write(ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(0));
+ 	}
+ }
+ 
+@@ -136,20 +135,18 @@ static const struct pwm_ops ntxec_pwm_ops = {
+ 
+ static int ntxec_pwm_probe(struct platform_device *pdev)
+ {
+-	struct ntxec *ec = dev_get_drvdata(pdev->dev.parent);
+ 	struct ntxec_pwm *priv;
+ 	struct pwm_chip *chip;
+ 
+ 	device_set_of_node_from_dev(&pdev->dev, pdev->dev.parent);
+ 
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 -	if (!priv)
-+	chip = devm_pwmchip_alloc(dev, sizeof(*priv));
++	chip = devm_pwmchip_alloc(&pdev->dev, sizeof(*priv));
 +	if (!chip)
  		return -ENOMEM;
-+	priv = to_keembay_pwm_dev(chip);
++	priv = ntxec_pwm_from_chip(chip);
  
- 	priv->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(priv->clk))
-@@ -205,11 +206,10 @@ static int keembay_pwm_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
+-	priv->ec = ec;
++	priv->ec = dev_get_drvdata(pdev->dev.parent);
  
--	priv->chip.dev = dev;
--	priv->chip.ops = &keembay_pwm_ops;
--	priv->chip.npwm = KMB_TOTAL_PWM_CHANNELS;
-+	chip->ops = &keembay_pwm_ops;
-+	chip->npwm = KMB_TOTAL_PWM_CHANNELS;
- 
--	ret = devm_pwmchip_add(dev, &priv->chip);
-+	ret = devm_pwmchip_add(dev, chip);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to add PWM chip\n");
+-	chip = &priv->chip;
+-	chip->dev = &pdev->dev;
+ 	chip->ops = &ntxec_pwm_ops;
+ 	chip->npwm = 1;
  
 -- 
 2.39.2
