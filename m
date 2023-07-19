@@ -2,91 +2,163 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 338DAEB64DA
-	for <linux-pwm@archiver.kernel.org>; Wed, 19 Jul 2023 14:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC7B3C0015E
+	for <linux-pwm@archiver.kernel.org>; Wed, 19 Jul 2023 19:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbjGSOzf (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 19 Jul 2023 10:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
+        id S230464AbjGSTU1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 19 Jul 2023 15:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231651AbjGSOze (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Jul 2023 10:55:34 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715111711
-        for <linux-pwm@vger.kernel.org>; Wed, 19 Jul 2023 07:55:33 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id D8AFFA4E;
-        Wed, 19 Jul 2023 16:55:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1689778531;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/BezhgEZ3QJmVt+9N/3+8JtxlC8yi1o/bzbB/y9p854=;
-        b=S0oemUShZVYBo3j+OmsIkSWbQf1gMAFfwOEE8uTIo5ZxdxYzQPElZBbGfdUT9aSsBja8WI
-        85sh+hVmWwKbDSFY16+qbEYECosDIVyOsDe/543G1EGV8FTEJ6hbIbvV73b7PErV82qyKP
-        aOQ9UBP/mlazRMo3wIx00dLruq6gCgaUED8RAWZp8iirbs1zZOFTjPYSufc0QwrhAvy0tA
-        Ny40c5+3fx38J3dwvv5Ky5apqoPGnCVjbPbIOqQnXJywE3cUghFLVWLO49qNB4H+zaogaj
-        JUmciCObGNc8t3B1fQPnkhpX+FhopVbCXqUaiDBYFgVgXnJDUTh8QMe5U2Ao/Q==
-MIME-Version: 1.0
-Date:   Wed, 19 Jul 2023 16:55:31 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
+        with ESMTP id S229477AbjGSTU0 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Jul 2023 15:20:26 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5CB1FC8
+        for <linux-pwm@vger.kernel.org>; Wed, 19 Jul 2023 12:20:24 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qMCig-0000M2-Q4; Wed, 19 Jul 2023 21:20:18 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qMCig-000fhx-6d; Wed, 19 Jul 2023 21:20:18 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qMCie-006B2f-Id; Wed, 19 Jul 2023 21:20:16 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         kernel@pengutronix.de
-Subject: Re: [PATCH 09/10] pwm: sl28cpld: Consistenly name pwm_chip variables
- "chip"
-In-Reply-To: <20230719143956.6sv3feiroiwrcosb@pengutronix.de>
-References: <20230714205623.2496590-1-u.kleine-koenig@pengutronix.de>
- <20230714205623.2496590-10-u.kleine-koenig@pengutronix.de>
- <bc30d8483cb3eb901feb986ca88a02b9@walle.cc>
- <20230719143956.6sv3feiroiwrcosb@pengutronix.de>
-Message-ID: <9cb1b141e206dd9afd215d8886d688d9@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 1/5] pwm: atmel-tcb: Harmonize resource allocation order
+Date:   Wed, 19 Jul 2023 21:20:09 +0200
+Message-Id: <20230719192013.4051193-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230719192013.4051193-1-u.kleine-koenig@pengutronix.de>
+References: <20230719192013.4051193-1-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3477; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=2kq+R+5Zn44CCOqOoCGazyrrt9TPf/LePHtMVSTCn5s=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkuDdlHE1LvDQq5IQiEv3g9LlVYoPt0P6DzkAlE ucBc2JysLiJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLg3ZQAKCRCPgPtYfRL+ Tm2SB/0ULFnRxRVG8KLLtX4vCtw3byYDNeoGXgXxXhMHHSqkzPKHWDEU7TR6PwiKGmG5d097a/I uTEldH9kMvozzIaYApeSqXoiz/IdQcGBl4J8xP6D0A52PuY7JxYyGYarGpGwf/cLT4eSCdRCOPy L0Cz6FSMCS90X3wJPPfTBVHSAPL6On/FpmP1CtrmRU/60azVvwTEf6BcfUFv+x5oDvCszcotkMA KE1xBnKDRDfvspLP1/Q6S9Ef7prXWg42Q2JdFthFZzztyuj4QD5rKKCBzDy+EsFSlt9iMWNtUI4 Y/lFcHGMSmhSXWA8/bgL8DEDn8LYybcc+KoQauKPmzP2QykB
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi,
+Allocate driver data as first resource in the probe function. This way it
+can be used during allocation of the other resources (instead of assigning
+these to local variables first and update driver data only when it's
+allocated). Also as driver data is allocated using a devm function this
+should happen first to have the order of freeing resources in the error
+path and the remove function in reverse.
 
->> I'd expect it to be:
->> #define sl28cpld_pwm_from_chip(_chip) \
->> 	container_of(_chip, struct sl28cpld_pwm, chip)
-> 
-> Indeed, that's bogus. My preference would be to make this a static
-> inline, i.e.
-> 
-> diff --git a/drivers/pwm/pwm-sl28cpld.c b/drivers/pwm/pwm-sl28cpld.c
-> index 98b0024f9658..c789e934671e 100644
-> --- a/drivers/pwm/pwm-sl28cpld.c
-> +++ b/drivers/pwm/pwm-sl28cpld.c
-> @@ -84,8 +84,11 @@ struct sl28cpld_pwm {
->  	struct regmap *regmap;
->  	u32 offset;
->  };
-> -#define sl28cpld_pwm_from_chip(chip) \
-> -	container_of(chip, struct sl28cpld_pwm, chip)
-> +
-> +static inline struct sl28cpld_pwm *sl28cpld_pwm_from_chip(struct 
-> pwm_chip *chip)
-> +{
-> +	return container_of(chip, struct sl28cpld_pwm, chip);
-> +}
-> 
->  static int sl28cpld_pwm_get_state(struct pwm_chip *chip,
->  				  struct pwm_device *pwm,
-> 
-> but I can live with _chip, too.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-atmel-tcb.c | 49 +++++++++++++++----------------------
+ 1 file changed, 20 insertions(+), 29 deletions(-)
 
-I don't have a strong preference. Looks like most drivers use
-the inline. Go with that :)
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index 4a116dc44f6e..613dd1810fb5 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -422,13 +422,14 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 	struct atmel_tcb_pwm_chip *tcbpwm;
+ 	const struct atmel_tcb_config *config;
+ 	struct device_node *np = pdev->dev.of_node;
+-	struct regmap *regmap;
+-	struct clk *clk, *gclk = NULL;
+-	struct clk *slow_clk;
+ 	char clk_name[] = "t0_clk";
+ 	int err;
+ 	int channel;
+ 
++	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
++	if (tcbpwm == NULL)
++		return -ENOMEM;
++
+ 	err = of_property_read_u32(np, "reg", &channel);
+ 	if (err < 0) {
+ 		dev_err(&pdev->dev,
+@@ -437,47 +438,37 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 		return err;
+ 	}
+ 
+-	regmap = syscon_node_to_regmap(np->parent);
+-	if (IS_ERR(regmap))
+-		return PTR_ERR(regmap);
++	tcbpwm->regmap = syscon_node_to_regmap(np->parent);
++	if (IS_ERR(tcbpwm->regmap))
++		return PTR_ERR(tcbpwm->regmap);
+ 
+-	slow_clk = of_clk_get_by_name(np->parent, "slow_clk");
+-	if (IS_ERR(slow_clk))
+-		return PTR_ERR(slow_clk);
++	tcbpwm->slow_clk = of_clk_get_by_name(np->parent, "slow_clk");
++	if (IS_ERR(tcbpwm->slow_clk))
++		return PTR_ERR(tcbpwm->slow_clk);
+ 
+ 	clk_name[1] += channel;
+-	clk = of_clk_get_by_name(np->parent, clk_name);
+-	if (IS_ERR(clk))
+-		clk = of_clk_get_by_name(np->parent, "t0_clk");
+-	if (IS_ERR(clk))
+-		return PTR_ERR(clk);
++	tcbpwm->clk = of_clk_get_by_name(np->parent, clk_name);
++	if (IS_ERR(tcbpwm->clk))
++		tcbpwm->clk = of_clk_get_by_name(np->parent, "t0_clk");
++	if (IS_ERR(tcbpwm->clk))
++		return PTR_ERR(tcbpwm->clk);
+ 
+ 	match = of_match_node(atmel_tcb_of_match, np->parent);
+ 	config = match->data;
+ 
+ 	if (config->has_gclk) {
+-		gclk = of_clk_get_by_name(np->parent, "gclk");
+-		if (IS_ERR(gclk))
+-			return PTR_ERR(gclk);
+-	}
+-
+-	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
+-	if (tcbpwm == NULL) {
+-		err = -ENOMEM;
+-		goto err_slow_clk;
++		tcbpwm->gclk = of_clk_get_by_name(np->parent, "gclk");
++		if (IS_ERR(tcbpwm->gclk))
++			return PTR_ERR(tcbpwm->gclk);
+ 	}
+ 
+ 	tcbpwm->chip.dev = &pdev->dev;
+ 	tcbpwm->chip.ops = &atmel_tcb_pwm_ops;
+ 	tcbpwm->chip.npwm = NPWM;
+ 	tcbpwm->channel = channel;
+-	tcbpwm->regmap = regmap;
+-	tcbpwm->clk = clk;
+-	tcbpwm->gclk = gclk;
+-	tcbpwm->slow_clk = slow_clk;
+ 	tcbpwm->width = config->counter_width;
+ 
+-	err = clk_prepare_enable(slow_clk);
++	err = clk_prepare_enable(tcbpwm->slow_clk);
+ 	if (err)
+ 		goto err_slow_clk;
+ 
+@@ -495,7 +486,7 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(tcbpwm->slow_clk);
+ 
+ err_slow_clk:
+-	clk_put(slow_clk);
++	clk_put(tcbpwm->slow_clk);
+ 
+ 	return err;
+ }
+-- 
+2.39.2
 
--michael
