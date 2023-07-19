@@ -2,30 +2,30 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBD75C001E0
-	for <linux-pwm@archiver.kernel.org>; Wed, 19 Jul 2023 19:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB242C00528
+	for <linux-pwm@archiver.kernel.org>; Wed, 19 Jul 2023 19:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbjGSTU1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 19 Jul 2023 15:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49048 "EHLO
+        id S229604AbjGSTU3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 19 Jul 2023 15:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230390AbjGSTU1 (ORCPT
+        with ESMTP id S230267AbjGSTU1 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Jul 2023 15:20:27 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC991FE8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11CF1FEC
         for <linux-pwm@vger.kernel.org>; Wed, 19 Jul 2023 12:20:24 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qMCig-0000Ld-98; Wed, 19 Jul 2023 21:20:18 +0200
+        id 1qMCig-0000LX-8g; Wed, 19 Jul 2023 21:20:18 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qMCif-000fhp-Ia; Wed, 19 Jul 2023 21:20:17 +0200
+        id 1qMCie-000fhk-Ur; Wed, 19 Jul 2023 21:20:16 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qMCie-006B2i-SZ; Wed, 19 Jul 2023 21:20:16 +0200
+        id 1qMCie-006B2c-Ar; Wed, 19 Jul 2023 21:20:16 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
@@ -34,15 +34,13 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
 Cc:     linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         kernel@pengutronix.de
-Subject: [PATCH 2/5] pwm: atmel-tcb: Fix resource freeing in error path and remove
-Date:   Wed, 19 Jul 2023 21:20:10 +0200
-Message-Id: <20230719192013.4051193-3-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 0/5] pwm: atmel-tcb: Some driver maintenance
+Date:   Wed, 19 Jul 2023 21:20:08 +0200
+Message-Id: <20230719192013.4051193-1-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230719192013.4051193-1-u.kleine-koenig@pengutronix.de>
-References: <20230719192013.4051193-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2213; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=68P5lTizHcnr3m1NXsflTQG+JDPaKJsegvL2wfUzU98=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkuDdnQxP7niozGA7H4RUf2e1PXbk1eLR4sHqD3 iUIfiW9lYaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLg3ZwAKCRCPgPtYfRL+ TtKTCAChytflverWQQ21dV8fnTI0hAvHPSC5TPnkcpH4tUuIGElUPsLGsOZjlddh5LH5c7n8IcX Dfyd1rdQIHNTgKM0Cj/OWSQ2XkaY2rVFaJErmxvIjhMYcWo2FevVGYSrOXj9OCyGl5YTNNf5RlV r/oeKBxD5dFZTMa+2Zex9ZItUGzhpNahlfbcI5hciAWUtxrvjIVhyWJskgDabBpBbkjVgon1FDi hZiDH+0ZI7sxtAztxD/M50i9PtqK21DooBPKQlDhpz/hI8064u7d1xSPzwQDyZxZRvAfb/cmW1r xodpaZhNE+rl2k7Btkiy4Xwl5hV/6v5OgNzE3McnUobUDYFB
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1131; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=XvuAit+M16d7pdB721g4IBznB+J6lmlI6WpU+BDvjPY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkuDdkwwqutjRZQvqflhmCr6npioR38rvoIosGB hS8f+g+kZ2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZLg3ZAAKCRCPgPtYfRL+ Tr3nB/9npHz/acM18ZCN0RAwQC2KEzZ0ljtRaJnlntIkc4OEJHYzf4V+UpndO5Xx+2yaq++FJ/U tJZGQOa5bjIYt3iw7jfvBJBx13NgdL4pO2l08z9pny4kMHMP3zAvjL0WzopUjVP89vOuATSWSTz tZonxn/Ptf1WVupdiGLMjeLQvpqqJQ+5W/CaT8/n+kY9DbZVhg1RftrGOWDMKDUVU8+is6lyhH5 xerTL/YLLfQgkxaxlCtGN5Jz2FCEuxzrMATt52kC7teicCk399+WgwbwMEzh6K/cTVJuO6mVTJE VYY/sOi4E2YEK0nxg2V4nfAutOJEAA6umwKvRbHxwY/HKLBd
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -53,78 +51,33 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Several resources were not freed in the error path and the remove
-function. Add the forgotten items.
+Hello,
 
-Fixes: 34cbcd72588f ("pwm: atmel-tcb: Add sama5d2 support")
-Fixes: 061f8572a31c ("pwm: atmel-tcb: Switch to new binding")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-atmel-tcb.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+here come some improvements to the pwm-atmel-tcb driver.
 
-diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-index 613dd1810fb5..2826fc216d29 100644
---- a/drivers/pwm/pwm-atmel-tcb.c
-+++ b/drivers/pwm/pwm-atmel-tcb.c
-@@ -450,16 +450,20 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 	tcbpwm->clk = of_clk_get_by_name(np->parent, clk_name);
- 	if (IS_ERR(tcbpwm->clk))
- 		tcbpwm->clk = of_clk_get_by_name(np->parent, "t0_clk");
--	if (IS_ERR(tcbpwm->clk))
--		return PTR_ERR(tcbpwm->clk);
-+	if (IS_ERR(tcbpwm->clk)) {
-+		err = PTR_ERR(tcbpwm->clk);
-+		goto err_slow_clk;
-+	}
- 
- 	match = of_match_node(atmel_tcb_of_match, np->parent);
- 	config = match->data;
- 
- 	if (config->has_gclk) {
- 		tcbpwm->gclk = of_clk_get_by_name(np->parent, "gclk");
--		if (IS_ERR(tcbpwm->gclk))
--			return PTR_ERR(tcbpwm->gclk);
-+		if (IS_ERR(tcbpwm->gclk)) {
-+			err = PTR_ERR(tcbpwm->gclk);
-+			goto err_clk;
-+		}
- 	}
- 
- 	tcbpwm->chip.dev = &pdev->dev;
-@@ -470,7 +474,7 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 
- 	err = clk_prepare_enable(tcbpwm->slow_clk);
- 	if (err)
--		goto err_slow_clk;
-+		goto err_gclk;
- 
- 	spin_lock_init(&tcbpwm->lock);
- 
-@@ -485,6 +489,12 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- err_disable_clk:
- 	clk_disable_unprepare(tcbpwm->slow_clk);
- 
-+err_gclk:
-+	clk_put(tcbpwm->gclk);
-+
-+err_clk:
-+	clk_put(tcbpwm->clk);
-+
- err_slow_clk:
- 	clk_put(tcbpwm->slow_clk);
- 
-@@ -498,8 +508,9 @@ static void atmel_tcb_pwm_remove(struct platform_device *pdev)
- 	pwmchip_remove(&tcbpwm->chip);
- 
- 	clk_disable_unprepare(tcbpwm->slow_clk);
--	clk_put(tcbpwm->slow_clk);
-+	clk_put(tcbpwm->gclk);
- 	clk_put(tcbpwm->clk);
-+	clk_put(tcbpwm->slow_clk);
- }
- 
- static const struct of_device_id atmel_tcb_pwm_dt_ids[] = {
+There are still a few opportunities to improve the driver. For example
+.duty shouldn't be relevant for atmel_tcb_pwm_disable(). Also the driver
+could be converted from of_clk_get_by_name to devm_clk_get() (and then
+also devm_pwmchip_add()). Further more I think all members of
+atmel_tcb_pwm_device could be dropped as they are all only used in
+.apply() after they were assigned earlier in the same function; similar
+to how I removed the polarity member. Maybe someone with the hardware
+wants to chime in?
+
+Best regards
+Uwe
+
+Uwe Kleine-König (5):
+  pwm: atmel-tcb: Harmonize resource allocation order
+  pwm: atmel-tcb: Fix resource freeing in error path and remove
+  pwm: atmel-tcb: Put per-channel data into driver data
+  pwm: atmel-tcb: Unroll atmel_tcb_pwm_set_polarity() into only caller
+  pwm: atmel-tcb: Don't track polarity in driver data
+
+ drivers/pwm/pwm-atmel-tcb.c | 120 ++++++++++++++----------------------
+ 1 file changed, 47 insertions(+), 73 deletions(-)
+
+base-commit: 06c2afb862f9da8dc5efa4b6076a0e48c3fbaaa5
 -- 
 2.39.2
 
