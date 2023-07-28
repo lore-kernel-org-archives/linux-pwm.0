@@ -2,64 +2,63 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 731BCC41513
-	for <linux-pwm@archiver.kernel.org>; Fri, 28 Jul 2023 07:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB9AEB64DD
+	for <linux-pwm@archiver.kernel.org>; Fri, 28 Jul 2023 07:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234416AbjG1HoZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 28 Jul 2023 03:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35942 "EHLO
+        id S234404AbjG1Ho1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 28 Jul 2023 03:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234414AbjG1HoY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Jul 2023 03:44:24 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AC7B6
-        for <linux-pwm@vger.kernel.org>; Fri, 28 Jul 2023 00:44:23 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-99bcc0adab4so258980466b.2
-        for <linux-pwm@vger.kernel.org>; Fri, 28 Jul 2023 00:44:23 -0700 (PDT)
+        with ESMTP id S234418AbjG1Ho0 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Jul 2023 03:44:26 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12A7B6
+        for <linux-pwm@vger.kernel.org>; Fri, 28 Jul 2023 00:44:25 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-99bc9e3cbf1so381533566b.0
+        for <linux-pwm@vger.kernel.org>; Fri, 28 Jul 2023 00:44:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1690530262; x=1691135062;
+        d=gmail.com; s=20221208; t=1690530264; x=1691135064;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NoBW4j4mPIdPVip7j8ncUxipZYGJJXtzm9JCwdw/Hss=;
-        b=BCRmqyO24Rl/811vNwmx28BarXJ6gNMwl1iNFZ5pWYtXXHIV6FnvaQYQIiI36Rzotk
-         BUNgN0R6ZBDNVFaJSfcN9Uyw31U99nTvLs6/q5cqZ+Ow/0D8VwfmiD/2evgdeqSWqsfD
-         Lva6k/0zKXk4a5xrPOR41UEanWYeXwU1PtJJztrqWwJV9jlSkqQfKp9pm7NUX4KdRN3/
-         QY0Cz/xp5cNt3jPewiGRrpxjrUA6Y6oELD6V4qm4kAJwKH7V/is24y+rzmhhNLd7ThTi
-         DZVQa04dMiXARX4MMT0wwS+FllnEX7V+UCgpf40lvNXwhCkVQlAmmdXeYXFAyMUdbzQZ
-         Fz9w==
+        bh=pzCM3bup9JYRIhMtvPNppw+otOi0bz3tqJa5kaDJQBg=;
+        b=mKWRiTOisRDYtEG8UqaRvKb5kRYTbGYpjyDL6MrKzrdneLHjeJJYf3AtVmcBf3zLnx
+         1ScqDt+C6LS9j5p1tgxUbWRdyvAgmxwtPffIi330tSTuKKgqyIfdyOk8UsQwhShdMHPg
+         DryVCqeUweUwi4+ms8Gjwj+Q1XKaLlfZc+I/BnFgo+tTDhaFyk7H7pG1+XYfULlme+4K
+         OAdE0F1cvHbuX1dOxEp87bwoZBFmZZLv0V0LA8/KK7JYD2INAFkCd7SeaGnFJz4q/t4O
+         Q7wlx5Uni3XIQKDM8sqPzU4ICQNnsdRyH+H2cVBBdKYilb110/CAUpEbWm8OqB8zNnno
+         VSQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690530262; x=1691135062;
+        d=1e100.net; s=20221208; t=1690530264; x=1691135064;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=NoBW4j4mPIdPVip7j8ncUxipZYGJJXtzm9JCwdw/Hss=;
-        b=El4pmDY59ZcqPuLxAXTfHSlzF4bAR9RoXTbFFOG8z0PQ/ogk1zaqOtOy1zqbnM2Kvn
-         7GF5fx5RS8SmbyZ6dHRFEyJc2ZpGMMffNbl6656G4D8MdraAzQznL2GcioJLbUd6eCv3
-         Wuw5SN/KwLyC1Lqz3pJOsVxgWYbuOyZwv9/PVpcGb/js7RVi//OSCe73I48PPdVg9OqV
-         yzg2hOC761IDvEz9Gb2krhjOmuZJy5RqZC1aXKp79oHVmwe6cN8EOsTPsZHDIcmJsbKJ
-         1RDRCRYcemseIGnmUh7wdUc/fddVc6NAGRBz89dqZpDoLkoq9xGCpm1Yc/YBaMditQpJ
-         Bc9Q==
-X-Gm-Message-State: ABy/qLbOxSHHf+s0nSHKeI0/5I6OPMYIZcA+0XHFhvK4p4EME+ZMcvwZ
-        m910z9k+KGPH0iKNLssPxEY=
-X-Google-Smtp-Source: APBJJlG+vDvdmLrAzqm/SX/MdiUXoysY+2xHhbosT7vwrOcmhVaVyzQQsvC7yTVz+eTmS9lOnbGXPA==
-X-Received: by 2002:a17:906:7a5e:b0:993:ec93:a5ef with SMTP id i30-20020a1709067a5e00b00993ec93a5efmr1313085ejo.47.1690530261832;
-        Fri, 28 Jul 2023 00:44:21 -0700 (PDT)
+        bh=pzCM3bup9JYRIhMtvPNppw+otOi0bz3tqJa5kaDJQBg=;
+        b=dtPIfoKUC3nOneeCxnKAWrzRUG9VRr54/wNqbEJSODj1mNJyvdskMlX5RpXwSPTU1j
+         hmMuWEd392SG7cFinGajgPwFKfix1rth62tAVcmspi/BiuvC4xpZzCnzWpvv+BM54WnE
+         BPqzM7YfoVNhz3xrTgs8LAGUGDxY4nyVp98DMptq7+frM5HHCfzUl3yAPdSfPOex1P8o
+         RdCXkYTBxJbcfXQz+kL45HyNSo8MI59SOzT0HYbtfrNlCKzFVZiawkJOOfEq0YSb4e5J
+         hawM95/FOTfI6jWMdHFiLOyRPOYMujh3Vdw5XVBdbfboNtPSPP8ftTn76vaG7TCYswrB
+         wu1Q==
+X-Gm-Message-State: ABy/qLY67cRsFWJWfjRRyqwRvPe6d9vPf3DQ0jaau4m+Qlvz1CKRK9JX
+        cB3Xdvh1y9MBxui1nFIpov/EnGDhZDM=
+X-Google-Smtp-Source: APBJJlEJvrrWRjivtDC74iqDsCm2vZh8M1I8sDQsSCZ36ZOU/f320fThaFIiZMrMrmh63IpPEUK2ew==
+X-Received: by 2002:a17:906:8a70:b0:99b:ce6d:fc90 with SMTP id hy16-20020a1709068a7000b0099bce6dfc90mr1982060ejc.2.1690530264115;
+        Fri, 28 Jul 2023 00:44:24 -0700 (PDT)
 Received: from localhost (p200300e41f1bd600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f1b:d600:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id gl13-20020a170906e0cd00b00982d0563b11sm1707445ejb.197.2023.07.28.00.44.21
+        by smtp.gmail.com with ESMTPSA id q24-20020a17090622d800b00997e00e78e6sm1704147eja.112.2023.07.28.00.44.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jul 2023 00:44:21 -0700 (PDT)
+        Fri, 28 Jul 2023 00:44:23 -0700 (PDT)
 From:   Thierry Reding <thierry.reding@gmail.com>
-To:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+To:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH] pwm: ntxec: Drop a write-only variable from driver data
-Date:   Fri, 28 Jul 2023 09:44:15 +0200
-Message-ID: <169053024118.3514419.14544397706500001742.b4-ty@gmail.com>
+Subject: Re: [PATCH] pwm: pxa: Don't reimplement of_device_get_match_data()
+Date:   Fri, 28 Jul 2023 09:44:17 +0200
+Message-ID: <169053024118.3514419.7335400972528269945.b4-ty@gmail.com>
 X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230718152327.2583886-1-u.kleine-koenig@pengutronix.de>
-References: <20230718152327.2583886-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20230718150657.1728166-1-u.kleine-koenig@pengutronix.de>
+References: <20230718150657.1728166-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -68,16 +67,17 @@ List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
-On Tue, 18 Jul 2023 17:23:27 +0200, Uwe Kleine-König wrote:
-> .dev is assigned in .probe() and never read. So it serves no purpose and
-> can be removed.
+On Tue, 18 Jul 2023 17:06:57 +0200, Uwe Kleine-König wrote:
+> Apart from the return type pxa_pwm_get_id_dt() reimplements
+> of_device_get_match_data(). Drop the former and replace the call to it
+> by the latter.
 > 
 > 
 
 Applied, thanks!
 
-[1/1] pwm: ntxec: Drop a write-only variable from driver data
-      commit: 250b4ca0c9d611c61e12a8eb2d24e69f9058de2b
+[1/1] pwm: pxa: Don't reimplement of_device_get_match_data()
+      commit: 63808bbb3e226b0160f61723614e612fbf51541c
 
 Best regards,
 -- 
