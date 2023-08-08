@@ -2,116 +2,164 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D23ABC001DE
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Aug 2023 20:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AA6C001B0
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 16:56:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbjHGUD3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Aug 2023 16:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50730 "EHLO
+        id S229795AbjHHQ4r (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Aug 2023 12:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230389AbjHGUD0 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Aug 2023 16:03:26 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF54172B;
-        Mon,  7 Aug 2023 13:03:21 -0700 (PDT)
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 377HUMfN016146;
-        Mon, 7 Aug 2023 20:03:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=iuZ3TDQo1tozN5VS9Wo/E3D3xrzfQoD/Zc3kj7u+4tc=;
- b=i7m7+5zDsDl65yll7O8V+0VXjZ2JB0/0xyII8rp/O9xXwYePXbpkplVQxe5PI6Y8q2jA
- 4fePmJPuDZm8c0PhzKkN5tUTEY/IDyyTk3cUTfJ/kAKBcjpVfmTlhLRToMozcCakGiXI
- s4HVeQW+Wt5PYkgliGFVXVRKr8Z5r6eCkLIHDcqEgz87I1z9rsCzgtkdS483t740lCLU
- rArF5CBgKPrfZOmjwI1JlT4UzAf69sMyprbyvjotv/DMmdg3z14Sm/yB2COPKrLPKqUt
- AnKB/LsBUIc1TW58ny0nxPaF3lNSuSTygvS5stC5YrxCV/axkoMjSC3HaSEdlRPbfriv tg== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3sawbg9dan-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Aug 2023 20:03:08 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 377K37Js019208
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 7 Aug 2023 20:03:07 GMT
-Received: from [10.110.62.211] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Mon, 7 Aug
- 2023 13:03:06 -0700
-Message-ID: <900b3b16-cfad-d043-39b4-8ea6802f87bc@quicinc.com>
-Date:   Mon, 7 Aug 2023 13:03:05 -0700
+        with ESMTP id S233628AbjHHQ4I (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 12:56:08 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FB3A289
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 08:59:36 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id 3f1490d57ef6-d13e0bfbbcfso8340853276.0
+        for <linux-pwm@vger.kernel.org>; Tue, 08 Aug 2023 08:59:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1691510370; x=1692115170;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cCJVGIzRWp3n6+ocRSshdb4+bDJCLF8hHPywBz67DZU=;
+        b=t2IvS8jPwcMDIAh1bSumcpdIUg3Q++QbRcT4YnOsllwUk2dbOrKhZR4GrYSH75ETyr
+         PqBxtVxMwJK+uAZI12WtJhXCGAO+7+fnwXm10yHpRs9QXc/baGerHO8OYHJhmcmU0+/k
+         iMerycyposv3KDY2rW49hv7WpzzIet4InIGwVKwecTpWXnRfAE6LnXwUyWILcBtnIqFb
+         L4x1btYgXQu0Zkg6ij7kIJW0AmD6GDjcyhutex+QJxxXr1z9VsjZqQ0gcWmAY/YiW9GQ
+         gulWlWWbh7l4KpGO0s6Oi6oaWZVvY3aBBTzkJ3HM2ecEe+5cRyGtHypYae1WZIXeehG3
+         SB7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691510370; x=1692115170;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cCJVGIzRWp3n6+ocRSshdb4+bDJCLF8hHPywBz67DZU=;
+        b=fwKMnLymnOAGNRsT+3b3Rg/370pXgTzsRFrAhaNzsb+s0YBRNbn1wt83YoiiOm5Fcq
+         EYUjZcqrY5u4sUyDe/cnJTzQxcd5MbhhxFzUOoPL+KixGD3PGjVrK23oJCPOQ9VBLKK0
+         nMQxE1VTjZcZktfOVPKE4XW5Hxur4hhklB8Z50MHc9165LGD+aOL+PmCvyPoyh6NPioC
+         j8jIBtEST16On1VXdmkfj6iorkx5XTxeny2YQxz7UN37kzTbKjq749xDE8fk9Dq0H+Y0
+         l3INCRNVcht3IgFllUjnEw5fF7mDAoYKshryD3RjSZluU7BJh6FcW/buaAMeQTKxyxw7
+         LK0A==
+X-Gm-Message-State: AOJu0Yzye3KnSp3QDSerh47yS1DoCx6BwyVZBuBhuhBsfrtjtu6YvvyY
+        c/NTxup5jQf5SKJ+QKZQP0KyPzD0ky9Ag/gNIRBRAE7mHKv/3Kpb
+X-Google-Smtp-Source: AGHT+IGCQegfute4wq8vuctRCNyh2F9D25HtOrYRCxA1KPyHbK9gB5btAs+lYOVd+Us7kHls2/CFh6KxK9tgT70dyU8=
+X-Received: by 2002:a25:d14e:0:b0:cee:80e:23af with SMTP id
+ i75-20020a25d14e000000b00cee080e23afmr3349036ybg.11.1691500721596; Tue, 08
+ Aug 2023 06:18:41 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 2/7] dt-bindings: leds: leds-qcom-lpg: Add support for
- LPG PPG
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     <pavel@ucw.cz>, <lee@kernel.org>, <thierry.reding@gmail.com>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <agross@kernel.org>, <andersson@kernel.org>,
-        <luca.weiss@fairphone.com>, <konrad.dybcio@linaro.org>,
-        <u.kleine-koenig@pengutronix.de>, <quic_subbaram@quicinc.com>,
-        <linux-leds@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-References: <20230725193423.25047-1-quic_amelende@quicinc.com>
- <20230725193423.25047-3-quic_amelende@quicinc.com>
- <20230803002502.GA1569972-robh@kernel.org>
-From:   Anjelique Melendez <quic_amelende@quicinc.com>
-In-Reply-To: <20230803002502.GA1569972-robh@kernel.org>
+References: <20230804142707.412137-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20230804142707.412137-1-u.kleine-koenig@pengutronix.de>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 8 Aug 2023 15:18:30 +0200
+Message-ID: <CACRpkdZ4OqLywBhCkDmA6bEkf3rfHpCODba9Rhx36fuP8ywt6Q@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] pwm: Manage owner assignment implicitly for drivers
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andy@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Robert Foss <rfoss@kernel.org>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee@kernel.org>, Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Michael Walle <michael@walle.cc>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Michal Simek <michal.simek@amd.com>,
+        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Anjelique Melendez <quic_amelende@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Bjorn Andersson <quic_bjorande@quicinc.com>,
+        linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org,
+        chrome-platform@lists.linux.dev, linux-mips@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: tA45PtcBV9TNqiAInbRxmq3CJjyHZ6KV
-X-Proofpoint-GUID: tA45PtcBV9TNqiAInbRxmq3CJjyHZ6KV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-07_22,2023-08-03_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=745
- impostorscore=0 bulkscore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
- mlxscore=0 priorityscore=1501 malwarescore=0 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
- definitions=main-2308070183
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+On Fri, Aug 4, 2023 at 4:28=E2=80=AFPM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
 
+> (implicit) v1 of this series can be found at
+> https://lore.kernel.org/linux-pwm/20230803140633.138165-1-u.kleine-koenig=
+@pengutronix.de .
+>
+> Changes since then only affect documentation that I missed to adapt befor=
+e.
+> Thanks to Laurent for catching that
+>
+> Best regards
+> Uwe
+>
+> Uwe Kleine-K=C3=B6nig (2):
+>   pwm: Manage owner assignment implicitly for drivers
+>   pwm: crc: Allow compilation as module and with COMPILE_TEST
 
-On 8/2/2023 5:25 PM, Rob Herring wrote:
-> On Tue, Jul 25, 2023 at 12:34:18PM -0700, Anjelique Melendez wrote:
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          contains:
->> +            enum:
->> +              - qcom,pm8350c-pw
->> +              - qcom,pm8550-pwm
->> +    then:
->> +      properties:
->> +        nvmem:
->> +          minItems: 2
->> +        nvmem-names:
->> +          items:
->> +            - const: lpg_chan_sdam
->> +            - const: lut_sdam
-> 
-> This can go into the main section and then here you just say 
-> 'minItems: 2'. And similar for the 1st if/then.
-> 
-ACK
->> +      required:
->> +        - nvmem
->> +        - nvmem-names
-> 
-> Looks like these are always required.
-These are only required for the compatibles properties that do not
-have lut peripherals. Right now this is is only for qcom,pmi632-lpg, 
-qcom,pm8350c-pwm and qcom,pm8550-pwm.
+Clearly the right thing to do! Nice patches.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-
+Yours,
+Linus Walleij
