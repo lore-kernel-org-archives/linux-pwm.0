@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7483EC04E69
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 556F9C41513
 	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 20:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232869AbjHHUjP (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S232754AbjHHUjP (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Tue, 8 Aug 2023 16:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236299AbjHHUit (ORCPT
+        with ESMTP id S236289AbjHHUit (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 16:38:49 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919EC1DD4E
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9516075853
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:05 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN7-0007Jg-Jl; Tue, 08 Aug 2023 19:19:53 +0200
+        id 1qTQN5-0007Ff-Fm; Tue, 08 Aug 2023 19:19:51 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN5-00226B-PF; Tue, 08 Aug 2023 19:19:51 +0200
+        id 1qTQN4-00225f-7m; Tue, 08 Aug 2023 19:19:50 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN4-00BTD2-Rb; Tue, 08 Aug 2023 19:19:50 +0200
+        id 1qTQN3-00BTCW-Bp; Tue, 08 Aug 2023 19:19:49 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 045/101] pwm: rockchip: Make use of devm_pwmchip_alloc() function
-Date:   Tue,  8 Aug 2023 19:18:35 +0200
-Message-Id: <20230808171931.944154-46-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 038/101] pwm: ntxec: Make use of devm_pwmchip_alloc() function
+Date:   Tue,  8 Aug 2023 19:18:28 +0200
+Message-Id: <20230808171931.944154-39-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2874; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=X593PDc19Tf8aLxCr+Rx8yqFCa+GUAZMpJsuMdRn5dc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njjyS9bO+NnFpMZQRO1vvgi0SuGT/XuXF0DF 4pUufw5/liJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ44wAKCRCPgPtYfRL+ TlooB/44E+m4hu6fPSI1AAmhfOds336lHAUNE/ryx2dbGtjewmLCkAafvBIW/Bs9SKblN9vuot9 +BteenoNlx8RzCpSFSvGH801WsOKEQVjLukgZndTDHPoVCGK8esgiMq2rV3TInJIOVDrXEBxHRc kyBBdbWWffrbjrwuX33tIEGHRdweubvtb4dVqPyva6Ff14GzQG26e4MHTM10MwGHNxMlwxQ914E Gth6b1VX9iME8skI2A5hgc6IY88xHQyQViTnEE2yG9RStn68Go5eUXDqv7IdtfnzodqVhIxNCVV TpimLlPSH6ijbQJ4l3VbcacUwBMVa8MG2C0D4iLqizqQcVyD
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3499; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=TghFrMQQFrlpBRpCyH6XhW0DoOJF13kDuQ/hwU9bndo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njbgiEY9Mvu/0Oo1RpVTjDnA8EfxBxS6XZLC nh4OiOthj2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ42wAKCRCPgPtYfRL+ TkpgB/9/jagDLR7mv19YysRpxFO9XVo48MjUwzjo1mePYVJyN5p8XKE+TLWss59lJsvR3ZD9fLr lifwjgBYJm53a3PbiBwQiIbXIbFZ5l5ZZ+YcKxPWA0c6zP3bIikTstB8XWgxWy0lfsdlVb0X8eq vK50gwCvnhcm7YBvFRBIb4gix9SK7QDosGDapK/09BZB+iOo3496fWo9msYsmc3VmBN1P+9TH5f aG/TLHRSZwVYj98ZFudxSZkXRqpJdUjylpfVuS5a61sRTJ6UQ/9SukP/aN2TVY8ZmgkkLBzEEk7 PE7vSSEwD8v1q/i8TTBk7rGMMhyerPsyx+FWVE59w0AAY8Fd
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,93 +51,109 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-rockchip driver to further changes of the pwm core
+This prepares the pwm-ntxec driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-rockchip.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-ntxec.c | 30 +++++++++++++-----------------
+ 1 file changed, 13 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index cce4381e188a..18fb092f4bec 100644
---- a/drivers/pwm/pwm-rockchip.c
-+++ b/drivers/pwm/pwm-rockchip.c
-@@ -30,7 +30,6 @@
- #define PWM_LP_DISABLE		(0 << 8)
+diff --git a/drivers/pwm/pwm-ntxec.c b/drivers/pwm/pwm-ntxec.c
+index 78606039eda2..0c54dc0d1e9c 100644
+--- a/drivers/pwm/pwm-ntxec.c
++++ b/drivers/pwm/pwm-ntxec.c
+@@ -25,12 +25,11 @@
  
- struct rockchip_pwm_chip {
+ struct ntxec_pwm {
+ 	struct ntxec *ec;
 -	struct pwm_chip chip;
- 	struct clk *clk;
- 	struct clk *pclk;
- 	const struct rockchip_pwm_data *data;
-@@ -54,7 +53,7 @@ struct rockchip_pwm_data {
+ };
  
- static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct pwm_chip *chip)
+ static struct ntxec_pwm *ntxec_pwm_from_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct rockchip_pwm_chip, chip);
+-	return container_of(chip, struct ntxec_pwm, chip);
 +	return pwmchip_priv(chip);
  }
  
- static int rockchip_pwm_get_state(struct pwm_chip *chip,
-@@ -297,6 +296,7 @@ MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
- static int rockchip_pwm_probe(struct platform_device *pdev)
+ #define NTXEC_REG_AUTO_OFF_HI	0xa1
+@@ -57,7 +56,7 @@ static struct ntxec_pwm *ntxec_pwm_from_chip(struct pwm_chip *chip)
+ static int ntxec_pwm_set_raw_period_and_duty_cycle(struct pwm_chip *chip,
+ 						   int period, int duty)
  {
- 	const struct of_device_id *id;
-+	struct pwm_chip *chip;
- 	struct rockchip_pwm_chip *pc;
- 	u32 enable_conf, ctrl;
- 	bool enabled;
-@@ -306,9 +306,10 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 	if (!id)
- 		return -EINVAL;
+-	struct ntxec_pwm *priv = ntxec_pwm_from_chip(chip);
++	struct ntxec *ec = ntxec_pwm_from_chip(chip)->ec;
  
--	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
--	if (!pc)
+ 	/*
+ 	 * Changes to the period and duty cycle take effect as soon as the
+@@ -77,13 +76,13 @@ static int ntxec_pwm_set_raw_period_and_duty_cycle(struct pwm_chip *chip,
+ 		{ NTXEC_REG_DUTY_LOW, ntxec_reg8(duty) },
+ 	};
+ 
+-	return regmap_multi_reg_write(priv->ec->regmap, regs, ARRAY_SIZE(regs));
++	return regmap_multi_reg_write(ec->regmap, regs, ARRAY_SIZE(regs));
+ }
+ 
+ static int ntxec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm_dev,
+ 			   const struct pwm_state *state)
+ {
+-	struct ntxec_pwm *priv = ntxec_pwm_from_chip(chip);
++	struct ntxec *ec = ntxec_pwm_from_chip(chip)->ec;
+ 	unsigned int period, duty;
+ 	int res;
+ 
+@@ -110,18 +109,18 @@ static int ntxec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm_dev,
+ 		if (res)
+ 			return res;
+ 
+-		res = regmap_write(priv->ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(1));
++		res = regmap_write(ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(1));
+ 		if (res)
+ 			return res;
+ 
+ 		/* Disable the auto-off timer */
+-		res = regmap_write(priv->ec->regmap, NTXEC_REG_AUTO_OFF_HI, ntxec_reg8(0xff));
++		res = regmap_write(ec->regmap, NTXEC_REG_AUTO_OFF_HI, ntxec_reg8(0xff));
+ 		if (res)
+ 			return res;
+ 
+-		return regmap_write(priv->ec->regmap, NTXEC_REG_AUTO_OFF_LO, ntxec_reg8(0xff));
++		return regmap_write(ec->regmap, NTXEC_REG_AUTO_OFF_LO, ntxec_reg8(0xff));
+ 	} else {
+-		return regmap_write(priv->ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(0));
++		return regmap_write(ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(0));
+ 	}
+ }
+ 
+@@ -135,22 +134,19 @@ static const struct pwm_ops ntxec_pwm_ops = {
+ 
+ static int ntxec_pwm_probe(struct platform_device *pdev)
+ {
+-	struct ntxec *ec = dev_get_drvdata(pdev->dev.parent);
+ 	struct ntxec_pwm *priv;
+ 	struct pwm_chip *chip;
+ 
+ 	device_set_of_node_from_dev(&pdev->dev, pdev->dev.parent);
+ 
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*pc));
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*priv));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	pc = to_rockchip_pwm_chip(chip);
++	priv = ntxec_pwm_from_chip(chip);
  
- 	pc->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pc->base))
-@@ -342,18 +343,16 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 		goto err_clk;
- 	}
+-	priv->ec = ec;
++	priv->ec = dev_get_drvdata(pdev->dev.parent);
  
--	platform_set_drvdata(pdev, pc);
-+	platform_set_drvdata(pdev, chip);
+-	chip = &priv->chip;
+-	chip->dev = &pdev->dev;
+ 	chip->ops = &ntxec_pwm_ops;
+-	chip->npwm = 1;
  
- 	pc->data = id->data;
--	pc->chip.dev = &pdev->dev;
--	pc->chip.ops = &rockchip_pwm_ops;
--	pc->chip.npwm = 1;
-+	chip->ops = &rockchip_pwm_ops;
- 
- 	enable_conf = pc->data->enable_conf;
- 	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
- 	enabled = (ctrl & enable_conf) == enable_conf;
- 
--	ret = pwmchip_add(&pc->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret < 0) {
- 		dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
- 		goto err_pclk;
-@@ -377,9 +376,10 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 
- static void rockchip_pwm_remove(struct platform_device *pdev)
- {
--	struct rockchip_pwm_chip *pc = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
- 
--	pwmchip_remove(&pc->chip);
-+	pwmchip_remove(chip);
- 
- 	clk_unprepare(pc->pclk);
- 	clk_unprepare(pc->clk);
+ 	return devm_pwmchip_add(&pdev->dev, chip);
+ }
 -- 
 2.40.1
 
