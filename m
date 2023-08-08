@@ -2,115 +2,136 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D4CC04A6A
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 20:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD97EC001B0
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 20:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbjHHUCp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Aug 2023 16:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
+        id S235820AbjHHUiZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Aug 2023 16:38:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230102AbjHHUCc (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 16:02:32 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1001C81291
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 11:19:33 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="437269769"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="437269769"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 10:49:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="801408349"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="801408349"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Aug 2023 10:49:54 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andy@kernel.org>)
-        id 1qTQq9-0015wc-1N;
-        Tue, 08 Aug 2023 20:49:53 +0300
-Date:   Tue, 8 Aug 2023 20:49:53 +0300
-From:   Andy Shevchenko <andy@kernel.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        with ESMTP id S235998AbjHHUiP (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 16:38:15 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD931DD5B
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:13 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qTQN9-0007OQ-KF; Tue, 08 Aug 2023 19:19:55 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qTQN8-002277-0j; Tue, 08 Aug 2023 19:19:54 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qTQN6-00BTDf-Sf; Tue, 08 Aug 2023 19:19:52 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        linux-pwm@vger.kernel.org, kernel@pengutronix.de,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: Re: [PATCH v1 080/101] pwm: lpss: Store parent device in driver data
-Message-ID: <ZNKAQV4VXVwkyYBV@smile.fi.intel.com>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v1 055/101] pwm: stmpe: Make use of devm_pwmchip_alloc() function
+Date:   Tue,  8 Aug 2023 19:18:45 +0200
+Message-Id: <20230808171931.944154-56-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
- <20230808171931.944154-81-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2448; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=NOHE85wOtUgdkzORs0ajc7ZvPmFMQojhvqWe8PWeqIo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njuVJT25413JFJ25MDnEm44e7maKrGyBiHNe FdlXIs6RRmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ47gAKCRCPgPtYfRL+ TlYiB/47oN5qgcxAsQZNPx6w9tDQiTGaaOXlxIJbYtHujxGV14Pp4m9BXJ4bmgANIeafJ3kMdYi ZrGEP7Q/KGppfj8DrOKyrpc/3zfOLyvfBQdnaB6VxfgYQknyF7M7lb3bYo+jiDsg8firerKz2jH 8wg5PREniKv4Rpulkd6HdJTE6a1SEZOAzTHTUoinPbxiVIr1g1q1X2gWeMI8HeP6T4+2a1SXxtz kQl3FjFWukoNGpofNX1+VEUIMY42fHI5ZRJXIknJYamrivZiYHldJZdXsmh0XGcbYVxrzDXuXTG cMM7csbpOVUzgSuuCVoC4plGkgiw9kmD1JdRuKoZCCU0WNHQ
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230808171931.944154-81-u.kleine-koenig@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Tue, Aug 08, 2023 at 07:19:10PM +0200, Uwe Kleine-König wrote:
-> struct pwm_chip::dev is about to change. To not have to touch this
-> driver in the same commit as struct pwm_chip::dev, store a pointer to
-> the parent device in driver data.
+This prepares the pwm-stmpe driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
-I'm not against this change, so
-Acked-by: Andy Shevchenko <andy@kernel.org>
-bu see some comments below.
+Signed-off-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-stmpe.c | 38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
-I think ideally pwm_chip should be an opaque to the driver
-(or something near to it). OTOH it may be I understood that
-wrong.
-
-...
-
->  	if (state->enabled) {
->  		if (!pwm_is_enabled(pwm)) {
-> -			pm_runtime_get_sync(chip->dev);
-> +			pm_runtime_get_sync(lpwm->parent);
->  			ret = pwm_lpss_prepare_enable(lpwm, pwm, state);
->  			if (ret)
-> -				pm_runtime_put(chip->dev);
-> +				pm_runtime_put(lpwm->parent);
->  		} else {
->  			ret = pwm_lpss_prepare_enable(lpwm, pwm, state);
->  		}
->  	} else if (pwm_is_enabled(pwm)) {
->  		pwm_lpss_write(pwm, pwm_lpss_read(pwm) & ~PWM_ENABLE);
-> -		pm_runtime_put(chip->dev);
-> +		pm_runtime_put(lpwm->parent);
->  	}
-
-I'm wondering why PM runtime calls can't be part of PWM core?
-We may cleanup a lot of code with it, no?
-
-...
-
-> -	pm_runtime_get_sync(chip->dev);
-> +	pm_runtime_get_sync(lpwm->parent);
-
-
-> -	pm_runtime_put(chip->dev);
-> +	pm_runtime_put(lpwm->parent);
-
-Ditto.
-
-...
-
->  struct pwm_lpss_chip {
-> +	struct device *parent;
-
-Have you checked IIO approach with the public and private members
-(under private the opaque pointer is meant)? Maybe something of that
-can be applied to PWM code as well, dunno.
-
->  	void __iomem *regs;
->  	const struct pwm_lpss_boardinfo *info;
->  };
-
+diff --git a/drivers/pwm/pwm-stmpe.c b/drivers/pwm/pwm-stmpe.c
+index a46f5b4dd816..9c0f96b77c42 100644
+--- a/drivers/pwm/pwm-stmpe.c
++++ b/drivers/pwm/pwm-stmpe.c
+@@ -27,13 +27,12 @@
+ 
+ struct stmpe_pwm {
+ 	struct stmpe *stmpe;
+-	struct pwm_chip chip;
+ 	u8 last_duty;
+ };
+ 
+ static inline struct stmpe_pwm *to_stmpe_pwm(struct pwm_chip *chip)
+ {
+-	return container_of(chip, struct stmpe_pwm, chip);
++	return pwmchip_priv(chip);
+ }
+ 
+ static int stmpe_24xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -292,33 +291,36 @@ static const struct pwm_ops stmpe_24xx_pwm_ops = {
+ static int __init stmpe_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct stmpe *stmpe = dev_get_drvdata(pdev->dev.parent);
++	struct pwm_chip *chip;
+ 	struct stmpe_pwm *stmpe_pwm;
+ 	int ret;
+ 
+-	stmpe_pwm = devm_kzalloc(&pdev->dev, sizeof(*stmpe_pwm), GFP_KERNEL);
+-	if (!stmpe_pwm)
+-		return -ENOMEM;
++	switch (stmpe->partnum) {
++	case STMPE2401:
++	case STMPE2403:
++		break;
++	case STMPE1601:
++		return dev_err_probe(&pdev->dev, -EINVAL,
++				     "STMPE1601 not yet supported\n");
++	default:
++		return dev_err_probe(&pdev->dev, -EINVAL,
++				     "Unknown STMPE PWM\n");
++	}
++
++	chip = devm_pwmchip_alloc(&pdev->dev, 3, sizeof(*stmpe_pwm));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	stmpe_pwm = to_stmpe_pwm(chip);
+ 
+ 	stmpe_pwm->stmpe = stmpe;
+-	stmpe_pwm->chip.dev = &pdev->dev;
+ 
+-	if (stmpe->partnum == STMPE2401 || stmpe->partnum == STMPE2403) {
+-		stmpe_pwm->chip.ops = &stmpe_24xx_pwm_ops;
+-		stmpe_pwm->chip.npwm = 3;
+-	} else {
+-		if (stmpe->partnum == STMPE1601)
+-			dev_err(&pdev->dev, "STMPE1601 not yet supported\n");
+-		else
+-			dev_err(&pdev->dev, "Unknown STMPE PWM\n");
+-
+-		return -ENODEV;
+-	}
++	chip->ops = &stmpe_24xx_pwm_ops;
+ 
+ 	ret = stmpe_enable(stmpe, STMPE_BLOCK_PWM);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = pwmchip_add(&stmpe_pwm->chip);
++	ret = pwmchip_add(chip);
+ 	if (ret) {
+ 		stmpe_disable(stmpe, STMPE_BLOCK_PWM);
+ 		return ret;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.40.1
 
