@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4355BC04A94
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 18:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8001FC001B0
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 18:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232556AbjHHSjk (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Aug 2023 14:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60196 "EHLO
+        id S232848AbjHHS6w (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Aug 2023 14:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232607AbjHHSjQ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 14:39:16 -0400
+        with ESMTP id S232901AbjHHS6g (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 14:58:36 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C431175DF5
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D330B75851
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:04 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN3-00072h-0b; Tue, 08 Aug 2023 19:19:49 +0200
+        id 1qTQN5-0007Ap-4c; Tue, 08 Aug 2023 19:19:51 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN1-00224i-UY; Tue, 08 Aug 2023 19:19:47 +0200
+        id 1qTQN3-00225G-Bb; Tue, 08 Aug 2023 19:19:49 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN0-00BTBf-F0; Tue, 08 Aug 2023 19:19:46 +0200
+        id 1qTQN2-00BTC9-20; Tue, 08 Aug 2023 19:19:48 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 024/101] pwm: imx-tpm: Make use of devm_pwmchip_alloc() function
-Date:   Tue,  8 Aug 2023 19:18:14 +0200
-Message-Id: <20230808171931.944154-25-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 032/101] pwm: lpss-*: Make use of devm_pwmchip_alloc() function
+Date:   Tue,  8 Aug 2023 19:18:22 +0200
+Message-Id: <20230808171931.944154-33-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2597; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=9tQyN3idoh7NtDVGf/T/Zz28QZpaBvTAsrUt4Z54kAw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njLwB18Em/m0sLF/MtXGm/d4u6ijCJjdLCL/ yURNvpg71WJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ4ywAKCRCPgPtYfRL+ TgcuCACeJ7Heig11O8t4vGeJBvgT+JZFOz3vGND10uEXY/bnXeXe5f277Y2pjJ9Nizp2fmV0m0u Xg9vvMlLxNdT0teELt/EgKSxwNN4HijtPaZWwtZaZUtzVjSx+BqBRcZyaWjZ30SHw7n7YZfnL/7 YR5Ghx8i/4/83yAb/gGxEjP6E8AWin1PGlELe+iR+eF0Vaxo781fk3mIbwCDpRAclopwyWQxhmB W6iifYVnnHB9d0rSHtfQ30qWlpxJfeRt1k+7G2Hm9QtCT1AcvOB9Hl/h2et9cnLvRAgUbUw2j1D 7py5WltDrfddkaFOCLjvr4I0gj2uofmRJ83eAjf9m41Beb3d
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5601; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=8weEtYs6n4O6WXl9Z2dwQUMxePRFSULOJbCZbLHehyo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njUgwTKfg3jKwOp74f8fwlNfZE7oTcW28lak QX2Ne6pXRaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ41AAKCRCPgPtYfRL+ Tto+CACcKIcF691Vi5XVrxy1Z5QaaJKwnxb4C++deNRZ2Iw2tUYi/m6Y4Hl739/6qm1tfuiv/IW wR3Np0R12CkMQNUrY56QpgEmgLkzURWyCjfyh2QwX8h6W54k7pVFtu347a3BVFCoWouTr4wwoWH ysuxTjAk16XpeRBGsatk9IN1tkSn1izavQ89eleCddp3yf06OBN7LznvzDGdOFG7ZugZy74Xtw6 sqv4/D3q36C9S+Z8ixh2SHM3baKM9SawMJd2LYBGIxpUqaOzFwUtvWT/KGeknuFs1lAHs5whKp3 iIoTAQ3Uuru9JTU0MmJtalTrO20iTiabJv9BqnoG3JWe3/zk
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,90 +51,169 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-tmp driver to further changes of the pwm core
+This prepares the pwm-lpc drivers to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx-tpm.c | 34 +++++++++++++++++++---------------
- 1 file changed, 19 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-lpss-pci.c                 | 10 +++++-----
+ drivers/pwm/pwm-lpss-platform.c            | 10 +++++-----
+ drivers/pwm/pwm-lpss.c                     | 20 ++++++++++----------
+ drivers/pwm/pwm-lpss.h                     |  1 -
+ include/linux/platform_data/x86/pwm-lpss.h |  4 ++--
+ 5 files changed, 22 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
-index dc6aafeb9f7b..6c668c78f849 100644
---- a/drivers/pwm/pwm-imx-tpm.c
-+++ b/drivers/pwm/pwm-imx-tpm.c
-@@ -57,7 +57,6 @@
- #define PWM_IMX_TPM_MOD_MOD	GENMASK(PWM_IMX_TPM_MOD_WIDTH - 1, 0)
- 
- struct imx_tpm_pwm_chip {
--	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
- 	struct mutex lock;
-@@ -75,7 +74,7 @@ struct imx_tpm_pwm_param {
- static inline struct imx_tpm_pwm_chip *
- to_imx_tpm_pwm_chip(struct pwm_chip *chip)
+diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
+index b4134bee2863..abaeac0e3226 100644
+--- a/drivers/pwm/pwm-lpss-pci.c
++++ b/drivers/pwm/pwm-lpss-pci.c
+@@ -18,7 +18,7 @@ static int pwm_lpss_probe_pci(struct pci_dev *pdev,
+ 			      const struct pci_device_id *id)
  {
--	return container_of(chip, struct imx_tpm_pwm_chip, chip);
+ 	const struct pwm_lpss_boardinfo *info;
+-	struct pwm_lpss_chip *lpwm;
++	struct pwm_chip *chip;
+ 	int err;
+ 
+ 	err = pcim_enable_device(pdev);
+@@ -30,11 +30,11 @@ static int pwm_lpss_probe_pci(struct pci_dev *pdev,
+ 		return err;
+ 
+ 	info = (struct pwm_lpss_boardinfo *)id->driver_data;
+-	lpwm = devm_pwm_lpss_probe(&pdev->dev, pcim_iomap_table(pdev)[0], info);
+-	if (IS_ERR(lpwm))
+-		return PTR_ERR(lpwm);
++	chip = devm_pwm_lpss_probe(&pdev->dev, pcim_iomap_table(pdev)[0], info);
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
+ 
+-	pci_set_drvdata(pdev, lpwm);
++	pci_set_drvdata(pdev, chip);
+ 
+ 	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_allow(&pdev->dev);
+diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
+index 319809aac2c4..90aeafa02a3b 100644
+--- a/drivers/pwm/pwm-lpss-platform.c
++++ b/drivers/pwm/pwm-lpss-platform.c
+@@ -20,7 +20,7 @@
+ static int pwm_lpss_probe_platform(struct platform_device *pdev)
+ {
+ 	const struct pwm_lpss_boardinfo *info;
+-	struct pwm_lpss_chip *lpwm;
++	struct pwm_chip *chip;
+ 	void __iomem *base;
+ 
+ 	info = device_get_match_data(&pdev->dev);
+@@ -31,11 +31,11 @@ static int pwm_lpss_probe_platform(struct platform_device *pdev)
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
+ 
+-	lpwm = devm_pwm_lpss_probe(&pdev->dev, base, info);
+-	if (IS_ERR(lpwm))
+-		return PTR_ERR(lpwm);
++	chip = devm_pwm_lpss_probe(&pdev->dev, base, info);
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
+ 
+-	platform_set_drvdata(pdev, lpwm);
++	platform_set_drvdata(pdev, chip);
+ 
+ 	/*
+ 	 * On Cherry Trail devices the GFX0._PS0 AML checks if the controller
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index a6ea3ce7e019..13087203d05a 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -68,7 +68,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_tng_info);
+ 
+ static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
+ {
+-	return container_of(chip, struct pwm_lpss_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- /*
-@@ -336,35 +335,40 @@ static const struct pwm_ops imx_tpm_pwm_ops = {
+ static inline u32 pwm_lpss_read(const struct pwm_device *pwm)
+@@ -245,9 +245,10 @@ static const struct pwm_ops pwm_lpss_ops = {
+ 	.get_state = pwm_lpss_get_state,
+ };
  
- static int pwm_imx_tpm_probe(struct platform_device *pdev)
+-struct pwm_lpss_chip *devm_pwm_lpss_probe(struct device *dev, void __iomem *base,
++struct pwm_chip *devm_pwm_lpss_probe(struct device *dev, void __iomem *base,
+ 					  const struct pwm_lpss_boardinfo *info)
  {
 +	struct pwm_chip *chip;
- 	struct imx_tpm_pwm_chip *tpm;
-+	void __iomem *base;
- 	int ret;
-+	unsigned int npwm;
- 	u32 val;
+ 	struct pwm_lpss_chip *lpwm;
+ 	unsigned long c;
+ 	int i, ret;
+@@ -256,9 +257,10 @@ struct pwm_lpss_chip *devm_pwm_lpss_probe(struct device *dev, void __iomem *base
+ 	if (WARN_ON(info->npwm > LPSS_MAX_PWMS))
+ 		return ERR_PTR(-ENODEV);
  
--	tpm = devm_kzalloc(&pdev->dev, sizeof(*tpm), GFP_KERNEL);
--	if (!tpm)
--		return -ENOMEM;
-+	base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(base))
-+		return PTR_ERR(base);
-+
-+	/* get number of channels */
-+	val = readl(tpm->base + PWM_IMX_TPM_PARAM);
-+	npwm = FIELD_GET(PWM_IMX_TPM_PARAM_CHAN, val);
-+
-+	chip = devm_pwmchip_alloc(&pdev->dev, npwm, sizeof(*tpm));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	tpm = to_imx_tpm_pwm_chip(chip);
+-	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
+-	if (!lpwm)
++	chip = devm_pwmchip_alloc(dev, info->npwm, sizeof(*lpwm));
++	if (!chip)
+ 		return ERR_PTR(-ENOMEM);
++	lpwm = to_lpwm(chip);
  
- 	platform_set_drvdata(pdev, tpm);
+ 	lpwm->regs = base;
+ 	lpwm->info = info;
+@@ -267,23 +269,21 @@ struct pwm_lpss_chip *devm_pwm_lpss_probe(struct device *dev, void __iomem *base
+ 	if (!c)
+ 		return ERR_PTR(-EINVAL);
  
--	tpm->base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(tpm->base))
--		return PTR_ERR(tpm->base);
-+	tpm->base = base;
+-	lpwm->chip.dev = dev;
+-	lpwm->chip.ops = &pwm_lpss_ops;
+-	lpwm->chip.npwm = info->npwm;
++	chip->ops = &pwm_lpss_ops;
  
- 	tpm->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(tpm->clk))
- 		return dev_err_probe(&pdev->dev, PTR_ERR(tpm->clk),
- 				     "failed to get PWM clock\n");
+-	ret = devm_pwmchip_add(dev, &lpwm->chip);
++	ret = devm_pwmchip_add(dev, chip);
+ 	if (ret) {
+ 		dev_err(dev, "failed to add PWM chip: %d\n", ret);
+ 		return ERR_PTR(ret);
+ 	}
  
--	tpm->chip.dev = &pdev->dev;
--	tpm->chip.ops = &imx_tpm_pwm_ops;
--
--	/* get number of channels */
--	val = readl(tpm->base + PWM_IMX_TPM_PARAM);
--	tpm->chip.npwm = FIELD_GET(PWM_IMX_TPM_PARAM_CHAN, val);
-+	chip->ops = &imx_tpm_pwm_ops;
+ 	for (i = 0; i < lpwm->info->npwm; i++) {
+-		ctrl = pwm_lpss_read(&lpwm->chip.pwms[i]);
++		ctrl = pwm_lpss_read(&chip->pwms[i]);
+ 		if (ctrl & PWM_ENABLE)
+ 			pm_runtime_get(dev);
+ 	}
  
- 	mutex_init(&tpm->lock);
+-	return lpwm;
++	return chip;
+ }
+ EXPORT_SYMBOL_GPL(devm_pwm_lpss_probe);
  
--	ret = devm_pwmchip_add(&pdev->dev, &tpm->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index bf841250385f..b5267ab5193b 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -18,7 +18,6 @@
+ #define LPSS_MAX_PWMS			4
  
+ struct pwm_lpss_chip {
+-	struct pwm_chip chip;
+ 	void __iomem *regs;
+ 	const struct pwm_lpss_boardinfo *info;
+ };
+diff --git a/include/linux/platform_data/x86/pwm-lpss.h b/include/linux/platform_data/x86/pwm-lpss.h
+index c852fe24fe2a..752c06b47cc8 100644
+--- a/include/linux/platform_data/x86/pwm-lpss.h
++++ b/include/linux/platform_data/x86/pwm-lpss.h
+@@ -27,7 +27,7 @@ struct pwm_lpss_boardinfo {
+ 	bool other_devices_aml_touches_pwm_regs;
+ };
+ 
+-struct pwm_lpss_chip *devm_pwm_lpss_probe(struct device *dev, void __iomem *base,
+-					  const struct pwm_lpss_boardinfo *info);
++struct pwm_chip *devm_pwm_lpss_probe(struct device *dev, void __iomem *base,
++				     const struct pwm_lpss_boardinfo *info);
+ 
+ #endif	/* __PLATFORM_DATA_X86_PWM_LPSS_H */
 -- 
 2.40.1
 
