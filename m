@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3937C05051
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 18:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33520C0729B
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 18:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231476AbjHHS7E (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S232616AbjHHS7E (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Tue, 8 Aug 2023 14:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35954 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232186AbjHHS6r (ORCPT
+        with ESMTP id S232312AbjHHS6r (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 14:58:47 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959BA1DD4F
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D47175DEB
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:19:59 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN8-0007LX-J9; Tue, 08 Aug 2023 19:19:54 +0200
+        id 1qTQN2-00070T-1i; Tue, 08 Aug 2023 19:19:48 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN6-00226i-Tu; Tue, 08 Aug 2023 19:19:52 +0200
+        id 1qTQN1-00224W-DR; Tue, 08 Aug 2023 19:19:47 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN6-00BTDQ-46; Tue, 08 Aug 2023 19:19:52 +0200
+        id 1qTQMz-00BTBN-Ea; Tue, 08 Aug 2023 19:19:45 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 051/101] pwm: sprd: Make use of devm_pwmchip_alloc() function
-Date:   Tue,  8 Aug 2023 19:18:41 +0200
-Message-Id: <20230808171931.944154-52-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 019/101] pwm: fsl-ftm: Make use of devm_pwmchip_alloc() function
+Date:   Tue,  8 Aug 2023 19:18:09 +0200
+Message-Id: <20230808171931.944154-20-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3399; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=pXfTRJQ8DhCXpR3ibh/jX3Xqdui1qixiNBehj39L/xA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njquPxVkQLZZqtQOyvF/ZdKf2Anx4Faok+wa hBS6leqe5WJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ46gAKCRCPgPtYfRL+ ThmZB/4zJsoCD8cQzzba+4j0cgVKtYdQPpDUOlfAD3XUP7TohZoSpKH/Nt6ky6dsZ9gPsRcwLmK GLwCnpk7NYQjz74z+Il0ivlOPQV5lIpDLALsUKKaiU8GTjkiWxNAygSXc1KnfDCvgwuDmg5McNz xNJG1xIDJIbNuuubUlipnVuuhvF4Q64CdUZBh2qbIec7rTL9sXO8oE33iLLUO9d9mV9XEu7aNHf k4jbm9I5ivSMZ3su0mro/wvH8JloFxsIe211ZpFiwH4FG/oLU/cxrPuRo1zFyh+/4uz4sVfG6ay MLRMMESM+md061f2SmBe8GUL1OGL8GvXSTt0LJBnaQjAh/4o
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5582; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=cSZBqLS/qreFp1l79DtA4XUckZmuMsG149LMnq+bfWo=; b=owGbwMvMwMXY3/A7olbonx/jabUkhpRLFcfuWknYbDFUfWBttzzIYomhyfTTd9cninTvtpvup ypTHizdyWjMwsDIxSArpshi37gm06pKLrJz7b/LMINYmUCmMHBxCsBE7O6y/xVOEPNexuq97NLs jwsv9l3dtHurmf50obyL8YYvPjrKtvvNZGGoE5l1W4+zVE8ufM1fTa/c2t9P2Z7U3PI8/ZPLt2n BmzpxF7X33/pSqu9096n9OFfKv+N026W4JQ3NMh//zK83nlP+5L5H0U9/R3vJtKtV0fsS3dqT0z 6xeAfY/bX3LHJj2njlRlu7287Mz1eu+M9+67ozu6w37m3YUl4XvesuT/Z4qs2Sm5/+0Pib+PSHJ X51Zv++ftuocSRiXcrc1CjTy78k28wqrJg6dVc/Vnsi/yOz3ZJD4sic1RXb9u3ZKdMnv77dd1rU ci+nXoYvIiKPZI3UBM/uC6g8V/ffLKQ6X3rRmib1kp67AA==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,125 +51,175 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-sprd driver to further changes of the pwm core
+This prepares the pwm-fsl-ftm driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-sprd.c | 50 +++++++++++++++++++++---------------------
- 1 file changed, 25 insertions(+), 25 deletions(-)
+ drivers/pwm/pwm-fsl-ftm.c | 48 ++++++++++++++++++++-------------------
+ 1 file changed, 25 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sprd.c b/drivers/pwm/pwm-sprd.c
-index 77939e161006..b7ecd875b605 100644
---- a/drivers/pwm/pwm-sprd.c
-+++ b/drivers/pwm/pwm-sprd.c
-@@ -35,14 +35,13 @@ struct sprd_pwm_chn {
- struct sprd_pwm_chip {
- 	void __iomem *base;
- 	struct device *dev;
--	struct pwm_chip chip;
- 	int num_pwms;
- 	struct sprd_pwm_chn chn[SPRD_PWM_CHN_NUM];
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index d1b6d1aa4773..f56c7e9f491a 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -40,7 +40,6 @@ struct fsl_pwm_periodcfg {
  };
  
- static inline struct sprd_pwm_chip* sprd_pwm_from_chip(struct pwm_chip *chip)
+ struct fsl_pwm_chip {
+-	struct pwm_chip chip;
+ 	struct mutex lock;
+ 	struct regmap *regmap;
+ 
+@@ -55,7 +54,7 @@ struct fsl_pwm_chip {
+ 
+ static inline struct fsl_pwm_chip *to_fsl_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct sprd_pwm_chip, chip);
+-	return container_of(chip, struct fsl_pwm_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- /*
-@@ -215,65 +214,66 @@ static const struct pwm_ops sprd_pwm_ops = {
- 	.get_state = sprd_pwm_get_state,
- };
- 
--static int sprd_pwm_clk_init(struct sprd_pwm_chip *spc)
-+static int sprd_pwm_clk_init(struct device *dev,
-+			     struct sprd_pwm_chn chn[SPRD_PWM_CHN_NUM])
- {
- 	struct clk *clk_pwm;
- 	int ret, i;
- 
- 	for (i = 0; i < SPRD_PWM_CHN_NUM; i++) {
--		struct sprd_pwm_chn *chn = &spc->chn[i];
- 		int j;
- 
- 		for (j = 0; j < SPRD_PWM_CHN_CLKS_NUM; ++j)
--			chn->clks[j].id =
-+			chn[i].clks[j].id =
- 				sprd_pwm_clks[i * SPRD_PWM_CHN_CLKS_NUM + j];
- 
--		ret = devm_clk_bulk_get(spc->dev, SPRD_PWM_CHN_CLKS_NUM,
--					chn->clks);
-+		ret = devm_clk_bulk_get(dev, SPRD_PWM_CHN_CLKS_NUM,
-+					chn[i].clks);
- 		if (ret) {
- 			if (ret == -ENOENT)
- 				break;
- 
--			return dev_err_probe(spc->dev, ret,
-+			return dev_err_probe(dev, ret,
- 					     "failed to get channel clocks\n");
- 		}
- 
--		clk_pwm = chn->clks[SPRD_PWM_CHN_OUTPUT_CLK].clk;
--		chn->clk_rate = clk_get_rate(clk_pwm);
-+		clk_pwm = chn[i].clks[SPRD_PWM_CHN_OUTPUT_CLK].clk;
-+		chn[i].clk_rate = clk_get_rate(clk_pwm);
- 	}
- 
- 	if (!i)
--		return dev_err_probe(spc->dev, -ENODEV, "no available PWM channels\n");
-+		return dev_err_probe(dev, -ENODEV, "no available PWM channels\n");
- 
--	spc->num_pwms = i;
--
--	return 0;
-+	return i;
+ static void ftm_clear_write_protection(struct fsl_pwm_chip *fpc)
+@@ -221,10 +220,11 @@ static bool fsl_pwm_is_other_pwm_enabled(struct fsl_pwm_chip *fpc,
+ 		return false;
  }
  
- static int sprd_pwm_probe(struct platform_device *pdev)
+-static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
++static int fsl_pwm_apply_config(struct pwm_chip *chip,
+ 				struct pwm_device *pwm,
+ 				const struct pwm_state *newstate)
+ {
++	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+ 	unsigned int duty;
+ 	u32 reg_polarity;
+ 
+@@ -232,7 +232,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
+ 	bool do_write_period = false;
+ 
+ 	if (!fsl_pwm_calculate_period(fpc, newstate->period, &periodcfg)) {
+-		dev_err(fpc->chip.dev, "failed to calculate new period\n");
++		dev_err(chip->dev, "failed to calculate new period\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -246,7 +246,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
+ 	 */
+ 	else if (!fsl_pwm_periodcfg_are_equal(&fpc->period, &periodcfg)) {
+ 		if (fsl_pwm_is_other_pwm_enabled(fpc, pwm)) {
+-			dev_err(fpc->chip.dev,
++			dev_err(chip->dev,
+ 				"Cannot change period for PWM %u, disable other PWMs first\n",
+ 				pwm->hwpwm);
+ 			return -EBUSY;
+@@ -322,7 +322,7 @@ static int fsl_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		goto end_mutex;
+ 	}
+ 
+-	ret = fsl_pwm_apply_config(fpc, pwm, newstate);
++	ret = fsl_pwm_apply_config(chip, pwm, newstate);
+ 	if (ret)
+ 		goto end_mutex;
+ 
+@@ -392,18 +392,19 @@ static const struct regmap_config fsl_pwm_regmap_config = {
+ 
+ static int fsl_pwm_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct sprd_pwm_chip *spc;
-+	struct sprd_pwm_chn chn[SPRD_PWM_CHN_NUM];
+ 	struct fsl_pwm_chip *fpc;
+ 	void __iomem *base;
  	int ret;
  
--	spc = devm_kzalloc(&pdev->dev, sizeof(*spc), GFP_KERNEL);
--	if (!spc)
+-	fpc = devm_kzalloc(&pdev->dev, sizeof(*fpc), GFP_KERNEL);
+-	if (!fpc)
 -		return -ENOMEM;
-+	ret = sprd_pwm_clk_init(&pdev->dev, chn);
-+	if (ret < 0)
-+		return ret;
-+
-+	chip = devm_pwmchip_alloc(&pdev->dev, ret, sizeof(*spc));
++	chip = devm_pwmchip_alloc(&pdev->dev, 8, sizeof(*fpc));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	spc = sprd_pwm_from_chip(chip);
++	fpc = to_fsl_chip(chip);
  
- 	spc->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(spc->base))
- 		return PTR_ERR(spc->base);
+ 	mutex_init(&fpc->lock);
  
- 	spc->dev = &pdev->dev;
-+	memcpy(spc->chn, chn, sizeof(chn));
+ 	fpc->soc = of_device_get_match_data(&pdev->dev);
+-	fpc->chip.dev = &pdev->dev;
  
--	ret = sprd_pwm_clk_init(spc);
--	if (ret)
--		return ret;
-+	chip->ops = &sprd_pwm_ops;
-+	chip->npwm = spc->num_pwms;
+ 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(base))
+@@ -422,16 +423,16 @@ static int fsl_pwm_probe(struct platform_device *pdev)
+ 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_SYS]);
+ 	}
  
--	spc->chip.dev = &pdev->dev;
--	spc->chip.ops = &sprd_pwm_ops;
--	spc->chip.npwm = spc->num_pwms;
--
--	ret = devm_pwmchip_add(&pdev->dev, &spc->chip);
+-	fpc->clk[FSL_PWM_CLK_FIX] = devm_clk_get(fpc->chip.dev, "ftm_fix");
++	fpc->clk[FSL_PWM_CLK_FIX] = devm_clk_get(&pdev->dev, "ftm_fix");
+ 	if (IS_ERR(fpc->clk[FSL_PWM_CLK_FIX]))
+ 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_FIX]);
+ 
+-	fpc->clk[FSL_PWM_CLK_EXT] = devm_clk_get(fpc->chip.dev, "ftm_ext");
++	fpc->clk[FSL_PWM_CLK_EXT] = devm_clk_get(&pdev->dev, "ftm_ext");
+ 	if (IS_ERR(fpc->clk[FSL_PWM_CLK_EXT]))
+ 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_EXT]);
+ 
+ 	fpc->clk[FSL_PWM_CLK_CNTEN] =
+-				devm_clk_get(fpc->chip.dev, "ftm_cnt_clk_en");
++				devm_clk_get(&pdev->dev, "ftm_cnt_clk_en");
+ 	if (IS_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]))
+ 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]);
+ 
+@@ -444,16 +445,15 @@ static int fsl_pwm_probe(struct platform_device *pdev)
+ 		fpc->ipg_clk = fpc->clk[FSL_PWM_CLK_SYS];
+ 
+ 
+-	fpc->chip.ops = &fsl_pwm_ops;
+-	fpc->chip.npwm = 8;
++	chip->ops = &fsl_pwm_ops;
+ 
+-	ret = devm_pwmchip_add(&pdev->dev, &fpc->chip);
 +	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret)
- 		dev_err(&pdev->dev, "failed to add PWM chip\n");
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
+ 		return ret;
+ 	}
  
+-	platform_set_drvdata(pdev, fpc);
++	platform_set_drvdata(pdev, chip);
+ 
+ 	return fsl_pwm_init(fpc);
+ }
+@@ -461,14 +461,15 @@ static int fsl_pwm_probe(struct platform_device *pdev)
+ #ifdef CONFIG_PM_SLEEP
+ static int fsl_pwm_suspend(struct device *dev)
+ {
+-	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
++	struct pwm_chip *chip = dev_get_drvdata(dev);
++	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+ 	int i;
+ 
+ 	regcache_cache_only(fpc->regmap, true);
+ 	regcache_mark_dirty(fpc->regmap);
+ 
+-	for (i = 0; i < fpc->chip.npwm; i++) {
+-		struct pwm_device *pwm = &fpc->chip.pwms[i];
++	for (i = 0; i < chip->npwm; i++) {
++		struct pwm_device *pwm = &chip->pwms[i];
+ 
+ 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
+ 			continue;
+@@ -487,11 +488,12 @@ static int fsl_pwm_suspend(struct device *dev)
+ 
+ static int fsl_pwm_resume(struct device *dev)
+ {
+-	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
++	struct pwm_chip *chip = dev_get_drvdata(dev);
++	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+ 	int i;
+ 
+-	for (i = 0; i < fpc->chip.npwm; i++) {
+-		struct pwm_device *pwm = &fpc->chip.pwms[i];
++	for (i = 0; i < chip->npwm; i++) {
++		struct pwm_device *pwm = &chip->pwms[i];
+ 
+ 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
+ 			continue;
 -- 
 2.40.1
 
