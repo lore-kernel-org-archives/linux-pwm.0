@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4C2C04FDF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF3EDC05052
 	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 18:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232365AbjHHS7D (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Aug 2023 14:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49480 "EHLO
+        id S230345AbjHHS7E (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Aug 2023 14:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232131AbjHHS6q (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 14:58:46 -0400
+        with ESMTP id S231476AbjHHS6r (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 14:58:47 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36F9175DE9
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:19:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5881DD50
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:10 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN1-0006zJ-S8; Tue, 08 Aug 2023 19:19:47 +0200
+        id 1qTQN7-0007KN-VC; Tue, 08 Aug 2023 19:19:54 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN1-00224Q-7Z; Tue, 08 Aug 2023 19:19:47 +0200
+        id 1qTQN6-00226T-7u; Tue, 08 Aug 2023 19:19:52 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN0-00BTBY-1k; Tue, 08 Aug 2023 19:19:46 +0200
+        id 1qTQN5-00BTDD-Gx; Tue, 08 Aug 2023 19:19:51 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 022/101] pwm: imx1: Make use of devm_pwmchip_alloc() function
-Date:   Tue,  8 Aug 2023 19:18:12 +0200
-Message-Id: <20230808171931.944154-23-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 048/101] pwm: sifive: Make use of devm_pwmchip_alloc() function
+Date:   Tue,  8 Aug 2023 19:18:38 +0200
+Message-Id: <20230808171931.944154-49-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2017; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=4gOJM5IBrpLIkLxj5Bh69owmlQl9Bs/nvKKHorq4In0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njJS/AJduh1vICieGvKJ4jqo2KYzcBc+GgLo SnU7k296gKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ4yQAKCRCPgPtYfRL+ TiRLCACRfs2LUE0G8ygWoy8yOrdkjKKRFzITjTts0pq6xQq95yE+VFtWiWW39Ca13e1kHYrrynl LjKa9HJk7yg5qIpNWqhVlbfrI0IqNcAZX8N4q5DgEMa8RMtMKk/0HliZP9vUycNAqno9RPeKsT5 HFuMLcRFR1DSnFcw63+RiifgQOusSTbNMr3D5I8JAPg8MQP3i8NCGEqqtXxklrGCuGF7mZ3FZJp FcuRjUKYgfBYRrFuYfhZxgixLcbxAlTkFQxy6xLLRcShBlXRvhnB6rdLaaLKKYc7FNc8P6AtAZC YIN+vQp1NMOt29cm8YEe11bh0P+s7AblOY4AihvAI0GDoT48
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3458; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=sQrwfGAiQqBKsZnlF78YLJAV7nOlKgW1pwzJPdjWmO0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njm06bRSjBKu2go3Ov3/6QH4R8HnmBOAtr0J SkLcnWqxGmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ45gAKCRCPgPtYfRL+ TojkB/97FZMU2TxbMCBELaM5ae7w/cpmnxunLcdMFo+m83wP7ooDvSY/m1Z+QGaceELxBU2/IoY As6lcj3pu/0UpNqsCfEhZqlxPn/N713eAJRbTIFmKxbH3poD+G+EJLKwqeoQmIh8Pp7nkF8chGB mu7j1SV/7kE/ZsB/W2TueLYjn5qNzRlH62AZaQyUAgMgBs7RjLzpzl3HJcY7fsd+Eag6Z+Zo7Eb fzHLwDzUHaWu29Wlum60dvBenLsAuf/4oyYAVIzWIMHwf8LAzjSzg3n1mXLVFK1+SubRnOBs0ty zswST25Ww9gj5B3nsZ4IM/hRCzjOcgZAhrS8GMR/Zd/iRpsl
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,66 +51,106 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-imx1 driver to further changes of the pwm core
+This prepares the pwm-sifive driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx1.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-sifive.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx1.c b/drivers/pwm/pwm-imx1.c
-index d175d895f22a..e4cf6e957b63 100644
---- a/drivers/pwm/pwm-imx1.c
-+++ b/drivers/pwm/pwm-imx1.c
-@@ -28,10 +28,9 @@ struct pwm_imx1_chip {
- 	struct clk *clk_ipg;
- 	struct clk *clk_per;
- 	void __iomem *mmio_base;
--	struct pwm_chip chip;
- };
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index 089e50bdbbf0..1f8a50143300 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -41,7 +41,7 @@
+ #define PWM_SIFIVE_DEFAULT_PERIOD	10000000
  
--#define to_pwm_imx1_chip(chip)	container_of(chip, struct pwm_imx1_chip, chip)
-+#define to_pwm_imx1_chip(chip)	pwmchip_priv(chip)
- 
- static int pwm_imx1_clk_prepare_enable(struct pwm_chip *chip)
+ struct pwm_sifive_ddata {
+-	struct pwm_chip	chip;
++	struct device *parent;
+ 	struct mutex lock; /* lock to protect user_count and approx_period */
+ 	struct notifier_block notifier;
+ 	struct clk *clk;
+@@ -54,7 +54,7 @@ struct pwm_sifive_ddata {
+ static inline
+ struct pwm_sifive_ddata *pwm_sifive_chip_to_ddata(struct pwm_chip *chip)
  {
-@@ -156,11 +155,13 @@ MODULE_DEVICE_TABLE(of, pwm_imx1_dt_ids);
- 
- static int pwm_imx1_probe(struct platform_device *pdev)
- {
-+	struct pwm_chip *chip;
- 	struct pwm_imx1_chip *imx;
- 
--	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
--	if (!imx)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*imx));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	imx = to_pwm_imx1_chip(chip);
- 
- 	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
- 	if (IS_ERR(imx->clk_ipg))
-@@ -172,15 +173,13 @@ static int pwm_imx1_probe(struct platform_device *pdev)
- 		return dev_err_probe(&pdev->dev, PTR_ERR(imx->clk_per),
- 				     "failed to get peripheral clock\n");
- 
--	imx->chip.ops = &pwm_imx1_ops;
--	imx->chip.dev = &pdev->dev;
--	imx->chip.npwm = 1;
-+	chip->ops = &pwm_imx1_ops;
- 
- 	imx->mmio_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(imx->mmio_base))
- 		return PTR_ERR(imx->mmio_base);
- 
--	return devm_pwmchip_add(&pdev->dev, &imx->chip);
-+	return devm_pwmchip_add(&pdev->dev, chip);
+-	return container_of(chip, struct pwm_sifive_ddata, chip);
++	return pwmchip_priv(chip);
  }
  
- static struct platform_driver pwm_imx1_driver = {
+ static int pwm_sifive_request(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -102,7 +102,7 @@ static void pwm_sifive_update_clock(struct pwm_sifive_ddata *ddata,
+ 	/* As scale <= 15 the shift operation cannot overflow. */
+ 	num = (unsigned long long)NSEC_PER_SEC << (PWM_SIFIVE_CMPWIDTH + scale);
+ 	ddata->real_period = div64_ul(num, rate);
+-	dev_dbg(ddata->chip.dev,
++	dev_dbg(ddata->parent,
+ 		"New real_period = %u ns\n", ddata->real_period);
+ }
+ 
+@@ -185,7 +185,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (!enabled) {
+ 		ret = clk_enable(ddata->clk);
+ 		if (ret) {
+-			dev_err(ddata->chip.dev, "Enable clk failed\n");
++			dev_err(chip->dev, "Enable clk failed\n");
+ 			return ret;
+ 		}
+ 	}
+@@ -230,15 +230,14 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 	u32 val;
+ 	unsigned int enabled_pwms = 0, enabled_clks = 1;
+ 
+-	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
+-	if (!ddata)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(dev, 4, sizeof(*ddata));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	ddata = pwm_sifive_chip_to_ddata(chip);
++	ddata->parent = dev;
+ 
+ 	mutex_init(&ddata->lock);
+-	chip = &ddata->chip;
+-	chip->dev = dev;
+ 	chip->ops = &pwm_sifive_ops;
+-	chip->npwm = 4;
+ 
+ 	ddata->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(ddata->regs))
+@@ -296,7 +295,7 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 		goto unregister_clk;
+ 	}
+ 
+-	platform_set_drvdata(pdev, ddata);
++	platform_set_drvdata(pdev, chip);
+ 	dev_dbg(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
+ 
+ 	return 0;
+@@ -314,15 +313,16 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 
+ static void pwm_sifive_remove(struct platform_device *dev)
+ {
+-	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
++	struct pwm_chip *chip = platform_get_drvdata(dev);
++	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
+ 	struct pwm_device *pwm;
+ 	int ch;
+ 
+-	pwmchip_remove(&ddata->chip);
++	pwmchip_remove(chip);
+ 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
+ 
+-	for (ch = 0; ch < ddata->chip.npwm; ch++) {
+-		pwm = &ddata->chip.pwms[ch];
++	for (ch = 0; ch < chip->npwm; ch++) {
++		pwm = &chip->pwms[ch];
+ 		if (pwm->state.enabled)
+ 			clk_disable(ddata->clk);
+ 	}
 -- 
 2.40.1
 
