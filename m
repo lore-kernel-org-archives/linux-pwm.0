@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 209EEC001DB
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 19:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E03BEC41513
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 19:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236502AbjHHTfj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Aug 2023 15:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
+        id S236643AbjHHTiM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Aug 2023 15:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236355AbjHHTfY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 15:35:24 -0400
+        with ESMTP id S236496AbjHHThw (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 15:37:52 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5171DD6A
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5A3175DC6
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:19:46 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQNB-0007RV-Sg; Tue, 08 Aug 2023 19:19:57 +0200
+        id 1qTQMx-0006md-AB; Tue, 08 Aug 2023 19:19:43 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQNA-002289-CB; Tue, 08 Aug 2023 19:19:56 +0200
+        id 1qTQMw-00222y-M4; Tue, 08 Aug 2023 19:19:42 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN9-00BTEX-Ng; Tue, 08 Aug 2023 19:19:55 +0200
+        id 1qTQMw-00BTAL-0i; Tue, 08 Aug 2023 19:19:42 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 068/101] leds: qcom-lpg: Make use of devm_pwmchip_alloc() function
-Date:   Tue,  8 Aug 2023 19:18:58 +0200
-Message-Id: <20230808171931.944154-69-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 003/101] pwm: apple: Make use of devm_pwmchip_alloc() function
+Date:   Tue,  8 Aug 2023 19:17:53 +0200
+Message-Id: <20230808171931.944154-4-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2962; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=iz21kDZ8eSUTIi/hoTLlvvGLRnFZ5Spz36bOZu6NAzA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0nj9RDKGeBcEYdRG+An8djkfbyvmMzJ0bg/Zp I4tziGSGcuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ4/QAKCRCPgPtYfRL+ TlDMB/9swbN8dslpe0QsWiktAOFJtA/BMNgMjDdUljWbYkJbXfaQYS4u6x40F/bk5xF56aSyw0Q 7NMjd5K9C+YsHGxvFNAUyMdR7r5ULPXheAbDWg2YBq855ITE02kg39+ARxNEYVJ9kYbhKNrPn+g s12D3jh6lugqLf39c4Ficd0EfZ0tmmKaFISG+E7sm3zkIjn7O4kgFi7yidKepDysuJADhWeCw6t 6xJWc2PEzq4C3ZMrdaW5BRbZfyXXwgEVf43t6ilvmaxq4ZAtmhS+ma5ov9+NRwNlRt5/ALskjbj R2pVF5urQt61gc3VaUG2URgqJjrk0W2xsKSGVpb9Q9KJo77R
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2020; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=89glyftoAOOkBIboD70t9sJMnEnwOUW4YTEcye0f/f0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0nizWoWYGjq2iVwzW1OyWAcsjraxyfpTztRx+ TmLVHsTXPCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ4swAKCRCPgPtYfRL+ TtOzCACETctq5ZjQUdo+zc1qzxXA/sVxzKsI8ntNKCrhEYx4Fs/NlwocVylIiae0Ppu0UBfrVnx 2QZj7xaIJ/k3ktLK88casMZ4ky+oB59OWD7YijHfEZ2KkKVS9ZW1dL3VZ9Z1RnyMxoJppVC1yyL Dffxgm4tQvv0sjHNCgnBsOj10cvkYvvWbfjNl2oRGKwXa/Fv5DcyEokp1jr3S2H7FnXQDXQ5Nse D/I8RlvVzSor3mObTJe0HLIen7c1IUJSrENaLPrnOOjhCjqAew7dCY/A4hWYU0oF/FavGUarnJ9 SSXrIcMxtLKQNJKn349d01CNLO1raN56wj7rV1S00ANpa/Yh
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,96 +51,69 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm sub-driver to further changes of the pwm core
+This prepares the pwm-apple driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/leds/rgb/leds-qcom-lpg.c | 30 +++++++++++++++++++++---------
- 1 file changed, 21 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-apple.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
-index 9e5a03f66543..182412cb0384 100644
---- a/drivers/leds/rgb/leds-qcom-lpg.c
-+++ b/drivers/leds/rgb/leds-qcom-lpg.c
-@@ -78,7 +78,7 @@ struct lpg {
+diff --git a/drivers/pwm/pwm-apple.c b/drivers/pwm/pwm-apple.c
+index 4d755b628d9e..1560b6f88821 100644
+--- a/drivers/pwm/pwm-apple.c
++++ b/drivers/pwm/pwm-apple.c
+@@ -32,14 +32,13 @@
+ #define APPLE_PWM_CTRL_OUTPUT_ENABLE BIT(14)
  
- 	struct mutex lock;
+ struct apple_pwm {
+-	struct pwm_chip chip;
+ 	void __iomem *base;
+ 	u64 clkrate;
+ };
  
--	struct pwm_chip pwm;
-+	struct pwm_chip *pwm;
- 
- 	const struct lpg_data *data;
- 
-@@ -978,9 +978,15 @@ static int lpg_pattern_mc_clear(struct led_classdev *cdev)
- 	return lpg_pattern_clear(led);
+ static inline struct apple_pwm *to_apple_pwm(struct pwm_chip *chip)
+ {
+-	return container_of(chip, struct apple_pwm, chip);
++	return pwmchip_priv(chip);
  }
  
-+static inline struct lpg *lpg_pwm_from_chip(struct pwm_chip *chip)
-+{
-+	struct lpg **lpg = pwmchip_priv(chip);
-+	return *lpg;
-+}
-+
- static int lpg_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
--	struct lpg *lpg = container_of(chip, struct lpg, pwm);
-+	struct lpg *lpg = lpg_pwm_from_chip(chip);
- 	struct lpg_channel *chan = &lpg->channels[pwm->hwpwm];
+ static int apple_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -103,13 +102,16 @@ static const struct pwm_ops apple_pwm_ops = {
  
- 	return chan->in_use ? -EBUSY : 0;
-@@ -996,7 +1002,7 @@ static int lpg_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			 const struct pwm_state *state)
- {
--	struct lpg *lpg = container_of(chip, struct lpg, pwm);
-+	struct lpg *lpg = lpg_pwm_from_chip(chip);
- 	struct lpg_channel *chan = &lpg->channels[pwm->hwpwm];
- 	int ret = 0;
- 
-@@ -1027,7 +1033,7 @@ static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- static int lpg_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 			     struct pwm_state *state)
- {
--	struct lpg *lpg = container_of(chip, struct lpg, pwm);
-+	struct lpg *lpg = lpg_pwm_from_chip(chip);
- 	struct lpg_channel *chan = &lpg->channels[pwm->hwpwm];
- 	unsigned int resolution;
- 	unsigned int pre_div;
-@@ -1090,13 +1096,19 @@ static const struct pwm_ops lpg_pwm_ops = {
- 
- static int lpg_add_pwm(struct lpg *lpg)
+ static int apple_pwm_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
+ 	struct apple_pwm *fpwm;
+ 	struct clk *clk;
  	int ret;
  
--	lpg->pwm.dev = lpg->dev;
--	lpg->pwm.npwm = lpg->num_channels;
--	lpg->pwm.ops = &lpg_pwm_ops;
-+	lpg->pwm = chip = devm_pwmchip_alloc(lpg->dev, lpg->num_channels,
-+					     sizeof(&lpg));
+-	fpwm = devm_kzalloc(&pdev->dev, sizeof(*fpwm), GFP_KERNEL);
+-	if (!fpwm)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*fpwm));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
- 
--	ret = pwmchip_add(&lpg->pwm);
-+	*(struct lpg **)pwmchip_priv(chip) = lpg;
 +
-+	chip->ops = &lpg_pwm_ops;
-+
-+	ret = pwmchip_add(chip);
- 	if (ret)
- 		dev_err(lpg->dev, "failed to add PWM chip: ret %d\n", ret);
++	fpwm = to_apple_pwm(chip);
  
-@@ -1368,7 +1380,7 @@ static int lpg_remove(struct platform_device *pdev)
- {
- 	struct lpg *lpg = platform_get_drvdata(pdev);
+ 	fpwm->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(fpwm->base))
+@@ -129,11 +131,9 @@ static int apple_pwm_probe(struct platform_device *pdev)
+ 	if (fpwm->clkrate > NSEC_PER_SEC)
+ 		return dev_err_probe(&pdev->dev, -EINVAL, "pwm clock out of range");
  
--	pwmchip_remove(&lpg->pwm);
-+	pwmchip_remove(lpg->pwm);
+-	fpwm->chip.dev = &pdev->dev;
+-	fpwm->chip.npwm = 1;
+-	fpwm->chip.ops = &apple_pwm_ops;
++	chip->ops = &apple_pwm_ops;
  
- 	return 0;
- }
+-	ret = devm_pwmchip_add(&pdev->dev, &fpwm->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "unable to add pwm chip");
+ 
 -- 
 2.40.1
 
