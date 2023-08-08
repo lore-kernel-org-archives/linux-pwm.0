@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 921EDC04FDF
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 18:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233DDC04A94
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 18:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233408AbjHHS6z (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S231668AbjHHS6z (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Tue, 8 Aug 2023 14:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59596 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233436AbjHHS6j (ORCPT
+        with ESMTP id S233448AbjHHS6j (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 14:58:39 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815F08CBB
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:19:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EED7585D
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:06 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQMy-0006oQ-OA; Tue, 08 Aug 2023 19:19:44 +0200
+        id 1qTQN5-0007Ea-UL; Tue, 08 Aug 2023 19:19:51 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQMy-00223N-2j; Tue, 08 Aug 2023 19:19:44 +0200
+        id 1qTQN4-00225Z-1l; Tue, 08 Aug 2023 19:19:50 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQMx-00BTAi-Af; Tue, 08 Aug 2023 19:19:43 +0200
+        id 1qTQN2-00BTCP-T3; Tue, 08 Aug 2023 19:19:48 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 009/101] pwm: bcm-kona: Make use of devm_pwmchip_alloc() function
-Date:   Tue,  8 Aug 2023 19:17:59 +0200
-Message-Id: <20230808171931.944154-10-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 036/101] pwm: mtk-disp: Make use of devm_pwmchip_alloc() function
+Date:   Tue,  8 Aug 2023 19:18:26 +0200
+Message-Id: <20230808171931.944154-37-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2115; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=4lOgYJf9pELkAq0II4KGpCMH7rGjczQ12sdM6GbU9M8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0ni6V0mz34GNKezmoX0DUsCqRjiogfDHDRhJh kk+xucB55OJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ4ugAKCRCPgPtYfRL+ TqHSCACnqETl7NrXG4QNZ8zs5xkYxi5l4mQrowZMSN93EDXdRS/F57SNuISZCUYmmtwHt0rAcoE mynZS+iPTtEW9tR/DQa6EKQ3w/sbUz3hOCWHikpDvLLBoW6Fue0DIfVqnpcIA5Jbkh6flM4YFDD Rt6yL3qdbIExPzAVM23eqSko+hq6wmunRIcFpsfcZ4L6CEmL/9FCjHvgOPvfgSsEmKyTVd8MTCO DrAKyrFM+Fm/7Brj6WUShfMnRwRZoqQBZBsYo9Q7NgkGPpOtU1PvQmc75U3ojT7RAEs1XBnZuQz MXSqn26dx8W2psL0JJHqueG32In248WXwq0ioYn6pbz08K+V
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2058; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=K2LWAHOiIz+H5bEQDd8w9UQgfmv0zP7YZC7ix9cYGYM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njZVjgGNOjihXL9+ExMxPpA6O7BjwdzmnNNz 1y0GhqWCuKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ42QAKCRCPgPtYfRL+ Tn0AB/9bDK8aOUbrAXJf2PAgAgBa4VFDcxzJsyCajLHg+sVGlOstONTe77TOsU3kAevmWPl/1cb gsMRYB/LMlf1TCYvLyIEzGBDkbWykpsExOTDUBZ1Jb9QP0ujaJDR3yUcWH7wwM/Xc/+3M4e4Op5 RNAPDPMRYGuxL21gac7mDBQfbF6jfAavOu6Mjlzjx1DFMvcDx9YMHkJzOf3BcdC1pjDARLdRtpS XuzA0IJPZuVWy/h/8VZyN4c6WVeAz8UF9fWNflu5WIJe2F94qoFHkUG3bsxujZ1u5s4pF/7JVCG HEn0yqa87DISW6ByfMuJm+/lhgs3Tj8P04F0Tu9POqRk+sCB
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,75 +51,67 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-bcm-kona driver to further changes of the pwm core
+This prepares the pwm-mtk-disp driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-bcm-kona.c | 17 ++++++++---------
+ drivers/pwm/pwm-mtk-disp.c | 17 ++++++++---------
  1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index c0d9956b6443..a0d961173b86 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -56,14 +56,13 @@
- #define DUTY_CYCLE_HIGH_MAX			0x00ffffff
- 
- struct kona_pwmc {
--	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *clk;
+diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
+index a72f7be36996..0c4f88145dc6 100644
+--- a/drivers/pwm/pwm-mtk-disp.c
++++ b/drivers/pwm/pwm-mtk-disp.c
+@@ -42,7 +42,6 @@ struct mtk_pwm_data {
  };
  
- static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *chip)
+ struct mtk_disp_pwm {
+-	struct pwm_chip chip;
+ 	const struct mtk_pwm_data *data;
+ 	struct clk *clk_main;
+ 	struct clk *clk_mm;
+@@ -52,7 +51,7 @@ struct mtk_disp_pwm {
+ 
+ static inline struct mtk_disp_pwm *to_mtk_disp_pwm(struct pwm_chip *chip)
  {
--	return container_of(chip, struct kona_pwmc, chip);
+-	return container_of(chip, struct mtk_disp_pwm, chip);
 +	return pwmchip_priv(chip);
  }
  
- /*
-@@ -264,18 +263,18 @@ static const struct pwm_ops kona_pwm_ops = {
+ static void mtk_disp_pwm_update_bits(struct mtk_disp_pwm *mdp, u32 offset,
+@@ -231,12 +230,14 @@ static const struct pwm_ops mtk_disp_pwm_ops = {
  
- static int kona_pwmc_probe(struct platform_device *pdev)
+ static int mtk_disp_pwm_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct kona_pwmc *kp;
- 	unsigned int chan;
- 	unsigned int value = 0;
- 	int ret = 0;
+ 	struct mtk_disp_pwm *mdp;
+ 	int ret;
  
--	kp = devm_kzalloc(&pdev->dev, sizeof(*kp), GFP_KERNEL);
--	if (kp == NULL)
-+	chip = devm_pwmchip_alloc(&pdev->dev, 6, sizeof(*kp));
-+	if (chip == NULL)
- 		return -ENOMEM;
-+	kp = to_kona_pwmc(chip);
+-	mdp = devm_kzalloc(&pdev->dev, sizeof(*mdp), GFP_KERNEL);
+-	if (!mdp)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*mdp));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	mdp = to_mtk_disp_pwm(chip);
  
--	kp->chip.dev = &pdev->dev;
--	kp->chip.ops = &kona_pwm_ops;
--	kp->chip.npwm = 6;
-+	chip->ops = &kona_pwm_ops;
+ 	mdp->data = of_device_get_match_data(&pdev->dev);
  
- 	kp->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(kp->base))
-@@ -295,14 +294,14 @@ static int kona_pwmc_probe(struct platform_device *pdev)
- 	}
+@@ -254,11 +255,9 @@ static int mtk_disp_pwm_probe(struct platform_device *pdev)
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(mdp->clk_mm),
+ 				     "Failed to get mm clock\n");
  
- 	/* Set push/pull for all channels */
--	for (chan = 0; chan < kp->chip.npwm; chan++)
-+	for (chan = 0; chan < chip->npwm; chan++)
- 		value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
+-	mdp->chip.dev = &pdev->dev;
+-	mdp->chip.ops = &mtk_disp_pwm_ops;
+-	mdp->chip.npwm = 1;
++	chip->ops = &mtk_disp_pwm_ops;
  
- 	writel(value, kp->base + PWM_CONTROL_OFFSET);
- 
- 	clk_disable_unprepare(kp->clk);
- 
--	ret = devm_pwmchip_add(&pdev->dev, &kp->chip);
+-	ret = devm_pwmchip_add(&pdev->dev, &mdp->chip);
 +	ret = devm_pwmchip_add(&pdev->dev, chip);
  	if (ret < 0)
- 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
+ 		return dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
  
 -- 
 2.40.1
