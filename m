@@ -2,162 +2,115 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE0ABC41513
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 19:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D4CC04A6A
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 20:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbjHHTvC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Aug 2023 15:51:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36566 "EHLO
+        id S230158AbjHHUCp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Aug 2023 16:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbjHHTup (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 15:50:45 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C965FE8
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 09:56:44 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qTGAZ-0007if-FO; Tue, 08 Aug 2023 08:26:15 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qTGAY-001v5N-3j; Tue, 08 Aug 2023 08:26:14 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qTGAX-00BKsD-04; Tue, 08 Aug 2023 08:26:13 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        with ESMTP id S230102AbjHHUCc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 16:02:32 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1001C81291
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 11:19:33 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="437269769"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="437269769"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 10:49:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="801408349"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="801408349"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004.fm.intel.com with ESMTP; 08 Aug 2023 10:49:54 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andy@kernel.org>)
+        id 1qTQq9-0015wc-1N;
+        Tue, 08 Aug 2023 20:49:53 +0300
+Date:   Tue, 8 Aug 2023 20:49:53 +0300
+From:   Andy Shevchenko <andy@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Paul Cercueil <paul@crapouillou.net>,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH] pwm: jz4740: Consistently name driver data "jz"
-Date:   Tue,  8 Aug 2023 08:26:08 +0200
-Message-Id: <20230808062608.897710-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.40.1
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        linux-pwm@vger.kernel.org, kernel@pengutronix.de,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: Re: [PATCH v1 080/101] pwm: lpss: Store parent device in driver data
+Message-ID: <ZNKAQV4VXVwkyYBV@smile.fi.intel.com>
+References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
+ <20230808171931.944154-81-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4302; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=CgCI6Nwvk9+sysDh3jA/wC6GMwE7Q3uqtKVdUn6NQqE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0d//BGdKQSIjqbmTKx1EqIjjeJIj/3pWze3B+ 0Q5sqqYYquJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNHf/wAKCRCPgPtYfRL+ TgvmCACesHKB5NI1pvKf4rTN1vuMShRlk4XkvVlj0uVqmIn5HMncpkaLM8YpEeJT06OlyOVfyEe lkXj+MkSpkBFBbDfxEo++qM/zWvhf908sn0IRbWvGYhenBu29DIIGdPVJxwSNhu+lK/OJZtwlDE DlDcEgy0zpU46tmj8zqVlmxYXhkVoPYwZCgGIybgO+XXPEtklgG9MZigsDg4q9G/YVK3F/EZUe7 6MuaCt0j/OHU7nuK2mBfN4Qa7ZdtF9AVik+bPyokqVpUbvYe8rW6kbxXiKuch35mOvmdGn7UQ0J vaFQdor8d3m4wTmt6WAC9IIZmNawMmGoHQLuJoVFbc+YY+a0
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+In-Reply-To: <20230808171931.944154-81-u.kleine-koenig@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Most but not all pointers to driver data are already called "jz":
+On Tue, Aug 08, 2023 at 07:19:10PM +0200, Uwe Kleine-König wrote:
+> struct pwm_chip::dev is about to change. To not have to touch this
+> driver in the same commit as struct pwm_chip::dev, store a pointer to
+> the parent device in driver data.
 
-	$ git grep 'struct jz4740_pwm_chip \*' v6.5-rc1 -- drivers/pwm/pwm-jz4740.c
-	v6.5-rc1:drivers/pwm/pwm-jz4740.c:static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
-	v6.5-rc1:drivers/pwm/pwm-jz4740.c:static bool jz4740_pwm_can_use_chn(struct jz4740_pwm_chip *jz,
-	v6.5-rc1:drivers/pwm/pwm-jz4740.c:      struct jz4740_pwm_chip *jz = to_jz4740(chip);
-	v6.5-rc1:drivers/pwm/pwm-jz4740.c:      struct jz4740_pwm_chip *jz = to_jz4740(chip);
-	v6.5-rc1:drivers/pwm/pwm-jz4740.c:      struct jz4740_pwm_chip *jz = to_jz4740(chip);
-	v6.5-rc1:drivers/pwm/pwm-jz4740.c:      struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
-	v6.5-rc1:drivers/pwm/pwm-jz4740.c:      struct jz4740_pwm_chip *jz4740;
+I'm not against this change, so
+Acked-by: Andy Shevchenko <andy@kernel.org>
+bu see some comments below.
 
-Adapt the two variables called "jz4740" to use the same name for
-consistency.
+I think ideally pwm_chip should be an opaque to the driver
+(or something near to it). OTOH it may be I understood that
+wrong.
 
-Signed-off-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-jz4740.c | 36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+...
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index ef1293f2a897..6b2124266273 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -121,7 +121,7 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    const struct pwm_state *state)
- {
--	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
-+	struct jz4740_pwm_chip *jz = to_jz4740(pwm->chip);
- 	unsigned long long tmp = 0xffffull * NSEC_PER_SEC;
- 	struct clk *clk = pwm_get_chip_data(pwm);
- 	unsigned long period, duty;
-@@ -173,16 +173,16 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	}
- 
- 	/* Reset counter to 0 */
--	regmap_write(jz4740->map, TCU_REG_TCNTc(pwm->hwpwm), 0);
-+	regmap_write(jz->map, TCU_REG_TCNTc(pwm->hwpwm), 0);
- 
- 	/* Set duty */
--	regmap_write(jz4740->map, TCU_REG_TDHRc(pwm->hwpwm), duty);
-+	regmap_write(jz->map, TCU_REG_TDHRc(pwm->hwpwm), duty);
- 
- 	/* Set period */
--	regmap_write(jz4740->map, TCU_REG_TDFRc(pwm->hwpwm), period);
-+	regmap_write(jz->map, TCU_REG_TDFRc(pwm->hwpwm), period);
- 
- 	/* Set abrupt shutdown */
--	regmap_set_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
-+	regmap_set_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
- 			TCU_TCSR_PWM_SD);
- 
- 	/*
-@@ -199,10 +199,10 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * state instead of its inactive state.
- 	 */
- 	if ((state->polarity == PWM_POLARITY_NORMAL) ^ state->enabled)
--		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
-+		regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
- 				   TCU_TCSR_PWM_INITL_HIGH, 0);
- 	else
--		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
-+		regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
- 				   TCU_TCSR_PWM_INITL_HIGH,
- 				   TCU_TCSR_PWM_INITL_HIGH);
- 
-@@ -222,28 +222,28 @@ static const struct pwm_ops jz4740_pwm_ops = {
- static int jz4740_pwm_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
--	struct jz4740_pwm_chip *jz4740;
-+	struct jz4740_pwm_chip *jz;
- 	const struct soc_info *info;
- 
- 	info = device_get_match_data(dev);
- 	if (!info)
- 		return -EINVAL;
- 
--	jz4740 = devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
--	if (!jz4740)
-+	jz = devm_kzalloc(dev, sizeof(*jz), GFP_KERNEL);
-+	if (!jz)
- 		return -ENOMEM;
- 
--	jz4740->map = device_node_to_regmap(dev->parent->of_node);
--	if (IS_ERR(jz4740->map)) {
--		dev_err(dev, "regmap not found: %ld\n", PTR_ERR(jz4740->map));
--		return PTR_ERR(jz4740->map);
-+	jz->map = device_node_to_regmap(dev->parent->of_node);
-+	if (IS_ERR(jz->map)) {
-+		dev_err(dev, "regmap not found: %ld\n", PTR_ERR(jz->map));
-+		return PTR_ERR(jz->map);
- 	}
- 
--	jz4740->chip.dev = dev;
--	jz4740->chip.ops = &jz4740_pwm_ops;
--	jz4740->chip.npwm = info->num_pwms;
-+	jz->chip.dev = dev;
-+	jz->chip.ops = &jz4740_pwm_ops;
-+	jz->chip.npwm = info->num_pwms;
- 
--	return devm_pwmchip_add(dev, &jz4740->chip);
-+	return devm_pwmchip_add(dev, &jz->chip);
- }
- 
- static const struct soc_info jz4740_soc_info = {
+>  	if (state->enabled) {
+>  		if (!pwm_is_enabled(pwm)) {
+> -			pm_runtime_get_sync(chip->dev);
+> +			pm_runtime_get_sync(lpwm->parent);
+>  			ret = pwm_lpss_prepare_enable(lpwm, pwm, state);
+>  			if (ret)
+> -				pm_runtime_put(chip->dev);
+> +				pm_runtime_put(lpwm->parent);
+>  		} else {
+>  			ret = pwm_lpss_prepare_enable(lpwm, pwm, state);
+>  		}
+>  	} else if (pwm_is_enabled(pwm)) {
+>  		pwm_lpss_write(pwm, pwm_lpss_read(pwm) & ~PWM_ENABLE);
+> -		pm_runtime_put(chip->dev);
+> +		pm_runtime_put(lpwm->parent);
+>  	}
 
-base-commit: 3ccb179aa40d931eb00ef8910d7b812a95659563
+I'm wondering why PM runtime calls can't be part of PWM core?
+We may cleanup a lot of code with it, no?
+
+...
+
+> -	pm_runtime_get_sync(chip->dev);
+> +	pm_runtime_get_sync(lpwm->parent);
+
+
+> -	pm_runtime_put(chip->dev);
+> +	pm_runtime_put(lpwm->parent);
+
+Ditto.
+
+...
+
+>  struct pwm_lpss_chip {
+> +	struct device *parent;
+
+Have you checked IIO approach with the public and private members
+(under private the opaque pointer is meant)? Maybe something of that
+can be applied to PWM code as well, dunno.
+
+>  	void __iomem *regs;
+>  	const struct pwm_lpss_boardinfo *info;
+>  };
+
 -- 
-2.40.1
+With Best Regards,
+Andy Shevchenko
+
 
