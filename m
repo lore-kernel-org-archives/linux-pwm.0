@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C83C04A6A
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 20:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F8EC04E69
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 20:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235273AbjHHUie (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Aug 2023 16:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
+        id S233489AbjHHUiv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Aug 2023 16:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbjHHUiX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 16:38:23 -0400
+        with ESMTP id S234978AbjHHUid (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 16:38:33 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 416021DD5C
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC3075840
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:19:54 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN9-0007OW-Ns; Tue, 08 Aug 2023 19:19:55 +0200
+        id 1qTQN0-0006ts-10; Tue, 08 Aug 2023 19:19:46 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN8-00227A-2A; Tue, 08 Aug 2023 19:19:54 +0200
+        id 1qTQMz-00223r-5R; Tue, 08 Aug 2023 19:19:45 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN7-00BTDn-Bv; Tue, 08 Aug 2023 19:19:53 +0200
+        id 1qTQMy-00BTB6-Hq; Tue, 08 Aug 2023 19:19:44 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 057/101] pwm: sunplus: Make use of devm_pwmchip_alloc() function
-Date:   Tue,  8 Aug 2023 19:18:47 +0200
-Message-Id: <20230808171931.944154-58-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 015/101] pwm: cros-ec: Change prototype of helper to prepare further changes
+Date:   Tue,  8 Aug 2023 19:18:05 +0200
+Message-Id: <20230808171931.944154-16-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1953; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=xvVmBGOOE5ysKj5Pph/3tWsRyTXe5h22ctkB1syLM3o=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njxhrpIrKVDTlmGCRlTFOEkOUpx8gM0dzN6S 6yCb4Cm7z6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ48QAKCRCPgPtYfRL+ TkIDB/4nl/ywomXUexGtfAlJ4+Tl/Yp97i0sTUkDl6VDHqzpHPwVF9/Qe089iwgPmgw2Vj2ay+b co8LJpzcv1H1DK7jw4Yc+31aWx21PZESayhf+x5L/JmZ+N4XFaIsSnNXUA/Hbi7cCAzEzt7WE60 BNU0G/2HDZeuG8iSlNSywKMRjim3k2mHRxAUnPTIeI7ggxcGiUrK57wcHbyyogeleVPHSKu5a5T P1LjMTxHf99WOwdqIGP0jM4YOzR6TgJ2g0sZ6ji7VUrVNKjwsop4jbuxC32znmGyliUpr6OP1RX 5b2Zg4K+0zxi+OmEqW9hUjxMFGc6+MnXmhmw94Iwo11ipW3Q
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2082; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Y3j4tNZ4BBLsQ8380LO53phorckXzTg91t5MfypHR1A=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njBzM04VpWXXBQkQL3fWAysbVIXbvE7VHpVI 7DzTIy+TniJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ4wQAKCRCPgPtYfRL+ TrtwB/4+Z7Yaz9Yu6awvUQ7UtuVemPXTOZieLY9K3aRR0gTKzPkU4mBxsfn3Py3yxXTV6tCfeva bxRjeGodK4dsNOisqASkxxuAsr/H7iNTwNfEwTgTShJbaQV/gwYNbz7cv0K1Mzf1gftjwmDcIsh WN98advGbTkWO0CDYyPc5UJmfm0oIpTLZ2qWAKnofJXAS6CIxp2K8GwB31RaVwVlECuionS5rDQ 5nHOld+KhB/SkNVkOp76K7aitRODRTw/u8CEi2gfWBl0AC4WTz5DFxJIdTKweE3F0yaCrX9YLmB SfHmz8nbbhvn6bblKiBU/1SJDfD7MAnEk2nVG2Luq5wc/So5
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,67 +51,58 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-sunplus driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+pwm_chip allocation and registration is about to change. For that the number
+of PWM devices must be known earlier in cros_ec_pwm_probe(). So make
+cros_ec_pwm_get_duty() independant from struct cros_ec_pwm_device which is only
+available later.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-sunplus.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-cros-ec.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sunplus.c b/drivers/pwm/pwm-sunplus.c
-index 773e2f80526e..46181b9149b0 100644
---- a/drivers/pwm/pwm-sunplus.c
-+++ b/drivers/pwm/pwm-sunplus.c
-@@ -43,14 +43,13 @@
- #define SP7021_PWM_NUM			4
- 
- struct sunplus_pwm {
--	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *clk;
- };
- 
- static inline struct sunplus_pwm *to_sunplus_pwm(struct pwm_chip *chip)
- {
--	return container_of(chip, struct sunplus_pwm, chip);
-+	return pwmchip_priv(chip);
+diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+index e2a5e54face1..8a5925a624e6 100644
+--- a/drivers/pwm/pwm-cros-ec.c
++++ b/drivers/pwm/pwm-cros-ec.c
+@@ -93,9 +93,8 @@ static int cros_ec_pwm_set_duty(struct cros_ec_pwm_device *ec_pwm, u8 index,
+ 	return cros_ec_cmd_xfer_status(ec, msg);
  }
  
- static int sunplus_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -175,12 +174,14 @@ static void sunplus_pwm_clk_release(void *data)
- static int sunplus_pwm_probe(struct platform_device *pdev)
+-static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
++static int cros_ec_pwm_get_duty(struct cros_ec_device *ec, bool use_pwm_type, u8 index)
  {
- 	struct device *dev = &pdev->dev;
-+	struct pwm_chip *chip;
- 	struct sunplus_pwm *priv;
+-	struct cros_ec_device *ec = ec_pwm->ec;
+ 	struct {
+ 		struct cros_ec_command msg;
+ 		union {
+@@ -115,7 +114,7 @@ static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
+ 	msg->insize = sizeof(*resp);
+ 	msg->outsize = sizeof(*params);
+ 
+-	if (ec_pwm->use_pwm_type) {
++	if (use_pwm_type) {
+ 		ret = cros_ec_dt_type_to_pwm_type(index, &params->pwm_type);
+ 		if (ret)
+ 			return ret;
+@@ -169,7 +168,7 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct cros_ec_pwm *channel = &ec_pwm->channel[pwm->hwpwm];
  	int ret;
  
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(dev, SP7021_PWM_NUM, sizeof(*priv));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	priv = to_sunplus_pwm(chip);
- 
- 	priv->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(priv->base))
-@@ -203,11 +204,9 @@ static int sunplus_pwm_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	priv->chip.dev = dev;
--	priv->chip.ops = &sunplus_pwm_ops;
--	priv->chip.npwm = SP7021_PWM_NUM;
-+	chip->ops = &sunplus_pwm_ops;
- 
--	ret = devm_pwmchip_add(dev, &priv->chip);
-+	ret = devm_pwmchip_add(dev, chip);
+-	ret = cros_ec_pwm_get_duty(ec_pwm, pwm->hwpwm);
++	ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, pwm->hwpwm);
  	if (ret < 0)
- 		return dev_err_probe(dev, ret, "Cannot register sunplus PWM\n");
+ 		return ret;
  
+@@ -228,7 +227,7 @@ static int cros_ec_num_pwms(struct cros_ec_pwm_device *ec_pwm)
+ 
+ 	/* The index field is only 8 bits */
+ 	for (i = 0; i <= U8_MAX; i++) {
+-		ret = cros_ec_pwm_get_duty(ec_pwm, i);
++		ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, i);
+ 		/*
+ 		 * We look for SUCCESS, INVALID_COMMAND, or INVALID_PARAM
+ 		 * responses; everything else is treated as an error.
 -- 
 2.40.1
 
