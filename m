@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5171C04E69
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D5CC04A6A
 	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 18:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235431AbjHHSPC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Aug 2023 14:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
+        id S234321AbjHHSPB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Aug 2023 14:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234341AbjHHSOh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 14:14:37 -0400
+        with ESMTP id S234773AbjHHSOe (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 14:14:34 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7751DD26
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46D81DD2E
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:28 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQNH-0007lg-MP; Tue, 08 Aug 2023 19:20:03 +0200
+        id 1qTQNH-0007lX-Gp; Tue, 08 Aug 2023 19:20:03 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQNH-0022Ag-2M; Tue, 08 Aug 2023 19:20:03 +0200
+        id 1qTQNG-0022Ab-Ta; Tue, 08 Aug 2023 19:20:02 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQNG-00BTGW-0D; Tue, 08 Aug 2023 19:20:02 +0200
+        id 1qTQNF-00BTGO-Iz; Tue, 08 Aug 2023 19:20:01 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 098/101] pwm: vt8500: Store parent device in driver data
-Date:   Tue,  8 Aug 2023 19:19:28 +0200
-Message-Id: <20230808171931.944154-99-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 096/101] pwm: twl: Store parent device in driver data
+Date:   Tue,  8 Aug 2023 19:19:26 +0200
+Message-Id: <20230808171931.944154-97-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1569; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=bVqVeYJNSYPTr4V327ecw1VPEB5+nnNKqOIy4x7c9ZM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0nkfz17wTrXTQqQcK9GtS+tj1VSH2kDAw6RtY ptyv/om1VaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ5HwAKCRCPgPtYfRL+ TpcyCACtqZT6Ibno+xQ5oD0NeH9VGKzZ4Voc1FhDGpC18emjyIT2z6KKnUamGHpy6LVz15JU8rN 51iHVh5sZmAvt6SEsof5udTS/TGmnFWVHRGI/CXii2nX+W669hbBdgFBu5owfy2s0ucCAjWRTh+ P+ExRGPmHHU/CzL4+8fRl5QtmuaQMBWlCyAI7FXNzueYEo2aAWbIIrKKiNQxAfPmcmhhWclCG6G vxmUq/+ur/r5s36et8Dnm8QQJWrVR8VPvv8ggrBoOPGIfOzOuOiraK6aHl099LdA/h+LgUpr3Kt MtEAw4FfJ4F5DaZOLAvy7ZkwXRR1Mm6VGZca/h2wqtiBJWQ1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6386; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=5xSqRYI/c2Q3Fvx1mQ0+nkQDGN+P98BjGaKCnhC55R4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0nkcK7u3szMxFpnMY0dhD7jrlasHKq+eYqo70 a68idhj5buJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ5HAAKCRCPgPtYfRL+ Tsb9B/9Nl7VMNbTZB8Ci4kBwhrYwbDueNmlHR9TKacWnZaXBCEa21Dgbp3jtPFTD9et5jCPEPh4 P+T9cYFSwz6WGy+LKC9jNqlQnxNWGZkoO0cg0HadKKb8D2iXm2NQK4TUhIkRfoK1R4g6tAQtSdK EcOek2wfChm9YDpoT0eDAvtmtM9gfsurMdtQ4nyHLmviIZaKNT45z7hW8OP2hPmm563qXosle5h WTkglyV29JuPCCCIAlMsHyNWSfOuYF1pZFN0snvyWUWO6TSFPN6oqwpfE5FEQYgoN6OTpQYiq3t zSw1rLOncv+nn02V+Km7+3+0JDMLc0/tEc9qhT/HS27n4sw4
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -57,47 +57,160 @@ the parent device in driver data.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-vt8500.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-twl.c | 32 +++++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
-index 41d9f1a0f74f..634dac40594f 100644
---- a/drivers/pwm/pwm-vt8500.c
-+++ b/drivers/pwm/pwm-vt8500.c
-@@ -45,6 +45,7 @@
- #define STATUS_ALL_UPDATE	0x0F
+diff --git a/drivers/pwm/pwm-twl.c b/drivers/pwm/pwm-twl.c
+index d66596c8597d..f7aa9b34f67e 100644
+--- a/drivers/pwm/pwm-twl.c
++++ b/drivers/pwm/pwm-twl.c
+@@ -46,6 +46,7 @@
+ #define TWL6030_PWM_TOGGLE(pwm, x)	((x) << (pwm * 3))
  
- struct vt8500_chip {
+ struct twl_pwm_chip {
 +	struct device *parent;
- 	void __iomem *base;
- 	struct clk *clk;
- };
-@@ -80,7 +81,7 @@ static int vt8500_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct mutex mutex;
+ 	u8 twl6030_toggle3;
+ 	u8 twl4030_pwm_mux;
+@@ -59,6 +60,7 @@ static inline struct twl_pwm_chip *to_twl(struct pwm_chip *chip)
+ static int twl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			  u64 duty_ns, u64 period_ns)
+ {
++	struct twl_pwm_chip *twl = to_twl(chip);
+ 	int duty_cycle = DIV64_U64_ROUND_UP(duty_ns * TWL_PWM_MAX, period_ns) + 1;
+ 	u8 pwm_config[2] = { 1, 0 };
+ 	int base, ret;
+@@ -85,7 +87,7 @@ static int twl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
- 	err = clk_enable(vt8500->clk);
- 	if (err < 0) {
--		dev_err(chip->dev, "failed to enable clock\n");
-+		dev_err(vt8500->parent, "failed to enable clock\n");
- 		return err;
+ 	ret = twl_i2c_write(TWL_MODULE_PWM, pwm_config, base, 2);
+ 	if (ret < 0)
+-		dev_err(chip->dev, "%s: Failed to configure PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to configure PWM\n", pwm->label);
+ 
+ 	return ret;
+ }
+@@ -99,7 +101,7 @@ static int twl4030_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	mutex_lock(&twl->mutex);
+ 	ret = twl_i2c_read_u8(TWL4030_MODULE_INTBR, &val, TWL4030_GPBR1_REG);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to read GPBR1\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to read GPBR1\n", pwm->label);
+ 		goto out;
  	}
  
-@@ -139,7 +140,7 @@ static int vt8500_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -107,13 +109,13 @@ static int twl4030_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
  
- 	err = clk_enable(vt8500->clk);
- 	if (err < 0) {
--		dev_err(chip->dev, "failed to enable clock\n");
-+		dev_err(vt8500->parent, "failed to enable clock\n");
- 		return err;
+ 	ret = twl_i2c_write_u8(TWL4030_MODULE_INTBR, val, TWL4030_GPBR1_REG);
+ 	if (ret < 0)
+-		dev_err(chip->dev, "%s: Failed to enable PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to enable PWM\n", pwm->label);
+ 
+ 	val |= TWL4030_PWM_TOGGLE(pwm->hwpwm, TWL4030_PWMX_ENABLE);
+ 
+ 	ret = twl_i2c_write_u8(TWL4030_MODULE_INTBR, val, TWL4030_GPBR1_REG);
+ 	if (ret < 0)
+-		dev_err(chip->dev, "%s: Failed to enable PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to enable PWM\n", pwm->label);
+ 
+ out:
+ 	mutex_unlock(&twl->mutex);
+@@ -129,7 +131,7 @@ static void twl4030_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	mutex_lock(&twl->mutex);
+ 	ret = twl_i2c_read_u8(TWL4030_MODULE_INTBR, &val, TWL4030_GPBR1_REG);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to read GPBR1\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to read GPBR1\n", pwm->label);
+ 		goto out;
  	}
  
-@@ -257,6 +258,7 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
+@@ -137,13 +139,13 @@ static void twl4030_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
  
- 	chip->ops = &vt8500_pwm_ops;
+ 	ret = twl_i2c_write_u8(TWL4030_MODULE_INTBR, val, TWL4030_GPBR1_REG);
+ 	if (ret < 0)
+-		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to disable PWM\n", pwm->label);
  
-+	vt8500->parent = &pdev->dev;
- 	vt8500->clk = devm_clk_get_prepared(&pdev->dev, NULL);
- 	if (IS_ERR(vt8500->clk))
- 		return dev_err_probe(&pdev->dev, PTR_ERR(vt8500->clk), "clock source not specified\n");
+ 	val &= ~TWL4030_PWM_TOGGLE(pwm->hwpwm, TWL4030_PWMXCLK_ENABLE);
+ 
+ 	ret = twl_i2c_write_u8(TWL4030_MODULE_INTBR, val, TWL4030_GPBR1_REG);
+ 	if (ret < 0)
+-		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to disable PWM\n", pwm->label);
+ 
+ out:
+ 	mutex_unlock(&twl->mutex);
+@@ -166,7 +168,7 @@ static int twl4030_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	mutex_lock(&twl->mutex);
+ 	ret = twl_i2c_read_u8(TWL4030_MODULE_INTBR, &val, TWL4030_PMBR1_REG);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to read PMBR1\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to read PMBR1\n", pwm->label);
+ 		goto out;
+ 	}
+ 
+@@ -180,7 +182,7 @@ static int twl4030_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	ret = twl_i2c_write_u8(TWL4030_MODULE_INTBR, val, TWL4030_PMBR1_REG);
+ 	if (ret < 0)
+-		dev_err(chip->dev, "%s: Failed to request PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to request PWM\n", pwm->label);
+ 
+ out:
+ 	mutex_unlock(&twl->mutex);
+@@ -201,7 +203,7 @@ static void twl4030_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	mutex_lock(&twl->mutex);
+ 	ret = twl_i2c_read_u8(TWL4030_MODULE_INTBR, &val, TWL4030_PMBR1_REG);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to read PMBR1\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to read PMBR1\n", pwm->label);
+ 		goto out;
+ 	}
+ 
+@@ -211,7 +213,7 @@ static void twl4030_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	ret = twl_i2c_write_u8(TWL4030_MODULE_INTBR, val, TWL4030_PMBR1_REG);
+ 	if (ret < 0)
+-		dev_err(chip->dev, "%s: Failed to free PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to free PWM\n", pwm->label);
+ 
+ out:
+ 	mutex_unlock(&twl->mutex);
+@@ -230,7 +232,7 @@ static int twl6030_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to enable PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to enable PWM\n", pwm->label);
+ 		goto out;
+ 	}
+ 
+@@ -253,7 +255,7 @@ static void twl6030_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to disable PWM\n", pwm->label);
+ 		goto out;
+ 	}
+ 
+@@ -261,7 +263,7 @@ static void twl6030_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to disable PWM\n", pwm->label);
+ 		goto out;
+ 	}
+ 
+@@ -269,7 +271,7 @@ static void twl6030_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
++		dev_err(twl->parent, "%s: Failed to disable PWM\n", pwm->label);
+ 		goto out;
+ 	}
+ 
 -- 
 2.40.1
 
