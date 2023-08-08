@@ -2,45 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD56C04A6A
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 20:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A8FC001DB
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Aug 2023 20:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233530AbjHHUjp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S232925AbjHHUjp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Tue, 8 Aug 2023 16:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58428 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232925AbjHHUjQ (ORCPT
+        with ESMTP id S232922AbjHHUjQ (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2023 16:39:16 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C937A1DD56
-        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:20:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32B8175DE6
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Aug 2023 10:19:58 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN9-0007Nz-9j; Tue, 08 Aug 2023 19:19:55 +0200
+        id 1qTQN1-0006z2-Si; Tue, 08 Aug 2023 19:19:47 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN7-00226x-KL; Tue, 08 Aug 2023 19:19:53 +0200
+        id 1qTQN1-00224P-6X; Tue, 08 Aug 2023 19:19:47 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qTQN6-00BTDY-GI; Tue, 08 Aug 2023 19:19:52 +0200
+        id 1qTQMz-00BTBU-RF; Tue, 08 Aug 2023 19:19:45 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 053/101] pwm: stm32-lp: Make use of devm_pwmchip_alloc() function
-Date:   Tue,  8 Aug 2023 19:18:43 +0200
-Message-Id: <20230808171931.944154-54-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 021/101] pwm: img: Make use of devm_pwmchip_alloc() function
+Date:   Tue,  8 Aug 2023 19:18:11 +0200
+Message-Id: <20230808171931.944154-22-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 References: <20230808171931.944154-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2383; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=GMCGG1YS/7rS4lyplT83r/sagIoZDDSSQf0lS6Ppw6g=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njsxzCxVCBrEXYGyKXyXaEmgmNOEnN0G3uLs eihYTJZYgaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ47AAKCRCPgPtYfRL+ TguAB/4yy3IXs5LXfypasyASoOFigBS2ho+BMwYr4a5B4Oe97vgeIXsOBQWfjkzw2TOiF/6Kz7P ZgLTE9exihS6A7HcoOMsvDLRXdIjlddgGM9tTF9ILTkJoLTiGZ5mwpRAGWQSbuuZW9x/Lrmq+Kf HB9MCr3dU3vBSKIw84BA4JKMm4C8wUunrP16bFE+CSALo3X5OTWwwfAlmh5qkbMCztVZeyq6285 IU+Zg47jhrhJY91lwQhgHdd7B8vndUtB+7WlfXhxVQAKXr6WTHb6r4T7HC3uS2i3e5lMXSA6xdr T4MoowEIcIKUkfp1DjE1L+wPJqztJjmzb+I2DcRUWV8nvKRd
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4207; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=e+Pj98NAcN3MIbhiwml67LlwwyP31jZj+t8E7vOVQ0U=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk0njIYTs8e0PperRHnTyQDOAAUHHdW2/lZuAFp 0I3v9HRLbqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZNJ4yAAKCRCPgPtYfRL+ TrUTB/wKWqk+hdUoUcVITH/oFvSKs7obOmBW2NTU+y78BygJ3npTOyKSmAWQmonrMZLkrbx9kSV m2mzBKWh26casfPSq5FEfnk1Qy5u9+nTNgOP86RKEfB0ZEeritRkjEbWaUvITmwtiLb7AhN/G4u 47cizvMgePrXc/7neJFDghnbMELvKaooIGN3axQ8h4Y7PORa9A+yo9hvNh7hXqCp7dh5W1W+9ds 0PGkWRa9222M+e2m7nZfZ0b3toP1MPaPDhUdQyIbVnMbyMNxWp6gRYfa8YTT0qz6Ty/hoyioim1 W1hZhzuTyzeyMLkvHNmgX9Qc2i9RucDioSXqjsaXlxi07IdP
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,80 +51,136 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-stm32-lp driver to further changes of the pwm core
+This prepares the pwm-img driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-stm32-lp.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-img.c | 35 ++++++++++++++++++-----------------
+ 1 file changed, 18 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-index 444a9c9c2c29..1fdf91ec9c9b 100644
---- a/drivers/pwm/pwm-stm32-lp.c
-+++ b/drivers/pwm/pwm-stm32-lp.c
-@@ -18,14 +18,13 @@
- #include <linux/pwm.h>
+diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
+index 116fa060e302..64e35ca1b576 100644
+--- a/drivers/pwm/pwm-img.c
++++ b/drivers/pwm/pwm-img.c
+@@ -60,7 +60,6 @@ struct img_pwm_soc_data {
  
- struct stm32_pwm_lp {
--	struct pwm_chip chip;
- 	struct clk *clk;
- 	struct regmap *regmap;
- };
+ struct img_pwm_chip {
+ 	struct device	*dev;
+-	struct pwm_chip	chip;
+ 	struct clk	*pwm_clk;
+ 	struct clk	*sys_clk;
+ 	void __iomem	*base;
+@@ -74,7 +73,7 @@ struct img_pwm_chip {
  
- static inline struct stm32_pwm_lp *to_stm32_pwm_lp(struct pwm_chip *chip)
+ static inline struct img_pwm_chip *to_img_pwm_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct stm32_pwm_lp, chip);
+-	return container_of(chip, struct img_pwm_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- /* STM32 Low-Power Timer is preceded by a configurable power-of-2 prescaler */
-@@ -192,20 +191,20 @@ static const struct pwm_ops stm32_pwm_lp_ops = {
- static int stm32_pwm_lp_probe(struct platform_device *pdev)
- {
- 	struct stm32_lptimer *ddata = dev_get_drvdata(pdev->dev.parent);
-+	struct pwm_chip *chip;
- 	struct stm32_pwm_lp *priv;
+ static inline void img_pwm_writel(struct img_pwm_chip *imgchip,
+@@ -259,12 +258,14 @@ static int img_pwm_probe(struct platform_device *pdev)
  	int ret;
+ 	u64 val;
+ 	unsigned long clk_rate;
++	struct pwm_chip *chip;
+ 	struct img_pwm_chip *imgchip;
+ 	const struct of_device_id *of_dev_id;
  
--	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
+-	imgchip = devm_kzalloc(&pdev->dev, sizeof(*imgchip), GFP_KERNEL);
+-	if (!imgchip)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*priv));
++	chip = devm_pwmchip_alloc(&pdev->dev, IMG_PWM_NPWM, sizeof(*imgchip));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	priv = to_stm32_pwm_lp(chip);
++	imgchip = to_img_pwm_chip(chip);
  
- 	priv->regmap = ddata->regmap;
- 	priv->clk = ddata->clk;
--	priv->chip.dev = &pdev->dev;
--	priv->chip.ops = &stm32_pwm_lp_ops;
--	priv->chip.npwm = 1;
-+	chip->ops = &stm32_pwm_lp_ops;
+ 	imgchip->dev = &pdev->dev;
  
--	ret = devm_pwmchip_add(&pdev->dev, &priv->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -216,13 +215,13 @@ static int stm32_pwm_lp_probe(struct platform_device *pdev)
- 
- static int __maybe_unused stm32_pwm_lp_suspend(struct device *dev)
- {
--	struct stm32_pwm_lp *priv = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
- 	struct pwm_state state;
- 
--	pwm_get_state(&priv->chip.pwms[0], &state);
-+	pwm_get_state(&chip->pwms[0], &state);
- 	if (state.enabled) {
- 		dev_err(dev, "The consumer didn't stop us (%s)\n",
--			priv->chip.pwms[0].label);
-+			chip->pwms[0].label);
- 		return -EBUSY;
+@@ -294,7 +295,7 @@ static int img_pwm_probe(struct platform_device *pdev)
+ 		return PTR_ERR(imgchip->pwm_clk);
  	}
  
+-	platform_set_drvdata(pdev, imgchip);
++	platform_set_drvdata(pdev, chip);
+ 
+ 	pm_runtime_set_autosuspend_delay(&pdev->dev, IMG_PWM_PM_TIMEOUT);
+ 	pm_runtime_use_autosuspend(&pdev->dev);
+@@ -321,11 +322,9 @@ static int img_pwm_probe(struct platform_device *pdev)
+ 	do_div(val, clk_rate);
+ 	imgchip->min_period_ns = val;
+ 
+-	imgchip->chip.dev = &pdev->dev;
+-	imgchip->chip.ops = &img_pwm_ops;
+-	imgchip->chip.npwm = IMG_PWM_NPWM;
++	chip->ops = &img_pwm_ops;
+ 
+-	ret = pwmchip_add(&imgchip->chip);
++	ret = pwmchip_add(chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
+ 		goto err_suspend;
+@@ -344,19 +343,20 @@ static int img_pwm_probe(struct platform_device *pdev)
+ 
+ static void img_pwm_remove(struct platform_device *pdev)
+ {
+-	struct img_pwm_chip *imgchip = platform_get_drvdata(pdev);
++	struct pwm_chip *chip = platform_get_drvdata(pdev);
+ 
+ 	pm_runtime_disable(&pdev->dev);
+ 	if (!pm_runtime_status_suspended(&pdev->dev))
+ 		img_pwm_runtime_suspend(&pdev->dev);
+ 
+-	pwmchip_remove(&imgchip->chip);
++	pwmchip_remove(chip);
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+ static int img_pwm_suspend(struct device *dev)
+ {
+-	struct img_pwm_chip *imgchip = dev_get_drvdata(dev);
++	struct pwm_chip *chip = dev_get_drvdata(dev);
++	struct img_pwm_chip *imgchip = to_img_pwm_chip(chip);
+ 	int i, ret;
+ 
+ 	if (pm_runtime_status_suspended(dev)) {
+@@ -365,7 +365,7 @@ static int img_pwm_suspend(struct device *dev)
+ 			return ret;
+ 	}
+ 
+-	for (i = 0; i < imgchip->chip.npwm; i++)
++	for (i = 0; i < chip->npwm; i++)
+ 		imgchip->suspend_ch_cfg[i] = img_pwm_readl(imgchip,
+ 							   PWM_CH_CFG(i));
+ 
+@@ -378,7 +378,8 @@ static int img_pwm_suspend(struct device *dev)
+ 
+ static int img_pwm_resume(struct device *dev)
+ {
+-	struct img_pwm_chip *imgchip = dev_get_drvdata(dev);
++	struct pwm_chip *chip = dev_get_drvdata(dev);
++	struct img_pwm_chip *imgchip = to_img_pwm_chip(chip);
+ 	int ret;
+ 	int i;
+ 
+@@ -386,13 +387,13 @@ static int img_pwm_resume(struct device *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	for (i = 0; i < imgchip->chip.npwm; i++)
++	for (i = 0; i < chip->npwm; i++)
+ 		img_pwm_writel(imgchip, PWM_CH_CFG(i),
+ 			       imgchip->suspend_ch_cfg[i]);
+ 
+ 	img_pwm_writel(imgchip, PWM_CTRL_CFG, imgchip->suspend_ctrl_cfg);
+ 
+-	for (i = 0; i < imgchip->chip.npwm; i++)
++	for (i = 0; i < chip->npwm; i++)
+ 		if (imgchip->suspend_ctrl_cfg & BIT(i))
+ 			regmap_clear_bits(imgchip->periph_regs,
+ 					  PERIP_PWM_PDM_CONTROL,
 -- 
 2.40.1
 
