@@ -2,111 +2,314 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E0AC04FE0
-	for <linux-pwm@archiver.kernel.org>; Tue, 15 Aug 2023 10:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8C5C001DB
+	for <linux-pwm@archiver.kernel.org>; Tue, 15 Aug 2023 15:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236508AbjHOKoN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 15 Aug 2023 06:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
+        id S238114AbjHOPgl (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 15 Aug 2023 11:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236541AbjHOKnx (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 15 Aug 2023 06:43:53 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F93199A;
-        Tue, 15 Aug 2023 03:43:46 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-986d8332f50so712457766b.0;
-        Tue, 15 Aug 2023 03:43:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1692096225; x=1692701025;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sduk85jgb4Rzoi+0BThhCqf7BU7Lkg9hkmERzbD9sNs=;
-        b=LUDpqjmagiSq84kwsybeyWQZDC7l+URGFNMSBVRzkJYuR95dgNCI9rbrT7CAbtEhZk
-         03X4hMXJITjpUsBQNQ6WonRjOuglXzrBKso7gAhLdtwxQhUyG5jZJ9zOVHaBA5pyf1SZ
-         EnLEKgsx5l7MWGkmoj6FCruDQU38cyVcxnvPgCa2QIyKz8nckkNVZ1xMifIYJbm3bi+E
-         FSLCYs123CBBYQr+QOQvT5BTOCIf43+7MvcT44qgMxEQ4K67p/rjYim/iqp1ld9V4rR4
-         OfCm8VUSxLsfjMqCS5HcvhzXqtBHvj2MxcJQiynzGG95908KFZpfKp+LToZMmnrE5rLr
-         Cj/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692096225; x=1692701025;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sduk85jgb4Rzoi+0BThhCqf7BU7Lkg9hkmERzbD9sNs=;
-        b=mIM46WTGTwaOZM0080cGxWnqVO94xM6G1WS0XGeaYKO7efwXT7wjhw+VNn7ZewnmS7
-         MiVYsVcxtL+MM7/oXUPu89Mxxp5FuiC0HGgf1MJvhPn2H0kFRccHvsv+ojN/OL6R5Ogf
-         D0E5xLmuINyZmCIoDMgyg3cmTiN68hkyXKxWiRA34Z70AeVmwmo2fO8v3O/lwqzjDvRD
-         Fuaykyooz/iDSNWT5Q9rukgx14W2oSRzcL1i2tB1TjVhmaxdkjqeHHsS8QNgREwAK/5t
-         v57haUF+3sWNRQiD9DdEG0QM2sRL3esCWC+2lw900BreHNSxOsHz3Z1eA/8z0Ae14ZOm
-         /07A==
-X-Gm-Message-State: AOJu0YweJZHhR64fUItYvLzn+xl4dpIBp4csaoHFI1QZ7vKeoLuHpeIm
-        VlXZHsQSTjMyH6eofwA+0oA=
-X-Google-Smtp-Source: AGHT+IFHzcS38HnEee+VxY8yfIsaZCs/wKTJxbsgsL3GPtyM5JlHWnLE3Va5K1Voj/9n8TDkfi5wKw==
-X-Received: by 2002:a17:906:3196:b0:99c:6518:ce77 with SMTP id 22-20020a170906319600b0099c6518ce77mr8581512ejy.54.1692096224703;
-        Tue, 15 Aug 2023 03:43:44 -0700 (PDT)
-Received: from localhost.localdomain (pd9e9e2b1.dip0.t-ipconnect.de. [217.233.226.177])
-        by smtp.gmail.com with ESMTPSA id md15-20020a170906ae8f00b0098d486d2bdfsm6944627ejb.177.2023.08.15.03.43.44
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 15 Aug 2023 03:43:44 -0700 (PDT)
-From:   Leif Middelschulte <leif.middelschulte@gmail.com>
-X-Google-Original-From: Leif Middelschulte <Leif.Middelschulte@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Cc:     Leif Middelschulte <Leif.Middelschulte@gmail.com>,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/4] pwm: imx27: verify decreasing PWM FIFO av value
-Date:   Tue, 15 Aug 2023 12:43:31 +0200
-Message-Id: <20230815104332.55044-3-Leif.Middelschulte@gmail.com>
-X-Mailer: git-send-email 2.39.2 (Apple Git-143)
-In-Reply-To: <20230815104332.55044-1-Leif.Middelschulte@gmail.com>
-References: <20230310174517.rb7xxrougkse2lrc@pengutronix.de>
- <20230815104332.55044-1-Leif.Middelschulte@gmail.com>
+        with ESMTP id S238167AbjHOPgb (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 15 Aug 2023 11:36:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1001BF8;
+        Tue, 15 Aug 2023 08:36:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CCD765B81;
+        Tue, 15 Aug 2023 15:36:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E811C433C8;
+        Tue, 15 Aug 2023 15:35:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1692113760;
+        bh=L16qJr+cFxC8bq6xHZ74yo7NYUNzP7Haus3/eItPbts=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=la6rSjDL1f4g5Zmbr3A10iwxtMj2mVfTXuYlO81tgA2Rkns7gdsiaYgk970dq2UCd
+         IBuerixPe5n6fWDzhVfXjfW5PSI+jNW2wygb9AJxAmN2Ifx/YDDlQ2BORgl3VzVPRW
+         VtgI3f7BwffxYlqa2VSgYKNGa5U3Wg7HVuk2HZdUGoLek07KxrIIM9pgngAZ++8p4z
+         I84uxug8xnyyaN7nwYGKk6nJGrBXlwHkcx/MDCDWRbLxuWXv72hESAZWjOAY61YkR2
+         jNrD4GF7VD6eF9F8kA+ZPPT8L9C/tmkWagzmyLpypLF1iv4kdH6ORM5HWaeZNLiIqZ
+         vG1W50lFFq7Kw==
+Date:   Tue, 15 Aug 2023 08:38:44 -0700
+From:   Bjorn Andersson <andersson@kernel.org>
+To:     Anjelique Melendez <quic_amelende@quicinc.com>
+Cc:     pavel@ucw.cz, lee@kernel.org, thierry.reding@gmail.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, agross@kernel.org, luca.weiss@fairphone.com,
+        konrad.dybcio@linaro.org, u.kleine-koenig@pengutronix.de,
+        quic_subbaram@quicinc.com, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3 4/7] leds: rgb: leds-qcom-lpg: Add support for PPG
+ through single SDAM
+Message-ID: <vt2ma5qiqv4uvzdhhouvxo6ykvfcwlqjjvctcsorfy6dfh2efp@g4viqt2rqvz4>
+References: <20230814235918.10396-1-quic_amelende@quicinc.com>
+ <20230814235918.10396-5-quic_amelende@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230814235918.10396-5-quic_amelende@quicinc.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Avoid unnecessary sleeps as adviced[0], if the FIFO cannot be emptied.
+On Mon, Aug 14, 2023 at 04:59:15PM -0700, Anjelique Melendez wrote:
+> In some PMICs like pmi632, the LUT pattern and LPG configuration can be
+> stored in a single SDAM module instead of LUT peripheral. This feature is
+> called PPG.
+> 
 
-[0] https://lore.kernel.org/lkml/20230310174517.rb7xxrougkse2lrc@pengutronix.de/T/#ec9560c1f613d9c0d7b77d72ad9051768812f80db
+You also introduce the abbreviation PBS in the driver, I think it would
+be useful to mention what that is as well.
 
-Signed-off-by: Leif Middelschulte <Leif.Middelschulte@gmail.com>
----
- drivers/pwm/pwm-imx27.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+It would also be preferred if you expanded (some of) these abbreviations
+in this description, to make the TLA-soup taste better.
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index c2a1e2030072..9673e809d212 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -126,7 +126,7 @@ static int pwm_imx27_wait_fifo_empty(struct pwm_chip *chip,
- 	struct device *dev = chip->dev;
- 	unsigned int period_ms = DIV_ROUND_UP_ULL(pwm->state.period, NSEC_PER_MSEC);
- 	int tries = MX3_PWM_FIFOAV_EMPTY_LOOP;
--	int fifoav;
-+	int fifoav, previous_fifoav = INT_MAX;
- 	u32 sr;
- 
- 	while (tries--) {
-@@ -134,6 +134,10 @@ static int pwm_imx27_wait_fifo_empty(struct pwm_chip *chip,
- 		fifoav = FIELD_GET(MX3_PWMSR_FIFOAV, sr);
- 		if (fifoav == MX3_PWMSR_FIFOAV_EMPTY)
- 			return;
-+		/* if the FIFO value does not decrease, there is another problem */
-+		if (previous_fifoav == fifoav)
-+			break;
-+		previous_fifoav = fifoav;
- 		msleep(period_ms);
- 	}
- 	dev_warn(dev, "FIFO has been refilled concurrently\n");
--- 
-2.39.2 (Apple Git-143)
+> Add support for configuring and using LUT pattern from SDAM.
+> 
+> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
+> ---
+>  drivers/leds/rgb/leds-qcom-lpg.c | 309 ++++++++++++++++++++++++++++---
+>  1 file changed, 283 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
+[..]
+> @@ -65,7 +83,12 @@ struct lpg_data;
+>   * @lut_base:	base address of the LUT block (optional)
+>   * @lut_size:	number of entries in the LUT block
+>   * @lut_bitmap:	allocation bitmap for LUT entries
+> - * @triled_base: base address of the TRILED block (optional)
+> + * @pbs_dev:	PBS device
+> + * @lpg_chan_nvmem:	LPG nvmem peripheral device
+> + * @pbs_en_bitmap:	bitmap for tracking PBS triggers
+> + * @lut_sdam_base:	offset where LUT pattern begins in nvmem
+> + * @ppg_en:	Flag indicating whether PPG is enabled/used
 
+Looking at its usage, it doesn't feel so much "is PPG enabled" as "does
+this instance use PPG", it's not a thing that can be enabled/disabled in
+runtime.
+
+So "has_ppg" seems like a better name, or perhaps even "use_sdam" and
+avoid "PPG" completely and make it clearer to the average reader?
+
+[..]
+> @@ -192,21 +229,87 @@ struct lpg_channel_data {
+>   * @lut_base:		base address of LUT block
+>   * @lut_size:		number of entries in LUT
+>   * @triled_base:	base address of TRILED
+> + * @lut_sdam_base:	base address where LUT pattern begins in nvmem device
+>   * @triled_has_atc_ctl:	true if there is TRI_LED_ATC_CTL register
+>   * @triled_has_src_sel:	true if there is TRI_LED_SRC_SEL register
+>   * @num_channels:	number of channels in LPG
+> + * @nvmem_count:	number of nvmems used for LUT and PPG config
+>   * @channels:		list of channel initialization data
+>   */
+>  struct lpg_data {
+>  	unsigned int lut_base;
+>  	unsigned int lut_size;
+>  	unsigned int triled_base;
+> +	unsigned int lut_sdam_base;
+>  	bool triled_has_atc_ctl;
+>  	bool triled_has_src_sel;
+>  	int num_channels;
+> +	int nvmem_count;
+
+I can't think of a reason for this to ever be negative, so please mark
+it unsigned.
+
+(It seems to have been an oversight to make this num_channels signed,
+when the two other instances are unsigned. But that's an unrelated
+change)
+
+>  	const struct lpg_channel_data *channels;
+>  };
+>  
+> +static int lpg_sdam_write(struct lpg *lpg, u16 addr, u8 val)
+> +{
+> +	int rc;
+> +
+> +	rc = nvmem_device_write(lpg->lpg_chan_nvmem, addr, 1, &val);
+> +	if (rc < 0)
+> +		dev_err(lpg->dev, "writing %u to SDAM addr %#x failed, rc=%d\n",
+> +			val, addr, rc);
+> +
+> +	return rc > 0 ? 0 : rc;
+
+Suggestion. It's idiomatic to deal with the error path first in the
+kernel, so writing this as "if it's an error propagate that, otherwise
+return 0" would feel more natural. It would have also saved me from
+wondering if you consider 0 to be an error or not.
+
+> +}
+> +
+> +#define SDAM_REG_PBS_SEQ_EN		0x42
+
+It seems I choose to sprinkle the bit defines throughout the driver, but
+all other register definitions are gathered at the top of the file. So
+please put this one there as well (and keep the PBS_SW_TRIG_BIT here).
+
+> +#define PBS_SW_TRIG_BIT		BIT(0)
+> +
+[..]
+> +static void lpg_sdam_configure_triggers(struct lpg_channel *chan)
+> +{
+> +	if (!chan->lpg->ppg_en)
+> +		return;
+> +
+> +	if (chan->enabled && chan->pattern_set) {
+> +		lpg_sdam_write(chan->lpg, SDAM_LUT_EN_OFFSET + chan->sdam_offset, 1);
+> +		lpg_set_pbs_trigger(chan);
+> +		chan->pattern_set = false;
+
+Forgive me if I'm confused, but doesn't this mean that if I configure a
+pattern and then set the brightness twice the pattern will be disabled
+again?
+
+> +	} else {
+> +		lpg_sdam_write(chan->lpg, SDAM_LUT_EN_OFFSET + chan->sdam_offset, 0);
+> +		lpg_clear_pbs_trigger(chan);
+> +	}
+> +}
+> +
+[..]
+>  static void lpg_apply_lut_control(struct lpg_channel *chan)
+>  {
+>  	struct lpg *lpg = chan->lpg;
+> @@ -476,6 +634,9 @@ static void lpg_apply_lut_control(struct lpg_channel *chan)
+>  	if (!chan->ramp_enabled || chan->pattern_lo_idx == chan->pattern_hi_idx)
+>  		return;
+>  
+> +	if (lpg->ppg_en)
+> +		return lpg_sdam_apply_lut_control(chan);
+
+Perhaps cleaner to just call lpg_sdam_apply_lut_control() directly from
+lpg_apply() instead of bouncing in this function?
+
+> +
+>  	hi_pause = DIV_ROUND_UP(chan->ramp_hi_pause_ms, step);
+>  	lo_pause = DIV_ROUND_UP(chan->ramp_lo_pause_ms, step);
+>  
+> @@ -632,7 +793,7 @@ static void lpg_brightness_set(struct lpg_led *led, struct led_classdev *cdev,
+>  		} else {
+>  			lpg_calc_freq(chan, NSEC_PER_MSEC);
+>  
+> -			duty = div_u64(brightness * chan->period, cdev->max_brightness);
+> +			duty = div_u64(brightness * chan->period, LPG_RESOLUTION_9BIT);
+
+This changes the divisor for the non-ppg case from LPG_RESOLUTION_9BIT
+- 1 to LPG_RESOLUTION_9BIT.
+
+Please perform any modifications to the non-ppg behavior in a separate
+commit, so that any potential regression can be easily identified as
+coming from refactoring, intentional changes or the introduction of new
+the new support.
+
+
+
+>  			lpg_calc_duty(chan, duty);
+>  			chan->enabled = true;
+>  			chan->ramp_enabled = false;
+[..]
+> +static int lpg_parse_sdam(struct lpg *lpg)
+> +{
+> +	int rc = 0;
+> +
+> +	if (lpg->data->nvmem_count == 0)
+> +		return 0;
+> +
+> +	/* get the nvmem device for LPG/LUT config */
+> +	lpg->lpg_chan_nvmem = devm_nvmem_device_get(lpg->dev, "lpg_chan_sdam");
+> +	if (IS_ERR(lpg->lpg_chan_nvmem)) {
+> +		rc = PTR_ERR(lpg->lpg_chan_nvmem);
+> +		if (rc != -EPROBE_DEFER)
+> +			dev_err(lpg->dev, "Failed to get nvmem device, rc=%d\n", rc);
+> +		return rc;
+
+return dev_err_probe(lpg->dev, "PTR_ERR(lpg->lpg_chan_nvmem, "Failed
+to...") will handle the EPROBE_DEFER conditioning and make the error
+message show up in /sys/kernel/debug/devices_deferred after boot.
+
+> +	}
+> +
+> +	lpg->pbs_dev = get_pbs_client_device(lpg->dev);
+> +	if (IS_ERR(lpg->pbs_dev)) {
+> +		rc = PTR_ERR(lpg->pbs_dev);
+> +		if (rc != -EPROBE_DEFER)
+> +			dev_err(lpg->dev, "Failed to get PBS client device, rc=%d\n", rc);
+> +		return rc;
+
+Same here.
+
+> +	}
+> +
+> +	lpg->ppg_en = true;
+> +
+> +	return rc;
+
+rc is 0 here. return 0 would make that obvious to the reader, and save
+you from having to zero-initialize the variable.
+
+> +}
+> +
+> +static int lpg_init_sdam(struct lpg *lpg)
+> +{
+> +	struct lpg_channel *chan;
+> +	int i, rc;
+> +
+> +	if (!lpg->ppg_en)
+
+This is effectively checking if the previous function also bailed.
+Perhaps it would be cleaner to just string these two together?
+
+> +		return 0;
+> +
+> +	for (i = 0; i < lpg->num_channels; i++) {
+> +		chan = &lpg->channels[i];
+> +		if (chan->sdam_offset) {
+> +			rc = lpg_sdam_write(lpg, SDAM_LUT_EN_OFFSET + chan->sdam_offset, 0);
+> +			if (rc < 0)
+> +				break;
+> +
+> +			rc = lpg_sdam_write(lpg,
+> +					SDAM_PBS_SCRATCH_LUT_COUNTER_OFFSET + chan->sdam_offset, 0);
+> +			if (rc < 0)
+> +				break;
+> +		}
+> +	}
+> +
+> +	return rc;
+> +}
+> +
+>  static int lpg_probe(struct platform_device *pdev)
+>  {
+>  	struct device_node *np;
+> @@ -1348,6 +1595,14 @@ static int lpg_probe(struct platform_device *pdev)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	ret = lpg_parse_sdam(lpg);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = lpg_init_sdam(lpg);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	ret = lpg_init_lut(lpg);
+>  	if (ret < 0)
+>  		return ret;
+> @@ -1363,7 +1618,9 @@ static int lpg_probe(struct platform_device *pdev)
+>  	for (i = 0; i < lpg->num_channels; i++)
+>  		lpg_apply_dtest(&lpg->channels[i]);
+>  
+> -	return lpg_add_pwm(lpg);
+> +	ret = lpg_add_pwm(lpg);
+> +
+> +	return ret;
+
+I'm failing to see the usefulness of this change.
+
+Regards,
+Bjorn
