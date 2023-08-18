@@ -2,65 +2,100 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D9DC001DE
-	for <linux-pwm@archiver.kernel.org>; Fri, 18 Aug 2023 09:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCD1C71136
+	for <linux-pwm@archiver.kernel.org>; Fri, 18 Aug 2023 09:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358960AbjHRJNL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 18 Aug 2023 05:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        id S1359111AbjHRJbD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 18 Aug 2023 05:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358969AbjHRJM7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 18 Aug 2023 05:12:59 -0400
-X-Greylist: delayed 369 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Aug 2023 02:12:57 PDT
-Received: from mail.cassleycruden.pl (mail.cassleycruden.pl [217.61.97.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FAE8E
-        for <linux-pwm@vger.kernel.org>; Fri, 18 Aug 2023 02:12:57 -0700 (PDT)
-Received: by mail.cassleycruden.pl (Postfix, from userid 1001)
-        id 4F03B84342; Fri, 18 Aug 2023 10:06:36 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=cassleycruden.pl;
-        s=mail; t=1692349606;
-        bh=PMKe/ZGJ6BzTndUs3U4s+9I0+VR2MMUK715AFNxw4AM=;
-        h=Date:From:To:Subject:From;
-        b=SE4J1IrnsNFtyZBUVnT3kzwZZ/ThEAJfKM8QsBDy1YEJllKykavoeKixKpgAzm4TV
-         EdSmF35fGBj6ZECb+6tiVA/d/xJRejaHAtcx4rMHqYPSRqpIeXuAeZyPiJJy9q3AiE
-         +58357Hlv38yVE8E/711g8MeBo+Hz15ryKZ0ITGdhj2HczLiake2K2ePKAWI9fEi1K
-         TD1HF+MR4L3MtfCRulSjHDdEyBIO+UBr61VSGdSD/JpTKaK4e2MESWnXAWuvnHSC18
-         rWTZ/NgPTtcYEHr8zPKL9fInVgD8qRmrQcJAJPQmcMalSKvJ8gbu55BkpdMaqSvcs6
-         wwx4Lk2anIOJg==
-Received: by mail.cassleycruden.pl for <linux-pwm@vger.kernel.org>; Fri, 18 Aug 2023 09:05:41 GMT
-Message-ID: <20230818090522-0.1.6m.f5az.0.l20nlk1vpb@cassleycruden.pl>
-Date:   Fri, 18 Aug 2023 09:05:41 GMT
-From:   "Adrian Giermata" <adrian.giermata@cassleycruden.pl>
-To:     <linux-pwm@vger.kernel.org>
-Subject: Nowa strona www
-X-Mailer: mail.cassleycruden.pl
+        with ESMTP id S1359165AbjHRJam (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 18 Aug 2023 05:30:42 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF25F3C1D;
+        Fri, 18 Aug 2023 02:30:38 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RRxN15pglztSFW;
+        Fri, 18 Aug 2023 17:26:57 +0800 (CST)
+Received: from huawei.com (10.90.53.73) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Fri, 18 Aug
+ 2023 17:30:35 +0800
+From:   Li Zetao <lizetao1@huawei.com>
+To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <andy@kernel.org>,
+        <j-keerthy@ti.com>, <vz@mleia.com>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <grygorii.strashko@ti.com>,
+        <ssantosh@kernel.org>, <khilman@kernel.org>,
+        <shubhrajyoti.datta@amd.com>, <srinivas.neeli@amd.com>,
+        <michal.simek@amd.com>
+CC:     <lizetao1@huawei.com>, <linux-gpio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-pwm@vger.kernel.org>, <linux-omap@vger.kernel.org>
+Subject: [PATCH -next 05/11] gpio: mb86s7x: Use helper function devm_clk_get_optional_enabled()
+Date:   Fri, 18 Aug 2023 17:30:12 +0800
+Message-ID: <20230818093018.1051434-6-lizetao1@huawei.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230818093018.1051434-1-lizetao1@huawei.com>
+References: <20230818093018.1051434-1-lizetao1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.53.73]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Szanowni Pa=C5=84stwo,
+Since commit 7ef9651e9792 ("clk: Provide new devm_clk helpers for
+prepared and enabled clocks"), devm_clk_get_optional() and
+clk_prepare_enable() can now be replaced by
+devm_clk_get_optional_enabled() when the driver enables (and possibly
+prepares) the clocks for the whole lifetime of the device. Moreover,
+it is no longer necessary to unprepare and disable the clocks explicitly.
 
-czy wiedz=C4=85 Pa=C5=84stwo, =C5=BCe internauta ocenia Pa=C5=84stwa firm=
-ow=C4=85 stron=C4=99 www ju=C5=BC w ci=C4=85gu pierwszych 5 sekund?
+Signed-off-by: Li Zetao <lizetao1@huawei.com>
+---
+ drivers/gpio/gpio-mb86s7x.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-Je=C5=9Bli pierwsze wra=C5=BCenie, jakie wywrze witryna, jest pozytywne, =
-to klient zak=C5=82ada, =C5=BCe za dobr=C4=85 stron=C4=85 stoi godna zauf=
-ania i rzetelna firma, a jej oferta jest atrakcyjna.
+diff --git a/drivers/gpio/gpio-mb86s7x.c b/drivers/gpio/gpio-mb86s7x.c
+index ca7eb5e8bfaa..8f2abc914dfa 100644
+--- a/drivers/gpio/gpio-mb86s7x.c
++++ b/drivers/gpio/gpio-mb86s7x.c
+@@ -170,14 +170,10 @@ static int mb86s70_gpio_probe(struct platform_device *pdev)
+ 	if (IS_ERR(gchip->base))
+ 		return PTR_ERR(gchip->base);
+ 
+-	gchip->clk = devm_clk_get_optional(&pdev->dev, NULL);
++	gchip->clk = devm_clk_get_optional_enabled(&pdev->dev, NULL);
+ 	if (IS_ERR(gchip->clk))
+ 		return PTR_ERR(gchip->clk);
+ 
+-	ret = clk_prepare_enable(gchip->clk);
+-	if (ret)
+-		return ret;
+-
+ 	spin_lock_init(&gchip->lock);
+ 
+ 	gchip->gc.direction_output = mb86s70_gpio_direction_output;
+@@ -196,7 +192,6 @@ static int mb86s70_gpio_probe(struct platform_device *pdev)
+ 	ret = gpiochip_add_data(&gchip->gc, gchip);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "couldn't register gpio driver\n");
+-		clk_disable_unprepare(gchip->clk);
+ 		return ret;
+ 	}
+ 
+@@ -211,7 +206,6 @@ static int mb86s70_gpio_remove(struct platform_device *pdev)
+ 
+ 	acpi_gpiochip_free_interrupts(&gchip->gc);
+ 	gpiochip_remove(&gchip->gc);
+-	clk_disable_unprepare(gchip->clk);
+ 
+ 	return 0;
+ }
+-- 
+2.34.1
 
-Reprezentuj=C4=99 software house, kt=C3=B3ry buduje nowoczesne strony int=
-ernetowe oraz dochodowe sklepy online, zmieniaj=C4=85c wirtualny =C5=9Bwi=
-at w rzeczywiste zyski. Dzi=C4=99ki nowoczesnym funkcjonalno=C5=9Bciom i =
-niestandardowej kreacji umacniamy wizerunek marki, dodaj=C4=85c jej warto=
-=C5=9Bci i to=C5=BCsamo=C5=9Bci, kt=C3=B3rej szukaj=C4=85 Klienci.
-
-Z przyjemno=C5=9Bci=C4=85 poznamy Pa=C5=84stwa oczekiwania, aby wsp=C3=B3=
-lnie przeanalizowa=C4=87 potencja=C5=82 wsp=C3=B3=C5=82pracy. Prosz=C4=99=
- o kontakt zwrotny, przedstawimy dok=C5=82adniej nasze mo=C5=BCliwo=C5=9B=
-ci.
-
-
-Pozdrawiam
-Adrian Giermata
