@@ -2,25 +2,25 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346C9C678DC
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EAEC7EE2C
 	for <linux-pwm@archiver.kernel.org>; Fri, 18 Aug 2023 09:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359156AbjHRJbK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 18 Aug 2023 05:31:10 -0400
+        id S1359175AbjHRJbM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 18 Aug 2023 05:31:12 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359180AbjHRJao (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 18 Aug 2023 05:30:44 -0400
+        with ESMTP id S1359130AbjHRJal (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 18 Aug 2023 05:30:41 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFE53A89;
-        Fri, 18 Aug 2023 02:30:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96583A8B;
+        Fri, 18 Aug 2023 02:30:36 -0700 (PDT)
 Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RRxQg33gqzkXDb;
-        Fri, 18 Aug 2023 17:29:15 +0800 (CST)
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RRxQZ5TzqzkXDM;
+        Fri, 18 Aug 2023 17:29:10 +0800 (CST)
 Received: from huawei.com (10.90.53.73) by kwepemi500012.china.huawei.com
  (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Fri, 18 Aug
- 2023 17:30:38 +0800
+ 2023 17:30:33 +0800
 From:   Li Zetao <lizetao1@huawei.com>
 To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <andy@kernel.org>,
         <j-keerthy@ti.com>, <vz@mleia.com>, <thierry.reding@gmail.com>,
@@ -31,9 +31,9 @@ To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <andy@kernel.org>,
 CC:     <lizetao1@huawei.com>, <linux-gpio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-pwm@vger.kernel.org>, <linux-omap@vger.kernel.org>
-Subject: [PATCH -next 09/11] gpio: stp-xway: Use helper function devm_clk_get_enabled()
-Date:   Fri, 18 Aug 2023 17:30:16 +0800
-Message-ID: <20230818093018.1051434-10-lizetao1@huawei.com>
+Subject: [PATCH -next 01/11] gpio: cadence: Use helper function devm_clk_get_enabled()
+Date:   Fri, 18 Aug 2023 17:30:08 +0800
+Message-ID: <20230818093018.1051434-2-lizetao1@huawei.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230818093018.1051434-1-lizetao1@huawei.com>
 References: <20230818093018.1051434-1-lizetao1@huawei.com>
@@ -57,39 +57,71 @@ explicitly.
 
 Signed-off-by: Li Zetao <lizetao1@huawei.com>
 ---
- drivers/gpio/gpio-stp-xway.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/gpio/gpio-cadence.c | 20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/gpio/gpio-stp-xway.c b/drivers/gpio/gpio-stp-xway.c
-index 053d616f2e02..5a6406d1f03a 100644
---- a/drivers/gpio/gpio-stp-xway.c
-+++ b/drivers/gpio/gpio-stp-xway.c
-@@ -296,23 +296,17 @@ static int xway_stp_probe(struct platform_device *pdev)
- 	if (!of_property_read_bool(pdev->dev.of_node, "lantiq,rising"))
- 		chip->edge = XWAY_STP_FALLING;
+diff --git a/drivers/gpio/gpio-cadence.c b/drivers/gpio/gpio-cadence.c
+index 3720b90cad10..a545baed9136 100644
+--- a/drivers/gpio/gpio-cadence.c
++++ b/drivers/gpio/gpio-cadence.c
+@@ -203,18 +203,12 @@ static int cdns_gpio_probe(struct platform_device *pdev)
+ 	cgpio->gc.request = cdns_gpio_request;
+ 	cgpio->gc.free = cdns_gpio_free;
  
--	clk = devm_clk_get(&pdev->dev, NULL);
-+	clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(clk)) {
- 		dev_err(&pdev->dev, "Failed to get clock\n");
- 		return PTR_ERR(clk);
+-	cgpio->pclk = devm_clk_get(&pdev->dev, NULL);
++	cgpio->pclk = devm_clk_get_enabled(&pdev->dev, NULL);
+ 	if (IS_ERR(cgpio->pclk)) {
+ 		ret = PTR_ERR(cgpio->pclk);
+ 		dev_err(&pdev->dev,
+-			"Failed to retrieve peripheral clock, %d\n", ret);
+-		goto err_revert_dir;
+-	}
+-
+-	ret = clk_prepare_enable(cgpio->pclk);
+-	if (ret) {
+-		dev_err(&pdev->dev,
+-			"Failed to enable the peripheral clock, %d\n", ret);
++			"Failed to retrieve and enable peripheral clock, %d\n",
++			ret);
+ 		goto err_revert_dir;
  	}
  
--	ret = clk_prepare_enable(clk);
--	if (ret)
--		return ret;
+@@ -234,7 +228,7 @@ static int cdns_gpio_probe(struct platform_device *pdev)
+ 					     GFP_KERNEL);
+ 		if (!girq->parents) {
+ 			ret = -ENOMEM;
+-			goto err_disable_clk;
++			goto err_revert_dir;
+ 		}
+ 		girq->parents[0] = irq;
+ 		girq->default_type = IRQ_TYPE_NONE;
+@@ -244,7 +238,7 @@ static int cdns_gpio_probe(struct platform_device *pdev)
+ 	ret = devm_gpiochip_add_data(&pdev->dev, &cgpio->gc, cgpio);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "Could not register gpiochip, %d\n", ret);
+-		goto err_disable_clk;
++		goto err_revert_dir;
+ 	}
+ 
+ 	cgpio->bypass_orig = ioread32(cgpio->regs + CDNS_GPIO_BYPASS_MODE);
+@@ -259,9 +253,6 @@ static int cdns_gpio_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, cgpio);
+ 	return 0;
+ 
+-err_disable_clk:
+-	clk_disable_unprepare(cgpio->pclk);
 -
- 	xway_stp_hw_init(chip);
+ err_revert_dir:
+ 	iowrite32(dir_prev, cgpio->regs + CDNS_GPIO_DIRECTION_MODE);
  
- 	ret = devm_gpiochip_add_data(&pdev->dev, &chip->gc, chip);
--	if (ret) {
--		clk_disable_unprepare(clk);
-+	if (ret)
- 		return ret;
--	}
+@@ -273,7 +264,6 @@ static int cdns_gpio_remove(struct platform_device *pdev)
+ 	struct cdns_gpio_chip *cgpio = platform_get_drvdata(pdev);
  
- 	dev_info(&pdev->dev, "Init done\n");
+ 	iowrite32(cgpio->bypass_orig, cgpio->regs + CDNS_GPIO_BYPASS_MODE);
+-	clk_disable_unprepare(cgpio->pclk);
  
+ 	return 0;
+ }
 -- 
 2.34.1
 
