@@ -2,143 +2,138 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577C1C83F20
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78953C83F23
 	for <linux-pwm@archiver.kernel.org>; Wed, 30 Aug 2023 18:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245657AbjH3Sx4 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 30 Aug 2023 14:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        id S245664AbjH3Sx5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 30 Aug 2023 14:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344094AbjH3SHM (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Aug 2023 14:07:12 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AFCB193;
-        Wed, 30 Aug 2023 11:07:10 -0700 (PDT)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37UHSasX009110;
-        Wed, 30 Aug 2023 18:06:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=qcppdkim1;
- bh=kpE5sCFq3dmk4U1+LA8mrhI3/a/VConRpuJvlSn/PyE=;
- b=MveyGRraCG8lvnqaBA9nyY26s9Y0KA4bfB7gZYc8HAnMhhUaKKhkxNPjHo5vz9YofCI/
- ojkhMSzx2TxcQHCzj+ruZKDiKwyy44SQdaTrI/RXD83G4KPUdGWkangHcLJ+bNf0riFo
- Ey2lqbS98ETO6mGJgGcD6V9x7mYLB+XE48CF4TZg5fb8ocgplxZlry0+KeSnTnisEytQ
- t/EGhXWOzKRxeEXgCXMBOMrMet3sA16m8+bPjNlKk+hGRNRX5OIxjDdd92s9f7vJ0Bjh
- Hp5LDGYZa1SZ15y1IwRxXE+nOvsteDbBg3Ml+GOZXyunprxUKd2PeA11P1BqLut9/Y8r Lg== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3st159sb8p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Aug 2023 18:06:49 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 37UI6mEZ019244
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Aug 2023 18:06:48 GMT
-Received: from hu-amelende-lv.qualcomm.com (10.49.16.6) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.36; Wed, 30 Aug 2023 11:06:46 -0700
-From:   Anjelique Melendez <quic_amelende@quicinc.com>
-To:     <pavel@ucw.cz>, <lee@kernel.org>, <thierry.reding@gmail.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <conor+dt@kernel.org>, <agross@kernel.org>, <andersson@kernel.org>
-CC:     <luca.weiss@fairphone.com>, <konrad.dybcio@linaro.org>,
-        <u.kleine-koenig@pengutronix.de>, <quic_subbaram@quicinc.com>,
-        <quic_gurus@quicinc.com>, <linux-leds@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <kernel@quicinc.com>,
-        Anjelique Melendez <quic_amelende@quicinc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 1/7] dt-bindings: soc: qcom: Add qcom,pbs bindings
-Date:   Wed, 30 Aug 2023 11:05:56 -0700
-Message-ID: <20230830180600.1865-4-quic_amelende@quicinc.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230830180600.1865-2-quic_amelende@quicinc.com>
-References: <20230830180600.1865-2-quic_amelende@quicinc.com>
+        with ESMTP id S244085AbjH3McM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Aug 2023 08:32:12 -0400
+Received: from TWMBX03.aspeed.com (mail.aspeedtech.com [211.20.114.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE932CD2;
+        Wed, 30 Aug 2023 05:32:09 -0700 (PDT)
+Received: from TWMBX02.aspeed.com (192.168.0.24) by TWMBX03.aspeed.com
+ (192.168.0.62) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 30 Aug
+ 2023 20:32:06 +0800
+Received: from twmbx02.aspeed.com (192.168.10.10) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 30 Aug 2023 20:32:06 +0800
+From:   Billy Tsai <billy_tsai@aspeedtech.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <joel@jms.id.au>,
+        <andrew@aj.id.au>, <corbet@lwn.net>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <p.zabel@pengutronix.de>,
+        <billy_tsai@aspeedtech.com>, <naresh.solanki@9elements.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <BMC-SW@aspeedtech.com>, <patrick@stwcx.xyz>
+Subject: [PATCH v8 1/3] dt-bindings: hwmon: fan: Add fan binding to schema
+Date:   Wed, 30 Aug 2023 20:32:00 +0800
+Message-ID: <20230830123202.3408318-2-billy_tsai@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230830123202.3408318-1-billy_tsai@aspeedtech.com>
+References: <20230830123202.3408318-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: -t6n9tbtIWWOEGYKa_XvZ-b43Iy6lvhm
-X-Proofpoint-GUID: -t6n9tbtIWWOEGYKa_XvZ-b43Iy6lvhm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-30_15,2023-08-29_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- lowpriorityscore=0 mlxscore=0 suspectscore=0 spamscore=0 mlxlogscore=999
- priorityscore=1501 clxscore=1011 bulkscore=0 impostorscore=0
- malwarescore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2308100000 definitions=main-2308300165
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add binding for the Qualcomm Programmable Boot Sequencer device.
+From: Naresh Solanki <naresh.solanki@9elements.com>
 
-Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Add common fan properties bindings to a schema.
+
+Bindings for fan controllers can reference the common schema for the
+fan
+
+child nodes:
+
+  patternProperties:
+    "^fan@[0-2]":
+      type: object
+      $ref: fan-common.yaml#
+
+Signed-off-by: Naresh Solanki <naresh.solanki@9elements.com>
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 ---
- .../bindings/soc/qcom/qcom,pbs.yaml           | 46 +++++++++++++++++++
- 1 file changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,pbs.yaml
+ .../devicetree/bindings/hwmon/fan-common.yaml | 63 +++++++++++++++++++
+ 1 file changed, 63 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/fan-common.yaml
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,pbs.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,pbs.yaml
+diff --git a/Documentation/devicetree/bindings/hwmon/fan-common.yaml b/Documentation/devicetree/bindings/hwmon/fan-common.yaml
 new file mode 100644
-index 000000000000..b502ca72266a
+index 000000000000..a69b4d553e45
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,pbs.yaml
-@@ -0,0 +1,46 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++++ b/Documentation/devicetree/bindings/hwmon/fan-common.yaml
+@@ -0,0 +1,63 @@
++# SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/soc/qcom/qcom,pbs.yaml#
++$id: http://devicetree.org/schemas/hwmon/fan-common.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Qualcomm Technologies, Inc. Programmable Boot Sequencer
++title: Common Fan Properties
 +
 +maintainers:
-+  - Anjelique Melendez <quic_amelende@quicinc.com>
-+
-+description: |
-+  The Qualcomm Technologies, Inc. Programmable Boot Sequencer (PBS)
-+  supports triggering power up and power down sequences for clients
-+  upon request.
++  - Naresh Solanki <naresh.solanki@9elements.com>
++  - Billy Tsai <billy_tsai@aspeedtech.com>
 +
 +properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - qcom,pmi632-pbs
-+      - const: qcom,pbs
++  max-rpm:
++    description:
++      Max RPM supported by fan.
++    $ref: /schemas/types.yaml#/definitions/uint32
 +
-+  reg:
-+    maxItems: 1
++  min-rpm:
++    description:
++      Min RPM supported by fan.
++    $ref: /schemas/types.yaml#/definitions/uint32
 +
-+required:
-+  - compatible
-+  - reg
++  pulses-per-revolution:
++    description:
++      The number of pulse from fan sensor per revolution.
++    $ref: /schemas/types.yaml#/definitions/uint32
 +
-+additionalProperties: false
++  div:
++    description:
++      Fan clock divisor
++    $ref: /schemas/types.yaml#/definitions/uint32
 +
-+examples:
-+  - |
-+    #include <dt-bindings/spmi/spmi.h>
++  target-rpm:
++    description:
++      Target RPM the fan should be configured during driver probe.
++    $ref: /schemas/types.yaml#/definitions/uint32
 +
-+    pmic@0 {
-+      reg = <0x0 SPMI_USID>;
-+      #address-cells = <1>;
-+      #size-cells = <0>;
++  mode:
++    description:
++      Select the operational mode of the fan.
++    $ref: /schemas/types.yaml#/definitions/uint32
 +
-+      pbs@7400 {
-+        compatible = "qcom,pmi632-pbs", "qcom,pbs";
-+        reg = <0x7400>;
-+      };
-+    };
++  pwms:
++    description:
++      PWM provider.
++
++  tach-ch:
++    description:
++      The tach channel used for the fan.
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  label:
++    description:
++      Optional fan label
++
++  fan-supply:
++    description:
++      Power supply for fan.
++
++additionalProperties: true
++
++...
 -- 
-2.41.0
+2.25.1
 
