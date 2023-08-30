@@ -2,229 +2,134 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE46AC83F1A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BC7C83F18
 	for <linux-pwm@archiver.kernel.org>; Wed, 30 Aug 2023 18:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245620AbjH3Sxq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S245626AbjH3Sxq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Wed, 30 Aug 2023 14:53:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344190AbjH3SUb (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Aug 2023 14:20:31 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876D71A3
-        for <linux-pwm@vger.kernel.org>; Wed, 30 Aug 2023 11:20:25 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id 2adb3069b0e04-50079d148aeso213362e87.3
-        for <linux-pwm@vger.kernel.org>; Wed, 30 Aug 2023 11:20:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1693419623; x=1694024423; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=51+E8w+DB/gmDcb8ags2q30yQi+hWnstc7Hv59yZB9Q=;
-        b=hRzBCXow1+JSLs6KLaq1mWX8T2wDOI9Ydl2K/GFjuQS07h82BajmbFJzHRL7vZsWYb
-         UbCinV4Rj4Ens0PctLqzpcB3zwV36M/a27nvvBAeA+ZV8TwxyaRkHddsl5Ap8axU4Laq
-         O8vN2Uv24UojgLBZq+bNI9YLaJcN62fFFvoHnJqn4ldX2fC8VlU2fyD5KfMwutCCZu7C
-         oR9VA0Dvayay35kNLTmSARPoRCjYI6La2L69oCocxJmwM+sCtahZ20IjagTFL0TYRs+l
-         09NBTxgKbd8M4uz8cpwIbtyK70uZEUqVX209DGXc/CM5z1rTL4WSi6f7cSf4qgD8G8HA
-         j0og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693419623; x=1694024423;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=51+E8w+DB/gmDcb8ags2q30yQi+hWnstc7Hv59yZB9Q=;
-        b=KB+XFGe5qPKoUtSB4H99JWLDGSilHW0Es1kCY6W1e4+2EgmNRZnuPQxORkjmuipwdF
-         pk+IwWhtB6MXcHv6DDG3yoCOd/T7F0kf9+Zvj+oLlYzzwG3fCKgeMw/xeJFxqopNSnEc
-         NmgPwBHcqIMiCIYP5hYckr6foP2QYA0vCoi3CsbG652c2+sjyMtBi5uXVaZGTWmzm7Z1
-         Tbjs1LQlNCfU9YiLfBU/t83Z3eO7Gbuk017MrtatMflLhp1kSGKdIVieVt9mCVZxXlKb
-         UzA0FTu+KE/tW3AaZhWzHEHA2pHYDK05uvpjxh9TNU+SjbXWzWR6bVD6gF8bJ7jj4dp9
-         NKYw==
-X-Gm-Message-State: AOJu0Yx2IkzcfS+SThL2yQghVKImdylFrDnFc99AgNqnx3O7v8am66qo
-        JEJsfTp8AoYJuKWOj2lL53F2yw==
-X-Google-Smtp-Source: AGHT+IGEMnFxFzzxLchfMDAjKjH48/ZXeqdd4n7pK1yqBWJF3jWMKxbY0sm0hTHgYgkcusKJEuVa+w==
-X-Received: by 2002:a05:6512:541:b0:500:bd75:77d1 with SMTP id h1-20020a056512054100b00500bd7577d1mr2092668lfl.63.1693419623630;
-        Wed, 30 Aug 2023 11:20:23 -0700 (PDT)
-Received: from [192.168.1.101] (abyl195.neoplus.adsl.tpnet.pl. [83.9.31.195])
-        by smtp.gmail.com with ESMTPSA id w17-20020ac254b1000000b004fe48d0b639sm2464838lfk.83.2023.08.30.11.20.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Aug 2023 11:20:23 -0700 (PDT)
-Message-ID: <4164dc42-ae7b-449e-82e1-8c5bfa64823d@linaro.org>
-Date:   Wed, 30 Aug 2023 20:20:19 +0200
+        with ESMTP id S244084AbjH3McM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Aug 2023 08:32:12 -0400
+Received: from TWMBX02.aspeed.com (mail.aspeedtech.com [211.20.114.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5708D107;
+        Wed, 30 Aug 2023 05:32:07 -0700 (PDT)
+Received: from TWMBX02.aspeed.com (192.168.0.24) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 30 Aug
+ 2023 20:32:07 +0800
+Received: from twmbx02.aspeed.com (192.168.10.10) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 30 Aug 2023 20:32:07 +0800
+From:   Billy Tsai <billy_tsai@aspeedtech.com>
+To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <joel@jms.id.au>,
+        <andrew@aj.id.au>, <corbet@lwn.net>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <p.zabel@pengutronix.de>,
+        <billy_tsai@aspeedtech.com>, <naresh.solanki@9elements.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <BMC-SW@aspeedtech.com>, <patrick@stwcx.xyz>
+Subject: [PATCH v8 2/3] dt-bindings: hwmon: Support Aspeed g6 PWM TACH Control
+Date:   Wed, 30 Aug 2023 20:32:01 +0800
+Message-ID: <20230830123202.3408318-3-billy_tsai@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230830123202.3408318-1-billy_tsai@aspeedtech.com>
+References: <20230830123202.3408318-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 3/7] soc: qcom: add QCOM PBS driver
-Content-Language: en-US
-To:     Anjelique Melendez <quic_amelende@quicinc.com>, pavel@ucw.cz,
-        lee@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        agross@kernel.org, andersson@kernel.org
-Cc:     luca.weiss@fairphone.com, u.kleine-koenig@pengutronix.de,
-        quic_subbaram@quicinc.com, quic_gurus@quicinc.com,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, kernel@quicinc.com
-References: <20230830180600.1865-2-quic_amelende@quicinc.com>
- <20230830180600.1865-6-quic_amelende@quicinc.com>
-From:   Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <20230830180600.1865-6-quic_amelende@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+Received-SPF: Fail (TWMBX02.aspeed.com: domain of billy_tsai@aspeedtech.com
+ does not designate 192.168.10.10 as permitted sender)
+ receiver=TWMBX02.aspeed.com; client-ip=192.168.10.10;
+ helo=twmbx02.aspeed.com;
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 30.08.2023 20:05, Anjelique Melendez wrote:
-> Add the Qualcomm PBS (Programmable Boot Sequencer) driver. The QCOM PBS
-> driver supports configuring software PBS trigger events through PBS RAM
-> on Qualcomm Technologies, Inc (QTI) PMICs.
-> 
-> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
-> ---
-[...]
+Document the compatible for aspeed,ast2600-pwm-tach device, which can
+support up to 16 PWM outputs and 16 fan tach input.
 
-> +static int qcom_pbs_read(struct pbs_dev *pbs, u32 address, u8 *val)
-I've seen your answer in v2, but I'm still not convinced about
-two things:
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+---
+ .../bindings/hwmon/aspeed,g6-pwm-tach.yaml    | 67 +++++++++++++++++++
+ 1 file changed, 67 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
 
-1. why are you using bulk APIs with count=1 instead of just
-   regmap_write/read?
-2. do we expect the accesses to ever fail (realistically), if not
-   we don't have to care about the retval and skip the conditional
-   error message (1-2 cycles less per invocation)
+diff --git a/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+new file mode 100644
+index 000000000000..95bac5588c04
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+@@ -0,0 +1,67 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2021 Aspeed, Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/aspeed,g6-pwm-tach.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ASPEED G6 PWM and Fan Tach controller device driver
++
++maintainers:
++  - Billy Tsai <billy_tsai@aspeedtech.com>
++
++description: |
++  The ASPEED PWM controller can support up to 16 PWM outputs.
++  The ASPEED Fan Tacho controller can support up to 16 fan tach input.
++
++properties:
++  compatible:
++    enum:
++      - aspeed,ast2600-pwm-tach
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++patternProperties:
++  "^fan[0-9a-f]_hwmon+$":
++    $ref: fan-common.yaml#
++    required:
++      - tach-ch
++
++required:
++  - reg
++  - clocks
++  - resets
++  - "#pwm-cells"
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/aspeed-clock.h>
++    pwm_tach: pwm-tach-controller@1e610000 {
++      compatible = "aspeed,ast2600-pwm-tach";
++      reg = <0x1e610000 0x100>;
++      clocks = <&syscon ASPEED_CLK_AHB>;
++      resets = <&syscon ASPEED_RESET_PWM>;
++      #pwm-cells = <3>;
++      fan0_hwmon {
++        tach-ch = <0x0>;
++      };
++      fan1_hwmon {
++        tach-ch = <0x1>;
++      };
++      fan2_hwmon {
++        tach-ch = <0x2>;
++      };
++    };
+-- 
+2.25.1
 
-You insisted on keeping the error messages, but firstly you'll soon
-get an angry response from Krzysztof saying register accesses can't
-fail (hence making checking the retval useless) and secondly I think
-spmi core already spits out some errors on disallowed r/w
-
-If you agree access failures are very edge cases, you can simply
-convert all r/w ops to regmap_read/write/modify_bits and pass
-pbs->base + reg
-
-> +{
-> +	int ret;
-> +
-> +	address += pbs->base;
-> +	ret = regmap_bulk_read(pbs->regmap, address, val, 1);
-> +	if (ret)
-> +		dev_err(pbs->dev, "Failed to read address=%#x sid=%#x ret=%d\n",
-> +			address, to_spmi_device(pbs->dev->parent)->usid, ret);
-> +
-> +	return ret;
-> +}
-[...]
-
-> +static int qcom_pbs_wait_for_ack(struct pbs_dev *pbs, u8 bit_pos)
-> +{
-> +	int ret, retries = 2000, delay = 1000;
-> +	u8 val;
-> +
-> +	while (retries--) {
-> +		ret = qcom_pbs_read(pbs, PBS_CLIENT_SCRATCH2, &val);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		if (val == PBS_CLIENT_SCRATCH2_ERROR) {
-> +			/* PBS error - clear SCRATCH2 register */
-> +			ret = qcom_pbs_write(pbs, PBS_CLIENT_SCRATCH2, 0);
-> +			if (ret < 0)
-> +				return ret;
-> +
-> +			dev_err(pbs->dev, "NACK from PBS for bit %u\n", bit_pos);
-> +			return -EINVAL;
-> +		}
-> +
-> +		if (val & BIT(bit_pos)) {
-> +			dev_dbg(pbs->dev, "PBS sequence for bit %u executed!\n", bit_pos);
-> +			return 0;
-> +		}
-> +
-> +		usleep_range(delay, delay + 100);
-> +	}
-Since the SCRATCH2_ERROR path exits the loop, this can simply be
-made into:
-
-regmap_read_poll_timeout
-
-if (SCARTCH2_ERROR)
-  do something
-  return einval
-
-return etimedout
-
-[...]
-
-> +int qcom_pbs_trigger_event(struct pbs_dev *pbs, u8 bitmap)
-> +{
-> +	u8 val;
-> +	u16 bit_pos;
-> +	int ret;
-Reverse-Christmas-tree?
-
-> +
-> +	if (!bitmap) {
-> +		dev_err(pbs->dev, "Invalid bitmap passed by client\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (IS_ERR_OR_NULL(pbs))
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&pbs->lock);
-> +	ret = qcom_pbs_read(pbs, PBS_CLIENT_SCRATCH2, &val);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	if (val == PBS_CLIENT_SCRATCH2_ERROR) {
-> +		/* PBS error - clear SCRATCH2 register */
-> +		ret = qcom_pbs_write(pbs, PBS_CLIENT_SCRATCH2, 0);
-> +		if (ret < 0)
-> +			goto out;
-> +	}
-Probably deserves an error message?
-
-> +
-> +	for (bit_pos = 0; bit_pos < 8; bit_pos++) {
-> +		if (bitmap & BIT(bit_pos)) {
-if (!(bitmap & BIT(bit_pos))
-    continue
-
-would save you a level of indentation
-
-Konrad
