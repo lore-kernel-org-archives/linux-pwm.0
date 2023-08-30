@@ -2,679 +2,382 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 040ADC83F1F
-	for <linux-pwm@archiver.kernel.org>; Wed, 30 Aug 2023 18:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4675DC83F01
+	for <linux-pwm@archiver.kernel.org>; Wed, 30 Aug 2023 20:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245654AbjH3Sxx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 30 Aug 2023 14:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54062 "EHLO
+        id S240052AbjH3Uk5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 30 Aug 2023 16:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244086AbjH3McP (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Aug 2023 08:32:15 -0400
-Received: from TWMBX03.aspeed.com (mail.aspeedtech.com [211.20.114.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4381F107;
-        Wed, 30 Aug 2023 05:32:11 -0700 (PDT)
-Received: from TWMBX02.aspeed.com (192.168.0.24) by TWMBX03.aspeed.com
- (192.168.0.62) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 30 Aug
- 2023 20:32:07 +0800
-Received: from twmbx02.aspeed.com (192.168.10.10) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 30 Aug 2023 20:32:07 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <corbet@lwn.net>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <p.zabel@pengutronix.de>,
-        <billy_tsai@aspeedtech.com>, <naresh.solanki@9elements.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <BMC-SW@aspeedtech.com>, <patrick@stwcx.xyz>
-Subject: [PATCH v8 3/3] hwmon: (aspeed-g6-pwm-tacho): Support for ASPEED g6 PWM/Fan tach
-Date:   Wed, 30 Aug 2023 20:32:02 +0800
-Message-ID: <20230830123202.3408318-4-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230830123202.3408318-1-billy_tsai@aspeedtech.com>
-References: <20230830123202.3408318-1-billy_tsai@aspeedtech.com>
+        with ESMTP id S240059AbjH3Uk5 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Aug 2023 16:40:57 -0400
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B1110EB
+        for <linux-pwm@vger.kernel.org>; Wed, 30 Aug 2023 13:40:24 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-9a1de3417acso287264466b.0
+        for <linux-pwm@vger.kernel.org>; Wed, 30 Aug 2023 13:40:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1693427657; x=1694032457; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+EWxGsOLnd1S0YI2fSd+NkLhQt9gXvMSC02V+aZzkUY=;
+        b=eanjHBClwy+sqQGBH0jiAZ6qYY5RDZPrvrR1BQxvAbx1/5aYJesOESkNCcAEfQfvU5
+         bx4jr8DDqNwK4fI67iRCZrKZSZnoy3ZXC+XQZwI2+VArSrhgHgbxWq+Vc0Kfkccir0u0
+         Xfr+yX5U2C7WXUDUGF1XTk721GijjAKuQLpM0GUGzalytqClFG1MeAaihoZFmWmblzQS
+         qiThsE1o6bOxJr+jepBTe6EeLRcuyBOK8XXH4/QVM8Kzfa9nqhXjrdXrJsTo+KaKqGU5
+         pQTeQ937CzBWpxazIZKw5l67DuRgxNjg/gmIqv3QAUaXR0G67vMDAKogjfNTOnvZrCZY
+         aOMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693427657; x=1694032457;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+EWxGsOLnd1S0YI2fSd+NkLhQt9gXvMSC02V+aZzkUY=;
+        b=QKsLoVsJxoHTnRRHStfpFtJxZyqk/LZqF+u8liwBbUimV4VM7wvhiei17Z9higKXyg
+         SeNAzfIJcxYtOvWKAnN4Jax66IFYPo/fy6/MwJzjr98lKVIAg7Sp9go8aT0t658FiQHU
+         egZtr9EPxgl/DjtqUGj+Hgz4ixMRkPqnyf+OGZA9DkfzQS9zKg6mmHxP4bkh4o5Zh8dE
+         GMKPDBG7NhuS3ZmV+xY2h7iMJP8cl61njdbgdpKYr9S0sn3qr0fLm982zai4fCwQub7k
+         hMd/ysBT6udQKNNsoVTsILLcdbJnftXoLrfOojokoI0LFEZ5J7QUhPqOoLOKEpN3YGm+
+         tymQ==
+X-Gm-Message-State: AOJu0Yx9Grvj6XMAF2lWoWP6YhcJto3f6223yG50dAizf1UDnxjGO4gm
+        znBHZGnbFhkwBP6CJgdXORPSF2x6F/JekN/VG254iw==
+X-Google-Smtp-Source: AGHT+IGfR18dSZBXSqYXGSzoHrNRgDwKf6Nb+DOKZeJcaMS5RT7sCIo9zfZ5tbBrSkGgdK4RGB/CLg==
+X-Received: by 2002:a05:6512:159c:b0:4ff:8f76:678c with SMTP id bp28-20020a056512159c00b004ff8f76678cmr165497lfb.1.1693420454740;
+        Wed, 30 Aug 2023 11:34:14 -0700 (PDT)
+Received: from [192.168.1.101] (abyl195.neoplus.adsl.tpnet.pl. [83.9.31.195])
+        by smtp.gmail.com with ESMTPSA id l12-20020ac24a8c000000b004fe633bfcc7sm2473562lfp.17.2023.08.30.11.34.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Aug 2023 11:34:14 -0700 (PDT)
+Message-ID: <3b6f6285-ec3b-4e12-aa65-d5f61937de6f@linaro.org>
+Date:   Wed, 30 Aug 2023 20:34:10 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 4/7] leds: rgb: leds-qcom-lpg: Add support for PPG
+ through single SDAM
+Content-Language: en-US
+To:     Anjelique Melendez <quic_amelende@quicinc.com>, pavel@ucw.cz,
+        lee@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        agross@kernel.org, andersson@kernel.org
+Cc:     luca.weiss@fairphone.com, u.kleine-koenig@pengutronix.de,
+        quic_subbaram@quicinc.com, quic_gurus@quicinc.com,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pwm@vger.kernel.org, kernel@quicinc.com
+References: <20230830180600.1865-2-quic_amelende@quicinc.com>
+ <20230830180600.1865-7-quic_amelende@quicinc.com>
+From:   Konrad Dybcio <konrad.dybcio@linaro.org>
+Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
+ xsFNBF9ALYUBEADWAhxdTBWrwAgDQQzc1O/bJ5O7b6cXYxwbBd9xKP7MICh5YA0DcCjJSOum
+ BB/OmIWU6X+LZW6P88ZmHe+KeyABLMP5s1tJNK1j4ntT7mECcWZDzafPWF4F6m4WJOG27kTJ
+ HGWdmtO+RvadOVi6CoUDqALsmfS3MUG5Pj2Ne9+0jRg4hEnB92AyF9rW2G3qisFcwPgvatt7
+ TXD5E38mLyOPOUyXNj9XpDbt1hNwKQfiidmPh5e7VNAWRnW1iCMMoKqzM1Anzq7e5Afyeifz
+ zRcQPLaqrPjnKqZGL2BKQSZDh6NkI5ZLRhhHQf61fkWcUpTp1oDC6jWVfT7hwRVIQLrrNj9G
+ MpPzrlN4YuAqKeIer1FMt8cq64ifgTzxHzXsMcUdclzq2LTk2RXaPl6Jg/IXWqUClJHbamSk
+ t1bfif3SnmhA6TiNvEpDKPiT3IDs42THU6ygslrBxyROQPWLI9IL1y8S6RtEh8H+NZQWZNzm
+ UQ3imZirlPjxZtvz1BtnnBWS06e7x/UEAguj7VHCuymVgpl2Za17d1jj81YN5Rp5L9GXxkV1
+ aUEwONM3eCI3qcYm5JNc5X+JthZOWsbIPSC1Rhxz3JmWIwP1udr5E3oNRe9u2LIEq+wH/toH
+ kpPDhTeMkvt4KfE5m5ercid9+ZXAqoaYLUL4HCEw+HW0DXcKDwARAQABzShLb25yYWQgRHli
+ Y2lvIDxrb25yYWQuZHliY2lvQGxpbmFyby5vcmc+wsGOBBMBCAA4FiEEU24if9oCL2zdAAQV
+ R4cBcg5dfFgFAmQ5bqwCGwMFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AACgkQR4cBcg5dfFjO
+ BQ//YQV6fkbqQCceYebGg6TiisWCy8LG77zV7DB0VMIWJv7Km7Sz0QQrHQVzhEr3trNenZrf
+ yy+o2tQOF2biICzbLM8oyQPY8B///KJTWI2khoB8IJSJq3kNG68NjPg2vkP6CMltC/X3ohAo
+ xL2UgwN5vj74QnlNneOjc0vGbtA7zURNhTz5P/YuTudCqcAbxJkbqZM4WymjQhe0XgwHLkiH
+ 5LHSZ31MRKp/+4Kqs4DTXMctc7vFhtUdmatAExDKw8oEz5NbskKbW+qHjW1XUcUIrxRr667V
+ GWH6MkVceT9ZBrtLoSzMLYaQXvi3sSAup0qiJiBYszc/VOu3RbIpNLRcXN3KYuxdQAptacTE
+ mA+5+4Y4DfC3rUSun+hWLDeac9z9jjHm5rE998OqZnOU9aztbd6zQG5VL6EKgsVXAZD4D3RP
+ x1NaAjdA3MD06eyvbOWiA5NSzIcC8UIQvgx09xm7dThCuQYJR4Yxjd+9JPJHI6apzNZpDGvQ
+ BBZzvwxV6L1CojUEpnilmMG1ZOTstktWpNzw3G2Gis0XihDUef0MWVsQYJAl0wfiv/0By+XK
+ mm2zRR+l/dnzxnlbgJ5pO0imC2w0TVxLkAp0eo0LHw619finad2u6UPQAkZ4oj++iIGrJkt5
+ Lkn2XgB+IW8ESflz6nDY3b5KQRF8Z6XLP0+IEdLOOARkOW7yEgorBgEEAZdVAQUBAQdAwmUx
+ xrbSCx2ksDxz7rFFGX1KmTkdRtcgC6F3NfuNYkYDAQgHwsF2BBgBCAAgFiEEU24if9oCL2zd
+ AAQVR4cBcg5dfFgFAmQ5bvICGwwACgkQR4cBcg5dfFju1Q//Xta1ShwL0MLSC1KL1lXGXeRM
+ 8arzfyiB5wJ9tb9U/nZvhhdfilEDLe0jKJY0RJErbdRHsalwQCrtq/1ewQpMpsRxXzAjgfRN
+ jc4tgxRWmI+aVTzSRpywNahzZBT695hMz81cVZJoZzaV0KaMTlSnBkrviPz1nIGHYCHJxF9r
+ cIu0GSIyUjZ/7xslxdvjpLth16H27JCWDzDqIQMtg61063gNyEyWgt1qRSaK14JIH/DoYRfn
+ jfFQSC8bffFjat7BQGFz4ZpRavkMUFuDirn5Tf28oc5ebe2cIHp4/kajTx/7JOxWZ80U70mA
+ cBgEeYSrYYnX+UJsSxpzLc/0sT1eRJDEhI4XIQM4ClIzpsCIN5HnVF76UQXh3a9zpwh3dk8i
+ bhN/URmCOTH+LHNJYN/MxY8wuukq877DWB7k86pBs5IDLAXmW8v3gIDWyIcgYqb2v8QO2Mqx
+ YMqL7UZxVLul4/JbllsQB8F/fNI8AfttmAQL9cwo6C8yDTXKdho920W4WUR9k8NT/OBqWSyk
+ bGqMHex48FVZhexNPYOd58EY9/7mL5u0sJmo+jTeb4JBgIbFPJCFyng4HwbniWgQJZ1WqaUC
+ nas9J77uICis2WH7N8Bs9jy0wQYezNzqS+FxoNXmDQg2jetX8en4bO2Di7Pmx0jXA4TOb9TM
+ izWDgYvmBE8=
+In-Reply-To: <20230830180600.1865-7-quic_amelende@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The driver support two functions: PWM and Tachometer. The PWM feature can
-handle up to 16 output ports, while the Tachometer can monitor to up to 16
-input ports as well. This driver implements them by exposing two kernel
-subsystems: PWM and HWMON. The PWM subsystem can be utilized alongside
-existing drivers for controlling elements such as fans (pwm-fan.c),
-beepers (pwm-beeper.c) and so on. Through the HWMON subsystem, the driver
-provides sysfs interfaces for fan.
+On 30.08.2023 20:05, Anjelique Melendez wrote:
+> In some PMICs like pmi632, the pattern look up table (LUT) and LPG
+> configuration can be stored in a single SDAM module instead of LUT
+> peripheral. This feature is called PPG. PPG uses Qualcomm Programmable
+> Boot Sequencer (PBS) inorder to trigger pattern sequences for PMICs.
+I still fail to understand what benefit this brings.
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- Documentation/hwmon/aspeed-g6-pwm-tach.rst |  26 +
- Documentation/hwmon/index.rst              |   1 +
- drivers/hwmon/Kconfig                      |  11 +
- drivers/hwmon/Makefile                     |   1 +
- drivers/hwmon/aspeed-g6-pwm-tach.c         | 528 +++++++++++++++++++++
- 5 files changed, 567 insertions(+)
- create mode 100644 Documentation/hwmon/aspeed-g6-pwm-tach.rst
- create mode 100644 drivers/hwmon/aspeed-g6-pwm-tach.c
+Is this a "can be used", or "should be used", or maybe "must be used"?
 
-diff --git a/Documentation/hwmon/aspeed-g6-pwm-tach.rst b/Documentation/hwmon/aspeed-g6-pwm-tach.rst
-new file mode 100644
-index 000000000000..17398fe397fe
---- /dev/null
-+++ b/Documentation/hwmon/aspeed-g6-pwm-tach.rst
-@@ -0,0 +1,26 @@
-+.. SPDX-License-Identifier: GPL-2.0-or-later
-+
-+Kernel driver aspeed-g6-pwm-tach
-+=================================
-+
-+Supported chips:
-+	ASPEED AST2600
-+
-+Authors:
-+	<billy_tsai@aspeedtech.com>
-+
-+Description:
-+------------
-+This driver implements support for ASPEED AST2600 Fan Tacho controller.
-+The controller supports up to 16 tachometer inputs.
-+
-+The driver provides the following sensor accesses in sysfs:
-+
-+=============== ======= ======================================================
-+fanX_input	ro	provide current fan rotation value in RPM as reported
-+			by the fan to the device.
-+fanX_div	rw	Fan divisor: Supported value are power of 4 (1, 4, 16
-+                        64, ... 4194304)
-+                        The larger divisor, the less rpm accuracy and the less
-+                        affected by fan signal glitch.
-+=============== ======= ======================================================
-diff --git a/Documentation/hwmon/index.rst b/Documentation/hwmon/index.rst
-index 5c1052d8c57c..614a18477e9f 100644
---- a/Documentation/hwmon/index.rst
-+++ b/Documentation/hwmon/index.rst
-@@ -43,6 +43,7 @@ Hardware Monitoring Kernel Drivers
-    aquacomputer_d5next
-    asb100
-    asc7621
-+   aspeed-g6-pwm-tach
-    aspeed-pwm-tacho
-    asus_ec_sensors
-    asus_wmi_sensors
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 283e0adafbc1..1f82df1979db 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -411,6 +411,17 @@ config SENSORS_ASPEED
- 	  This driver can also be built as a module. If so, the module
- 	  will be called aspeed_pwm_tacho.
- 
-+config SENSORS_ASPEED_G6
-+	tristate "ASPEED g6 PWM and Fan tach driver"
-+	depends on ARCH_ASPEED || COMPILE_TEST
-+	depends on PWM
-+	help
-+	  This driver provides support for ASPEED G6 PWM and Fan Tach
-+	  controllers.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called aspeed_pwm_tacho.
-+
- config SENSORS_ATXP1
- 	tristate "Attansic ATXP1 VID controller"
- 	depends on I2C
-diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
-index abefc16c1e1e..1fbb66c37a7c 100644
---- a/drivers/hwmon/Makefile
-+++ b/drivers/hwmon/Makefile
-@@ -54,6 +54,7 @@ obj-$(CONFIG_SENSORS_ARM_SCPI)	+= scpi-hwmon.o
- obj-$(CONFIG_SENSORS_AS370)	+= as370-hwmon.o
- obj-$(CONFIG_SENSORS_ASC7621)	+= asc7621.o
- obj-$(CONFIG_SENSORS_ASPEED)	+= aspeed-pwm-tacho.o
-+obj-$(CONFIG_SENSORS_ASPEED_G6) += aspeed-g6-pwm-tach.o
- obj-$(CONFIG_SENSORS_ATXP1)	+= atxp1.o
- obj-$(CONFIG_SENSORS_AXI_FAN_CONTROL) += axi-fan-control.o
- obj-$(CONFIG_SENSORS_BT1_PVT)	+= bt1-pvt.o
-diff --git a/drivers/hwmon/aspeed-g6-pwm-tach.c b/drivers/hwmon/aspeed-g6-pwm-tach.c
-new file mode 100644
-index 000000000000..f7d53e8e009f
---- /dev/null
-+++ b/drivers/hwmon/aspeed-g6-pwm-tach.c
-@@ -0,0 +1,528 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2021 Aspeed Technology Inc.
-+ *
-+ * PWM/TACH controller driver for Aspeed ast2600 SoCs.
-+ * This drivers doesn't support earlier version of the IP.
-+ *
-+ * The hardware operates in time quantities of length
-+ * Q := (DIV_L + 1) << DIV_H / input-clk
-+ * The length of a PWM period is (DUTY_CYCLE_PERIOD + 1) * Q.
-+ * The maximal value for DUTY_CYCLE_PERIOD is used here to provide
-+ * a fine grained selection for the duty cycle.
-+ *
-+ * This driver uses DUTY_CYCLE_RISING_POINT = 0, so from the start of a
-+ * period the output is active until DUTY_CYCLE_FALLING_POINT * Q. Note
-+ * that if DUTY_CYCLE_RISING_POINT = DUTY_CYCLE_FALLING_POINT the output is
-+ * always active.
-+ *
-+ * Register usage:
-+ * PIN_ENABLE: When it is unset the pwm controller will emit inactive level to the external.
-+ * Use to determine whether the PWM channel is enabled or disabled
-+ * CLK_ENABLE: When it is unset the pwm controller will assert the duty counter reset and
-+ * emit inactive level to the PIN_ENABLE mux after that the driver can still change the pwm period
-+ * and duty and the value will apply when CLK_ENABLE be set again.
-+ * Use to determine whether duty_cycle bigger than 0.
-+ * PWM_ASPEED_CTRL_INVERSE: When it is toggled the output value will inverse immediately.
-+ * PWM_ASPEED_DUTY_CYCLE_FALLING_POINT/PWM_ASPEED_DUTY_CYCLE_RISING_POINT: When these two
-+ * values are equal it means the duty cycle = 100%.
-+ *
-+ * The glitch may generate at:
-+ * - Enabled changing when the duty_cycle bigger than 0% and less than 100%.
-+ * - Polarity changing when the duty_cycle bigger than 0% and less than 100%.
-+ *
-+ * Limitations:
-+ * - When changing both duty cycle and period, we cannot prevent in
-+ *   software that the output might produce a period with mixed
-+ *   settings.
-+ * - Disabling the PWM doesn't complete the current period.
-+ *
-+ * Improvements:
-+ * - When only changing one of duty cycle or period, our pwm controller will not
-+ *   generate the glitch, the configure will change at next cycle of pwm.
-+ *   This improvement can disable/enable through PWM_ASPEED_CTRL_DUTY_SYNC_DISABLE.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/errno.h>
-+#include <linux/hwmon.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/math64.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <linux/reset.h>
-+#include <linux/sysfs.h>
-+
-+/* The channel number of Aspeed pwm controller */
-+#define PWM_ASPEED_NR_PWMS			16
-+/* PWM Control Register */
-+#define PWM_ASPEED_CTRL(ch)			((ch) * 0x10 + 0x00)
-+#define PWM_ASPEED_CTRL_LOAD_SEL_RISING_AS_WDT	BIT(19)
-+#define PWM_ASPEED_CTRL_DUTY_LOAD_AS_WDT_ENABLE	BIT(18)
-+#define PWM_ASPEED_CTRL_DUTY_SYNC_DISABLE	BIT(17)
-+#define PWM_ASPEED_CTRL_CLK_ENABLE		BIT(16)
-+#define PWM_ASPEED_CTRL_LEVEL_OUTPUT		BIT(15)
-+#define PWM_ASPEED_CTRL_INVERSE			BIT(14)
-+#define PWM_ASPEED_CTRL_OPEN_DRAIN_ENABLE	BIT(13)
-+#define PWM_ASPEED_CTRL_PIN_ENABLE		BIT(12)
-+#define PWM_ASPEED_CTRL_CLK_DIV_H		GENMASK(11, 8)
-+#define PWM_ASPEED_CTRL_CLK_DIV_L		GENMASK(7, 0)
-+
-+/* PWM Duty Cycle Register */
-+#define PWM_ASPEED_DUTY_CYCLE(ch)		((ch) * 0x10 + 0x04)
-+#define PWM_ASPEED_DUTY_CYCLE_PERIOD		GENMASK(31, 24)
-+#define PWM_ASPEED_DUTY_CYCLE_POINT_AS_WDT	GENMASK(23, 16)
-+#define PWM_ASPEED_DUTY_CYCLE_FALLING_POINT	GENMASK(15, 8)
-+#define PWM_ASPEED_DUTY_CYCLE_RISING_POINT	GENMASK(7, 0)
-+
-+/* PWM fixed value */
-+#define PWM_ASPEED_FIXED_PERIOD			FIELD_MAX(PWM_ASPEED_DUTY_CYCLE_PERIOD)
-+
-+/* The channel number of Aspeed tach controller */
-+#define TACH_ASPEED_NR_TACHS		16
-+/* TACH Control Register */
-+#define TACH_ASPEED_CTRL(ch)		(((ch) * 0x10) + 0x08)
-+#define TACH_ASPEED_IER			BIT(31)
-+#define TACH_ASPEED_INVERS_LIMIT	BIT(30)
-+#define TACH_ASPEED_LOOPBACK		BIT(29)
-+#define TACH_ASPEED_ENABLE		BIT(28)
-+#define TACH_ASPEED_DEBOUNCE_MASK	GENMASK(27, 26)
-+#define TACH_ASPEED_DEBOUNCE_BIT	26
-+#define TACH_ASPEED_IO_EDGE_MASK	GENMASK(25, 24)
-+#define TACH_ASPEED_IO_EDGE_BIT		24
-+#define TACH_ASPEED_CLK_DIV_T_MASK	GENMASK(23, 20)
-+#define TACH_ASPEED_CLK_DIV_BIT		20
-+#define TACH_ASPEED_THRESHOLD_MASK	GENMASK(19, 0)
-+/* [27:26] */
-+#define DEBOUNCE_3_CLK			0x00
-+#define DEBOUNCE_2_CLK			0x01
-+#define DEBOUNCE_1_CLK			0x02
-+#define DEBOUNCE_0_CLK			0x03
-+/* [25:24] */
-+#define F2F_EDGES			0x00
-+#define R2R_EDGES			0x01
-+#define BOTH_EDGES			0x02
-+/* [23:20] */
-+/* divisor = 4 to the nth power, n = register value */
-+#define DEFAULT_TACH_DIV		1024
-+#define DIV_TO_REG(divisor)		(ilog2(divisor) >> 1)
-+
-+/* TACH Status Register */
-+#define TACH_ASPEED_STS(ch)		(((ch) * 0x10) + 0x0C)
-+
-+/*PWM_TACH_STS */
-+#define TACH_ASPEED_ISR			BIT(31)
-+#define TACH_ASPEED_PWM_OUT		BIT(25)
-+#define TACH_ASPEED_PWM_OEN		BIT(24)
-+#define TACH_ASPEED_DEB_INPUT		BIT(23)
-+#define TACH_ASPEED_RAW_INPUT		BIT(22)
-+#define TACH_ASPEED_VALUE_UPDATE	BIT(21)
-+#define TACH_ASPEED_FULL_MEASUREMENT	BIT(20)
-+#define TACH_ASPEED_VALUE_MASK		GENMASK(19, 0)
-+/**********************************************************
-+ * Software setting
-+ *********************************************************/
-+#define DEFAULT_FAN_PULSE_PR		2
-+
-+struct aspeed_pwm_tach_data {
-+	struct device *dev;
-+	void __iomem *base;
-+	struct clk *clk;
-+	struct reset_control *reset;
-+	unsigned long clk_rate;
-+	struct pwm_chip chip;
-+	bool tach_present[TACH_ASPEED_NR_TACHS];
-+	u32 tach_divisor;
-+};
-+
-+static inline struct aspeed_pwm_tach_data *
-+aspeed_pwm_chip_to_data(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct aspeed_pwm_tach_data, chip);
-+}
-+
-+static int aspeed_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+				struct pwm_state *state)
-+{
-+	struct aspeed_pwm_tach_data *priv = aspeed_pwm_chip_to_data(chip);
-+	u32 hwpwm = pwm->hwpwm;
-+	bool polarity, pin_en, clk_en;
-+	u32 duty_pt, val;
-+	u64 div_h, div_l, duty_cycle_period, dividend;
-+
-+	val = readl(priv->base + PWM_ASPEED_CTRL(hwpwm));
-+	polarity = FIELD_GET(PWM_ASPEED_CTRL_INVERSE, val);
-+	pin_en = FIELD_GET(PWM_ASPEED_CTRL_PIN_ENABLE, val);
-+	clk_en = FIELD_GET(PWM_ASPEED_CTRL_CLK_ENABLE, val);
-+	div_h = FIELD_GET(PWM_ASPEED_CTRL_CLK_DIV_H, val);
-+	div_l = FIELD_GET(PWM_ASPEED_CTRL_CLK_DIV_L, val);
-+	val = readl(priv->base + PWM_ASPEED_DUTY_CYCLE(hwpwm));
-+	duty_pt = FIELD_GET(PWM_ASPEED_DUTY_CYCLE_FALLING_POINT, val);
-+	duty_cycle_period = FIELD_GET(PWM_ASPEED_DUTY_CYCLE_PERIOD, val);
-+	/*
-+	 * This multiplication doesn't overflow, the upper bound is
-+	 * 1000000000 * 256 * 256 << 15 = 0x1dcd650000000000
-+	 */
-+	dividend = (u64)NSEC_PER_SEC * (div_l + 1) * (duty_cycle_period + 1)
-+		       << div_h;
-+	state->period = DIV_ROUND_UP_ULL(dividend, priv->clk_rate);
-+
-+	if (clk_en && duty_pt) {
-+		dividend = (u64)NSEC_PER_SEC * (div_l + 1) * duty_pt
-+				 << div_h;
-+		state->duty_cycle = DIV_ROUND_UP_ULL(dividend, priv->clk_rate);
-+	} else {
-+		state->duty_cycle = clk_en ? state->period : 0;
-+	}
-+	state->polarity = polarity ? PWM_POLARITY_INVERSED : PWM_POLARITY_NORMAL;
-+	state->enabled = pin_en;
-+	return 0;
-+}
-+
-+static int aspeed_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    const struct pwm_state *state)
-+{
-+	struct aspeed_pwm_tach_data *priv = aspeed_pwm_chip_to_data(chip);
-+	u32 hwpwm = pwm->hwpwm, duty_pt, val;
-+	u64 div_h, div_l, divisor, expect_period;
-+	bool clk_en;
-+
-+	expect_period = div64_u64(ULLONG_MAX, (u64)priv->clk_rate);
-+	expect_period = min(expect_period, state->period);
-+	dev_dbg(chip->dev, "expect period: %lldns, duty_cycle: %lldns",
-+		expect_period, state->duty_cycle);
-+	/*
-+	 * Pick the smallest value for div_h so that div_l can be the biggest
-+	 * which results in a finer resolution near the target period value.
-+	 */
-+	divisor = (u64)NSEC_PER_SEC * (PWM_ASPEED_FIXED_PERIOD + 1) *
-+		  (FIELD_MAX(PWM_ASPEED_CTRL_CLK_DIV_L) + 1);
-+	div_h = order_base_2(DIV64_U64_ROUND_UP(priv->clk_rate * expect_period, divisor));
-+	if (div_h > 0xf)
-+		div_h = 0xf;
-+
-+	divisor = ((u64)NSEC_PER_SEC * (PWM_ASPEED_FIXED_PERIOD + 1)) << div_h;
-+	div_l = div64_u64(priv->clk_rate * expect_period, divisor);
-+
-+	if (div_l == 0)
-+		return -ERANGE;
-+
-+	div_l -= 1;
-+
-+	if (div_l > 255)
-+		div_l = 255;
-+
-+	dev_dbg(chip->dev, "clk source: %ld div_h %lld, div_l : %lld\n",
-+		priv->clk_rate, div_h, div_l);
-+	/* duty_pt = duty_cycle * (PERIOD + 1) / period */
-+	duty_pt = div64_u64(state->duty_cycle * priv->clk_rate,
-+			    (u64)NSEC_PER_SEC * (div_l + 1) << div_h);
-+	dev_dbg(chip->dev, "duty_cycle = %lld, duty_pt = %d\n",
-+		state->duty_cycle, duty_pt);
-+
-+	/*
-+	 * Fixed DUTY_CYCLE_PERIOD to its max value to get a
-+	 * fine-grained resolution for duty_cycle at the expense of a
-+	 * coarser period resolution.
-+	 */
-+	val = readl(priv->base + PWM_ASPEED_DUTY_CYCLE(hwpwm));
-+	val &= ~PWM_ASPEED_DUTY_CYCLE_PERIOD;
-+	val |= FIELD_PREP(PWM_ASPEED_DUTY_CYCLE_PERIOD,
-+			  PWM_ASPEED_FIXED_PERIOD);
-+	writel(val, priv->base + PWM_ASPEED_DUTY_CYCLE(hwpwm));
-+
-+	if (duty_pt == 0) {
-+		/* emit inactive level and assert the duty counter reset */
-+		clk_en = 0;
-+	} else {
-+		clk_en = 1;
-+		if (duty_pt >= (PWM_ASPEED_FIXED_PERIOD + 1))
-+			duty_pt = 0;
-+		val = readl(priv->base + PWM_ASPEED_DUTY_CYCLE(hwpwm));
-+		val &= ~(PWM_ASPEED_DUTY_CYCLE_RISING_POINT |
-+			 PWM_ASPEED_DUTY_CYCLE_FALLING_POINT);
-+		val |= FIELD_PREP(PWM_ASPEED_DUTY_CYCLE_FALLING_POINT, duty_pt);
-+		writel(val, priv->base + PWM_ASPEED_DUTY_CYCLE(hwpwm));
-+	}
-+
-+	val = readl(priv->base + PWM_ASPEED_CTRL(hwpwm));
-+	val &= ~(PWM_ASPEED_CTRL_CLK_DIV_H | PWM_ASPEED_CTRL_CLK_DIV_L |
-+		 PWM_ASPEED_CTRL_PIN_ENABLE | PWM_ASPEED_CTRL_CLK_ENABLE |
-+		 PWM_ASPEED_CTRL_INVERSE);
-+	val |= FIELD_PREP(PWM_ASPEED_CTRL_CLK_DIV_H, div_h) |
-+	       FIELD_PREP(PWM_ASPEED_CTRL_CLK_DIV_L, div_l) |
-+	       FIELD_PREP(PWM_ASPEED_CTRL_PIN_ENABLE, state->enabled) |
-+	       FIELD_PREP(PWM_ASPEED_CTRL_CLK_ENABLE, clk_en) |
-+	       FIELD_PREP(PWM_ASPEED_CTRL_INVERSE, state->polarity);
-+	writel(val, priv->base + PWM_ASPEED_CTRL(hwpwm));
-+
-+	return 0;
-+}
-+
-+static const struct pwm_ops aspeed_pwm_ops = {
-+	.apply = aspeed_pwm_apply,
-+	.get_state = aspeed_pwm_get_state,
-+	.owner = THIS_MODULE,
-+};
-+
-+static void aspeed_tach_ch_enable(struct aspeed_pwm_tach_data *priv, u8 tach_ch,
-+				  bool enable)
-+{
-+	if (enable)
-+		writel(readl(priv->base + TACH_ASPEED_CTRL(tach_ch)) |
-+			       TACH_ASPEED_ENABLE,
-+		       priv->base + TACH_ASPEED_CTRL(tach_ch));
-+	else
-+		writel(readl(priv->base + TACH_ASPEED_CTRL(tach_ch)) &
-+			       ~TACH_ASPEED_ENABLE,
-+		       priv->base + TACH_ASPEED_CTRL(tach_ch));
-+}
-+
-+static int aspeed_tach_val_to_rpm(struct aspeed_pwm_tach_data *priv, u32 tach_val)
-+{
-+	u64 rpm;
-+	u32 tach_div;
-+
-+	tach_div = tach_val * priv->tach_divisor * DEFAULT_FAN_PULSE_PR;
-+
-+	dev_dbg(priv->dev, "clk %ld, tach_val %d , tach_div %d\n",
-+		priv->clk_rate, tach_val, tach_div);
-+
-+	rpm = (u64)priv->clk_rate * 60;
-+	do_div(rpm, tach_div);
-+
-+	return (int)rpm;
-+}
-+
-+static int aspeed_get_fan_tach_ch_rpm(struct aspeed_pwm_tach_data *priv,
-+				      u8 fan_tach_ch)
-+{
-+	u32 val;
-+
-+	val = readl(priv->base + TACH_ASPEED_STS(fan_tach_ch));
-+
-+	if (!(val & TACH_ASPEED_FULL_MEASUREMENT))
-+		return 0;
-+	val = FIELD_GET(TACH_ASPEED_VALUE_MASK, val);
-+	return aspeed_tach_val_to_rpm(priv, val);
-+}
-+
-+static int aspeed_tach_hwmon_read(struct device *dev,
-+				  enum hwmon_sensor_types type, u32 attr,
-+				  int channel, long *val)
-+{
-+	struct aspeed_pwm_tach_data *priv = dev_get_drvdata(dev);
-+	u32 reg_val;
-+
-+	switch (attr) {
-+	case hwmon_fan_input:
-+		*val = aspeed_get_fan_tach_ch_rpm(priv, channel);
-+		break;
-+	case hwmon_fan_div:
-+		reg_val = readl(priv->base + TACH_ASPEED_CTRL(channel));
-+		reg_val = FIELD_GET(TACH_ASPEED_CLK_DIV_T_MASK, reg_val);
-+		*val = BIT(reg_val << 1);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return 0;
-+}
-+
-+static int aspeed_tach_hwmon_write(struct device *dev,
-+				   enum hwmon_sensor_types type, u32 attr,
-+				   int channel, long val)
-+{
-+	struct aspeed_pwm_tach_data *priv = dev_get_drvdata(dev);
-+	u32 reg_val;
-+
-+	switch (attr) {
-+	case hwmon_fan_div:
-+		if (!is_power_of_2(val) || (ilog2(val) % 2) ||
-+		    DIV_TO_REG(val) > 0xb)
-+			return -EINVAL;
-+		priv->tach_divisor = val;
-+		reg_val = readl(priv->base + TACH_ASPEED_CTRL(channel));
-+		reg_val &= ~TACH_ASPEED_CLK_DIV_T_MASK;
-+		reg_val |= FIELD_GET(TACH_ASPEED_CLK_DIV_T_MASK,
-+				     DIV_TO_REG(priv->tach_divisor));
-+		writel(reg_val, priv->base + TACH_ASPEED_CTRL(channel));
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static umode_t aspeed_tach_dev_is_visible(const void *drvdata,
-+					  enum hwmon_sensor_types type,
-+					  u32 attr, int channel)
-+{
-+	const struct aspeed_pwm_tach_data *priv = drvdata;
-+
-+	if (!priv->tach_present[channel])
-+		return 0;
-+	switch (attr) {
-+	case hwmon_fan_input:
-+		return 0444;
-+	case hwmon_fan_div:
-+		return 0644;
-+	}
-+	return 0;
-+}
-+
-+static const struct hwmon_ops aspeed_tach_ops = {
-+	.is_visible = aspeed_tach_dev_is_visible,
-+	.read = aspeed_tach_hwmon_read,
-+	.write = aspeed_tach_hwmon_write,
-+};
-+
-+static const struct hwmon_channel_info *aspeed_tach_info[] = {
-+	HWMON_CHANNEL_INFO(fan, HWMON_F_INPUT | HWMON_F_DIV, HWMON_F_INPUT | HWMON_F_DIV,
-+			   HWMON_F_INPUT | HWMON_F_DIV, HWMON_F_INPUT | HWMON_F_DIV,
-+			   HWMON_F_INPUT | HWMON_F_DIV, HWMON_F_INPUT | HWMON_F_DIV,
-+			   HWMON_F_INPUT | HWMON_F_DIV, HWMON_F_INPUT | HWMON_F_DIV,
-+			   HWMON_F_INPUT | HWMON_F_DIV, HWMON_F_INPUT | HWMON_F_DIV,
-+			   HWMON_F_INPUT | HWMON_F_DIV, HWMON_F_INPUT | HWMON_F_DIV,
-+			   HWMON_F_INPUT | HWMON_F_DIV, HWMON_F_INPUT | HWMON_F_DIV,
-+			   HWMON_F_INPUT | HWMON_F_DIV, HWMON_F_INPUT | HWMON_F_DIV),
-+	NULL
-+};
-+
-+static const struct hwmon_chip_info aspeed_tach_chip_info = {
-+	.ops = &aspeed_tach_ops,
-+	.info = aspeed_tach_info,
-+};
-+
-+static void aspeed_present_fan_tach(struct aspeed_pwm_tach_data *priv, u32 tach_ch)
-+{
-+	u32 val;
-+
-+	priv->tach_present[tach_ch] = true;
-+	priv->tach_divisor = DEFAULT_TACH_DIV;
-+
-+	val = readl(priv->base + TACH_ASPEED_CTRL(tach_ch));
-+	val &= ~(TACH_ASPEED_INVERS_LIMIT | TACH_ASPEED_DEBOUNCE_MASK |
-+		 TACH_ASPEED_IO_EDGE_MASK | TACH_ASPEED_CLK_DIV_T_MASK |
-+		 TACH_ASPEED_THRESHOLD_MASK);
-+	val |= (DEBOUNCE_3_CLK << TACH_ASPEED_DEBOUNCE_BIT) | F2F_EDGES |
-+	       FIELD_GET(TACH_ASPEED_CLK_DIV_T_MASK,
-+			 DIV_TO_REG(priv->tach_divisor));
-+	writel(val, priv->base + TACH_ASPEED_CTRL(tach_ch));
-+
-+	aspeed_tach_ch_enable(priv, tach_ch, true);
-+}
-+
-+static int aspeed_tach_create_fan(struct device *dev, struct device_node *child,
-+				  struct aspeed_pwm_tach_data *priv)
-+{
-+	int ret;
-+	u32 tach_ch;
-+
-+	ret = of_property_read_u32(child, "tach-ch", &tach_ch);
-+	if (ret)
-+		return ret;
-+
-+	aspeed_present_fan_tach(priv, tach_ch);
-+
-+	return 0;
-+}
-+
-+static int aspeed_pwm_tach_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev, *hwmon;
-+	int ret;
-+	struct device_node *child;
-+	struct aspeed_pwm_tach_data *priv;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+	priv->dev = dev;
-+	priv->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(priv->base))
-+		return PTR_ERR(priv->base);
-+
-+	priv->clk = devm_clk_get_enabled(dev, NULL);
-+	if (IS_ERR(priv->clk))
-+		return dev_err_probe(dev, PTR_ERR(priv->clk),
-+				     "Couldn't get clock\n");
-+	priv->clk_rate = clk_get_rate(priv->clk);
-+	priv->reset = devm_reset_control_get_exclusive(dev, NULL);
-+	if (IS_ERR(priv->reset))
-+		return dev_err_probe(dev, PTR_ERR(priv->reset),
-+				     "Couldn't get reset control\n");
-+
-+	ret = reset_control_deassert(priv->reset);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Couldn't deassert reset control\n");
-+
-+	priv->chip.dev = dev;
-+	priv->chip.ops = &aspeed_pwm_ops;
-+	priv->chip.npwm = PWM_ASPEED_NR_PWMS;
-+
-+	ret = devm_pwmchip_add(dev, &priv->chip);
-+	if (ret < 0) {
-+		reset_control_assert(priv->reset);
-+		return dev_err_probe(dev, ret, "Failed to add PWM chip\n");
-+	}
-+
-+	for_each_child_of_node(dev->of_node, child) {
-+		ret = aspeed_tach_create_fan(dev, child, priv);
-+		if (ret < 0) {
-+			of_node_put(child);
-+			dev_warn(dev, "Failed to create fan %d", ret);
-+			return 0;
-+		}
-+	}
-+
-+	hwmon = devm_hwmon_device_register_with_info(dev, "aspeed_tach", priv,
-+						     &aspeed_tach_chip_info, NULL);
-+	ret = PTR_ERR_OR_ZERO(hwmon);
-+	if (ret) {
-+		reset_control_assert(priv->reset);
-+		return dev_err_probe(dev, ret,
-+				     "Failed to register hwmon device\n");
-+	}
-+
-+	return 0;
-+}
-+
-+static int aspeed_pwm_tach_remove(struct platform_device *pdev)
-+{
-+	struct aspeed_pwm_tach_data *priv = platform_get_drvdata(pdev);
-+
-+	reset_control_assert(priv->reset);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id aspeed_pwm_tach_match[] = {
-+	{
-+		.compatible = "aspeed,ast2600-pwm-tach",
-+	},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, aspeed_pwm_tach_match);
-+
-+static struct platform_driver aspeed_pwm_tach_driver = {
-+	.probe = aspeed_pwm_tach_probe,
-+	.remove = aspeed_pwm_tach_remove,
-+	.driver	= {
-+		.name = "aspeed-g6-pwm-tach",
-+		.of_match_table = aspeed_pwm_tach_match,
-+	},
-+};
-+
-+module_platform_driver(aspeed_pwm_tach_driver);
-+
-+MODULE_AUTHOR("Billy Tsai <billy_tsai@aspeedtech.com>");
-+MODULE_DESCRIPTION("Aspeed ast2600 PWM and Fan Tach device driver");
-+MODULE_LICENSE("GPL");
--- 
-2.25.1
+Are there any distinct advantages to using one over the other?
+I see some limitations in the code below, but that's not being made
+obvious.
 
+This all should be in the commit message, the current one includes
+a lot of cryptic names that mean nothing to most people.
+
+[...]
+
+>  
+> +static int lpg_sdam_write(struct lpg *lpg, u16 addr, u8 val)
+Again, looks like excessive helpers for r/w accessors.
+
+> +{
+> +	int rc;
+> +
+> +	rc = nvmem_device_write(lpg->lpg_chan_nvmem, addr, 1, &val);
+> +	if (rc < 0) {
+> +		dev_err(lpg->dev, "writing %u to SDAM addr %#x failed, rc=%d\n",
+> +			val, addr, rc);
+> +		return rc;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +#define PBS_SW_TRIG_BIT		BIT(0)
+> +
+> +static int lpg_clear_pbs_trigger(struct lpg_channel *chan)
+> +{
+> +	int rc;
+> +
+> +	clear_bit(chan->lpg_idx, &chan->lpg->pbs_en_bitmap);
+> +	if (!chan->lpg->pbs_en_bitmap) {
+> +		rc = lpg_sdam_write(chan->lpg, SDAM_REG_PBS_SEQ_EN, 0);
+> +		if (rc < 0)
+> +			return rc;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int lpg_set_pbs_trigger(struct lpg_channel *chan)
+> +{
+> +	int rc;
+> +
+> +	if (!chan->lpg->pbs_en_bitmap) {
+> +		rc = lpg_sdam_write(chan->lpg, SDAM_REG_PBS_SEQ_EN, PBS_SW_TRIG_BIT);
+> +		if (rc < 0)
+> +			return rc;
+> +
+> +		rc = qcom_pbs_trigger_event(chan->lpg->pbs_dev, PBS_SW_TRIG_BIT);
+> +		if (rc < 0)
+> +			return rc;
+> +	}
+> +	set_bit(chan->lpg_idx, &chan->lpg->pbs_en_bitmap);
+> +
+> +	return 0;
+> +}
+> +
+> +static int lpg_sdam_configure_triggers(struct lpg_channel *chan, bool set_trig)
+> +{
+> +	int rc;
+> +
+> +	if (chan->lpg->lut_base)
+> +		return 0;
+> +
+> +	if (set_trig) {
+> +		rc = lpg_sdam_write(chan->lpg, SDAM_LUT_EN_OFFSET + chan->sdam_offset, 1);
+> +		if (rc < 0)
+> +			return rc;
+> +
+> +		rc = lpg_set_pbs_trigger(chan);
+> +		if (rc < 0)
+> +			return rc;
+> +		chan->pattern_set = false;
+> +	} else {
+> +		rc = lpg_sdam_write(chan->lpg, SDAM_LUT_EN_OFFSET + chan->sdam_offset, 0);
+> +		if (rc < 0)
+> +			return rc;
+> +
+> +		rc = lpg_clear_pbs_trigger(chan);
+> +		if (rc < 0)
+> +			return rc;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int triled_set(struct lpg *lpg, unsigned int mask, unsigned int enable)
+>  {
+>  	/* Skip if we don't have a triled block */
+> @@ -217,6 +333,41 @@ static int triled_set(struct lpg *lpg, unsigned int mask, unsigned int enable)
+>  				  mask, enable);
+>  }
+>  
+> +static int lpg_lut_store_sdam(struct lpg *lpg, struct led_pattern *pattern,
+> +			 size_t len, unsigned int *lo_idx, unsigned int *hi_idx)
+> +{
+> +	u8 brightness;
+> +	u16 addr;
+> +	unsigned int idx;
+> +	int i, rc;
+Reverse-Christmas-tree?
+
+> +
+> +	if (len > SDAM_LUT_COUNT_MAX) {
+> +		dev_err(lpg->dev, "Pattern length (%zu) exceeds maximum pattern length (%d)\n",
+> +			len, SDAM_LUT_COUNT_MAX);
+> +		return -EINVAL;
+> +	}
+> +
+> +	idx = bitmap_find_next_zero_area(lpg->lut_bitmap, lpg->lut_size,
+> +					 0, len, 0);
+> +	if (idx >= lpg->lut_size)
+> +		return -ENOSPC;
+> +
+> +	for (i = 0; i < len; i++) {
+> +		brightness = pattern[i].brightness;
+> +		addr = lpg->lut_sdam_base + i + idx;
+> +		rc = lpg_sdam_write(lpg, addr, brightness);
+> +		if (rc < 0)
+> +			return rc;
+> +	}
+> +
+> +	bitmap_set(lpg->lut_bitmap, idx, len);
+> +
+> +	*lo_idx = idx;
+> +	*hi_idx = idx + len - 1;
+> +
+> +	return 0;
+> +}
+> +
+>  static int lpg_lut_store(struct lpg *lpg, struct led_pattern *pattern,
+>  			 size_t len, unsigned int *lo_idx, unsigned int *hi_idx)
+>  {
+> @@ -463,6 +614,26 @@ static void lpg_apply_pwm_value(struct lpg_channel *chan)
+>  #define LPG_PATTERN_CONFIG_PAUSE_HI	BIT(1)
+>  #define LPG_PATTERN_CONFIG_PAUSE_LO	BIT(0)
+>  
+> +static void lpg_sdam_apply_lut_control(struct lpg_channel *chan)
+> +{
+> +	u8 val, conf = 0;
+> +	struct lpg *lpg = chan->lpg;
+Reverse-Christmas-tree?
+
+> +
+> +	if (!chan->ramp_oneshot)
+> +		conf |= LPG_PATTERN_CONFIG_REPEAT;
+> +
+> +	lpg_sdam_write(lpg, SDAM_PBS_SCRATCH_LUT_COUNTER_OFFSET + chan->sdam_offset, 0);
+> +	lpg_sdam_write(lpg, SDAM_PATTERN_CONFIG_OFFSET + chan->sdam_offset, conf);
+> +
+> +	lpg_sdam_write(lpg, SDAM_END_INDEX_OFFSET + chan->sdam_offset, chan->pattern_hi_idx);
+> +	lpg_sdam_write(lpg, SDAM_START_INDEX_OFFSET + chan->sdam_offset, chan->pattern_lo_idx);
+> +
+> +	val = RAMP_STEP_DURATION(chan->ramp_tick_ms);
+> +	if (val > 0)
+> +		val--;
+????
+
+that sounds very cryptic.. almost like some sort of a bad fixup
+maybe the RAMP_STEP_DURATION should contain that "-1"?
+
+not only that, but val is an unsigned value, so it's always > 0
+
+[...]
+
+> @@ -775,7 +952,7 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
+>  	unsigned int lo_idx;
+>  	unsigned int hi_idx;
+>  	unsigned int i;
+> -	bool ping_pong = true;
+> +	bool ping_pong = false;
+Why?
+
+This change combined with assigning true below for LUT mode
+is a NOP
+
+>  	int ret = -EINVAL;
+>  
+>  	/* Hardware only support oneshot or indefinite loops */
+> @@ -824,7 +1001,7 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
+>  	 * used to stretch the first delay of the pattern and a "high pause"
+>  	 * the last one.
+>  	 *
+> -	 * In order to save space the pattern can be played in "ping pong"
+> +	 * In order to save space for the pattern can be played in "ping pong"
+>  	 * mode, in which the pattern is first played forward, then "high
+>  	 * pause" is applied, then the pattern is played backwards and finally
+>  	 * the "low pause" is applied.
+> @@ -837,16 +1014,22 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
+>  	 * If the specified pattern is a palindrome the ping pong mode is
+>  	 * enabled. In this scenario the delta_t of the middle entry (i.e. the
+>  	 * last in the programmed pattern) determines the "high pause".
+> +	 *
+> +	 * NVMEM devices supporting LUT do not support "low pause", "high pause"
+> +	 * or "ping pong"
+>  	 */
+>  
+>  	/* Detect palindromes and use "ping pong" to reduce LUT usage */
+> -	for (i = 0; i < len / 2; i++) {
+> -		brightness_a = pattern[i].brightness;
+> -		brightness_b = pattern[len - i - 1].brightness;
+> -
+> -		if (brightness_a != brightness_b) {
+> -			ping_pong = false;
+> -			break;
+> +	if (lpg->lut_base) {
+> +		ping_pong = true;
+> +		for (i = 0; i < len / 2; i++) {
+> +			brightness_a = pattern[i].brightness;
+> +			brightness_b = pattern[len - i - 1].brightness;
+> +
+> +			if (brightness_a != brightness_b) {
+> +				ping_pong = false;
+> +				break;
+> +			}
+>  		}
+>  	}
+>  
+> @@ -860,14 +1043,21 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
+>  	 * Validate that all delta_t in the pattern are the same, with the
+>  	 * exception of the middle element in case of ping_pong.
+>  	 */
+> -	delta_t = pattern[1].delta_t;
+> -	for (i = 2; i < len; i++) {
+> +	if (lpg->lpg_chan_nvmem) {
+> +		i = 1;
+> +		delta_t = pattern[0].delta_t;
+> +	} else {
+> +		i = 2;
+> +		delta_t = pattern[1].delta_t;
+> +	}
+Why?
+
+What's the rationale behind this change?
+
+> +
+> +	for (; i < len; i++) {
+>  		if (pattern[i].delta_t != delta_t) {
+>  			/*
+>  			 * Allow last entry in the full or shortened pattern to
+>  			 * specify hi pause. Reject other variations.
+>  			 */
+> -			if (i != actual_len - 1)
+> +			if (i != actual_len - 1 || lpg->lpg_chan_nvmem)
+>  				goto out_free_pattern;
+>  		}
+>  	}
+> @@ -876,12 +1066,19 @@ static int lpg_pattern_set(struct lpg_led *led, struct led_pattern *led_pattern,
+>  	if (delta_t >= BIT(9))
+>  		goto out_free_pattern;
+>  
+> -	/* Find "low pause" and "high pause" in the pattern */
+> -	lo_pause = pattern[0].delta_t;
+> -	hi_pause = pattern[actual_len - 1].delta_t;
+> +	/* Find "low pause" and "high pause" in the pattern if not an NVMEM device*/
+missing a space before '*/'
+"if not an NVMEM device" -> "in the LUT case"?
+
+Konrad
