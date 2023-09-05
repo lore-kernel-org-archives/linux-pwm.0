@@ -2,63 +2,168 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C9ECA0FFD
-	for <linux-pwm@archiver.kernel.org>; Tue,  5 Sep 2023 16:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C445CA0FE2
+	for <linux-pwm@archiver.kernel.org>; Tue,  5 Sep 2023 17:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239393AbjIEQei (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 5 Sep 2023 12:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50800 "EHLO
+        id S240513AbjIERjr (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 5 Sep 2023 13:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354070AbjIEJeX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 5 Sep 2023 05:34:23 -0400
-X-Greylist: delayed 4352 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Sep 2023 02:34:20 PDT
-Received: from mail.equinoxrise.pl (mail.equinoxrise.pl [217.61.112.157])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A171A7
-        for <linux-pwm@vger.kernel.org>; Tue,  5 Sep 2023 02:34:20 -0700 (PDT)
-Received: by mail.equinoxrise.pl (Postfix, from userid 1002)
-        id 031C88377D; Mon,  4 Sep 2023 09:41:19 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=equinoxrise.pl;
-        s=mail; t=1693813364;
-        bh=v6OgBfK5dN7P5dQ0wCu59rOfZaiqziJeLNblJ8dOcGI=;
-        h=Date:From:To:Subject:From;
-        b=CeMh1ECJZg+V9NdFsoCdYYIJsoYQ3wx05S5KK3viprLFRn1QKSpDmk8w/I5fmu6Me
-         PGdNo2ESNktSqXHnJQhZvsQQG5pbbMWpx9tuVZHoXKF36IQrUP2b6afjHGU3AQT7Dc
-         WnTmd+sE8JSS3bDUINvHP/CZBorJ+2l0EnUcZV2kc3g9MfbK2q/4buktSI4J+3jX/n
-         QvJMwtLVQuf65LDRLGf8e/pEAcS5S352rax5ydTAmTCCOnpwZqGH7LWCn6q14phEv0
-         hfQDoltfW6O4lV1mxck72/e4LiM0DjG6ygOdGMAd/yYbXHx27xcNxBAARmZ2UuhHve
-         HaFFACW0mNSKQ==
-Received: by mail.equinoxrise.pl for <linux-pwm@vger.kernel.org>; Mon,  4 Sep 2023 07:40:34 GMT
-Message-ID: <20230904084500-0.1.7.r57.0.lve7hkrsl6@equinoxrise.pl>
-Date:   Mon,  4 Sep 2023 07:40:34 GMT
-From:   "Mateusz Talaga" <mateusz.talaga@equinoxrise.pl>
-To:     <linux-pwm@vger.kernel.org>
-Subject: Prezentacja
-X-Mailer: mail.equinoxrise.pl
+        with ESMTP id S239978AbjIERjf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 5 Sep 2023 13:39:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC55395DE;
+        Tue,  5 Sep 2023 10:15:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14762B815B4;
+        Tue,  5 Sep 2023 17:07:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F2FC433C7;
+        Tue,  5 Sep 2023 17:07:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1693933658;
+        bh=wvydTW5tlFfjmX77STi/JFlf00/5kzHytlOiPmKMEV0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uXlbNU97DMqwAC9ZNu5M7ajd6mDymvsmtCU7vrn1VzmDTcTpbt0vvMp1v641v2IQZ
+         SgVsL37pQLJ/Gp4U5eQffjkCedFKhKlriLxtQAh7m7RFlWBXj13W1YVwXqPfOmfJZF
+         vx1JCiQ4Ylx48/d2kHSiqhU93FzLfhAIaKFUhqGmoddtVvktDjJGF3LkiQJlVL++Q0
+         1zVL4u23WIIDcAaP3kxgwZwe32m2/F5Uh6SiFLBZWOUUp8D3ZxzkN+s25HRuMfDEpX
+         VwMPqEwD8llmszk0BL/HJOAZevfkwn64EsM4CTipbwOMQo+5pLTtFrkQYZhoHcNMIG
+         IRFBOOwr4tiIA==
+Received: (nullmailer pid 3568796 invoked by uid 1000);
+        Tue, 05 Sep 2023 17:07:35 -0000
+Date:   Tue, 5 Sep 2023 12:07:35 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Billy Tsai <billy_tsai@aspeedtech.com>
+Cc:     jdelvare@suse.com, linux@roeck-us.net,
+        krzysztof.kozlowski+dt@linaro.org, joel@jms.id.au, andrew@aj.id.au,
+        corbet@lwn.net, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, p.zabel@pengutronix.de,
+        naresh.solanki@9elements.com, linux-hwmon@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
+        BMC-SW@aspeedtech.com, patrick@stwcx.xyz
+Subject: Re: [PATCH v8 2/3] dt-bindings: hwmon: Support Aspeed g6 PWM TACH
+ Control
+Message-ID: <20230905170735.GA3528724-robh@kernel.org>
+References: <20230830123202.3408318-1-billy_tsai@aspeedtech.com>
+ <20230830123202.3408318-3-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230830123202.3408318-3-billy_tsai@aspeedtech.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Dzie=C5=84 dobry!
+On Wed, Aug 30, 2023 at 08:32:01PM +0800, Billy Tsai wrote:
+> Document the compatible for aspeed,ast2600-pwm-tach device, which can
+> support up to 16 PWM outputs and 16 fan tach input.
+> 
+> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+> ---
+>  .../bindings/hwmon/aspeed,g6-pwm-tach.yaml    | 67 +++++++++++++++++++
+>  1 file changed, 67 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+> new file mode 100644
+> index 000000000000..95bac5588c04
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+> @@ -0,0 +1,67 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2021 Aspeed, Inc.
 
-Czy m=C3=B3g=C5=82bym przedstawi=C4=87 rozwi=C4=85zanie, kt=C3=B3re umo=C5=
-=BCliwia monitoring ka=C5=BCdego auta w czasie rzeczywistym w tym jego po=
-zycj=C4=99, zu=C5=BCycie paliwa i przebieg?
+A few years out of date.
 
-Dodatkowo nasze narz=C4=99dzie minimalizuje koszty utrzymania samochod=C3=
-=B3w, skraca czas przejazd=C3=B3w, a tak=C5=BCe tworzenie planu tras czy =
-dostaw.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/hwmon/aspeed,g6-pwm-tach.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ASPEED G6 PWM and Fan Tach controller device driver
+> +
+> +maintainers:
+> +  - Billy Tsai <billy_tsai@aspeedtech.com>
+> +
+> +description: |
+> +  The ASPEED PWM controller can support up to 16 PWM outputs.
+> +  The ASPEED Fan Tacho controller can support up to 16 fan tach input.
 
-Z naszej wiedzy i do=C5=9Bwiadczenia korzysta ju=C5=BC ponad 49 tys. Klie=
-nt=C3=B3w. Monitorujemy 809 000 pojazd=C3=B3w na ca=C5=82ym =C5=9Bwiecie,=
- co jest nasz=C4=85 najlepsz=C4=85 wizyt=C3=B3wk=C4=85.
+Are PWM and tach channels independent? Would be useful to know here.
 
-Bardzo prosz=C4=99 o e-maila zwrotnego, je=C5=9Bli mogliby=C5=9Bmy wsp=C3=
-=B3lnie om=C3=B3wi=C4=87 potencja=C5=82 wykorzystania takiego rozwi=C4=85=
-zania w Pa=C5=84stwa firmie.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - aspeed,ast2600-pwm-tach
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  resets:
+> +    maxItems: 1
+> +
+> +  "#pwm-cells":
+> +    const: 3
+> +
+> +patternProperties:
+> +  "^fan[0-9a-f]_hwmon+$":
 
+Drop 'hwmon'. Standard practice for naming without 'reg' is 
+'^fan-[0-9]+$'.
 
-Pozdrawiam
-Mateusz Talaga
+> +    $ref: fan-common.yaml#
+
+       unevaluatedProperties: false
+
+> +    required:
+> +      - tach-ch
+> +
+> +required:
+> +  - reg
+> +  - clocks
+> +  - resets
+> +  - "#pwm-cells"
+> +  - compatible
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/aspeed-clock.h>
+> +    pwm_tach: pwm-tach-controller@1e610000 {
+> +      compatible = "aspeed,ast2600-pwm-tach";
+> +      reg = <0x1e610000 0x100>;
+> +      clocks = <&syscon ASPEED_CLK_AHB>;
+> +      resets = <&syscon ASPEED_RESET_PWM>;
+> +      #pwm-cells = <3>;
+
+Blank line.
+
+> +      fan0_hwmon {
+> +        tach-ch = <0x0>;
+
+Don't you need 'pwms'?
+
+> +      };
+
+Blank line.
+
+> +      fan1_hwmon {
+> +        tach-ch = <0x1>;
+> +      };
+> +      fan2_hwmon {
+> +        tach-ch = <0x2>;
+> +      };
+> +    };
+> -- 
+> 2.25.1
+> 
