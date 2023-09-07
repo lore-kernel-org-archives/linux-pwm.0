@@ -2,24 +2,24 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5745EEC873E
-	for <linux-pwm@archiver.kernel.org>; Thu,  7 Sep 2023 16:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D12F7EC8742
+	for <linux-pwm@archiver.kernel.org>; Thu,  7 Sep 2023 18:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237437AbjIGQrE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 7 Sep 2023 12:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
+        id S234975AbjIGSgN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 7 Sep 2023 14:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234303AbjIGQqi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Sep 2023 12:46:38 -0400
-Received: from imap5.colo.codethink.co.uk (imap5.colo.codethink.co.uk [78.40.148.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418401FD5;
-        Thu,  7 Sep 2023 09:46:10 -0700 (PDT)
+        with ESMTP id S231626AbjIGSgM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Sep 2023 14:36:12 -0400
+Received: from imap4.hz.codethink.co.uk (imap4.hz.codethink.co.uk [188.40.203.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88AA1C4;
+        Thu,  7 Sep 2023 11:36:02 -0700 (PDT)
 Received: from [134.238.52.102] (helo=rainbowdash)
-        by imap5.colo.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
-        id 1qeHce-0052RD-DX; Thu, 07 Sep 2023 17:12:48 +0100
+        by imap4.hz.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
+        id 1qeHcf-004U1P-DW; Thu, 07 Sep 2023 17:12:49 +0100
 Received: from ben by rainbowdash with local (Exim 4.96)
         (envelope-from <ben@rainbowdash>)
-        id 1qeHcd-000HUl-2N;
+        id 1qeHcd-000HUz-2h;
         Thu, 07 Sep 2023 17:12:47 +0100
 From:   Ben Dooks <ben.dooks@codethink.co.uk>
 To:     linux-pwm@vger.kernel.org
@@ -31,94 +31,88 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         jarkko.nikula@linux.intel.com,
         William Salmon <william.salmon@sifive.com>,
         Jude Onyenegecha <jude.onyenegecha@sifive.com>
-Subject: [PATCH v9 0/6] designware pwm driver updates
-Date:   Thu,  7 Sep 2023 17:12:36 +0100
-Message-Id: <20230907161242.67190-1-ben.dooks@codethink.co.uk>
+Subject: [PATCH v9 3/6] pwm: dwc: add PWM bit unset in get_state call
+Date:   Thu,  7 Sep 2023 17:12:39 +0100
+Message-Id: <20230907161242.67190-4-ben.dooks@codethink.co.uk>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230907161242.67190-1-ben.dooks@codethink.co.uk>
+References: <20230907161242.67190-1-ben.dooks@codethink.co.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This series is an update for the DesignWare PWM driver to add support for
-OF (and split the PCI bits out if aynone else wants them). This is mostly
-the same as the v8 series, but with code moved around and module-namespace
-added, plus review comments processed.
+If we are not in PWM mode, then the output is technically a 50%
+output based on a single timer instead of the high-low based on
+the two counters. Add a check for the PWM mode in dwc_pwm_get_state()
+and if DWC_TIM_CTRL_PWM is not set, then return a 50% cycle.
 
-We no longer have access to the hardware to test any further modifications.
+This may only be an issue on initialisation, as the rest of the
+code currently assumes we're always going to have the extended
+PWM mode using two counters.
 
-I've not added the tested-by tags as there have been alterations to this
-series.
-
-Note, the dt binding seems to have already been applied.
-
-The lengthy changelog:
-
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+---
 v9:
-  - fix multi-line comment issue
-  - changed rounding in calc-rate code
-  - changed email addresses to codethink one
-  - fix spelling mistake(s)
-  - add clk_rate_exclusive_get() to lock clock rate for now
+ - fixed multi-line comment
+ - put authour back to codethink email from sifive
 v8:
- - updated reviewed tags
- - fix module name for pci version
- - fix config symbol bug in makefile
- - remove pci compile-test (mostly not used for pci)
- - push the compile-test into the platform/of driver
-v7:
- - fixup kconfig from previous pcie changes
- - re-order kconfig to make dwc core be selected by PCI driver
- - move clk variable to patch it is used in
-v6:
- - fix removal ordering of DWC_PERIOD_NS
-v5:
- - fixed kconfig string error
- - merged pwm-nr into main of code
- - split of code from pci code
- - updated pwm-nr capping
- - fix duplicate error reporting in of-code
- - fix return in of-probe
- - remove unecessary remove function as devm_ functions sort this
- - fixed ordering of properties
- - added missing reg item
- - fixed missing split of the two clock sources.
- - get bus clock in of code
+ - fixed rename issues
 v4:
- - split pci and of into new modules
- - fixup review comments
- - fix typos in dt-bindings
-v3:
-- change the compatible name
-- squash down pwm count patch
-- fixup patch naming
-v2:
-- fix #pwm-cells count to be 3
-- fix indetation 
-- merge the two clock patches
-- add HAS_IOMEM as a config dependency
+ - fixed review comment on mulit-line calculations
+---
+ drivers/pwm/pwm-dwc-core.c | 30 +++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 11 deletions(-)
 
-Ben Dooks (6):
-  pwm: dwc: split pci out of core driver
-  pwm: dwc: make timer clock configurable
-  pwm: dwc: add PWM bit unset in get_state call
-  pwm: dwc: use clock rate in hz to avoid rounding issues
-  pwm: dwc: round rate divisions up
-  pwm: dwc: add of/platform support
-
- drivers/pwm/Kconfig        |  24 ++++-
- drivers/pwm/Makefile       |   2 +
- drivers/pwm/pwm-dwc-core.c | 197 ++++++++++++++++++++++++++++++++++++
- drivers/pwm/pwm-dwc-of.c   |  93 +++++++++++++++++
- drivers/pwm/pwm-dwc.c      | 198 +------------------------------------
- drivers/pwm/pwm-dwc.h      |  61 ++++++++++++
- 6 files changed, 380 insertions(+), 195 deletions(-)
- create mode 100644 drivers/pwm/pwm-dwc-core.c
- create mode 100644 drivers/pwm/pwm-dwc-of.c
- create mode 100644 drivers/pwm/pwm-dwc.h
-
+diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
+index 4b4b7b9e1d82..3fc281a78c9a 100644
+--- a/drivers/pwm/pwm-dwc-core.c
++++ b/drivers/pwm/pwm-dwc-core.c
+@@ -122,24 +122,32 @@ static int dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ {
+ 	struct dwc_pwm *dwc = to_dwc_pwm(chip);
+ 	u64 duty, period;
++	u32 ctrl, ld, ld2;
+ 
+ 	pm_runtime_get_sync(chip->dev);
+ 
+-	state->enabled = !!(dwc_pwm_readl(dwc,
+-				DWC_TIM_CTRL(pwm->hwpwm)) & DWC_TIM_CTRL_EN);
++	ctrl = dwc_pwm_readl(dwc, DWC_TIM_CTRL(pwm->hwpwm));
++	ld = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(pwm->hwpwm));
++	ld2 = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(pwm->hwpwm));
+ 
+-	duty = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(pwm->hwpwm));
+-	duty += 1;
+-	duty *= dwc->clk_ns;
+-	state->duty_cycle = duty;
++	state->enabled = !!(ctrl & DWC_TIM_CTRL_EN);
+ 
+-	period = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(pwm->hwpwm));
+-	period += 1;
+-	period *= dwc->clk_ns;
+-	period += duty;
+-	state->period = period;
++	/*
++	 * If we're not in PWM, technically the output is a 50-50
++	 * based on the timer load-count only.
++	 */
++	if (ctrl & DWC_TIM_CTRL_PWM) {
++		duty = (ld + 1) * dwc->clk_ns;
++		period = (ld2 + 1)  * dwc->clk_ns;
++		period += duty;
++	} else {
++		duty = (ld + 1) * dwc->clk_ns;
++		period = duty * 2;
++	}
+ 
+ 	state->polarity = PWM_POLARITY_INVERSED;
++	state->period = period;
++	state->duty_cycle = duty;
+ 
+ 	pm_runtime_put_sync(chip->dev);
+ 
 -- 
 2.40.1
 
