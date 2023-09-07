@@ -2,24 +2,24 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960B0EC8744
-	for <linux-pwm@archiver.kernel.org>; Thu,  7 Sep 2023 16:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5745EEC873E
+	for <linux-pwm@archiver.kernel.org>; Thu,  7 Sep 2023 16:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242990AbjIGQqq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 7 Sep 2023 12:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
+        id S237437AbjIGQrE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 7 Sep 2023 12:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242532AbjIGQqZ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Sep 2023 12:46:25 -0400
+        with ESMTP id S234303AbjIGQqi (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Sep 2023 12:46:38 -0400
 Received: from imap5.colo.codethink.co.uk (imap5.colo.codethink.co.uk [78.40.148.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFC3211B;
-        Thu,  7 Sep 2023 09:45:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418401FD5;
+        Thu,  7 Sep 2023 09:46:10 -0700 (PDT)
 Received: from [134.238.52.102] (helo=rainbowdash)
         by imap5.colo.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
-        id 1qeHce-0052RG-DY; Thu, 07 Sep 2023 17:12:48 +0100
+        id 1qeHce-0052RD-DX; Thu, 07 Sep 2023 17:12:48 +0100
 Received: from ben by rainbowdash with local (Exim 4.96)
         (envelope-from <ben@rainbowdash>)
-        id 1qeHcd-000HUv-2c;
+        id 1qeHcd-000HUl-2N;
         Thu, 07 Sep 2023 17:12:47 +0100
 From:   Ben Dooks <ben.dooks@codethink.co.uk>
 To:     linux-pwm@vger.kernel.org
@@ -31,12 +31,10 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         jarkko.nikula@linux.intel.com,
         William Salmon <william.salmon@sifive.com>,
         Jude Onyenegecha <jude.onyenegecha@sifive.com>
-Subject: [PATCH v9 2/6] pwm: dwc: make timer clock configurable
-Date:   Thu,  7 Sep 2023 17:12:38 +0100
-Message-Id: <20230907161242.67190-3-ben.dooks@codethink.co.uk>
+Subject: [PATCH v9 0/6] designware pwm driver updates
+Date:   Thu,  7 Sep 2023 17:12:36 +0100
+Message-Id: <20230907161242.67190-1-ben.dooks@codethink.co.uk>
 X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230907161242.67190-1-ben.dooks@codethink.co.uk>
-References: <20230907161242.67190-1-ben.dooks@codethink.co.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -44,92 +42,83 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add a configurable clock base rate for the pwm as when being built
-for non-PCI the block may be sourced from an internal clock.
+This series is an update for the DesignWare PWM driver to add support for
+OF (and split the PCI bits out if aynone else wants them). This is mostly
+the same as the v8 series, but with code moved around and module-namespace
+added, plus review comments processed.
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
+We no longer have access to the hardware to test any further modifications.
+
+I've not added the tested-by tags as there have been alterations to this
+series.
+
+Note, the dt binding seems to have already been applied.
+
+The lengthy changelog:
+
 v9:
- - moved email to codethink from sifive
+  - fix multi-line comment issue
+  - changed rounding in calc-rate code
+  - changed email addresses to codethink one
+  - fix spelling mistake(s)
+  - add clk_rate_exclusive_get() to lock clock rate for now
 v8:
- - add reviewed by, fixed issue with previous renames.
+ - updated reviewed tags
+ - fix module name for pci version
+ - fix config symbol bug in makefile
+ - remove pci compile-test (mostly not used for pci)
+ - push the compile-test into the platform/of driver
 v7:
- - remove the "struct clk *" clk field from dwc_pwm_ctx, not used here,
+ - fixup kconfig from previous pcie changes
+ - re-order kconfig to make dwc core be selected by PCI driver
+ - move clk variable to patch it is used in
 v6:
- - removed DWC_CLK_PERIOD_NS as it is now not needed
+ - fix removal ordering of DWC_PERIOD_NS
+v5:
+ - fixed kconfig string error
+ - merged pwm-nr into main of code
+ - split of code from pci code
+ - updated pwm-nr capping
+ - fix duplicate error reporting in of-code
+ - fix return in of-probe
+ - remove unecessary remove function as devm_ functions sort this
+ - fixed ordering of properties
+ - added missing reg item
+ - fixed missing split of the two clock sources.
+ - get bus clock in of code
 v4:
- - moved earlier before the of changes to make the of changes one patch
+ - split pci and of into new modules
+ - fixup review comments
+ - fix typos in dt-bindings
+v3:
+- change the compatible name
+- squash down pwm count patch
+- fixup patch naming
 v2:
-  - removed the ifdef and merged the other clock patch in here
----
- drivers/pwm/pwm-dwc-core.c | 9 +++++----
- drivers/pwm/pwm-dwc.h      | 2 +-
- 2 files changed, 6 insertions(+), 5 deletions(-)
+- fix #pwm-cells count to be 3
+- fix indetation 
+- merge the two clock patches
+- add HAS_IOMEM as a config dependency
 
-diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
-index b693cb7fa812..4b4b7b9e1d82 100644
---- a/drivers/pwm/pwm-dwc-core.c
-+++ b/drivers/pwm/pwm-dwc-core.c
-@@ -49,13 +49,13 @@ static int __dwc_pwm_configure_timer(struct dwc_pwm *dwc,
- 	 * periods and check are the result within HW limits between 1 and
- 	 * 2^32 periods.
- 	 */
--	tmp = DIV_ROUND_CLOSEST_ULL(state->duty_cycle, DWC_CLK_PERIOD_NS);
-+	tmp = DIV_ROUND_CLOSEST_ULL(state->duty_cycle, dwc->clk_ns);
- 	if (tmp < 1 || tmp > (1ULL << 32))
- 		return -ERANGE;
- 	low = tmp - 1;
- 
- 	tmp = DIV_ROUND_CLOSEST_ULL(state->period - state->duty_cycle,
--				    DWC_CLK_PERIOD_NS);
-+				    dwc->clk_ns);
- 	if (tmp < 1 || tmp > (1ULL << 32))
- 		return -ERANGE;
- 	high = tmp - 1;
-@@ -130,12 +130,12 @@ static int dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	duty = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(pwm->hwpwm));
- 	duty += 1;
--	duty *= DWC_CLK_PERIOD_NS;
-+	duty *= dwc->clk_ns;
- 	state->duty_cycle = duty;
- 
- 	period = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(pwm->hwpwm));
- 	period += 1;
--	period *= DWC_CLK_PERIOD_NS;
-+	period *= dwc->clk_ns;
- 	period += duty;
- 	state->period = period;
- 
-@@ -160,6 +160,7 @@ struct dwc_pwm *dwc_pwm_alloc(struct device *dev)
- 	if (!dwc)
- 		return NULL;
- 
-+	dwc->clk_ns = 10;
- 	dwc->chip.dev = dev;
- 	dwc->chip.ops = &dwc_pwm_ops;
- 	dwc->chip.npwm = DWC_TIMERS_TOTAL;
-diff --git a/drivers/pwm/pwm-dwc.h b/drivers/pwm/pwm-dwc.h
-index 56deab4e28ec..64795247c54c 100644
---- a/drivers/pwm/pwm-dwc.h
-+++ b/drivers/pwm/pwm-dwc.h
-@@ -24,7 +24,6 @@ MODULE_IMPORT_NS(dwc_pwm);
- #define DWC_TIMERS_COMP_VERSION	0xac
- 
- #define DWC_TIMERS_TOTAL	8
--#define DWC_CLK_PERIOD_NS	10
- 
- /* Timer Control Register */
- #define DWC_TIM_CTRL_EN		BIT(0)
-@@ -43,6 +42,7 @@ struct dwc_pwm_ctx {
- struct dwc_pwm {
- 	struct pwm_chip chip;
- 	void __iomem *base;
-+	unsigned int clk_ns;
- 	struct dwc_pwm_ctx ctx[DWC_TIMERS_TOTAL];
- };
- #define to_dwc_pwm(p)	(container_of((p), struct dwc_pwm, chip))
+Ben Dooks (6):
+  pwm: dwc: split pci out of core driver
+  pwm: dwc: make timer clock configurable
+  pwm: dwc: add PWM bit unset in get_state call
+  pwm: dwc: use clock rate in hz to avoid rounding issues
+  pwm: dwc: round rate divisions up
+  pwm: dwc: add of/platform support
+
+ drivers/pwm/Kconfig        |  24 ++++-
+ drivers/pwm/Makefile       |   2 +
+ drivers/pwm/pwm-dwc-core.c | 197 ++++++++++++++++++++++++++++++++++++
+ drivers/pwm/pwm-dwc-of.c   |  93 +++++++++++++++++
+ drivers/pwm/pwm-dwc.c      | 198 +------------------------------------
+ drivers/pwm/pwm-dwc.h      |  61 ++++++++++++
+ 6 files changed, 380 insertions(+), 195 deletions(-)
+ create mode 100644 drivers/pwm/pwm-dwc-core.c
+ create mode 100644 drivers/pwm/pwm-dwc-of.c
+ create mode 100644 drivers/pwm/pwm-dwc.h
+
 -- 
 2.40.1
 
