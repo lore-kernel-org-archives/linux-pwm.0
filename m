@@ -2,318 +2,174 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A02EC873D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F41BEC873C
 	for <linux-pwm@archiver.kernel.org>; Thu,  7 Sep 2023 15:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232488AbjIGPi5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 7 Sep 2023 11:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59936 "EHLO
+        id S234976AbjIGPi4 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 7 Sep 2023 11:38:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344220AbjIGPcm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Sep 2023 11:32:42 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2071c.outbound.protection.outlook.com [IPv6:2a01:111:f400:feae::71c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4717D1BC9;
-        Thu,  7 Sep 2023 08:32:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hh69poRUVIAktMtH+ZwKoMdyPVk2TVa3Lr0iO1MPpX/ggtxhazSd6YCn5j4iMEXcOXxzpGKYlsDuuEuFEyXp02UEu14FedlLwKEfS2AljTSjw+4PsTDgxEakMssu6CTlbpHn9wMs50mKVsLkhnVyUHwfrBUulAuEaq5szvqAY4dz2DwUW/XKt4041OvOMwXLRgsgHPctyXmsW4djMZ59bhKIBVLNi8m3BQZNlwWHxPZBa6Z7jwqEo5dxTUmlAE2Z0d62nB/Y8RhU1/SRG9J09In8moMaDI51AlEwyIfZRMnf8GNn2R7YgyyLQoMLkwcvqlfv5LB2VrtMmGTxwitbjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ILdyH+y3Ag8MQ5/OU0a8nDvQT8qItD7SrbA7qWiTn3Q=;
- b=eFT5iPgK+zNHhHX4MN1za1LqwITCwpPGzM725B+bIAPcUrYb3GqNMLj2THzsDmS1Glep/IzYTQhdfkf7Z2WXPKNojjGhtHrPPJRQqdD4yL1vNNHaG4GUftrZAIUuU2lT81Pw+SM+EXMCud6s8xr467+fSzooiqgCKkb8P3IaLvVcWa5tjE2Rrjj4uaKA4G35rElljVibvooMuZls3/vfILjxeccp5/m2EPK/fHsZ4z1Ddgyo3OQ7W8dF0CvfTHiRTUochXnYvHe8c7wGAGkDS1snz57p9BtWx5Yvl0AHEGUSfQ2/nkkwzNqDj4TY4p4m9TMiqGi9FSbhS8nnkZD7xQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
- header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aspeedtech.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ILdyH+y3Ag8MQ5/OU0a8nDvQT8qItD7SrbA7qWiTn3Q=;
- b=TIT80aqnx1oav1pXJdD6mq8zgsPlgj117pgQPILSZw8uxjtA9xaxFVwmj7loWAbvxuxE4chi0EMacAXB71bs2hkTjej/i8ScT3gov0E8kId1mgbn7KsJlSsFiy1rMBKEEiMQr7pGD2oO9ZSlep1opb45aJp+sK7Omz8V0cKS4heHeIK/x3Z3YdqY3HQCfx5Wf7ZmVLTFxGbKszmHmcSiO8cOZbZNtibhBrQY4Jq3dIMx8GtKLNZ+gUW6lB57NOjYgraqI0eCVjv1kyYOW3C1AzP0FLhOE3aHCU6ZB+m8F+djkE/ZUq74itbITI3RyisC+T5J3RUBxetMCWNNhooq9A==
-Received: from SG2PR06MB3365.apcprd06.prod.outlook.com (2603:1096:4:69::12) by
- SEZPR06MB6198.apcprd06.prod.outlook.com (2603:1096:101:f1::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6745.34; Thu, 7 Sep 2023 07:17:56 +0000
-Received: from SG2PR06MB3365.apcprd06.prod.outlook.com
- ([fe80::791a:38e8:18cf:d205]) by SG2PR06MB3365.apcprd06.prod.outlook.com
- ([fe80::791a:38e8:18cf:d205%5]) with mapi id 15.20.6745.030; Thu, 7 Sep 2023
- 07:17:55 +0000
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "jdelvare@suse.com" <jdelvare@suse.com>,
-        "linux@roeck-us.net" <linux@roeck-us.net>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "naresh.solanki@9elements.com" <naresh.solanki@9elements.com>,
-        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>,
-        "patrick@stwcx.xyz" <patrick@stwcx.xyz>
-Subject: Re: [PATCH v8 1/3] dt-bindings: hwmon: fan: Add fan binding to schema
-Thread-Topic: [PATCH v8 1/3] dt-bindings: hwmon: fan: Add fan binding to
- schema
-Thread-Index: AQHZ2z4C+uKKem1S50iGi7OYH9WEnLAMfl8AgAKBk6I=
-Date:   Thu, 7 Sep 2023 07:17:55 +0000
-Message-ID: <SG2PR06MB336567E43537C7F4947E342F8BEEA@SG2PR06MB3365.apcprd06.prod.outlook.com>
-References: <20230830123202.3408318-1-billy_tsai@aspeedtech.com>
- <20230830123202.3408318-2-billy_tsai@aspeedtech.com>
- <20230905170010.GA3505375-robh@kernel.org>
-In-Reply-To: <20230905170010.GA3505375-robh@kernel.org>
-Accept-Language: en-US, zh-TW
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=aspeedtech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SG2PR06MB3365:EE_|SEZPR06MB6198:EE_
-x-ms-office365-filtering-correlation-id: 0feb26c9-7fdd-4aae-70a0-08dbaf728eba
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gjadcIWuvkP37pgM56WRpO2Jn6eLPzrv69Z7uYUYI2p61PEBBfmiqsrBzJV+riJN7Xf9umG4wJsKy5z9gQZ27hkYri5Sfm87KhjtMtDT83yeS2qjqYSBLbxA65YU+qC86LBJlwAbRTAK7yT7EkVMbZEpjEZKJSQI/BzcRI/EsmAdfZp14D6lriG18LdOl5xiy1UIjmAOx6bZKsvxq4amto8MKaypE4pDxBg7J+CnPw887O+U5Ec8Oao2UrjW8heHCfNJk6twrwlsra/+nVs+kAEvT2XzcaYEGrq/7+vDwcCaW8woFHB6mYg/mQtwQfVxRqAjqbKh/MLNgB/L23obES9mfTDML3qPDz8qJXyJiiOq/EMgAxLgAH/NgUYCmhOH3rq0449vFEe6NCAV4jnOyturcJYa2IxuYJChl8R0YN7Swze6YkOHNLSQLwEPWmusKBWBU1Vu5IbWEtQaANChhpSYLqAso9ILWHVpmuxsmWHDd/Zwaoo9m+dhWgq3NN5zzlXL9Zo2L9c0FeTmDZ4bz3uU9tnwcMPouOfahoSMssqmfQGz75K+g1liadu+y0UEzdZ14F13git/NGyBncZoKo5jUXONrmZoDZqCyXB77Ak=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3365.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39850400004)(366004)(346002)(396003)(136003)(376002)(186009)(1800799009)(451199024)(6506007)(7696005)(9686003)(55236004)(55016003)(83380400001)(26005)(122000001)(91956017)(64756008)(54906003)(52536014)(66946007)(38070700005)(38100700002)(76116006)(66446008)(6916009)(66556008)(66476007)(5660300002)(7416002)(316002)(33656002)(41300700001)(86362001)(8676002)(8936002)(4326008)(2906002)(71200400001)(966005)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?uq8qgk4rMOm3HKcl/zSWqwPMKP+ZvhjefiHO6IWQ1VJbiP1RGFYTt45WtE?=
- =?iso-8859-1?Q?Y2JttAbiyZluub6uNRg1Ix9G7HXFRfjGdqiJb/Sz4nRUTw/ayLn384w3XT?=
- =?iso-8859-1?Q?T4SLsgUg7HaJClkfXsj7kd8S5cr4/Op5mVecKZ5OSEQQDeQe1jHwVFhEy/?=
- =?iso-8859-1?Q?qixBQsxufAZmDEi9qda9DYVv77P4ZELokqoXuL0QvLbrYCkHSW9UpyVBvr?=
- =?iso-8859-1?Q?+6twoQbBH3mVM2sI6goSkN+TWXGRD2ZHAwDfNZqZwLcnGfrmuta9QluUvb?=
- =?iso-8859-1?Q?50sdZTB+gBuO+1hDUdd66iMY/fz0fLCg5RGKwQFwYLZMmqF5CeFH8bkHEZ?=
- =?iso-8859-1?Q?caYLhzRVBKfJqPF4JoiJXrb3Cpv5UL4ywC/g6UJlHTnbyyiM+eFyzVeWHf?=
- =?iso-8859-1?Q?OedUHtpB2KuAXZUujz1nqlsG74Dg3PGb0Bb1hn9SQv/9/fm+GjJ2Jl6epY?=
- =?iso-8859-1?Q?iZRE/TZnGz686+BZY0+X69du9m0lHJBEtBz9pDzTGC+ap4u5RmvtUd6rYg?=
- =?iso-8859-1?Q?zQWFLBRDcfIo7iCva+AEuFucyJwDV06r5XqhcUNTggRqCGijLFw5ffHP2k?=
- =?iso-8859-1?Q?yIVZ546Ickjthbe0v64l2JKw2Em7UB1K164kj2aduroYkyvnd70XnhCD+2?=
- =?iso-8859-1?Q?S44mjV1nYRvD1vu3KzsIpm9fNwHJjEW+KpQTIHc5wiRUXRUFn+62DGj+9+?=
- =?iso-8859-1?Q?jeo/yNA8di/3/6FQsEJrBR7+0pX2SnWTGiDaSBpY6qSCT0e7NkhiKferDM?=
- =?iso-8859-1?Q?vCbLhS3dOONQpNCxd4qdu7IKCLQCnlFWUZo1UtQjUZvqQpp0D3UPv3Qn2c?=
- =?iso-8859-1?Q?Dv1mKziE1ZJg1AotH210odX7vPypv1zXRXFowbrpv4/UVYk2iCCE9Il1/6?=
- =?iso-8859-1?Q?r6UQIfdU6ARRusGz7d5Nfvg1ossngANkYEZV1OS5j2PrPzIpY6Y6DjLhtD?=
- =?iso-8859-1?Q?/LzJDubwlJfXfpQqM8diePEgHXgCg+zdY83cpFxRZmx0gW+pgT2QBKOAWC?=
- =?iso-8859-1?Q?pufGZOqj+vYIkhB1w1LP97SwPFogv+WDhe8gyZoBn1LDFkggJm0gnJL0vb?=
- =?iso-8859-1?Q?T0RrgqNe1PSwZcf2Fj/XqVGL0kLdHNE4UvvN3x5jsBGQINFyji+FPkDNrK?=
- =?iso-8859-1?Q?fEtktG6yorIBT8+0qgZB0xASXeKXKfryFGRZIZobOt9DvjEACWnClPd60F?=
- =?iso-8859-1?Q?DxdIlJ1OSfON+ZKr5bEc7ifZtxiDVQe2mzNuyGA4yszsVuwKXqhIDnYgcn?=
- =?iso-8859-1?Q?VccLbKTe7Ekz/a86x3vMN+FChnTkA/dmgqsQkpP8+mZ/u2+JlI/nzxXa0J?=
- =?iso-8859-1?Q?ATjQTTXna9Xc+4J88yP+q8dGnioO4vBAKDcOGyqFqVGABLCyYl7RovTvTP?=
- =?iso-8859-1?Q?1zuwJTIKb4zbCcXX73ylCGFqelJDw/hBRnjvfFKRKtuH9HkNV/cjOfgkTI?=
- =?iso-8859-1?Q?kNfO6ppIsMhKUWZGaXoeTBPtdO2SIq/3hi8MAUVCtYPpEzsVfj2RHd+ym4?=
- =?iso-8859-1?Q?nfm9V823kgjPa2R/nh+Eg0U39/8/TdPAZ3LV+F+uQUJ2RAlTXAWnnsjgZE?=
- =?iso-8859-1?Q?WM4WpPe1vQbJUY40bz35MO/ozV8yaAXAI9ejNR7wAqvSwiLjJGOMa+juUv?=
- =?iso-8859-1?Q?BbFGAKwpTQSHbT2LtwWpPfyJHoBXi8Ju8m?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S1344319AbjIGPcz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Sep 2023 11:32:55 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1AFE49;
+        Thu,  7 Sep 2023 08:32:38 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-529fb04a234so1504079a12.3;
+        Thu, 07 Sep 2023 08:32:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1694100708; x=1694705508; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Anm33g+5dzvXtjWdYbVxFjyCxv+da9wrUjhgUXOLNpI=;
+        b=WlZvy1u2VfQahzD1wew9p0jDUUNxg8g/n/bdSYSNKiBmJL7ktH/tn6V+7PSsqtUOiT
+         5SZ0uR/klJJ9Qgn49vSGM4O7xrWSbrMiPkYGJyamoGdwUewMIIRwESxCJC3uTm4C780/
+         3kNW09Bb0GwwA8SXsC3Hpl6Pa9HkI3xio8k1X2sIO5igAjpLqvK/PoUhdqoDsg/iOB6N
+         1r1kpdBgrDyhfpNTz/L0mRXhaqqA/+Uvcsx+DAfpGm3yFrvt7DTy0Klv2r1j480bxtuA
+         juKg5wUCD0J9nsgcfC0bRv58Xalek7F+83M1It+mvTiWBIGOGxxYF5zRlVhA1uEYKXcs
+         eAdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1694100708; x=1694705508;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Anm33g+5dzvXtjWdYbVxFjyCxv+da9wrUjhgUXOLNpI=;
+        b=jFlpGlmRFM3iFk6YSZkuQrb1FjCTiNkaPF6wBOyaNVBBfY73NG7Ng8xiYHYRPCjbRA
+         iI/WFroWG43QzmGgfjcEuE9+Jz1vE141mz2JiDnSl2wiif1rk8+VeW5+QzTKFimobWUr
+         Z78232QcULiORJ1uR5NTagnEjGvryTpFpYzNdn5nHsZ7T+CgbdhM83badVssh0yi2gEi
+         fTIRafT5exYR52/4PxlcF5rKrOE5ZmX0lchxeMn8pihmU0Lbys+7y5yz1hON9k9s/8z3
+         +2Iw4l1kGlflTZG/4yyRKNRwQpU0MZehVx7DBV3hRrdhUzEveUopq8ujJrzokSWrrryX
+         7GxQ==
+X-Gm-Message-State: AOJu0YwN+gTBehdFY3Rr6ZCr/OeW2CTmoP7NP0pXNzheyxTbiGhYGpCh
+        +oxiN4RAs34p5DiFJZUrM9skpAHCDMA=
+X-Google-Smtp-Source: AGHT+IGLdB3VB6GEFhh2lduscEjoVUh+j9EFoWRLJv53K3IliO9AdI22ayjESvSbR/42m/ikSs2BDA==
+X-Received: by 2002:a19:6707:0:b0:4fb:9631:4bb with SMTP id b7-20020a196707000000b004fb963104bbmr5289099lfc.11.1694098662260;
+        Thu, 07 Sep 2023 07:57:42 -0700 (PDT)
+Received: from localhost (p200300e41f1bd600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f1b:d600:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id f26-20020a056402069a00b0051e2670d599sm10002021edy.4.2023.09.07.07.57.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Sep 2023 07:57:41 -0700 (PDT)
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] pwm: Changes for v6.6-rc1
+Date:   Thu,  7 Sep 2023 16:57:36 +0200
+Message-ID: <20230907145738.1185893-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-X-OriginatorOrg: aspeedtech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3365.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0feb26c9-7fdd-4aae-70a0-08dbaf728eba
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Sep 2023 07:17:55.8712
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zcK5GmglR+3MXi2qIIq1nHTdHr6oevqtBYy47RKg3qcXJpuqNzf4Q5AjQYW07hTw/GFt9L3fMCEUzLBiZsTYcUrYyNaEywETx9eMH9xIi/0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR06MB6198
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Wed, Aug 30, 2023 at 08:32:00PM +0800, Billy Tsai wrote:=0A=
->> From: Naresh Solanki <naresh.solanki@9elements.com>=0A=
->> =0A=
->> Add common fan properties bindings to a schema.=0A=
->> =0A=
->> Bindings for fan controllers can reference the common schema for the=0A=
->> fan=0A=
->> =0A=
->> child nodes:=0A=
->> =0A=
->>   patternProperties:=0A=
->>     "^fan@[0-2]":=0A=
->>       type: object=0A=
->>       $ref: fan-common.yaml#=0A=
-=0A=
->        unevaluatedProperties: false=0A=
-=0A=
-OK, I will add this.=0A=
-=0A=
->> =0A=
->> Signed-off-by: Naresh Solanki <naresh.solanki@9elements.com>=0A=
->> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>=0A=
->> ---=0A=
->>  .../devicetree/bindings/hwmon/fan-common.yaml | 63 +++++++++++++++++++=
-=0A=
->>  1 file changed, 63 insertions(+)=0A=
->>  create mode 100644 Documentation/devicetree/bindings/hwmon/fan-common.y=
-aml=0A=
->> =0A=
->> diff --git a/Documentation/devicetree/bindings/hwmon/fan-common.yaml b/D=
-ocumentation/devicetree/bindings/>hwmon/fan-common.yaml=0A=
->> new file mode 100644=0A=
->> index 000000000000..a69b4d553e45=0A=
->> --- /dev/null=0A=
->> +++ b/Documentation/devicetree/bindings/hwmon/fan-common.yaml=0A=
->> @@ -0,0 +1,63 @@=0A=
->> +# SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause=0A=
-=0A=
-> Drop 'or-later'. It's GPL2 only.=0A=
-=0A=
-OK, I will fix it.=0A=
-=0A=
->> +%YAML 1.2=0A=
->> +---=0A=
->> +$id: http://devicetree.org/schemas/hwmon/fan-common.yaml#=0A=
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#=0A=
->> +=0A=
->> +title: Common Fan Properties=0A=
->> +=0A=
->> +maintainers:=0A=
->> +  - Naresh Solanki <naresh.solanki@9elements.com>=0A=
->> +  - Billy Tsai <billy_tsai@aspeedtech.com>=0A=
->> +=0A=
->> +properties:=0A=
->> +  max-rpm:=0A=
->> +    description:=0A=
->> +      Max RPM supported by fan.=0A=
->> +    $ref: /schemas/types.yaml#/definitions/uint32=0A=
-=0A=
-> Physics will limit this to something much less than 2^32. Add some =0A=
-> constraints. 10000?=0A=
-=0A=
-=0A=
->> +=0A=
->> +  min-rpm:=0A=
->> +    description:=0A=
->> +      Min RPM supported by fan.=0A=
->> +    $ref: /schemas/types.yaml#/definitions/uint32=0A=
-=0A=
-> ditto=0A=
-=0A=
->> +=0A=
->> +  pulses-per-revolution:=0A=
->> +    description:=0A=
->> +      The number of pulse from fan sensor per revolution.=0A=
->> +    $ref: /schemas/types.yaml#/definitions/uint32=0A=
-=0A=
->Needs constraints. I assume this is never more than 4 (or 2 even)?=0A=
-=0A=
-Do you think we should add the contraint in the common binding?=0A=
-In my option, the limit of the max/min rpm should be declared by=0A=
-the binding if necessary, because the usage of each fan monitor is=0A=
-based on the connection of the tach pin.=0A=
-=0A=
-=0A=
->> +  div:=0A=
-=0A=
-> Too generic of a name.=0A=
-=0A=
->> +    description:=0A=
->> +      Fan clock divisor=0A=
-=0A=
-> But what is a fan clock?=0A=
-=0A=
-This is the divisor for the tachometer sampling clock, which determines the=
- sensitivity of the tach pin.=0A=
-So, if the name of the property changes to 'tach-div,' is it acceptable to =
-you?=0A=
-=0A=
-=0A=
->> +    $ref: /schemas/types.yaml#/definitions/uint32=0A=
->> +=0A=
->> +  target-rpm:=0A=
->> +    description:=0A=
->> +      Target RPM the fan should be configured during driver probe.=0A=
-=0A=
-> What driver? By the time the OS driver runs, a bunch of other boot =0A=
-> software has already run on modern systems. So this value would likely =
-=0A=
-> be used much earlier. The point is that when exactly is outside the =0A=
-> scope of DT. This is "what RPM do I use in case of no other information =
-=0A=
-> (e.g. temperature)".=0A=
-=0A=
-So, the description should be changed to 'The default desired fan speed in =
-RPM,'=0A=
-and we shouldn't mention the timing of the property's operation in the DT, =
-is that correct?=0A=
-=0A=
->> +    $ref: /schemas/types.yaml#/definitions/uint32=0A=
->> +=0A=
->> +  mode:=0A=
-=0A=
-> Too generic.=0A=
-=0A=
->> +    description:=0A=
->> +      Select the operational mode of the fan.=0A=
-=0A=
-> What are modes? Spin and don't spin?=0A=
-=0A=
-The mode is used to indicate the driving mode of the fan (DC, PWM and so on=
-).=0A=
-So, if the name of the property changes to 'fan-driving-mode,' is it accept=
-able to you?=0A=
-=0A=
->> +    $ref: /schemas/types.yaml#/definitions/uint32=0A=
->> +=0A=
->> +  pwms:=0A=
->> +    description:=0A=
->> +      PWM provider.=0A=
-=0A=
-> maxItems: 1=0A=
-=0A=
-> I don't think there are fans with more than 1 PWM input?=0A=
-=0A=
-Ok, I will add the constraint for the pwm input.=0A=
-=0A=
->> +=0A=
->> +  tach-ch:=0A=
->> +    description:=0A=
->> +      The tach channel used for the fan.=0A=
->> +    $ref: /schemas/types.yaml#/definitions/uint32=0A=
-=0A=
-> The existing ASpeed version of this property allows more than 1 entry. I =
-=0A=
-> don't understand how a fan would have 2 tach signals, but if so, the =0A=
-> generic property should allow for that.=0A=
-=0A=
-Ok, I will modify it to the uint32-array=0A=
-=0A=
-> Perhaps 'reg' should be defined in here with some text saying 'reg' =0A=
-> corresponds to the fan controller specific id which may be the PWM+TACH =
-=0A=
-> channel, PWM channel (deprecated), or TACH channel. I think there are =0A=
-> examples of all 3 of these cases.=0A=
-=0A=
-I don't think it's necessary for the 'reg' because the case you mentioned i=
-s=0A=
-already covered by the property 'tach-ch' and the 'pwms'.=0A=
-=0A=
-> +=0A=
-> +  label:=0A=
-> +    description:=0A=
-> +      Optional fan label=0A=
-> +=0A=
-> +  fan-supply:=0A=
-> +    description:=0A=
-> +      Power supply for fan.=0A=
-> +=0A=
-> +additionalProperties: true=0A=
-> +=0A=
-> +...=0A=
-> -- =0A=
-> 2.25.1=0A=
-> =0A=
+Hi Linus,
+
+The following changes since commit 06c2afb862f9da8dc5efa4b6076a0e48c3fbaaa5:
+
+  Linux 6.5-rc1 (2023-07-09 13:53:13 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-6.6-rc1
+
+for you to fetch changes up to 4aae44f65827f0213a7361cf9c32cfe06114473f:
+
+  pwm: lpc32xx: Remove handling of PWM channels (2023-08-22 10:14:16 +0200)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v6.6-rc1
+
+This contains various cleanups and fixes across the board.
+
+----------------------------------------------------------------
+Biju Das (1):
+      pwm: rz-mtu3: Fix build warning 'num_channel_ios' not described
+
+Guiting Shen (1):
+      pwm: atmel: Enable clk when pwm already enabled in bootloader
+
+Rob Herring (1):
+      pwm: Explicitly include correct DT includes
+
+Stanislav Jakubek (1):
+      dt-bindings: pwm: brcm,kona-pwm: convert to YAML
+
+Uwe Kleine-König (26):
+      pwm: Use a consistent name for pwm_chip pointers in the core
+      pwm: atmel-hlcdc: Use consistent variable naming
+      pwm: bcm-kona: Consistently name pwm_chip variables "chip"
+      pwm: crc: Consistently name pwm_chip variables "chip"
+      pwm: cros-ec: Consistently name pwm_chip variables "chip"
+      pwm: lp3943: Consistently name pwm_chip variables "chip"
+      pwm: rockchip: Consistently name pwm_chip variables "chip"
+      pwm: sifive: Consistently name pwm_chip variables "chip"
+      pwm: sl28cpld: Consistently name pwm_chip variables "chip"
+      staging: greybus: pwm: Consistently name pwm_chip variables "chip"
+      pwm: Remove outdated documentation for pwmchip_remove()
+      pwm: Drop unused #include <linux/radix-tree.h>
+      pwm: atmel-tcb: Harmonize resource allocation order
+      pwm: atmel-tcb: Fix resource freeing in error path and remove
+      pwm: atmel-tcb: Put per-channel data into driver data
+      pwm: atmel-tcb: Unroll atmel_tcb_pwm_set_polarity() into only caller
+      pwm: atmel-tcb: Don't track polarity in driver data
+      pwm: lpc18xx-sct: Simplify using devm_clk_get_enabled()
+      pwm: pxa: Don't reimplement of_device_get_match_data()
+      pwm: ntxec: Drop a write-only variable from driver data
+      pwm: ntxec: Use device_set_of_node_from_dev()
+      pwm: Fix order of freeing resources in pwmchip_remove()
+      pwm: stm32: Don't modify HW state in .remove() callback
+      pwm: stm32: Simplify using devm_pwmchip_add()
+      pwm: stmpe: Handle errors when disabling the signal
+      pwm: atmel: Simplify using devm functions
+
+Vladimir Zapolskiy (1):
+      pwm: lpc32xx: Remove handling of PWM channels
+
+ .../devicetree/bindings/pwm/brcm,kona-pwm.txt      |  21 ----
+ .../devicetree/bindings/pwm/brcm,kona-pwm.yaml     |  51 +++++++++
+ drivers/pwm/core.c                                 |  41 ++++---
+ drivers/pwm/pwm-apple.c                            |   1 +
+ drivers/pwm/pwm-atmel-hlcdc.c                      |  66 +++++------
+ drivers/pwm/pwm-atmel-tcb.c                        | 123 ++++++++-------------
+ drivers/pwm/pwm-atmel.c                            |  77 ++++++++-----
+ drivers/pwm/pwm-bcm-kona.c                         |   4 +-
+ drivers/pwm/pwm-berlin.c                           |   1 +
+ drivers/pwm/pwm-crc.c                              |   4 +-
+ drivers/pwm/pwm-cros-ec.c                          |  11 +-
+ drivers/pwm/pwm-fsl-ftm.c                          |   3 +-
+ drivers/pwm/pwm-hibvt.c                            |   2 +-
+ drivers/pwm/pwm-imx1.c                             |   1 -
+ drivers/pwm/pwm-jz4740.c                           |   2 +-
+ drivers/pwm/pwm-lp3943.c                           |   5 +-
+ drivers/pwm/pwm-lpc18xx-sct.c                      |  34 ++----
+ drivers/pwm/pwm-lpc32xx.c                          |  16 +--
+ drivers/pwm/pwm-mediatek.c                         |   1 -
+ drivers/pwm/pwm-meson.c                            |   1 -
+ drivers/pwm/pwm-microchip-core.c                   |   2 +-
+ drivers/pwm/pwm-mtk-disp.c                         |   1 -
+ drivers/pwm/pwm-ntxec.c                            |   4 +-
+ drivers/pwm/pwm-pxa.c                              |  10 +-
+ drivers/pwm/pwm-rockchip.c                         |   4 +-
+ drivers/pwm/pwm-rz-mtu3.c                          |   2 +-
+ drivers/pwm/pwm-sifive.c                           |   5 +-
+ drivers/pwm/pwm-sl28cpld.c                         |  14 ++-
+ drivers/pwm/pwm-sprd.c                             |   1 +
+ drivers/pwm/pwm-stm32.c                            |  14 +--
+ drivers/pwm/pwm-stmpe.c                            |  17 +--
+ drivers/pwm/pwm-sun4i.c                            |   1 -
+ drivers/pwm/pwm-sunplus.c                          |   1 +
+ drivers/pwm/pwm-tegra.c                            |   1 -
+ drivers/pwm/pwm-tiecap.c                           |   2 +-
+ drivers/pwm/pwm-tiehrpwm.c                         |   2 +-
+ drivers/pwm/pwm-visconti.c                         |   2 +-
+ drivers/pwm/pwm-vt8500.c                           |   5 +-
+ drivers/staging/greybus/pwm.c                      |  12 +-
+ include/linux/pwm.h                                |   6 +-
+ 40 files changed, 281 insertions(+), 290 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/brcm,kona-pwm.yaml
