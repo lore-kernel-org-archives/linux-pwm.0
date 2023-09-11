@@ -2,93 +2,111 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4758CEEB58C
-	for <linux-pwm@archiver.kernel.org>; Mon, 11 Sep 2023 04:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D77FEE7FF4
+	for <linux-pwm@archiver.kernel.org>; Mon, 11 Sep 2023 07:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229495AbjIKEtH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 11 Sep 2023 00:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
+        id S233320AbjIKHTp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 11 Sep 2023 03:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231764AbjIKEtF (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Sep 2023 00:49:05 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B00F1B8;
-        Sun, 10 Sep 2023 21:49:00 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 593E7C43395;
-        Mon, 11 Sep 2023 04:49:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1694407740;
-        bh=4lLgVJb3LOG8DBSrlEzmuFBXuW0+M3lIby4bathQEJQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=C6/eNd9fiXyxGRt5Q8ahEQOhSgCzOfaDjiTl1H8jdUB7+nyLMvI8Z8jnvHGjBdQ49
-         pDudL3FXplQYq7jTK8HLgIy9ITXlxnbVaDIU/4PMDDSn6qJkGjrWtox5bdK/GK3F5p
-         C4G4DS2Wf1CiQbnf16oHi2/OLxkMc9s/eBeQrSQGCwpUsCE1in9Is3GDGfvYRWlM/7
-         2tlXMXWIRD3zJvcrlFXk8QeGnir5Z0kGUyv09GiSS8f+5ARo1lX8qkv1qJbHYp6gz6
-         YuEAVFmOzlKTCXnu+2B+mWUy9DGN2PXOf9rTw2PXn8k2N7iypmSeDiYERSZBfuV9XL
-         EZljecptFgb1A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3D213E21EC1;
-        Mon, 11 Sep 2023 04:49:00 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S231231AbjIKHTo (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Sep 2023 03:19:44 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE5FCD1
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Sep 2023 00:19:29 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qfbCc-0003Rt-OL; Mon, 11 Sep 2023 09:19:22 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qfbCc-005Ugm-BH; Mon, 11 Sep 2023 09:19:22 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qfbCb-000bT0-LW; Mon, 11 Sep 2023 09:19:21 +0200
+Date:   Mon, 11 Sep 2023 09:19:21 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     patchwork-bot+chrome-platform@kernel.org,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Benson Leung <bleung@chromium.org>
+Cc:     linux-pwm@vger.kernel.org, chrome-platform@lists.linux.dev
 Subject: Re: [PATCH] pwm: Explicitly include correct DT includes
-From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <169440774024.22573.12945048122079663648.git-patchwork-notify@kernel.org>
-Date:   Mon, 11 Sep 2023 04:49:00 +0000
+Message-ID: <20230911071921.6dhadiqmfpedqxvy@pengutronix.de>
 References: <20230714174852.4062251-1-robh@kernel.org>
-In-Reply-To: <20230714174852.4062251-1-robh@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        claudiu.beznea@microchip.com, bleung@chromium.org,
-        groeck@chromium.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        paul@crapouillou.net, vz@mleia.com, neil.armstrong@linaro.org,
-        khilman@baylibre.com, jbrunet@baylibre.com,
-        martin.blumenstingl@googlemail.com, conor.dooley@microchip.com,
-        daire.mcnamara@microchip.com, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com, palmer@dabbelt.com,
-        paul.walmsley@sifive.com, michael@walle.cc, orsonzhai@gmail.com,
-        baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        hammerh0314@gmail.com, jonathanh@nvidia.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp, devicetree@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-        chrome-platform@lists.linux.dev, linux-mips@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org
+ <169440670019.22573.2422972280084635660.git-patchwork-notify@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bbuuoqwymefnkym6"
+Content-Disposition: inline
+In-Reply-To: <169440670019.22573.2422972280084635660.git-patchwork-notify@kernel.org>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hello:
 
-This patch was applied to chrome-platform/linux.git (for-next)
-by Thierry Reding <thierry.reding@gmail.com>:
+--bbuuoqwymefnkym6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 14 Jul 2023 11:48:50 -0600 you wrote:
-> The DT of_device.h and of_platform.h date back to the separate
-> of_platform_bus_type before it as merged into the regular platform bus.
-> As part of that merge prepping Arm DT support 13 years ago, they
-> "temporarily" include each other. They also include platform_device.h
-> and of.h. As a result, there's a pretty much random mix of those include
-> files used throughout the tree. In order to detangle these headers and
-> replace the implicit includes with struct declarations, users need to
-> explicitly include the correct includes.
-> 
-> [...]
+Hello,
 
-Here is the summary with links:
-  - pwm: Explicitly include correct DT includes
-    https://git.kernel.org/chrome-platform/c/0a41b0c5d97a
+On Mon, Sep 11, 2023 at 04:31:40AM +0000, patchwork-bot+chrome-platform@ker=
+nel.org wrote:
+> This patch was applied to chrome-platform/linux.git (for-kernelci)
+> by Thierry Reding <thierry.reding@gmail.com>:
+>=20
+> On Fri, 14 Jul 2023 11:48:50 -0600 you wrote:
+> > The DT of_device.h and of_platform.h date back to the separate
+> > of_platform_bus_type before it as merged into the regular platform bus.
+> > As part of that merge prepping Arm DT support 13 years ago, they
+> > "temporarily" include each other. They also include platform_device.h
+> > and of.h. As a result, there's a pretty much random mix of those include
+> > files used throughout the tree. In order to detangle these headers and
+> > replace the implicit includes with struct declarations, users need to
+> > explicitly include the correct includes.
+> >=20
+> > [...]
+>=20
+> Here is the summary with links:
+>   - pwm: Explicitly include correct DT includes
+>     https://git.kernel.org/chrome-platform/c/0a41b0c5d97a
+>=20
+> You are awesome, thank you!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+It's a bit strange to get this notification given that this patch was
+applied via the pwm tree and only made it into the
+chrome-platform/linux.git repo via an update to v6.6-rc1.
 
+It's not a big problem, but if such mail could be suppressed that would
+be nice.
 
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--bbuuoqwymefnkym6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmT+v3gACgkQj4D7WH0S
+/k7XPQf/anQ6vlB0uEF5CmCQwzYikHQwTbvnK2tKGA9G3nw6wEIW8ss61ez4jFWZ
+DQ75loTIlF91uC59ZDYxyaL2i2iZFnisMi1hvAbevBA2Z/3b6T5Bcl/prartKxGX
+6IooL+RTaTgJKVwYqauIWIvO3/4synIpsF3YGlD8tZz4vyC4abTDaLPFFXfPE2vb
+h+UVzRT6eQfK94R7W/pP2u9vPLgR6OPAsv6t/z1bXHMU0FokJaOzQSt1sfXaHxUa
+tB8QnrbOQ1StunbalXmqBVdByNupbzAWJX6QipN4BjZ28w1HDs1XunFR/dRifmIo
+lGmG8LVNpr1wKeDktDi68Mtphwtxcg==
+=i3rg
+-----END PGP SIGNATURE-----
+
+--bbuuoqwymefnkym6--
