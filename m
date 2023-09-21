@@ -2,61 +2,64 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C096CE7D0A2
-	for <linux-pwm@archiver.kernel.org>; Thu, 21 Sep 2023 18:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 350DEE7D0A5
+	for <linux-pwm@archiver.kernel.org>; Thu, 21 Sep 2023 18:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbjIUSwd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 21 Sep 2023 14:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
+        id S231179AbjIUSys (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 21 Sep 2023 14:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230326AbjIUSwW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Sep 2023 14:52:22 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDC5ECF4D;
-        Thu, 21 Sep 2023 11:44:28 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id 98e67ed59e1d1-273e3d8b57aso296377a91.0;
-        Thu, 21 Sep 2023 11:44:28 -0700 (PDT)
+        with ESMTP id S230036AbjIUSyT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Sep 2023 14:54:19 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7968EED560;
+        Thu, 21 Sep 2023 11:44:35 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id d2e1a72fcca58-69028d0fab1so209202b3a.1;
+        Thu, 21 Sep 2023 11:44:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695321868; x=1695926668; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/VCY0QPe02BJazAiQWn34Qew1J3t1PztwawBqHZpK/s=;
-        b=Ycl/BDlDl3w8Fkmb+oyBoP441TDz2y+jxln8r2eJLz2PSUEKftfAiuItle0Cyz+PI+
-         i9QrnE3C15pCMT66qLtO44Ulmv0cNpo3JRSkfiDKff3gzrQjc+xd1TK7YCrkA57WCD3R
-         X/gRk14pg5FqmqoT5aYrfb4CRSqnirYz3fVWiJxOXDyg3xaBjYgmymnKSk0vEU/M4ILI
-         hoim8XH+L+VGqCW9ydiyw3xPrEf9I5IyAgahAu806qZ3sLeqjsj2txq43P+PLmXeRRZX
-         8f+Kb/E1grhqLmRl2j+0gYcp549gJc6k1ssqJSdPZS+b1oUMYyCniGn6xUKttinvzxdC
-         11lw==
+        d=gmail.com; s=20230601; t=1695321875; x=1695926675; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uL0bZo/5seRmQ1p67g8wgY/90dvrygUhJttKGE9q9es=;
+        b=RT2RRmo8xJ/JBvwf9SH+9t/CvNChs0QkE73SZvX6Sl6sjHeS7uDz5Xiip6pmhcngg7
+         LyExWDxR1rggY0OMrgiBNd0FOfieqisa2lZjZIwnyGSzmKpRJ5OC/pBc+oTWlk8v9+3x
+         pp565jM4Ab9mSYLJribX9MJdJsmT+anheMMb/9QxkQtKB2mhjX4ABy8IOwladJjIJ3YC
+         We9nwpn5bwdSoopqVulqIdcbGPjZAjsmQm4FoZ/I07HySP+QNNuLmaRK7GEakXAnDT86
+         BsbcOTiufvhhAsMDuvaphKBhllq4Kll3HsUmu0+zCA9MNbP7HaIuqNCZPky8vng5dnPL
+         alww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695321868; x=1695926668;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/VCY0QPe02BJazAiQWn34Qew1J3t1PztwawBqHZpK/s=;
-        b=H95eoKH58DfLmI9SwCHgkduWWsMWvCaTeYsZ67iKPK+A57EIw0WKT+6gLWFshPzxBZ
-         O2mV3VxQ/6WUPvTVgHp7ufS/RoH9o0tJY3QAiaX2yizvwKqVyUi34sUdHkLERFlwPtlJ
-         ud2BHvQ1QS4IEs+VGM4isEe0pRuTliU3tBlARhFMmuG3DVIc9G7zNh7N+7xATAlKNaXb
-         OiKhrmgc5P++xYsxdur3EI24eTXWyfllJY9gYvD2MXIUJBSz0Uf5LE9VCfnQQa1WGRgf
-         M4bjlDOQZcSSx7mIgDbiFM2Q+loNRcuEFXxRdlaJGyaae7Zm2CNW2ZBUF17VCuU8bARG
-         XAnQ==
-X-Gm-Message-State: AOJu0YzdW1HQQTfNWPrhquww/0qjSEE379CvZf7byeUR1vk2JRktvb1X
-        liMdG4JjjN9ioWaNSbKyF9U=
-X-Google-Smtp-Source: AGHT+IHfaLm5LLsVw0QZpLicq+/Oqy5BPrWWp55fJIt/cMqSTYenCMib0zdDkQyDB86uJDvPG4+XpA==
-X-Received: by 2002:a17:903:2303:b0:1c3:4073:bf80 with SMTP id d3-20020a170903230300b001c34073bf80mr6543072plh.0.1695321867594;
-        Thu, 21 Sep 2023 11:44:27 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1695321875; x=1695926675;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uL0bZo/5seRmQ1p67g8wgY/90dvrygUhJttKGE9q9es=;
+        b=J5+eh6Z3JviR9ehr9RRVPkzJJhSCSoeJJc265jjusDrF9FFMstjhFYRyAm480Y4p4q
+         K1Pm2SvtfePpHfYp6z+N7Q8vOwQYrTQER4tbYcMyBlN+BAhk+LpnHl68xJnxUJdHHFBd
+         8KVEFMC+nE4swASk7PFBuatugzrguDgnATZ0jqt/y8j1aTE4RVDwP91wTWpKNo4ecZt7
+         tMFZ5nb6gWi9lixuMqjeVZbxQS+/wqVfapJCidCvfJpBzH/3KR+vSLXWSaZfIGc5CGn1
+         SvYVO14y48kzQUQYOd2ES0R2UXC+4dgo9n6qRNmR+nTjTm8q/dMs0LAMv8Ffgt998QUt
+         dp9Q==
+X-Gm-Message-State: AOJu0YwoO4ENW6fnu5yEeFswGohqY68A96VefX3kPFr/B1J7uqGSbFm6
+        efHEIuhClbp1Ay6TxYKIkiA=
+X-Google-Smtp-Source: AGHT+IE/ImEQxdOeZQigsPJKWA1EdHeirBYxWHR6Wo2bgxZH5ceA76iyUZ1ku/3UYn9l6A1mDH+/KQ==
+X-Received: by 2002:a05:6a20:440d:b0:15a:3285:e834 with SMTP id ce13-20020a056a20440d00b0015a3285e834mr6050546pzb.4.1695321874853;
+        Thu, 21 Sep 2023 11:44:34 -0700 (PDT)
 Received: from fabio-Precision-3551.. ([2804:14c:485:4b61:3568:5db2:51a5:e134])
-        by smtp.gmail.com with ESMTPSA id c8-20020a170903234800b001b8b07bc600sm1852730plh.186.2023.09.21.11.44.23
+        by smtp.gmail.com with ESMTPSA id c8-20020a170903234800b001b8b07bc600sm1852730plh.186.2023.09.21.11.44.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Sep 2023 11:44:26 -0700 (PDT)
+        Thu, 21 Sep 2023 11:44:34 -0700 (PDT)
 From:   Fabio Estevam <festevam@gmail.com>
 To:     thierry.reding@gmail.com
 Cc:     u.kleine-koenig@pengutronix.de, krzysztof.kozlowski+dt@linaro.org,
         conor+dt@kernel.org, robh+dt@kernel.org, linux-pwm@vger.kernel.org,
         devicetree@vger.kernel.org, Fabio Estevam <festevam@denx.de>
-Subject: [PATCH 1/3] dt-bindings: pwm: mxs: Document fsl,imx28-pwm
-Date:   Thu, 21 Sep 2023 15:43:46 -0300
-Message-Id: <20230921184348.290261-1-festevam@gmail.com>
+Subject: [PATCH 3/3] dt-bindings: pwm: mxs: Allow passing #pwm-cells = <2>
+Date:   Thu, 21 Sep 2023 15:43:48 -0300
+Message-Id: <20230921184348.290261-3-festevam@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230921184348.290261-1-festevam@gmail.com>
+References: <20230921184348.290261-1-festevam@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -65,34 +68,35 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Fabio Estevam <festevam@denx.de>
 
-imx28 uses the same PWM block that is found on imx23.
+All the in-tree imx23 and imx28 devicetrees use #pwm-cells = <2>.
 
-Add an entry for fsl,imx28-pwm.
+Allow it in the schema to avoid warnings.
+
+It is still possible for a devicetree to pass the third cell with the
+PWM polarity though.
+
+This is similar to imx-pwm.yaml that allows #pwm-cells to be 2 or 3.
 
 Signed-off-by: Fabio Estevam <festevam@denx.de>
 ---
- Documentation/devicetree/bindings/pwm/mxs-pwm.yaml | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/pwm/mxs-pwm.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml b/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
-index 6ffbed204c25..655f008081d5 100644
+index 8f50e23ca8c9..405c6412dd5f 100644
 --- a/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
 +++ b/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
-@@ -15,8 +15,12 @@ allOf:
- 
- properties:
-   compatible:
--    enum:
--      - fsl,imx23-pwm
-+    oneOf:
-+      - const: fsl,imx23-pwm
-+      - items:
-+          - enum:
-+              - fsl,imx28-pwm
-+          - const: fsl,imx23-pwm
- 
-   reg:
+@@ -29,7 +29,9 @@ properties:
      maxItems: 1
+ 
+   "#pwm-cells":
+-    const: 3
++    enum:
++      - 2
++      - 3
+ 
+   fsl,pwm-number:
+     $ref: /schemas/types.yaml#/definitions/uint32
 -- 
 2.34.1
 
