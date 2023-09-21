@@ -2,111 +2,97 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F96BE7D0A2
-	for <linux-pwm@archiver.kernel.org>; Thu, 21 Sep 2023 18:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6A1E7D0A6
+	for <linux-pwm@archiver.kernel.org>; Thu, 21 Sep 2023 20:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbjIUS4x (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 21 Sep 2023 14:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
+        id S230016AbjIUUEb (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 21 Sep 2023 16:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbjIUS4m (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Sep 2023 14:56:42 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55D3ECF4F;
-        Thu, 21 Sep 2023 11:44:31 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1c5a223520dso1597855ad.1;
-        Thu, 21 Sep 2023 11:44:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695321871; x=1695926671; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QcgcTESH6/uLiICTVNF75Z76g5C0U09gLoJNGsFvxiU=;
-        b=NpoeGUGZ+31XTaZqQJn2uJKMZPQxRs91fRazZMHOwOHOI+aMqilqcoZDLzpYV53Tym
-         5UopdRl8qX+KJNQUko9tI9T5iq+xSwH0QPrdVRlfhTr4P7CkjhfJo57WznFKtDc9R7jW
-         uJHGBnyiudu5zmvW9NgZQGY2C+3tjvxNi3K52LRGKuTitv7Sw9XMf5q27Xq32vBp23R1
-         GjxgteoKxD6yIHVCn0bCWPjBztGgmVdA3Uhsa6qI5c+nSKE9CDiGRPmL8YOJL2oNdW5W
-         nzBOF8sgaAf5imcre2bxSxRlgUyHpHXG5giE4f7T9J7XSB6lClXRYCka89dYIMEI8gy2
-         W0cA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695321871; x=1695926671;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QcgcTESH6/uLiICTVNF75Z76g5C0U09gLoJNGsFvxiU=;
-        b=kO5B30UDRPRyd6tEikIzHVQu+PrWUtdww90nZIa7Kv7CYbjfjOSLi9ADHmtakn6wsj
-         BUQtLIzXfv1UZ3Y1ruG8XJ3LBo1KywPky5iO9oxtmKHQgvtubYLuKma0iXLU3aHgZAYY
-         dQmqv1r0jxz0gqQxUr26SPCOUOEbYHQlL4kMUVn1I/wes+YTCHk3qZsK0ukyYlrrKMOK
-         AK1AwN+m4NdRe7rkwDBP5+gjddX3NzakpYQ1p5vGdQ6HfQuGAnWiW3bL/xFFETLftbkJ
-         d2W7fwOAgD7/yDYF/ZRBDTOFqaAt4eD7tQnnIa4SzwoLptClmfpFxnd8zIgoAWOQsDQ/
-         vdvg==
-X-Gm-Message-State: AOJu0YyvjKfQMOaG1D32sGIq3KDTWPtpPE+2V0JIQ06JJRyfmH9y8pPh
-        YB0sFYdmzfW37Nvv8ixRI4Y=
-X-Google-Smtp-Source: AGHT+IGfrEo+fTzVOhVyIvLpWrVwIhQfeAURNfE8+QfZGqOMPnoiwlrD3+WDzITNd8LwcSLZQjvZsw==
-X-Received: by 2002:a17:902:d492:b0:1c4:1e65:1e5e with SMTP id c18-20020a170902d49200b001c41e651e5emr6565170plg.0.1695321871311;
-        Thu, 21 Sep 2023 11:44:31 -0700 (PDT)
-Received: from fabio-Precision-3551.. ([2804:14c:485:4b61:3568:5db2:51a5:e134])
-        by smtp.gmail.com with ESMTPSA id c8-20020a170903234800b001b8b07bc600sm1852730plh.186.2023.09.21.11.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Sep 2023 11:44:30 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     thierry.reding@gmail.com
-Cc:     u.kleine-koenig@pengutronix.de, krzysztof.kozlowski+dt@linaro.org,
+        with ESMTP id S229972AbjIUUEU (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Sep 2023 16:04:20 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428808D9DF
+        for <linux-pwm@vger.kernel.org>; Thu, 21 Sep 2023 12:59:16 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qjPpO-0003Ut-6U; Thu, 21 Sep 2023 21:59:10 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qjPpN-00803g-AH; Thu, 21 Sep 2023 21:59:09 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qjPpM-003iAi-Ts; Thu, 21 Sep 2023 21:59:08 +0200
+Date:   Thu, 21 Sep 2023 21:59:09 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     thierry.reding@gmail.com, krzysztof.kozlowski+dt@linaro.org,
         conor+dt@kernel.org, robh+dt@kernel.org, linux-pwm@vger.kernel.org,
         devicetree@vger.kernel.org, Fabio Estevam <festevam@denx.de>
-Subject: [PATCH 2/3] dt-bindings: pwm: mxs: Document the clocks property
-Date:   Thu, 21 Sep 2023 15:43:47 -0300
-Message-Id: <20230921184348.290261-2-festevam@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230921184348.290261-1-festevam@gmail.com>
+Subject: Re: [PATCH 3/3] dt-bindings: pwm: mxs: Allow passing #pwm-cells = <2>
+Message-ID: <20230921195909.ulpoqvrixocwqou2@pengutronix.de>
 References: <20230921184348.290261-1-festevam@gmail.com>
+ <20230921184348.290261-3-festevam@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zvqknlzx3hklllpf"
+Content-Disposition: inline
+In-Reply-To: <20230921184348.290261-3-festevam@gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
 
-The 'clocks' property is mandatory for the PWM to operate.
+--zvqknlzx3hklllpf
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Document it.
+Hello Fabio,
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
----
- Documentation/devicetree/bindings/pwm/mxs-pwm.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+On Thu, Sep 21, 2023 at 03:43:48PM -0300, Fabio Estevam wrote:
+> From: Fabio Estevam <festevam@denx.de>
+>=20
+> All the in-tree imx23 and imx28 devicetrees use #pwm-cells =3D <2>.
+>=20
+> Allow it in the schema to avoid warnings.
+>=20
+> It is still possible for a devicetree to pass the third cell with the
+> PWM polarity though.
+>=20
+> This is similar to imx-pwm.yaml that allows #pwm-cells to be 2 or 3.
 
-diff --git a/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml b/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
-index 655f008081d5..8f50e23ca8c9 100644
---- a/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
-@@ -25,6 +25,9 @@ properties:
-   reg:
-     maxItems: 1
- 
-+  clocks:
-+    maxItems: 1
-+
-   "#pwm-cells":
-     const: 3
- 
-@@ -35,6 +38,7 @@ properties:
- required:
-   - compatible
-   - reg
-+  - clocks
-   - fsl,pwm-number
- 
- additionalProperties: false
-@@ -44,6 +48,7 @@ examples:
-     pwm@80064000 {
-         compatible = "fsl,imx23-pwm";
-         reg = <0x80064000 0x2000>;
-+        clocks = <&clks 30>;
-         #pwm-cells = <3>;
-         fsl,pwm-number = <8>;
-     };
--- 
-2.34.1
+Alternatively switch all devicetrees to use =3D <3>? That's what I'd
+prefer given that the PWM supports both polarities.
 
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--zvqknlzx3hklllpf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUMoIwACgkQj4D7WH0S
+/k6/sQgArIOAvS8VYqdd//skjrkrDRwEC7caykl2brTnBrGTCbXLcN1xx7Ljc88H
+aLmjOFELi93sxjsGM5mcg5hQOg99fveuUKYLTQ/TpHmfPmT512SLRzeqPdMXmXdT
+twpDtmtpu5/L7LhFrpnU9+KKpi3f3JFCVAOzp9p4VgITkMvotRlnIh8xgOoMn+XU
+t/Rc3vylQ2Mqxrmsll4RJ3926JIG7OUAQ5Bpx7bWXNmzy9IdLe7zIIiGwLtEHhRH
+war+bneWv5+4r2clmniafrhnqlxuI9PuMGuvg3Ab+KKq9LyoWCekNeTzDc2cNn85
+nmMPSqbFBE9dwk6cig1WMkJFbS3KeA==
+=6VPi
+-----END PGP SIGNATURE-----
+
+--zvqknlzx3hklllpf--
