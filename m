@@ -2,42 +2,42 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80AFFCE7A89
-	for <linux-pwm@archiver.kernel.org>; Mon, 25 Sep 2023 06:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00DD4CE7A81
+	for <linux-pwm@archiver.kernel.org>; Mon, 25 Sep 2023 07:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbjIYG76 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 25 Sep 2023 02:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52320 "EHLO
+        id S229720AbjIYHAG (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 25 Sep 2023 03:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232333AbjIYG76 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Sep 2023 02:59:58 -0400
+        with ESMTP id S232343AbjIYHAF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Sep 2023 03:00:05 -0400
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADF4CF;
-        Sun, 24 Sep 2023 23:59:51 -0700 (PDT)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38P5DdZ4028258;
-        Mon, 25 Sep 2023 06:59:34 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584B5A3;
+        Sun, 24 Sep 2023 23:59:58 -0700 (PDT)
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38P4Clbj016677;
+        Mon, 25 Sep 2023 06:59:44 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=qcppdkim1;
- bh=Ui/rR6BUBsfiSpLCNBIjp14VY6rQXxkTQ8UdtHdSN3M=;
- b=ODaAXr3GwntTHubRmK8FEmuFqOTIUh6Kj0cJYMJcwIaxywzasbvQtUHedNS88wpPMobi
- AHmhKfBAz57MMEOf9vGKr7pV85uwmqTKixhZ2eEmAF7AlbEhWndB/sGrSKM7YIyEFz2d
- e9kAD7pemSR1B4YBaPz6UwTK4+L7QtNCn4A/eSrBW30FcMm+NmirtfwB1qXq4Mcf/pAQ
- u9oSF98jl2R9z2dq/s2miMjqu3t4L9dAOXrHJKPoqXk9Hteb7OoEACzdf3hTES+TgRix
- yOkLVtra8gTdNPc+ysBxvvI7kl0tgiIZEGu7bXp3qIgXZ4IpvqXVqztJvjCTbgNO3+IB kg== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=JXJS5Xc8wcznvYH4QGzPHBRcQwOdk/1Rhj8D6JmB63Y=;
+ b=o5Rbmimy9vPDOgntpsxCKaKf+Et/P2nRCXgzGqNdk4dHLB9Vad7DvJWWi+3F4O4fb56U
+ H4bSKSm+Q7Cy1EilmXukXUp/i7abBsP8e8x7OS6tmXXAHVnETRvZtJO1h2MnogG7BSl9
+ iLpqKwDdK52MP/odGdR0w5w1WCDThpO3PJjFpzcLKNm5OEHlUhVPqFFdpUmg0vMo4xAc
+ MNncNhaMvjiTvCavIBgzufMvg+lbo4qdiiqQR72IwYfhTTgCMMlk6EC26lFXAvhhCCm9
+ h3k0w0R7g9ylaH9tec2cHRX+l6xvENssrSYtox4Bbprfjal28a0Op4rK0NT9qT6dobn4 TQ== 
 Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t9qbpu3x8-1
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t9ncuk9rr-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Sep 2023 06:59:34 +0000
+        Mon, 25 Sep 2023 06:59:44 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38P6xXPB025886
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38P6xgBd025995
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Sep 2023 06:59:33 GMT
+        Mon, 25 Sep 2023 06:59:43 GMT
 Received: from hu-devipriy-blr.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.36; Sun, 24 Sep 2023 23:59:28 -0700
+ 15.2.1118.36; Sun, 24 Sep 2023 23:59:38 -0700
 From:   Devi Priya <quic_devipriy@quicinc.com>
 To:     <thierry.reding@gmail.com>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
@@ -48,51 +48,153 @@ To:     <thierry.reding@gmail.com>, <robh+dt@kernel.org>,
         <linux-arm-msm@vger.kernel.org>, <llvm@lists.linux.dev>
 CC:     <linux-pwm@vger.kernel.org>, <u.kleine-koenig@pengutronix.de>,
         <nathan@kernel.org>
-Subject: [PATCH V12 0/3] Add PWM support for IPQ chipsets
-Date:   Mon, 25 Sep 2023 12:29:12 +0530
-Message-ID: <20230925065915.3467964-1-quic_devipriy@quicinc.com>
+Subject: [PATCH V12 2/3] dt-bindings: pwm: add IPQ6018 binding
+Date:   Mon, 25 Sep 2023 12:29:14 +0530
+Message-ID: <20230925065915.3467964-3-quic_devipriy@quicinc.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230925065915.3467964-1-quic_devipriy@quicinc.com>
+References: <20230925065915.3467964-1-quic_devipriy@quicinc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
 X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: MbP2NKkmWh8SzeQhJqXqaY68dKJC1xfz
-X-Proofpoint-ORIG-GUID: MbP2NKkmWh8SzeQhJqXqaY68dKJC1xfz
+X-Proofpoint-ORIG-GUID: PqSpVEtJr6ru2667rSsl0kwzhC-gD_50
+X-Proofpoint-GUID: PqSpVEtJr6ru2667rSsl0kwzhC-gD_50
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-25_04,2023-09-21_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- priorityscore=1501 adultscore=0 mlxlogscore=755 spamscore=0 malwarescore=0
- impostorscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0
- clxscore=1011 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2309250047
+ definitions=2023-09-25_03,2023-09-21_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
+ impostorscore=0 adultscore=0 clxscore=1015 spamscore=0 priorityscore=1501
+ suspectscore=0 phishscore=0 mlxscore=0 lowpriorityscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
+ definitions=main-2309250047
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add PWM driver and binding support for IPQ chipsets.
-Also, add support for pwm in ipq6018.
+DT binding for the PWM block in Qualcomm IPQ6018 SoC.
 
-Devi Priya (3):
-  pwm: driver for qualcomm ipq6018 pwm block
-  dt-bindings: pwm: add IPQ6018 binding
-  arm64: dts: ipq6018: add pwm node
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Co-developed-by: Baruch Siach <baruch.siach@siklu.com>
+Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+Signed-off-by: Devi Priya <quic_devipriy@quicinc.com>
+---
+v12:
 
- .../devicetree/bindings/pwm/ipq-pwm.yaml      |  53 ++++
- arch/arm64/boot/dts/qcom/ipq6018.dtsi         |  15 +-
- drivers/pwm/Kconfig                           |  12 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-ipq.c                         | 282 ++++++++++++++++++
- 5 files changed, 362 insertions(+), 1 deletion(-)
+  Picked up the R-b tag
+
+v11:
+
+  No change
+
+v10:
+
+  No change
+
+v9:
+
+  Add 'ranges' property to example (Rob)
+
+  Drop label in example (Rob)
+
+v8:
+
+  Add size cell to 'reg' (Rob)
+
+v7:
+
+  Use 'reg' instead of 'offset' (Rob)
+
+  Drop 'clock-names' and 'assigned-clock*' (Bjorn)
+
+  Use single cell address/size in example node (Bjorn)
+
+  Move '#pwm-cells' lower in example node (Bjorn)
+
+  List 'reg' as required
+
+v6:
+
+  Device node is child of TCSR; remove phandle (Rob Herring)
+
+  Add assigned-clocks/assigned-clock-rates (Uwe Kleine-König)
+
+v5: Use qcom,pwm-regs for phandle instead of direct regs (Bjorn
+    Andersson, Kathiravan T)
+
+v4: Update the binding example node as well (Rob Herring's bot)
+
+v3: s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
+
+v2: Make #pwm-cells const (Rob Herring)
+
+ .../devicetree/bindings/pwm/ipq-pwm.yaml      | 53 +++++++++++++++++++
+ 1 file changed, 53 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
- create mode 100644 drivers/pwm/pwm-ipq.c
 
-
-base-commit: 940fcc189c51032dd0282cbee4497542c982ac59
+diff --git a/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+new file mode 100644
+index 000000000000..857086ad539e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+@@ -0,0 +1,53 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/ipq-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm IPQ6018 PWM controller
++
++maintainers:
++  - Baruch Siach <baruch@tkos.co.il>
++
++properties:
++  "#pwm-cells":
++    const: 2
++
++  compatible:
++    const: qcom,ipq6018-pwm
++
++  reg:
++    description: Offset of PWM register in the TCSR block.
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - "#pwm-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-ipq6018.h>
++
++    syscon@1937000 {
++        compatible = "qcom,tcsr-ipq6018", "syscon", "simple-mfd";
++        reg = <0x01937000 0x21000>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0 0x1937000 0x21000>;
++
++        pwm: pwm@a010 {
++            compatible = "qcom,ipq6018-pwm";
++            reg = <0xa010 0x20>;
++            clocks = <&gcc GCC_ADSS_PWM_CLK>;
++            assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
++            assigned-clock-rates = <100000000>;
++            #pwm-cells = <2>;
++        };
++    };
 -- 
 2.34.1
 
