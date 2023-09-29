@@ -2,49 +2,45 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5A6E728D1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89525E728CE
 	for <linux-pwm@archiver.kernel.org>; Fri, 29 Sep 2023 16:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233454AbjI2QTc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S233439AbjI2QTc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Fri, 29 Sep 2023 12:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233420AbjI2QTb (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 29 Sep 2023 12:19:31 -0400
+        with ESMTP id S233454AbjI2QT3 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 29 Sep 2023 12:19:29 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE681A4
-        for <linux-pwm@vger.kernel.org>; Fri, 29 Sep 2023 09:19:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501CE1AE
+        for <linux-pwm@vger.kernel.org>; Fri, 29 Sep 2023 09:19:26 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qmGD5-0007nu-9W; Fri, 29 Sep 2023 18:19:23 +0200
+        id 1qmGD6-0007pW-CU; Fri, 29 Sep 2023 18:19:24 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qmGD4-009r5X-Su; Fri, 29 Sep 2023 18:19:22 +0200
+        id 1qmGD5-009r5s-Vx; Fri, 29 Sep 2023 18:19:24 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qmGD4-006161-Jg; Fri, 29 Sep 2023 18:19:22 +0200
+        id 1qmGD5-00616L-Mm; Fri, 29 Sep 2023 18:19:23 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 04/11] pwm: imx-tpm: Simplify using devm functions
-Date:   Fri, 29 Sep 2023 18:19:11 +0200
-Message-Id: <20230929161918.2410424-5-u.kleine-koenig@pengutronix.de>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH 09/11] pwm: vt8500: Simplify using devm functions
+Date:   Fri, 29 Sep 2023 18:19:16 +0200
+Message-Id: <20230929161918.2410424-10-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230929161918.2410424-1-u.kleine-koenig@pengutronix.de>
 References: <20230929161918.2410424-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2232; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Vf9eLQ4D2emyuwU26S5RXcy4ATOu7LfDfnIsT7/7fjw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlFvj4ydcpCzIU4FL/bzecaNu1wUN40R/feN6wG EXh7MeeKMGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZRb4+AAKCRCPgPtYfRL+ TkE4B/4rBZD9qS0/b0Vzhmr7C5ciOkr5Ge1h3xMBzTWkPcneFvrVhN0aNLz7GZs8UzslftXNxqt BgLQ/r4nCedws/xNgElcjaydd9365GA9alFL0MNgO9PPpLwpAFKjYBE7/2+9i2dftNIDZd0vXNt jvH5W+ULWbpT7TdhAASgIKZs14ARAP5/n8dFKA4lDIM78XdUKQFMz4MVypW5FSIcPg9QTiVC+iq VLCGEcelQc3MptXZ6gqX/ENg9G46zCD0dZmbbIy+okiRaSeFAgYEd2xPdmfucjI5/oD992nQsNZ EmL+rGR/pUStDj/xgIiXF+9mW1XbpC5hOSoFR6OWknqQ1V7W
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2795; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=FJNOyAxzATbLhbsQS66EfbdvtZ2s0b2e76dKLbuAUn8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlFvj+/BiKgxM3yFS8ifonjeE+Fc5ehA51xYGuY ZK+ohvjOMyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZRb4/gAKCRCPgPtYfRL+ Tm0kB/9CZaXJD3rH7yyA8xt/cNUy0OHq/7be1ekXgDHhOCu0f8yoohEl1temrPM12ndk+jcnElk FUC0hAydmPsCA5po4Bx4vfkszNDUju8YOCHrfoOjOY19g9la6fKj2QjLXYVkHD8Mmz6SkUPeR+X kHV0+9I0c8stQkAbnJa9FQU+LC4vtNFLLIlJuvdmoLSYqIw+SFJywT9jZrDOupZrP6n7jstT++z MLAIq0x/QH9mZPBB8t34Bs2em+SzI7jsaNeX7jfBg0+0qx9Mz0ep4B3l77slGEeVEgPlrvoeopC wOzHVeCkuJd0fqzqbHCEZFvQtf093LgoaFVkbXHqLXGIV41J
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -55,77 +51,90 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-With devm_clk_get_enabled() the call to clk_disable_unprepare() can be
-dropped from the error path and the remove callback. With
-devm_pwmchip_add() pwmchip_remove() can be dropped. Then the remove
-callback is empty and can go away, too.
+With devm_clk_get_prepared() the call to clk_unprepare() can be dropped
+from the error path and the remove callback. With devm_pwmchip_add()
+pwmchip_remove() can be dropped. Then the remove callback is empty and
+can go away, too. With vt8500_pwm_remove() the last user of
+platform_get_drvdata() is gone and so platform_set_drvdata() can be
+dropped, too.
 
 Also use dev_err_probe() for simplified (and improved) error reporting.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx-tpm.c | 29 +++++------------------------
- 1 file changed, 5 insertions(+), 24 deletions(-)
+ drivers/pwm/pwm-vt8500.c | 42 +++++++++-------------------------------
+ 1 file changed, 9 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
-index 98ab65c89685..3ffc89b4f3fe 100644
---- a/drivers/pwm/pwm-imx-tpm.c
-+++ b/drivers/pwm/pwm-imx-tpm.c
-@@ -351,18 +351,11 @@ static int pwm_imx_tpm_probe(struct platform_device *pdev)
- 	if (IS_ERR(tpm->base))
- 		return PTR_ERR(tpm->base);
+diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
+index 6d46db51daac..25fee12d2131 100644
+--- a/drivers/pwm/pwm-vt8500.c
++++ b/drivers/pwm/pwm-vt8500.c
+@@ -236,10 +236,8 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	int ret;
  
--	tpm->clk = devm_clk_get(&pdev->dev, NULL);
-+	tpm->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(tpm->clk))
- 		return dev_err_probe(&pdev->dev, PTR_ERR(tpm->clk),
- 				     "failed to get PWM clock\n");
+-	if (!np) {
+-		dev_err(&pdev->dev, "invalid devicetree node\n");
+-		return -EINVAL;
+-	}
++	if (!np)
++		return dev_err_probe(&pdev->dev, -EINVAL, "invalid devicetree node\n");
  
--	ret = clk_prepare_enable(tpm->clk);
--	if (ret) {
--		dev_err(&pdev->dev,
--			"failed to prepare or enable clock: %d\n", ret);
+ 	vt8500 = devm_kzalloc(&pdev->dev, sizeof(*vt8500), GFP_KERNEL);
+ 	if (vt8500 == NULL)
+@@ -249,45 +247,23 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
+ 	vt8500->chip.ops = &vt8500_pwm_ops;
+ 	vt8500->chip.npwm = VT8500_NR_PWMS;
+ 
+-	vt8500->clk = devm_clk_get(&pdev->dev, NULL);
+-	if (IS_ERR(vt8500->clk)) {
+-		dev_err(&pdev->dev, "clock source not specified\n");
+-		return PTR_ERR(vt8500->clk);
+-	}
++	vt8500->clk = devm_clk_get_prepared(&pdev->dev, NULL);
++	if (IS_ERR(vt8500->clk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(vt8500->clk), "clock source not specified\n");
+ 
+ 	vt8500->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(vt8500->base))
+ 		return PTR_ERR(vt8500->base);
+ 
+-	ret = clk_prepare(vt8500->clk);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "failed to prepare clock\n");
+-		return ret;
+-	}
++	ret = devm_pwmchip_add(&pdev->dev, &vt8500->chip);
++	if (ret < 0)
++		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
+ 
+-	ret = pwmchip_add(&vt8500->chip);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "failed to add PWM chip\n");
+-		clk_unprepare(vt8500->clk);
 -		return ret;
 -	}
 -
- 	tpm->chip.dev = &pdev->dev;
- 	tpm->chip.ops = &imx_tpm_pwm_ops;
- 
-@@ -372,22 +365,11 @@ static int pwm_imx_tpm_probe(struct platform_device *pdev)
- 
- 	mutex_init(&tpm->lock);
- 
--	ret = pwmchip_add(&tpm->chip);
--	if (ret) {
--		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
--		clk_disable_unprepare(tpm->clk);
--	}
-+	ret = devm_pwmchip_add(&pdev->dev, &tpm->chip);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
- 
+-	platform_set_drvdata(pdev, vt8500);
 -	return ret;
 -}
 -
--static void pwm_imx_tpm_remove(struct platform_device *pdev)
+-static void vt8500_pwm_remove(struct platform_device *pdev)
 -{
--	struct imx_tpm_pwm_chip *tpm = platform_get_drvdata(pdev);
+-	struct vt8500_chip *vt8500 = platform_get_drvdata(pdev);
 -
--	pwmchip_remove(&tpm->chip);
+-	pwmchip_remove(&vt8500->chip);
 -
--	clk_disable_unprepare(tpm->clk);
+-	clk_unprepare(vt8500->clk);
 +	return 0;
  }
  
- static int __maybe_unused pwm_imx_tpm_suspend(struct device *dev)
-@@ -437,7 +419,6 @@ static struct platform_driver imx_tpm_pwm_driver = {
- 		.pm = &imx_tpm_pwm_pm,
- 	},
- 	.probe	= pwm_imx_tpm_probe,
--	.remove_new = pwm_imx_tpm_remove,
- };
- module_platform_driver(imx_tpm_pwm_driver);
- 
+ static struct platform_driver vt8500_pwm_driver = {
+ 	.probe		= vt8500_pwm_probe,
+-	.remove_new	= vt8500_pwm_remove,
+ 	.driver		= {
+ 		.name	= "vt8500-pwm",
+ 		.of_match_table = vt8500_pwm_dt_ids,
 -- 
 2.40.1
 
