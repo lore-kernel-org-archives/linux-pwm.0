@@ -2,49 +2,46 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B92E728C9
-	for <linux-pwm@archiver.kernel.org>; Fri, 29 Sep 2023 16:19:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA30E728CC
+	for <linux-pwm@archiver.kernel.org>; Fri, 29 Sep 2023 16:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233147AbjI2QTb (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S232878AbjI2QTb (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Fri, 29 Sep 2023 12:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233355AbjI2QT3 (ORCPT
+        with ESMTP id S233362AbjI2QT3 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Fri, 29 Sep 2023 12:19:29 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939C31A5
-        for <linux-pwm@vger.kernel.org>; Fri, 29 Sep 2023 09:19:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA461B0
+        for <linux-pwm@vger.kernel.org>; Fri, 29 Sep 2023 09:19:27 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qmGD5-0007o4-GR; Fri, 29 Sep 2023 18:19:23 +0200
+        id 1qmGD6-0007q4-RF; Fri, 29 Sep 2023 18:19:24 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qmGD5-009r5c-3Q; Fri, 29 Sep 2023 18:19:23 +0200
+        id 1qmGD6-009r61-Dt; Fri, 29 Sep 2023 18:19:24 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qmGD4-006165-QO; Fri, 29 Sep 2023 18:19:22 +0200
+        id 1qmGD6-00616T-4g; Fri, 29 Sep 2023 18:19:24 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-pwm@vger.kernel.org, kernel@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH 05/11] pwm: mtk-disp: Simplify using devm_pwmchip_add()
-Date:   Fri, 29 Sep 2023 18:19:12 +0200
-Message-Id: <20230929161918.2410424-6-u.kleine-koenig@pengutronix.de>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>, linux-pwm@vger.kernel.org,
+        chrome-platform@lists.linux.dev, kernel@pengutronix.de
+Subject: [PATCH 11/11] pwm: cros-ec: Simplify using devm_pwmchip_add() and dev_err_probe()
+Date:   Fri, 29 Sep 2023 18:19:18 +0200
+Message-Id: <20230929161918.2410424-12-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230929161918.2410424-1-u.kleine-koenig@pengutronix.de>
 References: <20230929161918.2410424-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2196; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=J2X1TCgGm2aiqZ1DsX5bUui3ufiRtvhRg3HnY+fgzOs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlFvj54D2J0JZGcHBTpeSmu5Mae16b94F5WOmVo 8PHPZe9K+OJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZRb4+QAKCRCPgPtYfRL+ TrIqB/9hQa72vyvBBSQ/n+Cx0Zvc7D1UUcOtRDbErHARp2Cx9dBlB/s9aVRGHAwIOatI+D+x/ux di1XfnnjLvpj81RMSVOZRRU/edU8HCobPdH56lBHyCEV+AR9DcKQlkquo67RN8iB8h7Jq3bzO8l Jk6DzEUsH6u+afQpGm/8i6Aox9UcxdDkF7jq2Uqu3jO5r/s3RH386wbDK25CNh2SKp+hBvPolqI 72ZK0jp1MQCfgIvqwx7TeV1UQ+KXmx0MglzyATwPmO+SUrfgwm6yihukDdWVQtG2swSQobKsQzk oNfWwZ2SRi4l0vTDdCPHGbsXCgpGvB6tuwaleRJYvqA12E1R
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2276; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=lvV87uXW3xEjQrKArZx5bIlDe5j6UzwJosC7twW0qwo=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlSxnwyJ+beYkxa8fvtwktM3ZZNy4+oPh7pyHd7lVjHvE 7zsuHJFJ6MxCwMjF4OsmCKLfeOaTKsqucjOtf8uwwxiZQKZwsDFKQATKSll/6fi7hx56/fkHKWT /L3L9ht7L++weC2fu9PHS27i/92L2MQKLpcv469clxH8aHa+wKvgjMKi2ys/c9vY+6137KxrutO nu7+W+YNOSXPkjtln7qgGJ+Qb3frFE9adtcDLov30l3g26cKL2VrsEkKuFonbOTWf5nB8sFnL1q Sa6J66QiVkUu3Ze7s9Nz989fCmhvE/gya1qtOqcicm6z+/qPLG0G3RLCaH1qSfGo2B+4zP9Ii1v 5FepTnpypEwXkZp3vXi3TNPxx10msxc62+eapZ/VWbtiZsVEfLcR4MeTTqed939sF11hWGim7Rc XebDr2Kuhh4Mx2xc3px4kdzWtnj+0tVrwr70bJ64zigEAA==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -55,72 +52,81 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-With devm_pwmchip_add() pwmchip_remove() can be dropped from the remove
-callback. Then the remove callback is empty and can go away, too. With
-mtk_disp_pwm_remove() the last user of platform_get_drvdata() is gone and
-so platform_set_drvdata() can be dropped, too.
+Using devm_pwmchip_add() allows to drop pwmchip_remove() from the remove
+function which makes this function empty. Then there is no user of
+drvdata left and platform_set_drvdata() can be dropped, too.
 
-Also use dev_err_probe() for simplified (and improved) error reporting.
+Further simplify and improve error returning using dev_err_probe().
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-mtk-disp.c | 24 +++++++-----------------
- 1 file changed, 7 insertions(+), 17 deletions(-)
+ drivers/pwm/pwm-cros-ec.c | 33 ++++++++-------------------------
+ 1 file changed, 8 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
-index a83bd6e18b07..e34fb4409695 100644
---- a/drivers/pwm/pwm-mtk-disp.c
-+++ b/drivers/pwm/pwm-mtk-disp.c
-@@ -247,34 +247,25 @@ static int mtk_disp_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+index baaac0c33aa0..f048150fffc7 100644
+--- a/drivers/pwm/pwm-cros-ec.c
++++ b/drivers/pwm/pwm-cros-ec.c
+@@ -286,10 +286,8 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
+ 	struct pwm_chip *chip;
+ 	int ret;
  
- 	mdp->clk_main = devm_clk_get(&pdev->dev, "main");
- 	if (IS_ERR(mdp->clk_main))
--		return PTR_ERR(mdp->clk_main);
-+		return dev_err_probe(&pdev->dev, PTR_ERR(mdp->clk_main),
-+				     "Failed to get main clock\n");
+-	if (!ec) {
+-		dev_err(dev, "no parent EC device\n");
+-		return -EINVAL;
+-	}
++	if (!ec)
++		return dev_err_probe(dev, -EINVAL, "no parent EC device\n");
  
- 	mdp->clk_mm = devm_clk_get(&pdev->dev, "mm");
- 	if (IS_ERR(mdp->clk_mm))
--		return PTR_ERR(mdp->clk_mm);
-+		return dev_err_probe(&pdev->dev, PTR_ERR(mdp->clk_mm),
-+				     "Failed to get mm clock\n");
+ 	ec_pwm = devm_kzalloc(dev, sizeof(*ec_pwm), GFP_KERNEL);
+ 	if (!ec_pwm)
+@@ -310,32 +308,18 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
+ 		chip->npwm = CROS_EC_PWM_DT_COUNT;
+ 	} else {
+ 		ret = cros_ec_num_pwms(ec_pwm);
+-		if (ret < 0) {
+-			dev_err(dev, "Couldn't find PWMs: %d\n", ret);
+-			return ret;
+-		}
++		if (ret < 0)
++			return dev_err_probe(dev, ret, "Couldn't find PWMs\n");
+ 		chip->npwm = ret;
+ 	}
  
- 	mdp->chip.dev = &pdev->dev;
- 	mdp->chip.ops = &mtk_disp_pwm_ops;
- 	mdp->chip.npwm = 1;
+ 	dev_dbg(dev, "Probed %u PWMs\n", chip->npwm);
  
--	ret = pwmchip_add(&mdp->chip);
+-	ret = pwmchip_add(chip);
 -	if (ret < 0) {
--		dev_err(&pdev->dev, "pwmchip_add() failed: %pe\n", ERR_PTR(ret));
+-		dev_err(dev, "cannot register PWM: %d\n", ret);
 -		return ret;
 -	}
--
--	platform_set_drvdata(pdev, mdp);
-+	ret = devm_pwmchip_add(&pdev->dev, &mdp->chip);
++	ret = devm_pwmchip_add(dev, chip);
 +	if (ret < 0)
-+		return dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
++		return dev_err_probe(dev, ret, "cannot register PWM\n");
  
- 	return 0;
- }
- 
--static void mtk_disp_pwm_remove(struct platform_device *pdev)
--{
--	struct mtk_disp_pwm *mdp = platform_get_drvdata(pdev);
+-	platform_set_drvdata(pdev, ec_pwm);
 -
--	pwmchip_remove(&mdp->chip);
+-	return ret;
 -}
 -
- static const struct mtk_pwm_data mt2701_pwm_data = {
- 	.enable_mask = BIT(16),
- 	.con0 = 0xa8,
-@@ -320,7 +311,6 @@ static struct platform_driver mtk_disp_pwm_driver = {
- 		.of_match_table = mtk_disp_pwm_of_match,
- 	},
- 	.probe = mtk_disp_pwm_probe,
--	.remove_new = mtk_disp_pwm_remove,
- };
- module_platform_driver(mtk_disp_pwm_driver);
+-static void cros_ec_pwm_remove(struct platform_device *dev)
+-{
+-	struct cros_ec_pwm_device *ec_pwm = platform_get_drvdata(dev);
+-	struct pwm_chip *chip = &ec_pwm->chip;
+-
+-	pwmchip_remove(chip);
++	return 0;
+ }
  
+ #ifdef CONFIG_OF
+@@ -349,7 +333,6 @@ MODULE_DEVICE_TABLE(of, cros_ec_pwm_of_match);
+ 
+ static struct platform_driver cros_ec_pwm_driver = {
+ 	.probe = cros_ec_pwm_probe,
+-	.remove_new = cros_ec_pwm_remove,
+ 	.driver = {
+ 		.name = "cros-ec-pwm",
+ 		.of_match_table = of_match_ptr(cros_ec_pwm_of_match),
 -- 
 2.40.1
 
