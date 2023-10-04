@@ -2,114 +2,77 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0ED5E7B5E0
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Oct 2023 09:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7725E7B5E2
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Oct 2023 09:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242029AbjJDJgP (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 4 Oct 2023 05:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57078 "EHLO
+        id S241000AbjJDJjj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 4 Oct 2023 05:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242023AbjJDJgM (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Oct 2023 05:36:12 -0400
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CA3AB
-        for <linux-pwm@vger.kernel.org>; Wed,  4 Oct 2023 02:36:08 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qnyIR-0008EB-Mz; Wed, 04 Oct 2023 11:35:59 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qnyIR-00AztC-AH; Wed, 04 Oct 2023 11:35:59 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qnyIR-008tcd-0w; Wed, 04 Oct 2023 11:35:59 +0200
-Date:   Wed, 4 Oct 2023 11:35:58 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sean Young <sean@mess.org>
-Cc:     Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 2/2] media: pwm-ir-tx: trigger edges from hrtimer
- interrupt context
-Message-ID: <20231004093558.bt7gf3m6erxxpaie@pengutronix.de>
-References: <cover.1696156485.git.sean@mess.org>
- <7efe4229514001b835fa70d51973cd3306dc0b04.1696156485.git.sean@mess.org>
- <5982681d-4fb5-0271-fdc5-712d6c8512e3@gmail.com>
- <ZRp9RE2jOZdL0+1/@gofer.mess.org>
- <7075cfd7-847e-8d28-72be-93761b36b0e0@gmail.com>
- <ZR0Xue8Mu8VZIxm5@gofer.mess.org>
+        with ESMTP id S232956AbjJDJjj (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Oct 2023 05:39:39 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E278A7;
+        Wed,  4 Oct 2023 02:39:36 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E8B7C433C7;
+        Wed,  4 Oct 2023 09:39:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696412376;
+        bh=Mo9aBSue9VgCsnzG+WTcEHnQB+oqgaq0bf1pV4lpD7s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=j8Tr0MiZaTgG2SgRnZTV7+1OuMwIoz8poMpoC5wZM+h+1Wp4gQhB4uJc1OrJl+iy5
+         BCr2XqZ4FzC8o71iWEgHlY+LnM2NJ/B65xYXFLwZsaDurmNYivr+ESxvNYTCt15on0
+         22gtaA35KcSe0zY1WSNEAfOGavpt0Kybof/3PViaXe0KKQARS5XTjO1z5mY/WacIb+
+         F8GNHTNlNPExRwrVtO6lMtuzaZJbGKeVcsNCD2lwMUFId/wUEIMzEkM+Zliflf57vk
+         uYdwjXA3ljT6I2G0oxpzTqdY2qODHtv0meyVUVbnKQpVKvTyuY0s90QZe19scZvsuP
+         5AZ15FkVv8lGA==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: [PATCH v2 0/2] pwm: add driver for T-THEAD TH1520 SoC
+Date:   Wed,  4 Oct 2023 17:27:29 +0800
+Message-Id: <20231004092731.1362-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pe6ujpvp227ivopk"
-Content-Disposition: inline
-In-Reply-To: <ZR0Xue8Mu8VZIxm5@gofer.mess.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+T-HEAD SoCs such as the TH1520 contain a PWM controller used to
+control the LCD backlight, fan and so on. Add the PWM driver support
+for it.
 
---pe6ujpvp227ivopk
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Since the clk part isn't mainlined, so SoC dts(i) changes are not
+included in this series. However, it can be tested by using fixed-clock.
 
-Hello,
+since v1:
+ - update commit msg and yaml filename to address Conor's comment
+ - use devm_clk_get_enabled() and devm_pwmchip_add()
+ - implement .get_state()
+ - properly handle overflow
+ - introduce thead_pwm_from_chip() inline function
+ - document Limitations
+ - address pm_runtime_get/put pingpong comment
 
-On Wed, Oct 04, 2023 at 08:43:53AM +0100, Sean Young wrote:
-> On Mon, Oct 02, 2023 at 12:52:00PM +0300, Ivaylo Dimitrov wrote:
-> > On 2.10.23 =D0=B3. 11:20 =D1=87., Sean Young wrote:
-> > > Requires a copy of pwm_state in pwm_ir, not a huge difference (copy o=
-f 28
-> > > bytes vs keeping it around).
-> >=20
-> > see my previous comment re struct var. Also, look at the overhead:
-> > https://elixir.bootlin.com/linux/v6.6-rc3/source/include/linux/pwm.h#L3=
-49 -
-> > you call pwm_get_state() for every edge.
->=20
-> That's the 28 bytes copy I was talking about.
+Jisheng Zhang (2):
+  dt-bindings: pwm: Add T-HEAD PWM controller
+  pwm: add T-HEAD PWM driver
 
-Note that pwm_get_state() also has (IMHO) confusing semantics. It gives
-you (most of the time) the state that was last pwm_state_apply()d and
-not the state the hardware is currently in. In my book keeping the
-pwm_state around is the nicer approach that often is also simpler ...
+ .../bindings/pwm/thead,th1520-pwm.yaml        |  44 +++
+ MAINTAINERS                                   |   1 +
+ drivers/pwm/Kconfig                           |  11 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-thead.c                       | 274 ++++++++++++++++++
+ 5 files changed, 331 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/thead,th1520-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-thead.c
 
-> However keeping a pointer in struct pwm_ir is a good compromise and makes
-> the rest of the code cleaner.
+-- 
+2.40.1
 
-=2E.. which seems to apply here, too.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
-   |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---pe6ujpvp227ivopk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUdMf4ACgkQj4D7WH0S
-/k4a8ggAg6OI8IGWfsLy664bxwFXr17DZ7mff8aWmCNyTuzenyyn1ztaclxH9LDA
-90+B2fbt/XxWJzt5pX+OU6wcGDMMmsVQdv87X4ACZBkhQ0k89TJ40SbVNFXoDLUa
-BTjQsYPqOxYUIS7AsGh2NRW1gIwL0ITcVdeaw/jZSc5gtYM/hc8HYzvPsL7V8Rom
-IGRNU0saEMLKiIcXObvQMAoLG4S6YPE0GKiOQZee2BQiEtF0uvfhHRSDcaEybMIg
-uyWqbJqS2i0dW6xsG+sp9ySpxPd9osh5LYhwxa9Xr/a0JPx+fjzTBt8RAefz1qWA
-KyU5n3RpaHKDe3p7eXq8U9HhzEm66A==
-=/8+M
------END PGP SIGNATURE-----
-
---pe6ujpvp227ivopk--
