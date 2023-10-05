@@ -2,248 +2,125 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0385EE936ED
-	for <linux-pwm@archiver.kernel.org>; Thu,  5 Oct 2023 01:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96413E92700
+	for <linux-pwm@archiver.kernel.org>; Thu,  5 Oct 2023 13:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244310AbjJEB07 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 4 Oct 2023 21:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        id S229817AbjJEN5X (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 5 Oct 2023 09:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbjJEB07 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Oct 2023 21:26:59 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2093.outbound.protection.outlook.com [40.107.255.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C994D8;
-        Wed,  4 Oct 2023 18:26:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KieloMr7msAi/kRXM10L0MakpZ3NJS4olFuwNCV+oY47f8cEmZLMIuEzam9AsNUM+k+eVbAh4RYNm/tzioCQ+j2riwRQGEupP2T3OOAnEVubHEjF7hov5KXxQ4AkTcu/9bjDfM4zVGLpks7hezo/RsdUOgCV+bxEgyqlO7FHJjlK2en3+R//lmS5mAnXAq7oFjCXsE12C7ANiap+O2xBfIIwsb6Fuscz5pSuoVmEel+3RyH/xszl0mkS8D8qzdZ/SqhTK5czXKBkwLsJ6ykr4Y0p7Ev8tB/4wvMXiz46pV5y6orsU9590kfIgxcVogtOEL4ln/4XdGG5UmB/dMfvtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=noo/fEzBt1fE2C1J8OnDvTdtPkofJlbXwvy1xaBOZic=;
- b=kELIoEHfKYiLpyfiUHiuB0YmuTirVm9tF1LEIsAyJueBSbZc1wZSKbdL2c0cfiUmuSFMPHEeQv15JnNuZ+JfSI94k7+QW680GIGdZr8AWkq216jPFCLTfvCVQHxOWVtcxFtuhMxAxCN309b8cVHq76U+7MulRxJOEEw2ZAYop9kF9z+g4wIx6e5r4an0K+09IbJq3B9Y6KndbHJI1uCh5rzi+FtEY4L/xqDvGcynyVU6K2bM8YxpUtOGuFOx3wDJXR2wmgnzDDew1f8//aNZSbU7Os6EHqgNGQ6FqisBTeE9OGxBO2ES+kkb+jmTqB2nMEGJe94dEVTscK7x3cRMVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
- header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aspeedtech.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=noo/fEzBt1fE2C1J8OnDvTdtPkofJlbXwvy1xaBOZic=;
- b=bQzuYddDZedRVxiouZy+LdPJpbhjtor8CmxuwR71r6qkonygoSbky/m2wb81++EtNaTzwnYjp9LmJbaxwLcOz0E8hBOQxuCPCBoqoQ83IMMeTGwzp81UW9bTuIH5QxIGJ+NPaqls1DdGiWLpgfLySr7PZUovYo0aT2VFQ52bIilnTRnNg0bKVk/XynS8DOea8FRTNEtGmS7bcwE0sqr0KZyDCJ5gYkqkjMmx/lwHfc1OlG10/GPdXZyFgEavxs/YXNShOZSR/QkpvPEMNurMGa6ipJeILx2/cvtzzPfbjpjWAZ8op0+wwPCnUcwPLrFWneZUcVXOocHUqbN5nJJ3vQ==
-Received: from SG2PR06MB3365.apcprd06.prod.outlook.com (2603:1096:4:69::12) by
- SEYPR06MB5648.apcprd06.prod.outlook.com (2603:1096:101:c0::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6838.30; Thu, 5 Oct 2023 01:26:46 +0000
-Received: from SG2PR06MB3365.apcprd06.prod.outlook.com
- ([fe80::956c:2f06:be93:fc3e]) by SG2PR06MB3365.apcprd06.prod.outlook.com
- ([fe80::956c:2f06:be93:fc3e%5]) with mapi id 15.20.6838.033; Thu, 5 Oct 2023
- 01:26:46 +0000
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "jdelvare@suse.com" <jdelvare@suse.com>,
-        "linux@roeck-us.net" <linux@roeck-us.net>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "naresh.solanki@9elements.com" <naresh.solanki@9elements.com>,
-        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
+        with ESMTP id S243861AbjJENzW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Oct 2023 09:55:22 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2347F65B5
+        for <linux-pwm@vger.kernel.org>; Wed,  4 Oct 2023 23:21:10 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qoHjP-0007bo-KR; Thu, 05 Oct 2023 08:21:07 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qoHjO-00BCcF-Sj; Thu, 05 Oct 2023 08:21:06 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qoHjO-009KGU-H5; Thu, 05 Oct 2023 08:21:06 +0200
+Date:   Thu, 5 Oct 2023 08:20:32 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Florian Fainelli <florian.fainelli@broadcom.com>
+Cc:     linux-pwm@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "moderated list:BROADCOM BCM7XXX ARM ARCHITECTURE" 
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>,
-        "patrick@stwcx.xyz" <patrick@stwcx.xyz>
-Subject: Re: [PATCH v9 2/3] dt-bindings: hwmon: Support Aspeed g6 PWM TACH
- Control
-Thread-Topic: [PATCH v9 2/3] dt-bindings: hwmon: Support Aspeed g6 PWM TACH
- Control
-Thread-Index: AQHZ6fsiTLYVIVnDjUKnszXE1xHHwrA2ti6AgAPFqCE=
-Date:   Thu, 5 Oct 2023 01:26:45 +0000
-Message-ID: <SG2PR06MB33650A58039DF915E4E868E68BCAA@SG2PR06MB3365.apcprd06.prod.outlook.com>
-References: <20230918064111.2221594-1-billy_tsai@aspeedtech.com>
- <20230918064111.2221594-3-billy_tsai@aspeedtech.com>
- <20231002152819.GB1747496-robh@kernel.org>
-In-Reply-To: <20231002152819.GB1747496-robh@kernel.org>
-Accept-Language: en-US, zh-TW
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=aspeedtech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SG2PR06MB3365:EE_|SEYPR06MB5648:EE_
-x-ms-office365-filtering-correlation-id: fd25256c-f524-46dd-0e0f-08dbc54223aa
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: FD25v1BddKoQXWF4XhVSoYWiaftdubRg3vIAQCC3GpJZgxAlw6oiInMz1VxFDyPzk04f3xqmu3crsnL4ShJn1hlujo1DRLEltsOULngJwiuGj++AJnGuMyv7imEA6pitzDLdNbiuA+uW9N7++6ULH0/ZbQeKRn52LPZJFAdku8SlI2VQIexhObj4C0KZ6EUJVpnJFTZOApuLp1uvIYH8/DHC/YKC04ycpFbNQ+etdybFSZgdAXKPhTwWC4pCryxpDYBQAfUmE7dTGXyFhLMkeRnpzgKuWLGHZO/piPDu0oa/D5c8tgWS75vH2Ci3WPmDaOo4M5iwlPhhPZ3g3exs3B/TQoAfGHgp11zU/EmaALllrC5Loq6HNieIsBK2Qnf9X967XI6+XhyA9XZRb/ogmdcosmiN3ILWuoesGMCllbl9u57EL3CNojS0MBTbuRDzNa3r7YBUmM4+wqzdESENCn9mhVCvw/dP0CxiubeNyZTC20q8sX4+rOfT/NdX77Lqwk4hBJ/Z4SeUelVIDYES0ZmXS01Wosuua9olyi3+x/ZMkQnTH3sd1zc9UVVHcGgxXxP8QHh/r4PdWcet96uNRaoT2X0SdhZJX5ukcvENFYk=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3365.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(376002)(346002)(39850400004)(396003)(136003)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(9686003)(55016003)(6506007)(478600001)(966005)(7696005)(71200400001)(86362001)(122000001)(38070700005)(38100700002)(2906002)(7416002)(91956017)(41300700001)(6916009)(316002)(83380400001)(26005)(54906003)(66946007)(66476007)(76116006)(66556008)(52536014)(33656002)(8936002)(8676002)(5660300002)(4326008)(64756008)(66446008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?0gqIfTS5scHL7t1hTYG3Y4L2aCvp27cZrdnOyXg4lxjP5RBL+5qh3/AWb+?=
- =?iso-8859-1?Q?iavrfKPgRKapcyXgYMNzjcFy33IWij1gpmftcrHzS7ZIR4ejK+La/5ZWi6?=
- =?iso-8859-1?Q?67j1eShZw8lx6Mcmqgj/75xKOcmatzDUsQWMrs1WMdiTPTI7B8rFCf8+LD?=
- =?iso-8859-1?Q?+UBrLM7HGgY8KJBmQyKjVG4ZMtL4OOs6/H1gqp88IvzhXOunAAyfeOMpaO?=
- =?iso-8859-1?Q?vrRgj93UKUZ22U5VILhAc0mr1jlcURGmo+NU3NsuaoKs9V93LMNlmDY+/d?=
- =?iso-8859-1?Q?0RNOZmTK3tpHf/YtgobDh0CVOoCElY/Xum8uc74DVFAEtQQPtmRXCyIxXg?=
- =?iso-8859-1?Q?onzMRHRYz/ZTpIDaogM9VaWeNuTJjKtnGPHHUCIUY9MMFmRT46nEIIuypp?=
- =?iso-8859-1?Q?o2X5OkmLUiFw68K6L5skXBib48XxzWUKCFWsQJRu2YQ/PxJ73eSgd3nvX4?=
- =?iso-8859-1?Q?EM8HFIzXAQA47ur+HcUorcpwdc49aZLC+tSuhF9LwDs8Pzs4BzcD4EbDiY?=
- =?iso-8859-1?Q?+VNph5FLBhbgAtR7LBGCY5TXFmnnDCLX1Ly8e2kX8y+HCFGClF8Fj22zwJ?=
- =?iso-8859-1?Q?fOAetJay7bOj+tKBynMTrVx47SHkq1hYwThcq7oZruxxq4oHV6YztnBeVk?=
- =?iso-8859-1?Q?Ku2eliS4Bu6P3KgWFRKazz7SFdwsh52GtRCISfRU01pDZim+x508C+p48z?=
- =?iso-8859-1?Q?pnfcbA0PWHBtBuHo/bUnjWgxCrV717gHQ2Edrw2YnZuvdNz9dynfWVGlrt?=
- =?iso-8859-1?Q?TrRQxELSAUFRV9kv4C4kDuG+VPeE9q9AOT9gpxDIRmwRQW0FJ5bD5elXJc?=
- =?iso-8859-1?Q?umAsq4jYx89r3kWnkwtYLpPYC4vl0pM4P3uU/Mzj0I2fyVOFdIdyfn+yrc?=
- =?iso-8859-1?Q?Ph8hEomKmAL1yrNWC2hv1Zlul271BzWT9qtPq6204vS3JhtRJ577OH/at7?=
- =?iso-8859-1?Q?07GVXRMlPiBzgY75cQZ4VHrEdCzgAyLBU2Gw3wGgLh9sYzStYqDofyOsKx?=
- =?iso-8859-1?Q?bOdcYC40E949Y67HNPt7MgSWtZJKztnkwq6mHCUo2bEIOVYxJtRh2r5y59?=
- =?iso-8859-1?Q?A1UpkcuLSBXkKDdLCp1C25FaVsn8pn7A7KO2ePwUxDjcXT7l45r8uVueUG?=
- =?iso-8859-1?Q?jUeDrDJzJnT1HNp8JmG67rf1n4qICTgBjGjzqYdjrS5RPqtutis/lXEL5K?=
- =?iso-8859-1?Q?IRZkb8+uYPyzhCtkC2WMUoS/dA/yal7/PWFbSp9H1ZmCe3JTexTGhZsO3u?=
- =?iso-8859-1?Q?B95YqXz+ITuwunnTpf5zU5kc5znd19ofgbpIPYtTdSROPB4gAjqzl90apx?=
- =?iso-8859-1?Q?6eVcjFhudE4/IODXjaOC9WJg9KQdZJUndz8BoIWArjGxMtyrA93aRvmP6o?=
- =?iso-8859-1?Q?JkpYfvc8zNh2D7DRi/FYUzcE+3PfsaXjX5FUmrynIrPLvVsmlzgCOcDldF?=
- =?iso-8859-1?Q?BHNn97z+OdLsl+/fbJ1DSMI888aPC9K9RpcNkpWJUO9OPcDJIWaJ9Ka6ND?=
- =?iso-8859-1?Q?dFhFjBcoXZZcyuBOqhLT9F9lgkt9YfY/io2tKMULb5GMWmBwbcCHUwY7FA?=
- =?iso-8859-1?Q?7Q42DB0uhnmItQ3CiohobOFLlCGajFCc4U5pHQRiNATQk7K6jDFCxO2fAD?=
- =?iso-8859-1?Q?TXIfJJu7+zg7+xu1g+yU0VxRhEBCXGcknM?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] pwm: brcmstb: Utilize appropriate clock APIs in
+ suspend/resume
+Message-ID: <20231005062032.kklxiavdkaix5sod@pengutronix.de>
+References: <20231004175414.1738475-1-florian.fainelli@broadcom.com>
 MIME-Version: 1.0
-X-OriginatorOrg: aspeedtech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3365.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd25256c-f524-46dd-0e0f-08dbc54223aa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Oct 2023 01:26:45.9544
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Iy8IpYEJzb+RPXwDTe2T5MorytOpwspc8bezfasxT4J0mk+GX1QkAehqQTXRCdhMF14Bsfk/cvDpIiwlLHWMTZ8lc6TqgexCBNUVOKDvstY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR06MB5648
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ccrp3b53ojxudlcw"
+Content-Disposition: inline
+In-Reply-To: <20231004175414.1738475-1-florian.fainelli@broadcom.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
->> Document the compatible for aspeed,ast2600-pwm-tach device, which can=0A=
->> support up to 16 PWM outputs and 16 fan tach input.=0A=
->>=0A=
->> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>=0A=
->> ---=0A=
->>  .../bindings/hwmon/aspeed,g6-pwm-tach.yaml    | 69 +++++++++++++++++++=
-=0A=
->>  1 file changed, 69 insertions(+)=0A=
->>  create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,g6-pw=
-m-tach.yaml=0A=
->>=0A=
->> diff --git a/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.=
-yaml b/Documentation/devicetree/>bindings/hwmon/aspeed,g6-pwm-tach.yaml=0A=
->> new file mode 100644=0A=
->> index 000000000000..5a679f4ad2fa=0A=
->> --- /dev/null=0A=
->> +++ b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml=0A=
->> @@ -0,0 +1,69 @@=0A=
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)=0A=
->> +# Copyright (C) 2023 Aspeed, Inc.=0A=
->> +%YAML 1.2=0A=
->> +---=0A=
->> +$id: http://devicetree.org/schemas/hwmon/aspeed,g6-pwm-tach.yaml#=0A=
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#=0A=
->> +=0A=
->> +title: ASPEED G6 PWM and Fan Tach controller device driver=0A=
-=0A=
-> This is binding for the h/w, not a 'device driver'.=0A=
-=0A=
-Okay, I will remove the 'device driver'.=0A=
-=0A=
->> +=0A=
->> +maintainers:=0A=
->> +  - Billy Tsai <billy_tsai@aspeedtech.com>=0A=
->> +=0A=
->> +description: |=0A=
->> +  The ASPEED PWM controller can support up to 16 PWM outputs.=0A=
->> +  The ASPEED Fan Tacho controller can support up to 16 fan tach input.=
-=0A=
->> +  They are independent hardware blocks, which are different from the=0A=
->> +  previous version of the ASPEED chip.=0A=
->> +=0A=
->> +properties:=0A=
->> +  compatible:=0A=
->> +    enum:=0A=
->> +      - aspeed,ast2600-pwm-tach=0A=
->> +=0A=
->> +  reg:=0A=
->> +    maxItems: 1=0A=
->> +=0A=
->> +  clocks:=0A=
->> +    maxItems: 1=0A=
->> +=0A=
->> +  resets:=0A=
->> +    maxItems: 1=0A=
->> +=0A=
->> +  "#pwm-cells":=0A=
->> +    const: 3=0A=
->> +=0A=
->> +patternProperties:=0A=
->> +  "^fan-[0-9a-f]+$":=0A=
-=0A=
-> foo-<index> naming is decimal, not hex. (unit-addresses are hex)=0A=
-=0A=
-Okay, I will change it to the decimal.=0A=
-=0A=
-> But if 0 and 1 correspond to something in the h/w, then you should=0A=
-> probably be using 'reg' instead (which means a unit-address too).=0A=
-=0A=
-The number doesn't unrelate to the hardware.=0A=
-=0A=
->> +    $ref: fan-common.yaml#=0A=
->> +    unevaluatedProperties: false=0A=
->> +    required:=0A=
->> +      - tach-ch=0A=
->> +=0A=
->> +required:=0A=
->> +  - reg=0A=
->> +  - clocks=0A=
->> +  - resets=0A=
->> +  - "#pwm-cells"=0A=
->> +  - compatible=0A=
->> +=0A=
->> +additionalProperties: false=0A=
->> +=0A=
->> +examples:=0A=
->> +  - |=0A=
->> +    #include <dt-bindings/clock/aspeed-clock.h>=0A=
->> +    pwm_tach: pwm-tach-controller@1e610000 {=0A=
->> +      compatible =3D "aspeed,ast2600-pwm-tach";=0A=
->> +      reg =3D <0x1e610000 0x100>;=0A=
->> +      clocks =3D <&syscon ASPEED_CLK_AHB>;=0A=
->> +      resets =3D <&syscon ASPEED_RESET_PWM>;=0A=
->> +      #pwm-cells =3D <3>;=0A=
->> +=0A=
->> +      fan-0 {=0A=
->> +        tach-ch =3D /bits/ 8 <0x0>;=0A=
-=0A=
-> What about the PWM connection?=0A=
-=0A=
-I only want to create the fan monitor without fan control.=0A=
-So, the PWM connection is unnecessary.=0A=
-=0A=
-Thanks=0A=
-=0A=
->> +      };=0A=
->> +=0A=
->> +      fan-1 {=0A=
->> +        tach-ch =3D /bits/ 8 <0x1 0x2>;=0A=
->> +      };=0A=
->> +    };=0A=
->> --=0A=
->> 2.25.1=0A=
->>=0A=
+
+--ccrp3b53ojxudlcw
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello Florian,
+
+On Wed, Oct 04, 2023 at 10:54:14AM -0700, Florian Fainelli wrote:
+> The suspend/resume functions currently utilize
+> clk_disable()/clk_enable() respectively which may be no-ops with certain
+> clock providers such as SCMI. Fix this to use clk_disable_unprepare()
+> and clk_prepare_enable() respectively as we should.
+>=20
+> Fixes: 3a9f5957020f ("pwm: Add Broadcom BCM7038 PWM controller support")
+> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
+> ---
+>  drivers/pwm/pwm-brcmstb.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
+> index a3faa9a3de7c..a7d529bf76ad 100644
+> --- a/drivers/pwm/pwm-brcmstb.c
+> +++ b/drivers/pwm/pwm-brcmstb.c
+> @@ -288,7 +288,7 @@ static int brcmstb_pwm_suspend(struct device *dev)
+>  {
+>  	struct brcmstb_pwm *p =3D dev_get_drvdata(dev);
+> =20
+> -	clk_disable(p->clk);
+> +	clk_disable_unprepare(p->clk);
+> =20
+>  	return 0;
+>  }
+> @@ -297,7 +297,7 @@ static int brcmstb_pwm_resume(struct device *dev)
+>  {
+>  	struct brcmstb_pwm *p =3D dev_get_drvdata(dev);
+> =20
+> -	clk_enable(p->clk);
+> +	clk_prepare_enable(p->clk);
+
+While at it: Add another patch that checks the return value of
+clk_prepare_enable()?
+
+Orthogonally to that, the patch looks fine:
+
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--ccrp3b53ojxudlcw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUeVa8ACgkQj4D7WH0S
+/k64xwgAgYEYSUsqGUELNGbGXzyYRPZJSUtsFciRuZjNR9ZEwUKz+v43kwZaCkuA
+Y32IIriYy62UcIA+qWny7cE/dDnTN8Vo+9dnxINQJX1qIDL3NgT+lak2xE9pdHwh
+1qS7vWvwqLWE7Xo6xJtt6jmNO6Xogxg6s/lrpVBgyQL8ubPw/dxOlP6o9oem5B6V
+IntnjW7+s3xjZ7MdZ8R+YaH9j1pigeP1floudtD8TxRo4hnz6tiWpvyM/qf41AFL
+dM4ck42NE/vNspKRz2lMThpYFIzIbbSIBZrdO6SzaN3xPpIjO7vYFYfi1mmrOGMa
+sT6wG3FZt12kYXNfxVTeUS+dtToi2g==
+=508Y
+-----END PGP SIGNATURE-----
+
+--ccrp3b53ojxudlcw--
