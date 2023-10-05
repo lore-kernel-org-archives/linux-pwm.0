@@ -2,112 +2,91 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDF3E92716
-	for <linux-pwm@archiver.kernel.org>; Thu,  5 Oct 2023 15:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E18E92719
+	for <linux-pwm@archiver.kernel.org>; Thu,  5 Oct 2023 15:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237849AbjJEP55 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 5 Oct 2023 11:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
+        id S237898AbjJEP56 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 5 Oct 2023 11:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234237AbjJEP4n (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Oct 2023 11:56:43 -0400
+        with ESMTP id S234700AbjJEP4v (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Oct 2023 11:56:51 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E83158F9;
-        Thu,  5 Oct 2023 06:57:54 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EB11C4AF6B;
-        Thu,  5 Oct 2023 13:17:37 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86649158FF;
+        Thu,  5 Oct 2023 06:57:55 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E97BC4AF76;
+        Thu,  5 Oct 2023 13:38:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696511860;
-        bh=FvFYza5x9SIIDMnc6LuiyfJJi2ON+p3o+hoKtpoSL5I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qi5hmaZIDtPlhx2c4ALDQ6HJp7a6DS5QaACOaPvXm9Peip64ktVO7rkq7sY2CqBLH
-         3jhSX7WGpwuu/CeP5gJMMec9URMsQS1vHw+aeLnGPuQMN5OPgiQe7H1/q2Q+FcGCVA
-         tPpIPk780sm0c0ffpNso4bodCzRqQs5DO7KygBy4di0vd8D5FUfdH71YXKpgdSQ2PF
-         l9wNoJRynwa13m9nISzrrenPgZINkDcbosYmPMdpKfuyWIBK37dCoJ0FZyBf8Z3mfZ
-         d8DzQCpSkWnppxRoKJ8+qoJRNkZw2wIXuqT65slTyuz+SpqEeZa4T+TE+R9IKYDYS9
-         jqDcq92N4O8Qw==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Guo Ren <guoren@kernel.org>, Fu Wei <wefu@redhat.com>
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 1/2] dt-bindings: pwm: Add T-HEAD PWM controller
-Date:   Thu,  5 Oct 2023 21:05:18 +0800
-Message-Id: <20231005130519.3864-2-jszhang@kernel.org>
-X-Mailer: git-send-email 2.40.0
-In-Reply-To: <20231005130519.3864-1-jszhang@kernel.org>
-References: <20231005130519.3864-1-jszhang@kernel.org>
+        s=k20201202; t=1696513119;
+        bh=F8uLKRMaqIMTxEEJ0Tsvy4TdC8fIt8Vx4EseGKGLtPc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p5SUr0VxoNw+IMG3d+fiAzkAjXm8HBBlx+hHso1qsYXmPAT8O0zA5EIrAoa5dOJ29
+         AWqrQ1SeDYDcKFHNGuFBhsqnVDdUleFpRpShtXXR0py1kMq2uz6CGz+9swRsrXhoS4
+         H4cHn7bEHfyCivvLnm4J8Pq6RWsQEJSOAW74mSjKLRQjk6Ty1JpwvMe0NRhs5H1c0b
+         rakipOaXlBZbpQ2A+U0LubipL2oLp7e7rqiH4/hSMqB5BDVc4DtSXSZJRmlsDxfKIL
+         C8vGeYTbMHHJC5BGs6Xr05XC1yLPcN+o7LITZ7NemOphJSzQgjghmJPadPGiVSjx4s
+         dBbAkOEUYMRxg==
+Date:   Thu, 5 Oct 2023 14:38:32 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Anjelique Melendez <quic_amelende@quicinc.com>
+Cc:     pavel@ucw.cz, thierry.reding@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        agross@kernel.org, andersson@kernel.org, luca.weiss@fairphone.com,
+        konrad.dybcio@linaro.org, u.kleine-koenig@pengutronix.de,
+        quic_subbaram@quicinc.com, quic_gurus@quicinc.com,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pwm@vger.kernel.org, kernel@quicinc.com
+Subject: Re: [PATCH v5 5/7] leds: rgb: leds-qcom-lpg: Update PMI632 lpg_data
+ to support PPG
+Message-ID: <20231005133832.GE681678@google.com>
+References: <20230929003901.15086-1-quic_amelende@quicinc.com>
+ <20230929003901.15086-6-quic_amelende@quicinc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230929003901.15086-6-quic_amelende@quicinc.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-T-HEAD SoCs such as the TH1520 contain a PWM controller used
-to control the LCD backlight, fan and so on.
+On Thu, 28 Sep 2023, Anjelique Melendez wrote:
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../bindings/pwm/thead,th1520-pwm.yaml        | 44 +++++++++++++++++++
- 1 file changed, 44 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/thead,th1520-pwm.yaml
+> Update the pmi632 lpg_data struct so that pmi632 devices use PPG
+> for LUT pattern.
+> 
+> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
+> ---
+>  drivers/leds/rgb/leds-qcom-lpg.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/thead,th1520-pwm.yaml b/Documentation/devicetree/bindings/pwm/thead,th1520-pwm.yaml
-new file mode 100644
-index 000000000000..e75d8e9f24c5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/thead,th1520-pwm.yaml
-@@ -0,0 +1,44 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/thead,th1520-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: T-HEAD TH1520 PWM
-+
-+maintainers:
-+  - Jisheng Zhang <jszhang@kernel.org>
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - thead,th1520-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+
-+    pwm@ec01c000 {
-+        compatible = "thead,th1520-pwm";
-+        reg = <0xec01c000 0x1000>;
-+        clocks = <&clk 1>;
-+        #pwm-cells = <3>;
-+    };
+Reviewed-by: Lee Jones <lee@kernel.org>
+
+> diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
+> index 4d87686f916c..a6cea6bd7167 100644
+> --- a/drivers/leds/rgb/leds-qcom-lpg.c
+> +++ b/drivers/leds/rgb/leds-qcom-lpg.c
+> @@ -1660,11 +1660,13 @@ static const struct lpg_data pm8994_lpg_data = {
+>  static const struct lpg_data pmi632_lpg_data = {
+>  	.triled_base = 0xd000,
+>  
+> +	.lut_size = 64,
+> +
+>  	.num_channels = 5,
+>  	.channels = (const struct lpg_channel_data[]) {
+> -		{ .base = 0xb300, .triled_mask = BIT(7) },
+> -		{ .base = 0xb400, .triled_mask = BIT(6) },
+> -		{ .base = 0xb500, .triled_mask = BIT(5) },
+> +		{ .base = 0xb300, .triled_mask = BIT(7), .sdam_offset = 0x48 },
+> +		{ .base = 0xb400, .triled_mask = BIT(6), .sdam_offset = 0x56 },
+> +		{ .base = 0xb500, .triled_mask = BIT(5), .sdam_offset = 0x64 },
+>  		{ .base = 0xb600 },
+>  		{ .base = 0xb700 },
+>  	},
+> -- 
+> 2.41.0
+> 
+
 -- 
-2.40.1
-
+Lee Jones [李琼斯]
