@@ -2,178 +2,205 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAFFE9270A
-	for <linux-pwm@archiver.kernel.org>; Thu,  5 Oct 2023 14:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1869CE9270A
+	for <linux-pwm@archiver.kernel.org>; Thu,  5 Oct 2023 14:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233087AbjJEOYz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
+        id S234148AbjJEOZ2 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234215AbjJEOXX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Oct 2023 10:23:23 -0400
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFE8A256
-        for <linux-pwm@vger.kernel.org>; Thu,  5 Oct 2023 02:17:43 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qoKTr-0004yM-Uh; Thu, 05 Oct 2023 11:17:15 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qoKTp-00BEVG-Mk; Thu, 05 Oct 2023 11:17:13 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qoKTp-009Nwv-Ca; Thu, 05 Oct 2023 11:17:13 +0200
-Date:   Thu, 5 Oct 2023 11:17:13 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sean Young <sean@mess.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
-        Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-riscv@lists.infradead.org,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Subject: Re: [PATCH 1/2] pwm: make it possible to apply pwm changes in atomic
- context
-Message-ID: <20231005091713.jgx5h2ss4oybdxq7@pengutronix.de>
-References: <cover.1696156485.git.sean@mess.org>
- <1bd5241d584ceb4d6b731c4dc3203fb9686ee1d1.1696156485.git.sean@mess.org>
- <20231004095920.ne7yrrthow6tnuvg@pengutronix.de>
- <ZR50KCVNzhlLooLW@gofer.mess.org>
+        with ESMTP id S232684AbjJEOXm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Oct 2023 10:23:42 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6FA57AB9
+        for <linux-pwm@vger.kernel.org>; Thu,  5 Oct 2023 00:31:00 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-9b2f73e3af3so111267266b.3
+        for <linux-pwm@vger.kernel.org>; Thu, 05 Oct 2023 00:31:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1696491059; x=1697095859; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WPJMTLO+rcQ93eaofl6YvPUICYprHmtKTi2Ba1SS9r8=;
+        b=vRepcQbbDfQ2IST6YRGHeokiOay44JmDKQFADJBOBiYD4RTTcDYOdaozL2uHdlhwOJ
+         7ISG+pe1bx+CC+8dpuaWdKrbZL9D8HEZ5tom8dLhYuN8BJAP017aRboQ/JoO7PHuDYz0
+         Pc+D0xzRte72c5HBd1xHZseTuJrzUZl2P1TpmhCyNwX+mnjvN7J7uKyvX5HzxRr2kgVC
+         g8tXTVBJ2YEyKlPnQxqMWAW7YqcirXEu0tu+qNJfhP1igxuLtPxSfWUwi4BDc6LaWO0Z
+         8xh6DBxBFTUXjaLXjnewzH5KV5iRul3I+1HeTB7x9twbHHI2X9TZsKDnYi/BrTOGqo1Z
+         hG4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696491059; x=1697095859;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WPJMTLO+rcQ93eaofl6YvPUICYprHmtKTi2Ba1SS9r8=;
+        b=OJI9RCm+1frngsdbldL4daWFuTe8llCSuJpcypcr5zPEwvatwx+gMX/SYOiGYmGj9Z
+         yRJQR+g+v7VMEgKZ2ru3Ul08FlYadG4RhgUmbrXAADGzaL7dCsx7dNNY9FUJWYiWonMz
+         y+ZLXaVW2zRVApSu+tkeqY5eVqC0Z7oaY8560RlIqqwm8ERYOC1uLm+a2aWeDpLoT7zd
+         BTfHlGP4F3D+SkEbiNdJ34AndEge3tu0Du1tmsVgDPx/gaHgp33ZBljeTeveyNcw7DGE
+         GCQepRHb4Hh2gWjg7ulfeMLMlZmjwWsoLHAZXeaqlTIc981BEZcxYwc+E8b3W+NTeMoi
+         MDiw==
+X-Gm-Message-State: AOJu0YyxTqWDhxw2AQMbBv/3QnUaZUOevjRT9JjLKvkpy5/SBtDWCf4m
+        M/sVx9il5bp5st2mukvsdnyfWA==
+X-Google-Smtp-Source: AGHT+IHx9rUS9yXnwUuTlpLFWszpnR7P8rb7udY8oUHx7qmTu+UvEIwzJlCuBHFRefkOeDKMgj0r2w==
+X-Received: by 2002:a17:907:78d1:b0:9b3:264:446 with SMTP id kv17-20020a17090778d100b009b302640446mr4269774ejc.0.1696491059133;
+        Thu, 05 Oct 2023 00:30:59 -0700 (PDT)
+Received: from [192.168.1.197] (5-157-101-10.dyn.eolo.it. [5.157.101.10])
+        by smtp.gmail.com with ESMTPSA id gt26-20020a170906f21a00b0099bcf9c2ec6sm692972ejb.75.2023.10.05.00.30.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Oct 2023 00:30:58 -0700 (PDT)
+Message-ID: <9afe38a1-193b-494e-a47f-83610d6dabac@linaro.org>
+Date:   Thu, 5 Oct 2023 09:30:57 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="x5d57cuv6lgyekgb"
-Content-Disposition: inline
-In-Reply-To: <ZR50KCVNzhlLooLW@gofer.mess.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V14 4/4] arm64: dts: qcom: ipq6018: add pwm node
+Content-Language: en-US
+To:     Devi Priya <quic_devipriy@quicinc.com>, agross@kernel.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org, lee@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, thierry.reding@gmail.com,
+        ndesaulniers@google.com, trix@redhat.com, baruch@tkos.co.il,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Cc:     linux-pwm@vger.kernel.org, u.kleine-koenig@pengutronix.de,
+        nathan@kernel.org
+References: <20231005043127.2690639-1-quic_devipriy@quicinc.com>
+ <20231005043127.2690639-5-quic_devipriy@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20231005043127.2690639-5-quic_devipriy@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+On 05/10/2023 06:31, Devi Priya wrote:
+> Describe the PWM block on IPQ6018.
+> 
+> The PWM is in the TCSR area. Make &tcsr "simple-mfd" compatible, and add
+> &pwm as child of &tcsr.
+> 
+> Add also ipq6018 specific compatible string.
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Co-developed-by: Baruch Siach <baruch.siach@siklu.com>
+> Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+> Signed-off-by: Devi Priya <quic_devipriy@quicinc.com>
+> ---
+> v14:
+> 
+>   Moved ranges just after reg as suggested by Krzysztof
+> 
+>   Picked up the R-b tag
+> 
+> v13:
+> 
+>   No change
+> 
+> v12: 
+> 
+>   No change
+> 
+> v11:
+> 
+>   No change
+> 
+> v10:
+> 
+>   No change
+> 
+> v9:
+> 
+>   Add 'ranges' property (Rob)
+> 
+> v8:
+> 
+>   Add size cell to 'reg' (Rob)
+> 
+> v7:
+> 
+>   Use 'reg' instead of 'offset' (Rob)
+> 
+>   Add qcom,tcsr-ipq6018 (Rob)
+> 
+>   Drop clock-names (Bjorn)
+> 
+> v6:
+> 
+>   Make the PWM node child of TCSR (Rob Herring)
+> 
+>   Add assigned-clocks/assigned-clock-rates (Uwe Kleine-König)
+> 
+> v5: Use qcom,pwm-regs for TCSR phandle instead of direct regs
+> 
+> v3: s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
+> 
+>  arch/arm64/boot/dts/qcom/ipq6018.dtsi | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> index e59b9df96c7e..565e61ce382f 100644
+> --- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> @@ -390,8 +390,21 @@ tcsr_mutex: hwlock@1905000 {
+>  		};
+>  
+>  		tcsr: syscon@1937000 {
+> -			compatible = "qcom,tcsr-ipq6018", "syscon";
+> +			compatible = "qcom,tcsr-ipq6018", "syscon", "simple-mfd";
+>  			reg = <0x0 0x01937000 0x0 0x21000>;
+> +			ranges = <0x0 0x0 0x01937000 0x21000>;
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +
+> +			 pwm: pwm@a010 {
 
---x5d57cuv6lgyekgb
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Broken indentation.
 
-Hello Sean,
+Best regards,
+Krzysztof
 
-On Thu, Oct 05, 2023 at 09:30:32AM +0100, Sean Young wrote:
-> On Wed, Oct 04, 2023 at 11:59:20AM +0200, Uwe Kleine-K=F6nig wrote:
-> > On Sun, Oct 01, 2023 at 11:40:29AM +0100, Sean Young wrote:
-> > > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> > > index dc66e3405bf5..d9679ae5b2be 100644
-> > > --- a/drivers/pwm/core.c
-> > > +++ b/drivers/pwm/core.c
-> > > @@ -505,7 +505,7 @@ int pwm_apply_state(struct pwm_device *pwm, const=
- struct pwm_state *state)
-> > >  	 * is a bad idea. So make it explicit that calling this function mi=
-ght
-> > >  	 * sleep.
-> > >  	 */
-> > > -	might_sleep();
-> > > +	might_sleep_if(pwm_can_sleep(pwm));
-> > > =20
-> > >  	if (!pwm || !state || !state->period ||
-> > >  	    state->duty_cycle > state->period)
-> >=20
-> > I'd like to have a mechanism to catch drivers that missed to set
-> > .can_sleep. The best idea I currently have for that is to disable
-> > preemption if IS_ENABLED(CONFIG_PWM_DEBUG) && !pwm_can_sleep(pwm) while
-> > .apply() is running.
->=20
-> If we have pwm_apply_state_atomic(), then CONFIG_DEBUG_ATOMIC_SLEEP will
-> catch them, but only in that code path of course.
->=20
-> How about using non_block_start() and non_block_end() if can_sleep is
-> not set?
-
-TIL, looks like it was created for that task.
-
-> > > diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-> > > index b7c6045c5d08..b8b9392844e9 100644
-> > > --- a/drivers/pwm/pwm-fsl-ftm.c
-> > > +++ b/drivers/pwm/pwm-fsl-ftm.c
-> > > @@ -405,6 +405,7 @@ static int fsl_pwm_probe(struct platform_device *=
-pdev)
-> > > =20
-> > >  	fpc->soc =3D of_device_get_match_data(&pdev->dev);
-> > >  	fpc->chip.dev =3D &pdev->dev;
-> > > +	fpc->chip.can_sleep =3D true;
-> >=20
-> > Also I wonder if the distinction between atomic and sleeping
-> > pwm_state_apply() should be more explicit. For GPIOs you have a sleeping
-> > variant gpiod_set_value_cansleep() that allows to immediately determine
-> > the intended context in the caller. This would allow that programming
-> > a PWM stays a preemption point (if possible/desired) even if the
-> > underlying hardware/driver is atomic. To not have to touch all consumer
-> > drivers, maybe the pair for pwm should better be
-> >=20
-> > 	pwm_apply_state()
-> > 	pwm_apply_state_atomic()
->=20
-> Do we need pwm_config_atomic(), pwm_enable_atomic(), and pwm_disable_atom=
-ic()
-> too? These are just convenience functions, so we can probably do without =
-them.
-
-I'd like to get rid of these, so for now I'd keep them as is.
-
-> > instead of a "cansleep" suffix for the sleeping variant? Or maybe it's
-> > better to accept touching all consumer drivers to get semantics similar
-> > to gpio? I couldn't decide quickly what I really like better here, so
-> > that's your chance to comment and influence the outcome :-)
->=20
-> If you expect to have more parameters for pwm_apply_state() then a flags
-> argument makes sense.
-
-Actually I don't want more parameters -- at least for this use case. I
-could imagine another parameter for something like apply-immediately vs.
-complete-current-period, but that's another topic.
-
-> TBH I like the pwm_apply_state_atomic() option.
-
-ok.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---x5d57cuv6lgyekgb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUefxgACgkQj4D7WH0S
-/k7aWAf+OxUfKBgEw3SVXriToMTyS73Uv7QeEY7QBZpX1vw08Ec0hP5Cww0L95e+
-ppjZ4O7YXmKcbOwHiakO3lKrm4KgzdpGqt+GV4zaBiubE8Wk6OyNN+P0bMe4jS2l
-uCOtDw9qDw8fSDGZsXTZTfGkdAUcGBnPR2gXJEF7avXghW4EWKmspE7+tS6d07Sl
-ItOiLn/AyScHsTWq4irGhaTe0K+eaM/GO3blwSu38ar3Pt3JCu5PEOxcRextT+cq
-f6eAObmnxL2JrR4M8szNwMEdm/1iRf0xUcAcpYs3biYbhq074kiN1X+NJ0dCtvCH
-2P1yNSi9esnY8j6X9ZGw1FLJA3kj1A==
-=bWrr
------END PGP SIGNATURE-----
-
---x5d57cuv6lgyekgb--
