@@ -2,91 +2,103 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF228E92702
-	for <linux-pwm@archiver.kernel.org>; Thu,  5 Oct 2023 14:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20AA6E92706
+	for <linux-pwm@archiver.kernel.org>; Thu,  5 Oct 2023 14:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236547AbjJEOgl (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46254 "EHLO
+        id S239324AbjJEOmM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:42:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236132AbjJEOej (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Oct 2023 10:34:39 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC71525F;
-        Thu,  5 Oct 2023 06:52:33 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99550C4AF75;
-        Thu,  5 Oct 2023 13:45:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696513532;
-        bh=vqu+fFoHGpohKG1mWSUhsvBpzumWkJeROSRoIa9+DVo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kUYID7x6le67JFoKgGTzvbOTjyJO9NDAdrJ3AEs17CFNCTmHQB3iiehmDUoGRvI16
-         RTQK/rSA7fykjZtx5smqscln90NaNT25zQ9duynurs9ANBT1K8US5Tu+y2xCEymowP
-         pfOsKPNNJ38+ogNc3HROV3NlPWkeHwb4NOYgcnKpmXLBM7zsS+6Y3ykVnNibdrogC/
-         YLJ1XeiljTIxcifJNOLabr9iZ+pQZdGzKl/yptPIb/7yS77O8RR/3KLj3ki3Acv3aJ
-         Y39WVOS2TYW5MsSoApmvY+QPjLAUQ1YA5u1nPxPs+BlkipZ8paTR1ejwC7Qyu4y5rw
-         KsSnKTuLL0aVw==
-Date:   Thu, 5 Oct 2023 14:45:25 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Anjelique Melendez <quic_amelende@quicinc.com>
-Cc:     pavel@ucw.cz, thierry.reding@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        agross@kernel.org, andersson@kernel.org, luca.weiss@fairphone.com,
-        konrad.dybcio@linaro.org, u.kleine-koenig@pengutronix.de,
-        quic_subbaram@quicinc.com, quic_gurus@quicinc.com,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, kernel@quicinc.com
-Subject: Re: [PATCH v5 7/7] leds: rgb: Update PM8350C lpg_data to support
- two-nvmem PPG Scheme
-Message-ID: <20231005134525.GG681678@google.com>
-References: <20230929003901.15086-1-quic_amelende@quicinc.com>
- <20230929003901.15086-8-quic_amelende@quicinc.com>
+        with ESMTP id S236150AbjJEOhD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Oct 2023 10:37:03 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D734F07B;
+        Thu,  5 Oct 2023 07:02:49 -0700 (PDT)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3953shNd003958;
+        Thu, 5 Oct 2023 04:31:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=qcppdkim1;
+ bh=H8Wr2XjEs5oHuA9SGyGdCEHWKMZtg85Nl/LHRslFifI=;
+ b=hehHETMlVrTZWnAyRycCJEBk1939LNg5tLlo1n7Mqf1QPzJ574dKder4EGSyQQoEDQhw
+ gDTM6tM/HXy2EfkemKtTt4MSa6U9HLAkfKJ02HuXDzh2NwOQOy2lhX5+wJQwn3LYCQyE
+ 1HC6MMeO+EMFRAxQghNy/vsavbwylyegGAqg4GIvp/bOcmkjKbosc+zrIdkqxzgIYGgp
+ 6vm3KibuDn5FAtaeCysp4QfQMUW2JZ5TCle1qDNp/fqfAJ6S05GZR5qLv5+HhMwRRJ60
+ axI5XQ07ltDI1WpaGXl0LHaFPwvDLuSIivoMT+uaKDD1eDKTVlOowRKob7YmntUpsjGR Zw== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3tgynhb4ac-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Oct 2023 04:31:46 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3954VjL0031892
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 5 Oct 2023 04:31:45 GMT
+Received: from hu-devipriy-blr.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.36; Wed, 4 Oct 2023 21:31:39 -0700
+From:   Devi Priya <quic_devipriy@quicinc.com>
+To:     <agross@kernel.org>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <lee@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <thierry.reding@gmail.com>, <ndesaulniers@google.com>,
+        <trix@redhat.com>, <baruch@tkos.co.il>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <llvm@lists.linux.dev>
+CC:     <linux-pwm@vger.kernel.org>, <u.kleine-koenig@pengutronix.de>,
+        <nathan@kernel.org>
+Subject: [PATCH V14 0/4] Add PWM support for IPQ chipsets 
+Date:   Thu, 5 Oct 2023 10:01:23 +0530
+Message-ID: <20231005043127.2690639-1-quic_devipriy@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230929003901.15086-8-quic_amelende@quicinc.com>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: cD2-C3Mm6cNGDwF9ERfa-e35sLhrlgAm
+X-Proofpoint-ORIG-GUID: cD2-C3Mm6cNGDwF9ERfa-e35sLhrlgAm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-10-05_01,2023-10-02_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ priorityscore=1501 impostorscore=0 malwarescore=0 mlxscore=0
+ mlxlogscore=671 clxscore=1015 adultscore=0 lowpriorityscore=0 bulkscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2310050037
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Thu, 28 Sep 2023, Anjelique Melendez wrote:
+Add PWM driver and binding support for IPQ chipsets.
+Also, add support for pwm node in ipq6018.
 
-> Update the pm8350c lpg_data struct so that pm8350c devices are treated as
-> PWM devices that support two-nvmem PPG scheme.
-> 
-> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
-> ---
->  drivers/leds/rgb/leds-qcom-lpg.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
+V14:
+Detailed Change logs are added to the respective patches.
 
-Reviewed-by: Lee Jones <lee@kernel.org>
+V13 can be found at:
+https://lore.kernel.org/linux-arm-msm/20231004090449.256229-1-quic_devipriy@quicinc.com/
 
-> diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
-> index 910c7cf740cc..8962ea13df29 100644
-> --- a/drivers/leds/rgb/leds-qcom-lpg.c
-> +++ b/drivers/leds/rgb/leds-qcom-lpg.c
-> @@ -1800,11 +1800,13 @@ static const struct lpg_data pm8150l_lpg_data = {
->  static const struct lpg_data pm8350c_pwm_data = {
->  	.triled_base = 0xef00,
->  
-> +	.lut_size = 122,
-> +
->  	.num_channels = 4,
->  	.channels = (const struct lpg_channel_data[]) {
-> -		{ .base = 0xe800, .triled_mask = BIT(7) },
-> -		{ .base = 0xe900, .triled_mask = BIT(6) },
-> -		{ .base = 0xea00, .triled_mask = BIT(5) },
-> +		{ .base = 0xe800, .triled_mask = BIT(7), .sdam_offset = 0x48 },
-> +		{ .base = 0xe900, .triled_mask = BIT(6), .sdam_offset = 0x56 },
-> +		{ .base = 0xea00, .triled_mask = BIT(5), .sdam_offset = 0x64 },
->  		{ .base = 0xeb00 },
->  	},
->  };
-> -- 
-> 2.41.0
-> 
+Devi Priya (4):
+  pwm: driver for qualcomm ipq6018 pwm block
+  dt-bindings: pwm: add IPQ6018 binding
+  dt-bindings: mfd: qcom,tcsr: Add simple-mfd support for IPQ6018
+  arm64: dts: qcom: ipq6018: add pwm node
+
+ .../devicetree/bindings/mfd/qcom,tcsr.yaml    | 112 +++++--
+ .../bindings/pwm/qcom,ipq6018-pwm.yaml        |  45 +++
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi         |  15 +-
+ drivers/pwm/Kconfig                           |  12 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-ipq.c                         | 282 ++++++++++++++++++
+ 6 files changed, 435 insertions(+), 32 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-ipq.c
 
 -- 
-Lee Jones [李琼斯]
+2.34.1
+
