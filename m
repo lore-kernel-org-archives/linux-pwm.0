@@ -2,42 +2,42 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027AAE92FE3
-	for <linux-pwm@archiver.kernel.org>; Fri,  6 Oct 2023 04:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB12E92FE1
+	for <linux-pwm@archiver.kernel.org>; Fri,  6 Oct 2023 04:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbjJFEyY (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 6 Oct 2023 00:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42716 "EHLO
+        id S230076AbjJFEy5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 6 Oct 2023 00:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230120AbjJFEyK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Oct 2023 00:54:10 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB58100;
-        Thu,  5 Oct 2023 21:54:08 -0700 (PDT)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3963dqlg000939;
-        Fri, 6 Oct 2023 04:53:57 GMT
+        with ESMTP id S230111AbjJFEyj (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Oct 2023 00:54:39 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25CE181;
+        Thu,  5 Oct 2023 21:54:25 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3964iVhc008306;
+        Fri, 6 Oct 2023 04:54:11 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=qcppdkim1;
- bh=Y57dG8ltw7MucdbZ+M3Satn38fEJHaAh5pACALJTxQA=;
- b=CmsrXYNNMKkiryQRDSG9KT9oDcJNZRqIpNgFWhXLOSV5B7Zg4j6C5XOwzYHFbhLXax/D
- RBn5sf1T9eYRWsM7nhRO9BNkgzvl6gWV8kAxA20Es9uPYIhqWwJKHM5LqLNzYLZLDr/M
- s+iwZSiDk79SoB1oVG/Ui6mFI/drozRiqzBdXq4b61EiDUXPIDomhVuePp2Y7q2rfsV4
- gcq8ZHNnITpXDG04OtlU7a4ojIKXcEyintKCArf+iPm4xr+pGJosIBjVtw10Tou/OO4s
- lvx3isVkInEfEDkDeMmflfKORNDHrmZ/e9QoEm8fkOO56sMOwFHuFBrurLmAL1ocuI5a bA== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3thnfaajjk-1
+ bh=tWBLtMiBnfislLmNpklT2fvoD4Wg1XhMm9DoZei9BDo=;
+ b=F7ZlqXe8MqN3ZpTc29p3CpwhCLriqm3ICMCQerxdpwSjzppw+1IG7AWCgd5wBEtWVijD
+ FtjrPSGesOdafcsFxMDdSV4TFAbjLBmqN2fS/qQ0GfE0TNAaxg/rspJN4n1Oezw5xk4y
+ +j/f4MMzo6jUAu/iHRAUf4Y/n2nk0AZwi1odhQ5ih3AExpf216izkd4xRU8MIaALN2SU
+ 8h/jrK2Ez7LMjoG+LCdbbdY7+ZEKy27SoR03exhaXXfTnGso+IFXVMqQry7Aeb4nfvmG
+ FDljNhknRU3ExK2iQZ/yMJw7j3E/wKdlWikMqUxuEXQsY2+BxRC4T604ey1kwVdAgYXm yQ== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3tj9bxg6d1-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 06 Oct 2023 04:53:57 +0000
+        Fri, 06 Oct 2023 04:54:11 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3964ruLF005160
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3964rkCV025465
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 6 Oct 2023 04:53:56 GMT
+        Fri, 6 Oct 2023 04:53:46 GMT
 Received: from hu-devipriy-blr.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.36; Thu, 5 Oct 2023 21:53:51 -0700
+ 15.2.1118.36; Thu, 5 Oct 2023 21:53:41 -0700
 From:   Devi Priya <quic_devipriy@quicinc.com>
 To:     <agross@kernel.org>, <andersson@kernel.org>,
         <konrad.dybcio@linaro.org>, <lee@kernel.org>, <robh+dt@kernel.org>,
@@ -46,9 +46,9 @@ To:     <agross@kernel.org>, <andersson@kernel.org>,
         <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <u.kleine-koenig@pengutronix.de>,
         <linux-pwm@vger.kernel.org>
-Subject: [PATCH 4/4] arm64: dts: qcom: ipq5332: Add pwm support
-Date:   Fri, 6 Oct 2023 10:23:17 +0530
-Message-ID: <20231006045317.1056625-5-quic_devipriy@quicinc.com>
+Subject: [PATCH 2/4] dt-bindings: mfd: qcom,tcsr: Extend simple-mfd & pwm support for IPQ targets
+Date:   Fri, 6 Oct 2023 10:23:15 +0530
+Message-ID: <20231006045317.1056625-3-quic_devipriy@quicinc.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231006045317.1056625-1-quic_devipriy@quicinc.com>
 References: <20231006045317.1056625-1-quic_devipriy@quicinc.com>
@@ -60,55 +60,64 @@ X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: DgdSN-ND56AvD-Zj2k5_JEHKD7l0FYxu
-X-Proofpoint-ORIG-GUID: DgdSN-ND56AvD-Zj2k5_JEHKD7l0FYxu
+X-Proofpoint-GUID: kQrUq-kBSyOQek41nm0AuSm4l88-6KSv
+X-Proofpoint-ORIG-GUID: kQrUq-kBSyOQek41nm0AuSm4l88-6KSv
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-10-06_01,2023-10-05_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 mlxlogscore=783 malwarescore=0 bulkscore=0 spamscore=0
- impostorscore=0 clxscore=1015 adultscore=0 phishscore=0 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2310060036
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ mlxlogscore=988 lowpriorityscore=0 malwarescore=0 bulkscore=0 adultscore=0
+ spamscore=0 mlxscore=0 priorityscore=1501 suspectscore=0 clxscore=1015
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2310060037
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add PWM support in ipq5332. The PWM is in the TCSR area. Make tcsr
-"simple-mfd" compatible, and add pwm as a child of &tcsr.
+Extend simple-mfd and pwm support for IPQ5332 & IPQ9574 SoCs.
 
 Signed-off-by: Devi Priya <quic_devipriy@quicinc.com>
 ---
- arch/arm64/boot/dts/qcom/ipq5332.dtsi | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq5332.dtsi b/arch/arm64/boot/dts/qcom/ipq5332.dtsi
-index d3fef2f80a81..7620f1ccd324 100644
---- a/arch/arm64/boot/dts/qcom/ipq5332.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq5332.dtsi
-@@ -210,8 +210,21 @@ tcsr_mutex: hwlock@1905000 {
- 		};
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml b/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
+index f836b973e382..1e1e25df4ee3 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,tcsr.yaml
+@@ -33,10 +33,8 @@ properties:
+               - qcom,sm8450-tcsr
+               - qcom,tcsr-apq8064
+               - qcom,tcsr-apq8084
+-              - qcom,tcsr-ipq5332
+               - qcom,tcsr-ipq8064
+               - qcom,tcsr-ipq8074
+-              - qcom,tcsr-ipq9574
+               - qcom,tcsr-mdm9615
+               - qcom,tcsr-msm8226
+               - qcom,tcsr-msm8660
+@@ -47,7 +45,10 @@ properties:
+               - qcom,tcsr-msm8996
+           - const: syscon
+       - items:
+-          - const: qcom,tcsr-ipq6018
++          - enum:
++              - qcom,tcsr-ipq5332
++              - qcom,tcsr-ipq6018
++              - qcom,tcsr-ipq9574
+           - const: syscon
+           - const: simple-mfd
  
- 		tcsr: syscon@1937000 {
--			compatible = "qcom,tcsr-ipq5332", "syscon";
-+			compatible = "qcom,tcsr-ipq5332", "syscon", "simple-mfd";
- 			reg = <0x01937000 0x21000>;
-+			ranges = <0x0 0x01937000 0x21000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+
-+			pwm: pwm@a010 {
-+				compatible = "qcom,ipq5332-pwm", "qcom,ipq6018-pwm";
-+				reg = <0xa010 0x20>;
-+				clocks = <&gcc GCC_ADSS_PWM_CLK>;
-+				assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
-+				assigned-clock-rates = <100000000>;
-+				#pwm-cells = <2>;
-+				status = "disabled";
-+			};
- 		};
- 
- 		sdhc: mmc@7804000 {
+@@ -78,7 +79,9 @@ allOf:
+           compatible:
+             contains:
+               enum:
++                - qcom,tcsr-ipq5332
+                 - qcom,tcsr-ipq6018
++                - qcom,tcsr-ipq9574
+     then:
+       patternProperties:
+         "pwm@[a-f0-9]+$": false
 -- 
 2.34.1
 
