@@ -2,53 +2,47 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F65CD68F5
-	for <linux-pwm@archiver.kernel.org>; Tue, 10 Oct 2023 07:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12574CD68F6
+	for <linux-pwm@archiver.kernel.org>; Tue, 10 Oct 2023 07:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442406AbjJJHTW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 10 Oct 2023 03:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
+        id S1442488AbjJJHvX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 10 Oct 2023 03:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378097AbjJJHTW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 10 Oct 2023 03:19:22 -0400
+        with ESMTP id S1442597AbjJJHvV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 10 Oct 2023 03:51:21 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D563B9F
-        for <linux-pwm@vger.kernel.org>; Tue, 10 Oct 2023 00:19:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDF0B8
+        for <linux-pwm@vger.kernel.org>; Tue, 10 Oct 2023 00:51:19 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qq71J-00046H-8A; Tue, 10 Oct 2023 09:19:09 +0200
+        id 1qq7WP-00086W-MA; Tue, 10 Oct 2023 09:51:17 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qq71I-000bZx-HG; Tue, 10 Oct 2023 09:19:08 +0200
+        id 1qq7WP-000bix-9D; Tue, 10 Oct 2023 09:51:17 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qq71I-00CuRr-7u; Tue, 10 Oct 2023 09:19:08 +0200
-Date:   Tue, 10 Oct 2023 09:19:08 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Florian Fainelli <florian.fainelli@broadcom.com>
-Cc:     linux-pwm@vger.kernel.org, Angus Clark <angus.clark@broadcom.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] pwm: bcm2835: Add support for suspend/resume
-Message-ID: <20231010071908.azpqdx3eff442fxh@pengutronix.de>
-References: <20231009204226.3224521-1-florian.fainelli@broadcom.com>
+        id 1qq7WP-00Cvmo-0B; Tue, 10 Oct 2023 09:51:17 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
+        Florian Fainelli <florian.fainelli@broadcom.com>
+Subject: [PATCH 05/11] pwm: dwc: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
+Date:   Tue, 10 Oct 2023 09:51:06 +0200
+Message-Id: <20231010075112.755178-6-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20231010075112.755178-1-u.kleine-koenig@pengutronix.de>
+References: <20231010075112.755178-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="isqqdgvdw4a6nj5a"
-Content-Disposition: inline
-In-Reply-To: <20231009204226.3224521-1-florian.fainelli@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1446; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=hnJyU72cjYfeGb3703HMX6Xcn5/1Hg2lADECe005B+Y=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlRVpkSpuA7XOZ3JDxhbnJIFK547TfvhkPX35s6Vdizzv 7/IieDpZDRmYWDkYpAVU2Sxb1yTaVUlF9m59t9lmEGsTCBTGLg4BWAixZ84GHrkFf0/BlrbOlq0 iyc+28Vkz8jd/60s8nBZyryIe2YmkTt5p1douUe9VNkvVhn3PS3AwK5opW/Rmyk9RSfUpmdGu/8 sL9R1d126bL979OKJjgJ/Fvos0zk0X1Ig9WL8oadn5/1qFxSLVv4febJ6ccTf+IrO674pK6ZHac 2buX1XRn3hD+3fiqcjTSc++OsaNDtYYMG6z38K7APm3iufdLHp0a0Vszr/WSaUWVgcTk26q/xUp 9845Jvp+T+2d1TsrvtUBWxfGBd6JObVBq+z7VONg2MlzUzYPX/KHOorrIiYxBcTUH1VtFtlpeQr pw+v4sN54/13+0y9eMo1fxHP0dokBRbW9Ef7pu/6sIcTAA==
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
@@ -57,94 +51,50 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+This macro has the advantage over SIMPLE_DEV_PM_OPS that we don't have to
+care about when the functions are actually used, so the corresponding
+#ifdef can be dropped.
 
---isqqdgvdw4a6nj5a
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Also make use of pm_ptr() to discard all PM related stuff if CONFIG_PM
+isn't enabled.
 
-On Mon, Oct 09, 2023 at 01:42:26PM -0700, Florian Fainelli wrote:
-> Similar to other drivers, we need to make sure that the clock is
-> disabled during suspend and re-enabled during resume.
->=20
-> Reported-by: Angus Clark <angus.clark@broadcom.com>
-> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
-> ---
-> Changes in v2:
->=20
-> - use DEFINE_SIMPLE_DEV_PM_OPS as suggested by Uwe
->=20
->  drivers/pwm/pwm-bcm2835.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
->=20
-> diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
-> index bdfc2a5ec0d6..938f993ae746 100644
-> --- a/drivers/pwm/pwm-bcm2835.c
-> +++ b/drivers/pwm/pwm-bcm2835.c
-> @@ -182,6 +182,25 @@ static void bcm2835_pwm_remove(struct platform_devic=
-e *pdev)
->  	clk_disable_unprepare(pc->clk);
->  }
-> =20
-> +static int __maybe_unused bcm2835_pwm_suspend(struct device *dev)
-> +{
-> +	struct bcm2835_pwm *pc =3D dev_get_drvdata(dev);
-> +
-> +	clk_disable_unprepare(pc->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __maybe_unused bcm2835_pwm_resume(struct device *dev)
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-dwc.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-With DEFINE_SIMPLE_DEV_PM_OPS you don't need the __maybe_unused (which
-is one of the upsides of DEFINE_SIMPLE_DEV_PM_OPS compared to
-SIMPLE_DEV_PM_OPS)
+diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
+index 3bbb26c862c3..87cc3d6c7868 100644
+--- a/drivers/pwm/pwm-dwc.c
++++ b/drivers/pwm/pwm-dwc.c
+@@ -260,7 +260,6 @@ static void dwc_pwm_remove(struct pci_dev *pci)
+ 	pm_runtime_get_noresume(&pci->dev);
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int dwc_pwm_suspend(struct device *dev)
+ {
+ 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+@@ -295,9 +294,8 @@ static int dwc_pwm_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+-static SIMPLE_DEV_PM_OPS(dwc_pwm_pm_ops, dwc_pwm_suspend, dwc_pwm_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(dwc_pwm_pm_ops, dwc_pwm_suspend, dwc_pwm_resume);
+ 
+ static const struct pci_device_id dwc_pwm_id_table[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x4bb7) }, /* Elkhart Lake */
+@@ -311,7 +309,7 @@ static struct pci_driver dwc_pwm_driver = {
+ 	.remove = dwc_pwm_remove,
+ 	.id_table = dwc_pwm_id_table,
+ 	.driver = {
+-		.pm = &dwc_pwm_pm_ops,
++		.pm = pm_ptr(&dwc_pwm_pm_ops),
+ 	},
+ };
+ 
+-- 
+2.40.1
 
-> +{
-> +	struct bcm2835_pwm *pc =3D dev_get_drvdata(dev);
-> +
-> +	return clk_prepare_enable(pc->clk);
-> +}
-> +
-> +static DEFINE_SIMPLE_DEV_PM_OPS(bcm2835_pwm_pm_ops, bcm2835_pwm_suspend,
-> +				bcm2835_pwm_resume);
-> +
->  static const struct of_device_id bcm2835_pwm_of_match[] =3D {
->  	{ .compatible =3D "brcm,bcm2835-pwm", },
->  	{ /* sentinel */ }
-> @@ -192,6 +211,7 @@ static struct platform_driver bcm2835_pwm_driver =3D {
->  	.driver =3D {
->  		.name =3D "bcm2835-pwm",
->  		.of_match_table =3D bcm2835_pwm_of_match,
-> +		.pm =3D &bcm2835_pwm_pm_ops,
-
-I think=20
-
-+		.pm =3D pm_ptr(&bcm2835_pwm_pm_ops),
-
-is the right thing here.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---isqqdgvdw4a6nj5a
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUk+usACgkQj4D7WH0S
-/k5ECwf+NPkcT3mWWY2ZBSoYzazNLuQvKMVs9Lt7KSbMFBoHA7ipNqgsZABLPrXU
-4hHgmDZAlpEvzTv/i5g3o2Q1GpGUA+AT42Dm7ds2oAh6g9OwyPcUhju9FztPQ2kJ
-R9sYJwNCdAdFw0w9QSG59Q42PR7Ad6v3wBFfokn96MweTm9GewxVdjsXxWCFa8B9
-gAfv3dEv5fFHjp+wvri89clKGBKn4CCXjtyHGgfkgnV2GnZOXeCFwjagauC+VKSW
-H3FFc5GrhjE0p3Kl0iGoGuNv0ucPAGJdkffObP9MmkNJSfUfySJZt/rNGH54yOZT
-4dkeEJf29RscME49f0Lx2BgFiEND+g==
-=2uy8
------END PGP SIGNATURE-----
-
---isqqdgvdw4a6nj5a--
