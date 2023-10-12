@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50327CDB486
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1F0CDB47E
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379616AbjJLQbu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        id S1379627AbjJLQbw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347338AbjJLQbT (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:19 -0400
+        with ESMTP id S1379564AbjJLQbU (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:20 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EEAE8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F924D3
         for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:14 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyad-0005o3-J4; Thu, 12 Oct 2023 18:31:11 +0200
+        id 1qqyad-0005p9-R0; Thu, 12 Oct 2023 18:31:11 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyab-001CAu-It; Thu, 12 Oct 2023 18:31:09 +0200
+        id 1qqyab-001CB2-W9; Thu, 12 Oct 2023 18:31:10 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyab-00F5S9-9v; Thu, 12 Oct 2023 18:31:09 +0200
+        id 1qqyab-00F5SH-NA; Thu, 12 Oct 2023 18:31:09 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 090/109] pwm: stm32: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:29:58 +0200
-Message-ID: <20231012162827.1002444-201-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 092/109] pwm: sun4i: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:30:00 +0200
+Message-ID: <20231012162827.1002444-203-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5683; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=spP0XjE/Zs62UwUDn+Gi8pEWdm3A7LuFbTjpaFYEf4Y=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB8Wga3s91I2WoyRnV+OOVPlZvWvsTnQPDTKm SGz5I/e6+KJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgfFgAKCRCPgPtYfRL+ TlOUCAC1fYqp0j9wI53Oy5qXxnn80IM8h6DqlnsEKuqZOPysYFA+qcyMhoKxBqUFYfLmTkY6fp1 TCBbY4mwq2/81icXkdF2DGJKSV7wPRfmwJ9Tun/boccThWqv+6ZDsdxP5zFrL67GKvehzQ/4BWh rMcw7rIWNwo0D/1ntsZVabJfAUSiscrp1Pr1UsIdAWxMtvKD4Sty6WMn9P6gLqlnj9lcngwOt4V yoJ+3bi3varwV7U44HRuiEw+6QbVknB9kbYQzdaH9AjRm0UH60sfmpRinEI9IqZGjZLwVJdt98i 5wLheUe9JvWVxCx7JO5M4ZSZooTnO6fWW8oR0okopeUQgFss
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3020; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=NamMhonsmWC/vi5fd8wfhvGOrAdNJTRMzmBa6OpmDa8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB8YjaoSvfLlTQRQTIEZx8QXpI4WVF2SrI4t6 3vk84iJ+3KJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgfGAAKCRCPgPtYfRL+ TioSB/9kiJvgg8FolMdjD37DF1+YhTdHSw2vJSO/ev34HTpmFbx0vdbOfA8UDDiUQ5jL/6Dbq1h R86pdG//PRPZdkWE4hpAKMt+jNs5+F+FNV/81D2So2QNXt+aQYGyuH0amFVm7mBLjGJDDafa2Dw 7gXFgqGDp9Qqk8hy/n6v1HHpAX7tyRLGr7A13vH3+7lQhakRdWVG+HJsaPKWLkbYk1rj2qWG7rF yVz4Q0/5ZVSzQKU4f/A0HhvxkuHSeO4XIXzDd7cG+0x4IofFFA7+gQfHVqsmXyGdXDRGY7j3xHM dBbY07/+haGKNXNnmRd8GJ8aYuFFiJj2Gyj3DIukASX/6lG5
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,171 +50,102 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-stm32 driver to further changes of the pwm core
+This prepares the pwm-sun4i driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-stm32.c | 51 ++++++++++++++++++++++-------------------
- 1 file changed, 27 insertions(+), 24 deletions(-)
+ drivers/pwm/pwm-sun4i.c | 34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index bb8592291bd0..bec6784870ec 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -27,7 +27,6 @@ struct stm32_breakinput {
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 44edf1ce5739..65652f510237 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -81,7 +81,6 @@ struct sun4i_pwm_data {
  };
  
- struct stm32_pwm {
+ struct sun4i_pwm_chip {
 -	struct pwm_chip chip;
- 	struct mutex lock; /* protect pwm config/enable */
+ 	struct clk *bus_clk;
  	struct clk *clk;
- 	struct regmap *regmap;
-@@ -40,7 +39,7 @@ struct stm32_pwm {
+ 	struct reset_control *rst;
+@@ -92,7 +91,7 @@ struct sun4i_pwm_chip {
  
- static inline struct stm32_pwm *to_stm32_pwm_dev(struct pwm_chip *chip)
+ static inline struct sun4i_pwm_chip *to_sun4i_pwm_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct stm32_pwm, chip);
+-	return container_of(chip, struct sun4i_pwm_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- static u32 active_channels(struct stm32_pwm *dev)
-@@ -105,11 +104,12 @@ static int write_ccrx(struct stm32_pwm *dev, int ch, u32 value)
-  * - Period     = t2 - t0
-  * - Duty cycle = t1 - t0
-  */
--static int stm32_pwm_raw_capture(struct stm32_pwm *priv, struct pwm_device *pwm,
-+static int stm32_pwm_raw_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 				 unsigned long tmo_ms, u32 *raw_prd,
- 				 u32 *raw_dty)
+ static inline u32 sun4i_pwm_readl(struct sun4i_pwm_chip *chip,
+@@ -384,17 +383,22 @@ MODULE_DEVICE_TABLE(of, sun4i_pwm_dt_ids);
+ 
+ static int sun4i_pwm_probe(struct platform_device *pdev)
  {
--	struct device *parent = pwmchip_parent(&priv->chip);
-+	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
-+	struct device *parent = pwmchip_parent(chip);
- 	enum stm32_timers_dmas dma_id;
- 	u32 ccen, ccr;
- 	int ret;
-@@ -223,7 +223,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   TIM_CCER_CC12P : TIM_CCER_CC34P, pwm->hwpwm < 2 ?
- 			   TIM_CCER_CC2P : TIM_CCER_CC4P);
- 
--	ret = stm32_pwm_raw_capture(priv, pwm, tmo_ms, &raw_prd, &raw_dty);
-+	ret = stm32_pwm_raw_capture(chip, pwm, tmo_ms, &raw_prd, &raw_dty);
- 	if (ret)
- 		goto stop;
- 
-@@ -244,7 +244,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 		/* 2nd measure with new scale */
- 		psc /= scale;
- 		regmap_write(priv->regmap, TIM_PSC, psc);
--		ret = stm32_pwm_raw_capture(priv, pwm, tmo_ms, &raw_prd,
-+		ret = stm32_pwm_raw_capture(chip, pwm, tmo_ms, &raw_prd,
- 					    &raw_dty);
- 		if (ret)
- 			goto stop;
-@@ -272,7 +272,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   FIELD_PREP(TIM_CCMR_IC1PSC, icpsc) |
- 			   FIELD_PREP(TIM_CCMR_IC2PSC, icpsc));
- 
--	ret = stm32_pwm_raw_capture(priv, pwm, tmo_ms, &raw_prd, &raw_dty);
-+	ret = stm32_pwm_raw_capture(chip, pwm, tmo_ms, &raw_prd, &raw_dty);
- 	if (ret)
- 		goto stop;
- 
-@@ -578,18 +578,18 @@ static void stm32_pwm_detect_complementary(struct stm32_pwm *priv)
- 	priv->have_complementary_output = (ccer != 0);
- }
- 
--static int stm32_pwm_detect_channels(struct stm32_pwm *priv)
-+static unsigned int stm32_pwm_detect_channels(struct stm32_timers *ddata)
- {
- 	u32 ccer;
--	int npwm = 0;
-+	unsigned int npwm = 0;
- 
- 	/*
- 	 * If channels enable bits don't exist writing 1 will have no
- 	 * effect so we can detect and count them.
- 	 */
--	regmap_set_bits(priv->regmap, TIM_CCER, TIM_CCER_CCXE);
--	regmap_read(priv->regmap, TIM_CCER, &ccer);
--	regmap_clear_bits(priv->regmap, TIM_CCER, TIM_CCER_CCXE);
-+	regmap_set_bits(ddata->regmap, TIM_CCER, TIM_CCER_CCXE);
-+	regmap_read(ddata->regmap, TIM_CCER, &ccer);
-+	regmap_clear_bits(ddata->regmap, TIM_CCER, TIM_CCER_CCXE);
- 
- 	if (ccer & TIM_CCER_CC1E)
- 		npwm++;
-@@ -612,11 +612,14 @@ static int stm32_pwm_probe(struct platform_device *pdev)
- 	struct device_node *np = dev->of_node;
- 	struct stm32_timers *ddata = dev_get_drvdata(pdev->dev.parent);
- 	struct stm32_pwm *priv;
 +	struct pwm_chip *chip;
+ 	struct sun4i_pwm_chip *sun4ichip;
++	const struct sun4i_pwm_data *data;
  	int ret;
  
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
+-	sun4ichip = devm_kzalloc(&pdev->dev, sizeof(*sun4ichip), GFP_KERNEL);
+-	if (!sun4ichip)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(dev, stm32_pwm_detect_channels(ddata),
-+				  sizeof(*priv));
+-
+-	sun4ichip->data = of_device_get_match_data(&pdev->dev);
+-	if (!sun4ichip->data)
++	data = of_device_get_match_data(&pdev->dev);
++	if (!data)
+ 		return -ENODEV;
+ 
++	chip = devm_pwmchip_alloc(&pdev->dev, data->npwm, sizeof(*sun4ichip));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	priv = to_stm32_pwm_dev(chip);
++	sun4ichip = to_sun4i_pwm_chip(chip);
++
++	sun4ichip->data = data;
++
+ 	sun4ichip->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(sun4ichip->base))
+ 		return PTR_ERR(sun4ichip->base);
+@@ -451,19 +455,18 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 		goto err_bus;
+ 	}
  
- 	mutex_init(&priv->lock);
- 	priv->regmap = ddata->regmap;
-@@ -632,33 +635,32 @@ static int stm32_pwm_probe(struct platform_device *pdev)
+-	sun4ichip->chip.dev = &pdev->dev;
+-	sun4ichip->chip.ops = &sun4i_pwm_ops;
+-	sun4ichip->chip.npwm = sun4ichip->data->npwm;
++	chip->ops = &sun4i_pwm_ops;
++	chip->npwm = sun4ichip->data->npwm;
  
- 	stm32_pwm_detect_complementary(priv);
+ 	spin_lock_init(&sun4ichip->ctrl_lock);
  
--	priv->chip.dev = dev;
--	priv->chip.ops = &stm32pwm_ops;
--	priv->chip.npwm = stm32_pwm_detect_channels(priv);
-+	chip->ops = &stm32pwm_ops;
+-	ret = pwmchip_add(&sun4ichip->chip);
++	ret = pwmchip_add(chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
+ 		goto err_pwm_add;
+ 	}
  
--	ret = devm_pwmchip_add(dev, &priv->chip);
-+	ret = devm_pwmchip_add(dev, chip);
- 	if (ret < 0)
- 		return ret;
- 
--	platform_set_drvdata(pdev, priv);
+-	platform_set_drvdata(pdev, sun4ichip);
 +	platform_set_drvdata(pdev, chip);
  
  	return 0;
- }
  
- static int __maybe_unused stm32_pwm_suspend(struct device *dev)
+@@ -477,9 +480,10 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 
+ static void sun4i_pwm_remove(struct platform_device *pdev)
  {
--	struct stm32_pwm *priv = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
- 	unsigned int i;
- 	u32 ccer, mask;
+-	struct sun4i_pwm_chip *sun4ichip = platform_get_drvdata(pdev);
++	struct pwm_chip *chip = platform_get_drvdata(pdev);
++	struct sun4i_pwm_chip *sun4ichip = to_sun4i_pwm_chip(chip);
  
- 	/* Look for active channels */
- 	ccer = active_channels(priv);
+-	pwmchip_remove(&sun4ichip->chip);
++	pwmchip_remove(chip);
  
--	for (i = 0; i < priv->chip.npwm; i++) {
-+	for (i = 0; i < chip->npwm; i++) {
- 		mask = TIM_CCER_CC1E << (i * 4);
- 		if (ccer & mask) {
- 			dev_err(dev, "PWM %u still in use by consumer %s\n",
--				i, priv->chip.pwms[i].label);
-+				i, chip->pwms[i].label);
- 			return -EBUSY;
- 		}
- 	}
-@@ -668,7 +670,8 @@ static int __maybe_unused stm32_pwm_suspend(struct device *dev)
- 
- static int __maybe_unused stm32_pwm_resume(struct device *dev)
- {
--	struct stm32_pwm *priv = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
- 	int ret;
- 
- 	ret = pinctrl_pm_select_default_state(dev);
+ 	clk_disable_unprepare(sun4ichip->bus_clk);
+ 	reset_control_assert(sun4ichip->rst);
 -- 
 2.42.0
 
