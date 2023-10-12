@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A905CDB47E
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCAF8CDB46E
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379578AbjJLQbV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
+        id S1347329AbjJLQbT (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379570AbjJLQbE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:04 -0400
+        with ESMTP id S1379613AbjJLQbC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:02 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E7EC0
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056EECC
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:01 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaS-00054d-7F; Thu, 12 Oct 2023 18:31:00 +0200
+        id 1qqyaR-000516-3G; Thu, 12 Oct 2023 18:30:59 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaR-001C7s-07; Thu, 12 Oct 2023 18:30:59 +0200
+        id 1qqyaQ-001C7l-J6; Thu, 12 Oct 2023 18:30:58 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaQ-00F5Op-NF; Thu, 12 Oct 2023 18:30:58 +0200
+        id 1qqyaQ-00F5Oh-A6; Thu, 12 Oct 2023 18:30:58 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 041/109] pwm: atmel-hlcdc: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:29:09 +0200
-Message-ID: <20231012162827.1002444-152-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 039/109] pwm: ab8500: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:29:07 +0200
+Message-ID: <20231012162827.1002444-150-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4008; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=bc32rkn7upBFRjQAp3znDqXYMNsTheReAMzAr41KPjM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB7cMTyLL68TZAN/CCcWOGACEXE9uZi/uwl0k x7RR3B69MGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge3AAKCRCPgPtYfRL+ Tl57B/9s4RUUWBRGJHkIkS2R69YRo3CbypfP3tjYUyGF97fVwSoSNO7RDdSe7ie0mUh6wR3xQ4m LYx80xVyILZvvo6OnW7BEyu4j8k4PSkYuyIqZ51ezdbrfEUBKiMGzI46GBlbP8BUPr0tHk99Ouy mxUma3IsioWM7+Yt9T++Aa2Und7DQNq0E38l3arm42n7bv3TdEmIjxyInS91amWEb/dx/FRrowT /0TB20RypUY3gjO/aP8rpBCu4LZfq7+BZmt+BdwaQn0h7YMoCdBJ/wms+XxlEm7AEVewRK6S85k F+HPkPcS605zWgIzm7DrREO2kU0NilI1lXeW/fCmZbm6fPFM
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2000; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=iuOiOOR77ki3z9y7/Se6t+44wfrdR9+cG1nAMH6IJEc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB7arHyCygjRpSdPjgYowjkodl8XG2o63BTWv O29IMn1h1WJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge2gAKCRCPgPtYfRL+ Tm3ECACTWxTgdcKvaxO6RERo2XT0Kvqk7WiFRc18LbdlO2tnKuS1wmmAkl9idWet+AP0/KlnjbA Hxe+v378DoHvTVKkuGX8CczAeaMi8mTqx/R4rz9BkJJSnjPGKf2aJW72kCOmn/PsAoJyjnG017O RBQl/wj6oD/bRmxI+b5EY6uudgi7t0AaJAQt9yVKrZ+MonfGf0XEidsDSmF3Wgnv2kRKh6gmpVI XOqT1Dd6pHLZwtj1TvhcOEGXtdOgTFZESXw+UH+gbwlhu9yvH53yas0a1OqodbZfz0JozHa7ZpB gyX1/srAF9JBfx98wgmFGiCC5c0GBDiXueul+ELUjFZ7r5sf
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,123 +50,66 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-atme-hlcdc driver to further changes of the pwm core
+This prepares the pwm-ab8500 driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-atmel-hlcdc.c | 35 ++++++++++++++++++-----------------
- 1 file changed, 18 insertions(+), 17 deletions(-)
+ drivers/pwm/pwm-ab8500.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-index 07920e034757..c3b18a51c926 100644
---- a/drivers/pwm/pwm-atmel-hlcdc.c
-+++ b/drivers/pwm/pwm-atmel-hlcdc.c
-@@ -28,7 +28,6 @@ struct atmel_hlcdc_pwm_errata {
+diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c
+index 719e4ccf1800..f642103931c7 100644
+--- a/drivers/pwm/pwm-ab8500.c
++++ b/drivers/pwm/pwm-ab8500.c
+@@ -24,13 +24,12 @@
+ #define AB8500_PWM_CLKRATE 9600000
+ 
+ struct ab8500_pwm_chip {
+-	struct pwm_chip chip;
+ 	unsigned int hwid;
  };
  
- struct atmel_hlcdc_pwm {
--	struct pwm_chip chip;
- 	struct atmel_hlcdc *hlcdc;
- 	struct clk *cur_clk;
- 	const struct atmel_hlcdc_pwm_errata *errata;
-@@ -36,7 +35,7 @@ struct atmel_hlcdc_pwm {
- 
- static inline struct atmel_hlcdc_pwm *to_atmel_hlcdc_pwm(struct pwm_chip *chip)
+ static struct ab8500_pwm_chip *ab8500_pwm_from_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct atmel_hlcdc_pwm, chip);
+-	return container_of(chip, struct ab8500_pwm_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- static int atmel_hlcdc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -183,10 +182,11 @@ static const struct atmel_hlcdc_pwm_errata atmel_hlcdc_pwm_sama5d3_errata = {
- #ifdef CONFIG_PM_SLEEP
- static int atmel_hlcdc_pwm_suspend(struct device *dev)
+ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -185,6 +184,7 @@ static const struct pwm_ops ab8500_pwm_ops = {
+ 
+ static int ab8500_pwm_probe(struct platform_device *pdev)
  {
--	struct atmel_hlcdc_pwm *atmel = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct atmel_hlcdc_pwm *atmel = to_atmel_hlcdc_pwm(chip);
- 
- 	/* Keep the periph clock enabled if the PWM is still running. */
--	if (pwm_is_enabled(&atmel->chip.pwms[0]))
-+	if (pwm_is_enabled(&chip->pwms[0]))
- 		clk_disable_unprepare(atmel->hlcdc->periph_clk);
- 
- 	return 0;
-@@ -194,11 +194,12 @@ static int atmel_hlcdc_pwm_suspend(struct device *dev)
- 
- static int atmel_hlcdc_pwm_resume(struct device *dev)
- {
--	struct atmel_hlcdc_pwm *atmel = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct atmel_hlcdc_pwm *atmel = to_atmel_hlcdc_pwm(chip);
- 	struct pwm_state state;
- 	int ret;
- 
--	pwm_get_state(&atmel->chip.pwms[0], &state);
-+	pwm_get_state(&chip->pwms[0], &state);
- 
- 	/* Re-enable the periph clock it was stopped during suspend. */
- 	if (!state.enabled) {
-@@ -207,8 +208,7 @@ static int atmel_hlcdc_pwm_resume(struct device *dev)
- 			return ret;
- 	}
- 
--	return atmel_hlcdc_pwm_apply(&atmel->chip, &atmel->chip.pwms[0],
--				     &state);
-+	return atmel_hlcdc_pwm_apply(chip, &chip->pwms[0], &state);
- }
- #endif
- 
-@@ -245,15 +245,17 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
- {
- 	const struct of_device_id *match;
- 	struct device *dev = &pdev->dev;
 +	struct pwm_chip *chip;
- 	struct atmel_hlcdc_pwm *atmel;
- 	struct atmel_hlcdc *hlcdc;
- 	int ret;
+ 	struct ab8500_pwm_chip *ab8500;
+ 	int err;
  
- 	hlcdc = dev_get_drvdata(dev->parent);
- 
--	atmel = devm_kzalloc(dev, sizeof(*atmel), GFP_KERNEL);
--	if (!atmel)
+@@ -195,16 +195,16 @@ static int ab8500_pwm_probe(struct platform_device *pdev)
+ 	 * Nothing to be done in probe, this is required to get the
+ 	 * device which is required for ab8500 read and write
+ 	 */
+-	ab8500 = devm_kzalloc(&pdev->dev, sizeof(*ab8500), GFP_KERNEL);
+-	if (ab8500 == NULL)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(dev, 1, sizeof(*atmel));
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*ab8500));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	atmel = to_atmel_hlcdc_pwm(chip);
  
- 	ret = clk_prepare_enable(hlcdc->periph_clk);
- 	if (ret)
-@@ -264,11 +266,9 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
- 		atmel->errata = match->data;
+-	ab8500->chip.dev = &pdev->dev;
+-	ab8500->chip.ops = &ab8500_pwm_ops;
+-	ab8500->chip.npwm = 1;
++	ab8500 = pwmchip_priv(chip);
++
++	chip->ops = &ab8500_pwm_ops;
+ 	ab8500->hwid = pdev->id - 1;
  
- 	atmel->hlcdc = hlcdc;
--	atmel->chip.ops = &atmel_hlcdc_pwm_ops;
--	atmel->chip.dev = dev;
--	atmel->chip.npwm = 1;
-+	chip->ops = &atmel_hlcdc_pwm_ops;
+-	err = devm_pwmchip_add(&pdev->dev, &ab8500->chip);
++	err = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (err < 0)
+ 		return dev_err_probe(&pdev->dev, err, "Failed to add pwm chip\n");
  
--	ret = pwmchip_add(&atmel->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret) {
- 		clk_disable_unprepare(hlcdc->periph_clk);
- 		return ret;
-@@ -281,9 +281,10 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
- 
- static void atmel_hlcdc_pwm_remove(struct platform_device *pdev)
- {
--	struct atmel_hlcdc_pwm *atmel = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct atmel_hlcdc_pwm *atmel = to_atmel_hlcdc_pwm(chip);
- 
--	pwmchip_remove(&atmel->chip);
-+	pwmchip_remove(chip);
- 
- 	clk_disable_unprepare(atmel->hlcdc->periph_clk);
- }
 -- 
 2.42.0
 
