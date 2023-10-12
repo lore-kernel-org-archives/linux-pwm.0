@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED6E2CDB46E
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3D9CDB48B
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379622AbjJLQbd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
+        id S1379595AbjJLQbc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379599AbjJLQbL (ORCPT
+        with ESMTP id S1379633AbjJLQbL (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:11 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4ACDD
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B04EC0
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:09 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaZ-0005Xn-2s; Thu, 12 Oct 2023 18:31:07 +0200
+        id 1qqyaY-0005UD-8V; Thu, 12 Oct 2023 18:31:06 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaW-001C9M-Bu; Thu, 12 Oct 2023 18:31:04 +0200
+        id 1qqyaV-001C97-Gs; Thu, 12 Oct 2023 18:31:03 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaW-00F5QW-2k; Thu, 12 Oct 2023 18:31:04 +0200
+        id 1qqyaV-00F5QG-74; Thu, 12 Oct 2023 18:31:03 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 066/109] pwm: lpc18xx-sct: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:29:34 +0200
-Message-ID: <20231012162827.1002444-177-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 062/109] pwm: iqs620a: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:29:30 +0200
+Message-ID: <20231012162827.1002444-173-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3038; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=hL3NRnrGhmDnL+/aA/MCOSU3YGi6QtKn4V05wNIpUcQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB76u1zMME8d1k3/hmHe5MBvSmujfM4Em0mPP 36NHJ5m546JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge+gAKCRCPgPtYfRL+ TrsSB/sGPaWfNoTtiZRQYKGtvcD9TYtjZRaNOMrrZXZZQJM+amWcWSGXDYfzUPLS/Z21uP9o93Y T9j4+bq0aK4Hjd13iRDopr6FbAzEOCRmj+xfUQBHVgbtFkQbpoYquL54EMr9O8C0ZYFbpKj7nW/ /abzjZAtVq1GLz2+2Ip5/q2qcfo8uSdzUxw/yVj6YawGLJfanfYOyLiW7zMdPTQqKKx894lJKno unsV7YrETR+ARfztbv5nIlPxh6qWdndTCy2HJF6NAHVFd67H3+uhqBA5H/UxG+Lo6fq/CNIuRfZ Xu9gAj2AnJn1c+a7V6H67sK76olyzXBE4K+BLizyWVmF7805
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4067; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=jKQagFXHySqMf7C8w5SyhvSOB2Ll9jDKv/yra19THew=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB71Fjkm5k4BwQrdkbQ1amFimhIq7cMXJkoUm wNEFsnadx2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge9QAKCRCPgPtYfRL+ TjaJB/9Xt4cB1qy/eRxG8EqD9pN9ctoKE3RdTsq4EhXCksxRuR1SgiwEPb4W4jLmcsDwXedJFx8 nmxmknnaLxYdUhVAaL2GlU7wiTqVg4jsr3uGPPVajbzIvGjow3YfNBvlpVWu+GdxZXc93KARs5o gowtUKy9/w6vro84VcVrmSu+YsY+9xsol9ClQLrbbbm/6JX2rBM0hWyoSPu6kMd4asGoVyHdv8W raW3Fyo+HGlw2ihXRT6on0Uvr9ADYWUkPIURgs8V/wETljdIxETBKIu6GGLnBFJoGz7YvMHbo5K KaHKjScjwbbf3gLRAO8EWBPo1Q2UXAXFo7Pb1MNbMDSk9kLr
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,94 +50,130 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-lpc18xx-sct driver to further changes of the pwm
-core outlined in the commit introducing devm_pwmchip_alloc(). There is
-no intended semantical change and the driver should behave as before.
+This prepares the pwm-iqs620a driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-lpc18xx-sct.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/pwm/pwm-iqs620a.c | 37 +++++++++++++++++++++----------------
+ 1 file changed, 21 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index 1fda3f11b3a6..606fa9cbebab 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -93,7 +93,6 @@ struct lpc18xx_pwm_data {
+diff --git a/drivers/pwm/pwm-iqs620a.c b/drivers/pwm/pwm-iqs620a.c
+index 378ab036edfe..a012a0f22b9a 100644
+--- a/drivers/pwm/pwm-iqs620a.c
++++ b/drivers/pwm/pwm-iqs620a.c
+@@ -34,12 +34,17 @@
  
- struct lpc18xx_pwm_chip {
- 	struct device *parent;
+ struct iqs620_pwm_private {
+ 	struct iqs62x_core *iqs62x;
 -	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *pwm_clk;
- 	unsigned long clk_rate;
-@@ -110,7 +109,7 @@ struct lpc18xx_pwm_chip {
- static inline struct lpc18xx_pwm_chip *
- to_lpc18xx_pwm_chip(struct pwm_chip *chip)
- {
--	return container_of(chip, struct lpc18xx_pwm_chip, chip);
++	struct device *dev;
+ 	struct notifier_block notifier;
+ 	struct mutex lock;
+ 	unsigned int duty_scale;
+ };
+ 
++static inline struct iqs620_pwm_private *iqs620_pwm_from_chip(struct pwm_chip *chip)
++{
 +	return pwmchip_priv(chip);
++}
++
+ static int iqs620_pwm_init(struct iqs620_pwm_private *iqs620_pwm,
+ 			   unsigned int duty_scale)
+ {
+@@ -73,7 +78,7 @@ static int iqs620_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (state->period < IQS620_PWM_PERIOD_NS)
+ 		return -EINVAL;
+ 
+-	iqs620_pwm = container_of(chip, struct iqs620_pwm_private, chip);
++	iqs620_pwm = iqs620_pwm_from_chip(chip);
+ 
+ 	/*
+ 	 * The duty cycle generated by the device is calculated as follows:
+@@ -107,9 +112,7 @@ static int iqs620_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ static int iqs620_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 				struct pwm_state *state)
+ {
+-	struct iqs620_pwm_private *iqs620_pwm;
+-
+-	iqs620_pwm = container_of(chip, struct iqs620_pwm_private, chip);
++	struct iqs620_pwm_private *iqs620_pwm = iqs620_pwm_from_chip(chip);
+ 
+ 	mutex_lock(&iqs620_pwm->lock);
+ 
+@@ -155,7 +158,7 @@ static int iqs620_pwm_notifier(struct notifier_block *notifier,
+ 	mutex_unlock(&iqs620_pwm->lock);
+ 
+ 	if (ret) {
+-		dev_err(iqs620_pwm->chip.dev,
++		dev_err(iqs620_pwm->dev,
+ 			"Failed to re-initialize device: %d\n", ret);
+ 		return NOTIFY_BAD;
+ 	}
+@@ -170,28 +173,32 @@ static const struct pwm_ops iqs620_pwm_ops = {
+ 
+ static void iqs620_pwm_notifier_unregister(void *context)
+ {
+-	struct iqs620_pwm_private *iqs620_pwm = context;
++	struct pwm_chip *chip = context;
++	struct iqs620_pwm_private *iqs620_pwm = iqs620_pwm_from_chip(chip);
+ 	int ret;
+ 
+ 	ret = blocking_notifier_chain_unregister(&iqs620_pwm->iqs62x->nh,
+ 						 &iqs620_pwm->notifier);
+ 	if (ret)
+-		dev_err(iqs620_pwm->chip.dev,
++		dev_err(iqs620_pwm->dev,
+ 			"Failed to unregister notifier: %d\n", ret);
  }
  
- static inline void lpc18xx_pwm_writel(struct lpc18xx_pwm_chip *lpc18xx_pwm,
-@@ -351,14 +350,15 @@ MODULE_DEVICE_TABLE(of, lpc18xx_pwm_of_match);
- 
- static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ static int iqs620_pwm_probe(struct platform_device *pdev)
  {
+ 	struct iqs62x_core *iqs62x = dev_get_drvdata(pdev->dev.parent);
 +	struct pwm_chip *chip;
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm;
+ 	struct iqs620_pwm_private *iqs620_pwm;
+ 	unsigned int val;
  	int ret;
- 	u64 val;
  
--	lpc18xx_pwm = devm_kzalloc(&pdev->dev, sizeof(*lpc18xx_pwm),
--				   GFP_KERNEL);
--	if (!lpc18xx_pwm)
+-	iqs620_pwm = devm_kzalloc(&pdev->dev, sizeof(*iqs620_pwm), GFP_KERNEL);
+-	if (!iqs620_pwm)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, LPC18XX_NUM_PWMS, sizeof(*lpc18xx_pwm));
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*iqs620_pwm));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
++	iqs620_pwm = iqs620_pwm_from_chip(chip);
  
- 	lpc18xx_pwm->parent = &pdev->dev;
+ 	iqs620_pwm->iqs62x = iqs62x;
++	iqs620_pwm->dev = &pdev->dev;
  
-@@ -391,9 +391,7 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	lpc18xx_pwm->min_period_ns = DIV_ROUND_UP(NSEC_PER_SEC,
- 						  lpc18xx_pwm->clk_rate);
+ 	ret = regmap_read(iqs62x->regmap, IQS620_PWR_SETTINGS, &val);
+ 	if (ret)
+@@ -205,9 +212,7 @@ static int iqs620_pwm_probe(struct platform_device *pdev)
+ 		iqs620_pwm->duty_scale = val + 1;
+ 	}
  
--	lpc18xx_pwm->chip.dev = &pdev->dev;
--	lpc18xx_pwm->chip.ops = &lpc18xx_pwm_ops;
--	lpc18xx_pwm->chip.npwm = LPC18XX_NUM_PWMS;
-+	chip->ops = &lpc18xx_pwm_ops;
+-	iqs620_pwm->chip.dev = &pdev->dev;
+-	iqs620_pwm->chip.ops = &iqs620_pwm_ops;
+-	iqs620_pwm->chip.npwm = 1;
++	chip->ops = &iqs620_pwm_ops;
  
- 	/* SCT counter must be in unify (32 bit) mode */
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CONFIG,
-@@ -425,21 +423,22 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	val |= LPC18XX_PWM_PRE(0);
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL, val);
+ 	mutex_init(&iqs620_pwm->lock);
  
--	ret = pwmchip_add(&lpc18xx_pwm->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "pwmchip_add failed\n");
+@@ -221,11 +226,11 @@ static int iqs620_pwm_probe(struct platform_device *pdev)
  
--	platform_set_drvdata(pdev, lpc18xx_pwm);
-+	platform_set_drvdata(pdev, chip);
+ 	ret = devm_add_action_or_reset(&pdev->dev,
+ 				       iqs620_pwm_notifier_unregister,
+-				       iqs620_pwm);
++				       chip);
+ 	if (ret)
+ 		return ret;
  
- 	return 0;
- }
+-	ret = devm_pwmchip_add(&pdev->dev, &iqs620_pwm->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret)
+ 		dev_err(&pdev->dev, "Failed to add device: %d\n", ret);
  
- static void lpc18xx_pwm_remove(struct platform_device *pdev)
- {
--	struct lpc18xx_pwm_chip *lpc18xx_pwm = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct lpc18xx_pwm_chip *lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
- 	u32 val;
- 
--	pwmchip_remove(&lpc18xx_pwm->chip);
-+	pwmchip_remove(chip);
- 
- 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL,
 -- 
 2.42.0
 
