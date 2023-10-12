@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F00CCDB46E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68561CDB484
 	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379614AbjJLQbD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
+        id S1379576AbjJLQbE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379578AbjJLQa6 (ORCPT
+        with ESMTP id S1379570AbjJLQa6 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:30:58 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F915E0
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:30:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00DBDD
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:30:55 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaM-0004ml-EM; Thu, 12 Oct 2023 18:30:54 +0200
+        id 1qqyaM-0004lv-31; Thu, 12 Oct 2023 18:30:54 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaL-001C68-Ii; Thu, 12 Oct 2023 18:30:53 +0200
+        id 1qqyaL-001C60-7G; Thu, 12 Oct 2023 18:30:53 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaL-00F5Mz-9X; Thu, 12 Oct 2023 18:30:53 +0200
+        id 1qqyaK-00F5Mr-US; Thu, 12 Oct 2023 18:30:52 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 014/109] pwm: imx27: Make use of pwmchip_parent() macro
-Date:   Thu, 12 Oct 2023 18:28:42 +0200
-Message-ID: <20231012162827.1002444-125-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 012/109] pwm: fsl-ftm: Make use of pwmchip_parent() macro
+Date:   Thu, 12 Oct 2023 18:28:40 +0200
+Message-ID: <20231012162827.1002444-123-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1477; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=21gVfHE440/T65WsIsIoIm1SwOOZ2P7hANAjmVXXXN4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB686gTTw90h3M7Rqg1A713CSQCBlXMywiMYj 0IQDu0QENyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgevAAKCRCPgPtYfRL+ TsvmB/9Pdre/BWqtlENbUoY8DjOORBThN2fb7ODUVbJA3F9iasL+BDlPH6LmCCm0HketkOlO0So xxkyfAb5jsz0WPzLB4CsaMY+uW5rLBauxCJ5yF2j9ymuCKYcp8S1KGTJ8ZAh082L6TPMYeX2TS6 iGf+q6GyQImR9smcHFB3R870gromCD17VtuJYHs0wsE5YWB1DTsyDyFRCJTNqWhWKeEIgXUjkjo ETy/UW3CbeDgX8ZIVkJPoA2x/QcGLGdYiXxUrQwulIc8kw11enOl+SCOLRC9VuyQve5XnmwAylr bvXbsvLT2V0WmBw1nZDYsZmnTTAfJ+2c04tXQ7EiqzflyZQo
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1912; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=nWr7Fn1CP8UGCXi7544g8G4oBBwlUD+iTlh8wcPSjDU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB66htSaqJ0s2B29OoNxNT6WxK2WSJ8TmmBp8 4rbC1BSgQmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgeugAKCRCPgPtYfRL+ TiJMB/43pl0eBM+XLJL9lLNEoO9Z1PNAR3Dokf1PrbunVvtrPAl94aShVgZ/o5yr0gpElZyWWB2 s8Hscn1U32KWahii4RubOl6DlkD86p9PTTv1WPklm3vomJxG9hKVkQh2GiMgX3yOT5WslJltJ82 TACShnOoiTXheyHSlZ1KCaAfDsyjaElEEICB88eN0Lnkn0DpjKy2oc9FiY6aoonpp+NrQrwB3ty YWIaHE/ukwQtImJk/mCdkgncGG/8lhbtmDA7/fyqN2JuDs4uHt4kNtv5iMIhNtfy4zbwsDK5cIy JIxXlqyuiHz6wRcPouxbu3eiDIbQHi7tpMGakEk/adNgOzrZ
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,40 +56,53 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx27.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-fsl-ftm.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 7d9bc43f12b0..5d796453519a 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -145,7 +145,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
- 		state->polarity = PWM_POLARITY_INVERSED;
- 		break;
- 	default:
--		dev_warn(chip->dev, "can't set polarity, output disconnected");
-+		dev_warn(pwmchip_parent(chip), "can't set polarity, output disconnected");
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index d1b6d1aa4773..47f1f5ac39cf 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -221,10 +221,11 @@ static bool fsl_pwm_is_other_pwm_enabled(struct fsl_pwm_chip *fpc,
+ 		return false;
+ }
+ 
+-static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
++static int fsl_pwm_apply_config(struct pwm_chip *chip,
+ 				struct pwm_device *pwm,
+ 				const struct pwm_state *newstate)
+ {
++	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+ 	unsigned int duty;
+ 	u32 reg_polarity;
+ 
+@@ -232,7 +233,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
+ 	bool do_write_period = false;
+ 
+ 	if (!fsl_pwm_calculate_period(fpc, newstate->period, &periodcfg)) {
+-		dev_err(fpc->chip.dev, "failed to calculate new period\n");
++		dev_err(pwmchip_parent(chip), "failed to calculate new period\n");
+ 		return -EINVAL;
  	}
  
- 	prescaler = MX3_PWMCR_PRESCALER_GET(val);
-@@ -177,7 +177,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
- static void pwm_imx27_sw_reset(struct pwm_chip *chip)
- {
- 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
--	struct device *dev = chip->dev;
-+	struct device *dev = pwmchip_parent(chip);
- 	int wait_count = 0;
- 	u32 cr;
+@@ -246,7 +247,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
+ 	 */
+ 	else if (!fsl_pwm_periodcfg_are_equal(&fpc->period, &periodcfg)) {
+ 		if (fsl_pwm_is_other_pwm_enabled(fpc, pwm)) {
+-			dev_err(fpc->chip.dev,
++			dev_err(pwmchip_parent(chip),
+ 				"Cannot change period for PWM %u, disable other PWMs first\n",
+ 				pwm->hwpwm);
+ 			return -EBUSY;
+@@ -322,7 +323,7 @@ static int fsl_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		goto end_mutex;
+ 	}
  
-@@ -196,7 +196,7 @@ static void pwm_imx27_wait_fifo_slot(struct pwm_chip *chip,
- 				     struct pwm_device *pwm)
- {
- 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
--	struct device *dev = chip->dev;
-+	struct device *dev = pwmchip_parent(chip);
- 	unsigned int period_ms;
- 	int fifoav;
- 	u32 sr;
+-	ret = fsl_pwm_apply_config(fpc, pwm, newstate);
++	ret = fsl_pwm_apply_config(chip, pwm, newstate);
+ 	if (ret)
+ 		goto end_mutex;
+ 
 -- 
 2.42.0
 
