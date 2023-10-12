@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B28CDB484
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA1FCDB489
 	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379626AbjJLQbI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1379594AbjJLQbI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Thu, 12 Oct 2023 12:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45070 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379594AbjJLQa6 (ORCPT
+        with ESMTP id S1379596AbjJLQa6 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:30:58 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF2BD3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF37E6
         for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:30:57 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaN-0004qZ-On; Thu, 12 Oct 2023 18:30:55 +0200
+        id 1qqyaN-0004q2-Fi; Thu, 12 Oct 2023 18:30:55 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaN-001C6h-67; Thu, 12 Oct 2023 18:30:55 +0200
+        id 1qqyaM-001C6a-Re; Thu, 12 Oct 2023 18:30:54 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaM-00F5Ne-T5; Thu, 12 Oct 2023 18:30:54 +0200
+        id 1qqyaM-00F5NR-IS; Thu, 12 Oct 2023 18:30:54 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 023/109] pwm: raspberrypi-poe: Make use of pwmchip_parent() macro
-Date:   Thu, 12 Oct 2023 18:28:51 +0200
-Message-ID: <20231012162827.1002444-134-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 021/109] pwm: omap: Make use of pwmchip_parent() macro
+Date:   Thu, 12 Oct 2023 18:28:49 +0200
+Message-ID: <20231012162827.1002444-132-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=941; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=7SoKIM/xkEZFVaeBKg/shON3CQblDARA/8PcLYb/Wys=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB7HrtSJAq3YDbLZ9rjZpMgWhsDnYEPZPUm7P 98hGQ65KjuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgexwAKCRCPgPtYfRL+ TgP2B/9CMYwEpJdJ5lXRVzDLqMgFgKcPeaCNESFFXv46fxQ123DHH5zAjECvwhaPACT53w6wLmO VjA9h4Dy5TIjwWo4S1e4u6m66OaFAYRYojvrsKdMSv0rhW5lq/N/UgRmsuJEEAPeE9w623RbyRb yJ4PdsASuSsiJLRqrGXii+6ILMvNNH+Rze39AUAQkjchx4zvXk4axe9JKbpzh7b7vcgQ3VDyI8/ 79M6vADhs5+CjNDt17z5+kdfAVV9l3xveEFV3fIaDOvfMx8rwA7IWJ1i45/P5AcqB7KWQgwGXRg L7Qpbd8mU9wm5hbW2JikpdYsS/a2zh+uBSdKFUg/nqkApL0h
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3441; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=s6oCTfmYQc/DWAC27sB+Arl/RK9nuBeqnJaPhwxauRU=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlQNuSPhc5cfmX3m1jKWBbUPS/YfV1qyoH/aT657JZlrT XusAn5ZdjIaszAwcjHIiimy2DeuybSqkovsXPvvMswgViaQKQxcnAIwEaYg9n9W571nZzHuaxFX NvFzEHxgUXtp+zzbyNnynhoblryxE0/OD3XPU/3Jq6HFlbR5TojJ7Z3Jr/OVfA8t6ze+b8nCvnK Rj/E9oV2Lmq4I3188nZH7cq2Iec56tb35K7VcLlx8FPemqHp97JXedcpn5V3FjVO/1T97PeOiW/ 1lfwH5X3/4Kht+iur2Mp9lmJzf8XCl/vSbu5Yl1Bop/1dYW/O00NuufsL8+6lCioxpzVOELlow2 TU4hE4XS/uw/nDNrMXGV96KmqkHmqRaKxtNY/6k2WXwYUcqu+Lrz1I/XqaXH858wnCtOWOu+ZWt +93kEiuXt9o3MJ1mq4kNKX9QxWFZJrbQ+XdFVdapyDWrAQ==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,22 +56,86 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-raspberrypi-poe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-omap-dmtimer.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/pwm-raspberrypi-poe.c b/drivers/pwm/pwm-raspberrypi-poe.c
-index 1ad814fdec6b..f10e8a624c51 100644
---- a/drivers/pwm/pwm-raspberrypi-poe.c
-+++ b/drivers/pwm/pwm-raspberrypi-poe.c
-@@ -122,7 +122,7 @@ static int raspberrypi_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	ret = raspberrypi_pwm_set_property(rpipwm->firmware, RPI_PWM_CUR_DUTY_REG,
- 					   duty_cycle);
- 	if (ret) {
--		dev_err(chip->dev, "Failed to set duty cycle: %pe\n",
-+		dev_err(pwmchip_parent(chip), "Failed to set duty cycle: %pe\n",
- 			ERR_PTR(ret));
- 		return ret;
+diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+index 13161e08dd6e..c7c7383f4b14 100644
+--- a/drivers/pwm/pwm-omap-dmtimer.c
++++ b/drivers/pwm/pwm-omap-dmtimer.c
+@@ -158,7 +158,7 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
+ 	unsigned long clk_rate;
+ 	struct clk *fclk;
+ 
+-	dev_dbg(chip->dev, "requested duty cycle: %d ns, period: %d ns\n",
++	dev_dbg(pwmchip_parent(chip), "requested duty cycle: %d ns, period: %d ns\n",
+ 		duty_ns, period_ns);
+ 
+ 	if (duty_ns == pwm_get_duty_cycle(pwm) &&
+@@ -167,17 +167,17 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
+ 
+ 	fclk = omap->pdata->get_fclk(omap->dm_timer);
+ 	if (!fclk) {
+-		dev_err(chip->dev, "invalid pmtimer fclk\n");
++		dev_err(pwmchip_parent(chip), "invalid pmtimer fclk\n");
+ 		return -EINVAL;
  	}
+ 
+ 	clk_rate = clk_get_rate(fclk);
+ 	if (!clk_rate) {
+-		dev_err(chip->dev, "invalid pmtimer fclk rate\n");
++		dev_err(pwmchip_parent(chip), "invalid pmtimer fclk rate\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	dev_dbg(chip->dev, "clk rate: %luHz\n", clk_rate);
++	dev_dbg(pwmchip_parent(chip), "clk rate: %luHz\n", clk_rate);
+ 
+ 	/*
+ 	 * Calculate the appropriate load and match values based on the
+@@ -199,27 +199,27 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
+ 	duty_cycles = pwm_omap_dmtimer_get_clock_cycles(clk_rate, duty_ns);
+ 
+ 	if (period_cycles < 2) {
+-		dev_info(chip->dev,
++		dev_info(pwmchip_parent(chip),
+ 			 "period %d ns too short for clock rate %lu Hz\n",
+ 			 period_ns, clk_rate);
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (duty_cycles < 1) {
+-		dev_dbg(chip->dev,
++		dev_dbg(pwmchip_parent(chip),
+ 			"duty cycle %d ns is too short for clock rate %lu Hz\n",
+ 			duty_ns, clk_rate);
+-		dev_dbg(chip->dev, "using minimum of 1 clock cycle\n");
++		dev_dbg(pwmchip_parent(chip), "using minimum of 1 clock cycle\n");
+ 		duty_cycles = 1;
+ 	} else if (duty_cycles >= period_cycles) {
+-		dev_dbg(chip->dev,
++		dev_dbg(pwmchip_parent(chip),
+ 			"duty cycle %d ns is too long for period %d ns at clock rate %lu Hz\n",
+ 			duty_ns, period_ns, clk_rate);
+-		dev_dbg(chip->dev, "using maximum of 1 clock cycle less than period\n");
++		dev_dbg(pwmchip_parent(chip), "using maximum of 1 clock cycle less than period\n");
+ 		duty_cycles = period_cycles - 1;
+ 	}
+ 
+-	dev_dbg(chip->dev, "effective duty cycle: %lld ns, period: %lld ns\n",
++	dev_dbg(pwmchip_parent(chip), "effective duty cycle: %lld ns, period: %lld ns\n",
+ 		DIV_ROUND_CLOSEST_ULL((u64)NSEC_PER_SEC * duty_cycles,
+ 				      clk_rate),
+ 		DIV_ROUND_CLOSEST_ULL((u64)NSEC_PER_SEC * period_cycles,
+@@ -231,7 +231,7 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
+ 	omap->pdata->set_load(omap->dm_timer, load_value);
+ 	omap->pdata->set_match(omap->dm_timer, true, match_value);
+ 
+-	dev_dbg(chip->dev, "load value: %#08x (%d), match value: %#08x (%d)\n",
++	dev_dbg(pwmchip_parent(chip), "load value: %#08x (%d), match value: %#08x (%d)\n",
+ 		load_value, load_value,	match_value, match_value);
+ 
+ 	return 0;
 -- 
 2.42.0
 
