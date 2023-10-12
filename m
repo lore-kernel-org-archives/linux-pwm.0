@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0FDCDB486
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F9BECDB47E
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379633AbjJLQbg (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60698 "EHLO
+        id S1347340AbjJLQbi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379603AbjJLQbO (ORCPT
+        with ESMTP id S1379554AbjJLQbO (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:14 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D67D8
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A0ACF
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:10 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaa-0005fM-7S; Thu, 12 Oct 2023 18:31:08 +0200
+        id 1qqyaZ-0005b7-M6; Thu, 12 Oct 2023 18:31:07 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaX-001C9n-Ul; Thu, 12 Oct 2023 18:31:05 +0200
+        id 1qqyaX-001C9Y-0J; Thu, 12 Oct 2023 18:31:05 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaX-00F5R3-LT; Thu, 12 Oct 2023 18:31:05 +0200
+        id 1qqyaW-00F5Qi-NO; Thu, 12 Oct 2023 18:31:04 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 073/109] pwm: mxs: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:29:41 +0200
-Message-ID: <20231012162827.1002444-184-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 069/109] pwm: mediatek: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:29:37 +0200
+Message-ID: <20231012162827.1002444-180-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2580; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=pjAx0J8kLJ1PZzC7JsCtWxKBVn2eyCVdftzhlgIGlbo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB8Cf0zfJsiVoNvGwaUbXxiRexrMexLm4/9J1 li+/1p/9fOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgfAgAKCRCPgPtYfRL+ Th1XB/46ZcFPeSTwQgx9WHnyx9rJ0nrYhtBTo1FSoqHRoCrqxnfo6l4f5uaRxaRRvShxRNCPoTN FizbHszOiHDBSz7KYDRsMvl7Tkbz5U2/SqwpS/MKUV4BfCdoMRKLnkyzVOeNNeWnoHzkE2ibz2P SEizfLLwH3eOiu6BLUULKH+IvjYCnX6FzPB0eEWc0Y4WrbqGjgOXNdWIXId9EWRJviqmcdueAqO WE07CghsDx7+3wT53BB+Z9ByJePzTeLJdfbT1iarPa3+zq8zFE6elAO8qpcVBo4VCyHwYoowIz8 pPCJrumf/Pk3gX7GUFP098bvztzXFyfRIw6iH5IV/Jz13Mwx
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2926; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=NvNSjL4xJ1Ai1FiR6lC3rZ+UFrgPRfr2vb9OTrIV/7A=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB79Uu/87wnUssX/8X0eWA6GQqyeJkdm+Wk1t N1CWkWND32JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge/QAKCRCPgPtYfRL+ TsbSB/wJ7odWzpVa2pOgRz6DO8lMhdbwdniHcICyNUp/kX+JG0d7GDGvqfZ5t+7RKHI/rINiEyo kkJwO742bs4zwwi0kEfp1TnKWOgX1zlfC6xrN0VDLp7+8UDPxKVTJ6NAT6KLCf7vmbmsq2R7ssm YvXuFNCLHKKsxLB4enqhHOSIoDTSn7vm9KYVd+C4IoJx9skr0dOm93pmx8hsKCjteO7piSwSaGS quvz0LqkVMXqb7UPdULejPozs/y/7vhhJFNZV0frEATRtCwJFlENJO2+iVoMhVp24Tm6v+tvuoT VEb4Ovyq5CCY9swqy7mIwYvgzQ2hyrVrDIGU6arQycj7VUBF
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,85 +50,91 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-mxs driver to further changes of the pwm core
+This prepares the pwm-mediatek driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-mxs.c | 32 ++++++++++++++++++--------------
- 1 file changed, 18 insertions(+), 14 deletions(-)
+ drivers/pwm/pwm-mediatek.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index 1b5e787d78f1..7c05b22bc7c9 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -37,12 +37,14 @@ static const u8 cdiv_shift[PERIOD_CDIV_MAX] = {
- };
- 
- struct mxs_pwm_chip {
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index ba76d9753f1b..bc614618086d 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -51,7 +51,6 @@ struct pwm_mediatek_of_data {
+  * @soc: pointer to chip's platform data
+  */
+ struct pwm_mediatek_chip {
 -	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
- };
- 
--#define to_mxs_pwm_chip(_chip) container_of(_chip, struct mxs_pwm_chip, chip)
-+static inline struct mxs_pwm_chip *to_mxs_pwm_chip(struct pwm_chip *chip)
-+{
-+	return pwmchip_priv(chip);
-+}
- 
- static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			 const struct pwm_state *state)
-@@ -120,12 +122,21 @@ static const struct pwm_ops mxs_pwm_ops = {
- static int mxs_pwm_probe(struct platform_device *pdev)
+ 	void __iomem *regs;
+ 	struct clk *clk_top;
+ 	struct clk *clk_main;
+@@ -70,7 +69,7 @@ static const unsigned int mtk_pwm_reg_offset_v2[] = {
+ static inline struct pwm_mediatek_chip *
+ to_pwm_mediatek_chip(struct pwm_chip *chip)
  {
- 	struct device_node *np = pdev->dev.of_node;
+-	return container_of(chip, struct pwm_mediatek_chip, chip);
++	return pwmchip_priv(chip);
+ }
+ 
+ static int pwm_mediatek_clk_enable(struct pwm_chip *chip,
+@@ -233,21 +232,26 @@ static const struct pwm_ops pwm_mediatek_ops = {
+ 
+ static int pwm_mediatek_probe(struct platform_device *pdev)
+ {
 +	struct pwm_chip *chip;
- 	struct mxs_pwm_chip *mxs;
-+	u32 npwm;
+ 	struct pwm_mediatek_chip *pc;
++	const struct pwm_mediatek_of_data *soc;
+ 	unsigned int i;
  	int ret;
  
--	mxs = devm_kzalloc(&pdev->dev, sizeof(*mxs), GFP_KERNEL);
--	if (!mxs)
+-	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+-	if (!pc)
 -		return -ENOMEM;
-+	ret = of_property_read_u32(np, "fsl,pwm-number", &npwm);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
-+		return ret;
-+	}
-+
-+	chip = devm_pwmchip_alloc(&pdev->dev, npwm, sizeof(*mxs));
++	soc = of_device_get_match_data(&pdev->dev);
+ 
+-	pc->soc = of_device_get_match_data(&pdev->dev);
++	chip = devm_pwmchip_alloc(&pdev->dev, soc->num_pwms, sizeof(*pc));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	mxs = to_mxs_pwm_chip(chip);
++	pc = to_pwm_mediatek_chip(chip);
++
++	pc->soc = soc;
  
- 	mxs->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(mxs->base))
-@@ -135,21 +146,14 @@ static int mxs_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(mxs->clk))
- 		return PTR_ERR(mxs->clk);
+ 	pc->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pc->regs))
+ 		return PTR_ERR(pc->regs);
  
--	mxs->chip.dev = &pdev->dev;
--	mxs->chip.ops = &mxs_pwm_ops;
--
--	ret = of_property_read_u32(np, "fsl,pwm-number", &mxs->chip.npwm);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
--		return ret;
--	}
-+	chip->ops = &mxs_pwm_ops;
+-	pc->clk_pwms = devm_kmalloc_array(&pdev->dev, pc->soc->num_pwms,
++	pc->clk_pwms = devm_kmalloc_array(&pdev->dev, soc->num_pwms,
+ 				    sizeof(*pc->clk_pwms), GFP_KERNEL);
+ 	if (!pc->clk_pwms)
+ 		return -ENOMEM;
+@@ -262,7 +266,7 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk_main),
+ 				     "Failed to get main clock\n");
  
- 	/* FIXME: Only do this if the PWM isn't already running */
- 	ret = stmp_reset_block(mxs->base);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to reset PWM\n");
+-	for (i = 0; i < pc->soc->num_pwms; i++) {
++	for (i = 0; i < soc->num_pwms; i++) {
+ 		char name[8];
  
--	ret = devm_pwmchip_add(&pdev->dev, &mxs->chip);
+ 		snprintf(name, sizeof(name), "pwm%d", i + 1);
+@@ -273,11 +277,9 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
+ 					     "Failed to get %s clock\n", name);
+ 	}
+ 
+-	pc->chip.dev = &pdev->dev;
+-	pc->chip.ops = &pwm_mediatek_ops;
+-	pc->chip.npwm = pc->soc->num_pwms;
++	chip->ops = &pwm_mediatek_ops;
+ 
+-	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
 +	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to add pwm chip %d\n", ret);
- 		return ret;
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
+ 
 -- 
 2.42.0
 
