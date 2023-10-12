@@ -2,48 +2,46 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1483CDB46E
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 14:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D70CDB46E
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378013AbjJLOsQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 10:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46402 "EHLO
+        id S1379551AbjJLQa5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379031AbjJLOsP (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 10:48:15 -0400
+        with ESMTP id S1379512AbjJLQa4 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:30:56 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB2FB8
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 07:48:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F995C0
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:30:53 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqwyy-0007C4-Dk; Thu, 12 Oct 2023 16:48:12 +0200
+        id 1qqyaJ-0004fl-PS; Thu, 12 Oct 2023 18:30:51 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqwyv-001AuK-Ps; Thu, 12 Oct 2023 16:48:09 +0200
+        id 1qqyaJ-001C5K-Cm; Thu, 12 Oct 2023 18:30:51 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqwyv-00F0i8-GV; Thu, 12 Oct 2023 16:48:09 +0200
-Date:   Thu, 12 Oct 2023 16:48:09 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+        id 1qqyaJ-00F5MA-3q; Thu, 12 Oct 2023 18:30:51 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     linux-pwm@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Ruan Jinjie <ruanjinjie@huawei.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Ben Dooks <ben.dooks@codethink.co.uk>, kernel@pengutronix.de
-Subject: Re: [PULL] pwm: Changes for v6.7-rc1
-Message-ID: <20231012144809.qxlpx6jysj5gploi@pengutronix.de>
-References: <20230930210758.urhdzkgczpabfsnh@pengutronix.de>
- <20231012084714.sr7t37ptr3qz2wje@pengutronix.de>
- <ZSf05DhzLT8qfKjJ@orome.fritz.box>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH v2 001/109] pwm: cros-ec: Change prototype of helper to prepare further changes
+Date:   Thu, 12 Oct 2023 18:28:29 +0200
+Message-ID: <20231012162827.1002444-112-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
+In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
+References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qcvvpiwighyoxksb"
-Content-Disposition: inline
-In-Reply-To: <ZSf05DhzLT8qfKjJ@orome.fritz.box>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2193; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=fSVvH+f3BS+svXicIWsCAGX1IEl8bH72NVb6PVmoSYQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB6tBsFRr285VEXe5jSgiKJjtf4OSmtOHjK6z I98pvKSTt2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgerQAKCRCPgPtYfRL+ ToXGB/sFbClFZScgnii5X7UC0eXxtDriAiIBPIx7nThARR2XKYGuV5obXZaZmPhJWD8nD8WRgVz TnsXcK/pKW49CrrByTlIS02FWggiIQG/BXb7I30ctuep7CFEGkzsNM7fgS15rIf0tcrXAdRfVYk RXZftBh47mqec/n4INYu+MtkF8AS3Uf1cIFkuma9E3ff+ayg/lL3rkYK54ZvSZ4Rc1kKabsPeSO xTBgwr84hJFdUDZF+OGt879eH8Uh8bWSn2ozd94dx3O72Ua2k7D//yo0Gc4421HA/1FSJiEQLsI 9zRLvMOl+2jRJdj4/rylttvWlP0MJ5YSpt/gtxSRDqnX+LI2
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
@@ -52,94 +50,58 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+pwm_chip allocation and registration is about to change. For that the number
+of PWM devices must be known earlier in cros_ec_pwm_probe(). So make
+cros_ec_pwm_get_duty() independant from struct cros_ec_pwm_device which is only
+available later.
 
---qcvvpiwighyoxksb
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-cros-ec.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Hello,
+diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+index 4fbd23e4ef69..3f552a46cbbf 100644
+--- a/drivers/pwm/pwm-cros-ec.c
++++ b/drivers/pwm/pwm-cros-ec.c
+@@ -95,9 +95,8 @@ static int cros_ec_pwm_set_duty(struct cros_ec_pwm_device *ec_pwm, u8 index,
+ 	return cros_ec_cmd_xfer_status(ec, msg);
+ }
+ 
+-static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
++static int cros_ec_pwm_get_duty(struct cros_ec_device *ec, bool use_pwm_type, u8 index)
+ {
+-	struct cros_ec_device *ec = ec_pwm->ec;
+ 	struct {
+ 		struct cros_ec_command msg;
+ 		union {
+@@ -117,7 +116,7 @@ static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
+ 	msg->insize = sizeof(*resp);
+ 	msg->outsize = sizeof(*params);
+ 
+-	if (ec_pwm->use_pwm_type) {
++	if (use_pwm_type) {
+ 		ret = cros_ec_dt_type_to_pwm_type(index, &params->pwm_type);
+ 		if (ret) {
+ 			dev_err(ec->dev, "Invalid PWM type index: %d\n", index);
+@@ -173,7 +172,7 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct cros_ec_pwm *channel = &ec_pwm->channel[pwm->hwpwm];
+ 	int ret;
+ 
+-	ret = cros_ec_pwm_get_duty(ec_pwm, pwm->hwpwm);
++	ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, pwm->hwpwm);
+ 	if (ret < 0) {
+ 		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
+ 		return ret;
+@@ -234,7 +233,7 @@ static int cros_ec_num_pwms(struct cros_ec_pwm_device *ec_pwm)
+ 
+ 	/* The index field is only 8 bits */
+ 	for (i = 0; i <= U8_MAX; i++) {
+-		ret = cros_ec_pwm_get_duty(ec_pwm, i);
++		ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, i);
+ 		/*
+ 		 * We look for SUCCESS, INVALID_COMMAND, or INVALID_PARAM
+ 		 * responses; everything else is treated as an error.
+-- 
+2.42.0
 
-On Thu, Oct 12, 2023 at 03:30:12PM +0200, Thierry Reding wrote:
-> On Thu, Oct 12, 2023 at 10:47:14AM +0200, Uwe Kleine-K=F6nig wrote:
-> > Are you already done for this cycle? What about the patches included
-> > in this PR that you didn't apply and didn't give any feedback? (These a=
-re:
->=20
-> I'm not done yet, but I've got a bunch of other things that need my
-> attention, so things are moving a bit slowly. And sorry that I didn't
-> see this before.
-
-I expected that this PR also appears in patchwork, but it didn't. I
-mentioned that in #linux-pwm on Oct 2. Is this a suitable channel to
-communicate such things for you?
-=20
-> Maybe next time you can mark these as "delegated" to you in patchwork,
-> which would give me an additional indication?
-
-Good idea. I assume that means that you consider my effort to collect
-patches a well spend support.
-=20
-> > 	pwm: cros-ec: Simplify using devm_pwmchip_add() and dev_err_probe()
-> > 	pwm: samsung: Consistently use the same name for driver data
-> > 	pwm: vt8500: Simplify using devm functions
-> > 	pwm: sprd: Simplify using devm_pwmchip_add() and dev_err_probe()
-> > 	pwm: sprd: Provide a helper to cast a chip to driver data
-> > 	pwm: spear: Simplify using devm functions
-> > 	pwm: mtk-disp: Simplify using devm_pwmchip_add()
-> > 	pwm: imx-tpm: Simplify using devm functions
-> > 	pwm: brcmstb: Simplify using devm functions
-> > 	pwm: bcm2835: Simplify using devm functions
-> > 	pwm: bcm-iproc: Simplify using devm functions
-> > 	pwm: dwc: add PWM bit unset in get_state call
-> > 	pwm: dwc: make timer clock configurable
-> > 	pwm: dwc: split pci out of core driver
-> > 	pwm: berlin: Simplify using devm functions
-> > 	pwm: Drop pwm_[sg]et_chip_data()
-> > 	pwm: cros-ec: Put per-channel data into driver data
-> > 	pwm: sti: Reduce number of allocations and drop usage of chip_data
-> > 	pwm: renesas: Drop usage of pwm_[gs]et_chip_data()
-> > 	pwm: lp3943: Drop usage of pwm_[gs]et_chip_data()
-> > 	pwm: jz4740: Put per-channel clk into driver data
-> > 	pwm: samsung: Put per-channel data into driver data
-> > 	pwm: berlin: Put per-channel config into driver data
-> > 	pwm: crc: Allow compilation as module and with COMPILE_TEST
-> > 	pwm: Manage owner assignment implicitly for drivers
-> > 	pwm: jz4740: Consistently name driver data "jz"
-> >=20
-> > (The patch "pwm: Adapt sysfs API documentation to reality" was already
-> > applied by corbet.))
-> >=20
-> > Since I created this PR a few more patches hit the list that IMHO can go
-> > in. (Florian's PM patches for brcmstb and bcm2835, Rob's DT include
-> > patch and my USE_DEFINE_SIMPLE_DEV_PM_OPS series.)
-> >=20
-> > IMHO they are all good and easy enough that "needs more time for review"
-> > is hardly an argument.
->=20
-> I'll go over the rest of patchwork over the next couple of days and pick
-> up what's ready to go.
-
-Great, thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---qcvvpiwighyoxksb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUoBygACgkQj4D7WH0S
-/k4mMAgArh1kbtgqAHptM4cwRKfOI0r3lT9GljAIUXKk2ny7vSL7oy8M4UoraZnK
-7ZwdOmzfACSgEqIGK2AwJB2M+n6tjLg7RP4pJqop/JD9nj4Z8NMBJxYGC7VxayYT
-GPzamUcUV2CpggfpEFF3V2ENfgkepQfzsOlAso3gR4lB36GQkcZpxwO25VoMWofx
-CtglWDnlphY2J28eFU3z5VuXefqDRRZA3cKh3eEJR0cI3JtpX7QIt/Ev+ziSJJ+k
-7esdrxtEMyWN2re5co+t5qVhOl0pTGbGXa7GV+pEXxv+c2pfBnFCAbrZ3yyBNHKN
-/TKWXvtJ8u1RX6auK8i2IutY1XToHQ==
-=/LdM
------END PGP SIGNATURE-----
-
---qcvvpiwighyoxksb--
