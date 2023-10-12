@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E92CDB487
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596BDCDB486
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379574AbjJLQbX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60518 "EHLO
+        id S1378739AbjJLQbW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379579AbjJLQbG (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:06 -0400
+        with ESMTP id S1379574AbjJLQbF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:05 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB4FCA
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734BECC
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:03 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaT-0005Ag-F1; Thu, 12 Oct 2023 18:31:01 +0200
+        id 1qqyaS-00057l-QI; Thu, 12 Oct 2023 18:31:00 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaR-001C87-Ru; Thu, 12 Oct 2023 18:30:59 +0200
+        id 1qqyaR-001C80-EM; Thu, 12 Oct 2023 18:30:59 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaR-00F5P5-Io; Thu, 12 Oct 2023 18:30:59 +0200
+        id 1qqyaR-00F5Ox-5O; Thu, 12 Oct 2023 18:30:59 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 045/109] pwm: bcm-iproc: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:29:13 +0200
-Message-ID: <20231012162827.1002444-156-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 043/109] pwm: atmel-tcb: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:29:11 +0200
+Message-ID: <20231012162827.1002444-154-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2335; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=sJ498qvoNivbkk0deEr4R5sEvVeiQw9QYJAIlTDYq+M=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB7hDnxIBSmh5IsDrNBdzQOT4MHI2EYFW8mYO py10IFAriyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge4QAKCRCPgPtYfRL+ TtDlCACLyvj49BazdlgBdhnF4j1SL9cbNY5qYQx/qJkwZsmMDl7T9aKy5qMQ4xaycE/SYqiQqur WXyVm4HHUMI5fV2dBhsu1Kv0Wflik5QBOTLW6NgSJucQEdXIgNbtg7xR9d9mVA/6pqfhPvj501B neIdnMXdIr3nYCTlSlqhYJiDEjSgfvgEU8Ut9IJ6QvCxd4ekWACCQMknX4WRumIwXMKnlYnCdj/ hm000xO/GwHvu98VWxm673yr/QUu+ox84szf87ly9Wz6DZCEzrWAcGBFuVlZB+Kl+YuuwA6Bk4p l6lOkMFLtHs6HWiOxVwa54bvcDiYCDz5o8J91UkpqWorRj2z
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2964; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=6fUgRCZtq6T6w9tuehzp9v4WMoKTB3KKl2kI80F5gDE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB7eBtlbWkH4iuemAf7Ug70zKEqVU3L9mTZs3 0L4KyKfOZ6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge3gAKCRCPgPtYfRL+ TvGhB/9VcnM6sVt2Gz8f/+ol7dT2CxEb4nh/H+1wZD/xFdwEW4g4l/x+nWHdRrLsdZ/kgcnFjyr YBI+8ETwAnCW5omPoHH4DcrTGZYS4ZkaCvLiaA+JyiiSSM8JCDZ9HGvI/Ekr9Iv2byFWZxDJ0Sd Rfh6z7XpEFUH2f6//inMYxKeejsYfXTPLb42KvY8jKMYFd7eyjF9qwx4VTOOsjINEjGCm+SAT6O LOWVtpxlPasLTdlbCD4FvblMK1s0YtZOTeD83X2kjyI61QQLfNbyj80SZId34SZprhYILhzU11P Q+NbR0RWUjrqOhOtIQAqm5piwBJtQ6kxTiChIZGTc4rrEYHU
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,79 +50,96 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-bcm-iproc driver to further changes of the pwm core
+This prepares the pwm-atmel-tcb driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-bcm-iproc.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ drivers/pwm/pwm-atmel-tcb.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pwm/pwm-bcm-iproc.c b/drivers/pwm/pwm-bcm-iproc.c
-index 758254025683..4c8d82de50a9 100644
---- a/drivers/pwm/pwm-bcm-iproc.c
-+++ b/drivers/pwm/pwm-bcm-iproc.c
-@@ -34,14 +34,13 @@
- #define IPROC_PWM_PRESCALE_MAX			0x3f
- 
- struct iproc_pwmc {
--	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *clk;
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index 9d335773c2fc..35d4c4987edb 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -47,7 +47,6 @@ struct atmel_tcb_channel {
  };
  
- static inline struct iproc_pwmc *to_iproc_pwmc(struct pwm_chip *chip)
+ struct atmel_tcb_pwm_chip {
+-	struct pwm_chip chip;
+ 	spinlock_t lock;
+ 	u8 channel;
+ 	u8 width;
+@@ -63,7 +62,7 @@ static const u8 atmel_tcb_divisors[] = { 2, 8, 32, 128, 0, };
+ 
+ static inline struct atmel_tcb_pwm_chip *to_tcb_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct iproc_pwmc, chip);
+-	return container_of(chip, struct atmel_tcb_pwm_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- static void iproc_pwmc_enable(struct iproc_pwmc *ip, unsigned int channel)
-@@ -187,20 +186,20 @@ static const struct pwm_ops iproc_pwm_ops = {
- 
- static int iproc_pwmc_probe(struct platform_device *pdev)
+ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
+@@ -389,6 +388,7 @@ static const struct of_device_id atmel_tcb_of_match[] = {
+ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
  {
+ 	const struct of_device_id *match;
 +	struct pwm_chip *chip;
- 	struct iproc_pwmc *ip;
- 	unsigned int i;
- 	u32 value;
- 	int ret;
+ 	struct atmel_tcb_pwm_chip *tcbpwm;
+ 	const struct atmel_tcb_config *config;
+ 	struct device_node *np = pdev->dev.of_node;
+@@ -396,9 +396,10 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 	int err;
+ 	int channel;
  
--	ip = devm_kzalloc(&pdev->dev, sizeof(*ip), GFP_KERNEL);
--	if (!ip)
+-	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
+-	if (tcbpwm == NULL)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 4, sizeof(*ip));
++	chip = devm_pwmchip_alloc(&pdev->dev, NPWM, sizeof(*tcbpwm));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	ip = to_iproc_pwmc(chip);
++	tcbpwm = to_tcb_chip(chip);
  
- 	platform_set_drvdata(pdev, ip);
- 
--	ip->chip.dev = &pdev->dev;
--	ip->chip.ops = &iproc_pwm_ops;
--	ip->chip.npwm = 4;
-+	chip->ops = &iproc_pwm_ops;
- 
- 	ip->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(ip->base))
-@@ -214,14 +213,14 @@ static int iproc_pwmc_probe(struct platform_device *pdev)
- 	/* Set full drive and normal polarity for all channels */
- 	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
- 
--	for (i = 0; i < ip->chip.npwm; i++) {
-+	for (i = 0; i < chip->npwm; i++) {
- 		value &= ~(1 << IPROC_PWM_CTRL_TYPE_SHIFT(i));
- 		value |= 1 << IPROC_PWM_CTRL_POLARITY_SHIFT(i);
+ 	err = of_property_read_u32(np, "reg", &channel);
+ 	if (err < 0) {
+@@ -436,9 +437,7 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 		}
  	}
  
- 	writel(value, ip->base + IPROC_PWM_CTRL_OFFSET);
+-	tcbpwm->chip.dev = &pdev->dev;
+-	tcbpwm->chip.ops = &atmel_tcb_pwm_ops;
+-	tcbpwm->chip.npwm = NPWM;
++	chip->ops = &atmel_tcb_pwm_ops;
+ 	tcbpwm->channel = channel;
+ 	tcbpwm->width = config->counter_width;
  
--	ret = devm_pwmchip_add(&pdev->dev, &ip->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret,
- 				     "failed to add PWM chip\n");
+@@ -448,11 +447,11 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 
+ 	spin_lock_init(&tcbpwm->lock);
+ 
+-	err = pwmchip_add(&tcbpwm->chip);
++	err = pwmchip_add(chip);
+ 	if (err < 0)
+ 		goto err_disable_clk;
+ 
+-	platform_set_drvdata(pdev, tcbpwm);
++	platform_set_drvdata(pdev, chip);
+ 
+ 	return 0;
+ 
+@@ -473,9 +472,10 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 
+ static void atmel_tcb_pwm_remove(struct platform_device *pdev)
+ {
+-	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
++	struct pwm_chip *chip = platform_get_drvdata(pdev);
++	struct atmel_tcb_pwm_chip *tcbpwm = to_tcb_chip(chip);
+ 
+-	pwmchip_remove(&tcbpwm->chip);
++	pwmchip_remove(chip);
+ 
+ 	clk_disable_unprepare(tcbpwm->slow_clk);
+ 	clk_put(tcbpwm->gclk);
 -- 
 2.42.0
 
