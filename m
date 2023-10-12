@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C1FCDB487
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A255CDB46E
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379641AbjJLQbt (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1379512AbjJLQbt (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Thu, 12 Oct 2023 12:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46986 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379512AbjJLQbS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:18 -0400
+        with ESMTP id S1347332AbjJLQbR (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:17 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08C9D7
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA86DD6
         for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:14 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyae-0005q8-9O; Thu, 12 Oct 2023 18:31:12 +0200
+        id 1qqyae-0005r7-JS; Thu, 12 Oct 2023 18:31:12 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyac-001CBA-Eh; Thu, 12 Oct 2023 18:31:10 +0200
+        id 1qqyac-001CBJ-S2; Thu, 12 Oct 2023 18:31:10 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyac-00F5SU-5c; Thu, 12 Oct 2023 18:31:10 +0200
+        id 1qqyac-00F5Sc-JA; Thu, 12 Oct 2023 18:31:10 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 094/109] pwm: tegra: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:30:02 +0200
-Message-ID: <20231012162827.1002444-205-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 096/109] pwm: twl-led: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:30:04 +0200
+Message-ID: <20231012162827.1002444-207-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2569; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=IVxivwViCvf6mlnIWgQw+fkT5k+uuDSJeGaKYqBS8jo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB8bUgTphMFCYobi8vF1ciSiVFmO8tJU/D+TO AHKpJGySzuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgfGwAKCRCPgPtYfRL+ TrjGB/4r3zR67vlLd8xP+PQ5LvaJm+5h/2NBocm8CeLUVvWS2h09W54Bm1A1WywuRBoU1DUmTIp 9vE9KcNBI85WeR3W45rWKg3qhGxoXhNSR0uKWMoxBcLkRjbJvF47KPXwcg8gsrrJts551d83XAu hliY/z6G3ShocXTHy1HYhoQub8EsZNWBWy4d9nzTFKxkwUWp2ux3Pqk6Sis6BZ/dlvaJFbKV5yt W10ilb4T+8C13vepKy1UHidVP6kjDc/bIqePlauCc60vIsy3WkYd+Yc4nV5vgkamkQxS/JpbnEh azwTHGLwOjq5e7LxpixMsEwE+m43YO5Zr2rGn2UQ4HlcI1lI
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1984; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=nii58utaHBqG9hIG3F2ztT/5M/S4TlWsZCz8MweGyPs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB8eCFKFIKQ00X0H2DnZ/6ChFuzehO54XUSOK JDPNpn96JqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgfHgAKCRCPgPtYfRL+ TseRB/9RoDJqD8SAzetVLzfuMMnEUeLbm794/nL65YwcTfNVC7L8qfdEeXugGTgeiqTMmhA4iR0 IRTHzsFdKtHu6Y1OCFB+DI4X0bIZUdUjlXuD5Kqh2Uh9Nk6EI+rm7UdQPIogTiJ+HQXbBZoDUeC WXU51PzlSG7WVn6T/GiNrLMIS1FUeQyLsHQAbDD+nb8EfDn6rjP5Jxul9zgRFXVJQG9WCU49e7r SUIw6ciYKPC4u7Nmc/NRZlPsbl4w3VBOXqcw5K+OdsJGbxHogSnfDOfFxepBo0+i6ivg3v6cwDq yCmomcj0md87ddN+DqkIxp/SBX/f3odYuGf5gf7jThn45t1n
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,87 +50,75 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-tegra driver to further changes of the pwm core
+This prepares the pwm-twl-led driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-tegra.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-twl-led.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index 39ea51e08c94..f41791d7630d 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -65,7 +65,6 @@ struct tegra_pwm_soc {
+diff --git a/drivers/pwm/pwm-twl-led.c b/drivers/pwm/pwm-twl-led.c
+index f1a9f04295ea..692f761affd3 100644
+--- a/drivers/pwm/pwm-twl-led.c
++++ b/drivers/pwm/pwm-twl-led.c
+@@ -62,13 +62,12 @@
+ #define TWL6040_LED_MODE_MASK	0x03
+ 
+ struct twl_pwmled_chip {
+-	struct pwm_chip chip;
+ 	struct mutex mutex;
  };
  
- struct tegra_pwm_chip {
--	struct pwm_chip chip;
- 	struct device *dev;
- 
- 	struct clk *clk;
-@@ -81,7 +80,7 @@ struct tegra_pwm_chip {
- 
- static inline struct tegra_pwm_chip *to_tegra_pwm_chip(struct pwm_chip *chip)
+ static inline struct twl_pwmled_chip *to_twl(struct pwm_chip *chip)
  {
--	return container_of(chip, struct tegra_pwm_chip, chip);
+-	return container_of(chip, struct twl_pwmled_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- static inline u32 pwm_readl(struct tegra_pwm_chip *pc, unsigned int offset)
-@@ -272,14 +271,19 @@ static const struct pwm_ops tegra_pwm_ops = {
+ static int twl4030_pwmled_config(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -345,25 +344,28 @@ static const struct pwm_ops twl6030_pwmled_ops = {
  
- static int tegra_pwm_probe(struct platform_device *pdev)
+ static int twl_pwmled_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct tegra_pwm_chip *pc;
-+	const struct tegra_pwm_soc *soc;
- 	int ret;
+ 	struct twl_pwmled_chip *twl;
++	unsigned int npwm;
  
--	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
--	if (!pc)
+-	twl = devm_kzalloc(&pdev->dev, sizeof(*twl), GFP_KERNEL);
+-	if (!twl)
 -		return -ENOMEM;
-+	soc = of_device_get_match_data(&pdev->dev);
++	if (twl_class_is_4030())
++		npwm = 2;
++	else
++		npwm = 1;
  
--	pc->soc = of_device_get_match_data(&pdev->dev);
-+	chip = devm_pwmchip_alloc(&pdev->dev, soc->num_channels, sizeof(*pc));
+-	if (twl_class_is_4030()) {
+-		twl->chip.ops = &twl4030_pwmled_ops;
+-		twl->chip.npwm = 2;
+-	} else {
+-		twl->chip.ops = &twl6030_pwmled_ops;
+-		twl->chip.npwm = 1;
+-	}
++	chip = devm_pwmchip_alloc(&pdev->dev, npwm, sizeof(*twl));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	pc = to_tegra_pwm_chip(chip);
-+
-+	pc->soc = soc;
- 	pc->dev = &pdev->dev;
++	twl = to_twl(chip);
  
- 	pc->regs = devm_platform_ioremap_resource(pdev, 0);
-@@ -328,11 +332,9 @@ static int tegra_pwm_probe(struct platform_device *pdev)
+-	twl->chip.dev = &pdev->dev;
++	if (twl_class_is_4030())
++		chip->ops = &twl4030_pwmled_ops;
++	else
++		chip->ops = &twl6030_pwmled_ops;
  
- 	reset_control_deassert(pc->rst);
+ 	mutex_init(&twl->mutex);
  
--	pc->chip.dev = &pdev->dev;
--	pc->chip.ops = &tegra_pwm_ops;
--	pc->chip.npwm = pc->soc->num_channels;
-+	chip->ops = &tegra_pwm_ops;
+-	return devm_pwmchip_add(&pdev->dev, &twl->chip);
++	return devm_pwmchip_add(&pdev->dev, chip);
+ }
  
--	ret = pwmchip_add(&pc->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
- 		reset_control_assert(pc->rst);
-@@ -350,9 +352,10 @@ static int tegra_pwm_probe(struct platform_device *pdev)
- 
- static void tegra_pwm_remove(struct platform_device *pdev)
- {
--	struct tegra_pwm_chip *pc = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
- 
--	pwmchip_remove(&pc->chip);
-+	pwmchip_remove(chip);
- 
- 	reset_control_assert(pc->rst);
- 
+ #ifdef CONFIG_OF
 -- 
 2.42.0
 
