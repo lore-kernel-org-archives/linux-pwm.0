@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF55CDB47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F4DCDB485
 	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379552AbjJLQdB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:33:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
+        id S1379466AbjJLQdC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379507AbjJLQc7 (ORCPT
+        with ESMTP id S1379542AbjJLQc7 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:32:59 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B7ACF
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:32:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF08D6
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:32:56 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqycI-0000fB-8E; Thu, 12 Oct 2023 18:32:54 +0200
+        id 1qqycI-0000fz-Sc; Thu, 12 Oct 2023 18:32:54 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqycH-001CBt-Kz; Thu, 12 Oct 2023 18:32:53 +0200
+        id 1qqycI-001CC7-Fc; Thu, 12 Oct 2023 18:32:54 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqycH-00F5VI-By; Thu, 12 Oct 2023 18:32:53 +0200
+        id 1qqycI-00F5VX-6i; Thu, 12 Oct 2023 18:32:54 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 099/109] pwm: vt8500: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:32:28 +0200
-Message-ID: <20231012163227.1004288-12-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 103/109] leds: qcom-lpg: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:32:32 +0200
+Message-ID: <20231012163227.1004288-16-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2296; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=HzjuSrKnWX8ZPRAZT/TNFfYQbfuRgII0D79E6MOrP6Q=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB+cqNYRp9Emm0I4TN4q5I0oFssqH6D7Hu9+y 21ExAPYH7uJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgfnAAKCRCPgPtYfRL+ TvbHB/9EWmTmnJaHYbA+9rYD6Z4GyinlrHZk1aLKRLExfOrlE2OdCtfW6+17+aj0Q+X8YLwhtv1 bYqoxrMW9ASeiE2cuR71t9qxSh7WNLA2EeE5WpjH6FSNjJDqaLR8HmU6rtNTG3fA7Ca/V5DErfX gbWuc5Lz+VlbeRWm02b6zS2vNHbbV4o6ANUKcZLcPfBSUPjDrYH+wmFN9AvPM+Jm3NrYRgqqjXa bKk+AoOyc9Ri9NHiKhKO8zuO0eWXXR5+n4VHVRp7YdFmXpZ5Atjuv4bVr7xtyCsmJUsMSVEE4Rl QXrRgi/FWoOCkC8tXlG/GQfD21tg7nzvyRycNaJFlmkXVLuN
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2962; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=M/+YrrRNVhGADFKY1/9Jqz6O7NSfLJ8wFbirQ3DzoFQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB+g48Qq2HM32kjLOjj0eYxExgrFbf8+eWuwd ur6zwRcWTuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgfoAAKCRCPgPtYfRL+ TuDVCAClHq4UxLfh8IznTB47FJH5Byed5OloxEWWaZFgtF1ILh9yvy/hQp3sgb9TAZFALqoFvgm USZi2xQtNFhtoMYZNlLXeeqD8LOHNSC/nDsPY7QWnqR8Buo7SYU/AXaS0MwuAuQuGQaDJKOR9Vs kUukEJ0pJCFclkIJK6+RicEmcARUOPvC/o9anzFk38qk4Y66BIftC0ophqaH5xDI+asCM3gSrFb dOVvv/HudxdEiP+yXv3gXdwoZcnwd54fJQ3JVhFC6CBsWdMZD7o1s6RpU1AQ8ANtMGccVlvFYAr YS7NT9xRiupU18ZZNSe9PFwCdDc4mAQGMNv/0LYvVpONLZsm
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,71 +50,96 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-vt8500 driver to further changes of the pwm core
+This prepares the pwm sub-driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-vt8500.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/leds/rgb/leds-qcom-lpg.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
-index 16046f936d98..22c8695c3337 100644
---- a/drivers/pwm/pwm-vt8500.c
-+++ b/drivers/pwm/pwm-vt8500.c
-@@ -45,12 +45,14 @@
- #define STATUS_ALL_UPDATE	0x0F
+diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
+index c8525f59748c..57289af9480f 100644
+--- a/drivers/leds/rgb/leds-qcom-lpg.c
++++ b/drivers/leds/rgb/leds-qcom-lpg.c
+@@ -77,7 +77,7 @@ struct lpg {
  
- struct vt8500_chip {
--	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *clk;
- };
+ 	struct mutex lock;
  
--#define to_vt8500_chip(chip)	container_of(chip, struct vt8500_chip, chip)
-+static inline struct vt8500_chip *to_vt8500_chip(struct pwm_chip *chip)
+-	struct pwm_chip pwm;
++	struct pwm_chip *pwm;
+ 
+ 	const struct lpg_data *data;
+ 
+@@ -977,9 +977,15 @@ static int lpg_pattern_mc_clear(struct led_classdev *cdev)
+ 	return lpg_pattern_clear(led);
+ }
+ 
++static inline struct lpg *lpg_pwm_from_chip(struct pwm_chip *chip)
 +{
-+	return pwmchip_priv(chip);
++	struct lpg **lpg = pwmchip_priv(chip);
++	return *lpg;
 +}
++
+ static int lpg_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	struct lpg *lpg = container_of(chip, struct lpg, pwm);
++	struct lpg *lpg = lpg_pwm_from_chip(chip);
+ 	struct lpg_channel *chan = &lpg->channels[pwm->hwpwm];
  
- #define msecs_to_loops(t) (loops_per_jiffy / 1000 * HZ * t)
- static inline void vt8500_pwm_busy_wait(struct pwm_chip *chip, int nr, u8 bitmask)
-@@ -232,6 +234,7 @@ MODULE_DEVICE_TABLE(of, vt8500_pwm_dt_ids);
+ 	return chan->in_use ? -EBUSY : 0;
+@@ -995,7 +1001,7 @@ static int lpg_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			 const struct pwm_state *state)
+ {
+-	struct lpg *lpg = container_of(chip, struct lpg, pwm);
++	struct lpg *lpg = lpg_pwm_from_chip(chip);
+ 	struct lpg_channel *chan = &lpg->channels[pwm->hwpwm];
+ 	int ret = 0;
  
- static int vt8500_pwm_probe(struct platform_device *pdev)
+@@ -1026,7 +1032,7 @@ static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ static int lpg_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			     struct pwm_state *state)
+ {
+-	struct lpg *lpg = container_of(chip, struct lpg, pwm);
++	struct lpg *lpg = lpg_pwm_from_chip(chip);
+ 	struct lpg_channel *chan = &lpg->channels[pwm->hwpwm];
+ 	unsigned int resolution;
+ 	unsigned int pre_div;
+@@ -1089,13 +1095,19 @@ static const struct pwm_ops lpg_pwm_ops = {
+ 
+ static int lpg_add_pwm(struct lpg *lpg)
  {
 +	struct pwm_chip *chip;
- 	struct vt8500_chip *vt8500;
- 	struct device_node *np = pdev->dev.of_node;
  	int ret;
-@@ -239,13 +242,12 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
- 	if (!np)
- 		return dev_err_probe(&pdev->dev, -EINVAL, "invalid devicetree node\n");
  
--	vt8500 = devm_kzalloc(&pdev->dev, sizeof(*vt8500), GFP_KERNEL);
--	if (vt8500 == NULL)
-+	chip = devm_pwmchip_alloc(&pdev->dev, VT8500_NR_PWMS, sizeof(*vt8500));
-+	if (chip == NULL)
- 		return -ENOMEM;
-+	vt8500 = to_vt8500_chip(chip);
+-	lpg->pwm.dev = lpg->dev;
+-	lpg->pwm.npwm = lpg->num_channels;
+-	lpg->pwm.ops = &lpg_pwm_ops;
++	lpg->pwm = chip = devm_pwmchip_alloc(lpg->dev, lpg->num_channels,
++					     sizeof(&lpg));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
  
--	vt8500->chip.dev = &pdev->dev;
--	vt8500->chip.ops = &vt8500_pwm_ops;
--	vt8500->chip.npwm = VT8500_NR_PWMS;
-+	chip->ops = &vt8500_pwm_ops;
+-	ret = pwmchip_add(&lpg->pwm);
++	*(struct lpg **)pwmchip_priv(chip) = lpg;
++
++	chip->ops = &lpg_pwm_ops;
++
++	ret = pwmchip_add(chip);
+ 	if (ret)
+ 		dev_err(lpg->dev, "failed to add PWM chip: ret %d\n", ret);
  
- 	vt8500->clk = devm_clk_get_prepared(&pdev->dev, NULL);
- 	if (IS_ERR(vt8500->clk))
-@@ -255,7 +257,7 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(vt8500->base))
- 		return PTR_ERR(vt8500->base);
+@@ -1367,7 +1379,7 @@ static int lpg_remove(struct platform_device *pdev)
+ {
+ 	struct lpg *lpg = platform_get_drvdata(pdev);
  
--	ret = devm_pwmchip_add(&pdev->dev, &vt8500->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
+-	pwmchip_remove(&lpg->pwm);
++	pwmchip_remove(lpg->pwm);
  
+ 	return 0;
+ }
 -- 
 2.42.0
 
