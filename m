@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10125CDB482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03834CDB47E
 	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379612AbjJLQbm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
+        id S1379609AbjJLQbo (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379645AbjJLQbQ (ORCPT
+        with ESMTP id S1379647AbjJLQbQ (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:16 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4808E0
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77738E3
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:13 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyac-0005jQ-0b; Thu, 12 Oct 2023 18:31:10 +0200
+        id 1qqyac-0005kT-O5; Thu, 12 Oct 2023 18:31:10 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaZ-001CAO-UY; Thu, 12 Oct 2023 18:31:07 +0200
+        id 1qqyaa-001CAa-IU; Thu, 12 Oct 2023 18:31:08 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaZ-00F5Rd-LT; Thu, 12 Oct 2023 18:31:07 +0200
+        id 1qqyaa-00F5Rp-9J; Thu, 12 Oct 2023 18:31:08 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 082/109] pwm: rz-mtu3: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:29:50 +0200
-Message-ID: <20231012162827.1002444-193-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 085/109] pwm: sl28cpld: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:29:53 +0200
+Message-ID: <20231012162827.1002444-196-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3523; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=WXizGuPAM7lEtf4b2moBTiKgq1NZn195DE8Y0arNpew=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlQNed6lTNf5LYUXKHA+P1mn9d3OW6+jfY5A5oG4fI7XF o6X5jp2MhqzMDByMciKKbLYN67JtKqSi+xc++8yzCBWJpApDFycAjCRjBz2//XCrxxjWOwP/c1/ ukf+rQiLCYue150rO7Q0Ha6fYwr/W/RwRb1+0wbuyMqwz9kBk/mEpI6W9shMf6EfM1tOkjfsMZO VGufSZQrOXetCniQ/D31kOzmq2CZhr7/EX6klmZaz983sn9L5dI71jabPJZyti0L48tj0mc2nt7 v4XBV4VuEb9up0K3+BxeTZbBIyr/efjn7yT+Pgd8eLexTXsT0vCPr/22/+6hJOrfnTW+8/Dtywz M1rU3aR7I0dhdZZT84sz2S8ZRo6zXueQJK8y9NN6fqX5p/7rCTxaaGla3DqrL6OKUeSv76zctqW HHHL/+KK3deDct7cN3jiU3R/5bWzfkXqajXVjuLtdgyNAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1740; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=SP6HObl80sKwkBdnebMV0NaVHrkgjH2XzfH7ob63+Ig=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB8QwWhMGtDGaaPSLdY7QUxl+KNrnFVHd6FOT AAi9Ii1Hz+JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgfEAAKCRCPgPtYfRL+ TvfkB/9WygesFu6BWG6w+d5vF0GyG5RzKYHDp+9kcZUc4zKMcMcsMr0QgH3oaBMmQbX/2erdlIw Zvwr2sscQAaxD4+44sA9bLMJG4gakMmoLHhLmcQ7CdNKttKDNjUhKmNM9+XU9X8Zztl/UI2bXSQ JK4rdVzIWxRtmfHARwX4XJBSLUaTerbm1FxQLSsd8eyjs/H7lHPwwOL7JHONEmqQYR5q8JSmwjM 6FbBVnqL295uPHWBviid7+6uqi11tEqWAB73ek2QLb8EjdjZH2SZ8+poqP/wVMT1RE0TxOMh9XP MNCHcL94TXJjgHoCgsLXOuwBkY0HoWNKaneyTDGEwoXfy1SL
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,107 +50,60 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-rz-mtu3 driver to further changes of the pwm core
+This prepares the pwm-sl28cpld driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-rz-mtu3.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-sl28cpld.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rz-mtu3.c b/drivers/pwm/pwm-rz-mtu3.c
-index 45d075560a21..61597c215cf6 100644
---- a/drivers/pwm/pwm-rz-mtu3.c
-+++ b/drivers/pwm/pwm-rz-mtu3.c
-@@ -72,7 +72,6 @@ struct rz_mtu3_pwm_channel {
-  */
+diff --git a/drivers/pwm/pwm-sl28cpld.c b/drivers/pwm/pwm-sl28cpld.c
+index 88b01ff9e460..30f96d10a3b8 100644
+--- a/drivers/pwm/pwm-sl28cpld.c
++++ b/drivers/pwm/pwm-sl28cpld.c
+@@ -81,14 +81,13 @@
+ 	regmap_write((priv)->regmap, (priv)->offset + (reg), (val))
  
- struct rz_mtu3_pwm_chip {
+ struct sl28cpld_pwm {
 -	struct pwm_chip chip;
- 	struct clk *clk;
- 	struct mutex lock;
- 	unsigned long rate;
-@@ -92,7 +91,7 @@ static const struct rz_mtu3_channel_io_map channel_map[] = {
+ 	struct regmap *regmap;
+ 	u32 offset;
+ };
  
- static inline struct rz_mtu3_pwm_chip *to_rz_mtu3_pwm_chip(struct pwm_chip *chip)
+ static inline struct sl28cpld_pwm *sl28cpld_pwm_from_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct rz_mtu3_pwm_chip, chip);
+-	return container_of(chip, struct sl28cpld_pwm, chip);
 +	return pwmchip_priv(chip);
  }
  
- static void rz_mtu3_pwm_read_tgr_registers(struct rz_mtu3_pwm_channel *priv,
-@@ -219,7 +218,7 @@ static int rz_mtu3_pwm_enable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
- 	u8 val;
- 	int rc;
+ static int sl28cpld_pwm_get_state(struct pwm_chip *chip,
+@@ -213,9 +212,10 @@ static int sl28cpld_pwm_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
  
--	rc = pm_runtime_resume_and_get(rz_mtu3_pwm->chip.dev);
-+	rc = pm_runtime_resume_and_get(pwmchip_parent(pwm->chip));
- 	if (rc)
- 		return rc;
- 
-@@ -265,7 +264,7 @@ static void rz_mtu3_pwm_disable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
- 
- 	mutex_unlock(&rz_mtu3_pwm->lock);
- 
--	pm_runtime_put_sync(rz_mtu3_pwm->chip.dev);
-+	pm_runtime_put_sync(pwmchip_parent(pwm->chip));
- }
- 
- static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -462,24 +461,27 @@ static DEFINE_RUNTIME_DEV_PM_OPS(rz_mtu3_pwm_pm_ops,
- 
- static void rz_mtu3_pwm_pm_disable(void *data)
- {
--	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = data;
-+	struct pwm_chip *chip = data;
-+	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
- 
- 	clk_rate_exclusive_put(rz_mtu3_pwm->clk);
--	pm_runtime_disable(rz_mtu3_pwm->chip.dev);
--	pm_runtime_set_suspended(rz_mtu3_pwm->chip.dev);
-+	pm_runtime_disable(pwmchip_parent(chip));
-+	pm_runtime_set_suspended(pwmchip_parent(chip));
- }
- 
- static int rz_mtu3_pwm_probe(struct platform_device *pdev)
- {
- 	struct rz_mtu3 *parent_ddata = dev_get_drvdata(pdev->dev.parent);
-+	struct pwm_chip *chip;
- 	struct rz_mtu3_pwm_chip *rz_mtu3_pwm;
- 	struct device *dev = &pdev->dev;
- 	unsigned int i, j = 0;
- 	int ret;
- 
--	rz_mtu3_pwm = devm_kzalloc(&pdev->dev, sizeof(*rz_mtu3_pwm), GFP_KERNEL);
--	if (!rz_mtu3_pwm)
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, RZ_MTU3_MAX_PWM_CHANNELS, sizeof(*rz_mtu3_pwm));
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*priv));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
++	priv = sl28cpld_pwm_from_chip(chip);
  
- 	rz_mtu3_pwm->clk = parent_ddata->clk;
+ 	priv->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+ 	if (!priv->regmap) {
+@@ -231,10 +231,7 @@ static int sl28cpld_pwm_probe(struct platform_device *pdev)
+ 	}
  
-@@ -514,15 +516,13 @@ static int rz_mtu3_pwm_probe(struct platform_device *pdev)
+ 	/* Initialize the pwm_chip structure */
+-	chip = &priv->chip;
+-	chip->dev = &pdev->dev;
+ 	chip->ops = &sl28cpld_pwm_ops;
+-	chip->npwm = 1;
  
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
--	rz_mtu3_pwm->chip.dev = &pdev->dev;
- 	ret = devm_add_action_or_reset(&pdev->dev, rz_mtu3_pwm_pm_disable,
--				       rz_mtu3_pwm);
-+				       chip);
- 	if (ret < 0)
- 		return ret;
- 
--	rz_mtu3_pwm->chip.ops = &rz_mtu3_pwm_ops;
--	rz_mtu3_pwm->chip.npwm = RZ_MTU3_MAX_PWM_CHANNELS;
--	ret = devm_pwmchip_add(&pdev->dev, &rz_mtu3_pwm->chip);
-+	chip->ops = &rz_mtu3_pwm_ops;
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
- 
+ 	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret) {
 -- 
 2.42.0
 
