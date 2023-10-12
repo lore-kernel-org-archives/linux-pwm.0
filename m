@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC14CDB46E
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52712CDB482
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379613AbjJLQb1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1379619AbjJLQb1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Thu, 12 Oct 2023 12:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379627AbjJLQbK (ORCPT
+        with ESMTP id S1379630AbjJLQbK (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:10 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE92CC
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9481D9
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:08 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaW-0005NO-HG; Thu, 12 Oct 2023 18:31:04 +0200
+        id 1qqyaX-0005Rf-Jv; Thu, 12 Oct 2023 18:31:05 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaU-001C8k-3d; Thu, 12 Oct 2023 18:31:02 +0200
+        id 1qqyaV-001C8z-0Z; Thu, 12 Oct 2023 18:31:03 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaT-00F5Pr-Ql; Thu, 12 Oct 2023 18:31:01 +0200
+        id 1qqyaU-00F5Q8-Mh; Thu, 12 Oct 2023 18:31:02 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 056/109] pwm: hibvt: Make use of devm_pwmchip_alloc() function
-Date:   Thu, 12 Oct 2023 18:29:24 +0200
-Message-ID: <20231012162827.1002444-167-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 060/109] pwm: imx-tpm: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:29:28 +0200
+Message-ID: <20231012162827.1002444-171-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2992; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=H8zUpd6JrWoh58k1PJzTBVEr8mAeOolpVMPZzRPQkW4=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlQNuXeJ+xQ/2QioaL5ZsjDFwVn9xTw+LglF9dkOodx7u XSiPwh2MhqzMDByMciKKbLYN67JtKqSi+xc++8yzCBWJpApDFycAjCR7Ons/0t6N1Xd9JY8Hx3v Z8jsKcLam5YsHaV57myM+DtHp/36+bcsn2uv8fueoZPjOnn6/Vr9KTMFGdWOyS5d6Ttht8FjLb1 213/6mt9+5xj1NBufXs74b7ZvlpK3t13IhbLCAjeVhPW9P/ZXPvVltt3xOVny+sGc/YJmM+8dbl rzp/zWmYncBzkdrD9E+Uv/yTJcdOgJt/KDs08/v3J5nXL6yiHtxHcXViWuftxfHs2u6SIuLDpf5 EztjlSH/Rq7eeevny2vUxh+POGWpoiNkMGRW2IMopq36u5PDF4dIz5DkOvWi5UaO/Tjrxg7GetF 9X3am/S09J1Uht3v6I2fbQLMeZbwT7K789omamLslYlaAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2597; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=al2gUsMV/qQxF0GFQppq77GU9T8AH/zElp8RrHQcUP0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB7zNU3P6vWYCcMZV+2A+dSz450a7d4hmiZLr pbUIWhVpAeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge8wAKCRCPgPtYfRL+ TiwAB/93JDeGJMcqJjKyGIYrKspVHvfpYFRqmjOeG4NsLIHc9anIC5P/nz5qWNiMKLO5S1Wsmfn gT0EEUXYEDfRKbCSU8NxQgw6VPxF1YyqK5eOW/3OLMCaZqfmgnrgojUDycYTaHXHRxi2aijpH4A cDmckYLpZ/ItfWYv93lv9cldv7h+nDwRtuVVXNaDOWDlsxxEyEcem50aC07mBqJGPj+vMkwjZIj ZOS+omKQiEwo/dedy8OFJ/tidHjMRAEHRx4QqNpxMVYHQ3vW1DdxEHyHO5t0J/5m/hk3IFbLLbR knxTOKOo8cfZciKpUItdSObcg0dFeGcAZF27YJXoCVBDmXGo
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,101 +50,90 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This prepares the pwm-hibvt driver to further changes of the pwm core
+This prepares the pwm-tmp driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-hibvt.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-imx-tpm.c | 34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
-index c435776e2f78..60be59ce4320 100644
---- a/drivers/pwm/pwm-hibvt.c
-+++ b/drivers/pwm/pwm-hibvt.c
-@@ -33,7 +33,6 @@
- #define PWM_DUTY_MASK       GENMASK(31, 0)
+diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
+index dc6aafeb9f7b..6c668c78f849 100644
+--- a/drivers/pwm/pwm-imx-tpm.c
++++ b/drivers/pwm/pwm-imx-tpm.c
+@@ -57,7 +57,6 @@
+ #define PWM_IMX_TPM_MOD_MOD	GENMASK(PWM_IMX_TPM_MOD_WIDTH - 1, 0)
  
- struct hibvt_pwm_chip {
--	struct pwm_chip	chip;
+ struct imx_tpm_pwm_chip {
+-	struct pwm_chip chip;
  	struct clk *clk;
  	void __iomem *base;
- 	struct reset_control *rstc;
-@@ -65,7 +64,7 @@ static const struct hibvt_pwm_soc hi3559v100_soc_info = {
- 
- static inline struct hibvt_pwm_chip *to_hibvt_pwm_chip(struct pwm_chip *chip)
+ 	struct mutex lock;
+@@ -75,7 +74,7 @@ struct imx_tpm_pwm_param {
+ static inline struct imx_tpm_pwm_chip *
+ to_imx_tpm_pwm_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct hibvt_pwm_chip, chip);
+-	return container_of(chip, struct imx_tpm_pwm_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- static void hibvt_pwm_set_bits(void __iomem *base, u32 offset,
-@@ -191,12 +190,14 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
- {
- 	const struct hibvt_pwm_soc *soc =
- 				of_device_get_match_data(&pdev->dev);
-+	struct pwm_chip	*chip;
- 	struct hibvt_pwm_chip *pwm_chip;
- 	int ret, i;
+ /*
+@@ -336,35 +335,40 @@ static const struct pwm_ops imx_tpm_pwm_ops = {
  
--	pwm_chip = devm_kzalloc(&pdev->dev, sizeof(*pwm_chip), GFP_KERNEL);
--	if (pwm_chip == NULL)
-+	chip = devm_pwmchip_alloc(&pdev->dev, soc->num_pwms, sizeof(*pwm_chip));
-+	if (chip == NULL)
- 		return -ENOMEM;
-+	pwm_chip = to_hibvt_pwm_chip(chip);
- 
- 	pwm_chip->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(pwm_chip->clk)) {
-@@ -205,9 +206,7 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
- 		return PTR_ERR(pwm_chip->clk);
- 	}
- 
--	pwm_chip->chip.ops = &hibvt_pwm_ops;
--	pwm_chip->chip.dev = &pdev->dev;
--	pwm_chip->chip.npwm = soc->num_pwms;
-+	chip->ops = &hibvt_pwm_ops;
- 	pwm_chip->soc = soc;
- 
- 	pwm_chip->base = devm_platform_ioremap_resource(pdev, 0);
-@@ -228,29 +227,31 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
- 	msleep(30);
- 	reset_control_deassert(pwm_chip->rstc);
- 
--	ret = pwmchip_add(&pwm_chip->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret < 0) {
- 		clk_disable_unprepare(pwm_chip->clk);
- 		return ret;
- 	}
- 
--	for (i = 0; i < pwm_chip->chip.npwm; i++) {
-+	for (i = 0; i < chip->npwm; i++) {
- 		hibvt_pwm_set_bits(pwm_chip->base, PWM_CTRL_ADDR(i),
- 				PWM_KEEP_MASK, (0x1 << PWM_KEEP_SHIFT));
- 	}
- 
--	platform_set_drvdata(pdev, pwm_chip);
-+	platform_set_drvdata(pdev, chip);
- 
- 	return 0;
- }
- 
- static void hibvt_pwm_remove(struct platform_device *pdev)
+ static int pwm_imx_tpm_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct hibvt_pwm_chip *pwm_chip;
+ 	struct imx_tpm_pwm_chip *tpm;
++	void __iomem *base;
+ 	int ret;
++	unsigned int npwm;
+ 	u32 val;
  
--	pwm_chip = platform_get_drvdata(pdev);
-+	chip = platform_get_drvdata(pdev);
-+	pwm_chip = to_hibvt_pwm_chip(chip);
+-	tpm = devm_kzalloc(&pdev->dev, sizeof(*tpm), GFP_KERNEL);
+-	if (!tpm)
+-		return -ENOMEM;
++	base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(base))
++		return PTR_ERR(base);
++
++	/* get number of channels */
++	val = readl(tpm->base + PWM_IMX_TPM_PARAM);
++	npwm = FIELD_GET(PWM_IMX_TPM_PARAM_CHAN, val);
++
++	chip = devm_pwmchip_alloc(&pdev->dev, npwm, sizeof(*tpm));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	tpm = to_imx_tpm_pwm_chip(chip);
  
--	pwmchip_remove(&pwm_chip->chip);
-+	pwmchip_remove(chip);
+ 	platform_set_drvdata(pdev, tpm);
  
- 	reset_control_assert(pwm_chip->rstc);
- 	msleep(30);
+-	tpm->base = devm_platform_ioremap_resource(pdev, 0);
+-	if (IS_ERR(tpm->base))
+-		return PTR_ERR(tpm->base);
++	tpm->base = base;
+ 
+ 	tpm->clk = devm_clk_get_enabled(&pdev->dev, NULL);
+ 	if (IS_ERR(tpm->clk))
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(tpm->clk),
+ 				     "failed to get PWM clock\n");
+ 
+-	tpm->chip.dev = &pdev->dev;
+-	tpm->chip.ops = &imx_tpm_pwm_ops;
+-
+-	/* get number of channels */
+-	val = readl(tpm->base + PWM_IMX_TPM_PARAM);
+-	tpm->chip.npwm = FIELD_GET(PWM_IMX_TPM_PARAM_CHAN, val);
++	chip->ops = &imx_tpm_pwm_ops;
+ 
+ 	mutex_init(&tpm->lock);
+ 
+-	ret = devm_pwmchip_add(&pdev->dev, &tpm->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret)
+ 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
+ 
 -- 
 2.42.0
 
