@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C91ACDB482
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 525D0CDB484
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347327AbjJLQbR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45072 "EHLO
+        id S1347337AbjJLQbU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379610AbjJLQbB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:01 -0400
+        with ESMTP id S1379566AbjJLQbD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:31:03 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A4DD3
-        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:30:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36C5D6
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:31:01 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaQ-0004xM-CO; Thu, 12 Oct 2023 18:30:58 +0200
+        id 1qqyaR-00052p-In; Thu, 12 Oct 2023 18:30:59 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaP-001C7Z-V0; Thu, 12 Oct 2023 18:30:57 +0200
+        id 1qqyaQ-001C7p-PX; Thu, 12 Oct 2023 18:30:58 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaP-00F5OV-M2; Thu, 12 Oct 2023 18:30:57 +0200
+        id 1qqyaQ-00F5Ol-GM; Thu, 12 Oct 2023 18:30:58 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 036/109] pwm: vt8500: Make use of pwmchip_parent() macro
-Date:   Thu, 12 Oct 2023 18:29:04 +0200
-Message-ID: <20231012162827.1002444-147-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 040/109] pwm: apple: Make use of devm_pwmchip_alloc() function
+Date:   Thu, 12 Oct 2023 18:29:08 +0200
+Message-ID: <20231012162827.1002444-151-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3929; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=zhXjRG6kPkwsKyJdTkY5kxiF11Z3mfQ6zxIWD9AQjl0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB7WkgW1eN3Ag6HnZanmXbo3unfuyGN6+imRS BpGh54cwQaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSge1gAKCRCPgPtYfRL+ TuGLCACMXhdpezz8nBfWiYtut8FdjYKUbuUi79wvUPQIxKXK55CRXIkAIVSdk4GNLu02E9rGSKQ eEaO48QvqdrlII9f5qy0XuT9iC4q35nYuZuhW7hEMc2LHjUtqvf7dLROrpdlpQmpkrKmJoXwACm oLWImFcumanZ48GokWHfZn0LYPUmmVZ9lVs+PlWa4EV/WHvHmj8vjzr4oqGVihkRNh5TjZt3rkK xAssGmq1q+VAPQTYLd5UXSXC0OoOueaQwr5EB6XH1H1TB587Ra1WhiWIYDV3e7GUOzyieIugoom iHVYcdRJrrDW4stoRpNj8RITmMf+pyccHp2E7P5D2zKtUYnH
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2020; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=EWFaSHTVoFTH6Q8XFdZqH8m+52FGb/WrCzVZKfXOE7M=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlQNudsNsczb8+b/mPEl+0jh7W2VtspHJuy+ty+Hr748P nnbAlvVTkZjFgZGLgZZMUUW+8Y1mVZVcpGda/9dhhnEygQyhYGLUwAmolbA/t/n/Ib7c3s7F1Tv nOO6vK268OZfo4IItYPnfriHW4g96fpyeuo9j2X+utPkGfNsNqQ/SHB3ZOw/mLe7NCjbjN3v+gE dk4LQ3bO8dx7P0HGP83ga8ir0e8aaNTw7pST0EyqaXq9azGezfcq1lc7JIa8kV5poWnR38X94eY HB1H1NWOdUr0YVl0mLrAUMYl1Uvbkj69zD1E3l5wTf5hENWVvAz61dHXEuJv98hOEO7jkmqYcOK NbU9h/7qMolv89MvfHnR5Fs1kiJtca+DDxv3ET9OZxen76TvLmPgUVwtrPkL3OlhSnTeqtS35h4 rJVVPLIw/KNMAL/3CZlPM+eu/Cvx9Fr5Ws7fE+e4mNwCAA==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,106 +50,69 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the macro
-provided for exactly this purpose.
+This prepares the pwm-apple driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-vt8500.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/pwm/pwm-apple.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
-index 5568d5312d3c..16046f936d98 100644
---- a/drivers/pwm/pwm-vt8500.c
-+++ b/drivers/pwm/pwm-vt8500.c
-@@ -53,8 +53,9 @@ struct vt8500_chip {
- #define to_vt8500_chip(chip)	container_of(chip, struct vt8500_chip, chip)
+diff --git a/drivers/pwm/pwm-apple.c b/drivers/pwm/pwm-apple.c
+index 4d755b628d9e..1560b6f88821 100644
+--- a/drivers/pwm/pwm-apple.c
++++ b/drivers/pwm/pwm-apple.c
+@@ -32,14 +32,13 @@
+ #define APPLE_PWM_CTRL_OUTPUT_ENABLE BIT(14)
  
- #define msecs_to_loops(t) (loops_per_jiffy / 1000 * HZ * t)
--static inline void vt8500_pwm_busy_wait(struct vt8500_chip *vt8500, int nr, u8 bitmask)
-+static inline void vt8500_pwm_busy_wait(struct pwm_chip *chip, int nr, u8 bitmask)
+ struct apple_pwm {
+-	struct pwm_chip chip;
+ 	void __iomem *base;
+ 	u64 clkrate;
+ };
+ 
+ static inline struct apple_pwm *to_apple_pwm(struct pwm_chip *chip)
  {
-+	struct vt8500_chip *vt8500 = to_vt8500_chip(chip);
- 	int loops = msecs_to_loops(10);
- 	u32 mask = bitmask << (nr << 8);
- 
-@@ -62,7 +63,7 @@ static inline void vt8500_pwm_busy_wait(struct vt8500_chip *vt8500, int nr, u8 b
- 		cpu_relax();
- 
- 	if (unlikely(!loops))
--		dev_warn(vt8500->chip.dev, "Waiting for status bits 0x%x to clear timed out\n",
-+		dev_warn(pwmchip_parent(chip), "Waiting for status bits 0x%x to clear timed out\n",
- 			 mask);
+-	return container_of(chip, struct apple_pwm, chip);
++	return pwmchip_priv(chip);
  }
  
-@@ -77,7 +78,7 @@ static int vt8500_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ static int apple_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -103,13 +102,16 @@ static const struct pwm_ops apple_pwm_ops = {
  
- 	err = clk_enable(vt8500->clk);
- 	if (err < 0) {
--		dev_err(chip->dev, "failed to enable clock\n");
-+		dev_err(pwmchip_parent(chip), "failed to enable clock\n");
- 		return err;
- 	}
+ static int apple_pwm_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct apple_pwm *fpwm;
+ 	struct clk *clk;
+ 	int ret;
  
-@@ -103,18 +104,18 @@ static int vt8500_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	dc = div64_u64(c, period_ns);
+-	fpwm = devm_kzalloc(&pdev->dev, sizeof(*fpwm), GFP_KERNEL);
+-	if (!fpwm)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*fpwm));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++
++	fpwm = to_apple_pwm(chip);
  
- 	writel(prescale, vt8500->base + REG_SCALAR(pwm->hwpwm));
--	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_SCALAR_UPDATE);
-+	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_SCALAR_UPDATE);
+ 	fpwm->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(fpwm->base))
+@@ -129,11 +131,9 @@ static int apple_pwm_probe(struct platform_device *pdev)
+ 	if (fpwm->clkrate > NSEC_PER_SEC)
+ 		return dev_err_probe(&pdev->dev, -EINVAL, "pwm clock out of range");
  
- 	writel(pv, vt8500->base + REG_PERIOD(pwm->hwpwm));
--	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_PERIOD_UPDATE);
-+	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_PERIOD_UPDATE);
+-	fpwm->chip.dev = &pdev->dev;
+-	fpwm->chip.npwm = 1;
+-	fpwm->chip.ops = &apple_pwm_ops;
++	chip->ops = &apple_pwm_ops;
  
- 	writel(dc, vt8500->base + REG_DUTY(pwm->hwpwm));
--	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_DUTY_UPDATE);
-+	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_DUTY_UPDATE);
+-	ret = devm_pwmchip_add(&pdev->dev, &fpwm->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "unable to add pwm chip");
  
- 	val = readl(vt8500->base + REG_CTRL(pwm->hwpwm));
- 	val |= CTRL_AUTOLOAD;
- 	writel(val, vt8500->base + REG_CTRL(pwm->hwpwm));
--	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_CTRL_UPDATE);
-+	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_CTRL_UPDATE);
- 
- 	clk_disable(vt8500->clk);
- 	return 0;
-@@ -128,14 +129,14 @@ static int vt8500_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 
- 	err = clk_enable(vt8500->clk);
- 	if (err < 0) {
--		dev_err(chip->dev, "failed to enable clock\n");
-+		dev_err(pwmchip_parent(chip), "failed to enable clock\n");
- 		return err;
- 	}
- 
- 	val = readl(vt8500->base + REG_CTRL(pwm->hwpwm));
- 	val |= CTRL_ENABLE;
- 	writel(val, vt8500->base + REG_CTRL(pwm->hwpwm));
--	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_CTRL_UPDATE);
-+	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_CTRL_UPDATE);
- 
- 	return 0;
- }
-@@ -148,7 +149,7 @@ static void vt8500_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	val = readl(vt8500->base + REG_CTRL(pwm->hwpwm));
- 	val &= ~CTRL_ENABLE;
- 	writel(val, vt8500->base + REG_CTRL(pwm->hwpwm));
--	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_CTRL_UPDATE);
-+	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_CTRL_UPDATE);
- 
- 	clk_disable(vt8500->clk);
- }
-@@ -168,7 +169,7 @@ static int vt8500_pwm_set_polarity(struct pwm_chip *chip,
- 		val &= ~CTRL_INVERT;
- 
- 	writel(val, vt8500->base + REG_CTRL(pwm->hwpwm));
--	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_CTRL_UPDATE);
-+	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_CTRL_UPDATE);
- 
- 	return 0;
- }
 -- 
 2.42.0
 
