@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 074C2CDB482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A76CDB486
 	for <linux-pwm@archiver.kernel.org>; Thu, 12 Oct 2023 16:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379548AbjJLQbF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Oct 2023 12:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
+        id S1379582AbjJLQbG (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Oct 2023 12:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379582AbjJLQa6 (ORCPT
+        with ESMTP id S1379580AbjJLQa6 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Oct 2023 12:30:58 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028C3DE
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5992E3
         for <linux-pwm@vger.kernel.org>; Thu, 12 Oct 2023 09:30:56 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaM-0004mR-8i; Thu, 12 Oct 2023 18:30:54 +0200
+        id 1qqyaN-0004pP-1H; Thu, 12 Oct 2023 18:30:55 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaL-001C64-DI; Thu, 12 Oct 2023 18:30:53 +0200
+        id 1qqyaM-001C6M-BW; Thu, 12 Oct 2023 18:30:54 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qqyaL-00F5Mv-4G; Thu, 12 Oct 2023 18:30:53 +0200
+        id 1qqyaM-00F5NF-07; Thu, 12 Oct 2023 18:30:54 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 013/109] pwm: img: Make use of parent device pointer in driver data
-Date:   Thu, 12 Oct 2023 18:28:41 +0200
-Message-ID: <20231012162827.1002444-124-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 018/109] pwm: mediatek: Make use of pwmchip_parent() macro
+Date:   Thu, 12 Oct 2023 18:28:46 +0200
+Message-ID: <20231012162827.1002444-129-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.41.0.rc2.161.g9c6817b8e7dd
 In-Reply-To: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 References: <20231012162827.1002444-111-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2510; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=WIZ7fLBIOTJnC6P913+B4YLhHBG2b7x1ND9nCM5/+EA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKB67kA2xQglZ6WDlTk1mAgh4V57B7juy7100k dTzkOLHHrGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSgeuwAKCRCPgPtYfRL+ TnXECACp2zZJ6rR39qyk3pYd2cA8wydh3UyGBQJjq42KXNnt2yYbB/Gr1Atrit2pGEFmrPqM2h5 xiUv+EmknbaJitP9vZC+BagKPKv7yRQJCBb5tRIk4ZOVMMzQNkV9F/EM24R0pmHMbpVWSqpawRY UgHpbX/DvZUZx5lNI1XvoJ7XoLY2E3xW2Y3YnQZJfLHAx4kKm6AF6WdB4hwglT2cHzIPvoc9i8R JNYDsh/zIpAfeEgoeJ8X/MS2aL6oqwZe9/my/uM26Wil/qdV7w981Cig+FTUlQujwEgS+LRwcBl 10iwquEoNi5Ceiq/dK9QBvTRObD850zbetSiCJJyorYc8iOQ
+X-Developer-Signature: v=1; a=openpgp-sha256; l=879; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=a0fld00DRbtpE+nAzc/C3ZVKGGdC7FMFewgxDZIK3tc=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlQNuYNXGRfus9j5K00nc33X580/j0bydahYtImZHTbu4 czo2nyuk9GYhYGRi0FWTJHFvnFNplWVXGTn2n+XYQaxMoFMYeDiFICJBG/hYNjg+P05V2+s+b2c 4neNX8Vt114OUzNROPFWfnUwE4N+tUoqq0za59bbn5O/BEXqsCxzYjQRMFeobE6Zdo5Vv1yWe+J nr+chgXGmb9epJWzqLSmZXnDadefWxbxFP49ck5i5btORlxGndU1ce7WEOHd+bNq/USZFWix206 Y+6eXCVh3POlhPCuUYCCVL6HP/ylRZKu+rvFe0Yf0ZXrbKEpeytJK2+wq7XHguiG21ZZ3WwjZJ7 lZClcJxYcZX7+66HLi/osk2usrnKoMTy6nVC88qLfHkXtYuJBSmtP0py/fahWfYojWePC3eYb5w tvzDauXbk+tlbzVJPpR3ijL69eFBTQ3Hi0V6E4Rux54FAA==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,75 +51,27 @@ List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, make use of the
-already existing pointer to the parent device in driver data.
+driver in the same commit as struct pwm_chip::dev, use the macro
+provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-img.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-mediatek.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-index 116fa060e302..c2398a2e3a14 100644
---- a/drivers/pwm/pwm-img.c
-+++ b/drivers/pwm/pwm-img.c
-@@ -99,7 +99,7 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index 373abfd25acb..ba76d9753f1b 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -150,7 +150,7 @@ static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
- 	if (period_ns < imgchip->min_period_ns ||
- 	    period_ns > imgchip->max_period_ns) {
--		dev_err(chip->dev, "configured period not in range\n");
-+		dev_err(imgchip->dev, "configured period not in range\n");
- 		return -ERANGE;
- 	}
- 
-@@ -120,14 +120,14 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		div = PWM_CTRL_CFG_SUB_DIV0_DIV1;
- 		timebase = DIV_ROUND_UP(mul, 512);
- 	} else {
--		dev_err(chip->dev,
-+		dev_err(imgchip->dev,
- 			"failed to configure timebase steps/divider value\n");
+ 	if (clkdiv > PWM_CLK_DIV_MAX) {
+ 		pwm_mediatek_clk_disable(chip, pwm);
+-		dev_err(chip->dev, "period of %d ns not supported\n", period_ns);
++		dev_err(pwmchip_parent(chip), "period of %d ns not supported\n", period_ns);
  		return -EINVAL;
  	}
  
- 	duty = DIV_ROUND_UP(timebase * duty_ns, period_ns);
- 
--	ret = pm_runtime_resume_and_get(chip->dev);
-+	ret = pm_runtime_resume_and_get(imgchip->dev);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -141,8 +141,8 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	      (timebase << PWM_CH_CFG_TMBASE_SHIFT);
- 	img_pwm_writel(imgchip, PWM_CH_CFG(pwm->hwpwm), val);
- 
--	pm_runtime_mark_last_busy(chip->dev);
--	pm_runtime_put_autosuspend(chip->dev);
-+	pm_runtime_mark_last_busy(imgchip->dev);
-+	pm_runtime_put_autosuspend(imgchip->dev);
- 
- 	return 0;
- }
-@@ -153,7 +153,7 @@ static int img_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct img_pwm_chip *imgchip = to_img_pwm_chip(chip);
- 	int ret;
- 
--	ret = pm_runtime_resume_and_get(chip->dev);
-+	ret = pm_runtime_resume_and_get(imgchip->dev);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -177,8 +177,8 @@ static void img_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	val &= ~BIT(pwm->hwpwm);
- 	img_pwm_writel(imgchip, PWM_CTRL_CFG, val);
- 
--	pm_runtime_mark_last_busy(chip->dev);
--	pm_runtime_put_autosuspend(chip->dev);
-+	pm_runtime_mark_last_busy(imgchip->dev);
-+	pm_runtime_put_autosuspend(imgchip->dev);
- }
- 
- static int img_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 -- 
 2.42.0
 
