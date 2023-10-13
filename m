@@ -2,63 +2,57 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25764CDB47E
-	for <linux-pwm@archiver.kernel.org>; Fri, 13 Oct 2023 17:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BEECDB47E
+	for <linux-pwm@archiver.kernel.org>; Fri, 13 Oct 2023 17:51:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbjJMRmo (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 13 Oct 2023 13:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
+        id S229879AbjJMRvx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 13 Oct 2023 13:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjJMRmn (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Oct 2023 13:42:43 -0400
+        with ESMTP id S229830AbjJMRvw (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Oct 2023 13:51:52 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367F5BE
-        for <linux-pwm@vger.kernel.org>; Fri, 13 Oct 2023 10:42:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5DDBB
+        for <linux-pwm@vger.kernel.org>; Fri, 13 Oct 2023 10:51:48 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qrMBA-0004VF-BU; Fri, 13 Oct 2023 19:42:28 +0200
+        id 1qrMK5-0006CR-OY; Fri, 13 Oct 2023 19:51:41 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qrMB7-001RgQ-76; Fri, 13 Oct 2023 19:42:25 +0200
+        id 1qrMK5-001RiD-AW; Fri, 13 Oct 2023 19:51:41 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qrMB6-00FilQ-T7; Fri, 13 Oct 2023 19:42:24 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel@pengutronix.de,
+        id 1qrMK5-00Fiwn-16; Fri, 13 Oct 2023 19:51:41 +0200
+Date:   Fri, 13 Oct 2023 19:51:40 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Sean Young <sean@mess.org>, linux-media@vger.kernel.org,
+        Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Florian Fainelli <florian.fainelli@broadcom.com>,
-        Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
         Broadcom internal kernel review list 
         <bcm-kernel-feedback-list@broadcom.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-samsung-soc@vger.kernel.org,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH v2 00/11] pwm: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-Date:   Fri, 13 Oct 2023 19:42:05 +0200
-Message-ID: <20231013174204.1457085-13-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.42.0
+        Stefan Wahren <wahrenst@gmx.net>, linux-pwm@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] pwm: bcm2835: allow pwm driver to be used in
+ atomic context
+Message-ID: <20231013175140.dzlz4grrgngoyxbc@pengutronix.de>
+References: <cover.1697193646.git.sean@mess.org>
+ <6ce73b2688f059e7169935699044104cf37b2425.1697193646.git.sean@mess.org>
+ <84429d39-aa54-462d-85cd-c5d06a614a0e@gmx.net>
+ <5203415.ElGaqSPkdT@steina-w>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2024; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Jw1sN5icL+aTGXegL1KKLnEOKhic0UKDh73rtiw7rKU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKYFskKTqtssqZIdgk+76YyHvwGsNASsaoY5Eb qXb+aYndMWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSmBbAAKCRCPgPtYfRL+ TnpUB/94Rb7ImJa1JHBMssTYaC01OTNC4YG3y0XfXKLaKUW9Zoch0nSYruPX9hsjmRDfcptFkku yI0lj61TABbNziRqdmBbOAcEsma/sTiWDKKFb+X1LPU7h8tmBgt2ZkzgrPpAyomodmKCk+GM4Nw kPEOFGvciGa55RE5Yzp/Hc8XL0P0I2LFsmMS/IrMOLBBSUytgEJ/Z4GlCJMeivTcguoCbtDbBwc gsL3JROcqSwc4TfNeVL0NwOS7GdfOc7SxDMdruSsCFX5lYnzgO9owMDS38QhzkXeqYVusGcnNoY j8xun9IT/ww179rPuZ6kPTCN3h3IGFJR9nBTmFFG3VYzga/n
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ssu5t4hquxq747is"
+Content-Disposition: inline
+In-Reply-To: <5203415.ElGaqSPkdT@steina-w>
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
@@ -67,51 +61,58 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+
+--ssu5t4hquxq747is
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
 Hello,
 
-the only change here compared to (implicit) v1 sent with Message-Id:
-20231010075112.755178-1-u.kleine-koenig@pengutronix.de is a rebase on
-Thierry's current for-next branch and I added the tags I recieved on the
-previous submission.
+On Fri, Oct 13, 2023 at 01:13:50PM +0200, Alexander Stein wrote:
+> Am Freitag, 13. Oktober 2023, 13:04:48 CEST schrieb Stefan Wahren:
+> > Am 13.10.23 um 12:46 schrieb Sean Young:
+> > > clk_get_rate() may do a mutex lock. Since the clock rate cannot chang=
+e on
+> > > an rpi, simply fetch it once.
+> >=20
+> > does it mean you checked all possible SoCs (BCM2835, BCM2836, BCM2837,
+> > BCM2711, BCM2712) for this change?
+> >=20
+> > Is it impossible that the real clock can never be influenced by turbo
+> > mode like SPI?
+>=20
+> Assuming the clock can change, which I would, then a clock notifier seems=
+=20
+> appropriate. See [1] for an example.
 
-In v1 I did a small improvement for the brcmstb PWM driver en passant,
-which was already done by Florian in a patch that is now commit
-aacbd6543669 ("pwm: brcmstb: Checked clk_prepare_enable() return
-value"). So the brcmstb patch in this series simplified to be similar to
-the other patches here and so the commit log improvement that I promised
-on Jonathan Cameron's feedback was dropped again.
+I'm not a fan. If the clock changes, the output also changes. With a
+clock notifier you can soften the issue and reconfigure to something
+similar as the original wave form, but a glitch happens for sure.
+
+I already toyed with the thought to add clk_rate_exclusive_get() to all
+PWM drivers, but didn't come around it yet.
 
 Best regards
 Uwe
 
-Uwe Kleine-König (11):
-  pwm: atmel-hlcdc: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: atmel-tcb: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: berlin: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: brcmstb: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: dwc: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: imx-tpm: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: samsung: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: stm32-lp: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: stm32: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: tiecap: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-  pwm: tiehrpwm: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
- drivers/pwm/pwm-atmel-hlcdc.c |  8 +++-----
- drivers/pwm/pwm-atmel-tcb.c   |  8 +++-----
- drivers/pwm/pwm-berlin.c      |  8 +++-----
- drivers/pwm/pwm-brcmstb.c     |  8 +++-----
- drivers/pwm/pwm-dwc.c         |  6 ++----
- drivers/pwm/pwm-imx-tpm.c     | 10 +++++-----
- drivers/pwm/pwm-samsung.c     |  6 ++----
- drivers/pwm/pwm-stm32-lp.c    | 10 +++++-----
- drivers/pwm/pwm-stm32.c       |  8 ++++----
- drivers/pwm/pwm-tiecap.c      |  6 ++----
- drivers/pwm/pwm-tiehrpwm.c    |  8 +++-----
- 11 files changed, 35 insertions(+), 51 deletions(-)
+--ssu5t4hquxq747is
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-base-commit: 4bb36d126cb3147d6bbfd00242a5b846dacad595
--- 
-2.42.0
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUpg6wACgkQj4D7WH0S
+/k6zXAf8CLxtrbWX3bu/WNzhyWl92SzyhIaU0UrVF1cyUmSvSccu/9afnKYtgPfZ
+2lsWg4a1AVndcN2OoIZ8Fqf6eKdMNqSnxc1cyOH3rL7o+6wYPACNRQ907zK44Ah9
+FYPytiBMKZq+xXTBU1Qbm6Vrn2dQxXBv0/mOIz6pLI2mcdN66Ad1a2Bf2avkddd5
+NoU5DJhuRI8ywHb34lexulqMdCQqjNZhcj46TFks3bk3FVT76aBRXhwOesaJnmy8
+hSg84cJn8TiQzgsOkP5Px580mOQQ0eYFGB8DZm7tlljXRhEgiuRwcrOXeFfaITI4
+lI87RD2C73qZIV7fLaOKCHWr3GQraw==
+=x/eO
+-----END PGP SIGNATURE-----
 
+--ssu5t4hquxq747is--
