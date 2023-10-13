@@ -2,44 +2,44 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1128CDB483
-	for <linux-pwm@archiver.kernel.org>; Fri, 13 Oct 2023 17:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9636FCDB482
+	for <linux-pwm@archiver.kernel.org>; Fri, 13 Oct 2023 17:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229518AbjJMRma (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 13 Oct 2023 13:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
+        id S229704AbjJMRmc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 13 Oct 2023 13:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbjJMRm3 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Oct 2023 13:42:29 -0400
+        with ESMTP id S229679AbjJMRmc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Oct 2023 13:42:32 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410E1BB
-        for <linux-pwm@vger.kernel.org>; Fri, 13 Oct 2023 10:42:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864CDA9
+        for <linux-pwm@vger.kernel.org>; Fri, 13 Oct 2023 10:42:29 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qrMB8-0004VT-OC; Fri, 13 Oct 2023 19:42:26 +0200
+        id 1qrMB9-0004WQ-Sk; Fri, 13 Oct 2023 19:42:27 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qrMB8-001Rgf-BW; Fri, 13 Oct 2023 19:42:26 +0200
+        id 1qrMB9-001Rgw-FH; Fri, 13 Oct 2023 19:42:27 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1qrMB8-00Filn-2S; Fri, 13 Oct 2023 19:42:26 +0200
+        id 1qrMB9-00FimC-64; Fri, 13 Oct 2023 19:42:27 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 05/11] pwm: dwc: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-Date:   Fri, 13 Oct 2023 19:42:10 +0200
-Message-ID: <20231013174204.1457085-18-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 10/11] pwm: tiecap: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
+Date:   Fri, 13 Oct 2023 19:42:15 +0200
+Message-ID: <20231013174204.1457085-23-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20231013174204.1457085-13-u.kleine-koenig@pengutronix.de>
 References: <20231013174204.1457085-13-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1420; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=62EaAMeMBi6KA2sRZL2wrFSCNiazBTYJoyx9cqmwclA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKYFygd+IBU5Lby9bS/SZRk0kvuoOfYD0YKk+u 4Jpj4SEuKmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSmBcgAKCRCPgPtYfRL+ TrcfB/wPojXaUff2T6Tqc09bgu5hpk9ELs9kWv0iuLnaZq5i3mMAYQJ3xTk+8JBJ445WbyDNBks Gfg4c0Za2i1L/k0LoeWtKr0ODChyX1w17TbqzfEyGekcbHl/m9CCNMHik0cZ6JrsfQTijwmrl2C mXB+r0156r133k0DNxPQz+wsHlRZ9bFWfSQ3yZ344ZsY1FMFXOfMnA2D/vm1GTHfqMhZmDLPDbA KoGv8EWdSvI0lo7fUqNxcQoawZDwZ75DF0/SpClmDmboJ0kSMn+MwVZuiDcFzKTdgkbhh9SUfso VwSJdgRGhT4597v8wpJKTka+cLSiGUDI6M3Kg5W7DDCmxz1Q
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1392; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Ri/mWOwoqDUd5X1pQcPpUEvF4Hv5wqsu48zXQOMPSGg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlKYF4bipc7FEf5L+kmYsGO6NvoWGw2HtE691Wa RPmuNpgeSWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZSmBeAAKCRCPgPtYfRL+ TsP9B/43f+gMItUs2QX5bS72Gu4GNAPzS9Ifj08774VJE6yR5yxOob0i3cZhtmS4xyI2tIpCzIz H0XXe3rBek+vFcoJKaYrH004apJoJDD0UB3EaA+IGrFISKlBKmyPr1l7ijMzzlHgCMKODZsQFEL OWbsMGmiwAGh2JzD1pVW7JY18VNkwOvoFyfAFOB6P6mvqIrDAf1kWoC7oYQZFY3FG9doCLy8CQH BY+1OELIs4jpj1Yl0MC6e4p9S2qDLRKv/powBLnwMHTuPKAf6CW9dIB9dj1hDRPOFZG9kcBL5Ti bWfhlm73yqiqnZKtzBHXB7/hfHlXD2uMaLANt/0sW/4Qulk8
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -58,41 +58,39 @@ isn't enabled.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-dwc.c | 6 ++----
+ drivers/pwm/pwm-tiecap.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index bd9cadb497d7..4929354f8cd9 100644
---- a/drivers/pwm/pwm-dwc.c
-+++ b/drivers/pwm/pwm-dwc.c
-@@ -71,7 +71,6 @@ static void dwc_pwm_remove(struct pci_dev *pci)
- 	pm_runtime_get_noresume(&pci->dev);
+diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
+index 11e3549cf103..d974f4414ac9 100644
+--- a/drivers/pwm/pwm-tiecap.c
++++ b/drivers/pwm/pwm-tiecap.c
+@@ -269,7 +269,6 @@ static void ecap_pwm_remove(struct platform_device *pdev)
+ 	pm_runtime_disable(&pdev->dev);
  }
  
 -#ifdef CONFIG_PM_SLEEP
- static int dwc_pwm_suspend(struct device *dev)
+ static void ecap_pwm_save_context(struct ecap_pwm_chip *pc)
  {
- 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
-@@ -106,9 +105,8 @@ static int dwc_pwm_resume(struct device *dev)
- 
+ 	pm_runtime_get_sync(pc->chip.dev);
+@@ -312,15 +311,14 @@ static int ecap_pwm_resume(struct device *dev)
+ 	ecap_pwm_restore_context(pc);
  	return 0;
  }
 -#endif
  
--static SIMPLE_DEV_PM_OPS(dwc_pwm_pm_ops, dwc_pwm_suspend, dwc_pwm_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(dwc_pwm_pm_ops, dwc_pwm_suspend, dwc_pwm_resume);
+-static SIMPLE_DEV_PM_OPS(ecap_pwm_pm_ops, ecap_pwm_suspend, ecap_pwm_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(ecap_pwm_pm_ops, ecap_pwm_suspend, ecap_pwm_resume);
  
- static const struct pci_device_id dwc_pwm_id_table[] = {
- 	{ PCI_VDEVICE(INTEL, 0x4bb7) }, /* Elkhart Lake */
-@@ -122,7 +120,7 @@ static struct pci_driver dwc_pwm_driver = {
- 	.remove = dwc_pwm_remove,
- 	.id_table = dwc_pwm_id_table,
+ static struct platform_driver ecap_pwm_driver = {
  	.driver = {
--		.pm = &dwc_pwm_pm_ops,
-+		.pm = pm_ptr(&dwc_pwm_pm_ops),
+ 		.name = "ecap",
+ 		.of_match_table = ecap_of_match,
+-		.pm = &ecap_pwm_pm_ops,
++		.pm = pm_ptr(&ecap_pwm_pm_ops),
  	},
- };
- 
+ 	.probe = ecap_pwm_probe,
+ 	.remove_new = ecap_pwm_remove,
 -- 
 2.42.0
 
