@@ -2,110 +2,76 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C50CDB465
-	for <linux-pwm@archiver.kernel.org>; Thu, 19 Oct 2023 20:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C50E3E71084
+	for <linux-pwm@archiver.kernel.org>; Thu, 19 Oct 2023 21:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbjJSUIK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 19 Oct 2023 16:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56282 "EHLO
+        id S1346549AbjJSVGo (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 19 Oct 2023 17:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229892AbjJSUIJ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Oct 2023 16:08:09 -0400
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7CB124
-        for <linux-pwm@vger.kernel.org>; Thu, 19 Oct 2023 13:08:07 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qtZJ6-0000Ag-V6; Thu, 19 Oct 2023 22:07:48 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qtZJ5-002rfs-Jv; Thu, 19 Oct 2023 22:07:47 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qtZJ5-001ve3-AL; Thu, 19 Oct 2023 22:07:47 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-pwm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
-Subject: [PATCH 1/5] pwm: stm32: Replace write_ccrx with regmap_write
-Date:   Thu, 19 Oct 2023 22:07:00 +0200
-Message-ID: <20231019200658.1754190-8-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.42.0
-In-Reply-To: <20231019200658.1754190-7-u.kleine-koenig@pengutronix.de>
-References: <20231019200658.1754190-7-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S235529AbjJSVGn (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Oct 2023 17:06:43 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A54136;
+        Thu, 19 Oct 2023 14:06:42 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82639C433CA;
+        Thu, 19 Oct 2023 21:06:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1697749601;
+        bh=VY5heIBy9yftU7sYBNfoeKWqOwP4esxHzVS+2WzNFSc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=CEmtcQ4IqPvbJWnxJuekiXHzD9SNs3kIEH+DgJzWzEXC5Q9YETxOU8YLkGXLGKUZD
+         LnmoApJt7vYJgs5O6OxnIm6mCL+WZifbVTrMqDFyj3j8n9WK/u6a9JGGVw0FrIB4e/
+         5Ec87wTgg1DWo6q0vAky2XeorzhdFNdrkoUOS4P4rw4/UPgQSM3wprhoratuzDCwjB
+         dpQ00Eth8jNgLt60yQ1zOZOn/zmFE6+XPNVVZMV4Pm/yvRQKlzTdZ+j12nTp2epE08
+         GyWZqkZRb5O9qqcNfO4bl/jOeKK02zywE9o1qXRgg2cMd9Y5eLwNO91bQAmpyZ/uK/
+         stJt683nTgvqw==
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-507bd19eac8so145444e87.0;
+        Thu, 19 Oct 2023 14:06:41 -0700 (PDT)
+X-Gm-Message-State: AOJu0YwhovISxy2sJd/SVg0h9ENC8NbYVn3plQw43ETPCgGXMeSnYVka
+        Q5pmUT2rtWgSMUDowAY8tGJCY2/AukgH8qPzLA==
+X-Google-Smtp-Source: AGHT+IFNNqLHq7e9rbvmn7g8Kf+819v49MVg4TY+Jdh4Fqqqe3ifpRBgvC9663PPxlQqPustO9R2FgtjwWcYakFNqKY=
+X-Received: by 2002:ac2:5464:0:b0:504:3c1f:cbd9 with SMTP id
+ e4-20020ac25464000000b005043c1fcbd9mr2295837lfn.16.1697749599708; Thu, 19 Oct
+ 2023 14:06:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1768; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=XJO2ggFWysOn0g4wuN+uvCKU8+S2R3VmfphxGItb/Jo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlMYxjGVnCbg0gnva3opb6gZdeiT1Ots7MkwFf4 acaYa6X76aJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZTGMYwAKCRCPgPtYfRL+ Tp3NB/0eTOzkcQ5HvaeR4sNjFj4/tyNZ2XaSKgaGZDhGXGsPvIm40b/R/RBUVGETXKfZb3/ojf7 phq2p79AeVXuiyYbXEC03lDjBqGWn9bK0FzawYBRiiQvDYJnddPN/bs4+dmbdwzTSoSr36qZnWD bo8hfhA0uqdfacHt0XHJ7gNmmlfHIMftD9WYEA1DuMyR/WIKCFlPicla3N7XTotNwyHNZt5AGJe PEVp3EY3Mr5sTMzRAbCbgjb1LeREooFYGNGhOQaVj9/u5P6FunyH+RDTgvPuVsErjNBJuKphwI7 rLAIFSz/8H12vhu8paiknEmseAFnk+CwqYwrSO3vXJuTlVLK
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+References: <20231005160550.2423075-1-quic_devipriy@quicinc.com>
+ <20231005160550.2423075-4-quic_devipriy@quicinc.com> <169710517252.1166696.13811645504228005200.b4-ty@kernel.org>
+In-Reply-To: <169710517252.1166696.13811645504228005200.b4-ty@kernel.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 19 Oct 2023 16:06:27 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKdvnb7c_oMaMsQiJQzm1YF5uV+Tb9nQSgX0_+tP1KD8g@mail.gmail.com>
+Message-ID: <CAL_JsqKdvnb7c_oMaMsQiJQzm1YF5uV+Tb9nQSgX0_+tP1KD8g@mail.gmail.com>
+Subject: Re: (subset) [PATCH V15 3/4] dt-bindings: mfd: qcom,tcsr: Add
+ simple-mfd support for IPQ6018
+To:     Lee Jones <lee@kernel.org>
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        thierry.reding@gmail.com, ndesaulniers@google.com, trix@redhat.com,
+        baruch@tkos.co.il, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Devi Priya <quic_devipriy@quicinc.com>,
+        linux-pwm@vger.kernel.org, u.kleine-koenig@pengutronix.de,
+        nathan@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Philipp Zabel <p.zabel@pengutronix.de>
+On Thu, Oct 12, 2023 at 5:06=E2=80=AFAM Lee Jones <lee@kernel.org> wrote:
+>
+> On Thu, 05 Oct 2023 21:35:49 +0530, Devi Priya wrote:
+> > Update the binding to include pwm as the child node to TCSR block and
+> > add simple-mfd support for IPQ6018.
+> >
+> >
+>
+> Applied, thanks!
+>
+> [3/4] dt-bindings: mfd: qcom,tcsr: Add simple-mfd support for IPQ6018
+>       commit: b4a32d218d424b81a58fbd419e1114b1c1f76168
 
-The TIM_CCR1...4 registers are consecutive, so replace the switch
-case with a simple calculation. Since ch is known to be in the 0...3
-range (it is set to hwpwm < npwm <= 4), drop the unnecessary error
-handling. The return value was not checked anyway. What remains does
-not warrant keeping the write_ccrx() function around, so instead call
-regmap_write() directly at the singular call site.
+This is dependent on patch 2 being applied.
 
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-stm32.c | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
-
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index 3303a754ea02..5e48584e3bd4 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -52,21 +52,6 @@ static u32 active_channels(struct stm32_pwm *dev)
- 	return ccer & TIM_CCER_CCXE;
- }
- 
--static int write_ccrx(struct stm32_pwm *dev, int ch, u32 value)
--{
--	switch (ch) {
--	case 0:
--		return regmap_write(dev->regmap, TIM_CCR1, value);
--	case 1:
--		return regmap_write(dev->regmap, TIM_CCR2, value);
--	case 2:
--		return regmap_write(dev->regmap, TIM_CCR3, value);
--	case 3:
--		return regmap_write(dev->regmap, TIM_CCR4, value);
--	}
--	return -EINVAL;
--}
--
- #define TIM_CCER_CC12P (TIM_CCER_CC1P | TIM_CCER_CC2P)
- #define TIM_CCER_CC12E (TIM_CCER_CC1E | TIM_CCER_CC2E)
- #define TIM_CCER_CC34P (TIM_CCER_CC3P | TIM_CCER_CC4P)
-@@ -369,7 +354,7 @@ static int stm32_pwm_config(struct stm32_pwm *priv, int ch,
- 	dty = prd * duty_ns;
- 	do_div(dty, period_ns);
- 
--	write_ccrx(priv, ch, dty);
-+	regmap_write(priv->regmap, TIM_CCR1 + 4 * ch, dty);
- 
- 	/* Configure output mode */
- 	shift = (ch & 0x1) * CCMR_CHANNEL_SHIFT;
--- 
-2.42.0
-
+Rob
