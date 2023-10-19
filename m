@@ -2,68 +2,111 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620FBCDB482
-	for <linux-pwm@archiver.kernel.org>; Thu, 19 Oct 2023 11:19:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B86CDB465
+	for <linux-pwm@archiver.kernel.org>; Thu, 19 Oct 2023 20:07:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345280AbjJSLTU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 19 Oct 2023 07:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36124 "EHLO
+        id S235537AbjJSUHz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 19 Oct 2023 16:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233136AbjJSLTU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Oct 2023 07:19:20 -0400
-Received: from gofer.mess.org (gofer.mess.org [88.97.38.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBDA112;
-        Thu, 19 Oct 2023 04:19:18 -0700 (PDT)
-Received: by gofer.mess.org (Postfix, from userid 1000)
-        id 795EE100068; Thu, 19 Oct 2023 12:19:15 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mess.org; s=2020;
-        t=1697714355; bh=J+Sc0dS6j12A8ZgfTiTjAS5ZcNj0Wm7WCiB2Bh+oyCM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jSfOh75zKV7LMfO0/8Rr6+Pg1VS9Q4B8vW+LR88S5V77xS7GAlJRkIRaR5TzuHjKB
-         5xRDqygm8CUvihrf7UDO/B52ZGPGLx2w7n0e4ZT0PaaJgddadOeNgEbYSks5wZw73h
-         VHHfQT53ZkZsrm7Lwcwi3ASuPkTKYWA2RKqkZ2OmLNZV2IHuvy+lO+hkWgB8vn0wz2
-         GBC8WIizSz9CMy1ryLuVj7Tu4RgPr1IiU8oKTN4alNTkHQmBUNH2KCzsnhgMOVRevy
-         6yObP1EKk3grMPBfL4iaP928T77L83z5agBBz9ykPWsPKpoP6IVCRom03TBpeNUpRQ
-         iXlkKx1rY2yMw==
-Date:   Thu, 19 Oct 2023 12:19:15 +0100
-From:   Sean Young <sean@mess.org>
-To:     Stefan Wahren <wahrenst@gmx.net>
-Cc:     linux-media@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Florian Fainelli <florian.fainelli@broadcom.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] pwm: bcm2835: allow pwm driver to be used in
- atomic context
-Message-ID: <ZTEQszOAEybWPrCO@gofer.mess.org>
-References: <cover.1697534024.git.sean@mess.org>
- <c826281c0ceab8ce8fcc453a5ce777444349ff9a.1697534024.git.sean@mess.org>
- <53534015-07ab-4d43-8dcb-be3a08ee6339@gmx.net>
+        with ESMTP id S229892AbjJSUHy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Oct 2023 16:07:54 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BD5116
+        for <linux-pwm@vger.kernel.org>; Thu, 19 Oct 2023 13:07:52 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qtZJ6-0000Ah-V6; Thu, 19 Oct 2023 22:07:48 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qtZJ5-002rfv-T9; Thu, 19 Oct 2023 22:07:47 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qtZJ5-001veH-JX; Thu, 19 Oct 2023 22:07:47 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-pwm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Subject: [PATCH 2/5] pwm: stm32: Make ch parameter unsigned
+Date:   Thu, 19 Oct 2023 22:07:01 +0200
+Message-ID: <20231019200658.1754190-9-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.42.0
+In-Reply-To: <20231019200658.1754190-7-u.kleine-koenig@pengutronix.de>
+References: <20231019200658.1754190-7-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <53534015-07ab-4d43-8dcb-be3a08ee6339@gmx.net>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1642; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=7f75PVVxVopmOVTh1aUDtvsneuXS9AhU8k3+zgRBTe8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlMYxkxM0GUmvVtAQdmfgUDj+XP46m8mONLLbLs Ddk9JypUF2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZTGMZAAKCRCPgPtYfRL+ TvvaCACj+8dG+4/zQL/4OubeWWXtiHBVpDUgr/dabE71cYW38ec1vTqrm3gzR/z49xvFozkyJ6G EDixygJzPs7KQilRIbXtm3xmlV02wg57bHmp+nCL8mMRCmGPAKlSpYljLOrPNibDG9O0eCsmLm5 m2vKbon4Jd1dL+NbvlNIpTZsymf6z5a5mDtS1ILWrPjViTxznqVYqutA5FfcYczFUYlmCQ/raVb 66VPiKdCwio/rXsJgvcBzVJvboF9SroW5Pq8o0Fl/SX9QrKiVfsBuMs/nJHBsD3erp5YSa/ur5n HpEZPmAKp9sET6F1TmtiV+G79bw03xKOcHQyKBB1uahjOoug
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Wed, Oct 18, 2023 at 05:00:23PM +0200, Stefan Wahren wrote:
-> Hi Sean,
-> 
-> Am 17.10.23 um 11:17 schrieb Sean Young:
-> > clk_get_rate() may do a mutex lock. Since the clock rate cannot change on
-> > an rpi, simply fetch it once.
-> the driver changes looks good to me, but could you please adapt the
-> commit message to your recent changes.
+From: Philipp Zabel <p.zabel@pengutronix.de>
 
-Yes, the commit message needs fixing. Thanks for pointing that out.
+The channel parameter is only ever set to pwm->hwpwm.
+Make it unsigned int as well.
 
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-stm32.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Sean
+diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+index 5e48584e3bd4..009f9c1a5eca 100644
+--- a/drivers/pwm/pwm-stm32.c
++++ b/drivers/pwm/pwm-stm32.c
+@@ -308,7 +308,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return ret;
+ }
+ 
+-static int stm32_pwm_config(struct stm32_pwm *priv, int ch,
++static int stm32_pwm_config(struct stm32_pwm *priv, unsigned int ch,
+ 			    int duty_ns, int period_ns)
+ {
+ 	unsigned long long prd, div, dty;
+@@ -371,7 +371,7 @@ static int stm32_pwm_config(struct stm32_pwm *priv, int ch,
+ 	return 0;
+ }
+ 
+-static int stm32_pwm_set_polarity(struct stm32_pwm *priv, int ch,
++static int stm32_pwm_set_polarity(struct stm32_pwm *priv, unsigned int ch,
+ 				  enum pwm_polarity polarity)
+ {
+ 	u32 mask;
+@@ -386,7 +386,7 @@ static int stm32_pwm_set_polarity(struct stm32_pwm *priv, int ch,
+ 	return 0;
+ }
+ 
+-static int stm32_pwm_enable(struct stm32_pwm *priv, int ch)
++static int stm32_pwm_enable(struct stm32_pwm *priv, unsigned int ch)
+ {
+ 	u32 mask;
+ 	int ret;
+@@ -411,7 +411,7 @@ static int stm32_pwm_enable(struct stm32_pwm *priv, int ch)
+ 	return 0;
+ }
+ 
+-static void stm32_pwm_disable(struct stm32_pwm *priv, int ch)
++static void stm32_pwm_disable(struct stm32_pwm *priv, unsigned int ch)
+ {
+ 	u32 mask;
+ 
+-- 
+2.42.0
+
