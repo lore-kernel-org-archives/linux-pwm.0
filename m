@@ -2,62 +2,133 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15932CDB474
-	for <linux-pwm@archiver.kernel.org>; Fri, 20 Oct 2023 08:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 963FBCDB47E
+	for <linux-pwm@archiver.kernel.org>; Fri, 20 Oct 2023 10:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376534AbjJTIzz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 20 Oct 2023 04:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35398 "EHLO
+        id S1376863AbjJTKht convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 20 Oct 2023 06:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376546AbjJTIzy (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Oct 2023 04:55:54 -0400
-Received: from mail.nfschina.com (unknown [42.101.60.195])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 96248D57;
-        Fri, 20 Oct 2023 01:55:48 -0700 (PDT)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        by mail.nfschina.com (Maildata Gateway V2.8.8) with ESMTPA id F1F88604889BB;
-        Fri, 20 Oct 2023 16:55:35 +0800 (CST)
-X-MD-Sfrom: suhui@nfschina.com
-X-MD-SrcIP: 180.167.10.98
-From:   Su Hui <suhui@nfschina.com>
-To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        jdelvare@suse.com, linux@roeck-us.net, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de
-Cc:     Su Hui <suhui@nfschina.com>, openbmc@lists.ozlabs.org,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] hwmon: npcm750-pwm: add an error code check in npcm7xx_en_pwm_fan
-Date:   Fri, 20 Oct 2023 16:55:19 +0800
-Message-Id: <20231020085518.198477-1-suhui@nfschina.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S1376775AbjJTKht (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Oct 2023 06:37:49 -0400
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479EED5A;
+        Fri, 20 Oct 2023 03:37:46 -0700 (PDT)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 92D2224E13F;
+        Fri, 20 Oct 2023 18:37:44 +0800 (CST)
+Received: from EXMBX168.cuchost.com (172.16.6.78) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 20 Oct
+ 2023 18:37:44 +0800
+Received: from williamqiu-virtual-machine.starfivetech.com (171.223.208.138)
+ by EXMBX168.cuchost.com (172.16.6.78) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.42; Fri, 20 Oct 2023 18:37:43 +0800
+From:   William Qiu <william.qiu@starfivetech.com>
+To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-pwm@vger.kernel.org>
+CC:     Emil Renner Berthing <kernel@esmil.dk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Hal Feng" <hal.feng@starfivetech.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        William Qiu <william.qiu@starfivetech.com>
+Subject: [PATCH v6 1/4] dt-bindings: pwm: Add OpenCores PWM module
+Date:   Fri, 20 Oct 2023 18:37:38 +0800
+Message-ID: <20231020103741.557735-2-william.qiu@starfivetech.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231020103741.557735-1-william.qiu@starfivetech.com>
+References: <20231020103741.557735-1-william.qiu@starfivetech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX168.cuchost.com
+ (172.16.6.78)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-npcm7xx_pwm_config_set() can return '-ENODEV' for failed. So check
-the value of 'ret' after calling npcm7xx_pwm_config_set().
+Add documentation to describe OpenCores Pulse Width Modulation
+controller driver.
 
-Signed-off-by: Su Hui <suhui@nfschina.com>
+Signed-off-by: William Qiu <william.qiu@starfivetech.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Hal Feng <hal.feng@starfivetech.com>
 ---
- drivers/hwmon/npcm750-pwm-fan.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../bindings/pwm/opencores,pwm-ocores.yaml    | 53 +++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/opencores,pwm-ocores.yaml
 
-diff --git a/drivers/hwmon/npcm750-pwm-fan.c b/drivers/hwmon/npcm750-pwm-fan.c
-index 10ed3f4335d4..4702e4edc662 100644
---- a/drivers/hwmon/npcm750-pwm-fan.c
-+++ b/drivers/hwmon/npcm750-pwm-fan.c
-@@ -875,6 +875,8 @@ static int npcm7xx_en_pwm_fan(struct device *dev,
- 	data->pwm_present[pwm_port] = true;
- 	ret = npcm7xx_pwm_config_set(data, pwm_port,
- 				     NPCM7XX_PWM_CMR_DEFAULT_NUM);
-+	if (ret)
-+		return ret;
- 
- 	ret = of_property_count_u8_elems(child, "cooling-levels");
- 	if (ret > 0) {
+diff --git a/Documentation/devicetree/bindings/pwm/opencores,pwm-ocores.yaml b/Documentation/devicetree/bindings/pwm/opencores,pwm-ocores.yaml
+new file mode 100644
+index 000000000000..0f6a3434f155
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/opencores,pwm-ocores.yaml
+@@ -0,0 +1,53 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/opencores,pwm-ocores.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: OpenCores PWM controller
++
++maintainers:
++  - William Qiu <william.qiu@starfivetech.com>
++
++description:
++  OpenCores PTC ip core contains a PWM controller. When operating in PWM mode, the PTC core
++  generates binary signal with user-programmable low and high periods. All PTC counters and
++  registers are 32-bit.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    enum:
++      - opencores,pwm-ocores
++      - starfive,jh71x0-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++required:
++  - compatible
++  - reg
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    pwm@12490000 {
++        compatible = "opencores,pwm-ocores";
++        reg = <0x12490000 0x10000>;
++        clocks = <&clkgen 181>;
++        resets = <&rstgen 109>;
++        #pwm-cells = <3>;
++    };
 -- 
-2.30.2
+2.34.1
 
