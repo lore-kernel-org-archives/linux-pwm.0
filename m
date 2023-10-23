@@ -2,139 +2,98 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAD3C25B46
-	for <linux-pwm@archiver.kernel.org>; Mon, 23 Oct 2023 17:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42927C25B45
+	for <linux-pwm@archiver.kernel.org>; Mon, 23 Oct 2023 17:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230301AbjJWRij (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 23 Oct 2023 13:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47802 "EHLO
+        id S230053AbjJWRqy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 23 Oct 2023 13:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbjJWRii (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Oct 2023 13:38:38 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7A483;
-        Mon, 23 Oct 2023 10:38:37 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A5BDC433C7;
-        Mon, 23 Oct 2023 17:38:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1698082716;
-        bh=eZlZ0RSR8neaBBF+HvzJKthBOQ2i00NRtc83TDbgb/M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GZcoCvRUwfcmv7oI3ZoKRQE+hLDNpdANz8/BDEmtdrSB2ioRBIq6ZoJEeGHZTPrQ6
-         gnxXS1y2gCKIIOUH86xYNxb6Cw1d0qkGZ6JYlMefFOdOgsiepFUfajPb+0UdftD+ao
-         e7EK2ytUx3z+ij79CECne+/7u91MfFH+FZORhv7ytIhrgJPcSFQ8MwD+wAyWV5nbOP
-         FqKH0wpAQmjLNmJr84u1AgLEWBQFaKtk+m+dL+bvfW7mCQjhSpwgNHTXV80gLlneKT
-         1nhCgO0oxC5wcJMmyCa1r/z2anONnpe0U+eedfEA7GRxCX1i7O3rvm7G66ryiZ3gCP
-         B4q/ik75qZn6A==
-Date:   Mon, 23 Oct 2023 18:38:30 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Alexandre Mergnat <amergnat@baylibre.com>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Jitao Shi <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>,
-        CK Hu <ck.hu@mediatek.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 11/18] dt-bindings: pwm: add power-domains property
-Message-ID: <20231023-oppose-tamper-36d526ece102@spud>
-References: <20231023-display-support-v1-0-5c860ed5c33b@baylibre.com>
- <20231023-display-support-v1-11-5c860ed5c33b@baylibre.com>
+        with ESMTP id S230335AbjJWRqu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Oct 2023 13:46:50 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9356F98
+        for <linux-pwm@vger.kernel.org>; Mon, 23 Oct 2023 10:46:48 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1quz0o-0001MQ-Vq; Mon, 23 Oct 2023 19:46:47 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1quz0o-003lPh-JH; Mon, 23 Oct 2023 19:46:46 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1quz0o-004VD8-AF; Mon, 23 Oct 2023 19:46:46 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH v3 05/11] pwm: dwc: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
+Date:   Mon, 23 Oct 2023 19:46:22 +0200
+Message-ID: <20231023174616.2282067-18-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.42.0
+In-Reply-To: <20231023174616.2282067-13-u.kleine-koenig@pengutronix.de>
+References: <20231023174616.2282067-13-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="cS4xr49HXM/FpVea"
-Content-Disposition: inline
-In-Reply-To: <20231023-display-support-v1-11-5c860ed5c33b@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1444; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=B3FUN0XcVewJQeGl7DPiaNNT+ZFEdpVmVTOHA0u9NMw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlNrFuDI547MzT6uxwTI9dA2x9AbT8ARHdebors N9PH6LXXBiJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZTaxbgAKCRCPgPtYfRL+ Tm7rB/9veA+QTxBBtZkJgH8TeIEV8jTxxDakuaFgOlmBy1YUIVERo9kv3slwvBjMB6szy6JNESy ah1Z3TGdCZHtP+gYJdqPdgAuKwgo2/hWV+erWCjNytH/u88vSSTnqH7D/6Zx+h+eXbJgPg83zNP XT92WUy/+TjFjyD3oW2/Ght5eUaMQupA/EI+pVwuey/XeHnXPn5+TXWNfPT4nHyz4AgEeJG2ms/ 3dTdG2WZg+0ZzB8HkM74L9xSbAmxY65A3HBNrPpRbI25P8hkPf1NsopQ2RmT4NholhwLhJZCFPd 2osPi9fHBE8cSA7uSt5bg5tIlhjgkjwfwWX2F1DWGh1OaWG8
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+This macro has the advantage over SIMPLE_DEV_PM_OPS that we don't have to
+care about when the functions are actually used, so the corresponding
+#ifdef can be dropped.
 
---cS4xr49HXM/FpVea
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Also make use of pm_ptr() to discard all PM related stuff if CONFIG_PM
+isn't enabled.
 
-Yo,
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-dwc.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-On Mon, Oct 23, 2023 at 04:40:11PM +0200, Alexandre Mergnat wrote:
-> According to the Mediatek datasheet, the display PWM block has a power
-> domain.
+diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
+index bd9cadb497d7..4929354f8cd9 100644
+--- a/drivers/pwm/pwm-dwc.c
++++ b/drivers/pwm/pwm-dwc.c
+@@ -71,7 +71,6 @@ static void dwc_pwm_remove(struct pci_dev *pci)
+ 	pm_runtime_get_noresume(&pci->dev);
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int dwc_pwm_suspend(struct device *dev)
+ {
+ 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+@@ -106,9 +105,8 @@ static int dwc_pwm_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+-static SIMPLE_DEV_PM_OPS(dwc_pwm_pm_ops, dwc_pwm_suspend, dwc_pwm_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(dwc_pwm_pm_ops, dwc_pwm_suspend, dwc_pwm_resume);
+ 
+ static const struct pci_device_id dwc_pwm_id_table[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x4bb7) }, /* Elkhart Lake */
+@@ -122,7 +120,7 @@ static struct pci_driver dwc_pwm_driver = {
+ 	.remove = dwc_pwm_remove,
+ 	.id_table = dwc_pwm_id_table,
+ 	.driver = {
+-		.pm = &dwc_pwm_pm_ops,
++		.pm = pm_ptr(&dwc_pwm_pm_ops),
+ 	},
+ };
+ 
+-- 
+2.42.0
 
-Datasheet for which soc? The mt8173? Is it valid for all devices in this
-binding?
-
-Cheers,
-Conor.
-
->=20
-> Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
-> ---
->  Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 8 ++++++++
->  1 file changed, 8 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml=
- b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-> index 153e146df7d4..efe0cacf55b7 100644
-> --- a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-> @@ -53,6 +53,12 @@ properties:
->        - const: main
->        - const: mm
-> =20
-> +  power-domains:
-> +    maxItems: 1
-> +    description: A phandle and PM domain specifier as defined by binding=
-s of
-> +      the power controller specified by phandle. See
-> +      Documentation/devicetree/bindings/power/power-domain.yaml for deta=
-ils.
-> +
->  required:
->    - compatible
->    - reg
-> @@ -67,6 +73,7 @@ examples:
->      #include <dt-bindings/interrupt-controller/arm-gic.h>
->      #include <dt-bindings/clock/mt8173-clk.h>
->      #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/power/mt8173-power.h>
-> =20
->      pwm0: pwm@1401e000 {
->          compatible =3D "mediatek,mt8173-disp-pwm";
-> @@ -75,4 +82,5 @@ examples:
->          clocks =3D <&mmsys CLK_MM_DISP_PWM026M>,
->                   <&mmsys CLK_MM_DISP_PWM0MM>;
->          clock-names =3D "main", "mm";
-> +        power-domains =3D <&spm MT8173_POWER_DOMAIN_MM>;
->      };
->=20
-> --=20
-> 2.25.1
->=20
-
---cS4xr49HXM/FpVea
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZTavlQAKCRB4tDGHoIJi
-0v6MAP9Wb3x+52wloDaXjDqYEnoDpprt4+MalmIoclgMkfOMIQEAhpm3TcXRGiJp
-BzZXQcz8bAvgaFDyy5KvWovrZlrFSgE=
-=4JSZ
------END PGP SIGNATURE-----
-
---cS4xr49HXM/FpVea--
