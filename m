@@ -2,50 +2,50 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE74C25B4D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2766FC25B51
 	for <linux-pwm@archiver.kernel.org>; Mon, 23 Oct 2023 17:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229594AbjJWRq6 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 23 Oct 2023 13:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
+        id S229578AbjJWRq5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 23 Oct 2023 13:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbjJWRqx (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Oct 2023 13:46:53 -0400
+        with ESMTP id S229717AbjJWRqw (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Oct 2023 13:46:52 -0400
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C1310C8
-        for <linux-pwm@vger.kernel.org>; Mon, 23 Oct 2023 10:46:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24F010C0
+        for <linux-pwm@vger.kernel.org>; Mon, 23 Oct 2023 10:46:50 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1quz0p-0001NZ-VI; Mon, 23 Oct 2023 19:46:47 +0200
+        id 1quz0p-0001MX-II; Mon, 23 Oct 2023 19:46:47 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1quz0p-003lPv-Ho; Mon, 23 Oct 2023 19:46:47 +0200
+        id 1quz0o-003lPl-Qg; Mon, 23 Oct 2023 19:46:46 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1quz0p-004VDO-8T; Mon, 23 Oct 2023 19:46:47 +0200
+        id 1quz0o-004VDC-HF; Mon, 23 Oct 2023 19:46:46 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-pwm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de,
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 09/11] pwm: stm32: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
-Date:   Mon, 23 Oct 2023 19:46:26 +0200
-Message-ID: <20231023174616.2282067-22-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 06/11] pwm: imx-tpm: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions
+Date:   Mon, 23 Oct 2023 19:46:23 +0200
+Message-ID: <20231023174616.2282067-19-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20231023174616.2282067-13-u.kleine-koenig@pengutronix.de>
 References: <20231023174616.2282067-13-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1966; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=8LOtNenmZF8wkliwgTRGuRDknwBK+eJm9E5HUGBysKU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlNrFy1hWc33CRR/2b76E9SKmrA340sicAvYfa4 67mDAktmeCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZTaxcgAKCRCPgPtYfRL+ TkEYB/4k1mSfQC/yE61Yg3z1w6mZz0BcLElVa6wRMOaTFthbs2hM2gog9E7rYE/UCne1gIB2IZ2 b55bpjf/DsR635kfrre98SGG8uSIo68GhTPNYId62cW8gf0iYQqJc6Kjn40sKZ49RVEqBG+8VWJ avv43TynuqvRkFh1lDrbZl2326to99SFgrtmiy0mf1rNes/xgWYoXITYP6844cYnt+dkvqPxi62 YewNYUHuF61Q1UwbOZ7Pnj5om2S4tKogVMF7KRfSbdmnTOEyR4kzpBjj1e445m+sI5rTTfLkgf9 k50UcBgoCG7KWw+miFMajhsZz7cO5FEp9Hw0dD3mlj31WDWo
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1940; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=8EISHAXwEtIwr6wjsRmQoHPERXhBycmKFvzjTKS2ZXo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlNrFv0bE+v7fm+H4G8usm8c7qoo3fyfufM4GAT 85ewwuGHE6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZTaxbwAKCRCPgPtYfRL+ Ts8HCACRwFr5JDUB157kWHqt0b7XflxFNrleXROb5xcCGQZ1/KkeKTbSoNejzaGMd7pFTPQVE+u L7mkJ6WJJWA7/tna3v0z+WovkYXnxHj0HlK9eORAhn/+F5yAsYi3PtNRWlGy25GMK8Jdm0dxLkO cD+jRb1404HH1yxiyPYFSCLsKpZK0UL5BHNDuntfMAC5tGROi7uUePHtbyIr8KNbGa8MgAEid1W xXRkeAVdHOj6uSMegsc6QmsXFcrQBIXSEVqDE3bmRXEwnEeTGnc2xgH/y6lhYURzYxKGPaJrqvS uAdzFuTJTOCqeQfNU+PhBs4rluP9BPeVOePzy3599d9G5+6Q
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -66,49 +66,51 @@ isn't enabled.
 Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-stm32.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-imx-tpm.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index 3303a754ea02..8be037757b8b 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -645,7 +645,7 @@ static int stm32_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
+index dc6aafeb9f7b..9fc290e647e1 100644
+--- a/drivers/pwm/pwm-imx-tpm.c
++++ b/drivers/pwm/pwm-imx-tpm.c
+@@ -371,7 +371,7 @@ static int pwm_imx_tpm_probe(struct platform_device *pdev)
  	return 0;
  }
  
--static int __maybe_unused stm32_pwm_suspend(struct device *dev)
-+static int stm32_pwm_suspend(struct device *dev)
+-static int __maybe_unused pwm_imx_tpm_suspend(struct device *dev)
++static int pwm_imx_tpm_suspend(struct device *dev)
  {
- 	struct stm32_pwm *priv = dev_get_drvdata(dev);
- 	unsigned int i;
-@@ -666,7 +666,7 @@ static int __maybe_unused stm32_pwm_suspend(struct device *dev)
- 	return pinctrl_pm_select_sleep_state(dev);
+ 	struct imx_tpm_pwm_chip *tpm = dev_get_drvdata(dev);
+ 
+@@ -390,7 +390,7 @@ static int __maybe_unused pwm_imx_tpm_suspend(struct device *dev)
+ 	return 0;
  }
  
--static int __maybe_unused stm32_pwm_resume(struct device *dev)
-+static int stm32_pwm_resume(struct device *dev)
+-static int __maybe_unused pwm_imx_tpm_resume(struct device *dev)
++static int pwm_imx_tpm_resume(struct device *dev)
  {
- 	struct stm32_pwm *priv = dev_get_drvdata(dev);
- 	int ret;
-@@ -679,7 +679,7 @@ static int __maybe_unused stm32_pwm_resume(struct device *dev)
- 	return stm32_pwm_apply_breakinputs(priv);
+ 	struct imx_tpm_pwm_chip *tpm = dev_get_drvdata(dev);
+ 	int ret = 0;
+@@ -402,8 +402,8 @@ static int __maybe_unused pwm_imx_tpm_resume(struct device *dev)
+ 	return ret;
  }
  
--static SIMPLE_DEV_PM_OPS(stm32_pwm_pm_ops, stm32_pwm_suspend, stm32_pwm_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(stm32_pwm_pm_ops, stm32_pwm_suspend, stm32_pwm_resume);
+-static SIMPLE_DEV_PM_OPS(imx_tpm_pwm_pm,
+-			 pwm_imx_tpm_suspend, pwm_imx_tpm_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(imx_tpm_pwm_pm,
++				pwm_imx_tpm_suspend, pwm_imx_tpm_resume);
  
- static const struct of_device_id stm32_pwm_of_match[] = {
- 	{ .compatible = "st,stm32-pwm",	},
-@@ -692,7 +692,7 @@ static struct platform_driver stm32_pwm_driver = {
- 	.driver	= {
- 		.name = "stm32-pwm",
- 		.of_match_table = stm32_pwm_of_match,
--		.pm = &stm32_pwm_pm_ops,
-+		.pm = pm_ptr(&stm32_pwm_pm_ops),
+ static const struct of_device_id imx_tpm_pwm_dt_ids[] = {
+ 	{ .compatible = "fsl,imx7ulp-pwm", },
+@@ -415,7 +415,7 @@ static struct platform_driver imx_tpm_pwm_driver = {
+ 	.driver = {
+ 		.name = "imx7ulp-tpm-pwm",
+ 		.of_match_table = imx_tpm_pwm_dt_ids,
+-		.pm = &imx_tpm_pwm_pm,
++		.pm = pm_ptr(&imx_tpm_pwm_pm),
  	},
+ 	.probe	= pwm_imx_tpm_probe,
  };
- module_platform_driver(stm32_pwm_driver);
 -- 
 2.42.0
 
