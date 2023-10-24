@@ -2,126 +2,104 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6728AC25B47
-	for <linux-pwm@archiver.kernel.org>; Tue, 24 Oct 2023 08:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 096C3C00A8F
+	for <linux-pwm@archiver.kernel.org>; Tue, 24 Oct 2023 09:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232917AbjJXIPw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 24 Oct 2023 04:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55428 "EHLO
+        id S233757AbjJXJMx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 24 Oct 2023 05:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233720AbjJXHo2 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 24 Oct 2023 03:44:28 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4A9B7
-        for <linux-pwm@vger.kernel.org>; Tue, 24 Oct 2023 00:44:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1698133466; x=1729669466;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=UWsk3wRzyFM05ANVRF7Vq8Nt6NuNDTN6URxMBk+lxhY=;
-  b=a5k/wDZnBV6FA6PtCFDPYeqPrrYDg4GjI2PbS1DhmdA/Fpc0MbBn6Muu
-   Kkdf3G/6YoQ6UGxNC4d2hOZj8GTdtPl8eVEB2kj3of+aVt4+H/F0iRS+T
-   DwyAzgKQy9mWB5wyC78wd00LnZGbL/dx09xdXHiyyoaExofwB659B2OOY
-   BHZkCgw2tdXO5D8eXzy4/EIMoSv0iOa4fIbRRtZxU3TsR5tgF1sg8IhyG
-   kp1VMtSfnOUE3TAp3OBkavput4Jpx+C3cVQSjoxrv7pEDdQnCFCjiEDfT
-   e9j/oHr7Pirxma3fJ4BU77djpo0m9vHpi6pwV9H9unI5M1P1+DNSzYhbH
-   w==;
-X-CSE-ConnectionGUID: cqGc5osmQsquJVDgRwckmw==
-X-CSE-MsgGUID: jWqu4dinRsOrBzGt1iFo0A==
-X-ThreatScanner-Verdict: Negative
-X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="10590949"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 24 Oct 2023 00:44:26 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 24 Oct 2023 00:44:09 -0700
-Received: from [10.159.245.205] (10.10.85.11) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Tue, 24 Oct 2023 00:44:07 -0700
-Message-ID: <3e40b74c-11b5-4355-b90d-e6f455729586@microchip.com>
-Date:   Tue, 24 Oct 2023 09:43:39 +0200
+        with ESMTP id S229595AbjJXJMw (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 24 Oct 2023 05:12:52 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9434D8E;
+        Tue, 24 Oct 2023 02:12:50 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 271BE66072F6;
+        Tue, 24 Oct 2023 10:12:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1698138769;
+        bh=XfXPQ0oVnRctPph3CPb1I9j9606bGUTiH9V9O3ZMIGk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ZAayU1HWjcx40JeBjgKxWYWr2uAdaRzRDwg9CptGRQK3F8N4pyyUl2MsZhjqgUsQD
+         fhbujYDWpmUiB7lf2ZUIY/Xu5puKX9BnVL5bj/iwpU7ejqKeJGJ6QbSFys85w9jz0Q
+         kbioJO+PH7U7OYD0xsCDzUgpA/uWV4NE9CPdTF02KEEc5cONRV686zrqpC1gL8lZYE
+         zlOo8aeMWJR46gNbtozQval7ZcQpcrrmQFPKf9lg7yH565yJyyiSrBSPtDfYCyKSMu
+         aJN/1EZcPEim62/9Ew16sOnkydctMMXSRwMOtR6x2wlHI2uFOxKc+AJSNUkdG2TM2f
+         6FrBSYu0Pe33g==
+Message-ID: <cf25a3cc-6411-45f5-bc7a-6b69cf28c860@collabora.com>
+Date:   Tue, 24 Oct 2023 11:12:45 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 02/11] pwm: atmel-tcb: Use DEFINE_SIMPLE_DEV_PM_OPS for
- PM functions
-Content-Language: en-US, fr-FR
-To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>
-CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-        <linux-pwm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <kernel@pengutronix.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <20231023174616.2282067-13-u.kleine-koenig@pengutronix.de>
- <20231023174616.2282067-15-u.kleine-koenig@pengutronix.de>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20231023174616.2282067-15-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 14/18] drm/mediatek: dpi: add support for dpi clock
+Content-Language: en-US
+To:     amergnat@baylibre.com, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Jitao Shi <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>,
+        CK Hu <ck.hu@mediatek.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pwm@vger.kernel.org, Fabien Parent <fparent@baylibre.com>
+References: <20231023-display-support-v1-0-5c860ed5c33b@baylibre.com>
+ <20231023-display-support-v1-14-5c860ed5c33b@baylibre.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20231023-display-support-v1-14-5c860ed5c33b@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 23/10/2023 at 19:46, Uwe Kleine-König wrote:
-> This macro has the advantage over SIMPLE_DEV_PM_OPS that we don't have to
-> care about when the functions are actually used, so the corresponding
-> #ifdef can be dropped.
+Il 23/10/23 16:40, amergnat@baylibre.com ha scritto:
+> From: Fabien Parent <fparent@baylibre.com>
+> 
+> MT8365 requires an additional clock for DPI. Add support for that
+> additional clock.
+> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
 
-Commit message is fine ;-)
+I'm not convinced that this is right... at all.
 
-> 
-> Also make use of pm_ptr() to discard all PM related stuff if CONFIG_PM
-> isn't enabled.
-> 
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+ From a fast check of the MT8365 DPI clocks, I can see that the DPI0 clock declares
+parent VPLL_DPIX (a fixed clock), but nothing ever has VPLL_DPIX_EN (which is the
+GATE clock, enabling output of DPIx VPLL?).
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Thanks Uwe for this cleanup. Best regards,
-   Nicolas
+But then, there's even more: no clock ever references the CLK_TOP_DPI0_SEL nor the
+CLK_TOP_DPI1_SEL gate, which is a PLL parent selector... in other platforms, that
+is muxing through the TVDPLL, but on MT8365 that is LVDSPLL?!
 
-> ---
->   drivers/pwm/pwm-atmel-tcb.c | 8 +++-----
->   1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-> index 98b33c016c3c..d42c897cb85e 100644
-> --- a/drivers/pwm/pwm-atmel-tcb.c
-> +++ b/drivers/pwm/pwm-atmel-tcb.c
-> @@ -489,7 +489,6 @@ static const struct of_device_id atmel_tcb_pwm_dt_ids[] = {
->   };
->   MODULE_DEVICE_TABLE(of, atmel_tcb_pwm_dt_ids);
-> 
-> -#ifdef CONFIG_PM_SLEEP
->   static int atmel_tcb_pwm_suspend(struct device *dev)
->   {
->          struct atmel_tcb_pwm_chip *tcbpwm = dev_get_drvdata(dev);
-> @@ -522,16 +521,15 @@ static int atmel_tcb_pwm_resume(struct device *dev)
-> 
->          return 0;
->   }
-> -#endif
-> 
-> -static SIMPLE_DEV_PM_OPS(atmel_tcb_pwm_pm_ops, atmel_tcb_pwm_suspend,
-> -                        atmel_tcb_pwm_resume);
-> +static DEFINE_SIMPLE_DEV_PM_OPS(atmel_tcb_pwm_pm_ops, atmel_tcb_pwm_suspend,
-> +                               atmel_tcb_pwm_resume);
-> 
->   static struct platform_driver atmel_tcb_pwm_driver = {
->          .driver = {
->                  .name = "atmel-tcb-pwm",
->                  .of_match_table = atmel_tcb_pwm_dt_ids,
-> -               .pm = &atmel_tcb_pwm_pm_ops,
-> +               .pm = pm_ptr(&atmel_tcb_pwm_pm_ops),
->          },
->          .probe = atmel_tcb_pwm_probe,
->          .remove_new = atmel_tcb_pwm_remove,
-> --
-> 2.42.0
-> 
+I have many questions now:
+* Two PLLs are apparently brought up, but which one is the right one?!
+   * Is the LVDS PLL really used for DisplayPort? (dpi0_sel)
+   * Is the VPLL_DPIx PLL used for DisplayPort instead? (dpi0_dpi0)
+* Why is the LVDSTX_PXL clock using the same PLL as DPI0?!
+   * Why is the VPLL_DPIx gate never enabled?
+* Are you sure that CLK_MM_DPI0_DPI0's parent shouldn't be dpi0_sel instead?
+* Where is DPI1 in this SoC? Why is there a dpi1_sel clock, but no MM clock
+   for the DPI1 controller? Is there any DPI1 controller, even?!
+   * Why is there a DPI1 MUX, if there's no DPI1 controller?!
+
+Answering all those questions will lead you to the right change, which I believe
+to be in the clock drivers, not here in mtk_dpi.c.
+
+Cheers!
+Angelo
 
