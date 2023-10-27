@@ -2,55 +2,55 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E71F3C25B6E
-	for <linux-pwm@archiver.kernel.org>; Fri, 27 Oct 2023 09:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C86C25B47
+	for <linux-pwm@archiver.kernel.org>; Fri, 27 Oct 2023 09:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235014AbjJ0JVl (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 27 Oct 2023 05:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
+        id S1345554AbjJ0JVm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 27 Oct 2023 05:21:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbjJ0JVk (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 27 Oct 2023 05:21:40 -0400
+        with ESMTP id S229503AbjJ0JVl (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 27 Oct 2023 05:21:41 -0400
 Received: from gofer.mess.org (gofer.mess.org [88.97.38.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4891A7;
-        Fri, 27 Oct 2023 02:21:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27642C0;
+        Fri, 27 Oct 2023 02:21:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mess.org; s=2020;
-        t=1698398496; bh=gX47DmwUFBJ74FJcyAxBXziwmdQhVcn+KrsG/1jO4T8=;
+        t=1698398498; bh=zBxWi8MQUDX7DBBtEIkwqqmnqFZ1vJcG4pny5YR7se0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dSjLGeY4dvVWQ0+Qdj4xfGSTLteQVXUX9/01S0+hukZ5AaUfIgaCy1ExVIeQeYoy0
-         +LZUM1CV9Ay6QG3xK5396iUF39mwtdyKNDFrumr++tx7uZTODVEtRcQa7k/nFwPZbL
-         dOj3RWND8KOKUuHKGmV1a34ADTpH+IQZghsQmbuB/KqThqNj60S8NDly7avIwuN3GI
-         VZ8S4GO7TGN/O5PNSX8fAV3nbJ8Y5PUE9wR0MrL6uBV5iBd7JNx3qL41L0kpsxBV/S
-         MpvhfC/lfDPB5Uvq9aIcAmyRs2fDAoArGTU7Dq+P/ay6P8TSEIYqysTgHSoZTACPRD
-         IiLBKV/QYthTw==
+        b=pTpPGqSAoDl031doiXKos+ptO7qUwJnPnExj3TsRDZSFXUUGhfCZWsa8GFmgmCqW/
+         Mr+SDsfpn5nnKvCONOvKhDXaqGwPgSkqfnRUpoQZsCgRamNFqQ/Y9TGyTO6smGxNeC
+         9dRSa89D6dkSRuHl7xxFeosoAS5upawC6yc4iYdr1j9iLUJ5rZFstV22aiR6/MVC4E
+         uJIkK7NtQZHm6PeRHed4z8K7aqgiltuJnxZatjppTVaRtRzSiZPDHX5gdkxW5+nZAa
+         RW8UrQpzkFCJTIDcvywi/NVtLYaQaIiqgIs8+C2OCK7mtIfLQNn3aSl/f7RskaqHUv
+         /PK5915Mxbnkg==
 Received: by gofer.mess.org (Postfix, from userid 501)
-        id 851A51002A7; Fri, 27 Oct 2023 10:21:36 +0100 (BST)
+        id 11381100100; Fri, 27 Oct 2023 10:21:38 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mess.org; s=2020;
-        t=1698398482; bh=gX47DmwUFBJ74FJcyAxBXziwmdQhVcn+KrsG/1jO4T8=;
+        t=1698398482; bh=zBxWi8MQUDX7DBBtEIkwqqmnqFZ1vJcG4pny5YR7se0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kBgFCXkqx/U35L3dRAPXdHGNYfaFdlWPWe5TA96MjXL7d8XHC5PIH1mW8sYaze7T8
-         +8VZqk4J3+EULoBp4R+xRvCbnXl3BeBBLDtP5MjJhm4z6TJGC6Hvqp5StOKzjm2Cn2
-         Cs/aZj30QjSvq56VqJxp5FiDR/f4X4qZki2JYjtS0UiTnTxo4DoQQuhrx3s+WgutxN
-         K4clxXmRKI6+VCg/YxPzMdUnlexlYnYgagRCLwrxjuX1tyml4UYE8IIqtPZWMXzy03
-         V6gkGPwdhctRG3sMQ+dF+z2FDFOR8bO6Zp6X54atCWQQUK4MpHa8+FaM4z1oDQ0Mfs
-         GQQtgr+rmNlkw==
+        b=UBH7GUyqOR41CCzW7TW0FgO+DouBYB42qhQOYu1ukcGc6u3Ib/PSuHhSyUOck78wu
+         9rqa3EvvJNxCinCmVFzB0DfqV3w9ZvLq3q45K0PptKcLtboiEVRuljqD03mPEG/nQn
+         bdW2+zKRknbRwcPvb8qXEMt+fe1aTlm2ApPiDe6mbQKDSDZZhglyoGQUXTn0/iIwFi
+         RvKdKViouI1W0JM4yduG/OC6nYxbp/6JTxiTWE8SckZZlYIm5wbooG/Fx2voA8iPjs
+         uzp1kvG4+9tcusZQooKCsFiseIN29x/LkdamzQjabHhZwlPOC8bw/uIrhEhulxAvwI
+         yo2dt34W1nrpg==
 Received: from bigcore.mess.org (unknown [IPv6:2a02:8011:d000:212:ca7f:54ff:fe51:14d6])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by gofer.mess.org (Postfix) with ESMTPSA id 22A10100102;
+        by gofer.mess.org (Postfix) with ESMTPSA id A4EA2100103;
         Fri, 27 Oct 2023 10:21:22 +0100 (BST)
 From:   Sean Young <sean@mess.org>
 To:     linux-media@vger.kernel.org, linux-pwm@vger.kernel.org,
         Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
         Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Sean Young <sean@mess.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/4] pwm: make it possible to apply pwm changes in atomic context
-Date:   Fri, 27 Oct 2023 10:20:45 +0100
-Message-ID: <a4df81cf9f8855e33d32f5db1826e588a99ba3e4.1698398004.git.sean@mess.org>
+        <u.kleine-koenig@pengutronix.de>, Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH v4 4/4] media: pwm-ir-tx: trigger edges from hrtimer interrupt context
+Date:   Fri, 27 Oct 2023 10:20:47 +0100
+Message-ID: <15e5b0856a9b09b3066591fa0004a0db4e9c66c6.1698398004.git.sean@mess.org>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1698398004.git.sean@mess.org>
 References: <cover.1698398004.git.sean@mess.org>
@@ -60,228 +60,128 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Some pwm devices require sleeping, for example if the pwm device is
-connected over i2c. However, many pwm devices could be used from atomic
-context, e.g. memmory mapped pwm. This is useful for, for example, the
-pwm-ir-tx driver which requires precise timing. Sleeping causes havoc
-with the generated IR signal.
-
-Since not all pmw devices can support atomic context, we also add a
-pwm_is_atomic() function to check if it is supported.
+This makes the generated IR much more precise. Before this change, the
+driver is unreliable and many users opted to use gpio-ir-tx instead.
 
 Signed-off-by: Sean Young <sean@mess.org>
 ---
- Documentation/driver-api/pwm.rst |  9 +++++
- drivers/pwm/core.c               | 63 ++++++++++++++++++++++++++------
- drivers/pwm/pwm-renesas-tpu.c    |  1 -
- include/linux/pwm.h              | 29 ++++++++++++++-
- 4 files changed, 87 insertions(+), 15 deletions(-)
+ drivers/media/rc/pwm-ir-tx.c | 79 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 76 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/driver-api/pwm.rst b/Documentation/driver-api/pwm.rst
-index ff1b73431b04..0a1c8289f81e 100644
---- a/Documentation/driver-api/pwm.rst
-+++ b/Documentation/driver-api/pwm.rst
-@@ -43,6 +43,15 @@ After being requested, a PWM has to be configured using::
- 
- 	int pwm_apply_cansleep(struct pwm_device *pwm, struct pwm_state *state);
- 
-+Some PWM devices can be used from atomic context. You can check if this is
-+supported with::
-+
-+        bool pwm_is_atomic(struct pwm_device *pwm);
-+
-+If true, the PWM can be configured from atomic context with::
-+
-+	int pwm_apply_atomic(struct pwm_device *pwm, struct pwm_state *state);
-+
- This API controls both the PWM period/duty_cycle config and the
- enable/disable state.
- 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 423114cee430..90c1ebbb838c 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -489,24 +489,15 @@ static void pwm_apply_debug(struct pwm_device *pwm,
- }
- 
- /**
-- * pwm_apply_cansleep() - atomically apply a new state to a PWM device
-+ * pwm_apply_unchecked() - atomically apply a new state to a PWM device
-  * @pwm: PWM device
-  * @state: new state to apply
-  */
--int pwm_apply_cansleep(struct pwm_device *pwm, const struct pwm_state *state)
-+static int pwm_apply_unchecked(struct pwm_device *pwm, const struct pwm_state *state)
- {
- 	struct pwm_chip *chip;
- 	int err;
- 
--	/*
--	 * Some lowlevel driver's implementations of .apply() make use of
--	 * mutexes, also with some drivers only returning when the new
--	 * configuration is active calling pwm_apply_cansleep() from atomic context
--	 * is a bad idea. So make it explicit that calling this function might
--	 * sleep.
--	 */
--	might_sleep();
--
- 	if (!pwm || !state || !state->period ||
- 	    state->duty_cycle > state->period)
- 		return -EINVAL;
-@@ -527,16 +518,64 @@ int pwm_apply_cansleep(struct pwm_device *pwm, const struct pwm_state *state)
- 
- 	pwm->state = *state;
- 
-+	return 0;
-+}
-+
-+/**
-+ * pwm_apply_cansleep() - atomically apply a new state to a PWM device
-+ * Cannot be used in atomic context.
-+ * @pwm: PWM device
-+ * @state: new state to apply
-+ */
-+int pwm_apply_cansleep(struct pwm_device *pwm, const struct pwm_state *state)
-+{
-+	int err;
-+
-+	/*
-+	 * Some lowlevel driver's implementations of .apply() make use of
-+	 * mutexes, also with some drivers only returning when the new
-+	 * configuration is active calling pwm_apply_cansleep() from atomic context
-+	 * is a bad idea. So make it explicit that calling this function might
-+	 * sleep.
-+	 */
-+	might_sleep();
-+
-+	if (IS_ENABLED(CONFIG_PWM_DEBUG) && pwm->chip->atomic) {
-+		/*
-+		 * Catch any sleeping drivers when atomic is set.
-+		 */
-+		non_block_start();
-+		err = pwm_apply_unchecked(pwm, state);
-+		non_block_end();
-+	} else {
-+		err = pwm_apply_unchecked(pwm, state);
-+	}
-+
- 	/*
- 	 * only do this after pwm->state was applied as some
- 	 * implementations of .get_state depend on this
- 	 */
- 	pwm_apply_debug(pwm, state);
- 
--	return 0;
-+	return err;
- }
- EXPORT_SYMBOL_GPL(pwm_apply_cansleep);
- 
-+/**
-+ * pwm_apply_atomic() - apply a new state to a PWM device from atomic context
-+ * Not all pwm devices support this function, check with pwm_is_atomic().
-+ * @pwm: PWM device
-+ * @state: new state to apply
-+ */
-+int pwm_apply_atomic(struct pwm_device *pwm, const struct pwm_state *state)
-+{
-+	WARN_ONCE(!pwm->chip->atomic,
-+		  "sleeping pwm driver used in atomic context");
-+
-+	return pwm_apply_unchecked(pwm, state);
-+}
-+EXPORT_SYMBOL_GPL(pwm_apply_atomic);
-+
- /**
-  * pwm_capture() - capture and report a PWM signal
-  * @pwm: PWM device
-diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
-index d7311614c846..96797a33d8c6 100644
---- a/drivers/pwm/pwm-renesas-tpu.c
-+++ b/drivers/pwm/pwm-renesas-tpu.c
-@@ -11,7 +11,6 @@
- #include <linux/init.h>
- #include <linux/ioport.h>
- #include <linux/module.h>
--#include <linux/mutex.h>
+diff --git a/drivers/media/rc/pwm-ir-tx.c b/drivers/media/rc/pwm-ir-tx.c
+index ccb86890adce..5465bd38d941 100644
+--- a/drivers/media/rc/pwm-ir-tx.c
++++ b/drivers/media/rc/pwm-ir-tx.c
+@@ -10,6 +10,8 @@
+ #include <linux/slab.h>
  #include <linux/of.h>
  #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index af081cdbb77d..365a40ced5d0 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -289,6 +289,7 @@ struct pwm_ops {
-  * @npwm: number of PWMs controlled by this chip
-  * @of_xlate: request a PWM device given a device tree PWM specifier
-  * @of_pwm_n_cells: number of cells expected in the device tree PWM specifier
-+ * @atomic: can the driver execute pwm_apply_cansleep in atomic context
-  * @list: list node for internal use
-  * @pwms: array of PWM devices allocated by the framework
-  */
-@@ -301,6 +302,7 @@ struct pwm_chip {
- 	struct pwm_device * (*of_xlate)(struct pwm_chip *chip,
- 					const struct of_phandle_args *args);
- 	unsigned int of_pwm_n_cells;
-+	bool atomic;
++#include <linux/hrtimer.h>
++#include <linux/completion.h>
+ #include <media/rc-core.h>
  
- 	/* only used internally by the PWM framework */
- 	struct list_head list;
-@@ -310,6 +312,7 @@ struct pwm_chip {
- #if IS_ENABLED(CONFIG_PWM)
- /* PWM user APIs */
- int pwm_apply_cansleep(struct pwm_device *pwm, const struct pwm_state *state);
-+int pwm_apply_atomic(struct pwm_device *pwm, const struct pwm_state *state);
- int pwm_adjust_config(struct pwm_device *pwm);
+ #define DRIVER_NAME	"pwm-ir-tx"
+@@ -17,8 +19,14 @@
  
- /**
-@@ -380,6 +383,17 @@ static inline void pwm_disable(struct pwm_device *pwm)
- 	pwm_apply_cansleep(pwm, &state);
+ struct pwm_ir {
+ 	struct pwm_device *pwm;
+-	unsigned int carrier;
+-	unsigned int duty_cycle;
++	struct hrtimer timer;
++	struct completion tx_done;
++	struct pwm_state *state;
++	u32 carrier;
++	u32 duty_cycle;
++	uint *txbuf;
++	uint txbuf_len;
++	uint txbuf_index;
+ };
+ 
+ static const struct of_device_id pwm_ir_of_match[] = {
+@@ -82,6 +90,62 @@ static int pwm_ir_tx(struct rc_dev *dev, unsigned int *txbuf,
+ 	return count;
  }
  
-+/**
-+ * pwm_is_atomic() - is pwm_apply_atomic() supported?
-+ * @pwm: PWM device
-+ *
-+ * Returns: true pwm_apply_atomic() can be called from atomic context.
-+ */
-+static inline bool pwm_is_atomic(struct pwm_device *pwm)
++static int pwm_ir_tx_atomic(struct rc_dev *dev, unsigned int *txbuf,
++			    unsigned int count)
 +{
-+	return pwm->chip->atomic;
++	struct pwm_ir *pwm_ir = dev->priv;
++	struct pwm_device *pwm = pwm_ir->pwm;
++	struct pwm_state state;
++
++	pwm_init_state(pwm, &state);
++
++	state.period = DIV_ROUND_CLOSEST(NSEC_PER_SEC, pwm_ir->carrier);
++	pwm_set_relative_duty_cycle(&state, pwm_ir->duty_cycle, 100);
++
++	pwm_ir->txbuf = txbuf;
++	pwm_ir->txbuf_len = count;
++	pwm_ir->txbuf_index = 0;
++	pwm_ir->state = &state;
++
++	hrtimer_start(&pwm_ir->timer, 0, HRTIMER_MODE_REL);
++
++	wait_for_completion(&pwm_ir->tx_done);
++
++	return count;
 +}
 +
- /* PWM provider APIs */
- int pwm_capture(struct pwm_device *pwm, struct pwm_capture *result,
- 		unsigned long timeout);
-@@ -408,16 +422,27 @@ struct pwm_device *devm_fwnode_pwm_get(struct device *dev,
- 				       struct fwnode_handle *fwnode,
- 				       const char *con_id);
- #else
-+static inline bool pwm_is_atomic(struct pwm_device *pwm)
++static enum hrtimer_restart pwm_ir_timer(struct hrtimer *timer)
 +{
-+	return false;
++	struct pwm_ir *pwm_ir = container_of(timer, struct pwm_ir, timer);
++	ktime_t now;
++
++	/*
++	 * If we happen to hit an odd latency spike, loop through the
++	 * pulses until we catch up.
++	 */
++	do {
++		u64 ns;
++
++		pwm_ir->state->enabled = !(pwm_ir->txbuf_index % 2);
++		pwm_apply_atomic(pwm_ir->pwm, pwm_ir->state);
++
++		if (pwm_ir->txbuf_index >= pwm_ir->txbuf_len) {
++			complete(&pwm_ir->tx_done);
++
++			return HRTIMER_NORESTART;
++		}
++
++		ns = US_TO_NS(pwm_ir->txbuf[pwm_ir->txbuf_index]);
++		hrtimer_add_expires_ns(timer, ns);
++
++		pwm_ir->txbuf_index++;
++
++		now = timer->base->get_time();
++	} while (hrtimer_get_expires_tv64(timer) < now);
++
++	return HRTIMER_RESTART;
 +}
 +
- static inline int pwm_apply_cansleep(struct pwm_device *pwm,
- 				     const struct pwm_state *state)
+ static int pwm_ir_probe(struct platform_device *pdev)
  {
- 	might_sleep();
--	return -ENOTSUPP;
-+	return -EOPNOTSUPP;
-+}
+ 	struct pwm_ir *pwm_ir;
+@@ -103,10 +167,19 @@ static int pwm_ir_probe(struct platform_device *pdev)
+ 	if (!rcdev)
+ 		return -ENOMEM;
+ 
++	if (pwm_is_atomic(pwm_ir->pwm)) {
++		init_completion(&pwm_ir->tx_done);
++		hrtimer_init(&pwm_ir->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++		pwm_ir->timer.function = pwm_ir_timer;
++		rcdev->tx_ir = pwm_ir_tx_atomic;
++	} else {
++		dev_info(&pdev->dev, "tx will not be accurate as pwm device does not support atomic mode");
++		rcdev->tx_ir = pwm_ir_tx;
++	}
 +
-+static inline int pwm_apply_atomic(struct pwm_device *pwm,
-+				   const struct pwm_state *state)
-+{
-+	return -EOPNOTSUPP;
- }
+ 	rcdev->priv = pwm_ir;
+ 	rcdev->driver_name = DRIVER_NAME;
+ 	rcdev->device_name = DEVICE_NAME;
+-	rcdev->tx_ir = pwm_ir_tx;
+ 	rcdev->s_tx_duty_cycle = pwm_ir_set_duty_cycle;
+ 	rcdev->s_tx_carrier = pwm_ir_set_carrier;
  
- static inline int pwm_adjust_config(struct pwm_device *pwm)
- {
--	return -ENOTSUPP;
-+	return -EOPNOTSUPP;
- }
- 
- static inline int pwm_config(struct pwm_device *pwm, int duty_ns,
 -- 
 2.42.0
 
