@@ -2,135 +2,109 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAD1C41535
-	for <linux-pwm@archiver.kernel.org>; Thu,  9 Nov 2023 10:48:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F14C4332F
+	for <linux-pwm@archiver.kernel.org>; Thu,  9 Nov 2023 17:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231821AbjKIKsG (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 9 Nov 2023 05:48:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
+        id S234657AbjKIRRe (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 9 Nov 2023 12:17:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232576AbjKIKsF (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Nov 2023 05:48:05 -0500
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B99226AF
-        for <linux-pwm@vger.kernel.org>; Thu,  9 Nov 2023 02:48:02 -0800 (PST)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20231109104759euoutp0269064bee25f26d463f508572bcf92776~V7rFEvuWP0744407444euoutp02_
-        for <linux-pwm@vger.kernel.org>; Thu,  9 Nov 2023 10:47:59 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20231109104759euoutp0269064bee25f26d463f508572bcf92776~V7rFEvuWP0744407444euoutp02_
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1699526879;
-        bh=ghDtuNm/rprsB94SZ+nrIouWWrb2Q3jHekqjdqhln5s=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=VI/ADahax0HsXra5ywaFvb9JA1dO3RVHZF+LDTECuHlFTVzKEIeWzi6rKQMFLuDA3
-         zuDQWvtjY6d3WujN3ZSz7ynbrOhqAv3GRSBV5mJMrcvX2WoJons4TaG1GSyVZrycIF
-         +kgtZ1InJy2szVpR2V07DKnJuB8BVp7UcJSGBKxw=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20231109104759eucas1p263e75fab40bb2b3ad5cc4646e0cd2634~V7rEyTyIH2943429434eucas1p2B;
-        Thu,  9 Nov 2023 10:47:59 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 69.5D.11320.FD8BC456; Thu,  9
-        Nov 2023 10:47:59 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20231109104758eucas1p2e98e8cf22a42aae212a98228e46b4438~V7rEeWd6a2942529425eucas1p2A;
-        Thu,  9 Nov 2023 10:47:58 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20231109104758eusmtrp252bf200468d54124faf3feab1d57f613~V7rEdi5xx2298322983eusmtrp2t;
-        Thu,  9 Nov 2023 10:47:58 +0000 (GMT)
-X-AuditID: cbfec7f4-993ff70000022c38-89-654cb8dfa774
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id A0.21.25043.ED8BC456; Thu,  9
-        Nov 2023 10:47:58 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20231109104758eusmtip2b084c095a97cd533501393d6e8d08ea9~V7rD2N_nf0866008660eusmtip2E;
-        Thu,  9 Nov 2023 10:47:58 +0000 (GMT)
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-To:     linux-arm-kernel@lists.infradead.org,
+        with ESMTP id S234633AbjKIRRe (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Nov 2023 12:17:34 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6BE30D5
+        for <linux-pwm@vger.kernel.org>; Thu,  9 Nov 2023 09:17:32 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id 98e67ed59e1d1-2802b744e52so1812112a91.0
+        for <linux-pwm@vger.kernel.org>; Thu, 09 Nov 2023 09:17:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1699550251; x=1700155051; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6XrcCNqDdhGRMVH+CVL3Mh6Lfi1vR+qAOIav9EoJwRI=;
+        b=HhRkdOj/jZZT0BcXD65SvG4vnxgk9k8MmIXyojzgXm8/MXsHJRAXpsDKPJeo4aV0yN
+         WABC8FpyHZcJUf8FK+tzSwrf35e0F1yNUUyz12mFf+z/1jvPUw8t+jwwrAg27ARgjwuw
+         K58y3KDOVb84FIcW3qudy2d2tQJDf1u7gxeh2fYGUFlJ1auu+x522Bo9Gd4p5ohV+0wE
+         bdnJFcMXCPuVBIPtGYb67ZqjsRiTzVXmj+ffQLiYh0qk7wbK5jBsA2VOjCLrMDXMvxzr
+         TJoZi4Irx0fDJnacs8Y36NHVAuhK9uwklMd3q4M9pG8cl99NtcKUb2FxAvRVAsjSBgMM
+         PO1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699550251; x=1700155051;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6XrcCNqDdhGRMVH+CVL3Mh6Lfi1vR+qAOIav9EoJwRI=;
+        b=u4tJgIpIgIFjSsovvE17tDoonGpvU+a7wf9jRyqjMCmB+olWirmUJzNVcka+gSUy1n
+         zAgJyopSXisJhBx/ZpNsjjpeVsPYvd4bwGGSlemjg1UcvR76ihn1LuSIQ91MoPM6ehdr
+         c1Utzpg2cYsjZtGvc/S42qk0xwXHtO2JODR0XseeMg9CNp1S1N/EbxkPDF05H535fn4E
+         6Cm5dLr4eBDU3YwQSXM9a1/JTMc8097UPGe4ZyW+QHrwCrB1neILsXv/Av5aHfoTwQbV
+         E+n6Gnw/yZRmda1fD7eZFvP/XxNZJ9KTxNZoQb/oG6ajyLzIC9Bo31yM29FxAp4+28pF
+         CjIg==
+X-Gm-Message-State: AOJu0YxdoxZqEqmTJoj2ApghQtIfiDVQ1jzTe2b5ii56f+cNEB/tuwz4
+        u5k+fTGwOgeJMd/1mEKnHYiRF6XW8p8VC5FB7dxDkA==
+X-Google-Smtp-Source: AGHT+IEU+g/mPCOvVEq8Q3n58WTTnn/5lUY9PZtSeC/rp33EaGT45gQDxrQx0su38GxRFDoqUGOluqibblOr4hDwi3Q=
+X-Received: by 2002:a17:90a:6349:b0:280:4796:59b8 with SMTP id
+ v9-20020a17090a634900b00280479659b8mr3597320pjs.9.1699550251597; Thu, 09 Nov
+ 2023 09:17:31 -0800 (PST)
+MIME-Version: 1.0
+References: <CGME20231109104759eucas1p1fc7343ea2b113abd18397833d70d6835@eucas1p1.samsung.com>
+ <20231109104748.2746839-1-m.szyprowski@samsung.com> <20231109104748.2746839-2-m.szyprowski@samsung.com>
+In-Reply-To: <20231109104748.2746839-2-m.szyprowski@samsung.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Thu, 9 Nov 2023 11:17:20 -0600
+Message-ID: <CAPLW+4=jdmj1nddYupB_6D4FZXc+fL1SjM6m9uNgEHbdZqUjNQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] pwm: Clarify PWMF_* enums definition
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        linux-kernel@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Alim Akhtar <alim.akhtar@samsung.com>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 1/2] pwm: samsung: Fix broken resume after putting
- per-channel data into driver data
-Date:   Thu,  9 Nov 2023 11:47:47 +0100
-Message-Id: <20231109104748.2746839-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrIKsWRmVeSWpSXmKPExsWy7djPc7r3d/ikGky8zGHxYN42Nou9r7ey
-        W2x6fI3V4vKuOWwWd++uYrSYcX4fk8XaI3fZLX7umsdicXviZEYHTo+ds+6ye9y5tofNY/OS
-        eo/+vwYefVtWMXp83iQXwBbFZZOSmpNZllqkb5fAlXH8aAdjwXn2ikcv1jI2MK5n62Lk5JAQ
-        MJE4cqmHqYuRi0NIYAWjxLdPzSwQzhdGicknzzJDOJ8ZJTpnPmSCaWlpucAKkVjOKNGy8Twb
-        XMufs4dZQKrYBAwlut52gSVEBNoYJZoufwBzmAWamSSafncD9XNwCAukSdzfbg7SwCKgKnH+
-        6FGwZl4Be4k/c3tYINbJS+w/CHIHSFxQ4uTMJ2BxZqB489bZYPdJCGzhkJh7YQVUg4vEjwl3
-        mCFsYYlXx7ewQ9gyEv93zmeCaGhnlFjw+z6UM4FRouH5LUaIKmuJO+d+sYFcxyygKbF+lz5E
-        2FFi6aeVLCBhCQE+iRtvBSGO4JOYtG06M0SYV6KjTQiiWk1i1vF1cGsPXrgEdY6HxIXpO8Bs
-        IYFYiUcXXrNOYFSYheS1WUhem4VwwwJG5lWM4qmlxbnpqcVGeanlesWJucWleel6yfm5mxiB
-        qej0v+NfdjAuf/VR7xAjEwfjIUYJDmYlEd4LJj6pQrwpiZVVqUX58UWlOanFhxilOViUxHlV
-        U+RThQTSE0tSs1NTC1KLYLJMHJxSDUxGsSbKczMeGnY1RtbrpsYn7NE78fF/2Qq1+8JzI8vb
-        FJ853WyNCjKMUhLmDX500HHb6fS9PB6rpOZJa3ofVrwRct5Et2XPr4/3DlRxZxieEnl27ULe
-        NLsQibIivYt+MXYTtnMWcSdyxxuWTdqly7tssWR67IXbOxZ1vP91aFPB07qYy5u0PL/OSVJe
-        VcNvnbQt+URS+lNBKcH2t0bnZr6NjLO1jqzgqCx29z1icjMgckHJ6tPri83dZHSEpDVF+FmE
-        4spe3XRSu1bjLCy6NXPngRxbA5Wy348dxT68V/MMCt+f8u/oAWk7rjdnJ5YLuvG/OO03/aP2
-        oetJnwPdxJ94BV/gYWUpygwIFfmpxFKckWioxVxUnAgAxJg2JLQDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrOLMWRmVeSWpSXmKPExsVy+t/xe7r3dvikGvTcNLB4MG8bm8Xe11vZ
-        LTY9vsZqcXnXHDaLu3dXMVrMOL+PyWLtkbvsFj93zWOxuD1xMqMDp8fOWXfZPe5c28PmsXlJ
-        vUf/XwOPvi2rGD0+b5ILYIvSsynKLy1JVcjILy6xVYo2tDDSM7S00DMysdQzNDaPtTIyVdK3
-        s0lJzcksSy3St0vQyzh+tIOx4Dx7xaMXaxkbGNezdTFyckgImEi0tFxg7WLk4hASWMooMWv2
-        P0aIhIzEyWkNrBC2sMSfa11sEEWfGCV+rGgBS7AJGEp0vYVIiAh0MUr8PraWEcRhFmhlkmg4
-        sYoFpEpYIEXiYecWZhCbRUBV4vzRo2BxXgF7iT9ze1ggVshL7D94lhkiLihxcuYTsDgzULx5
-        62zmCYx8s5CkZiFJLWBkWsUoklpanJueW2ykV5yYW1yal66XnJ+7iREYA9uO/dyyg3Hlq496
-        hxiZOBgPMUpwMCuJ8F4w8UkV4k1JrKxKLcqPLyrNSS0+xGgKdN9EZinR5HxgFOaVxBuaGZga
-        mphZGphamhkrifN6FnQkCgmkJ5akZqemFqQWwfQxcXBKNTBxZWjMmLb0y8Wirz0Lvh+w7Glc
-        eLzSW+eUgcCETXceVLv+d5Wv+R2ZHsTm6v9BlCUgySTLcsXqkvd7p6efv7ZRaNraa+kP/ueJ
-        btj9n3FpZNgq8bCtq2IqHTt4n36dz7ji+8rAb+oSjtaXpK/t+MA5gTNyt33tl8/Ju1d2+zYd
-        tDlvfvDacvu7Ple2r3WON3ynUmz1t/i31j2d71ZZbj9ON6xksJGv/Ljk1cPSX5dZmwxzire/
-        eX9r+rlP5XcCjvj3HhZcn1I4/2Utf8gCfY0J39ft7MoU5jin6nd873XONT90NpbnHT/zJ/iK
-        aMXVmLB5+p5KFXJLdIQ0n7LJfrnYLq3g58fowMETmcF/r/maEktxRqKhFnNRcSIAc04Y9goD
-        AAA=
-X-CMS-MailID: 20231109104758eucas1p2e98e8cf22a42aae212a98228e46b4438
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20231109104758eucas1p2e98e8cf22a42aae212a98228e46b4438
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20231109104758eucas1p2e98e8cf22a42aae212a98228e46b4438
-References: <CGME20231109104758eucas1p2e98e8cf22a42aae212a98228e46b4438@eucas1p2.samsung.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-PWMF_EXPORTED is misleadingly used as a bit numer in the pwm->flags, not
-as a flag value, so the proper test for it must use test_bit() helper.
-This fixes broken resume after putting per-channel data into driver data.
+On Thu, Nov 9, 2023 at 4:48=E2=80=AFAM Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
+>
+> PWMF_* enums are defined as flag values (like 1 << n), but then in the
+> code they are used as bit numbers via set/test/clear_bit() macros. Change
+> their values to sequential numbers to clearly show that they are bit
+> numbers, not the flag values.
+>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
 
-Fixes: e3fe982b2e4e ("pwm: samsung: Put per-channel data into driver data")
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/pwm/pwm-samsung.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index 568491ed6829..69d9f4577b34 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -631,7 +631,7 @@ static int pwm_samsung_resume(struct device *dev)
- 		struct pwm_device *pwm = &chip->pwms[i];
- 		struct samsung_pwm_channel *chan = &our_chip->channel[i];
- 
--		if (!(pwm->flags & PWMF_REQUESTED))
-+		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 			continue;
- 
- 		if (our_chip->variant.output_mask & BIT(i))
--- 
-2.34.1
-
+>  include/linux/pwm.h | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+> index e3b437587b32..95c895c63cf6 100644
+> --- a/include/linux/pwm.h
+> +++ b/include/linux/pwm.h
+> @@ -40,9 +40,12 @@ struct pwm_args {
+>         enum pwm_polarity polarity;
+>  };
+>
+> -enum {
+> -       PWMF_REQUESTED =3D 1 << 0,
+> -       PWMF_EXPORTED =3D 1 << 1,
+> +/**
+> + * enum pwm_flags_bits - status bits for pwm->flags entry
+> + */
+> +enum pwm_flags_bits {
+> +       PWMF_REQUESTED =3D 0,
+> +       PWMF_EXPORTED =3D 1,
+>  };
+>
+>  /*
+> --
+> 2.34.1
+>
