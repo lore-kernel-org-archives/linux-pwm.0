@@ -2,130 +2,134 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99464C4332F
-	for <linux-pwm@archiver.kernel.org>; Fri, 10 Nov 2023 18:28:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1798FC4167D
+	for <linux-pwm@archiver.kernel.org>; Fri, 10 Nov 2023 18:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344073AbjKJS3A (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 10 Nov 2023 13:29:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
+        id S1345798AbjKJSeB convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 10 Nov 2023 13:34:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344330AbjKJS1H (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Nov 2023 13:27:07 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7A793F8;
-        Fri, 10 Nov 2023 00:24:12 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-9e62f903e88so52901866b.2;
-        Fri, 10 Nov 2023 00:24:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1699604651; x=1700209451; darn=vger.kernel.org;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dfDqdLzyNfvzEFCK1mMeur3z08aolTVmbywuBZUz1vU=;
-        b=MA+Z08jIs82cmRdMOD5hNQXFRYVkv7x+WtSST6BHCA/1XvVS0npm11Cx0wAoJ3Gwyd
-         Kqf5khoeqq+iNOG9eHm2Hwy9RRAeTKs+L/iPwhvCscXwDTPU/xEJz0WUSRRnfO9hoi3C
-         NzLPIanPWiyma8Hv7/pFYQiasVKQ27Gb8OZqUwNfvc4ZPcSxkLz3ZvLyTbq3gdfed9vv
-         tDGucZBVdkDjzZG8xUtgIgkmZcWyOWJyNFeKYHXWZcqu633vftdmW5pPj+3dxKG206yc
-         d7qL/XUtp085VsOHM0qDTOBjP/UCWKs/2nAjEczYXuxhoLczFrs22EYAS4G0D/YQg1TP
-         lWLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699604651; x=1700209451;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dfDqdLzyNfvzEFCK1mMeur3z08aolTVmbywuBZUz1vU=;
-        b=o0+kSR7m63CC3fQMNkGQ97V7UampvKwGJnEriVplUNFC7wfChRLB9v8ZxOE/IOxT7s
-         BMWgAiegdiRWuU8AfTY8g1fGvi6iRXGzOpkOUakyFMflkWjBR4jklebkyrYKwiITu30d
-         BJBZscL6G2fZGR8/9VDQ21QsYK/owbwxy6jYopmYvSC4L17tIn7f0Eh2STNDDSzyFEIz
-         V5kRf/x5M6ivdxHA6Ys7W7LtQQfinIqEkyOawC4QuURsghM0X8RcwbtdwoZtPvk2tZ/2
-         6dNtoryzpc23dY0byMh1fbN+leeCQbsXLj9HykTLpbW9fG2k/IIvJKtVD5vQ9WcfJf9v
-         Rx+g==
-X-Gm-Message-State: AOJu0YysBg8wOrf6C0uVtcK90pmHPqukPEOg/lSPXJcFw7rRYeEQS/4b
-        C7K8tjuN11K1jRiQFp762Mk=
-X-Google-Smtp-Source: AGHT+IGkpJsaD7eeUdyoGD79V/8B2egxHqY2C1lshUye5coKMtJR/c8Pik98l7xCGozscEO7liUzOQ==
-X-Received: by 2002:a17:907:60ca:b0:9b2:b9ff:dc35 with SMTP id hv10-20020a17090760ca00b009b2b9ffdc35mr5204085ejc.70.1699604651029;
-        Fri, 10 Nov 2023 00:24:11 -0800 (PST)
-Received: from orome.fritz.box (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id qc20-20020a170906d8b400b009a193a5acffsm3551379ejb.121.2023.11.10.00.24.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Nov 2023 00:24:10 -0800 (PST)
-Date:   Fri, 10 Nov 2023 09:24:08 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Dan Carpenter <dan.carpenter@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] pwm: samsung: Fix a bit test in
- pwm_samsung_resume()
-Message-ID: <ZU3oqBduYubWPho3@orome.fritz.box>
-References: <e031db45-add0-4da7-97fa-dee95ee936ad@moroto.mountain>
- <20231025121103.ptck4z62wvndgdlr@pengutronix.de>
- <20231106104304.cq6353tj5pfdffyc@pengutronix.de>
+        with ESMTP id S1346043AbjKJSc6 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Nov 2023 13:32:58 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE266A5B;
+        Thu,  9 Nov 2023 22:20:52 -0800 (PST)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 5852A24DFED;
+        Fri, 10 Nov 2023 14:20:41 +0800 (CST)
+Received: from EXMBX168.cuchost.com (172.16.6.78) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 10 Nov
+ 2023 14:20:41 +0800
+Received: from williamqiu-virtual-machine.starfivetech.com (171.223.208.138)
+ by EXMBX168.cuchost.com (172.16.6.78) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.42; Fri, 10 Nov 2023 14:20:40 +0800
+From:   William Qiu <william.qiu@starfivetech.com>
+To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-pwm@vger.kernel.org>
+CC:     Emil Renner Berthing <kernel@esmil.dk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Hal Feng" <hal.feng@starfivetech.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        William Qiu <william.qiu@starfivetech.com>
+Subject: [PATCH v7 0/4] StarFive's Pulse Width Modulation driver support
+Date:   Fri, 10 Nov 2023 14:20:35 +0800
+Message-ID: <20231110062039.103339-1-william.qiu@starfivetech.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="FrW2o9lj2SGdyZ01"
-Content-Disposition: inline
-In-Reply-To: <20231106104304.cq6353tj5pfdffyc@pengutronix.de>
-User-Agent: Mutt/2.2.12 (2023-09-09)
+Content-Type: text/plain
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS062.cuchost.com (172.16.6.22) To EXMBX168.cuchost.com
+ (172.16.6.78)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Hi,
 
---FrW2o9lj2SGdyZ01
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patchset adds initial rudimentary support for the StarFive
+Pulse Width Modulation controller driver. And this driver will
+be used in StarFive's VisionFive 2 board.The first patch add
+Documentations for the device and Patch 2 adds device probe for
+the module.
 
-On Mon, Nov 06, 2023 at 11:43:04AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello Thierry,
->=20
-> On Wed, Oct 25, 2023 at 02:11:03PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> > On Wed, Oct 25, 2023 at 02:57:34PM +0300, Dan Carpenter wrote:
-> > > The PWMF_REQUESTED enum is supposed to be used with test_bit() and not
-> > > used as in a bitwise AND.  In this specific code the flag will never =
-be
-> > > set so the function is effectively a no-op.
-> > >=20
-> > > Fixes: e3fe982b2e4e ("pwm: samsung: Put per-channel data into driver =
-data")
-> > > Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
-> >=20
-> > Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> >=20
-> > @Thierry: e3fe982b2e4e is currently in your for-next branch. So it would
-> > be good to get Dan's patch into your PR for 6.7-rc1.
->=20
-> I saw you updated your for-next branch but didn't add this patch yet.
-> Would be great to get this one in to not get a known-broken state into
-> 6.7-rc1.
+Changes v6->v7:
+- Rebased to v6.6.
+- Added dependency architecture.
+- Adopted new rounding algorithm.
+- Added limitation descripton.
+- Used function interfaces instead of macro definitions.
+- Followed the linux coding style.
 
-Yeah, I missed this when I was skimming the list for last-minute things
-to include. I've applied these now and will send a follow-up PR.
+Changes v5->v6:
+- Rebased to v6.6rc5.
+- Changed driver into a generic OpenCores driver.
+- Modified dt-bindings description into OpenCores.
+- Uesd the StarFive compatible string to parameterize.
 
-Thierry
+Changes v4->v5:
+- Rebased to v6.6rc2.
+- Updated macro definition indent.
+- Replaced the clock initializes the interface.
+- Fixed patch description.
 
---FrW2o9lj2SGdyZ01
-Content-Type: application/pgp-signature; name="signature.asc"
+Changes v3->v4:
+- Rebased to v6.5rc7.
+- Sorted the header files in alphabetic order.
+- Changed iowrite32() to writel().
+- Added a way to turn off.
+- Modified polarity inversion implementation.
+- Added 7100 support.
+- Added dts patches.
+- Used the various helpers in linux/math.h.
+- Corrected formatting problems.
+- Renamed dtbinding  to 'starfive,jh7100-pwm.yaml'.
+- Dropped the redundant code.
 
------BEGIN PGP SIGNATURE-----
+Changes v2->v3:
+- Fixed some formatting issues.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmVN6KgACgkQ3SOs138+
-s6G3RhAAwpdVRWzezfhVpLWty49CIg9DegWa6IFQCTca/seHCuTVnE4tRyMuRk0a
-2+eZvRyFUKBOCkI/sDov8WFZhluiOxQbboevmig/Z3yJm0grdzO2/LI7lrhTTudW
-+PM8EKbPHRe8rSSlXWMXSD5Dw5Uqi2sAEFTLCcFhkCSO6cugR/U/b4k66XiNVN4D
-zEPxqvoE94YyYiMVEMyIwuN0SGBlHGjXu8vdCU830FW55UP2ffYJn2Al6okn5/Y+
-1nCc5Y9mr1Qv+HEsQtqGaGH2ej7UWGKzUF2ASkoGaZ/FckH7Pmucvub4ISWCIgQD
-cEDH7Wc/20MR+CoLUiim71bKZo4BEMQVpbTHLK+dde42Fx+sbN/jgs2AvNZsq7Y8
-1gKucOq8kraZ6EG8j7M3nj3DzID0OlrMuPSW46m3w7qz7qz0xtP6Cu6aUEuQ7wMn
-858pVW9XVMihlZUi1lChwukq8FmZss9KNKFwwh5P+9RQDPABcjMzxFy7oohfTEzh
-DBBz27EijR0iwdCew9si4GGTRT1Fhe1tU5OM9ocjM1Qxiq8bRZ4RpOpTcHsy8CfJ
-JyDy+fayQJ4DjFkWapp0NRJjPFdhPKiaaGBluzXYBkj4TyW+S+Jy0Mr4MJmmrVAb
-WJT2SS5PK880dZkCBFxIaKWYkCh1diBfM2YzngrKNkaHZlsj8jU=
-=yin9
------END PGP SIGNATURE-----
+Changes v1->v2:
+- Renamed the dt-binding 'pwm-starfive.yaml' to 'starfive,jh7110-pwm.yaml'.
+- Dropped the compatible's Items.
+- Dropped the unuse defines.
+- Modified the code to follow the Linux coding style.
+- Changed return value to dev_err_probe.
+- Dropped the unnecessary local variable.
 
---FrW2o9lj2SGdyZ01--
+The patch series is based on v6.6.
+
+William Qiu (4):
+  dt-bindings: pwm: Add OpenCores PWM module
+  pwm: opencores: Add PWM driver support
+  riscv: dts: starfive: jh7110: Add PWM node and pins configuration
+  riscv: dts: starfive: jh7100: Add PWM node and pins configuration
+
+ .../bindings/pwm/opencores,pwm.yaml           |  56 +++++
+ MAINTAINERS                                   |   7 +
+ .../boot/dts/starfive/jh7100-common.dtsi      |  24 ++
+ arch/riscv/boot/dts/starfive/jh7100.dtsi      |   9 +
+ .../jh7110-starfive-visionfive-2.dtsi         |  22 ++
+ arch/riscv/boot/dts/starfive/jh7110.dtsi      |   9 +
+ drivers/pwm/Kconfig                           |  12 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-ocores.c                      | 236 ++++++++++++++++++
+ 9 files changed, 376 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
+ create mode 100644 drivers/pwm/pwm-ocores.c
+
+--
+2.34.1
+
