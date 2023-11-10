@@ -2,133 +2,135 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F9CC4167D
-	for <linux-pwm@archiver.kernel.org>; Fri, 10 Nov 2023 18:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF26BC4332F
+	for <linux-pwm@archiver.kernel.org>; Fri, 10 Nov 2023 18:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235571AbjKJSDe (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 10 Nov 2023 13:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51476 "EHLO
+        id S230486AbjKJSFE convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 10 Nov 2023 13:05:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235776AbjKJSCo (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Nov 2023 13:02:44 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B20A33F86
-        for <linux-pwm@vger.kernel.org>; Fri, 10 Nov 2023 04:24:53 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-9be02fcf268so315693666b.3
-        for <linux-pwm@vger.kernel.org>; Fri, 10 Nov 2023 04:24:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699619092; x=1700223892; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kSMxTW9sdJk1INNkesPXXGzPLDqsgagFo7VWqT4Pqyc=;
-        b=uu3BFCRiDbcI09+zRDaqZuY5/BsFutP/z0h2dZ7h3NxqpjhU9Gf+SQo5H8O7/LjPFB
-         ShWaQnu0hOv72pPeysV6ZgIJ9H16EO914eGr5eW5pWI/P+b6NLYzH5n6RrdWNuAzmlk7
-         YG08z4OEeqiAFPJVZfnorgU/o3nHEQUlXM0zrejtmEOWZ0OQSfn48uUxGwz+rj2rxGzy
-         hguGML2SvHr7DisvhuSI7F3tldPc2oX1dbEkwCyh5Idr/97374y9G0MIc/xL8BlJ974v
-         GxhUIJ1uAIW9ksBml7btIOsaTub8DQdgm7haHZhqO1DFHPXOUUhUEXQMIeD5LYWDeegT
-         fheg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699619092; x=1700223892;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kSMxTW9sdJk1INNkesPXXGzPLDqsgagFo7VWqT4Pqyc=;
-        b=DgqRTqQh0xQZ7Rtt/65g/9VJJK6dPjJLDc+DHcRQfTztr7Qg6IT7Xvm6Oyfj/fID4I
-         po2pX/g86LbZtQPK7N5AE5fLx59beMge7yUgyo6QQUTqdaPRKgZ485nKWzVdosU/OPNo
-         CoNOgR1bIKdclpWE/wL4bXdmW2m6TLD9xA/J5maSCdAMC3Ej4CKg9oymBH2qK6m8yDOs
-         csX6d7GlS8moJgvI+xKCPuL+eSo2AeFWD1eJd8qkPSvcLWjGxcl634amG+z0z7K409TS
-         eZqify+3ERJzA7UpA+FygkTX51QbwLthGPneOfKEO6XQSl2QhESMfJ9+26xeAx5Ce8U0
-         EFjA==
-X-Gm-Message-State: AOJu0YyKzqnhJgDJaM0kLSsmNvGYWJ6DeingtgfFdXL+R+fDBYQdU8MN
-        DGA4Q5M/Fti5eCLdfydkJIFy8Q==
-X-Google-Smtp-Source: AGHT+IFXV9SgLbEufj4ibWueYQFMBtT3EW6RJNVbmMciQn9n+OCJDJW1Q20T3iKuWcXZvJ6u8YC2gQ==
-X-Received: by 2002:a17:907:3e9e:b0:9d0:51d4:4d87 with SMTP id hs30-20020a1709073e9e00b009d051d44d87mr7415872ejc.62.1699619091806;
-        Fri, 10 Nov 2023 04:24:51 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.126])
-        by smtp.gmail.com with ESMTPSA id z15-20020a1709060acf00b0099cb0a7098dsm3876197ejf.19.2023.11.10.04.24.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Nov 2023 04:24:51 -0800 (PST)
-Message-ID: <faa1835b-4488-4e10-998d-f77ac7e396a5@linaro.org>
-Date:   Fri, 10 Nov 2023 13:24:49 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 1/4] dt-bindings: pwm: Add OpenCores PWM module
-Content-Language: en-US
-To:     William Qiu <william.qiu@starfivetech.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        with ESMTP id S230131AbjKJSEk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Nov 2023 13:04:40 -0500
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCF16A5E;
+        Thu,  9 Nov 2023 22:20:53 -0800 (PST)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 6806524E2A0;
+        Fri, 10 Nov 2023 14:20:45 +0800 (CST)
+Received: from EXMBX168.cuchost.com (172.16.6.78) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 10 Nov
+ 2023 14:20:45 +0800
+Received: from williamqiu-virtual-machine.starfivetech.com (171.223.208.138)
+ by EXMBX168.cuchost.com (172.16.6.78) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.42; Fri, 10 Nov 2023 14:20:44 +0800
+From:   William Qiu <william.qiu@starfivetech.com>
+To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-pwm@vger.kernel.org>
+CC:     Emil Renner Berthing <kernel@esmil.dk>,
         Rob Herring <robh+dt@kernel.org>,
         Thierry Reding <thierry.reding@gmail.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-        Hal Feng <hal.feng@starfivetech.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Hal Feng" <hal.feng@starfivetech.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
+        Albert Ou <aou@eecs.berkeley.edu>,
+        William Qiu <william.qiu@starfivetech.com>
+Subject: [PATCH v7 4/4] riscv: dts: starfive: jh7100: Add PWM node and pins configuration
+Date:   Fri, 10 Nov 2023 14:20:39 +0800
+Message-ID: <20231110062039.103339-5-william.qiu@starfivetech.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231110062039.103339-1-william.qiu@starfivetech.com>
 References: <20231110062039.103339-1-william.qiu@starfivetech.com>
- <20231110062039.103339-2-william.qiu@starfivetech.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231110062039.103339-2-william.qiu@starfivetech.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS062.cuchost.com (172.16.6.22) To EXMBX168.cuchost.com
+ (172.16.6.78)
+X-YovoleRuleAgent: yovoleflag
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 10/11/2023 07:20, William Qiu wrote:
-> Add documentation to describe OpenCores Pulse Width Modulation
-> controller driver.
+Add OpenCores PWM controller node and add PWM pins configuration
+on VisionFive 1 board.
 
-Please describe the hardware, not the driver.
+Signed-off-by: William Qiu <william.qiu@starfivetech.com>
+Reviewed-by: Hal Feng <hal.feng@starfivetech.com>
+---
+ .../boot/dts/starfive/jh7100-common.dtsi      | 24 +++++++++++++++++++
+ arch/riscv/boot/dts/starfive/jh7100.dtsi      |  9 +++++++
+ 2 files changed, 33 insertions(+)
 
-Best regards,
-Krzysztof
+diff --git a/arch/riscv/boot/dts/starfive/jh7100-common.dtsi b/arch/riscv/boot/dts/starfive/jh7100-common.dtsi
+index b93ce351a90f..11876906cc05 100644
+--- a/arch/riscv/boot/dts/starfive/jh7100-common.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7100-common.dtsi
+@@ -84,6 +84,24 @@ GPO_I2C2_PAD_SDA_OEN,
+ 		};
+ 	};
+ 
++	pwm_pins: pwm-0 {
++		pwm-pins {
++			pinmux = <GPIOMUX(7,
++				  GPO_PWM_PAD_OUT_BIT0,
++				  GPO_PWM_PAD_OE_N_BIT0,
++				  GPI_NONE)>,
++				 <GPIOMUX(5,
++				  GPO_PWM_PAD_OUT_BIT1,
++				  GPO_PWM_PAD_OE_N_BIT1,
++				  GPI_NONE)>;
++			bias-disable;
++			drive-strength = <35>;
++			input-disable;
++			input-schmitt-disable;
++			slew-rate = <0>;
++		};
++	};
++
+ 	uart3_pins: uart3-0 {
+ 		rx-pins {
+ 			pinmux = <GPIOMUX(13, GPO_LOW, GPO_DISABLE,
+@@ -154,6 +172,12 @@ &osc_aud {
+ 	clock-frequency = <27000000>;
+ };
+ 
++&pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm_pins>;
++	status = "okay";
++};
++
+ &uart3 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart3_pins>;
+diff --git a/arch/riscv/boot/dts/starfive/jh7100.dtsi b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+index 35ab54fb235f..9a7192b0684c 100644
+--- a/arch/riscv/boot/dts/starfive/jh7100.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+@@ -274,6 +274,15 @@ watchdog@12480000 {
+ 				 <&rstgen JH7100_RSTN_WDT>;
+ 		};
+ 
++		pwm: pwm@12490000 {
++			compatible = "starfive,jh7100-pwm", "opencores,pwm";
++			reg = <0x0 0x12490000 0x0 0x10000>;
++			clocks = <&clkgen JH7100_CLK_PWM_APB>;
++			resets = <&rstgen JH7100_RSTN_PWM_APB>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
+ 		sfctemp: temperature-sensor@124a0000 {
+ 			compatible = "starfive,jh7100-temp";
+ 			reg = <0x0 0x124a0000 0x0 0x10000>;
+-- 
+2.34.1
 
