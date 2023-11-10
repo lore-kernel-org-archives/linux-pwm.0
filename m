@@ -2,115 +2,95 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1970FC4332F
-	for <linux-pwm@archiver.kernel.org>; Fri, 10 Nov 2023 20:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45880C4167B
+	for <linux-pwm@archiver.kernel.org>; Fri, 10 Nov 2023 20:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235994AbjKJUpI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 10 Nov 2023 15:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        id S231160AbjKJU5e (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 10 Nov 2023 15:57:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235791AbjKJUop (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Nov 2023 15:44:45 -0500
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00E15596;
-        Fri, 10 Nov 2023 12:43:37 -0800 (PST)
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-6ce2fc858feso1340548a34.3;
-        Fri, 10 Nov 2023 12:43:37 -0800 (PST)
+        with ESMTP id S235747AbjKJU5W (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Nov 2023 15:57:22 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C92250B9;
+        Fri, 10 Nov 2023 01:50:15 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-5446c9f3a77so3152146a12.0;
+        Fri, 10 Nov 2023 01:50:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1699609814; x=1700214614; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=oJNlMvbde7lnPoy+KN4RWxD1Ppfgvo+k6ZiBdq4htqI=;
+        b=S03Im9IXa8GGVHxfJvQ8b6p8t26OulL+PDkX41J7zjZwM2hDuIcuG1SFAnAdhOeaH7
+         3E3zcWYUkRfIm1q3UhNQClLFhwb95YbtzQuT6uLB7D2aCdlCmFhPlHaneJMdMv1SJTqi
+         qqp08XvcpuHW9v3bkbODoA68PlzyQRpU0qWregsYv0Ce0khqbhdQ/EUb9V22xRgc70je
+         XObxsOtVeaMII3Ff/eKZZkc/vF+JYJ18QpP+LPE4ernYUwFj1nND3wjRgVZIRF2ljFiU
+         y9HHR/PFLgly7MO/j/OmM4UzDUnhFan8Us6OmwpGoPYRKgtjas0Ap+u98M7/JjcwvtzE
+         fQ4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699649017; x=1700253817;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8JelqBtasuctrFq8aA1lg5BQxbworEzE8yTnhOMjZkc=;
-        b=g3Z97gzxwzroBwBn23TrnQrTUU3yKB7lZPzm5LZHjrMTEThjfDkrn5X1FgQ2ji5wSi
-         dLpjzbjr0MX+pa5hlTfiBCSBDTKpYvcjvXan/UMF9dlTe9/OK0E++X/IgtqG/xQD84bs
-         oPQkgOebb3OhqCXYQzYgdXMsC5rzwFLGqPhAOF73R8mttCR09Ouc8yoK8+Kk8DNMu2pO
-         ymd6Py26ZN0E69vK0K/SNu26ZE+6/7LaeMZBHh2DQFuS4nMLZ7hofnLBixHPq+RzLg5x
-         KgCil5ReM8VEjqqA6HoM+OSfFFCSlnGIE96eNvevfmgtL3Jz8zChfHStWbrIp6NV0Z4j
-         2a7Q==
-X-Gm-Message-State: AOJu0Yxe3D0xrPc72/W/HPK4Crsvew2EY5B8uc9E9/3CjsLf6jHCPsdT
-        EEgPHtYC4eUwj2ageZhd8A==
-X-Google-Smtp-Source: AGHT+IHvxcWxE9DKzdafhiZ3HFcZS9N0tFj/iDRHQnxnirdx157d/x13I8sAnvTh754BbGSMSLyN9Q==
-X-Received: by 2002:a05:6830:3492:b0:6b8:dc53:9efd with SMTP id c18-20020a056830349200b006b8dc539efdmr345339otu.3.1699649017102;
-        Fri, 10 Nov 2023 12:43:37 -0800 (PST)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l19-20020a056830269300b006ce2fce83cbsm52941otu.25.2023.11.10.12.43.35
+        d=1e100.net; s=20230601; t=1699609814; x=1700214614;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oJNlMvbde7lnPoy+KN4RWxD1Ppfgvo+k6ZiBdq4htqI=;
+        b=aZ/mWYErsKrOtvuYYVy9fiSFjvCZoVON+RFmPxaAMP/pLEFb7VKlEXKpHisi7VKau6
+         xqbJeAg+HNG5ttNpwzZk3u4+HNO6YlWBrnDPDFDXICBYEg3Zh7rVs3a/tl6V8IQW1OCB
+         fzX0PX/XTcv2dGG7WfdOsDRgDchguQmHeEXF6O+j7maLRem2h2lrYggm2aMwzIhBfYrU
+         yA/pRnz2HvTx9b9HFZJWerVl8Q7+ica9FqHn5qO6A3q/G378cZL9RYDoqFWmGaTM/I66
+         0N4uDcxgr51smFO90sjuMz0tVm51h62NVBm3NSpvV6tWx0SVxifHUANNCHaEHaOL7B29
+         PsbA==
+X-Gm-Message-State: AOJu0YychDnUfqZB0bVSKTWaoWf7TUt9VCyVAjT5yG64E2BGcIRT5ZNo
+        wH49A7GRQKUYXAP+uW/eFx4=
+X-Google-Smtp-Source: AGHT+IGAfVXOwoHXM1HDmbp7yJAOb44BosarbcsCmEb1AH0XKxg6Z2ED04RDg+geXGJLVJrS+07BRQ==
+X-Received: by 2002:a17:907:9384:b0:9e4:651f:60d0 with SMTP id cm4-20020a170907938400b009e4651f60d0mr3532024ejc.9.1699609814123;
+        Fri, 10 Nov 2023 01:50:14 -0800 (PST)
+Received: from localhost (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id cq4-20020a170906d50400b009e5f2e02e68sm803707ejc.222.2023.11.10.01.50.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Nov 2023 12:43:36 -0800 (PST)
-Received: (nullmailer pid 399226 invoked by uid 1000);
-        Fri, 10 Nov 2023 20:43:34 -0000
-Date:   Fri, 10 Nov 2023 14:43:34 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mmc@vger.kernel.org,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-gpio@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-kernel@vger.kernel.org, Andi Shyti <andi.shyti@kernel.org>,
-        linux-sound@vger.kernel.org, linux-iio@vger.kernel.org,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jaehoon Chung <jh80.chung@samsung.com>,
-        linux-i2c@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        alsa-devel@alsa-project.org, linux-rtc@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        linux-samsung-soc@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        devicetree@vger.kernel.org,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        David Airlie <airlied@gmail.com>, Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH 12/17] dt-bindings: pwm: samsung: add specific
- compatibles for existing SoC
-Message-ID: <169964901433.399188.3619478168082919994.robh@kernel.org>
-References: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
- <20231108104343.24192-13-krzysztof.kozlowski@linaro.org>
+        Fri, 10 Nov 2023 01:50:13 -0800 (PST)
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] pwm: Fixes for v6.7-rc1
+Date:   Fri, 10 Nov 2023 10:50:08 +0100
+Message-ID: <20231110095013.655597-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.42.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231108104343.24192-13-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Hi Linus,
 
-On Wed, 08 Nov 2023 11:43:38 +0100, Krzysztof Kozlowski wrote:
-> Samsung Exynos SoC reuses several devices from older designs, thus
-> historically we kept the old (block's) compatible only.  This works fine
-> and there is no bug here, however guidelines expressed in
-> Documentation/devicetree/bindings/writing-bindings.rst state that:
-> 1. Compatibles should be specific.
-> 2. We should add new compatibles in case of bugs or features.
-> 
-> Add compatibles specific to each SoC in front of all old-SoC-like
-> compatibles.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> I propose to take the patch through Samsung SoC (me). See cover letter
-> for explanation.
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-samsung.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+The following changes since commit 40592064a1a536adcced4ffea435c392eb9e7192:
 
-Acked-by: Rob Herring <robh@kernel.org>
+  pwm: samsung: Document new member .channel in struct samsung_pwm_chip (2023-11-03 12:00:41 +0100)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-6.7-rc1-fixes
+
+for you to fetch changes up to d27abbfd4888d79dd24baf50e774631046ac4732:
+
+  pwm: Fix double shift bug (2023-11-10 09:20:55 +0100)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Fixes for v6.7-rc1
+
+This contains two very small fixes that I failed to include in the main
+pull request for v6.7-rc1.
+
+----------------------------------------------------------------
+Dan Carpenter (2):
+      pwm: samsung: Fix a bit test in pwm_samsung_resume()
+      pwm: Fix double shift bug
+
+ drivers/pwm/pwm-samsung.c | 2 +-
+ include/linux/pwm.h       | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
