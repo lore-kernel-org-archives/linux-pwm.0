@@ -2,135 +2,77 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B6AC4332F
-	for <linux-pwm@archiver.kernel.org>; Fri, 10 Nov 2023 19:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB77C4167D
+	for <linux-pwm@archiver.kernel.org>; Fri, 10 Nov 2023 20:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236182AbjKJT2y convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 10 Nov 2023 14:28:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
+        id S1344975AbjKJUK6 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 10 Nov 2023 15:10:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344862AbjKJT2Z (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Nov 2023 14:28:25 -0500
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9796A59;
-        Thu,  9 Nov 2023 22:20:51 -0800 (PST)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by fd01.gateway.ufhost.com (Postfix) with ESMTP id BEFAF24E0B4;
-        Fri, 10 Nov 2023 14:20:42 +0800 (CST)
-Received: from EXMBX168.cuchost.com (172.16.6.78) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 10 Nov
- 2023 14:20:42 +0800
-Received: from williamqiu-virtual-machine.starfivetech.com (171.223.208.138)
- by EXMBX168.cuchost.com (172.16.6.78) with Microsoft SMTP Server (TLS) id
- 15.0.1497.42; Fri, 10 Nov 2023 14:20:41 +0800
-From:   William Qiu <william.qiu@starfivetech.com>
-To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>, <linux-pwm@vger.kernel.org>
-CC:     Emil Renner Berthing <kernel@esmil.dk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Hal Feng" <hal.feng@starfivetech.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        William Qiu <william.qiu@starfivetech.com>
-Subject: [PATCH v7 1/4] dt-bindings: pwm: Add OpenCores PWM module
-Date:   Fri, 10 Nov 2023 14:20:36 +0800
-Message-ID: <20231110062039.103339-2-william.qiu@starfivetech.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231110062039.103339-1-william.qiu@starfivetech.com>
-References: <20231110062039.103339-1-william.qiu@starfivetech.com>
+        with ESMTP id S230222AbjKJUK5 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Nov 2023 15:10:57 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BF1A9
+        for <linux-pwm@vger.kernel.org>; Fri, 10 Nov 2023 12:10:54 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-543456dbd7bso7110313a12.1
+        for <linux-pwm@vger.kernel.org>; Fri, 10 Nov 2023 12:10:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1699647053; x=1700251853; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=UaWQSRQzi/7DA8Jzdisd3TlJK2VMiM2u767TaBKKybM=;
+        b=cXksBSP2fm8aWPZNdifFg65Yke0PQniAYndu8lxzfGIaN7fVcyvKrHaHyMMVeCgv7D
+         lzwD+xRHiFYnZHmdehJ1OADKJ1M7xh0AExCCk2rrX1LyxPo8dlM97saa7LlL6/HBX89g
+         m4wK8ygB+4qCBdR+8airCW4H5vz53Fjmc4YWM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699647053; x=1700251853;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UaWQSRQzi/7DA8Jzdisd3TlJK2VMiM2u767TaBKKybM=;
+        b=BxfNCpbI5eQGocAUA9dMN6MawYYfuIcIoUUFAC2FvkpT7RVMwDYTvFo9UdJAY68mKH
+         lWSy5+HJX4tJtI6IVxdpfPi5kDAHQLtN0BNPNLPfA4aAWpIeG58Qz5ZiiF6CWJpkfue3
+         hu7et28SE8Aovh/fCZnboss3+Mw3tBAX84DEo1CfLIW1RYAOC5mSA0JNBF5GsxssIOM/
+         u4KbYrS4F1vtsVKk26NArkgfpDLQsUbD2lk/LDEswr+cYtweJQUm0w2KoVWu0u615Yss
+         zEtB64lzkIPRR4hC3VKPjzHBOEhXslhpuZdB5FCMJJOYYZ03AegavcNAo9L2fAdgDs3d
+         sUtQ==
+X-Gm-Message-State: AOJu0YwnxqNetvVwBJ1gjIAvyVNorx2JAn5RDgUg5IH7yMedKBlOT+lw
+        j16rbc5lhV2n4ZzxA9nStJ5qudIQAH7PcxTmzFo0WSda
+X-Google-Smtp-Source: AGHT+IEiOh84WPCA5bdBPE3w5eD9TrQIU2j7UkPYJPGXr1rWCupnLeEfu66LZu2lFAQX5mjC0ERnfw==
+X-Received: by 2002:a17:906:4e4d:b0:9ba:8ed:ea58 with SMTP id g13-20020a1709064e4d00b009ba08edea58mr140724ejw.30.1699647052753;
+        Fri, 10 Nov 2023 12:10:52 -0800 (PST)
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com. [209.85.208.49])
+        by smtp.gmail.com with ESMTPSA id t25-20020a1709066bd900b0099c53c4407dsm34906ejs.78.2023.11.10.12.10.52
+        for <linux-pwm@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Nov 2023 12:10:52 -0800 (PST)
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-53b32dca0bfso5001046a12.0
+        for <linux-pwm@vger.kernel.org>; Fri, 10 Nov 2023 12:10:52 -0800 (PST)
+X-Received: by 2002:a05:6402:3514:b0:545:52ff:edef with SMTP id
+ b20-20020a056402351400b0054552ffedefmr2843522edd.20.1699647051822; Fri, 10
+ Nov 2023 12:10:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS062.cuchost.com (172.16.6.22) To EXMBX168.cuchost.com
- (172.16.6.78)
-X-YovoleRuleAgent: yovoleflag
-Content-Transfer-Encoding: 8BIT
+References: <20231110095013.655597-1-thierry.reding@gmail.com>
+In-Reply-To: <20231110095013.655597-1-thierry.reding@gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 10 Nov 2023 12:10:34 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wj=-dpdJv54NMawHSOZ_aM3oeaTdEVDeQM5OS9+5bi2eA@mail.gmail.com>
+Message-ID: <CAHk-=wj=-dpdJv54NMawHSOZ_aM3oeaTdEVDeQM5OS9+5bi2eA@mail.gmail.com>
+Subject: Re: [GIT PULL] pwm: Fixes for v6.7-rc1
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add documentation to describe OpenCores Pulse Width Modulation
-controller driver.
+On Fri, 10 Nov 2023 at 01:50, Thierry Reding <thierry.reding@gmail.com> wrote:
+>
+>   git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-6.7-rc1-fixes
 
-Signed-off-by: William Qiu <william.qiu@starfivetech.com>
-Reviewed-by: Hal Feng <hal.feng@starfivetech.com>
----
- .../bindings/pwm/opencores,pwm.yaml           | 56 +++++++++++++++++++
- 1 file changed, 56 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
+I have no idea why pr-tracker-bot isn't reacting to this one, but
+here's the manual version of "it's pulled".
 
-diff --git a/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml b/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
-new file mode 100644
-index 000000000000..8f776bbc1112
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/opencores,pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: OpenCores PWM controller
-+
-+maintainers:
-+  - William Qiu <william.qiu@starfivetech.com>
-+
-+description:
-+  OpenCores PTC ip core contains a PWM controller. When operating in PWM mode, the PTC core
-+  generates binary signal with user-programmable low and high periods. All PTC counters and
-+  registers are 32-bit.
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - starfive,jh7100-pwm
-+              - starfive,jh7110-pwm
-+          - const: opencores,pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pwm@12490000 {
-+        compatible = "starfive,jh7110-pwm", "opencores,pwm";
-+        reg = <0x12490000 0x10000>;
-+        clocks = <&clkgen 181>;
-+        resets = <&rstgen 109>;
-+        #pwm-cells = <3>;
-+    };
--- 
-2.34.1
-
+              Linus
