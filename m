@@ -2,168 +2,136 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF94CC4332F
-	for <linux-pwm@archiver.kernel.org>; Tue, 14 Nov 2023 08:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6172BC4332F
+	for <linux-pwm@archiver.kernel.org>; Tue, 14 Nov 2023 10:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231382AbjKNI1f (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 14 Nov 2023 03:27:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        id S229596AbjKNKge (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 14 Nov 2023 05:36:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230271AbjKNI1e (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Nov 2023 03:27:34 -0500
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D5BB1A8;
-        Tue, 14 Nov 2023 00:27:29 -0800 (PST)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id CDC2180CE;
-        Tue, 14 Nov 2023 08:27:26 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>,
+        with ESMTP id S229441AbjKNKgd (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Nov 2023 05:36:33 -0500
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F56D9
+        for <linux-pwm@vger.kernel.org>; Tue, 14 Nov 2023 02:36:30 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r2qmC-000319-AS; Tue, 14 Nov 2023 11:36:12 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r2qmB-008yF9-4C; Tue, 14 Nov 2023 11:36:11 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r2qmA-001JJi-R6; Tue, 14 Nov 2023 11:36:10 +0100
+Date:   Tue, 14 Nov 2023 11:36:10 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-Cc:     linux-pwm@vger.kernel.org, Nishanth Menon <nm@ti.com>,
+        Conor Dooley <conor+dt@kernel.org>, linux-pwm@vger.kernel.org,
+        Nishanth Menon <nm@ti.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/1] dt-bindings: pwm: ti,pwm-omap-dmtimer: Update binding for yaml
-Date:   Tue, 14 Nov 2023 10:27:06 +0200
-Message-ID: <20231114082709.54138-1-tony@atomide.com>
-X-Mailer: git-send-email 2.42.1
+Subject: Re: [PATCH v4 1/1] dt-bindings: pwm: ti,pwm-omap-dmtimer: Update
+ binding for yaml
+Message-ID: <20231114103610.sbiicumbh2xju6lj@pengutronix.de>
+References: <20231114082709.54138-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7b6i2lxusyiit2rg"
+Content-Disposition: inline
+In-Reply-To: <20231114082709.54138-1-tony@atomide.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Update for yaml and remove the old txt binding.
 
-As we can replace most of the custom timer API with standard Linux
-frameworks such as clock framework, let's tag the properties for
-ti,prescaler and ti,clock-source as deprecated.
+--7b6i2lxusyiit2rg
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Cc: linux-pwm@vger.kernel.org
-Cc: Nishanth Menon <nm@ti.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: Vignesh Raghavendra <vigneshr@ti.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
+Hello,
 
-Changes since v3:
+On Tue, Nov 14, 2023 at 10:27:06AM +0200, Tony Lindgren wrote:
+> +  ti,timers:
+> +    description: Timer instance phandle for the PWM
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +
+> +  ti,prescaler:
+> +    description: |
+> +      Legacy clock prescaler for timer. The timer counter is prescaled
+> +      with 2^n where n is the prescaler.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+> +    deprecated: true
+> +
+> +  ti,clock-source:
+> +    description: |
+> +      Legacy clock for timer, please use assigned-clocks instead.
+> +      0x00 - high-frequency system clock (timer_sys_ck)
+> +      0x01 - 32-kHz always-on clock (timer_32k_ck)
+> +      0x02 - external clock (timer_ext_ck, OMAP2 only)
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [ 0, 1, 2 ]
+> +    deprecated: true
 
-- No changes, reposted without patch 1/2. The pwm.yaml related issues got
-  fixed by commit 05b743db9d8c ("dt-bindings: pwm: restrict node name
-  suffixes")
+Someone could collect some bonus points by converting these:
 
-Changes since v2:
+	$ git grep ti,clock-source arch/arm/boot
+	arch/arm/boot/dts/ti/omap/am335x-guardian.dts:          ti,clock-source =
+=3D <0x01>;
+	arch/arm/boot/dts/ti/omap/am3517-evm.dts:               ti,clock-source =
+=3D <0x01>;
+	arch/arm/boot/dts/ti/omap/logicpd-torpedo-baseboard.dtsi:               ti=
+,clock-source =3D <0x01>;
+	arch/arm/boot/dts/ti/omap/motorola-mapphone-common.dtsi:                ti=
+,clock-source =3D <0x01>;
+	arch/arm/boot/dts/ti/omap/motorola-mapphone-common.dtsi:                ti=
+,clock-source =3D <0x01>;
+	arch/arm/boot/dts/ti/omap/omap3-gta04.dtsi:             ti,clock-source =
+=3D <0x01>;
+	arch/arm/boot/dts/ti/omap/omap3-n900.dts:               ti,clock-source =
+=3D <0x00>; /* timer_sys_ck */
 
-- Reviewed-by collected from Krzysztof, no changes
+(I verified, this are all about this binding.)
 
-Changes since v1:
+otherwise LGTM:
 
-- Fix issues noticed by Krzysztof
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
----
- .../bindings/pwm/pwm-omap-dmtimer.txt         | 22 -------
- .../bindings/pwm/ti,omap-dmtimer-pwm.yaml     | 59 +++++++++++++++++++
- 2 files changed, 59 insertions(+), 22 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-omap-dmtimer.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/ti,omap-dmtimer-pwm.yaml
+Should this go via the pwm tree or via some arm or omap or dt tree?
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-omap-dmtimer.txt b/Documentation/devicetree/bindings/pwm/pwm-omap-dmtimer.txt
-deleted file mode 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-omap-dmtimer.txt
-+++ /dev/null
-@@ -1,22 +0,0 @@
--* OMAP PWM for dual-mode timers
--
--Required properties:
--- compatible: Shall contain "ti,omap-dmtimer-pwm".
--- ti,timers: phandle to PWM capable OMAP timer. See timer/ti,timer-dm.yaml for info
--  about these timers.
--- #pwm-cells: Should be 3. See pwm.yaml in this directory for a description of
--  the cells format.
--
--Optional properties:
--- ti,prescaler: Should be a value between 0 and 7, see the timers datasheet
--- ti,clock-source: Set dmtimer parent clock, values between 0 and 2:
--  - 0x00 - high-frequency system clock (timer_sys_ck)
--  - 0x01 - 32-kHz always-on clock (timer_32k_ck)
--  - 0x02 - external clock (timer_ext_ck, OMAP2 only)
--
--Example:
--	pwm9: dmtimer-pwm@9 {
--		compatible = "ti,omap-dmtimer-pwm";
--		ti,timers = <&timer9>;
--		#pwm-cells = <3>;
--	};
-diff --git a/Documentation/devicetree/bindings/pwm/ti,omap-dmtimer-pwm.yaml b/Documentation/devicetree/bindings/pwm/ti,omap-dmtimer-pwm.yaml
-new file mode 100644
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/ti,omap-dmtimer-pwm.yaml
-@@ -0,0 +1,59 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/ti,omap-dmtimer-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TI dual mode timer PWM controller
-+
-+maintainers:
-+  - Tony Lindgren <tony@atomide.com>
-+
-+description:
-+  TI dual mode timer instances have an IO pin for PWM capability
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: ti,omap-dmtimer-pwm
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+  ti,timers:
-+    description: Timer instance phandle for the PWM
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
-+  ti,prescaler:
-+    description: |
-+      Legacy clock prescaler for timer. The timer counter is prescaled
-+      with 2^n where n is the prescaler.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-+    deprecated: true
-+
-+  ti,clock-source:
-+    description: |
-+      Legacy clock for timer, please use assigned-clocks instead.
-+      0x00 - high-frequency system clock (timer_sys_ck)
-+      0x01 - 32-kHz always-on clock (timer_32k_ck)
-+      0x02 - external clock (timer_ext_ck, OMAP2 only)
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [ 0, 1, 2 ]
-+    deprecated: true
-+
-+required:
-+  - compatible
-+  - ti,timers
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    pwm9: pwm {
-+      compatible = "ti,omap-dmtimer-pwm";
-+      ti,timers = <&timer9>;
-+      #pwm-cells = <3>;
-+    };
--- 
-2.42.1
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--7b6i2lxusyiit2rg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmVTTZkACgkQj4D7WH0S
+/k7ERgf+IaYSSEKLl5KVBFqv40539YINuhNaIstLunhrxIN+o899MuLjyLl/DM13
+DCXIGigv9OBuBnflHhUy3DCsMEiF400x469OXwNhtHjjmEXbo2XlxODea/hkrIGw
++tbrf8c7wc4Tca/R0ZN411wCtaE7o2zPsKM5/fL6evW9dB9qhonCX+KeAlE1IKAo
+8HS5J/NT8ZonhYPtGHLUt7Uee+b8VzZVPkGVjxb+eZ/ZWbX5NZq2XyOh0yCfPvVm
+fpTc40h0wUGIjQu5TO06ZyF0zC218hJOdpO6YvrJAmpTeUKTgPwjfNeZBRjtpIjl
+WRxfbSvCKi0L7StGP6Bgcqsd++tWvg==
+=TLmH
+-----END PGP SIGNATURE-----
+
+--7b6i2lxusyiit2rg--
