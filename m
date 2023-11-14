@@ -2,165 +2,107 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E50EBC41535
-	for <linux-pwm@archiver.kernel.org>; Tue, 14 Nov 2023 12:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32701C4332F
+	for <linux-pwm@archiver.kernel.org>; Tue, 14 Nov 2023 12:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231826AbjKNMtW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 14 Nov 2023 07:49:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
+        id S232900AbjKNMxF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 14 Nov 2023 07:53:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232883AbjKNMtT (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Nov 2023 07:49:19 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCEBF1A7;
-        Tue, 14 Nov 2023 04:49:12 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JwpwaT8s6iKScHChRQV903JQ6/GsHfEq7gccAD2KgSIwOA8o/v09ENEUDa1AgDtm1ucIw1H5FMITSKem1v/WaQgcsEXg5jpybG/vNYw00SeTWOV7brjs0cMPcvAc0uPcErjTDGXeo2bDpnVU/uMwOJJ8yflSRkNZoq3LneI01hMSqPsBDEKFnhyenEMH0SQwgOG9POLtM/MSFaGyw0z/2HeTIoy+NpL8TQ0kEAm51yp7IOKzkER8AABamRrAHpTyOgCy1r3lo8xvFbvVG2o8HjB7abEloVqwg35FdHdY1Gfwlpcpiqg86XgWz2AcWfrgjzM36c+AwFv7Ff9gj5pRfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jQpXlyDONzimOsaHr6N0meVwJEruFBCSVGiH0P1lF/Y=;
- b=iyreijANeNJ+q+bHefy5sAyZMrIPZMjFO8Kyz4XuAHKyTl5ChWtf8RnLczpZFCfAo1gC7XTwic6nreadbg6KkcbQmfGFu3jVaK5u9eTPEwZ3UZgik188v/in6valOodkac/i140TcsyNsrY+ov/uEMCFe+pbWrUyeuh14mediyDGB5X3P6fus6cA4Z1QD7C6/90W0QvbAwkZNe8ADAeqtEjHtVEJmyh8AUzc5IawIqya2im4Vzl5a/gJBCF3OTmcO0zhz8YzKR3Ofwr6wfvz2CcRNSg+mRB5Fd0ejr/PzAr8raYKQTtaA76cL1b7Mis3W2d2JBI3zRu2uTac2LiOlg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linaro.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jQpXlyDONzimOsaHr6N0meVwJEruFBCSVGiH0P1lF/Y=;
- b=ymOScf6kcNYQe+6euvlIVEBqRo8a4vg/qf+6NDBdgkVdmUg7QGdIrtJnVeagoWOCGRZM5uNYUc0W7tI8O2g6+WSsrLPuI9VBQuXEEUP7k/c5J5uH/pq6Z9DP7GM5ctfNHVJEXxdVzk58p83+o3LYqHhDV65399G3kDMID1gMfVM=
-Received: from MN2PR12CA0020.namprd12.prod.outlook.com (2603:10b6:208:a8::33)
- by DS0PR12MB6487.namprd12.prod.outlook.com (2603:10b6:8:c4::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6977.31; Tue, 14 Nov
- 2023 12:49:10 +0000
-Received: from BL6PEPF0001AB4A.namprd04.prod.outlook.com
- (2603:10b6:208:a8:cafe::26) by MN2PR12CA0020.outlook.office365.com
- (2603:10b6:208:a8::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6977.31 via Frontend
- Transport; Tue, 14 Nov 2023 12:49:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BL6PEPF0001AB4A.mail.protection.outlook.com (10.167.242.68) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7002.14 via Frontend Transport; Tue, 14 Nov 2023 12:48:43 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.32; Tue, 14 Nov
- 2023 06:48:38 -0600
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.32; Tue, 14 Nov
- 2023 04:48:37 -0800
-Received: from xhdmubinusm40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2507.32 via Frontend
- Transport; Tue, 14 Nov 2023 06:48:34 -0600
-From:   Mubin Sayyed <mubin.sayyed@amd.com>
-To:     <krzysztof.kozlowski+dt@linaro.org>,
-        <u.kleine-koenig@pengutronix.de>, <thierry.reding@gmail.com>,
-        <robh+dt@kernel.org>, <conor+dt@kernel.org>, <tglx@linutronix.de>,
-        <daniel.lezcano@linaro.org>, <michal.simek@amd.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <git@amd.com>, <mubin10@gmail.com>,
-        Mubin Sayyed <mubin.sayyed@amd.com>
-Subject: [LINUX PATCH v2 2/3] dt-bindings: timer: Add bindings for TTC PWM
-Date:   Tue, 14 Nov 2023 18:17:47 +0530
-Message-ID: <20231114124748.581850-3-mubin.sayyed@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20231114124748.581850-1-mubin.sayyed@amd.com>
-References: <20231114124748.581850-1-mubin.sayyed@amd.com>
+        with ESMTP id S233100AbjKNMwy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Nov 2023 07:52:54 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1151993
+        for <linux-pwm@vger.kernel.org>; Tue, 14 Nov 2023 04:52:49 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id 3f1490d57ef6-dae7cc31151so5527372276.3
+        for <linux-pwm@vger.kernel.org>; Tue, 14 Nov 2023 04:52:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1699966369; x=1700571169; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dm5tIBxlFob9g4Fl4wFAfi9oUFoS3/1CELy15DVM1mI=;
+        b=IUva1w1nEizlrvNSoUb3UCdQBfVmQ5Q4YZp7nEJb92vakCXDD3tvM56YuNFWj73t56
+         TOoZ95mU9fpkZD2KzIW51MFjmpbE6+hIE3T+so0B1GAhA59XFPmZTZSjSDtLr8mydiBn
+         Ef9QF2o6CrkfgsAZcZmj+S4j8KOM99mRlpubKhiM/m53A3QLZcc5PUzMkjqGMDY8tRdu
+         PS8vjaJPg0kpvBHmKGd8zxZQbZXG+Bwl+WJuQcx5XkAv1XEgI7/vnmvOcFgAVwjfcR2L
+         th8L1YtixZdLUKGq3erttfLhik3qL8eBf1l3jQIVwmRRUC1q/x+O6K6Hk1CZ3y4DfDHl
+         jIhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699966369; x=1700571169;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dm5tIBxlFob9g4Fl4wFAfi9oUFoS3/1CELy15DVM1mI=;
+        b=crRlKsomXNATDeNR14qSH7jHvtyGfEguY8WAqJeRTuWJYFe5bR3VkSV7lTGDwASlb6
+         W0uVVFAYrtfxlro0M4umfEmaHFwPVvn7/F0WsIClzcLHjBza0kLhGZm1cdVf6qWzvRwD
+         mbeub7LyX2rxEmypt07CgPeVkngf9SN07g3SwIypHEj1c/PUs2YTg9Ju6JHfu2PQGe3N
+         FhXcTJxwKIbKWUlVg2W/2V2qcnS4KG4sHWT6c+l7pSGCe6Dkydb6M2QRelNIlrSdV50o
+         ra16Y3i/059fM5iXharmigMAkf+oiZcHPOpevA2zuiCEAY+vdEUrOkqHFXB0iGJiTWzK
+         Uzsg==
+X-Gm-Message-State: AOJu0Yyn1zo8BLhf6ALgtSOOU2reob/68oMrEmyqubEcAFFrNb/atAqo
+        +Ge09M48ZFug92yyEcFoeIKGeYQyGgzEbocHj105iw==
+X-Google-Smtp-Source: AGHT+IHb5y2/nAMzpAAbpcAqsc2332J3Hl+TEbnJYw6VgROQL9pFrDJMQLjA7DxF+w42E0bHCOIHzfYDBAjoO7yaXoA=
+X-Received: by 2002:a25:6951:0:b0:da3:ab41:2fc8 with SMTP id
+ e78-20020a256951000000b00da3ab412fc8mr8347458ybc.16.1699966368706; Tue, 14
+ Nov 2023 04:52:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB4A:EE_|DS0PR12MB6487:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3b602e4-0dd0-4e20-c528-08dbe51018c5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kHMgSg2FmBbWoeBxmOOi4hfe2SACmbD0xZKBb3q1sods81yv33T873ADOEG0jDe2hWh6uaBiOgP+I0mENzOKTLhaIzrbnOgyUd7RZDo6M7UeD0dbimGunIq2KJjGSHfrowSXO591nm/tPkUV6ZPQf9TWiAnnfUsz8WGcsf3vLB7ZdEfY4C45q0cP9TAbgxWpoBkz7qi/C5nTZl5F5ggDGD5C3ejY4HyOveBCSw94UuGAOYaRsZAK6qrucSTcEIgluRSM1/9Qs1OFkLbpP4eF276t1plEw5DpCQm4Ars8p7Fi1CIFxpb+ACGV6qC7UGDBRXRXYOE2isVNknPIZ+xquF7bahvvNqXqFTuZb12ul7rfqpOcXfrsESoeIeBIbpa1YliEE8qo/Z8iXfgFiQQ/eWdIOUnADJHAyZRoLG08Am+sNK9Ofsa3BiupIZJAiqEE8d/Sp6WdumHiYXXvNu6jHTIEsSZ1viJe++sTl1v23RMYr6T59LE++tZGDrpbwjLwmjnwhAzSmpUP8mq3+qsKOFxsNQgQ+Pm2h5xmsV10lk9CHvMj3z8JKCDoGmNCtmHPO2hVlbEASakVuNEqYMIZiknulcgfO36byqGj4Y8eJssoyoOC5Fw58K5BB3X0FOWdvdDqRQhw/S3c324m+ayxCjZTwVJu6u3SotE9yInr9UKFEjdHlzaUDZCQrjkQMYjNo4i0qw3iayqn3bRK8E3ezU2id02LF2eg0Sv9LZYrTtAQLo3mPKCm2aSFVhvSx0jt7AdNCFghtUzYaVtsltF8iw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(136003)(346002)(396003)(39860400002)(376002)(230922051799003)(451199024)(186009)(82310400011)(64100799003)(1800799009)(36840700001)(46966006)(40470700004)(40480700001)(40460700003)(70586007)(70206006)(110136005)(6636002)(316002)(54906003)(81166007)(82740400003)(356005)(36756003)(86362001)(83380400001)(336012)(426003)(26005)(6666004)(2616005)(36860700001)(478600001)(2906002)(5660300002)(47076005)(44832011)(41300700001)(4326008)(8676002)(7416002)(1076003)(8936002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2023 12:48:43.9345
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3b602e4-0dd0-4e20-c528-08dbe51018c5
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL6PEPF0001AB4A.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6487
+References: <CGME20231031095014epcas2p2814fa2bb5f940ccb0d0951667df34f98@epcas2p2.samsung.com>
+ <20231031094852.118677-1-jaewon02.kim@samsung.com> <CACRpkdZRMJgWkLwKstpN_9=VGutbE1wBv+X_a15RJ=7ddNtbHw@mail.gmail.com>
+ <15d9340a-dd4f-43fc-96c6-f6a8daf76e11@linaro.org>
+In-Reply-To: <15d9340a-dd4f-43fc-96c6-f6a8daf76e11@linaro.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 14 Nov 2023 13:52:36 +0100
+Message-ID: <CACRpkdYrJMnJLHa1+Vtga3WdYySx9ioGzqmnf1uZKGdBxEWa_Q@mail.gmail.com>
+Subject: Re: [PATCH 00/10] Introduce ExynosAutov920 SoC and SADK board
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Jaewon Kim <jaewon02.kim@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Cadence TTC can act as PWM device, it is supported through
-separate PWM framework based driver. Decision to configure
-specific TTC device as PWM or clocksource/clockevent would
-be done based on presence of "#pwm-cells" property.
+On Mon, Nov 13, 2023 at 8:59=E2=80=AFPM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> On 13/11/2023 15:11, Linus Walleij wrote:
+> > Hi Jaewon,
+> >
+> > thanks for your patches!
+> >
+> > On Tue, Oct 31, 2023 at 10:50=E2=80=AFAM Jaewon Kim <jaewon02.kim@samsu=
+ng.com> wrote:
+> >
+> >>   dt-bindings: pinctrl: samsung: add exynosautov920 pinctrl binding
+> >>   pinctrl: samsung: add exynosautv920 pinctrl
+> >
+> > It is best if I can apply these two separately once Krzysztof is happy
+> > with them. I hope that would work? I don't see any specific dependencie=
+s.
+>
+> That's fine. I might have conflicting pieces in-flight, but then I'll
+> funnel these through you as well. I can apply these to my
+> samsung-pinctrl tree and send them to you as usual, unless you prefer to
+> apply yourself.
 
-Also, interrupt property is not required for TTC PWM driver.
-Update bindings to support TTC PWM configuration.
+Oh that's best of course, you take them when you think they are ready.
 
-Signed-off-by: Mubin Sayyed <mubin.sayyed@amd.com>
----
-Changes for v2:
-  Update subject
-  Modify #pwm-cells to constant 3
-  Update example to use generic name
----
- .../devicetree/bindings/timer/cdns,ttc.yaml   | 22 ++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+I was more referring to that we should be able to merge the two pin control
+patches apart from the rest of the series.
 
-diff --git a/Documentation/devicetree/bindings/timer/cdns,ttc.yaml b/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
-index dbba780c9b02..da342464d32e 100644
---- a/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
-+++ b/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
-@@ -32,12 +32,23 @@ properties:
-     description: |
-       Bit width of the timer, necessary if not 16.
- 
-+  "#pwm-cells":
-+    const: 3
-+
- required:
-   - compatible
-   - reg
--  - interrupts
-   - clocks
- 
-+allOf:
-+  - if:
-+      not:
-+        required:
-+          - "#pwm-cells"
-+    then:
-+      required:
-+        - interrupts
-+
- additionalProperties: false
- 
- examples:
-@@ -50,3 +61,12 @@ examples:
-         clocks = <&cpu_clk 3>;
-         timer-width = <32>;
-     };
-+
-+  - |
-+    pwm: pwm@f8002000 {
-+        compatible = "cdns,ttc";
-+        reg = <0xf8002000 0x1000>;
-+        clocks = <&cpu_clk 3>;
-+        timer-width = <32>;
-+        #pwm-cells = <3>;
-+    };
--- 
-2.25.1
-
+Yours,
+Linus Walleij
