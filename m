@@ -2,55 +2,55 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4ACDC47074
-	for <linux-pwm@archiver.kernel.org>; Wed, 15 Nov 2023 09:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0394CC07548
+	for <linux-pwm@archiver.kernel.org>; Wed, 15 Nov 2023 09:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234833AbjKOJ7E (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 15 Nov 2023 04:59:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
+        id S234868AbjKOJ7F (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 15 Nov 2023 04:59:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234843AbjKOJ7D (ORCPT
+        with ESMTP id S234856AbjKOJ7D (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Nov 2023 04:59:03 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB25B18C
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA966184
         for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 01:58:58 -0800 (PST)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20231115095855epoutp018ef45f70251b78fa4b41b0fae5fd94bb~Xw38mia580883908839epoutp01F
-        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 09:58:55 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20231115095855epoutp018ef45f70251b78fa4b41b0fae5fd94bb~Xw38mia580883908839epoutp01F
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20231115095854epoutp03446f86c7702a2f72690a25f2dc3cda0e~Xw38E9P1L0641806418epoutp033
+        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 09:58:54 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20231115095854epoutp03446f86c7702a2f72690a25f2dc3cda0e~Xw38E9P1L0641806418epoutp033
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1700042335;
-        bh=hopgT6J43l7rW84P4tBjhgGiFDOitoS2F4ykAHwp7rI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cBKFzW8tj81z0Sk9RcHApdj1qcXcgQ/CUD466qpFDsIDSstcOj6uaNlKH7V25alEC
-         gJCm93c1M8fIbU8bThvEa16BKsRmslR0Yx/BFXCapmDq7e15W6GrJij524kWYXY6h7
-         OJ6184+yWqmjLG0i1A48EHbBTig5m6bykb3HF+1Q=
+        s=mail20170921; t=1700042334;
+        bh=+xyxjTP8FlkiTMFrXXa0W/gjW4TDlH/6sRUSaQy2ih4=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=tTPlnTBxVI0HhCS3nkpdh0wXOQ7di9QVZx0XJBHvNR0z4hE5wXJoszhtrNkE20otP
+         8PCSbAe+iVMqctdqFFWonbNS2/1td7wk8zsVmTMyqKpP6J3uw4c/h7QdhxxTSnSRuZ
+         o7nSsFduyFa+QXpag7/CTRkQo8MTpaM9OjBnHL8c=
 Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20231115095854epcas2p23e93dbc422aa3ec09a8ed64ba391fd4a~Xw373R7eE3041230412epcas2p2F;
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20231115095854epcas2p10dbad7d6683fff22c48dac482b4bf2fa~Xw37hGnKx0961209612epcas2p1m;
         Wed, 15 Nov 2023 09:58:54 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.36.68]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4SVdsp0lfyz4x9Pw; Wed, 15 Nov
-        2023 09:58:54 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        87.B1.09607.D5694556; Wed, 15 Nov 2023 18:58:53 +0900 (KST)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.101]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4SVdsn3vVfz4x9Pw; Wed, 15 Nov
+        2023 09:58:53 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E0.0D.09622.D5694556; Wed, 15 Nov 2023 18:58:53 +0900 (KST)
 Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20231115095853epcas2p45e2c5fe8ac771555a25b434cf86895fd~Xw37CyxH80940109401epcas2p4i;
-        Wed, 15 Nov 2023 09:58:53 +0000 (GMT)
-Received: from epsmgmcp1.samsung.com (unknown [182.195.42.82]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20231115095852epcas2p21e067efe75275c6abd2aebf04c5c6166~Xw36fQ_Wl3241632416epcas2p2E;
+        Wed, 15 Nov 2023 09:58:52 +0000 (GMT)
+Received: from epsmgmc1p1new.samsung.com (unknown [182.195.42.40]) by
         epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20231115095853epsmtrp22022fe9e34e5e66147e70286fc58bc8c~Xw37B7q6m2554225542epsmtrp2c;
-        Wed, 15 Nov 2023 09:58:53 +0000 (GMT)
-X-AuditID: b6c32a48-bcdfd70000002587-6d-6554965d81d0
+        20231115095852epsmtrp238fa1f36703da144c5f3eeb63cab9209~Xw36eXIgI2554225542epsmtrp2b;
+        Wed, 15 Nov 2023 09:58:52 +0000 (GMT)
+X-AuditID: b6c32a46-d61ff70000002596-aa-6554965d8bf7
 Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgmcp1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        47.F0.18939.D5694556; Wed, 15 Nov 2023 18:58:53 +0900 (KST)
+        epsmgmc1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        79.B2.07368.C5694556; Wed, 15 Nov 2023 18:58:52 +0900 (KST)
 Received: from localhost.localdomain (unknown [10.229.9.55]) by
         epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20231115095853epsmtip2522ff670d63eb152b9ff8433536c4976~Xw36km-312498624986epsmtip2e;
-        Wed, 15 Nov 2023 09:58:53 +0000 (GMT)
+        20231115095852epsmtip244f6135daaa656919ae8823313fbb2b5~Xw36BA7MM2498224982epsmtip2P;
+        Wed, 15 Nov 2023 09:58:52 +0000 (GMT)
 From:   Jaewon Kim <jaewon02.kim@samsung.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Alim Akhtar <alim.akhtar@samsung.com>,
@@ -68,82 +68,115 @@ Cc:     linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
         Jaewon Kim <jaewon02.kim@samsung.com>
-Subject: [PATCH v2 02/12] dt-bindings: soc: samsung: exynos-pmu: add
- exynosautov920 compatible
-Date:   Wed, 15 Nov 2023 18:55:58 +0900
-Message-ID: <20231115095609.39883-3-jaewon02.kim@samsung.com>
+Subject: [PATCH v2 00/12] Introduce ExynosAutov920 SoC and SADK board
+Date:   Wed, 15 Nov 2023 18:55:56 +0900
+Message-ID: <20231115095609.39883-1-jaewon02.kim@samsung.com>
 X-Mailer: git-send-email 2.42.0
-In-Reply-To: <20231115095609.39883-1-jaewon02.kim@samsung.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLJsWRmVeSWpSXmKPExsWy7bCmmW7stJBUg60PbCwezNvGZrFm7zkm
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBJsWRmVeSWpSXmKPExsWy7bCmhW7stJBUg5M/xS0ezNvGZrFm7zkm
         i/lHzrFaNC9ez2axo+EIq8W7uTIWe19vZbeY8mc5k8Wmx9dYLTbP/8NocXnXHDaLu3dXMVrM
         OL+PyeLM4l52i9a9R9gtDr9pZ7X4uWsei8WqXUB1tydOZnQQ9tg56y67x6ZVnWwed67tYfPY
         P3cNu8fmJfUe/X8NPPq2rGL0+LxJLoAjKtsmIzUxJbVIITUvOT8lMy/dVsk7ON453tTMwFDX
         0NLCXEkhLzE31VbJxSdA1y0zB+gdJYWyxJxSoFBAYnGxkr6dTVF+aUmqQkZ+cYmtUmpBSk6B
-        eYFecWJucWleul5eaomVoYGBkSlQYUJ2xp6X0xgLrrFVNHZ7NTCuYe1i5OSQEDCRuPOiB8wW
-        EtjBKLHlQngXIxeQ/YlRYvqiB4wQCSDn7Fk2mIYLu/eyQBTtZJRoXNTOBlH0kVHix052EJtN
-        QFvi+/rFYFNFBO4zS7xuqwZpYBZoZ5KY9+0lC0hCWCBB4sq+/UxdjBwcLAKqEuv+JYKEeQVs
-        JXa+WA61TF5iz6LvYCWcAnYSree1IEoEJU7OfAI2hRmopHnrbGaQ8RICZzgk1j49ygjR6yIx
-        899LZghbWOLV8S3sELaUxOd3e6HmZ0u0T/8DDYkKiYsbZkPFjSVmPWtnBNnLLKApsX6XPogp
-        IaAsceQW1Fo+iY7Df9khwrwSHW1CEI1qEvennoMaIiMx6chKJogSD4npc/wh4TSRUaLhe+EE
-        RoVZSH6ZheSXWQhrFzAyr2IUSy0ozk1PLTYqMIFHbXJ+7iZGcLrW8tjBOPvtB71DjEwcjIcY
-        JTiYlUR4zeVCUoV4UxIrq1KL8uOLSnNSiw8xmgLDeSKzlGhyPjBj5JXEG5pYGpiYmRmaG5ka
-        mCuJ895rnZsiJJCeWJKanZpakFoE08fEwSnVwBQ79fVh69UFDaU/Xz6zfHzjwQyB9Bs89d8r
-        5VjdGSpVxUx8mFovan+UKq3U+K0xV5iJu+CgbC7/lZnhYvuutJ13vOAh/ddta26S2KuHlZN3
-        vLXnFA1u53m3eE1nkNkUU8YHmx+fbU0LSpkkdeH3+jVBYeZFt10/PbHX/ru94kRZweydEzfZ
-        lc0Utcpfo+13f73fsYVMhw62RX+62sykXPpn5+mZdxbu+2r9bPKjlAlLDm8/VvNWL/fNw7hX
-        7Dyq7YtFFgnevcd91r6+6X3o7Ge3pu5fIZv6cU/ZvgPf5md/3nG2yG/Xl54GwR8Ne23/OvNl
-        bSlmX8bO+tHclfnY+fNS5nETbfvyVns8EEjy/e2nxFKckWioxVxUnAgAOuctDmAEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupkkeLIzCtJLcpLzFFi42LZdlhJXjd2Wkiqweur4hYP5m1js1iz9xyT
+        eYFecWJucWleul5eaomVoYGBkSlQYUJ2xqtl/5gKzopVrHr9gL2B8bBQFyMnh4SAicSFn6uY
+        uhi5OIQEdjBKbGi8wwLhfGKUWPZrG1TmG6PEz9WL2WBa1jXOZYdI7GWU+L+pFarqI6PEov07
+        WUCq2AS0Jb6vX8wKYosI3GeWeN1WDVLELNDOJDHv20uwImEBV4nXH+eA2SwCqhJX350Ds3kF
+        bCXudP5mhVgnL7Fn0XcmiLigxMmZT8BqmIHizVtnM4MMlRA4wyHxYetUdogGF4nJt+8yQdjC
+        Eq+Ob4GKS0l8frcX6odsifbpf6AWVEhc3DAbKm4sMetZO2MXIwfQAk2J9bv0QUwJAWWJI7eg
+        1vJJdBz+yw4R5pXoaIOGo5rE/annoIbISEw6shLqAA+Jkx37wBYJCcRKbLv3n2kCo/wsJM/M
+        QvLMLIS9CxiZVzGKpRYU56anFhsVGMFjNTk/dxMjOElrue1gnPL2g94hRiYOxkOMEhzMSiK8
+        5nIhqUK8KYmVValF+fFFpTmpxYcYTYHBO5FZSjQ5H5gn8kriDU0sDUzMzAzNjUwNzJXEee+1
+        zk0REkhPLEnNTk0tSC2C6WPi4JRqYGLYcyzleflE9WYulhb1R1Wx3p8nvRUV/Bb2KHHJ9xtd
+        S3+23TA/9Jqb++jGTd3HSz1kVvo+d3KbPV1s1uPtey+2G/zsWbPSjvHW+tLNEzIrzdI1ZkgZ
+        lEZtf7xo8zVhO6XV67XPunadYde9snhins+nyUmZj0uavzabr9u9wUhn6/w1+5dJ6HNn/vxz
+        aolMiofV05VmEptapqRtD2q3+/JQtHVhl43M6QkzmDvWmq1fMe0b8xrRHguOcz/lDihURDE0
+        F7FpJ+bXVz0UyD8htjF35VKRP5Zvo8uDl7D+/8GVGyc8bWqT6cIFGyO6bFntFVqs2N10bSrW
+        3z8ZX2LqKLHKtihTUVArUUbjxNNcZiWW4oxEQy3mouJEAGlteTxbBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuplkeLIzCtJLcpLzFFi42LZdlhJXjdmWkiqwdkjehYP5m1js1iz9xyT
         xfwj51gtmhevZ7PY0XCE1eLdXBmLva+3sltM+bOcyWLT42usFpvn/2G0uLxrDpvF3burGC1m
         nN/HZHFmcS+7ReveI+wWh9+0s1r83DWPxWLVLqC62xMnMzoIe+ycdZfdY9OqTjaPO9f2sHns
-        n7uG3WPzknqP/r8GHn1bVjF6fN4kF8ARxWWTkpqTWZZapG+XwJWx5+U0xoJrbBWN3V4NjGtY
-        uxg5OSQETCQu7N7L0sXIxSEksJ1R4vuxjcwQCRmJ5c/62CBsYYn7LUdYIYreM0psef+CCSTB
-        JqAt8X39YrCEiMBzZomzfx6BdTML9DNJXN+UAGILC8RJNFyZwt7FyMHBIqAqse5fIkiYV8BW
-        YueL5VAL5CX2LPrOBFLCKWAn0XpeCyQsBFTSuvsHM0S5oMTJmU9YIKbLSzRvnc08gVFgFpLU
-        LCSpBYxMqxhFUwuKc9NzkwsM9YoTc4tL89L1kvNzNzGCY0sraAfjsvV/9Q4xMnEwHmKU4GBW
-        EuE1lwtJFeJNSaysSi3Kjy8qzUktPsQozcGiJM6rnNOZIiSQnliSmp2aWpBaBJNl4uCUamBS
-        jLpZbbjkl6aX/Ium+enBH2z/3Dn/wlun5u+EuTPn97PdP71TTnXeLv21/jWHJRWv5N3yvdy4
-        UTLzl2RfQYDzrv23Cl081rMcOvb0Qk7IC+9H/kn5D5q7jlU8eHt75fXDH0zY5jm0C/IoV1mG
-        xC3aPNNGvf30qUOLrULLrSZLaMpdmcC5Wa/ZcPlEtqm3py45co2twEIwQcpJSYzza2zeuUXP
-        30QWnKo84n3aO37LzO92G15t4CnbnqJ4/W/VV+OV6yNe6Uma/DJc86Hj1hlN5dR8ft7ESYrZ
-        CT4XL3YdzLKLkOK5FPWgzLbu7K2N1VPPTFujk6Zz19nsSzObRbIn4ynzdZynuEUL3We8SnJQ
-        YinOSDTUYi4qTgQAaZ8qVhwDAAA=
-X-CMS-MailID: 20231115095853epcas2p45e2c5fe8ac771555a25b434cf86895fd
+        n7uG3WPzknqP/r8GHn1bVjF6fN4kF8ARxWWTkpqTWZZapG+XwJXxatk/poKzYhWrXj9gb2A8
+        LNTFyMkhIWAisa5xLnsXIxeHkMBuRok/L6+wQSRkJJY/64OyhSXutxxhBbGFBN4zSsyZbQVi
+        swloS3xfv5gVpFlE4DmzxNk/j5hBEswC/UwS1zclgNjCAq4Srz/OYQGxWQRUJa6+Owdm8wrY
+        Stzp/M0KsUBeYs+i70wQcUGJkzOfANVwAM1Rl1g/TwhipLxE89bZzBMY+WchqZqFUDULSdUC
+        RuZVjJKpBcW56bnJhgWGeanlesWJucWleel6yfm5mxjBMaalsYPx3vx/eocYmTgYDzFKcDAr
+        ifCay4WkCvGmJFZWpRblxxeV5qQWH2KU5mBREuc1nDE7RUggPbEkNTs1tSC1CCbLxMEp1cD0
+        MnCLUX5Si+mtosfKk9dPytvPFfFIp4Znotd/63tTJ6ysUdx1kCcrhPN56vFAKdtZLw9x7JvH
+        vm9X8MN62bT9GvOmn7mwtVvRTGzdu9W/jevVLi7aZf9p021bR/Nce2U2toRJ6788Obs4j7cn
+        ZlbUeUaZvgmHRQ3U26/aSqSZcv02X3yyg3fGtWy/Y0k2G88av/j87FLG/hu9db65K3fcT1rk
+        J3JbKVi78s2d6ZNyFgqv7P1/uLAlJP9ls8OjpTxv5sy+L1Wiv05B8dBuEdH1Ukynjv6JXpSa
+        986m+I7pr9csE1iKl7fsFpj4519rxKTd+6WMb3VZli0/2Dzr3uMHG3Y/5XTbtbPhSvXecwJ+
+        PEosxRmJhlrMRcWJAE2o/okgAwAA
+X-CMS-MailID: 20231115095852epcas2p21e067efe75275c6abd2aebf04c5c6166
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: AUTO_CONFIDENTIAL
 CMS-TYPE: 102P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20231115095853epcas2p45e2c5fe8ac771555a25b434cf86895fd
-References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
-        <CGME20231115095853epcas2p45e2c5fe8ac771555a25b434cf86895fd@epcas2p4.samsung.com>
+X-CMS-RootMailID: 20231115095852epcas2p21e067efe75275c6abd2aebf04c5c6166
+References: <CGME20231115095852epcas2p21e067efe75275c6abd2aebf04c5c6166@epcas2p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add samsung,exynosautov920-pmu compatible for representing
-pmu of ExynosAutov920 SoC.
+ExynosAutov920[1] is ARMv8-based automotive-oriented SoC.
+This SoC is the next generation of exynosautov9 and AE(Automotive Enhanced)
+IPs are used for safety.
 
-Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+This patchset is the minimal set for ExynosAutov920 SoC and SADK board.
+Currently, ramdisk console is available and Clock, UFS, and USI will be
+added after this patchset.
+
+[1] : https://semiconductor.samsung.com/processor/automotive-processor/exynos-auto-v920
+
 ---
- Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Changes in v2:
+ - Rebase to git://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git
+             branch : for-v6.8/samsung-bindings-compatibles
+ - Specific exynosautov920 compatible
+ - Add dt-binding patch for pmu, chipid
 
-diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml b/Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml
-index 6492e92586d9..28e2cb50d85e 100644
---- a/Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml
-+++ b/Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml
-@@ -52,6 +52,7 @@ properties:
-           - enum:
-               - samsung,exynos7885-pmu
-               - samsung,exynosautov9-pmu
-+              - samsung,exynosautov920-pmu
-           - const: samsung,exynos7-pmu
-           - const: syscon
-       - items:
+Jaewon Kim (12):
+  dt-bindings: soc: samsung: exynos-sysreg: add exynosautov920 sysreg
+  dt-bindings: soc: samsung: exynos-pmu: add exynosautov920 compatible
+  dt-bindings: soc: samsung: usi: add exynosautov920-usi compatible
+  dt-bindings: serial: samsung: add exynosautov920-uart compatible
+  dt-bindings: pwm: samsung: add exynosautov920 compatible
+  dt-bindings: pinctrl: samsung: add exynosautov920 binding
+  dt-bindings: arm: samsung: Document exynosautov920 SADK board binding
+  dt-bindings: hwinfo: samsung,exynos-chipid: add exynosautov920
+    compatible
+  soc: samsung: exynos-chipid: add exynosautov920 SoC support
+  pinctrl: samsung: add exynosautov920 pinctrl
+  arm64: dts: exynos: add initial support for exynosautov920 SoC
+  arm64: dts: exynos: add minimal support for exynosautov920 sadk board
+
+ .../bindings/arm/samsung/samsung-boards.yaml  |    6 +
+ .../hwinfo/samsung,exynos-chipid.yaml         |    1 +
+ .../samsung,pinctrl-wakeup-interrupt.yaml     |    2 +
+ .../bindings/pinctrl/samsung,pinctrl.yaml     |    1 +
+ .../devicetree/bindings/pwm/pwm-samsung.yaml  |    1 +
+ .../bindings/serial/samsung_uart.yaml         |    4 +-
+ .../bindings/soc/samsung/exynos-pmu.yaml      |    1 +
+ .../bindings/soc/samsung/exynos-usi.yaml      |    4 +-
+ .../soc/samsung/samsung,exynos-sysreg.yaml    |    5 +
+ arch/arm64/boot/dts/exynos/Makefile           |    3 +-
+ .../dts/exynos/exynosautov920-pinctrl.dtsi    | 1266 +++++++++++++++++
+ .../boot/dts/exynos/exynosautov920-sadk.dts   |   88 ++
+ .../arm64/boot/dts/exynos/exynosautov920.dtsi |  312 ++++
+ .../pinctrl/samsung/pinctrl-exynos-arm64.c    |  140 ++
+ drivers/pinctrl/samsung/pinctrl-exynos.c      |  102 +-
+ drivers/pinctrl/samsung/pinctrl-exynos.h      |   27 +
+ drivers/pinctrl/samsung/pinctrl-samsung.c     |    5 +
+ drivers/pinctrl/samsung/pinctrl-samsung.h     |   13 +
+ drivers/soc/samsung/exynos-chipid.c           |    1 +
+ 19 files changed, 1972 insertions(+), 10 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/exynos/exynosautov920-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
+ create mode 100644 arch/arm64/boot/dts/exynos/exynosautov920.dtsi
+
 -- 
 2.42.0
 
