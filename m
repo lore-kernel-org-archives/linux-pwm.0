@@ -2,162 +2,152 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02209C07548
-	for <linux-pwm@archiver.kernel.org>; Wed, 15 Nov 2023 09:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB59CC07548
+	for <linux-pwm@archiver.kernel.org>; Wed, 15 Nov 2023 09:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234678AbjKOJCs (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 15 Nov 2023 04:02:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33566 "EHLO
+        id S234850AbjKOJ7D (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 15 Nov 2023 04:59:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234651AbjKOJCs (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Nov 2023 04:02:48 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FE3114
-        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 01:02:44 -0800 (PST)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3AF60kvO030368;
-        Wed, 15 Nov 2023 10:02:23 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; s=
-        selector1; bh=jTZBldcCzRDJ/o8lXUBW/3C7mfzdAv5i1O3ggFoUvFI=; b=tL
-        5FgaC0lzWW6JxZeMpzYkqXEhUG34Ha88Wb/2Y3+e2cfcP3Gr5Tfwmz3yoDL/HOkV
-        YVf+fdPOy2AoWaz7MkjOcUiNh+zCIc4FZPyxB5fdIvcDts5xWizMds12VxxJFVMm
-        n5pBUOaBp062FpyH+9G7ewIsVj5qHyVC4T55rncpInU5waK6KaIZlMRzeYECJSYJ
-        dGYTUxB3R85KAEJGfzk1OxavZltJ6+zrxaiZ2bkmc4etB2sICpyO4VeC0ic6x+Rh
-        uHts/PP2oNzqRpBY4ykWdubF8qVLFyGuj+oyT7GUin69ATaWKv5+e7t4cQ8hQv4f
-        S1uAGjg5nv8Z9/oKiL9g==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ua1u1yr32-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Nov 2023 10:02:23 +0100 (CET)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 456FC100053;
-        Wed, 15 Nov 2023 10:02:22 +0100 (CET)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3BA6521B536;
-        Wed, 15 Nov 2023 10:02:22 +0100 (CET)
-Received: from [10.201.20.59] (10.201.20.59) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Wed, 15 Nov
- 2023 10:02:21 +0100
-Message-ID: <e7034e83-7c1a-4706-8382-536b260284eb@foss.st.com>
-Date:   Wed, 15 Nov 2023 10:02:20 +0100
+        with ESMTP id S234833AbjKOJ7C (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Nov 2023 04:59:02 -0500
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8792A120
+        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 01:58:58 -0800 (PST)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20231115095854epoutp035d78d86477977e1f76d99aefd19d987d~Xw38LMxhP0638506385epoutp03p
+        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 09:58:54 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20231115095854epoutp035d78d86477977e1f76d99aefd19d987d~Xw38LMxhP0638506385epoutp03p
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1700042334;
+        bh=kJxHxNjsxBKiWMi9viH6jAuHV4XZXizWHnQJw/wgmHw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=p/57tihjBEwTZOERfnqiGd79PTh6B8dLKcHuHd1h3yVbR0xe5Up8sltmu+DSJDrZS
+         KMaaXkw9l3AWZWk7RwtuyLMlSRL/JYLP5TvVYA1JDnEf3QvNcFVfthJKRHwy8PmT7d
+         gX1VNDOKfWXGz0jidMuUDM84JAZaZHM2hNlnoFiM=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20231115095854epcas2p175cbb55ca0281f244db0d05356c89322~Xw37iyZvH0959709597epcas2p1o;
+        Wed, 15 Nov 2023 09:58:54 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.100]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4SVdsn5DYCz4x9Q5; Wed, 15 Nov
+        2023 09:58:53 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        3C.46.10006.D5694556; Wed, 15 Nov 2023 18:58:53 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20231115095853epcas2p3e808e27c4a5c611e7e1965f4c968cbcc~Xw36x_PKA0132301323epcas2p3S;
+        Wed, 15 Nov 2023 09:58:53 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20231115095853epsmtrp2c7196be844e6e8ffebdc09b9161c05e1~Xw36w8hL32585825858epsmtrp2o;
+        Wed, 15 Nov 2023 09:58:53 +0000 (GMT)
+X-AuditID: b6c32a45-9e590a8000002716-f7-6554965d5774
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        02.F6.08755.D5694556; Wed, 15 Nov 2023 18:58:53 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.229.9.55]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20231115095852epsmtip2ce7770628a2aa20bbf5fe5f2b8186299~Xw36RnLWe2715627156epsmtip2N;
+        Wed, 15 Nov 2023 09:58:52 +0000 (GMT)
+From:   Jaewon Kim <jaewon02.kim@samsung.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Jaewon Kim <jaewon02.kim@samsung.com>
+Subject: [PATCH v2 01/12] dt-bindings: soc: samsung: exynos-sysreg: add
+ exynosautov920 sysreg
+Date:   Wed, 15 Nov 2023 18:55:57 +0900
+Message-ID: <20231115095609.39883-2-jaewon02.kim@samsung.com>
+X-Mailer: git-send-email 2.42.0
+In-Reply-To: <20231115095609.39883-1-jaewon02.kim@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5/5] pwm: stm32: Fix enable count for clk in .probe()
-Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-CC:     Thierry Reding <thierry.reding@gmail.com>, <kernel@pengutronix.de>,
-        <linux-pwm@vger.kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20231019200658.1754190-7-u.kleine-koenig@pengutronix.de>
- <20231019200658.1754190-12-u.kleine-koenig@pengutronix.de>
- <c2da3f60-595c-4938-809a-c5640388c13c@foss.st.com>
- <20231114212009.44r742f3xqosswod@pengutronix.de>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-In-Reply-To: <20231114212009.44r742f3xqosswod@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.201.20.59]
-X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-15_07,2023-11-14_01,2023-05-22_02
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrPJsWRmVeSWpSXmKPExsWy7bCmhW7stJBUg3VTNCwezNvGZrFm7zkm
+        i/lHzrFaNC9ez2axo+EIq8W7uTIWe19vZbeY8mc5k8Wmx9dYLTbP/8NocXnXHDaLu3dXMVrM
+        OL+PyeLM4l52i9a9R9gtDr9pZ7X4uWsei8WqXUB1tydOZnQQ9tg56y67x6ZVnWwed67tYfPY
+        P3cNu8fmJfUe/X8NPPq2rGL0+LxJLoAjKtsmIzUxJbVIITUvOT8lMy/dVsk7ON453tTMwFDX
+        0NLCXEkhLzE31VbJxSdA1y0zB+gdJYWyxJxSoFBAYnGxkr6dTVF+aUmqQkZ+cYmtUmpBSk6B
+        eYFecWJucWleul5eaomVoYGBkSlQYUJ2xrr5GQWn2CsONu1mamBsYOti5OCQEDCR6Nga2sXI
+        xSEksINR4vLdz0wQzidGifbmhSxdjJxAzjdGiX+LkkFskIYluz6xQBTtZZRYdXUTI4TzkVHi
+        yc7dzCBVbALaEt/XL2YFsUUE7jNLvG6rBiliFmhnkpj37SXYWGGBeImlk+6zg9gsAqoSV068
+        ZgS5iVfAVqJpjwLENnmJPYu+M4GEOQXsJFrPa4GEeQUEJU7OfAI2hRmopHnrbGaQ8RICVzgk
+        jk9+xQ7xmovEnnMJEGOEJV4d38IOYUtJfH63lw3CzpZon/6HFcKukLi4YTZU3Fhi1rN2sGuY
+        BTQl1u/Sh5ioLHHkFtRWPomOw3+hFvFKdLQJQTSqSdyfeg5qiIzEpCMrmSBsD4l/q6dBg3Yi
+        o8SKDatZJjAqzELyzCwkz8xCWLyAkXkVo1hqQXFuemqxUYEhPHKT83M3MYJTtpbrDsbJbz/o
+        HWJk4mA8xCjBwawkwmsuF5IqxJuSWFmVWpQfX1Sak1p8iNEUGNATmaVEk/OBWSOvJN7QxNLA
+        xMzM0NzI1MBcSZz3XuvcFCGB9MSS1OzU1ILUIpg+Jg5OqQamRY/EJBaxLdx485/27YuS6oL6
+        364ysdt8U7fdOqO7NUPd/O3/xmkb1wb/Yl7oceXSpMrgq+rBfq5rPmg/XPOk7E358yKhj3sY
+        HnJVmT27erf83sJYy/icZouj/1s+r7js/lVGWlSqRETHsHjG17geiyivPQcvHAupXVeQu0ff
+        +jbvl7V3jV+vSOYuOdJU/6h/s8HmgOJdGzp71WKTP0jJHHfT+ynSL5f18hqDjswJqV0Bup09
+        HMtKp8dH/P27vFTY0/32+5K2VuMZN/n+ei17vU085QDfhvpVbakM70WO7tkx+fLmmWv1jp26
+        Ej3xApPv/89BztP9ZP76xu24L3LxQOUPvet3ryfxdOwU0hD4pMRSnJFoqMVcVJwIAM9VbOti
+        BAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuplkeLIzCtJLcpLzFFi42LZdlhJXjd2WkiqwdyZrBYP5m1js1iz9xyT
+        xfwj51gtmhevZ7PY0XCE1eLdXBmLva+3sltM+bOcyWLT42usFpvn/2G0uLxrDpvF3burGC1m
+        nN/HZHFmcS+7ReveI+wWh9+0s1r83DWPxWLVLqC62xMnMzoIe+ycdZfdY9OqTjaPO9f2sHns
+        n7uG3WPzknqP/r8GHn1bVjF6fN4kF8ARxWWTkpqTWZZapG+XwJWxbn5GwSn2ioNNu5kaGBvY
+        uhg5OSQETCSW7PrE0sXIxSEksJtR4sLRJiaIhIzE8md9UEXCEvdbjrBCFL1nlJjfuRMswSag
+        LfF9/WKwhIjAc2aJs38eMYMkmAX6mSSub0oAsYUFYiWWnmtlBLFZBFQlrpx4DWRzcPAK2Eo0
+        7VGAWCAvsWfRdyaQMKeAnUTreS2QsBBQRevuH2ATeQUEJU7OfMICMV1eonnrbOYJjAKzkKRm
+        IUktYGRaxSiZWlCcm55bbFhgmJdarlecmFtcmpeul5yfu4kRHGNamjsYt6/6oHeIkYmD8RCj
+        BAezkgivuVxIqhBvSmJlVWpRfnxRaU5q8SFGaQ4WJXFe8Re9KUIC6YklqdmpqQWpRTBZJg5O
+        qQamrLMS318qHHly7LeUg3rxmw6jE//02FanW6f83Lvb4yrDAo47k6NDEnVzE3X8/y66IB/o
+        43dk8Zzfb5XdHmdePjFnz/Hn+Z/iK/d/7oyPKU3amX9/y78D8Wqm60pFlr49YnHhXfia1gUl
+        wcKnn7T5H3/X+kXnjd2zaf+k/WU2lnBG97NEb5gxg3PH7LtB156Fvr4bdjY9+cNEI6Xdl80e
+        CKfEnC5ttb2it7Xx62XznvXdXBe/Kuj1qIduviYnMb2o+97/Vr+wKWL7N8iYNvL/k4vicHkm
+        0l56d36jwVEHAd3uPfZFpTaC28+82f75ov6LD4/XLWOcMmvm4XW83Zfn7FzJ9LrhKP/qiyuf
+        zJm2IVaJpTgj0VCLuag4EQANvdx5IAMAAA==
+X-CMS-MailID: 20231115095853epcas2p3e808e27c4a5c611e7e1965f4c968cbcc
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20231115095853epcas2p3e808e27c4a5c611e7e1965f4c968cbcc
+References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
+        <CGME20231115095853epcas2p3e808e27c4a5c611e7e1965f4c968cbcc@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 11/14/23 22:20, Uwe Kleine-König wrote:
-> On Tue, Nov 14, 2023 at 02:35:19PM +0100, Fabrice Gasnier wrote:
->> On 10/19/23 22:07, Uwe Kleine-König wrote:
->>> From: Philipp Zabel <p.zabel@pengutronix.de>
->>>
->>> Make the driver take over hardware state without disabling in .probe()
->>> and enable the clock for each enabled channel.
->>>
->>> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
->>> [ukleinek: split off from a patch that also implemented .get_state()]
->>> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
->>> ---
->>>  drivers/pwm/pwm-stm32.c | 18 ++++++++++++++----
->>>  1 file changed, 14 insertions(+), 4 deletions(-)
->>
->>
->> Hi Uwe,
->>
->> I'd only have a suggestion on the commit title:
->> pwm: stm32: Fix enable count for clk in .probe()
->>             ^
->> On first sight, the "Fix" may suggest that this fixes something older in
->> the tree. This would suggest a Fixes tag which isn't the case in this
->> series, as this is a split of the .get_state() patch.
->> Is it possible to rephrase ?
-> 
-> IMHO it is a fix, the hw state wasn't properly taken over before.
+Add compatible for ExynosAutov920 sysreg controllers.
 
-Hi Uwe,
+Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+---
+ .../bindings/soc/samsung/samsung,exynos-sysreg.yaml          | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Indeed, the HW state wasn't taken. Instead the driver used to be
-forcibly stop each channel: regmap_clear_bits(priv->regmap, TIM_CCER,
-TIM_CCER_CCXE);
-So the clk enable count (of 0) reflects this. That's kind of consistent
-state.
+diff --git a/Documentation/devicetree/bindings/soc/samsung/samsung,exynos-sysreg.yaml b/Documentation/devicetree/bindings/soc/samsung/samsung,exynos-sysreg.yaml
+index 163e912e9cad..2de4301a467d 100644
+--- a/Documentation/devicetree/bindings/soc/samsung/samsung,exynos-sysreg.yaml
++++ b/Documentation/devicetree/bindings/soc/samsung/samsung,exynos-sysreg.yaml
+@@ -50,6 +50,11 @@ properties:
+               - samsung,exynosautov9-peric1-sysreg
+           - const: samsung,exynosautov9-sysreg
+           - const: syscon
++      - items:
++          - enum:
++              - samsung,exynosautov920-peric0-sysreg
++              - samsung,exynosautov920-peric1-sysreg
++          - const: syscon
+ 
+   reg:
+     maxItems: 1
+-- 
+2.42.0
 
-> If you want a Fixes line, that's:
-> 
-> Fixes: 7edf7369205b ("pwm: Add driver for STM32 plaftorm")
-
-Well, the original driver didn't implement the .get_state.
-BUT, more thinking about this, I think it lacks to read the global
-enable status of the timer, e.g. TIM_CR1_CEN.
-
-Original driver stops each channel (clear CCXE), but after probing, the
-global TIM_CR1_CEN bit may remains 1 (from bootloader), without a
-running clock.
-
-If we're talking about fixing the original driver (probably unrelevant
-without a working .get_state), then I think this part is missing.
-
-(with or without a Fixes tag) Could you add a check on global counter
-enable bit (TIM_CR1_CEN) both in the .get_state(), and in the
-stm32_pwm_detect_channels(), that counts the num_enabled channels ?
-
-In case the TIM_CR1_CEN isn't set (but some of the TIM_CCER_CCXE are),
-the driver will report enabled channels. But physically, the pwm output
-will be inactive.
-That's more a robustness case... depending on what's been done possibly
-by bootloader. What to you think ?
-
-> 
->> something like: set clk enable count when probing channels ?
->>
->> Apart from that, you can add my:
->> Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
->>
->> ---
->> I've additional questions, unrelated to this patch. I had a look at
->> pwm-stm32-lp.c, the clock enabling is done directly in the .get_state()
->> routine. I think this should be moved to the .probe() routine as done
->> here. There's likely a risk, that clk enable count gets increased
->> artificially, at least since commit cfc4c189bc70 "pwm: Read initial
->> hardware state at request time".
->> Shall I send a patch for pwm-stm32-lp.c, similar as this patch ? Or has
->> it been spotted already ?
-> 
-> I'm not aware of someone working on stm32-lp, so feel free to prepare a
-> patch!
-
-Ok thanks! Will look into it.
-Best Regards,
-Fabrice
-
-> 
-> Best regards and thanks for your review,
-> Uwe
-> 
