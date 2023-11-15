@@ -2,54 +2,54 @@ Return-Path: <linux-pwm-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFCAC07548
-	for <linux-pwm@archiver.kernel.org>; Wed, 15 Nov 2023 09:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B57C07548
+	for <linux-pwm@archiver.kernel.org>; Wed, 15 Nov 2023 09:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234947AbjKOJ7W (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 15 Nov 2023 04:59:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
+        id S234974AbjKOJ7m (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 15 Nov 2023 04:59:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234888AbjKOJ7H (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Nov 2023 04:59:07 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9553B193
-        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 01:59:02 -0800 (PST)
+        with ESMTP id S234893AbjKOJ7J (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Nov 2023 04:59:09 -0500
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E111318B
+        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 01:59:03 -0800 (PST)
 Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20231115095856epoutp01e8dd1e190ee2869fade1afa657263839~Xw39fWtJ80883908839epoutp01J
-        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 09:58:56 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20231115095856epoutp01e8dd1e190ee2869fade1afa657263839~Xw39fWtJ80883908839epoutp01J
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20231115095855epoutp04a78bc25a38f452275c17f50bd9dbcbae~Xw39UWDYE1006510065epoutp04O
+        for <linux-pwm@vger.kernel.org>; Wed, 15 Nov 2023 09:58:55 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20231115095855epoutp04a78bc25a38f452275c17f50bd9dbcbae~Xw39UWDYE1006510065epoutp04O
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
         s=mail20170921; t=1700042336;
-        bh=Je4oVe2Ds5NyqjG75sDuOwZc3fdFC6A8pg4jNpKzco8=;
+        bh=niNoXIDBaDfRcCYo2fCtxgtWpQtcXPXpRTf9QZgEyLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YridPgHMeARQbf0vDiqxhF0B33V1aakyfGuUp76smOUNv0GYENoi0SSd6enqxoXuc
-         Zd28UuNZmk3p8aGJCC0oQ7era74S5l6zt8YOTFe33WpasKlZ6kP48DLjYmzBQ52pGT
-         8tujO9UnU/1SEBNtaNmH+5IdJpJV6UKqWJrYRNo4=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20231115095855epcas2p25c8d92aea81d09ba5de5f4cdea1e8887~Xw39F_v8I3241632416epcas2p2J;
+        b=lFvYwQ6IWo44bA4tBHz/TuqG6jbO0KQ0cG0AI2LUsvKGNo8qJRcVTKASQQlw7Es/S
+         L8cxNKKFPtI7oa4lT7OO6/Yt6sN/LGEwU744Y/5N0bEPSnXnDqhcNe1RORGWY43k3y
+         91XVH7vLpjBgTMGTFVofg2O6VRNTPdqJoSz9UD3I=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20231115095855epcas2p141909fb8f82cf06006d28c9cad9c925c~Xw38zQmdn2129221292epcas2p1R;
         Wed, 15 Nov 2023 09:58:55 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.97]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4SVdsq38LYz4x9Q5; Wed, 15 Nov
+Received: from epsmgec2p1-new.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4SVdsq0xmBz4x9Px; Wed, 15 Nov
         2023 09:58:55 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E2.47.10022.F5694556; Wed, 15 Nov 2023 18:58:55 +0900 (KST)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmgec2p1-new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        8C.34.18994.E5694556; Wed, 15 Nov 2023 18:58:55 +0900 (KST)
 Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20231115095854epcas2p42af0a20bcc4fb98aee818c7b44d77c31~Xw377l54N0467204672epcas2p4J;
-        Wed, 15 Nov 2023 09:58:54 +0000 (GMT)
-Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20231115095853epcas2p38f9fbdd7bbbb940afa2042cd5ee9d237~Xw37T0XZH0097300973epcas2p3Q;
+        Wed, 15 Nov 2023 09:58:53 +0000 (GMT)
+Received: from epsmgmc1p1new.samsung.com (unknown [182.195.42.40]) by
         epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20231115095854epsmtrp10081d7f2f6ef018232bfef56fdbfa5e1~Xw376sIVT2856328563epsmtrp1L;
-        Wed, 15 Nov 2023 09:58:54 +0000 (GMT)
-X-AuditID: b6c32a47-9a3ff70000002726-3d-6554965fb6a2
+        20231115095853epsmtrp1f9de90c93038c4976ec93fcfd8148b1d~Xw37SgZc22856328563epsmtrp1J;
+        Wed, 15 Nov 2023 09:58:53 +0000 (GMT)
+X-AuditID: b6c32a4d-743ff70000004a32-a2-6554965eda9e
 Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        9F.71.08817.E5694556; Wed, 15 Nov 2023 18:58:54 +0900 (KST)
+        epsmgmc1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        BA.B2.07368.D5694556; Wed, 15 Nov 2023 18:58:53 +0900 (KST)
 Received: from localhost.localdomain (unknown [10.229.9.55]) by
         epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20231115095853epsmtip201b8da7c5249b86482d5b6bd2379b063~Xw37cXBab2713927139epsmtip2f;
+        20231115095853epsmtip289e0b6023a1c306598b74502f86d8e78~Xw3629IuF2749427494epsmtip2d;
         Wed, 15 Nov 2023 09:58:53 +0000 (GMT)
 From:   Jaewon Kim <jaewon02.kim@samsung.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
@@ -68,82 +68,86 @@ Cc:     linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
         Jaewon Kim <jaewon02.kim@samsung.com>
-Subject: [PATCH v2 05/12] dt-bindings: pwm: samsung: add exynosautov920
- compatible
-Date:   Wed, 15 Nov 2023 18:56:01 +0900
-Message-ID: <20231115095609.39883-6-jaewon02.kim@samsung.com>
+Subject: [PATCH v2 03/12] dt-bindings: soc: samsung: usi: add
+ exynosautov920-usi compatible
+Date:   Wed, 15 Nov 2023 18:55:59 +0900
+Message-ID: <20231115095609.39883-4-jaewon02.kim@samsung.com>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20231115095609.39883-1-jaewon02.kim@samsung.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMJsWRmVeSWpSXmKPExsWy7bCmmW78tJBUg4cPRSwezNvGZrFm7zkm
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrBJsWRmVeSWpSXmKPExsWy7bCmuW78tJBUg7VPGS0ezNvGZrFm7zkm
         i/lHzrFaNC9ez2axo+EIq8W7uTIWe19vZbeY8mc5k8Wmx9dYLTbP/8NocXnXHDaLu3dXMVrM
         OL+PyeLM4l52i9a9R9gtDr9pZ7X4uWsei8WqXUB1tydOZnQQ9tg56y67x6ZVnWwed67tYfPY
         P3cNu8fmJfUe/X8NPPq2rGL0+LxJLoAjKtsmIzUxJbVIITUvOT8lMy/dVsk7ON453tTMwFDX
         0NLCXEkhLzE31VbJxSdA1y0zB+gdJYWyxJxSoFBAYnGxkr6dTVF+aUmqQkZ+cYmtUmpBSk6B
-        eYFecWJucWleul5eaomVoYGBkSlQYUJ2xqT+sywFV9gqNi59wdbAuJW1i5GTQ0LARGLS3WtA
-        NheHkMAORokXbydCOZ8YJR7d2Q/lfGOU2PiiiR2m5f/02SwQib2MEkv/TGKHcD4ySqxvW8cC
-        UsUmoC3xff1isCUiAveZJV63VYMUMQu0M0nM+/YSrEhYIETi1+NpYGNZBFQlPi1ZBhTn4OAV
-        sJVo++sOsU1eYs+i70wgYU4BO4nW81ogYV4BQYmTM5+ATWEGKmneOpsZZLyEwBMOidsrWlgg
-        el0kXm2aCmULS7w6vgXqAymJl/1tUHa2RPv0P9DAqJC4uGE2G4RtLDHrWTsjyF5mAU2J9bv0
-        QUwJAWWJI7eg1vJJdBz+yw4R5pXoaBOCaFSTuD/1HNQQGYlJR1YyQdgeEo0P1jFDQmoio8TE
-        /jUsExgVZiH5ZhaSb2YhLF7AyLyKUSy1oDg3PbXYqMAYHsHJ+bmbGMGpW8t9B+OMtx/0DjEy
-        cTAeYpTgYFYS4TWXC0kV4k1JrKxKLcqPLyrNSS0+xGgKDOmJzFKiyfnA7JFXEm9oYmlgYmZm
-        aG5kamCuJM57r3VuipBAemJJanZqakFqEUwfEwenVAOTjsCKb97vczfeFpcQe81fo2FY8Haa
-        X2fL1Mv7JoeJLGENmPTkNcOd7kVL3BcHPlt4fV9FU9k8L8cFfYsPyGa9ecvRql+Vz3s8Z1WE
-        IcfhZzqODM1Tfu24fTNBO47/zqfCzo+ulR857jw7fPHGl3aWS69WRCQ/tm1V/3dwKTfDZK59
-        gWv19D5tzvSZ95Xt+OMMU7cQhYrlJqt2rbRfz7j9yPPPJRapKu1S9VLNRRO2661oW+rhGbn/
-        9EeRtSLms+8tPPX247ltz/e0aPCvqe6vVKtaynz3xs9H9bfyf6xUyAqNWmnPMoXD7PU1PYuY
-        sLCvTZFCbd0v39TfPdnKHZpb/eCb0VrZj4cSrH7LPVnFqsRSnJFoqMVcVJwIAOtCSMhmBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrCIsWRmVeSWpSXmKPExsWy7bCSvG7ctJBUgwWXhC0ezNvGZrFm7zkm
-        i/lHzrFaNC9ez2axo+EIq8W7uTIWe19vZbeY8mc5k8Wmx9dYLTbP/8NocXnXHDaLu3dXMVrM
-        OL+PyeLM4l52i9a9R9gtDr9pZ7X4uWsei8WqXUB1tydOZnQQ9tg56y67x6ZVnWwed67tYfPY
-        P3cNu8fmJfUe/X8NPPq2rGL0+LxJLoAjissmJTUnsyy1SN8ugStjUv9ZloIrbBUbl75ga2Dc
-        ytrFyMkhIWAi8X/6bJYuRi4OIYHdjBInJ55jg0jISCx/1gdlC0vcbznCClH0nlHifuM/JpAE
-        m4C2xPf1i8ESIgLPmSXO/nnEDJJgFuhnkri+KQHEFhYIkvj4Yxk7iM0ioCrxackyoHUcHLwC
-        thJtf90hFshL7Fn0nQkkzClgJ9F6XgskLARU0br7B9hEXgFBiZMzn4B1MguoS6yfJwSxSF6i
-        eets5gmMgrOQVM1CqJqFpGoBI/MqRsnUguLc9NxiwwKjvNRyveLE3OLSvHS95PzcTYzgiNTS
-        2sG4Z9UHvUOMTByMhxglOJiVRHjN5UJShXhTEiurUovy44tKc1KLDzFKc7AoifN+e92bIiSQ
-        nliSmp2aWpBaBJNl4uCUamAyMt6devMpT0rknKviWZn3xLZfui41tdsiw/s+u3llxu3TkQcC
-        Npvoy+kVs8WHLrZ0f9/2tCC93N+6jHf6da5LebmKL6a1idcJ7fl5+NkVybudG2/vNF4c+XWV
-        xcYKbvkMjhuTZ7XMKJq64UiB+AKNrv9/319wklodofvuefFK/blGS+5/10zhP1hx4HHw+taP
-        G07WzZ5Tt7fnTaHXzovhJrUWnmcset1zb3oF/axkEQ6VTd+bKBcZOrWLhaFK6ci0yzwt08//
-        0LSs/9yw46B+8Flx/cgdHKofHeomCTR2333uaXWzsemlkbf9BnuWtHzf8rNCqVuXXD9XHlt0
-        +LWe6xq+tMyjnCEiHOtbDiixFGckGmoxFxUnAgBngwBsNwMAAA==
-X-CMS-MailID: 20231115095854epcas2p42af0a20bcc4fb98aee818c7b44d77c31
+        eYFecWJucWleul5eaomVoYGBkSlQYUJ2Rs/uC2wF69krNj6aw9TA+Jm1i5GTQ0LARGL55C1A
+        NheHkMAeRomb73dAOZ8YJZbuPMUG4XxjlFg57RkbTMvOOc8ZIRJ7GSVuHd8LVfWRUWL2gdeM
+        IFVsAtoS39cvBlsiInCfWeJ1WzVIEbNAO5PEvG8vWUASwgKxEjc6e8GKWARUJR5d28UOYvMK
+        2Ep86nrBCLFOXmLPou9MXYwcHJwCdhKt57UgSgQlTs58AjaGGaikeetsZpD5EgJXOCT2Nbxk
+        guh1kTiw+hgzhC0s8er4FnYIW0riZX8blJ0t0T79DzQ0KiQubpgN9aaxxKxn7Ywge5kFNCXW
+        79IHMSUElCWO3IJayyfRcfgvO0SYV6KjTQiiUU3i/tRzUENkJCYdWQl1jIfE13mroOE2kVFi
+        3a8t7BMYFWYh+WYWkm9mISxewMi8ilEqtaA4Nz012ajAUDcvtRwey8n5uZsYwUlcy3cH4+v1
+        f/UOMTJxMB5ilOBgVhLhNZcLSRXiTUmsrEotyo8vKs1JLT7EaAoM7onMUqLJ+cA8klcSb2hi
+        aWBiZmZobmRqYK4kznuvdW6KkEB6YklqdmpqQWoRTB8TB6dUA5Nv5rpb3/+9KjSyZHvQIrhv
+        K8v2gH5/numvrNYu1Pp0WvJEzPbdZ4XkF33eYfC+32AZ5701/bZb+4oWRcw9f7kvbvWTJLGJ
+        UseEPUXCvnEmtrfM6jSv6p0y9YfwXbEXT/647//Wvd5UYUqjabRP4s+kia/fJX07yb36+4lG
+        FnbWE/fvm2ya0PRm7+fXlrKOhz7pMEe8/eZ9LmafBEeJP4N63cv01Z869hzzdVnLu+ZvF8dJ
+        9lzeN++uhbnLTfx+YMucL+nKMu/X3LcQf1k0farRF43es7c/aG7esvp70VYdYwfRnvCTKxfd
+        KmQ7fvHd36CfcV7X3D/uslozWaaAIejmA46F9fqRSW8+7w3RZjhuqMRSnJFoqMVcVJwIADXA
+        2dlrBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnkeLIzCtJLcpLzFFi42LZdlhJXjd2Wkiqwa9ebYsH87axWazZe47J
+        Yv6Rc6wWzYvXs1nsaDjCavFurozF3tdb2S2m/FnOZLHp8TVWi83z/zBaXN41h83i7t1VjBYz
+        zu9jsjizuJfdonXvEXaLw2/aWS1+7prHYrFqF1Dd7YmTGR2EPXbOusvusWlVJ5vHnWt72Dz2
+        z13D7rF5Sb1H/18Dj74tqxg9Pm+SC+CI4rJJSc3JLEst0rdL4Mro2X2BrWA9e8XGR3OYGhg/
+        s3YxcnJICJhI7JzznLGLkYtDSGA3o8S1mRvYIRIyEsuf9bFB2MIS91uOsEIUvWeUWHLhLQtI
+        gk1AW+L7+sVgCRGB58wSZ/88YgZJMAv0M0lc35QAYgsLREs0fF/JBGKzCKhKPLq2C2wDr4Ct
+        xKeuF4wQG+Ql9iz6DlTDwcEpYCfRel4LJCwEVNK6+wczRLmgxMmZT1ggxstLNG+dzTyBUWAW
+        ktQsJKkFjEyrGCVTC4pz03OTDQsM81LL9YoTc4tL89L1kvNzNzGC40xLYwfjvfn/9A4xMnEw
+        HmKU4GBWEuE1lwtJFeJNSaysSi3Kjy8qzUktPsQozcGiJM5rOGN2ipBAemJJanZqakFqEUyW
+        iYNTqoEpadH3S7+4X6k3WnLdmMpYuPGS6Sa1p/cXvzy3J77hcCyLxNvbBSwLJh/8nPMmr3vN
+        wocGHw1qGj6x/jzfu6Jxwcrfe8OizVLO/Hll9+CkWZz55kiPGZL2elP6th2Kmmcd3cTvrXzs
+        xszCTLmGoxxrfwRM0y95pHLpq+a0kmYdOS4WNm6P/Ye1RC9du5EqJ7v32yHnwAuLMoMXdl35
+        dFBY/mhnsnHfYs4stw9CpVkTAlgWpq76vTtwRfurdd46Nh8TjQ71brf89mLH58MvP39RLp58
+        eH//PxO1BTkV35OubPFoz/lvlvL/kEW2VEal8sfyi61t5yf12/1+eMyK54nyxTd6BvO95GdI
+        NkVfkHZ3V2Ipzkg01GIuKk4EAGo9A80iAwAA
+X-CMS-MailID: 20231115095853epcas2p38f9fbdd7bbbb940afa2042cd5ee9d237
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: AUTO_CONFIDENTIAL
 CMS-TYPE: 102P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20231115095854epcas2p42af0a20bcc4fb98aee818c7b44d77c31
+X-CMS-RootMailID: 20231115095853epcas2p38f9fbdd7bbbb940afa2042cd5ee9d237
 References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
-        <CGME20231115095854epcas2p42af0a20bcc4fb98aee818c7b44d77c31@epcas2p4.samsung.com>
+        <CGME20231115095853epcas2p38f9fbdd7bbbb940afa2042cd5ee9d237@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add samsung,exynosautov920-pwm compatible string to binding document.
+Add samsung,exynosautov920-usi dedicated compatible for representing USI
+of ExynosAutoV920 SoC.
 
 Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- Documentation/devicetree/bindings/pwm/pwm-samsung.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-index 89a3875cb50a..16de6434693b 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-+++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-@@ -32,6 +32,7 @@ properties:
-               - samsung,exynos5433-pwm
-               - samsung,exynos7-pwm
-               - samsung,exynosautov9-pwm
-+              - samsung,exynosautov920-pwm
-           - const: samsung,exynos4210-pwm
- 
-   reg:
+diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+index 5b7ab69546c4..61be1f2ddbe7 100644
+--- a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
++++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+@@ -24,7 +24,9 @@ properties:
+   compatible:
+     oneOf:
+       - items:
+-          - const: samsung,exynosautov9-usi
++          - enum:
++              - samsung,exynosautov9-usi
++              - samsung,exynosautov920-usi
+           - const: samsung,exynos850-usi
+       - enum:
+           - samsung,exynos850-usi
 -- 
 2.42.0
 
