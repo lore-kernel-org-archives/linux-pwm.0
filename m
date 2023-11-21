@@ -1,31 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F63BD72
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B50A10E7
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:06 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAX-0005yZ-2W; Tue, 21 Nov 2023 14:52:01 +0100
+	id 1r5RAZ-00067L-Jy; Tue, 21 Nov 2023 14:52:03 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAU-00Ab0Z-TE; Tue, 21 Nov 2023 14:51:58 +0100
+	id 1r5RAW-00Ab13-A6; Tue, 21 Nov 2023 14:52:00 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAU-004xfP-JO; Tue, 21 Nov 2023 14:51:58 +0100
+	id 1r5RAW-004xfq-0f; Tue, 21 Nov 2023 14:52:00 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org,
-	kernel@pengutronix.de,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 068/108] pwm: mediatek: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:50:10 +0100
-Message-ID: <20231121134901.208535-69-u.kleine-koenig@pengutronix.de>
+	kernel@pengutronix.de
+Subject: [PATCH v3 075/108] pwm: pca9685: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:17 +0100
+Message-ID: <20231121134901.208535-76-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -36,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2926; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=NvNSjL4xJ1Ai1FiR6lC3rZ+UFrgPRfr2vb9OTrIV/7A=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtSYrdOD3v95z3ll09H/H2vlIvjanNbMU3NP+5lpuuWuU 5RrL39tJ6MxCwMjF4OsmCKLfeOaTKsqucjOtf8uwwxiZQKZwsDFKQATqTvP/leC5/dHFZn1uyMv KuXuzBabmJYl5JXWoFbwWDPZ/LnKumJJ5nkzDB30HWLK7/m63JAqmnRd/fkOg181biJs+14Wntw oW8ZdyveJ8dz+2urDsc9t216uvx5z3JO147jlkq7irJ3HTVYc0GHu98g//n9vx+ZjwYqJEW1vWQ 4yi6g2Tr7Z9jrf272mebF2pGV7lI30JJnn56L2eFw8+kTD9qCFWGTKjm2Cho0zBX9IR7Wu8N+Yc NlB48CyiVOmfe1WZXe+N1t8h3ruzhr2A7eOVRl/WMpxTvevCv/e97IirGeV2mVOtx5dtK1LNuRA eahFEXNoMY+OxpSOhw2lJ85NkYzyk9j5rKtgjqpX8zlxAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=8912; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=eRFSjwcFT81zKDiHKP133tqyktQNhORrzHWFbvEF5a8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWfvHbhgw8DHj9vnU0da2gHB/wxwEEhAvqi1 HXwjJ3Qwz6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1nwAKCRCPgPtYfRL+ TqbNB/9mHG0eN/fnJ3TE/4izSXlXtggaa+9gSnrmGNdTr7B+/im8BDmr3dnEKIq7Z5qLtDStLa1 QqcWZuqME61v9HgdNEQYzEryq9tzkznNKj6IRwpT3VFVZ/VuBG7BfEKb6uAaKpNCghynlionhEL kZQ7VQyBQ8orN2TZVCcA6OspV0U6keuVwTbVRHnMXIPQhKQWEm09dXTbrc2eiUIwC+lwzgMbjQ4 1wZ5mXukCwj4g5uU0tSbl1DYmP3a9FFJSVlPfDfdk71VBEteIzy2GLfp0VGW7hQ7yAvryt6StbW cwMUn6viysGwWH85Jn8DuAVIcU8/JBJGZN47n1H39jFGJ6Eb
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -44,91 +40,254 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-mediatek driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+This prepares the pwm-pca9685 driver to further changes of the pwm
+core outlined in the commit introducing devm_pwmchip_alloc(). There is
+no intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-mediatek.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-pca9685.c | 76 +++++++++++++++++++++------------------
+ 1 file changed, 41 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index ba76d9753f1b..bc614618086d 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -51,7 +51,6 @@ struct pwm_mediatek_of_data {
-  * @soc: pointer to chip's platform data
-  */
- struct pwm_mediatek_chip {
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 04e713ef790f..63bbacd9a88f 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -76,7 +76,6 @@
+ #define REG_OFF_L(C)	((C) >= PCA9685_MAXCHAN ? PCA9685_ALL_LED_OFF_L : LED_N_OFF_L((C)))
+ 
+ struct pca9685 {
 -	struct pwm_chip chip;
- 	void __iomem *regs;
- 	struct clk *clk_top;
- 	struct clk *clk_main;
-@@ -70,7 +69,7 @@ static const unsigned int mtk_pwm_reg_offset_v2[] = {
- static inline struct pwm_mediatek_chip *
- to_pwm_mediatek_chip(struct pwm_chip *chip)
+ 	struct regmap *regmap;
+ 	struct mutex lock;
+ 	struct device *parent;
+@@ -89,7 +88,7 @@ struct pca9685 {
+ 
+ static inline struct pca9685 *to_pca(struct pwm_chip *chip)
  {
--	return container_of(chip, struct pwm_mediatek_chip, chip);
+-	return container_of(chip, struct pca9685, chip);
 +	return pwmchip_priv(chip);
  }
  
- static int pwm_mediatek_clk_enable(struct pwm_chip *chip,
-@@ -233,21 +232,26 @@ static const struct pwm_ops pwm_mediatek_ops = {
+ /* This function is supposed to be called with the lock mutex held */
+@@ -133,9 +132,9 @@ static int pca9685_write_reg(struct pca9685 *pca, unsigned int reg, unsigned int
+ }
  
- static int pwm_mediatek_probe(struct platform_device *pdev)
+ /* Helper function to set the duty cycle ratio to duty/4096 (e.g. duty=2048 -> 50%) */
+-static void pca9685_pwm_set_duty(struct pca9685 *pca, int channel, unsigned int duty)
++static void pca9685_pwm_set_duty(struct pwm_chip *chip, struct pca9685 *pca, int channel, unsigned int duty)
  {
-+	struct pwm_chip *chip;
- 	struct pwm_mediatek_chip *pc;
-+	const struct pwm_mediatek_of_data *soc;
- 	unsigned int i;
- 	int ret;
+-	struct pwm_device *pwm = &pca->chip.pwms[channel];
++	struct pwm_device *pwm = &chip->pwms[channel];
+ 	unsigned int on, off;
  
--	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
--	if (!pc)
--		return -ENOMEM;
-+	soc = of_device_get_match_data(&pdev->dev);
+ 	if (duty == 0) {
+@@ -172,9 +171,9 @@ static void pca9685_pwm_set_duty(struct pca9685 *pca, int channel, unsigned int
+ 	pca9685_write_reg(pca, REG_OFF_H(channel), (off >> 8) & 0xf);
+ }
  
--	pc->soc = of_device_get_match_data(&pdev->dev);
-+	chip = devm_pwmchip_alloc(&pdev->dev, soc->num_pwms, sizeof(*pc));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	pc = to_pwm_mediatek_chip(chip);
-+
-+	pc->soc = soc;
+-static unsigned int pca9685_pwm_get_duty(struct pca9685 *pca, int channel)
++static unsigned int pca9685_pwm_get_duty(struct pwm_chip *chip, struct pca9685 *pca, int channel)
+ {
+-	struct pwm_device *pwm = &pca->chip.pwms[channel];
++	struct pwm_device *pwm = &chip->pwms[channel];
+ 	unsigned int off = 0, on = 0, val = 0;
  
- 	pc->regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pc->regs))
- 		return PTR_ERR(pc->regs);
+ 	if (WARN_ON(channel >= PCA9685_MAXCHAN)) {
+@@ -248,7 +247,8 @@ static void pca9685_pwm_clear_inuse(struct pca9685 *pca, int pwm_idx)
  
--	pc->clk_pwms = devm_kmalloc_array(&pdev->dev, pc->soc->num_pwms,
-+	pc->clk_pwms = devm_kmalloc_array(&pdev->dev, soc->num_pwms,
- 				    sizeof(*pc->clk_pwms), GFP_KERNEL);
- 	if (!pc->clk_pwms)
- 		return -ENOMEM;
-@@ -262,7 +266,7 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 		return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk_main),
- 				     "Failed to get main clock\n");
+ static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
+ {
+-	struct pca9685 *pca = gpiochip_get_data(gpio);
++	struct pwm_chip *chip = gpiochip_get_data(gpio);
++	struct pca9685 *pca = to_pca(chip);
  
--	for (i = 0; i < pc->soc->num_pwms; i++) {
-+	for (i = 0; i < soc->num_pwms; i++) {
- 		char name[8];
+ 	if (pca9685_pwm_test_and_set_inuse(pca, offset))
+ 		return -EBUSY;
+@@ -258,24 +258,27 @@ static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
  
- 		snprintf(name, sizeof(name), "pwm%d", i + 1);
-@@ -273,11 +277,9 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 					     "Failed to get %s clock\n", name);
+ static int pca9685_pwm_gpio_get(struct gpio_chip *gpio, unsigned int offset)
+ {
+-	struct pca9685 *pca = gpiochip_get_data(gpio);
++	struct pwm_chip *chip = gpiochip_get_data(gpio);
++	struct pca9685 *pca = to_pca(chip);
+ 
+-	return pca9685_pwm_get_duty(pca, offset) != 0;
++	return pca9685_pwm_get_duty(chip, pca, offset) != 0;
+ }
+ 
+ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
+ 				 int value)
+ {
+-	struct pca9685 *pca = gpiochip_get_data(gpio);
++	struct pwm_chip *chip = gpiochip_get_data(gpio);
++	struct pca9685 *pca = to_pca(chip);
+ 
+-	pca9685_pwm_set_duty(pca, offset, value ? PCA9685_COUNTER_RANGE : 0);
++	pca9685_pwm_set_duty(chip, pca, offset, value ? PCA9685_COUNTER_RANGE : 0);
+ }
+ 
+ static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
+ {
+-	struct pca9685 *pca = gpiochip_get_data(gpio);
++	struct pwm_chip *chip = gpiochip_get_data(gpio);
++	struct pca9685 *pca = to_pca(chip);
+ 
+-	pca9685_pwm_set_duty(pca, offset, 0);
++	pca9685_pwm_set_duty(chip, pca, offset, 0);
+ 	pm_runtime_put(pca->parent);
+ 	pca9685_pwm_clear_inuse(pca, offset);
+ }
+@@ -307,7 +310,7 @@ static int pca9685_pwm_gpio_direction_output(struct gpio_chip *gpio,
+  * expose a GPIO chip here which can exclusively take over the underlying
+  * PWM channel.
+  */
+-static int pca9685_pwm_gpio_probe(struct pca9685 *pca)
++static int pca9685_pwm_gpio_probe(struct pwm_chip *chip, struct pca9685 *pca)
+ {
+ 	struct device *dev = pca->parent;
+ 
+@@ -324,7 +327,7 @@ static int pca9685_pwm_gpio_probe(struct pca9685 *pca)
+ 	pca->gpio.ngpio = PCA9685_MAXCHAN;
+ 	pca->gpio.can_sleep = true;
+ 
+-	return devm_gpiochip_add_data(dev, &pca->gpio, pca);
++	return devm_gpiochip_add_data(dev, &pca->gpio, chip);
+ }
+ #else
+ static inline bool pca9685_pwm_test_and_set_inuse(struct pca9685 *pca,
+@@ -338,7 +341,7 @@ pca9685_pwm_clear_inuse(struct pca9685 *pca, int pwm_idx)
+ {
+ }
+ 
+-static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
++static inline int pca9685_pwm_gpio_probe(struct pwm_chip *chip, struct pca9685 *pca)
+ {
+ 	return 0;
+ }
+@@ -379,7 +382,7 @@ static int __pca9685_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	}
  
--	pc->chip.dev = &pdev->dev;
--	pc->chip.ops = &pwm_mediatek_ops;
--	pc->chip.npwm = pc->soc->num_pwms;
-+	chip->ops = &pwm_mediatek_ops;
+ 	if (!state->enabled) {
+-		pca9685_pwm_set_duty(pca, pwm->hwpwm, 0);
++		pca9685_pwm_set_duty(chip, pca, pwm->hwpwm, 0);
+ 		return 0;
+ 	}
  
--	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
+@@ -409,7 +412,7 @@ static int __pca9685_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	duty = PCA9685_COUNTER_RANGE * state->duty_cycle;
+ 	duty = DIV_ROUND_UP_ULL(duty, state->period);
+-	pca9685_pwm_set_duty(pca, pwm->hwpwm, duty);
++	pca9685_pwm_set_duty(chip, pca, pwm->hwpwm, duty);
+ 	return 0;
+ }
+ 
+@@ -463,7 +466,7 @@ static int pca9685_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	}
+ 
+ 	state->enabled = true;
+-	duty = pca9685_pwm_get_duty(pca, pwm->hwpwm);
++	duty = pca9685_pwm_get_duty(chip, pca, pwm->hwpwm);
+ 	state->duty_cycle = DIV_ROUND_DOWN_ULL(duty * state->period, PCA9685_COUNTER_RANGE);
+ 
+ 	return 0;
+@@ -493,7 +496,7 @@ static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct pca9685 *pca = to_pca(chip);
+ 
+ 	mutex_lock(&pca->lock);
+-	pca9685_pwm_set_duty(pca, pwm->hwpwm, 0);
++	pca9685_pwm_set_duty(chip, pca, pwm->hwpwm, 0);
+ 	clear_bit(pwm->hwpwm, pca->pwms_enabled);
+ 	mutex_unlock(&pca->lock);
+ 
+@@ -517,13 +520,16 @@ static const struct regmap_config pca9685_regmap_i2c_config = {
+ 
+ static int pca9685_pwm_probe(struct i2c_client *client)
+ {
++	struct pwm_chip *chip;
+ 	struct pca9685 *pca;
+ 	unsigned int reg;
+ 	int ret;
+ 
+-	pca = devm_kzalloc(&client->dev, sizeof(*pca), GFP_KERNEL);
+-	if (!pca)
+-		return -ENOMEM;
++	/* Add an extra channel for ALL_LED */
++	chip = devm_pwmchip_alloc(&client->dev, PCA9685_MAXCHAN + 1, sizeof(*pca));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	pca = to_pca(chip);
+ 
+ 	pca->regmap = devm_regmap_init_i2c(client, &pca9685_regmap_i2c_config);
+ 	if (IS_ERR(pca->regmap)) {
+@@ -533,7 +539,7 @@ static int pca9685_pwm_probe(struct i2c_client *client)
+ 		return ret;
+ 	}
+ 
+-	i2c_set_clientdata(client, pca);
++	i2c_set_clientdata(client, chip);
+ 
+ 	mutex_init(&pca->lock);
+ 
+@@ -566,20 +572,17 @@ static int pca9685_pwm_probe(struct i2c_client *client)
+ 	pca9685_write_reg(pca, PCA9685_ALL_LED_ON_L, 0);
+ 	pca9685_write_reg(pca, PCA9685_ALL_LED_ON_H, LED_FULL);
+ 
+-	pca->chip.ops = &pca9685_pwm_ops;
+-	/* Add an extra channel for ALL_LED */
+-	pca->chip.npwm = PCA9685_MAXCHAN + 1;
++	chip->ops = &pca9685_pwm_ops;
+ 
+-	pca->chip.dev = &client->dev;
+ 	pca->parent = &client->dev;
+ 
+-	ret = pwmchip_add(&pca->chip);
++	ret = pwmchip_add(chip);
  	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
+ 		return ret;
  
+-	ret = pca9685_pwm_gpio_probe(pca);
++	ret = pca9685_pwm_gpio_probe(chip, pca);
+ 	if (ret < 0) {
+-		pwmchip_remove(&pca->chip);
++		pwmchip_remove(chip);
+ 		return ret;
+ 	}
+ 
+@@ -602,9 +605,10 @@ static int pca9685_pwm_probe(struct i2c_client *client)
+ 
+ static void pca9685_pwm_remove(struct i2c_client *client)
+ {
+-	struct pca9685 *pca = i2c_get_clientdata(client);
++	struct pwm_chip *chip = i2c_get_clientdata(client);
++	struct pca9685 *pca = to_pca(chip);
+ 
+-	pwmchip_remove(&pca->chip);
++	pwmchip_remove(chip);
+ 
+ 	if (!pm_runtime_enabled(&client->dev)) {
+ 		/* Put chip in sleep state if runtime PM is disabled */
+@@ -617,7 +621,8 @@ static void pca9685_pwm_remove(struct i2c_client *client)
+ static int __maybe_unused pca9685_pwm_runtime_suspend(struct device *dev)
+ {
+ 	struct i2c_client *client = to_i2c_client(dev);
+-	struct pca9685 *pca = i2c_get_clientdata(client);
++	struct pwm_chip *chip = i2c_get_clientdata(client);
++	struct pca9685 *pca = to_pca(chip);
+ 
+ 	pca9685_set_sleep_mode(pca, true);
+ 	return 0;
+@@ -626,7 +631,8 @@ static int __maybe_unused pca9685_pwm_runtime_suspend(struct device *dev)
+ static int __maybe_unused pca9685_pwm_runtime_resume(struct device *dev)
+ {
+ 	struct i2c_client *client = to_i2c_client(dev);
+-	struct pca9685 *pca = i2c_get_clientdata(client);
++	struct pwm_chip *chip = i2c_get_clientdata(client);
++	struct pca9685 *pca = to_pca(chip);
+ 
+ 	pca9685_set_sleep_mode(pca, false);
+ 	return 0;
 -- 
 2.42.0
 
