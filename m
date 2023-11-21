@@ -1,27 +1,29 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC9510F0
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:07 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93CA1702
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:08 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAa-0006AW-5X; Tue, 21 Nov 2023 14:52:04 +0100
+	id 1r5RAc-0006Sa-62; Tue, 21 Nov 2023 14:52:06 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAW-00Ab1F-St; Tue, 21 Nov 2023 14:52:00 +0100
+	id 1r5RAa-00Ab2E-DK; Tue, 21 Nov 2023 14:52:04 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAW-004xg3-Jw; Tue, 21 Nov 2023 14:52:00 +0100
+	id 1r5RAa-004xhB-3y; Tue, 21 Nov 2023 14:52:04 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>
 Cc: linux-pwm@vger.kernel.org,
+	linux-tegra@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 078/108] pwm: rcar: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:50:20 +0100
-Message-ID: <20231121134901.208535-79-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 093/108] pwm: tegra: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:35 +0100
+Message-ID: <20231121134901.208535-94-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -32,7 +34,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2442; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=/7NzeUVBkwLO5GckTSQRjmmzgIbFt754JEX9aLhGMus=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWiPuyL3GFOO2vf5lTW6i+VZQao5bX5OAgy7 UkPrk3au/KJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1ogAKCRCPgPtYfRL+ TgLLB/4nDtX60tAb4qMIaa2EgvjZeiGgxps7CpLkQS+aZsL5Zgepx8VoMbXJ2Oz2V3HLNf7Cgqi cSmbqld1VVJcgqJ7PhsxPdTuXvyMPRaP6wQXbzSB3k23OKu6oi3Cu0TkMBTb4SdrjWNbExR9tKe E9UtkFB31xu6Zob1/uweksS+TAvisQ5yTdUjxfQRABRx6eFQbbA2GPhpZHLrya1igkBrBympmaJ zarNyvwZliT3RF55Tqhz5WERrUdR+3wUrx1xQwQribTxHZ3q7FR1vzO6WOa7R+4OwSugi6r+I+S p9Gib9/yDugfGGyQYc+tE2m/e0dOLx5y+Cdk+rAXHn3CXE/E
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2569; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=IVxivwViCvf6mlnIWgQw+fkT5k+uuDSJeGaKYqBS8jo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWzUgTphMFCYobi8vF1ciSiVFmO8tJU/D+TO AHKpJGySzuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1swAKCRCPgPtYfRL+ TvnkB/91qsWELYOEDWrSIVM6i7uEw43ggLOKY5ViV3zqQKNV+dyLE5rAco3VEpoR5DxCS9Frpcg lX9sCi42LUlk+4pQsyKSm0UKuJwtcufLt7gw9XFUnOmsSBTH1LsVYTyBZk/9us0O3oxMDgTqEEt ZT1cvss4OMZBgtVxWmaT/J9wL/fp8XjCkjR9pQCfFwRsePZxOQ/xDhIFPentgvYGD4UDzBt4q0g mb5yzxFLZPQe1PssvD9aRx2wTEmaJUVldzRxdIr2ExpG9upBl8FcXAcit3smBwW+5LXplU4Kf6S Yll7TNlmBshUzT+0dBEeJAYpBAMO6CBhCEXbb4fiN6ExCdnd
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -40,83 +42,87 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-rcar driver to further changes of the pwm core
+This prepares the pwm-tegra driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-rcar.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ drivers/pwm/pwm-tegra.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 4838762137d1..f67f2c664c6a 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -38,14 +38,13 @@
- #define  RCAR_PWMCNT_PH0_SHIFT	0
- 
- struct rcar_pwm_chip {
--	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *clk;
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index 39ea51e08c94..f41791d7630d 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -65,7 +65,6 @@ struct tegra_pwm_soc {
  };
  
- static inline struct rcar_pwm_chip *to_rcar_pwm_chip(struct pwm_chip *chip)
+ struct tegra_pwm_chip {
+-	struct pwm_chip chip;
+ 	struct device *dev;
+ 
+ 	struct clk *clk;
+@@ -81,7 +80,7 @@ struct tegra_pwm_chip {
+ 
+ static inline struct tegra_pwm_chip *to_tegra_pwm_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct rcar_pwm_chip, chip);
+-	return container_of(chip, struct tegra_pwm_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- static void rcar_pwm_write(struct rcar_pwm_chip *rp, u32 data,
-@@ -202,12 +201,14 @@ static const struct pwm_ops rcar_pwm_ops = {
+ static inline u32 pwm_readl(struct tegra_pwm_chip *pc, unsigned int offset)
+@@ -272,14 +271,19 @@ static const struct pwm_ops tegra_pwm_ops = {
  
- static int rcar_pwm_probe(struct platform_device *pdev)
+ static int tegra_pwm_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct rcar_pwm_chip *rcar_pwm;
+ 	struct tegra_pwm_chip *pc;
++	const struct tegra_pwm_soc *soc;
  	int ret;
  
--	rcar_pwm = devm_kzalloc(&pdev->dev, sizeof(*rcar_pwm), GFP_KERNEL);
--	if (rcar_pwm == NULL)
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*rcar_pwm));
-+	if (chip == NULL)
- 		return -ENOMEM;
-+	rcar_pwm = to_rcar_pwm_chip(chip);
+-	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+-	if (!pc)
+-		return -ENOMEM;
++	soc = of_device_get_match_data(&pdev->dev);
  
- 	rcar_pwm->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(rcar_pwm->base))
-@@ -219,15 +220,13 @@ static int rcar_pwm_probe(struct platform_device *pdev)
- 		return PTR_ERR(rcar_pwm->clk);
- 	}
+-	pc->soc = of_device_get_match_data(&pdev->dev);
++	chip = devm_pwmchip_alloc(&pdev->dev, soc->num_channels, sizeof(*pc));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	pc = to_tegra_pwm_chip(chip);
++
++	pc->soc = soc;
+ 	pc->dev = &pdev->dev;
  
--	platform_set_drvdata(pdev, rcar_pwm);
-+	platform_set_drvdata(pdev, chip);
+ 	pc->regs = devm_platform_ioremap_resource(pdev, 0);
+@@ -328,11 +332,9 @@ static int tegra_pwm_probe(struct platform_device *pdev)
  
--	rcar_pwm->chip.dev = &pdev->dev;
--	rcar_pwm->chip.ops = &rcar_pwm_ops;
--	rcar_pwm->chip.npwm = 1;
-+	chip->ops = &rcar_pwm_ops;
+ 	reset_control_deassert(pc->rst);
  
- 	pm_runtime_enable(&pdev->dev);
+-	pc->chip.dev = &pdev->dev;
+-	pc->chip.ops = &tegra_pwm_ops;
+-	pc->chip.npwm = pc->soc->num_channels;
++	chip->ops = &tegra_pwm_ops;
  
--	ret = pwmchip_add(&rcar_pwm->chip);
+-	ret = pwmchip_add(&pc->chip);
 +	ret = pwmchip_add(chip);
  	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to register PWM chip: %d\n", ret);
- 		pm_runtime_disable(&pdev->dev);
-@@ -239,9 +238,9 @@ static int rcar_pwm_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+ 		reset_control_assert(pc->rst);
+@@ -350,9 +352,10 @@ static int tegra_pwm_probe(struct platform_device *pdev)
  
- static void rcar_pwm_remove(struct platform_device *pdev)
+ static void tegra_pwm_remove(struct platform_device *pdev)
  {
--	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
+-	struct tegra_pwm_chip *pc = platform_get_drvdata(pdev);
 +	struct pwm_chip *chip = platform_get_drvdata(pdev);
++	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
  
--	pwmchip_remove(&rcar_pwm->chip);
+-	pwmchip_remove(&pc->chip);
 +	pwmchip_remove(chip);
  
- 	pm_runtime_disable(&pdev->dev);
- }
+ 	reset_control_assert(pc->rst);
+ 
 -- 
 2.42.0
 
