@@ -1,28 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5255310EB
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1D810F1
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:07 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAa-0006H6-3t; Tue, 21 Nov 2023 14:52:04 +0100
+	id 1r5RAa-0006Bg-AG; Tue, 21 Nov 2023 14:52:04 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAY-00Ab1c-66; Tue, 21 Nov 2023 14:52:02 +0100
+	id 1r5RAX-00Ab1I-3e; Tue, 21 Nov 2023 14:52:01 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAX-004xgb-TQ; Tue, 21 Nov 2023 14:52:01 +0100
+	id 1r5RAW-004xg7-Qp; Tue, 21 Nov 2023 14:52:00 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Michael Walle <michael@walle.cc>,
-	Thierry Reding <thierry.reding@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 084/108] pwm: sl28cpld: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:50:26 +0100
-Message-ID: <20231121134901.208535-85-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 079/108] pwm: renesas-tpu: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:21 +0100
+Message-ID: <20231121134901.208535-80-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -33,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1740; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=SP6HObl80sKwkBdnebMV0NaVHrkgjH2XzfH7ob63+Ig=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWpwWhMGtDGaaPSLdY7QUxl+KNrnFVHd6FOT AAi9Ii1Hz+JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1qQAKCRCPgPtYfRL+ Tv15B/9eYSNY5ScFcI7BkppO6h7sWw4mWSP5RvRqlWveBuVPWa1IpJ+VV9/IGayvYYfq8x/8Ff1 B/bNnixyRBtJnFCMDFOmIvxCMcnP6HDJW0Po9ddTZu1EhNYEekq4wzZCueYf9bHJkPJ8EeHgvmt rd3pAare8tGXn3sLPJPRWwnQMEjw0VFVvheC3y5uYHIkwhwD0UVlGKPv83PJOkWA9DXTgeljWZE jAj5YIQqc7tiSxiQ5+OuSpKVcNOn21JRnxS4o6kXkgukp8zN/ZP91Sfd+F46b6bKTSSdwKX1mbv CRJKBeC7cxd99pKezVvYx1eCadN52oHbHieafGgsy6Zt7c4o
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2230; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=c956yE3LyGOGjGJg4kFVt2dBy1BRj/4S0vxTYlanGQE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWjiVsVsdu95M/0OiG9eTRjHoUaejjln2ScI AF74J5J9MOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1owAKCRCPgPtYfRL+ TpD+CAC4dMRzavEcyFa5/Q/wV1oqcor8WJoBvailsFt5tTDf0rNcCIEdT0kBZnkMA3WQ3uPLQNZ R1gJ8y+JafACzQ/EErLkMJjiBAZiGv2uxJm9ULtNepUTa2KdO7Au3jHN8yxNDRVtUohm1xJ1iJM LyPMXz8aMKbOYDZh8+pM/9QN2ir42T5fApSIpWFJsugGwTa0BMxZE7lngPIxHQygFQ3d6zNqTfs NX/m6I22Ag8xa/G/f06vJ82AvtHAVj9QojCpCpTaUnyMPCf81KpX1TaSyfCk+JcB8QMEAIqFKEa tgtjZN25VBcQixE/rYnIZug08ZiFlL3KLeOnieCMOdbr+fwN
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -41,60 +40,74 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-sl28cpld driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+This prepares the pwm-renesas-tpu driver to further changes of the pwm
+core outlined in the commit introducing devm_pwmchip_alloc(). There is
+no intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-sl28cpld.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-renesas-tpu.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sl28cpld.c b/drivers/pwm/pwm-sl28cpld.c
-index 88b01ff9e460..30f96d10a3b8 100644
---- a/drivers/pwm/pwm-sl28cpld.c
-+++ b/drivers/pwm/pwm-sl28cpld.c
-@@ -81,14 +81,13 @@
- 	regmap_write((priv)->regmap, (priv)->offset + (reg), (val))
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 4239f2c3e8b2..2f6b2351619b 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -80,7 +80,6 @@ struct tpu_pwm_device {
  
- struct sl28cpld_pwm {
+ struct tpu_device {
+ 	struct platform_device *pdev;
 -	struct pwm_chip chip;
- 	struct regmap *regmap;
- 	u32 offset;
+ 	spinlock_t lock;
+ 
+ 	void __iomem *base;
+@@ -88,7 +87,10 @@ struct tpu_device {
+ 	struct tpu_pwm_device tpd[TPU_CHANNEL_MAX];
  };
  
- static inline struct sl28cpld_pwm *sl28cpld_pwm_from_chip(struct pwm_chip *chip)
- {
--	return container_of(chip, struct sl28cpld_pwm, chip);
+-#define to_tpu_device(c)	container_of(c, struct tpu_device, chip)
++static inline struct tpu_device *to_tpu_device(struct pwm_chip *chip)
++{
 +	return pwmchip_priv(chip);
- }
++}
  
- static int sl28cpld_pwm_get_state(struct pwm_chip *chip,
-@@ -213,9 +212,10 @@ static int sl28cpld_pwm_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
+ static void tpu_pwm_write(struct tpu_pwm_device *tpd, int reg_nr, u16 value)
+ {
+@@ -439,12 +441,14 @@ static const struct pwm_ops tpu_pwm_ops = {
  
--	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*priv));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	priv = sl28cpld_pwm_from_chip(chip);
+ static int tpu_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct tpu_device *tpu;
+ 	int ret;
  
- 	priv->regmap = dev_get_regmap(pdev->dev.parent, NULL);
- 	if (!priv->regmap) {
-@@ -231,10 +231,7 @@ static int sl28cpld_pwm_probe(struct platform_device *pdev)
- 	}
+-	tpu = devm_kzalloc(&pdev->dev, sizeof(*tpu), GFP_KERNEL);
+-	if (tpu == NULL)
++	chip = devm_pwmchip_alloc(&pdev->dev, TPU_CHANNEL_MAX, sizeof(*tpu));
++	if (chip == NULL)
+ 		return -ENOMEM;
++	tpu = to_tpu_device(chip);
  
- 	/* Initialize the pwm_chip structure */
--	chip = &priv->chip;
--	chip->dev = &pdev->dev;
- 	chip->ops = &sl28cpld_pwm_ops;
--	chip->npwm = 1;
+ 	spin_lock_init(&tpu->lock);
+ 	tpu->pdev = pdev;
+@@ -461,15 +465,13 @@ static int tpu_probe(struct platform_device *pdev)
+ 	/* Initialize and register the device. */
+ 	platform_set_drvdata(pdev, tpu);
  
- 	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret) {
+-	tpu->chip.dev = &pdev->dev;
+-	tpu->chip.ops = &tpu_pwm_ops;
+-	tpu->chip.npwm = TPU_CHANNEL_MAX;
++	chip->ops = &tpu_pwm_ops;
+ 
+ 	ret = devm_pm_runtime_enable(&pdev->dev);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "Failed to enable runtime PM\n");
+ 
+-	ret = devm_pwmchip_add(&pdev->dev, &tpu->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "Failed to register PWM chip\n");
+ 
 -- 
 2.42.0
 
