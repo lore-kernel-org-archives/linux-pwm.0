@@ -1,27 +1,34 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E05D6E
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:11 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F279F10C1
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:15 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAf-0006jJ-N3; Tue, 21 Nov 2023 14:52:09 +0100
+	id 1r5RAP-0005Pa-11; Tue, 21 Nov 2023 14:51:53 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAe-00Ab3D-5U; Tue, 21 Nov 2023 14:52:08 +0100
+	id 1r5RAO-00Aayl-3k; Tue, 21 Nov 2023 14:51:52 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAd-004xiF-SV; Tue, 21 Nov 2023 14:52:07 +0100
+	id 1r5RAN-004xdE-Qg; Tue, 21 Nov 2023 14:51:51 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org,
-	kernel@pengutronix.de
-Subject: [PATCH v3 107/108] pwm: Add more locking
-Date: Tue, 21 Nov 2023 14:50:49 +0100
-Message-ID: <20231121134901.208535-108-u.kleine-koenig@pengutronix.de>
+To: Jonathan Corbet <corbet@lwn.net>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	James Clark <james.clark@arm.com>,
+	Yang Yingliang <yangyingliang@huawei.com>
+Cc: linux-doc@vger.kernel.org,
+	kernel@pengutronix.de,
+	linux-pwm@vger.kernel.org
+Subject: [PATCH v3 037/108] pwm: Provide devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:49:39 +0100
+Message-ID: <20231121134901.208535-38-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -32,7 +39,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6255; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=fv4owEAX/3VhLfGfvMYUehaVu71r4UF5pOS7YdjGEv8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLXC2DSCIGiZqSbfEkw7x0cuGpOo1iJAH3TZN BtqAYjv6OWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1wgAKCRCPgPtYfRL+ TgxoB/9qwzu9w281fQakPINT27GfpiGYLyz86aENTAZjgGfom6ZAZBAODrq7Vcvegxcc6DmNCRd 3meNbTgWFxOqos99Kcn7/j3/BsQgbLWIvTvtHkxG77LbYCJKCUS6jWIO4umW91uug+Ycv0wJOJ5 V7/QUY+1WBBC1vORv4n42U50uSRdio45gTdRdLnm/uOAW7BUgPWV7F3ZsOzUBcVVsx+00a9XFBf DQPqg6VaWz1255zytdIVnHCzvjPd3ED5zec+hGXUi1HeFymhVmwTNlNr1/D2exz8T9MKNX/jW7B 1EQ2nNqT74ui5za/F9LTgppJlgXtaN4OIxWJ80lnXIc3/EIk
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5470; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=33tk1ra3E7BD8UFlUXt1nlBlRpOf0+9wzBGIYwmD0w8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLV13JFQ2jSBSYxXpUv9d/Ktdh466khPgnySq O8g/eU3KjWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1dQAKCRCPgPtYfRL+ TnRpB/9RbdQd2mUV1NTJmpfIIEkhlYHXvynu0S8CbE/SPRq+5dBWZvaHyjyz1mJmKJHemFS/pns AOHLunCN2ae8MYu0W69WqG8tMQ2jkQ68XrcuT2k+g2333qXloV7io9r4nyKUAEH3dN1J64NzIro LZr76SsX4gGYHLRzTOOBJJ/M/gWWPt8+/OfYNSCyGK9ul8NlhRAvxMwOfJ8qbQj1hP4H3QJ7/0q VA7ud+WWFImLYpJIxIa8dGVwhoAmzn03SO1W+VxZJ/i7l0hZIVBTJg8Dd5EcRnQFHnZH+U38/yp XVHh1w4iqED8L4yh2pMDt5X5lbG7Zs9s4CQdQc2iemDtmPmL
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -40,233 +47,151 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This ensures that a pwm_chip that has no corresponding driver isn't used
-and that a driver doesn't go away while a callback is still running.
+This function allocates a struct pwm_chip and driver data. Compared to
+the status quo the split into pwm_chip and driver data is new, otherwise
+it doesn't change anything relevant (yet).
 
-As with the previous commit this is not needed yet, but once we have PWM
-character device support this is required for race-free operation.
+The intention is that after all drivers are switched to use this
+allocation function, its possible to add a struct device to struct
+pwm_chip to properly track the latter's lifetime without touching all
+drivers again. Proper lifetime tracking is a necessary precondition to
+introduce character device support for PWMs (that implements atomic
+setting and doesn't suffer from the sysfs overhead of the /sys/class/pwm
+userspace support).
 
-To not serialize all pwm_apply_state() calls, this introduces a per chip
-lock. To prepare for a more sophisticated locking scheme involving spin
-locks instead of mutexes for "fast" chips, there are (for now trivial)
-functions introduced for locking and unlocking.
+The new function pwmchip_priv() (obviously?) only works for chips
+allocated with devm_pwmchip_alloc().
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/core.c  | 76 ++++++++++++++++++++++++++++++++++++++-------
- include/linux/pwm.h |  6 +++-
- 2 files changed, 69 insertions(+), 13 deletions(-)
+ .../driver-api/driver-model/devres.rst        |  1 +
+ Documentation/driver-api/pwm.rst              | 10 +++---
+ drivers/pwm/core.c                            | 32 ++++++++++++++++---
+ include/linux/pwm.h                           |  5 +++
+ 4 files changed, 38 insertions(+), 10 deletions(-)
 
+diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
+index c5f99d834ec5..e4df72c408d2 100644
+--- a/Documentation/driver-api/driver-model/devres.rst
++++ b/Documentation/driver-api/driver-model/devres.rst
+@@ -420,6 +420,7 @@ POWER
+   devm_reboot_mode_unregister()
+ 
+ PWM
++  devm_pwmchip_alloc()
+   devm_pwmchip_add()
+   devm_pwm_get()
+   devm_fwnode_pwm_get()
+diff --git a/Documentation/driver-api/pwm.rst b/Documentation/driver-api/pwm.rst
+index bb264490a87a..994ea5368805 100644
+--- a/Documentation/driver-api/pwm.rst
++++ b/Documentation/driver-api/pwm.rst
+@@ -134,11 +134,11 @@ to implement the pwm_*() functions itself. This means that it's impossible
+ to have multiple PWM drivers in the system. For this reason it's mandatory
+ for new drivers to use the generic PWM framework.
+ 
+-A new PWM controller/chip can be added using pwmchip_add() and removed
+-again with pwmchip_remove(). pwmchip_add() takes a filled in struct
+-pwm_chip as argument which provides a description of the PWM chip, the
+-number of PWM devices provided by the chip and the chip-specific
+-implementation of the supported PWM operations to the framework.
++A new PWM controller/chip can be allocated using devm_pwmchip_alloc, then added
++using pwmchip_add() and removed again with pwmchip_remove(). pwmchip_add()
++takes a filled in struct pwm_chip as argument which provides a description of
++the PWM chip, the number of PWM devices provided by the chip and the
++chip-specific implementation of the supported PWM operations to the framework.
+ 
+ When implementing polarity support in a PWM driver, make sure to respect the
+ signal conventions in the PWM framework. By definition, normal polarity
 diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index dd376fe9e265..8dbc79f7218c 100644
+index 58a9d3df73a1..0346709b60d8 100644
 --- a/drivers/pwm/core.c
 +++ b/drivers/pwm/core.c
-@@ -32,6 +32,16 @@ static DEFINE_MUTEX(pwm_lock);
- 
- static DEFINE_IDR(pwmchip_idr);
- 
-+static void pwmchip_lock(struct pwm_chip *chip)
-+{
-+	mutex_lock(&chip->lock);
-+}
-+
-+static void pwmchip_unlock(struct pwm_chip *chip)
-+{
-+	mutex_unlock(&chip->lock);
-+}
-+
- static struct pwm_chip *pwmchip_find_by_name(const char *name)
- {
- 	struct pwm_chip *chip;
-@@ -231,6 +241,7 @@ static struct pwm_chip *pwmchip_alloc(struct device *parent, unsigned int npwm,
- 
- 	chip->npwm = npwm;
- 	chip->uses_pwmchip_alloc = true;
-+	chip->operational = false;
- 
- 	for (i = 0; i < chip->npwm; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
-@@ -311,23 +322,29 @@ int __pwmchip_add(struct pwm_chip *chip, struct module *owner)
- 	if (IS_ENABLED(CONFIG_OF))
- 		of_pwmchip_add(chip);
- 
-+	mutex_init(&chip->lock);
-+
- 	ret = device_add(&chip->dev);
- 	if (ret)
- 		goto err_device_add;
- 
-+	pwmchip_lock(chip);
-+	chip->operational = true;
-+	pwmchip_unlock(chip);
-+
- 	mutex_unlock(&pwm_lock);
- 
- 	return 0;
- 
- err_device_add:
- 
--	if (IS_ENABLED(CONFIG_OF))
--		of_pwmchip_remove(chip);
-+	of_pwmchip_remove(chip);
- 
- 	idr_remove(&pwmchip_idr, chip->id);
- err_idr_alloc:
- 
- 	mutex_unlock(&pwm_lock);
-+
- 	module_put(owner);
- 
- 	return ret;
-@@ -343,12 +360,27 @@ EXPORT_SYMBOL_GPL(__pwmchip_add);
- void pwmchip_remove(struct pwm_chip *chip)
- {
- 	pwmchip_sysfs_unexport(chip);
-+	unsigned int i;
- 
- 	if (IS_ENABLED(CONFIG_OF))
- 		of_pwmchip_remove(chip);
- 
- 	mutex_lock(&pwm_lock);
- 
-+	pwmchip_lock(chip);
-+	chip->operational = false;
-+	pwmchip_unlock(chip);
-+
-+	for (i = 0; i < chip->npwm; ++i) {
-+		struct pwm_device *pwm = &chip->pwms[i];
-+
-+		if (test_and_clear_bit(PWMF_REQUESTED, &pwm->flags)) {
-+			dev_alert(&chip->dev, "Freeing requested PWM #%u\n", i);
-+			if (pwm->chip->ops->free)
-+				pwm->chip->ops->free(pwm->chip, pwm);
-+		}
-+	}
-+
- 	idr_remove(&pwmchip_idr, chip->id);
- 
- 	mutex_unlock(&pwm_lock);
-@@ -524,7 +556,7 @@ static void pwm_apply_state_debug(struct pwm_device *pwm,
- int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
- {
- 	struct pwm_chip *chip;
--	int err;
-+	int err = 0;
- 
- 	/*
- 	 * Some lowlevel driver's implementations of .apply() make use of
-@@ -541,17 +573,24 @@ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
- 
- 	chip = pwm->chip;
- 
-+	pwmchip_lock(chip);
-+
-+	if (!chip->operational) {
-+		err = -ENXIO;
-+		goto out_unlock;
-+	}
-+
- 	if (state->period == pwm->state.period &&
- 	    state->duty_cycle == pwm->state.duty_cycle &&
- 	    state->polarity == pwm->state.polarity &&
- 	    state->enabled == pwm->state.enabled &&
- 	    state->usage_power == pwm->state.usage_power)
--		return 0;
-+		goto out_unlock;
- 
- 	err = chip->ops->apply(chip, pwm, state);
- 	trace_pwm_apply(pwm, state, err);
- 	if (err)
--		return err;
-+		goto out_unlock;
- 
- 	pwm->state = *state;
- 
-@@ -561,7 +600,10 @@ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
- 	 */
- 	pwm_apply_state_debug(pwm, state);
- 
--	return 0;
-+out_unlock:
-+	pwmchip_unlock(chip);
-+
-+	return err;
+@@ -196,6 +196,30 @@ static bool pwm_ops_check(const struct pwm_chip *chip)
+ 	return true;
  }
- EXPORT_SYMBOL_GPL(pwm_apply_state);
  
-@@ -585,7 +627,12 @@ int pwm_capture(struct pwm_device *pwm, struct pwm_capture *result,
- 		return -ENOSYS;
- 
- 	mutex_lock(&pwm_lock);
--	err = pwm->chip->ops->capture(pwm->chip, pwm, result, timeout);
++void *pwmchip_priv(struct pwm_chip *chip)
++{
++	return (void *)chip + sizeof(*chip);
++}
++EXPORT_SYMBOL_GPL(pwmchip_priv);
 +
-+	if (pwm->chip->operational)
-+		err = pwm->chip->ops->capture(pwm->chip, pwm, result, timeout);
-+	else
-+		err = -ENXIO;
++struct pwm_chip *devm_pwmchip_alloc(struct device *parent, unsigned int npwm, size_t sizeof_priv)
++{
++	struct pwm_chip *chip;
++	size_t alloc_size;
 +
- 	mutex_unlock(&pwm_lock);
- 
- 	return err;
-@@ -992,23 +1039,28 @@ EXPORT_SYMBOL_GPL(pwm_get);
++	alloc_size = size_add(sizeof(*chip), sizeof_priv);
++
++	chip = devm_kzalloc(parent, alloc_size, GFP_KERNEL);
++	if (!chip)
++		return ERR_PTR(-ENOMEM);
++
++	chip->dev = parent;
++	chip->npwm = npwm;
++
++	return chip;
++}
++EXPORT_SYMBOL_GPL(devm_pwmchip_alloc);
++
+ /**
+  * __pwmchip_add() - register a new PWM chip
+  * @chip: the PWM chip to add
+@@ -208,9 +232,8 @@ static bool pwm_ops_check(const struct pwm_chip *chip)
   */
- void pwm_put(struct pwm_device *pwm)
+ int __pwmchip_add(struct pwm_chip *chip, struct module *owner)
  {
-+	bool operational;
-+
- 	if (!pwm)
- 		return;
+-	struct pwm_device *pwm;
+-	unsigned int i;
+ 	int ret;
++	unsigned i;
  
- 	mutex_lock(&pwm_lock);
+ 	if (!chip || !chip->dev || !chip->ops || !chip->npwm)
+ 		return -EINVAL;
+@@ -220,7 +243,7 @@ int __pwmchip_add(struct pwm_chip *chip, struct module *owner)
  
--	if (!test_and_clear_bit(PWMF_REQUESTED, &pwm->flags)) {
--		pr_warn("PWM device already freed\n");
-+	if (!test_and_clear_bit(PWMF_REQUESTED, &pwm->flags))
- 		goto out;
--	}
+ 	chip->owner = owner;
  
--	if (pwm->chip->ops->free)
-+	pwmchip_lock(pwm->chip);
-+	operational = pwm->chip->operational;
-+	pwmchip_unlock(pwm->chip);
-+
-+	if (operational && pwm->chip->ops->free)
- 		pwm->chip->ops->free(pwm->chip, pwm);
+-	chip->pwms = kcalloc(chip->npwm, sizeof(*pwm), GFP_KERNEL);
++	chip->pwms = kcalloc(chip->npwm, sizeof(*chip->pwms), GFP_KERNEL);
+ 	if (!chip->pwms)
+ 		return -ENOMEM;
  
- 	pwm->label = NULL;
+@@ -234,9 +257,8 @@ int __pwmchip_add(struct pwm_chip *chip, struct module *owner)
+ 	}
  
--	put_device(&pwm->chip->dev);
- out:
-+	put_device(&pwm->chip->dev);
-+
- 	mutex_unlock(&pwm_lock);
- }
- EXPORT_SYMBOL_GPL(pwm_put);
+ 	chip->id = ret;
+-
+ 	for (i = 0; i < chip->npwm; i++) {
+-		pwm = &chip->pwms[i];
++		struct pwm_device *pwm = &chip->pwms[i];
+ 
+ 		pwm->chip = chip;
+ 		pwm->hwpwm = i;
 diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 081c8402155d..4e81e8819f8c 100644
+index dda3a68e06dc..3c62cf329ee0 100644
 --- a/include/linux/pwm.h
 +++ b/include/linux/pwm.h
-@@ -287,7 +287,9 @@ struct pwm_ops {
-  * @npwm: number of PWMs controlled by this chip
-  * @of_xlate: request a PWM device given a device tree PWM specifier
-  * @of_pwm_n_cells: number of cells expected in the device tree PWM specifier
-- * @list: list node for internal use
-+ * @lock: mutex protecting .operational and serializing ops and chip unregistration
-+ * @uses_pwmchip_alloc: signals if pwmchip_allow was used to allocate this chip
-+ * @operational: tracks if the chip is operational
-  * @pwms: array of PWM devices allocated by the framework
-  */
- struct pwm_chip {
-@@ -302,7 +304,9 @@ struct pwm_chip {
- 	unsigned int of_pwm_n_cells;
+@@ -5,6 +5,7 @@
+ #include <linux/err.h>
+ #include <linux/mutex.h>
+ #include <linux/of.h>
++#include <linux/compiler_attributes.h>
  
- 	/* only used internally by the PWM framework */
-+	struct mutex lock;
- 	bool uses_pwmchip_alloc;
-+	bool operational;
- 	struct pwm_device pwms[] __counted_by(npwm);
- };
+ struct pwm_chip;
  
+@@ -385,6 +386,10 @@ static inline void pwm_disable(struct pwm_device *pwm)
+ int pwm_capture(struct pwm_device *pwm, struct pwm_capture *result,
+ 		unsigned long timeout);
+ 
++void *pwmchip_priv(struct pwm_chip *chip) __attribute_const__;
++
++struct pwm_chip *devm_pwmchip_alloc(struct device *parent, unsigned int npwm, size_t sizeof_priv);
++
+ int __pwmchip_add(struct pwm_chip *chip, struct module *owner);
+ #define pwmchip_add(chip) __pwmchip_add(chip, THIS_MODULE)
+ void pwmchip_remove(struct pwm_chip *chip);
 -- 
 2.42.0
 
