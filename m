@@ -1,32 +1,30 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D75F10DC
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:09 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1175C10F7
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:08 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAb-0006MY-5e; Tue, 21 Nov 2023 14:52:05 +0100
+	id 1r5RAa-0006GG-Eo; Tue, 21 Nov 2023 14:52:04 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAZ-00Ab1w-BA; Tue, 21 Nov 2023 14:52:03 +0100
+	id 1r5RAY-00Ab1Y-0Y; Tue, 21 Nov 2023 14:52:02 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAZ-004xgv-1s; Tue, 21 Nov 2023 14:52:03 +0100
+	id 1r5RAX-004xgX-NS; Tue, 21 Nov 2023 14:52:01 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>
 Cc: linux-pwm@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
+	linux-riscv@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 089/108] pwm: stm32: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:50:31 +0100
-Message-ID: <20231121134901.208535-90-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 083/108] pwm: sifive: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:25 +0100
+Message-ID: <20231121134901.208535-84-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -37,7 +35,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5958; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Hjoz5pS3o+vQD05j7hvlIBMBoLcpuUHgtSwWzaNV+3M=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtSYres8WkNvFhs+jChapSa9tKPnZ0/AckfRxNSZlh9tH rL7Wp7sZDRmYWDkYpAVU2Sxb1yTaVUlF9m59t9lmEGsTCBTGLg4BWAi2jXs/8w99lmIa8x2W+cs 76+mfviL5ipG9h/Ll+wJVJ4f2fOsvuMSr5eJxvx6MZegvhCfY+p212x93d4Lh1Yznk1NXuPsZHn mu22k2LzDXkyxGiGTxM0mFVlIG/5jX3Dk43qHd4sv3JNfkMjkxrzrXfa7vldalTMNI/x29Cf8c5 1ZMPdV5hGbs6Ja3WdfcNyKvKi24dWZuUssJHWPRB5Luf7lf/fCllmue0TseNalP12ck7j90oy25 /+WtzmI59quYNvgev9a9/OgCb8+Szld9+Gwlve+LKU821eQv7csxJuJ22f/c8H+iZ2aJnMjW08F Mq6UOGy2XWSio7R8YKlV0Guj97+Fn4ZX5SW/SAnZXmYBAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3188; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=bq6oGUNw3twpEEw3Xxtv6KtBRgfpfqaTqcIAr/U12XQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWo2/ckebPr78FuPrlhSlNEcRHW0SDFawSnu FE5IEuUHYSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1qAAKCRCPgPtYfRL+ Tm4yB/9Q2UkmyOd/IK3SHV3hc2ji0grQMmqPHrd1nXFf+/0joeIH/j2WitSRC8jg+0STOz/ZE89 dLqqsigfURL4IMWWRl6kwVTVb0Ne5S+cPTEaS+jqBLw21FssoixVIGRCKPe3Npzapl55/QqWfEP B7Yjv87a+Dcv+TNMRNTQaapwjniSNGqD+7tqVQXpIsBQIPKx3UZBoUMvZ6KKE/znmGu8JQgPz0O 0K2ZPRrwx7Ngo6QbVpgc3ri09XeZtFZwI6mYeQrnyT94RR12kf+Sc4dvpjsvrnXlVTCogioyuGm LLghtdhRebblOntpnhqc44Zu6vgCtdnu0Yk9dZKCHFGJNaOY
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -45,175 +43,97 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-stm32 driver to further changes of the pwm core
+This prepares the pwm-sifive driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-stm32.c | 51 ++++++++++++++++++++++-------------------
- 1 file changed, 27 insertions(+), 24 deletions(-)
+ drivers/pwm/pwm-sifive.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index d1dc9e3ca2a1..248244d03e4d 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -27,7 +27,6 @@ struct stm32_breakinput {
- };
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index c1b412905d9e..99b7e981cdd6 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -41,7 +41,7 @@
+ #define PWM_SIFIVE_DEFAULT_PERIOD	10000000
  
- struct stm32_pwm {
--	struct pwm_chip chip;
- 	struct mutex lock; /* protect pwm config/enable */
+ struct pwm_sifive_ddata {
+-	struct pwm_chip	chip;
++	struct pwm_chip *chip;
+ 	struct mutex lock; /* lock to protect user_count and approx_period */
+ 	struct notifier_block notifier;
  	struct clk *clk;
- 	struct regmap *regmap;
-@@ -40,7 +39,7 @@ struct stm32_pwm {
- 
- static inline struct stm32_pwm *to_stm32_pwm_dev(struct pwm_chip *chip)
+@@ -54,7 +54,7 @@ struct pwm_sifive_ddata {
+ static inline
+ struct pwm_sifive_ddata *pwm_sifive_chip_to_ddata(struct pwm_chip *chip)
  {
--	return container_of(chip, struct stm32_pwm, chip);
+-	return container_of(chip, struct pwm_sifive_ddata, chip);
 +	return pwmchip_priv(chip);
  }
  
- static u32 active_channels(struct stm32_pwm *dev)
-@@ -90,11 +89,12 @@ static u32 active_channels(struct stm32_pwm *dev)
-  * - Period     = t2 - t0
-  * - Duty cycle = t1 - t0
-  */
--static int stm32_pwm_raw_capture(struct stm32_pwm *priv, struct pwm_device *pwm,
-+static int stm32_pwm_raw_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 				 unsigned long tmo_ms, u32 *raw_prd,
- 				 u32 *raw_dty)
- {
--	struct device *parent = pwmchip_parent(&priv->chip)->parent;
-+	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
-+	struct device *parent = pwmchip_parent(chip)->parent;
- 	enum stm32_timers_dmas dma_id;
- 	u32 ccen, ccr;
- 	int ret;
-@@ -208,7 +208,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   TIM_CCER_CC12P : TIM_CCER_CC34P, pwm->hwpwm < 2 ?
- 			   TIM_CCER_CC2P : TIM_CCER_CC4P);
- 
--	ret = stm32_pwm_raw_capture(priv, pwm, tmo_ms, &raw_prd, &raw_dty);
-+	ret = stm32_pwm_raw_capture(chip, pwm, tmo_ms, &raw_prd, &raw_dty);
- 	if (ret)
- 		goto stop;
- 
-@@ -229,7 +229,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 		/* 2nd measure with new scale */
- 		psc /= scale;
- 		regmap_write(priv->regmap, TIM_PSC, psc);
--		ret = stm32_pwm_raw_capture(priv, pwm, tmo_ms, &raw_prd,
-+		ret = stm32_pwm_raw_capture(chip, pwm, tmo_ms, &raw_prd,
- 					    &raw_dty);
- 		if (ret)
- 			goto stop;
-@@ -257,7 +257,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   FIELD_PREP(TIM_CCMR_IC1PSC, icpsc) |
- 			   FIELD_PREP(TIM_CCMR_IC2PSC, icpsc));
- 
--	ret = stm32_pwm_raw_capture(priv, pwm, tmo_ms, &raw_prd, &raw_dty);
-+	ret = stm32_pwm_raw_capture(chip, pwm, tmo_ms, &raw_prd, &raw_dty);
- 	if (ret)
- 		goto stop;
- 
-@@ -605,7 +605,7 @@ static void stm32_pwm_detect_complementary(struct stm32_pwm *priv)
- 	priv->have_complementary_output = (ccer != 0);
+ static int pwm_sifive_request(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -102,7 +102,7 @@ static void pwm_sifive_update_clock(struct pwm_sifive_ddata *ddata,
+ 	/* As scale <= 15 the shift operation cannot overflow. */
+ 	num = (unsigned long long)NSEC_PER_SEC << (PWM_SIFIVE_CMPWIDTH + scale);
+ 	ddata->real_period = div64_ul(num, rate);
+-	dev_dbg(pwmchip_parent(&ddata->chip),
++	dev_dbg(pwmchip_parent(ddata->chip),
+ 		"New real_period = %u ns\n", ddata->real_period);
  }
  
--static unsigned int stm32_pwm_detect_channels(struct stm32_pwm *priv,
-+static unsigned int stm32_pwm_detect_channels(struct stm32_timers *ddata,
- 					      unsigned int *num_enabled)
- {
- 	u32 ccer, ccer_backup;
-@@ -614,10 +614,10 @@ static unsigned int stm32_pwm_detect_channels(struct stm32_pwm *priv,
- 	 * If channels enable bits don't exist writing 1 will have no
- 	 * effect so we can detect and count them.
- 	 */
--	regmap_read(priv->regmap, TIM_CCER, &ccer_backup);
--	regmap_set_bits(priv->regmap, TIM_CCER, TIM_CCER_CCXE);
--	regmap_read(priv->regmap, TIM_CCER, &ccer);
--	regmap_write(priv->regmap, TIM_CCER, ccer_backup);
-+	regmap_read(ddata->regmap, TIM_CCER, &ccer_backup);
-+	regmap_set_bits(ddata->regmap, TIM_CCER, TIM_CCER_CCXE);
-+	regmap_read(ddata->regmap, TIM_CCER, &ccer);
-+	regmap_write(ddata->regmap, TIM_CCER, ccer_backup);
+@@ -230,15 +230,14 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 	u32 val;
+ 	unsigned int enabled_pwms = 0, enabled_clks = 1;
  
- 	*num_enabled = hweight32(ccer_backup & TIM_CCER_CCXE);
- 
-@@ -632,11 +632,14 @@ static int stm32_pwm_probe(struct platform_device *pdev)
- 	struct stm32_pwm *priv;
- 	unsigned int num_enabled;
- 	unsigned int i;
-+	struct pwm_chip *chip;
- 	int ret;
- 
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
+-	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
+-	if (!ddata)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(dev, stm32_pwm_detect_channels(ddata, &num_enabled),
-+				  sizeof(*priv));
++	chip = devm_pwmchip_alloc(dev, 4, sizeof(*ddata));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	priv = to_stm32_pwm_dev(chip);
++	ddata = pwm_sifive_chip_to_ddata(chip);
++	ddata->chip = chip;
  
- 	mutex_init(&priv->lock);
- 	priv->regmap = ddata->regmap;
-@@ -652,37 +655,36 @@ static int stm32_pwm_probe(struct platform_device *pdev)
+ 	mutex_init(&ddata->lock);
+-	chip = &ddata->chip;
+-	chip->dev = dev;
+ 	chip->ops = &pwm_sifive_ops;
+-	chip->npwm = 4;
  
- 	stm32_pwm_detect_complementary(priv);
+ 	ddata->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(ddata->regs))
+@@ -296,7 +295,7 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 		goto unregister_clk;
+ 	}
  
--	priv->chip.dev = dev;
--	priv->chip.ops = &stm32pwm_ops;
--	priv->chip.npwm = stm32_pwm_detect_channels(priv, &num_enabled);
-+	chip->ops = &stm32pwm_ops;
- 
- 	/* Initialize clock refcount to number of enabled PWM channels. */
- 	for (i = 0; i < num_enabled; i++)
- 		clk_enable(priv->clk);
- 
--	ret = devm_pwmchip_add(dev, &priv->chip);
-+	ret = devm_pwmchip_add(dev, chip);
- 	if (ret < 0)
- 		return ret;
- 
--	platform_set_drvdata(pdev, priv);
+-	platform_set_drvdata(pdev, ddata);
 +	platform_set_drvdata(pdev, chip);
+ 	dev_dbg(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
  
  	return 0;
- }
+@@ -314,15 +313,16 @@ static int pwm_sifive_probe(struct platform_device *pdev)
  
- static int stm32_pwm_suspend(struct device *dev)
+ static void pwm_sifive_remove(struct platform_device *dev)
  {
--	struct stm32_pwm *priv = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
- 	unsigned int i;
- 	u32 ccer, mask;
+-	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
++	struct pwm_chip *chip = platform_get_drvdata(dev);
++	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
+ 	struct pwm_device *pwm;
+ 	int ch;
  
- 	/* Look for active channels */
- 	ccer = active_channels(priv);
+-	pwmchip_remove(&ddata->chip);
++	pwmchip_remove(chip);
+ 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
  
--	for (i = 0; i < priv->chip.npwm; i++) {
-+	for (i = 0; i < chip->npwm; i++) {
- 		mask = TIM_CCER_CC1E << (i * 4);
- 		if (ccer & mask) {
- 			dev_err(dev, "PWM %u still in use by consumer %s\n",
--				i, priv->chip.pwms[i].label);
-+				i, chip->pwms[i].label);
- 			return -EBUSY;
- 		}
+-	for (ch = 0; ch < ddata->chip.npwm; ch++) {
+-		pwm = &ddata->chip.pwms[ch];
++	for (ch = 0; ch < chip->npwm; ch++) {
++		pwm = &chip->pwms[ch];
+ 		if (pwm->state.enabled)
+ 			clk_disable(ddata->clk);
  	}
-@@ -692,7 +694,8 @@ static int stm32_pwm_suspend(struct device *dev)
- 
- static int stm32_pwm_resume(struct device *dev)
- {
--	struct stm32_pwm *priv = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
- 	int ret;
- 
- 	ret = pinctrl_pm_select_default_state(dev);
 -- 
 2.42.0
 
