@@ -1,32 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313EE10FB
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994701700
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:08 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAY-00063l-Vq; Tue, 21 Nov 2023 14:52:03 +0100
+	id 1r5RAc-0006Xb-KF; Tue, 21 Nov 2023 14:52:06 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAV-00Ab0r-PU; Tue, 21 Nov 2023 14:51:59 +0100
+	id 1r5RAb-00Ab2T-8q; Tue, 21 Nov 2023 14:52:05 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAV-004xff-GH; Tue, 21 Nov 2023 14:51:59 +0100
+	id 1r5RAa-004xhN-W8; Tue, 21 Nov 2023 14:52:05 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 072/108] pwm: mxs: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:50:14 +0100
-Message-ID: <20231121134901.208535-73-u.kleine-koenig@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org,
+	kernel@pengutronix.de
+Subject: [PATCH v3 096/108] pwm: twl: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:38 +0100
+Message-ID: <20231121134901.208535-97-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -37,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2580; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=pjAx0J8kLJ1PZzC7JsCtWxKBVn2eyCVdftzhlgIGlbo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWcf0zfJsiVoNvGwaUbXxiRexrMexLm4/9J1 li+/1p/9fOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1nAAKCRCPgPtYfRL+ To46CACUSxboH8pMBjIrN+XM8aJzkf9vK3XxuyXoyhoIN2pDNgtfY8AGPqu/nfQGJ9qpJzhKgvM TJ8ItPjJhx+hxtgoGLKGF4Yl98g45TfjC6gCXnWu9a3JFA16ARDR+AQPXs64rXvqaxrtEQeqpQk xP7vflxyIW4jiGX0/Vp9RxjsO+SxJ6hnytZQQgezc8vbZajRIbGZY505a3H0Reqero5hbHJF+Oh FgRZA6NrU+tHOogBqi/K5zz8IqhVuyfWLszSH69zfaL95cgy4u2veBztNvaDoFLcIgLLekQkViz SZ02yTmia6OJaMJMJ7N5kThhddMoqyctfuiWv1vgx1QXduHn
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1851; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=mV+FFikCiI0EGP6Lsp4dGIMRO80FE3i6GifvqG2Vx7I=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLW2s2KJ9YJQ19Q5ZduRoZZkAgWDUG6JCY8eV FkZKpWub4eJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1tgAKCRCPgPtYfRL+ TnKJCACcVipYvWz33BnzM9vqgtYZpFnskdXacguibzzW46QL4Ft0P5oGVt9yz/lQSS8y17KsMgv Z/JJbDMa57WQRGNaw3lX0FeDcxrxU4mSzUHPDL2AdzUk4CdsFkSYeNdv5WOrUdJkJfJDeD3Yppx A8baaJqc8VH1/BjkxlzHSXbH1kfyJxDgcfvwHMoQR+s7l4d8JMhTgHNF8pEv2mExgbpBfQwJO0c SHl5xdtOiiG6J6ohefv9X/j0VcshkbhhEIxIKDfck9kLYxmhdtSB8hyfO7b3UstMxD0xjVgvci+ BvGv2H6QaGl3Tf1KsvWOAN0EA1/Y5g/PGzP1aoFNkgMnP/gl
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -45,85 +40,68 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-mxs driver to further changes of the pwm core
+This prepares the pwm-twol driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-mxs.c | 32 ++++++++++++++++++--------------
- 1 file changed, 18 insertions(+), 14 deletions(-)
+ drivers/pwm/pwm-twl.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index 1b5e787d78f1..7c05b22bc7c9 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -37,12 +37,14 @@ static const u8 cdiv_shift[PERIOD_CDIV_MAX] = {
- };
+diff --git a/drivers/pwm/pwm-twl.c b/drivers/pwm/pwm-twl.c
+index 073c107964f6..7f9d79a7372d 100644
+--- a/drivers/pwm/pwm-twl.c
++++ b/drivers/pwm/pwm-twl.c
+@@ -46,7 +46,6 @@
+ #define TWL6030_PWM_TOGGLE(pwm, x)	((x) << (pwm * 3))
  
- struct mxs_pwm_chip {
+ struct twl_pwm_chip {
 -	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
- };
+ 	struct mutex mutex;
+ 	u8 twl6030_toggle3;
+ 	u8 twl4030_pwm_mux;
+@@ -54,7 +53,7 @@ struct twl_pwm_chip {
  
--#define to_mxs_pwm_chip(_chip) container_of(_chip, struct mxs_pwm_chip, chip)
-+static inline struct mxs_pwm_chip *to_mxs_pwm_chip(struct pwm_chip *chip)
-+{
-+	return pwmchip_priv(chip);
-+}
- 
- static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			 const struct pwm_state *state)
-@@ -120,12 +122,21 @@ static const struct pwm_ops mxs_pwm_ops = {
- static int mxs_pwm_probe(struct platform_device *pdev)
+ static inline struct twl_pwm_chip *to_twl(struct pwm_chip *chip)
  {
- 	struct device_node *np = pdev->dev.of_node;
-+	struct pwm_chip *chip;
- 	struct mxs_pwm_chip *mxs;
-+	u32 npwm;
- 	int ret;
+-	return container_of(chip, struct twl_pwm_chip, chip);
++	return pwmchip_priv(chip);
+ }
  
--	mxs = devm_kzalloc(&pdev->dev, sizeof(*mxs), GFP_KERNEL);
--	if (!mxs)
+ static int twl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -341,23 +340,22 @@ static const struct pwm_ops twl6030_pwm_ops = {
+ 
+ static int twl_pwm_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct twl_pwm_chip *twl;
+ 
+-	twl = devm_kzalloc(&pdev->dev, sizeof(*twl), GFP_KERNEL);
+-	if (!twl)
 -		return -ENOMEM;
-+	ret = of_property_read_u32(np, "fsl,pwm-number", &npwm);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
-+		return ret;
-+	}
-+
-+	chip = devm_pwmchip_alloc(&pdev->dev, npwm, sizeof(*mxs));
++	chip = devm_pwmchip_alloc(&pdev->dev, 2, sizeof(*twl));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	mxs = to_mxs_pwm_chip(chip);
++	twl = to_twl(chip);
  
- 	mxs->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(mxs->base))
-@@ -135,21 +146,14 @@ static int mxs_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(mxs->clk))
- 		return PTR_ERR(mxs->clk);
- 
--	mxs->chip.dev = &pdev->dev;
--	mxs->chip.ops = &mxs_pwm_ops;
+ 	if (twl_class_is_4030())
+-		twl->chip.ops = &twl4030_pwm_ops;
++		chip->ops = &twl4030_pwm_ops;
+ 	else
+-		twl->chip.ops = &twl6030_pwm_ops;
 -
--	ret = of_property_read_u32(np, "fsl,pwm-number", &mxs->chip.npwm);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
--		return ret;
--	}
-+	chip->ops = &mxs_pwm_ops;
+-	twl->chip.dev = &pdev->dev;
+-	twl->chip.npwm = 2;
++		chip->ops = &twl6030_pwm_ops;
  
- 	/* FIXME: Only do this if the PWM isn't already running */
- 	ret = stmp_reset_block(mxs->base);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to reset PWM\n");
+ 	mutex_init(&twl->mutex);
  
--	ret = devm_pwmchip_add(&pdev->dev, &mxs->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to add pwm chip %d\n", ret);
- 		return ret;
+-	return devm_pwmchip_add(&pdev->dev, &twl->chip);
++	return devm_pwmchip_add(&pdev->dev, chip);
+ }
+ 
+ #ifdef CONFIG_OF
 -- 
 2.42.0
 
