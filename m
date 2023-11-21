@@ -1,31 +1,29 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EA710E9
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:57 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4324B10DC
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:59 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAQ-0005S3-Bv; Tue, 21 Nov 2023 14:51:54 +0100
+	id 1r5RAR-0005Vt-S6; Tue, 21 Nov 2023 14:51:55 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAP-00AazH-RV; Tue, 21 Nov 2023 14:51:53 +0100
+	id 1r5RAQ-00AazX-Mp; Tue, 21 Nov 2023 14:51:54 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAP-004xdl-Ia; Tue, 21 Nov 2023 14:51:53 +0100
+	id 1r5RAQ-004xe1-Ds; Tue, 21 Nov 2023 14:51:54 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>
-Cc: Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	linux-pwm@vger.kernel.org,
+	Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-pwm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 045/108] pwm: bcm-kona: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:49:47 +0100
-Message-ID: <20231121134901.208535-46-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 049/108] pwm: clps711x: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:49:51 +0100
+Message-ID: <20231121134901.208535-50-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -36,7 +34,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2115; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=6uQ+gQRpp9b2E6GpmmxJDmApJQvDAxDJ/6PjecsbMsw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLV+sCY49v82+fjC2TzYYRPsh/j3v8wknSP5C /pft4XC+HeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1fgAKCRCPgPtYfRL+ TshkCACo4H4wmZJT0jLRZObqj5dy2inP5vDAwEHRcnH33RwFG3YeKLRXyCme/dH8eM+v17c8vDC yFTLv+0NtHtnQFrUtjMLWzgQAga5B5IuIdwx2yL2wiN9xa85qT6fjph0U333PInWpAc2VmP9POP ZD03UWbvUtbLZ8PeUQR0/UTrPRrAP3UMQuiBCHqGS7TZQ1jtQ12XTECneOLLcLpO9DWDdUxvrOU lyIE/rPFgb7OjkwrRQEc9rLusSBAz/3AHj6gROahrirZL/QhUC5iqMB2+ozI24LTaHdP/OkDl3/ w0jZV+q8FmBkMMZi7Fkf6dF7CpnuwGESM/VSbnRUFpsCCLRY
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2239; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=uttibuUPMCE6ihNNpyBu3/EYsQLKMrwihagoZRONhP4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWCptSq9X/VovEsSoHud9NnIAxIHGrKYju6v KIgotuh6oWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1ggAKCRCPgPtYfRL+ TplRB/4izZLM4P5IaiOngM/teoKrWYswcLCMO4DURHvHCVjz5NG2qmiEnCsvSBdw8cFRWmTf9nA mnUeOS42OEcqEYA7fGwcCLoH3oSfcAFgt/izjOoAEyZ0jzP17Q5SrLXXEqZffAbVw+5m2h7s26y 8KxRXAUk2g6mDX3nHYBYAKd5+ukUgIExuddYKTBpIzQOjrxv8BzK4gZ+2SqQwJHi5/hVo4lEnEq 6b8P0ZIW1Muk+RL4IClmfnY3hOJ4EoTJY6/zkDW7AmPNtMktdmh+aMIU8+c7HMb2ds3Llg4DIxt 4Sacfh8hPVKb7S0F90p2EDajlSZf80UCkNvoeTnHjP0dwEb7
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -44,76 +42,73 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-bcm-kona driver to further changes of the pwm core
+This prepares the pwm-clps711x driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-bcm-kona.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-clps711x.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index 53bb52c9da08..71bc999c576f 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -56,14 +56,13 @@
- #define DUTY_CYCLE_HIGH_MAX			0x00ffffff
+diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+index 42179b3f7ec3..f8a05a11a5d0 100644
+--- a/drivers/pwm/pwm-clps711x.c
++++ b/drivers/pwm/pwm-clps711x.c
+@@ -12,7 +12,6 @@
+ #include <linux/pwm.h>
  
- struct kona_pwmc {
+ struct clps711x_chip {
 -	struct pwm_chip chip;
- 	void __iomem *base;
+ 	void __iomem *pmpcon;
  	struct clk *clk;
- };
+ 	spinlock_t lock;
+@@ -20,7 +19,7 @@ struct clps711x_chip {
  
- static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *chip)
+ static inline struct clps711x_chip *to_clps711x_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct kona_pwmc, chip);
+-	return container_of(chip, struct clps711x_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- /*
-@@ -273,18 +272,18 @@ static const struct pwm_ops kona_pwm_ops = {
+ static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -85,11 +84,13 @@ static struct pwm_device *clps711x_pwm_xlate(struct pwm_chip *chip,
  
- static int kona_pwmc_probe(struct platform_device *pdev)
+ static int clps711x_pwm_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct kona_pwmc *kp;
- 	unsigned int chan;
- 	unsigned int value = 0;
- 	int ret = 0;
+ 	struct clps711x_chip *priv;
  
--	kp = devm_kzalloc(&pdev->dev, sizeof(*kp), GFP_KERNEL);
--	if (kp == NULL)
-+	chip = devm_pwmchip_alloc(&pdev->dev, 6, sizeof(*kp));
-+	if (chip == NULL)
- 		return -ENOMEM;
-+	kp = to_kona_pwmc(chip);
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, 2, sizeof(*priv));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	priv = to_clps711x_chip(chip);
  
--	kp->chip.dev = &pdev->dev;
--	kp->chip.ops = &kona_pwm_ops;
--	kp->chip.npwm = 6;
-+	chip->ops = &kona_pwm_ops;
+ 	priv->pmpcon = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->pmpcon))
+@@ -99,15 +100,13 @@ static int clps711x_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(priv->clk))
+ 		return PTR_ERR(priv->clk);
  
- 	kp->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(kp->base))
-@@ -304,14 +303,14 @@ static int kona_pwmc_probe(struct platform_device *pdev)
- 	}
+-	priv->chip.ops = &clps711x_pwm_ops;
+-	priv->chip.dev = &pdev->dev;
+-	priv->chip.npwm = 2;
+-	priv->chip.of_xlate = clps711x_pwm_xlate;
+-	priv->chip.of_pwm_n_cells = 1;
++	chip->ops = &clps711x_pwm_ops;
++	chip->of_xlate = clps711x_pwm_xlate;
++	chip->of_pwm_n_cells = 1;
  
- 	/* Set push/pull for all channels */
--	for (chan = 0; chan < kp->chip.npwm; chan++)
-+	for (chan = 0; chan < chip->npwm; chan++)
- 		value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
+ 	spin_lock_init(&priv->lock);
  
- 	writel(value, kp->base + PWM_CONTROL_OFFSET);
+-	return devm_pwmchip_add(&pdev->dev, &priv->chip);
++	return devm_pwmchip_add(&pdev->dev, chip);
+ }
  
- 	clk_disable_unprepare(kp->clk);
- 
--	ret = devm_pwmchip_add(&pdev->dev, &kp->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0)
- 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
- 
+ static const struct of_device_id __maybe_unused clps711x_pwm_dt_ids[] = {
 -- 
 2.42.0
 
