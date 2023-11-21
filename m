@@ -1,32 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6971310DD
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:00 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B102D10EC
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:03 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAO-0005PL-CI; Tue, 21 Nov 2023 14:51:52 +0100
+	id 1r5RAW-0005tQ-FB; Tue, 21 Nov 2023 14:52:00 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAN-00Aayh-Tv; Tue, 21 Nov 2023 14:51:51 +0100
+	id 1r5RAU-00Ab0N-3J; Tue, 21 Nov 2023 14:51:58 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAN-004xd1-Ks; Tue, 21 Nov 2023 14:51:51 +0100
+	id 1r5RAT-004xf9-QW; Tue, 21 Nov 2023 14:51:57 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Johan Hovold <johan@kernel.org>,
-	Alex Elder <elder@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Thierry Reding <thierry.reding@gmail.com>
-Cc: greybus-dev@lists.linaro.org,
-	linux-staging@lists.linux.dev,
-	kernel@pengutronix.de,
-	linux-pwm@vger.kernel.org
-Subject: [PATCH v3 036/108] staging: greybus: pwm: Make use of pwmchip_parent() macro
-Date: Tue, 21 Nov 2023 14:49:38 +0100
-Message-ID: <20231121134901.208535-37-u.kleine-koenig@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org,
+	kernel@pengutronix.de
+Subject: [PATCH v3 064/108] pwm: lp3943: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:06 +0100
+Message-ID: <20231121134901.208535-65-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -37,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7260; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=jpdApB4VpVV6JyKzGy62ySXnPuypB5bG/1JU/y0CImA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLV0Lyj9BOUz8VOflfgEti2rfiRFVXeKtxY4p BmDrawxZuCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1dAAKCRCPgPtYfRL+ ThaQB/9B9muXTVxgkECFZ4/FsZt27L4vQfumMIZQpySvOl9v3vS2x+Diz/loNDqB9+ImhDXcMyc qt3x7kiIWjrgenu2shQ9YoWqBiAl1qtPePrOZ4+wSEXBbasXMmGHebvek5+XthkvAKa95wxSTgD h0i7Of9vWMHmwC+JU8N+KqGC16kbbTYnSd9jCACYRIItYPZvHKsB11NXkXOa8ZxUjcakYqm9E/d Z0gLMkX4K0juug75g0RUmCeDismJdE3drkxHp798qrTzoYgfUTh5x9Wdmj6W51JgNGCnN1PL5aN 8za6BLzByDc96eXEqP4NVMJ2Q2s332CvUeo0aXJY2RaikBOD
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2070; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=nmbYPiEX73YZqU9wYOiRPHISAgyO5+Qz7Jmrgty0MT4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWT4Yra4RzGD/94mpDfTEsugXcQsoV7qO7ON Rn1S16BFFaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1kwAKCRCPgPtYfRL+ TnZpB/9tcaWJlLYdBiorZ8XF1hnUJlrLOo/Z15p0VOh1tJATRNE0Bgygi54ioe8sVKaKcVHpx3v 2lAhAyl4ufkdrI0+dbC2U+y6no7ml+IjAt35Xkf6YNVW2UB63WrAPbyIeD0dxl3HXsnnlm4FtMb PPHgstc7wKYZUJdyllHa6ygUnURv1hIKFz2L5VSndWFAlg9d8NqsqpdYl7JfmMn5usqRB6NtPpV k9hew9J6+aVdo170DFXuySc0aetCGcudiEI5CHvN9eIEMNL/7K+fn8HZ2ri07v9s8q9r7AV+cy8 NoP8DfWtaPPLL4lNQ5xDELOzPb8pnz5UWZ6r6FLkHTwksRWP
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -45,218 +40,68 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the macro
-provided for exactly this purpose.
+This prepares the pwm-lp3943 driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/staging/greybus/pwm.c | 55 +++++++++++++++++------------------
- 1 file changed, 26 insertions(+), 29 deletions(-)
+ drivers/pwm/pwm-lp3943.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
-index a3cb68cfa0f9..75e0518791d8 100644
---- a/drivers/staging/greybus/pwm.c
-+++ b/drivers/staging/greybus/pwm.c
-@@ -17,7 +17,6 @@
- struct gb_pwm_chip {
- 	struct gb_connection	*connection;
- 	u8			pwm_max;	/* max pwm number */
--
- 	struct pwm_chip		chip;
- };
+diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
+index 32350a357278..c8d728a6259c 100644
+--- a/drivers/pwm/pwm-lp3943.c
++++ b/drivers/pwm/pwm-lp3943.c
+@@ -20,7 +20,6 @@
+ #define LP3943_MAX_PERIOD		1600000
  
-@@ -39,9 +38,9 @@ static int gb_pwm_count_operation(struct gb_pwm_chip *pwmc)
- 	return 0;
+ struct lp3943_pwm {
+-	struct pwm_chip chip;
+ 	struct lp3943 *lp3943;
+ 	struct lp3943_platform_data *pdata;
+ 	struct lp3943_pwm_map pwm_map[LP3943_NUM_PWMS];
+@@ -28,7 +27,7 @@ struct lp3943_pwm {
+ 
+ static inline struct lp3943_pwm *to_lp3943_pwm(struct pwm_chip *chip)
+ {
+-	return container_of(chip, struct lp3943_pwm, chip);
++	return pwmchip_priv(chip);
  }
  
--static int gb_pwm_activate_operation(struct gb_pwm_chip *pwmc,
--				     u8 which)
-+static int gb_pwm_activate_operation(struct pwm_chip *chip, u8 which)
+ static struct lp3943_pwm_map *
+@@ -273,12 +272,14 @@ static int lp3943_pwm_parse_dt(struct device *dev,
+ static int lp3943_pwm_probe(struct platform_device *pdev)
  {
-+	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 	struct gb_pwm_activate_request request;
- 	struct gbphy_device *gbphy_dev;
+ 	struct lp3943 *lp3943 = dev_get_drvdata(pdev->dev.parent);
++	struct pwm_chip *chip;
+ 	struct lp3943_pwm *lp3943_pwm;
  	int ret;
-@@ -51,7 +50,7 @@ static int gb_pwm_activate_operation(struct gb_pwm_chip *pwmc,
  
- 	request.which = which;
+-	lp3943_pwm = devm_kzalloc(&pdev->dev, sizeof(*lp3943_pwm), GFP_KERNEL);
+-	if (!lp3943_pwm)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, LP3943_NUM_PWMS, sizeof(*lp3943_pwm));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	lp3943_pwm = to_lp3943_pwm(chip);
  
--	gbphy_dev = to_gbphy_dev(pwmc->chip.dev);
-+	gbphy_dev = to_gbphy_dev(pwmchip_parent(chip));
- 	ret = gbphy_runtime_get_sync(gbphy_dev);
- 	if (ret)
- 		return ret;
-@@ -64,9 +63,10 @@ static int gb_pwm_activate_operation(struct gb_pwm_chip *pwmc,
- 	return ret;
- }
- 
--static int gb_pwm_deactivate_operation(struct gb_pwm_chip *pwmc,
-+static int gb_pwm_deactivate_operation(struct pwm_chip *chip,
- 				       u8 which)
- {
-+	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 	struct gb_pwm_deactivate_request request;
- 	struct gbphy_device *gbphy_dev;
- 	int ret;
-@@ -76,7 +76,7 @@ static int gb_pwm_deactivate_operation(struct gb_pwm_chip *pwmc,
- 
- 	request.which = which;
- 
--	gbphy_dev = to_gbphy_dev(pwmc->chip.dev);
-+	gbphy_dev = to_gbphy_dev(pwmchip_parent(chip));
- 	ret = gbphy_runtime_get_sync(gbphy_dev);
- 	if (ret)
- 		return ret;
-@@ -89,9 +89,10 @@ static int gb_pwm_deactivate_operation(struct gb_pwm_chip *pwmc,
- 	return ret;
- }
- 
--static int gb_pwm_config_operation(struct gb_pwm_chip *pwmc,
-+static int gb_pwm_config_operation(struct pwm_chip *chip,
- 				   u8 which, u32 duty, u32 period)
- {
-+	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 	struct gb_pwm_config_request request;
- 	struct gbphy_device *gbphy_dev;
- 	int ret;
-@@ -103,7 +104,7 @@ static int gb_pwm_config_operation(struct gb_pwm_chip *pwmc,
- 	request.duty = cpu_to_le32(duty);
- 	request.period = cpu_to_le32(period);
- 
--	gbphy_dev = to_gbphy_dev(pwmc->chip.dev);
-+	gbphy_dev = to_gbphy_dev(pwmchip_parent(chip));
- 	ret = gbphy_runtime_get_sync(gbphy_dev);
- 	if (ret)
- 		return ret;
-@@ -116,9 +117,10 @@ static int gb_pwm_config_operation(struct gb_pwm_chip *pwmc,
- 	return ret;
- }
- 
--static int gb_pwm_set_polarity_operation(struct gb_pwm_chip *pwmc,
-+static int gb_pwm_set_polarity_operation(struct pwm_chip *chip,
- 					 u8 which, u8 polarity)
- {
-+	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 	struct gb_pwm_polarity_request request;
- 	struct gbphy_device *gbphy_dev;
- 	int ret;
-@@ -129,7 +131,7 @@ static int gb_pwm_set_polarity_operation(struct gb_pwm_chip *pwmc,
- 	request.which = which;
- 	request.polarity = polarity;
- 
--	gbphy_dev = to_gbphy_dev(pwmc->chip.dev);
-+	gbphy_dev = to_gbphy_dev(pwmchip_parent(chip));
- 	ret = gbphy_runtime_get_sync(gbphy_dev);
- 	if (ret)
- 		return ret;
-@@ -142,9 +144,9 @@ static int gb_pwm_set_polarity_operation(struct gb_pwm_chip *pwmc,
- 	return ret;
- }
- 
--static int gb_pwm_enable_operation(struct gb_pwm_chip *pwmc,
--				   u8 which)
-+static int gb_pwm_enable_operation(struct pwm_chip *chip, u8 which)
- {
-+	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 	struct gb_pwm_enable_request request;
- 	struct gbphy_device *gbphy_dev;
- 	int ret;
-@@ -154,7 +156,7 @@ static int gb_pwm_enable_operation(struct gb_pwm_chip *pwmc,
- 
- 	request.which = which;
- 
--	gbphy_dev = to_gbphy_dev(pwmc->chip.dev);
-+	gbphy_dev = to_gbphy_dev(pwmchip_parent(chip));
- 	ret = gbphy_runtime_get_sync(gbphy_dev);
- 	if (ret)
- 		return ret;
-@@ -167,9 +169,9 @@ static int gb_pwm_enable_operation(struct gb_pwm_chip *pwmc,
- 	return ret;
- }
- 
--static int gb_pwm_disable_operation(struct gb_pwm_chip *pwmc,
--				    u8 which)
-+static int gb_pwm_disable_operation(struct pwm_chip *chip, u8 which)
- {
-+	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 	struct gb_pwm_disable_request request;
- 	struct gbphy_device *gbphy_dev;
- 	int ret;
-@@ -182,7 +184,7 @@ static int gb_pwm_disable_operation(struct gb_pwm_chip *pwmc,
- 	ret = gb_operation_sync(pwmc->connection, GB_PWM_TYPE_DISABLE,
- 				&request, sizeof(request), NULL, 0);
- 
--	gbphy_dev = to_gbphy_dev(pwmc->chip.dev);
-+	gbphy_dev = to_gbphy_dev(pwmchip_parent(chip));
- 	gbphy_runtime_put_autosuspend(gbphy_dev);
- 
- 	return ret;
-@@ -190,19 +192,15 @@ static int gb_pwm_disable_operation(struct gb_pwm_chip *pwmc,
- 
- static int gb_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
--
--	return gb_pwm_activate_operation(pwmc, pwm->hwpwm);
-+	return gb_pwm_activate_operation(chip, pwm->hwpwm);
- };
- 
- static void gb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
--
- 	if (pwm_is_enabled(pwm))
--		dev_warn(chip->dev, "freeing PWM device without disabling\n");
-+		dev_warn(pwmchip_parent(chip), "freeing PWM device without disabling\n");
- 
--	gb_pwm_deactivate_operation(pwmc, pwm->hwpwm);
-+	gb_pwm_deactivate_operation(chip, pwm->hwpwm);
- }
- 
- static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -212,22 +210,21 @@ static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	bool enabled = pwm->state.enabled;
- 	u64 period = state->period;
- 	u64 duty_cycle = state->duty_cycle;
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 
- 	/* Set polarity */
- 	if (state->polarity != pwm->state.polarity) {
- 		if (enabled) {
--			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-+			gb_pwm_disable_operation(chip, pwm->hwpwm);
- 			enabled = false;
- 		}
--		err = gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, state->polarity);
-+		err = gb_pwm_set_polarity_operation(chip, pwm->hwpwm, state->polarity);
- 		if (err)
- 			return err;
+ 	lp3943_pwm->pdata = lp3943->pdata;
+ 	if (!lp3943_pwm->pdata) {
+@@ -292,11 +293,9 @@ static int lp3943_pwm_probe(struct platform_device *pdev)
  	}
  
- 	if (!state->enabled) {
- 		if (enabled)
--			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-+			gb_pwm_disable_operation(chip, pwm->hwpwm);
- 		return 0;
- 	}
+ 	lp3943_pwm->lp3943 = lp3943;
+-	lp3943_pwm->chip.dev = &pdev->dev;
+-	lp3943_pwm->chip.ops = &lp3943_pwm_ops;
+-	lp3943_pwm->chip.npwm = LP3943_NUM_PWMS;
++	chip->ops = &lp3943_pwm_ops;
  
-@@ -243,13 +240,13 @@ static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (duty_cycle > period)
- 		duty_cycle = period;
- 
--	err = gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_cycle, period);
-+	err = gb_pwm_config_operation(chip, pwm->hwpwm, duty_cycle, period);
- 	if (err)
- 		return err;
- 
- 	/* enable/disable */
- 	if (!enabled)
--		return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
-+		return gb_pwm_enable_operation(chip, pwm->hwpwm);
- 
- 	return 0;
+-	return devm_pwmchip_add(&pdev->dev, &lp3943_pwm->chip);
++	return devm_pwmchip_add(&pdev->dev, chip);
  }
+ 
+ #ifdef CONFIG_OF
 -- 
 2.42.0
 
