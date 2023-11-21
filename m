@@ -1,32 +1,31 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E264D6F
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA50D10D2
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:05 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAV-0005gS-J4; Tue, 21 Nov 2023 14:51:59 +0100
+	id 1r5RAY-00061y-2A; Tue, 21 Nov 2023 14:52:02 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAS-00Aazy-9i; Tue, 21 Nov 2023 14:51:56 +0100
+	id 1r5RAV-00Ab0m-HG; Tue, 21 Nov 2023 14:51:59 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAS-004xeX-0b; Tue, 21 Nov 2023 14:51:56 +0100
+	id 1r5RAV-004xfb-8G; Tue, 21 Nov 2023 14:51:59 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 057/108] pwm: imx1: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:49:59 +0100
-Message-ID: <20231121134901.208535-58-u.kleine-koenig@pengutronix.de>
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: linux-pwm@vger.kernel.org,
+	kernel@pengutronix.de,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: [PATCH v3 071/108] pwm: mtk-disp: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:13 +0100
+Message-ID: <20231121134901.208535-72-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -37,7 +36,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2017; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=iYureV1+Vd9s2wh3vZQrnZF6wHumB2re5t3FN8kVhAs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWLVqGKbZ8r6i0eKADj3QeX1OW3oky8kmtCt OSSWqn8caSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1iwAKCRCPgPtYfRL+ TpE2B/9hA5i8pjp0qJI1LXjY25zT9nfIPwbhHTYAjW6D7DLdI6tCnx7nwV0YoAh9x7U6pWJklTp 77uzUN2HQ6iKFnmW2hDF7lDYU9bRf2b78A0h30nRQUvYnbAsllR+WsMLeshZbfa1nooFxq0752f GK9njdsREnpIHx51TvjorN0QnlpU3DRdHkf/moi5Z3ESDcW+ojtZ1P+3O+XC7HeBZQmuy5cWb4X /uzmWw4caYm6G28ysZ3DgyGHI1AAU6anUW9C7ELjUl+45DZDY4YlIHSaOL/O3sZnCaS6guzRF0e CkOqro+g7+WzN80D0CN8GAuae7WPNY7tcpiy5OGHrQLG8LY8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2058; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=orJh76hEUL7Rk/yjRjkFli3Ba27e4cCKOafNosKLVWA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWayHDS5NZ5qmBN8Vk5RDJxkTJ93X8/+Wvjd XOnWEPBeWqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1mgAKCRCPgPtYfRL+ ToiLCACIVzX0vX+tLMqizTQb4n+sikw0iWqTW2SyxrHKHO1MY8MsxdoJgziv7acBatLfg7yDNWC p0KAUJsvTP+MP+wQi7lJDsc8/UBc/6dhUernfkdIA0IM4PKi/XRpsgU/TI7A3b24LCVFrE7/0w4 T6vJHHbKRWA88N7yded6eiGrQD2j8/c4zC5SDkhpY2DobxMgHO8EfL2RNGdUwdDpvRc3qCL/yTI Pn8/TYO2ub00w0OdlAUsCrifXnxBrsyf1I5D/0mow63rtTZ9xLGTcnb7e2TdICx0UtM1UyCNzO7 gKkdC+6LgTtYp+hJ1QAC7gU8caJabOx6tuIaYPgaq33Z2ISH
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -45,66 +44,68 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-imx1 driver to further changes of the pwm core
+This prepares the pwm-mtk-disp driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx1.c | 17 ++++++++---------
+ drivers/pwm/pwm-mtk-disp.c | 17 ++++++++---------
  1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx1.c b/drivers/pwm/pwm-imx1.c
-index d175d895f22a..e4cf6e957b63 100644
---- a/drivers/pwm/pwm-imx1.c
-+++ b/drivers/pwm/pwm-imx1.c
-@@ -28,10 +28,9 @@ struct pwm_imx1_chip {
- 	struct clk *clk_ipg;
- 	struct clk *clk_per;
- 	void __iomem *mmio_base;
--	struct pwm_chip chip;
+diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
+index 186aa5c04435..bf8e2a520982 100644
+--- a/drivers/pwm/pwm-mtk-disp.c
++++ b/drivers/pwm/pwm-mtk-disp.c
+@@ -42,7 +42,6 @@ struct mtk_pwm_data {
  };
  
--#define to_pwm_imx1_chip(chip)	container_of(chip, struct pwm_imx1_chip, chip)
-+#define to_pwm_imx1_chip(chip)	pwmchip_priv(chip)
+ struct mtk_disp_pwm {
+-	struct pwm_chip chip;
+ 	const struct mtk_pwm_data *data;
+ 	struct clk *clk_main;
+ 	struct clk *clk_mm;
+@@ -52,7 +51,7 @@ struct mtk_disp_pwm {
  
- static int pwm_imx1_clk_prepare_enable(struct pwm_chip *chip)
+ static inline struct mtk_disp_pwm *to_mtk_disp_pwm(struct pwm_chip *chip)
  {
-@@ -156,11 +155,13 @@ MODULE_DEVICE_TABLE(of, pwm_imx1_dt_ids);
- 
- static int pwm_imx1_probe(struct platform_device *pdev)
- {
-+	struct pwm_chip *chip;
- 	struct pwm_imx1_chip *imx;
- 
--	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
--	if (!imx)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*imx));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	imx = to_pwm_imx1_chip(chip);
- 
- 	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
- 	if (IS_ERR(imx->clk_ipg))
-@@ -172,15 +173,13 @@ static int pwm_imx1_probe(struct platform_device *pdev)
- 		return dev_err_probe(&pdev->dev, PTR_ERR(imx->clk_per),
- 				     "failed to get peripheral clock\n");
- 
--	imx->chip.ops = &pwm_imx1_ops;
--	imx->chip.dev = &pdev->dev;
--	imx->chip.npwm = 1;
-+	chip->ops = &pwm_imx1_ops;
- 
- 	imx->mmio_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(imx->mmio_base))
- 		return PTR_ERR(imx->mmio_base);
- 
--	return devm_pwmchip_add(&pdev->dev, &imx->chip);
-+	return devm_pwmchip_add(&pdev->dev, chip);
+-	return container_of(chip, struct mtk_disp_pwm, chip);
++	return pwmchip_priv(chip);
  }
  
- static struct platform_driver pwm_imx1_driver = {
+ static void mtk_disp_pwm_update_bits(struct mtk_disp_pwm *mdp, u32 offset,
+@@ -231,12 +230,14 @@ static const struct pwm_ops mtk_disp_pwm_ops = {
+ 
+ static int mtk_disp_pwm_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct mtk_disp_pwm *mdp;
+ 	int ret;
+ 
+-	mdp = devm_kzalloc(&pdev->dev, sizeof(*mdp), GFP_KERNEL);
+-	if (!mdp)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*mdp));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	mdp = to_mtk_disp_pwm(chip);
+ 
+ 	mdp->data = of_device_get_match_data(&pdev->dev);
+ 
+@@ -254,11 +255,9 @@ static int mtk_disp_pwm_probe(struct platform_device *pdev)
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(mdp->clk_mm),
+ 				     "Failed to get mm clock\n");
+ 
+-	mdp->chip.dev = &pdev->dev;
+-	mdp->chip.ops = &mtk_disp_pwm_ops;
+-	mdp->chip.npwm = 1;
++	chip->ops = &mtk_disp_pwm_ops;
+ 
+-	ret = devm_pwmchip_add(&pdev->dev, &mdp->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
+ 
 -- 
 2.42.0
 
