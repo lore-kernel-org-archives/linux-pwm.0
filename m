@@ -1,29 +1,32 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F4F10C1
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A165DD79
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:05 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAX-0005uV-H3; Tue, 21 Nov 2023 14:52:01 +0100
+	id 1r5RAV-0005iI-TW; Tue, 21 Nov 2023 14:51:59 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAU-00Ab0Q-8Y; Tue, 21 Nov 2023 14:51:58 +0100
+	id 1r5RAS-00Ab01-Hg; Tue, 21 Nov 2023 14:51:56 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAT-004xfD-Vr; Tue, 21 Nov 2023 14:51:57 +0100
+	id 1r5RAS-004xeb-8Z; Tue, 21 Nov 2023 14:51:56 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>,
-	Vladimir Zapolskiy <vz@mleia.com>
-Cc: linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	kernel@pengutronix.de
-Subject: [PATCH v3 065/108] pwm: lpc18xx-sct: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:50:07 +0100
-Message-ID: <20231121134901.208535-66-u.kleine-koenig@pengutronix.de>
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	NXP Linux Team <linux-imx@nxp.com>,
+	linux-pwm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 058/108] pwm: imx27: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:00 +0100
+Message-ID: <20231121134901.208535-59-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -34,7 +37,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3038; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=hL3NRnrGhmDnL+/aA/MCOSU3YGi6QtKn4V05wNIpUcQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWUu1zMME8d1k3/hmHe5MBvSmujfM4Em0mPP 36NHJ5m546JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1lAAKCRCPgPtYfRL+ Tr8ZB/sEPj/Tmc2zTibTucpI8HbHUltu7eho1CiD7c9LgJefPSqjUYesMwGqtdNDSaDjppVO3md Pb1Y7YXKZtp57san2dbaZym/g5gMjxs9bnItH0bd9TfUqtfRlC/Wm8lM6i+TknaELNxlMqcLxpg tV8PRuMjreI5FXZ2+N8IO2u/r3U8HzrcoZ24fNGWWyoLJ520uDzMmO22dv+Nf3bk/j++SVgDG/W Ii9QU/WJtUR1nkGE6iR4as0LniuOv3xKwHQo4AELbiO4sy4ui8E316ClFfY6kRxnI2fDfYq8lft DZ+hBbfxR9ZA3726qqIqPDk3P9ocSvSPVPu8QgFs9bnTgWHQ
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2403; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=HQBsZ6EWKWS9924322N+GU3LXrpIEZr5RhMJudjTM+M=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtSYrT0fn/r/eTl5k0o/c5bboueKk2e8MZ91m0OvYf9t1 +3XRSVLOxmNWRgYuRhkxRRZ7BvXZFpVyUV2rv13GWYQKxPIFAYuTgGYSPlj9n96W1iZzet2tuZ3 dHVeP7ogbGmHfkmf3LIJ+a9WrSw88qaawybhXaWUtmKu4UH3vxvLPpf+CF8TcC/1tBxjk69k7BF pnWPmjPInF929dzpsf9/xaxe4+oSqvjzuedcYHXW435TpktQv20j2IM63antL7zQyfjm1MLX77/ 3u0Ha3M78viJlYi7qwLn5oVitnb5Iw893p1YF94fauq+9d3eBg6Rzt0cZ3QqFgnVzw5vpuX7/gO olmeS/XE3azgxpZz03dqV5jv+pPfcNftqZd879wM0sbbrptIsjQ/tV6a7LfHWfm2MT0VJ++wvTX 3Xs+m2eozmriCTotqP8wTT8w6eX6REWrI7xGTTur5rICAA==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -42,94 +45,78 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-lpc18xx-sct driver to further changes of the pwm
-core outlined in the commit introducing devm_pwmchip_alloc(). There is
-no intended semantical change and the driver should behave as before.
+This prepares the pwm-imx27 driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-lpc18xx-sct.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/pwm/pwm-imx27.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index 1fda3f11b3a6..606fa9cbebab 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -93,7 +93,6 @@ struct lpc18xx_pwm_data {
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index 5d796453519a..52ac65e40e35 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -83,7 +83,6 @@ struct pwm_imx27_chip {
+ 	struct clk	*clk_ipg;
+ 	struct clk	*clk_per;
+ 	void __iomem	*mmio_base;
+-	struct pwm_chip	chip;
  
- struct lpc18xx_pwm_chip {
- 	struct device *parent;
--	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *pwm_clk;
- 	unsigned long clk_rate;
-@@ -110,7 +109,7 @@ struct lpc18xx_pwm_chip {
- static inline struct lpc18xx_pwm_chip *
- to_lpc18xx_pwm_chip(struct pwm_chip *chip)
- {
--	return container_of(chip, struct lpc18xx_pwm_chip, chip);
+ 	/*
+ 	 * The driver cannot read the current duty cycle from the hardware if
+@@ -93,7 +92,10 @@ struct pwm_imx27_chip {
+ 	unsigned int duty_cycle;
+ };
+ 
+-#define to_pwm_imx27_chip(chip)	container_of(chip, struct pwm_imx27_chip, chip)
++static inline struct pwm_imx27_chip *to_pwm_imx27_chip(struct pwm_chip *chip)
++{
 +	return pwmchip_priv(chip);
- }
++}
  
- static inline void lpc18xx_pwm_writel(struct lpc18xx_pwm_chip *lpc18xx_pwm,
-@@ -351,14 +350,15 @@ MODULE_DEVICE_TABLE(of, lpc18xx_pwm_of_match);
+ static int pwm_imx27_clk_prepare_enable(struct pwm_imx27_chip *imx)
+ {
+@@ -306,13 +308,15 @@ MODULE_DEVICE_TABLE(of, pwm_imx27_dt_ids);
  
- static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ static int pwm_imx27_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm;
+ 	struct pwm_imx27_chip *imx;
  	int ret;
- 	u64 val;
+ 	u32 pwmcr;
  
--	lpc18xx_pwm = devm_kzalloc(&pdev->dev, sizeof(*lpc18xx_pwm),
--				   GFP_KERNEL);
--	if (!lpc18xx_pwm)
+-	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
+-	if (imx == NULL)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, LPC18XX_NUM_PWMS, sizeof(*lpc18xx_pwm));
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*imx));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
++	imx = pwmchip_priv(chip);
  
- 	lpc18xx_pwm->parent = &pdev->dev;
+ 	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+ 	if (IS_ERR(imx->clk_ipg))
+@@ -324,9 +328,7 @@ static int pwm_imx27_probe(struct platform_device *pdev)
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(imx->clk_per),
+ 				     "failed to get peripheral clock\n");
  
-@@ -391,9 +391,7 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	lpc18xx_pwm->min_period_ns = DIV_ROUND_UP(NSEC_PER_SEC,
- 						  lpc18xx_pwm->clk_rate);
+-	imx->chip.ops = &pwm_imx27_ops;
+-	imx->chip.dev = &pdev->dev;
+-	imx->chip.npwm = 1;
++	chip->ops = &pwm_imx27_ops;
  
--	lpc18xx_pwm->chip.dev = &pdev->dev;
--	lpc18xx_pwm->chip.ops = &lpc18xx_pwm_ops;
--	lpc18xx_pwm->chip.npwm = LPC18XX_NUM_PWMS;
-+	chip->ops = &lpc18xx_pwm_ops;
+ 	imx->mmio_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(imx->mmio_base))
+@@ -341,7 +343,7 @@ static int pwm_imx27_probe(struct platform_device *pdev)
+ 	if (!(pwmcr & MX3_PWMCR_EN))
+ 		pwm_imx27_clk_disable_unprepare(imx);
  
- 	/* SCT counter must be in unify (32 bit) mode */
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CONFIG,
-@@ -425,21 +423,22 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	val |= LPC18XX_PWM_PRE(0);
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL, val);
- 
--	ret = pwmchip_add(&lpc18xx_pwm->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "pwmchip_add failed\n");
- 
--	platform_set_drvdata(pdev, lpc18xx_pwm);
-+	platform_set_drvdata(pdev, chip);
- 
- 	return 0;
+-	return devm_pwmchip_add(&pdev->dev, &imx->chip);
++	return devm_pwmchip_add(&pdev->dev, chip);
  }
  
- static void lpc18xx_pwm_remove(struct platform_device *pdev)
- {
--	struct lpc18xx_pwm_chip *lpc18xx_pwm = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct lpc18xx_pwm_chip *lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
- 	u32 val;
- 
--	pwmchip_remove(&lpc18xx_pwm->chip);
-+	pwmchip_remove(chip);
- 
- 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL,
+ static struct platform_driver imx_pwm_driver = {
 -- 
 2.42.0
 
