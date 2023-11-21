@@ -1,27 +1,30 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F39CD72
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73487D78
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:47 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAH-0004uk-Pf; Tue, 21 Nov 2023 14:51:45 +0100
+	id 1r5RAH-0004uH-DM; Tue, 21 Nov 2023 14:51:45 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAH-00AawZ-Cu; Tue, 21 Nov 2023 14:51:45 +0100
+	id 1r5RAH-00AawR-0C; Tue, 21 Nov 2023 14:51:45 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAH-004xaj-40; Tue, 21 Nov 2023 14:51:45 +0100
+	id 1r5RAG-004xab-N8; Tue, 21 Nov 2023 14:51:44 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org,
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Benson Leung <bleung@chromium.org>
+Cc: Guenter Roeck <groeck@chromium.org>,
+	linux-pwm@vger.kernel.org,
+	chrome-platform@lists.linux.dev,
 	kernel@pengutronix.de
-Subject: [PATCH v3 003/108] pwm: ab8500: Make use of pwmchip_parent() macro
-Date: Tue, 21 Nov 2023 14:49:05 +0100
-Message-ID: <20231121134901.208535-4-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 001/108] pwm: cros-ec: Change prototype of helper to prepare further changes
+Date: Tue, 21 Nov 2023 14:49:03 +0100
+Message-ID: <20231121134901.208535-2-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -32,7 +35,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3155; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=r5Kmv/tDk34cc+a8oE6K7rQUuOVXGh3943H4Og8rEXo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVQVXzj18+aAJacu1hLiuce3QGRKXdVvFzwR 0Img6W8ixiJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1UAAKCRCPgPtYfRL+ TpIpCACxFvwbEIcSd6aMQFRZp8avww9EJQjK89dobxIEH5uJ7w+qBG83Ybs119hvogB9iU+MEJg 9+OnEt5P+1yb2DY5gmsANwvhEsNLvuc/hiUmW+IFDeAfhOIrEXPQMYFT+vjwG1rDAL9kdmdTrcE G5F5APdbAO5Zab1x92KLEeUlDl22bLma7DzepWLrLpXSBKDMHr0NrWvqhW6fMGW/fAp2po0KBXX LHsYdk33QTWg85SFspoN93L2jTHSGP9r9SK3xX06CUybyecy/ywOmbJb3ggw8AfKyP28VDLf7eg TTuwKxK3uItH3IsK8dC972TGekMTHNAGSnSW/tSioWoAot09
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2193; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=V/IJJoJX3QK23Y5w7jdiUtgIfEZRk5AJz40cNCILguQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVOa0BCBVU9wlQauoqF3tclDNoh0Ea0BVbfq WODMJhoGPiJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1TgAKCRCPgPtYfRL+ TqcQB/9Gnuh4J24+ltWots494BYmt3mmvz0YmzzLRGcCQhvDF1iDNQRVD5D+7hkceFDB8rjlHch NtNb+oJGjxvhCqFV3VEFlACZh+weO5Zpz4ILZByq9GiemehMKj7wSGH0IAd2wrn270eWH7BvdkY QzsN3qNvBkHsl3EHNKWzB/yl0tDaEHHrzn1zdqxIJ+wjgz6hLPZCQzCnSLKCPgx526/pRTVZWqj 8elKQB9h4h664D0VN3CU2Vh7XW4fyyD3D1RzRuBpsoMYZ2J/9xMcbnc9AphTfpPk1Zb8YKKqHjT O0ONbvY8EityCxS+FnjFNd3OMSy6r3TaA6aZtRTROhBrTbTS
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -40,86 +43,58 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the macro
-provided for exactly this purpose.
+pwm_chip allocation and registration is about to change. For that the number
+of PWM devices must be known earlier in cros_ec_pwm_probe(). So make
+cros_ec_pwm_get_duty() independant from struct cros_ec_pwm_device which is only
+available later.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-ab8500.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-cros-ec.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c
-index 670d33daea84..719e4ccf1800 100644
---- a/drivers/pwm/pwm-ab8500.c
-+++ b/drivers/pwm/pwm-ab8500.c
-@@ -92,12 +92,12 @@ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * when disabled.
- 	 */
- 	if (!state->enabled || duty_steps == 0) {
--		ret = abx500_mask_and_set_register_interruptible(chip->dev,
-+		ret = abx500_mask_and_set_register_interruptible(pwmchip_parent(chip),
- 					AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG,
- 					1 << ab8500->hwid, 0);
+diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+index 9a8f1b6a4e13..7345ca1c60f0 100644
+--- a/drivers/pwm/pwm-cros-ec.c
++++ b/drivers/pwm/pwm-cros-ec.c
+@@ -94,9 +94,8 @@ static int cros_ec_pwm_set_duty(struct cros_ec_pwm_device *ec_pwm, u8 index,
+ 	return cros_ec_cmd_xfer_status(ec, msg);
+ }
  
- 		if (ret < 0)
--			dev_err(chip->dev, "%s: Failed to disable PWM, Error %d\n",
-+			dev_err(pwmchip_parent(chip), "%s: Failed to disable PWM, Error %d\n",
- 								pwm->label, ret);
+-static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
++static int cros_ec_pwm_get_duty(struct cros_ec_device *ec, bool use_pwm_type, u8 index)
+ {
+-	struct cros_ec_device *ec = ec_pwm->ec;
+ 	struct {
+ 		struct cros_ec_command msg;
+ 		union {
+@@ -116,7 +115,7 @@ static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
+ 	msg->insize = sizeof(*resp);
+ 	msg->outsize = sizeof(*params);
+ 
+-	if (ec_pwm->use_pwm_type) {
++	if (use_pwm_type) {
+ 		ret = cros_ec_dt_type_to_pwm_type(index, &params->pwm_type);
+ 		if (ret) {
+ 			dev_err(ec->dev, "Invalid PWM type index: %d\n", index);
+@@ -172,7 +171,7 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct cros_ec_pwm *channel = &ec_pwm->channel[pwm->hwpwm];
+ 	int ret;
+ 
+-	ret = cros_ec_pwm_get_duty(ec_pwm, pwm->hwpwm);
++	ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, pwm->hwpwm);
+ 	if (ret < 0) {
+ 		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
  		return ret;
- 	}
-@@ -115,22 +115,22 @@ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -233,7 +232,7 @@ static int cros_ec_num_pwms(struct cros_ec_pwm_device *ec_pwm)
  
- 	reg = AB8500_PWM_OUT_CTRL1_REG + (ab8500->hwid * 2);
- 
--	ret = abx500_set_register_interruptible(chip->dev, AB8500_MISC,
-+	ret = abx500_set_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
- 			reg, lower_val);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = abx500_set_register_interruptible(chip->dev, AB8500_MISC,
-+	ret = abx500_set_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
- 			(reg + 1), higher_val);
- 	if (ret < 0)
- 		return ret;
- 
- 	/* enable */
--	ret = abx500_mask_and_set_register_interruptible(chip->dev,
-+	ret = abx500_mask_and_set_register_interruptible(pwmchip_parent(chip),
- 				AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG,
- 				1 << ab8500->hwid, 1 << ab8500->hwid);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to enable PWM, Error %d\n",
-+		dev_err(pwmchip_parent(chip), "%s: Failed to enable PWM, Error %d\n",
- 							pwm->label, ret);
- 
- 	return ret;
-@@ -144,7 +144,7 @@ static int ab8500_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct ab8500_pwm_chip *ab8500 = ab8500_pwm_from_chip(chip);
- 	unsigned int div, duty_steps;
- 
--	ret = abx500_get_register_interruptible(chip->dev, AB8500_MISC,
-+	ret = abx500_get_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
- 						AB8500_PWM_OUT_CTRL7_REG,
- 						&ctrl7);
- 	if (ret)
-@@ -157,13 +157,13 @@ static int ab8500_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 		return 0;
- 	}
- 
--	ret = abx500_get_register_interruptible(chip->dev, AB8500_MISC,
-+	ret = abx500_get_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
- 						AB8500_PWM_OUT_CTRL1_REG + (ab8500->hwid * 2),
- 						&lower_val);
- 	if (ret)
- 		return ret;
- 
--	ret = abx500_get_register_interruptible(chip->dev, AB8500_MISC,
-+	ret = abx500_get_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
- 						AB8500_PWM_OUT_CTRL2_REG + (ab8500->hwid * 2),
- 						&higher_val);
- 	if (ret)
+ 	/* The index field is only 8 bits */
+ 	for (i = 0; i <= U8_MAX; i++) {
+-		ret = cros_ec_pwm_get_duty(ec_pwm, i);
++		ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, i);
+ 		/*
+ 		 * We look for SUCCESS, INVALID_COMMAND, or INVALID_PARAM
+ 		 * responses; everything else is treated as an error.
 -- 
 2.42.0
 
