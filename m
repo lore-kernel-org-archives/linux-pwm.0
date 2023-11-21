@@ -1,27 +1,31 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6BA10C2
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1ABBD6A
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:49 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAJ-0004zk-Ec; Tue, 21 Nov 2023 14:51:47 +0100
+	id 1r5RAI-0004wN-Rz; Tue, 21 Nov 2023 14:51:46 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAJ-00Aax5-1q; Tue, 21 Nov 2023 14:51:47 +0100
+	id 1r5RAI-00Aawl-1d; Tue, 21 Nov 2023 14:51:46 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAI-004xbP-PA; Tue, 21 Nov 2023 14:51:46 +0100
+	id 1r5RAH-004xau-Oh; Tue, 21 Nov 2023 14:51:45 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org,
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>
+Cc: Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	linux-pwm@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 011/108] pwm: fsl-ftm: Make use of pwmchip_parent() macro
-Date: Tue, 21 Nov 2023 14:49:13 +0100
-Message-ID: <20231121134901.208535-12-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 006/108] pwm: bcm-kona: Make use of pwmchip_parent() macro
+Date: Tue, 21 Nov 2023 14:49:08 +0100
+Message-ID: <20231121134901.208535-7-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -32,7 +36,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1912; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=nWr7Fn1CP8UGCXi7544g8G4oBBwlUD+iTlh8wcPSjDU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVZhtSaqJ0s2B29OoNxNT6WxK2WSJ8TmmBp8 4rbC1BSgQmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1WQAKCRCPgPtYfRL+ TiTICACo+LPj/efu41fW2d8n6HuiDN8f2q/kOz/Trnek5idw6BTpy6ZTZ+bwxV9Tf05NJQWd6gZ Fl7igYg2Ci96gLRleHJFGbvizjbvR3QNR7LNPucF9HCSJblGnFXWBkZR7m6IZuvCqsTxLlaqPET sRb7aczmRIiKqzl/hFNfpA8YcatIK3YWt7MKk9NMpzQW7k2lQXw5psg8Q/coI8TtI5/0vDp9QI9 F4LpBs8OlBpbAlnD9eU2VRG4y53ZM8mnaiUvkhRjJyyd4V/ROmuTw28CGeuG/fgjzPABvOmhrvK TLuI55+C0BfTJ3Bfh7Wzcgq4SkajdeEGL/3Plos8+nvD3pMB
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1156; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=a6rdmbZKU11BMNMtNYdQhs2WfPNB8F0MjUDfYmBxZiI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVUXEm9MHfbrkRBNCwCvgiAbbpbymYTz+9Un lMk9iqgyEKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1VAAKCRCPgPtYfRL+ Tso+B/45xEFuBm+QYlj44Fmj5qi9Gr44JyFx44AM6oKbzzODbfZ6dXbenG30kNEQED9VbBOYN17 s7lIMlExdrCu/UmuoS+7f2IQKw796DM2kX5FEL2DiRME2YWT01JO7ozI+7XchA+Vy+TKFxPC5lw De89ttgyP8/TXTNnMzcGWYo5FzrMSxUZV9H+1rfVq/VlSwF/cXYI4g/pPnjivXxH2qWsTXYN5vk 75ET9hXyX0qPcUsGJIbRnma5VtYJxe3HExepT+gFg8sLmv4RuqIc6etXs+b6oCtMC5t8bIxqxh3 zOcIiiS3UkOLJ6vQ6LbRmVH2DySm+EAwSByNMNk/4au4avIJ
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -46,52 +50,30 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-fsl-ftm.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-bcm-kona.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index d1b6d1aa4773..47f1f5ac39cf 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -221,10 +221,11 @@ static bool fsl_pwm_is_other_pwm_enabled(struct fsl_pwm_chip *fpc,
- 		return false;
- }
+diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+index 15d6ed03c3ce..53bb52c9da08 100644
+--- a/drivers/pwm/pwm-bcm-kona.c
++++ b/drivers/pwm/pwm-bcm-kona.c
+@@ -164,7 +164,7 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
  
--static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
-+static int fsl_pwm_apply_config(struct pwm_chip *chip,
- 				struct pwm_device *pwm,
- 				const struct pwm_state *newstate)
- {
-+	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
- 	unsigned int duty;
- 	u32 reg_polarity;
- 
-@@ -232,7 +233,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
- 	bool do_write_period = false;
- 
- 	if (!fsl_pwm_calculate_period(fpc, newstate->period, &periodcfg)) {
--		dev_err(fpc->chip.dev, "failed to calculate new period\n");
-+		dev_err(pwmchip_parent(chip), "failed to calculate new period\n");
- 		return -EINVAL;
+ 	ret = clk_prepare_enable(kp->clk);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "failed to enable clock: %d\n", ret);
++		dev_err(pwmchip_parent(chip), "failed to enable clock: %d\n", ret);
+ 		return ret;
  	}
  
-@@ -246,7 +247,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
- 	 */
- 	else if (!fsl_pwm_periodcfg_are_equal(&fpc->period, &periodcfg)) {
- 		if (fsl_pwm_is_other_pwm_enabled(fpc, pwm)) {
--			dev_err(fpc->chip.dev,
-+			dev_err(pwmchip_parent(chip),
- 				"Cannot change period for PWM %u, disable other PWMs first\n",
- 				pwm->hwpwm);
- 			return -EBUSY;
-@@ -322,7 +323,7 @@ static int fsl_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		goto end_mutex;
- 	}
+@@ -193,7 +193,7 @@ static int kona_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pwm)
  
--	ret = fsl_pwm_apply_config(fpc, pwm, newstate);
-+	ret = fsl_pwm_apply_config(chip, pwm, newstate);
- 	if (ret)
- 		goto end_mutex;
+ 	ret = clk_prepare_enable(kp->clk);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "failed to enable clock: %d\n", ret);
++		dev_err(pwmchip_parent(chip), "failed to enable clock: %d\n", ret);
+ 		return ret;
+ 	}
  
 -- 
 2.42.0
