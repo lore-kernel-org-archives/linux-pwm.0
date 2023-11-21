@@ -1,32 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FD8D6D
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:54 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5FED78
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:53 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAM-0005LZ-Tw; Tue, 21 Nov 2023 14:51:50 +0100
+	id 1r5RAN-0005Nf-EC; Tue, 21 Nov 2023 14:51:51 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAM-00AayA-GY; Tue, 21 Nov 2023 14:51:50 +0100
+	id 1r5RAN-00AayL-0J; Tue, 21 Nov 2023 14:51:51 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAM-004xcV-7Q; Tue, 21 Nov 2023 14:51:50 +0100
+	id 1r5RAM-004xcg-NO; Tue, 21 Nov 2023 14:51:50 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 028/108] pwm: stm32: Make use of pwmchip_parent() macro
-Date: Tue, 21 Nov 2023 14:49:30 +0100
-Message-ID: <20231121134901.208535-29-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 031/108] pwm: tiecap: Make use of pwmchip_parent() macro
+Date: Tue, 21 Nov 2023 14:49:33 +0100
+Message-ID: <20231121134901.208535-32-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -37,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1165; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=BiIJD0Tq83cq7moryfFH9gyYiLGEDBNRcTCtX9A+nHI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVrKamzo059IDn9Bz0ICE63cZQkJbSdbJPvs yBcg3j/30iJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1awAKCRCPgPtYfRL+ TjAJB/sEKV1EpNt9BVuq0M74NChKDcJS2AD2S0xSI1tKjbP1mG4RXX4a/x0f2OAC98RQ/B9/t6+ SrJa35PDIU+CLPk9fM73iS5OWNh/n6eeSmfUWg5sXB9wRvd9/zQIAakFnao8+54TifdA3MR/cPn fr49yQRRaoZ/4wR/obNsm/ii9HugQAlF+bYCupfX/8twL7JlxwjqD5Tvt4bv2Pbq4g/AcnrRDkM k82OiQ5OHnSprFH7RsvWJ39i4bVkseGunwBZ1SS4SHQNeZ+bPe2E+lYsasR9d5LSvFQB4WmXKlK /adoKsinmhoLebc7UPNEGfAoGw+9oogo9nKobXdC27bXNERK
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2801; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=ppATWHEHhEGXwkBa8MbiFsBDgYN2JkTUM2rhAJWXqHA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVvz+XMQC4CT4IRX7KDa1ImY10MOePSSg3sV vTYkpW9EKWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1bwAKCRCPgPtYfRL+ Tl6DCAComxurLGwELgljJFGZfwbxHdX9wW4Akdn9Eupo676uj+MnIsom6bYY5jJWyohbAkXj54T G1nDQCGC82vFzjUU5Y1gm5iBZpYXp40Vdg/sJ+ZsVvNq0FsS7vrLBttDCk7PfEIliu6U4jdswL3 Pn8b5kDhMPEoXCIQxE2zBU70IES6VKHgmCTZe8xwQHbQe7E40qiSi6DkMwTubSvv2kQpBLr0Ro2 2vLQLMhAbX2/AuJc5F6z5OqM6eoQN+detPrDqS6Wf1F0uLLF5mgRCmuJlVy3N1RxO8NhYGployu JvTSkKNO8sBKIjwKS6fy2vuJycOynO22fNp6RgjVcKwIfaWo
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -51,31 +46,81 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-stm32.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-tiecap.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index 5f10cba492ec..d1dc9e3ca2a1 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -94,7 +94,7 @@ static int stm32_pwm_raw_capture(struct stm32_pwm *priv, struct pwm_device *pwm,
- 				 unsigned long tmo_ms, u32 *raw_prd,
- 				 u32 *raw_dty)
- {
--	struct device *parent = priv->chip.dev->parent;
-+	struct device *parent = pwmchip_parent(&priv->chip)->parent;
- 	enum stm32_timers_dmas dma_id;
- 	u32 ccen, ccr;
- 	int ret;
-@@ -170,7 +170,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	ret = clk_enable(priv->clk);
- 	if (ret) {
--		dev_err(priv->chip.dev, "failed to enable counter clock\n");
-+		dev_err(pwmchip_parent(chip), "failed to enable counter clock\n");
- 		goto unlock;
+diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
+index d974f4414ac9..8c4f67774f24 100644
+--- a/drivers/pwm/pwm-tiecap.c
++++ b/drivers/pwm/pwm-tiecap.c
+@@ -70,7 +70,7 @@ static int ecap_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		duty_cycles = (u32)c;
  	}
  
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(chip));
+ 
+ 	value = readw(pc->mmio_base + ECCTL2);
+ 
+@@ -100,7 +100,7 @@ static int ecap_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		writew(value, pc->mmio_base + ECCTL2);
+ 	}
+ 
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
+ 
+ 	return 0;
+ }
+@@ -111,7 +111,7 @@ static int ecap_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct ecap_pwm_chip *pc = to_ecap_pwm_chip(chip);
+ 	u16 value;
+ 
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(chip));
+ 
+ 	value = readw(pc->mmio_base + ECCTL2);
+ 
+@@ -124,7 +124,7 @@ static int ecap_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	writew(value, pc->mmio_base + ECCTL2);
+ 
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
+ 
+ 	return 0;
+ }
+@@ -135,7 +135,7 @@ static int ecap_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	u16 value;
+ 
+ 	/* Leave clock enabled on enabling PWM */
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(chip));
+ 
+ 	/*
+ 	 * Enable 'Free run Time stamp counter mode' to start counter
+@@ -162,7 +162,7 @@ static void ecap_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	writew(value, pc->mmio_base + ECCTL2);
+ 
+ 	/* Disable clock on PWM disable */
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
+ }
+ 
+ static int ecap_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -271,11 +271,11 @@ static void ecap_pwm_remove(struct platform_device *pdev)
+ 
+ static void ecap_pwm_save_context(struct ecap_pwm_chip *pc)
+ {
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(&pc->chip));
+ 	pc->ctx.ecctl2 = readw(pc->mmio_base + ECCTL2);
+ 	pc->ctx.cap4 = readl(pc->mmio_base + CAP4);
+ 	pc->ctx.cap3 = readl(pc->mmio_base + CAP3);
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(&pc->chip));
+ }
+ 
+ static void ecap_pwm_restore_context(struct ecap_pwm_chip *pc)
 -- 
 2.42.0
 
