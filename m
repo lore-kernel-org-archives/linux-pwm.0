@@ -1,27 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17ED410CB
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:59 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B35A10E2
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:03 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAR-0005UN-U1; Tue, 21 Nov 2023 14:51:55 +0100
+	id 1r5RAW-0005rg-7q; Tue, 21 Nov 2023 14:52:00 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAQ-00AazS-Dp; Tue, 21 Nov 2023 14:51:54 +0100
+	id 1r5RAT-00Ab0K-Qf; Tue, 21 Nov 2023 14:51:57 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAQ-004xdx-4x; Tue, 21 Nov 2023 14:51:54 +0100
+	id 1r5RAT-004xf5-Hh; Tue, 21 Nov 2023 14:51:57 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 048/108] pwm: clk: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:49:50 +0100
-Message-ID: <20231121134901.208535-49-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 063/108] pwm: keembay: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:05 +0100
+Message-ID: <20231121134901.208535-64-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -32,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2393; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=dqPmpUBWXhxQUDh+Jp+d35ZL8f3SurIXjN24EPVpkDA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWBxJLGRLm3rmmVBeNuH6OIDDxcANvDOm4GB fQQsE2hsuWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1gQAKCRCPgPtYfRL+ TgPPCAC2J/eHB2m5k5whkjp+esn2nmq5MZofd4ZRdGLxoa8dyhqqc+lr0HFZ4Ynaa9ZDr1Nhcly C8qaui4t5eJk/ae4wOT9KTRqpgvjZOU35X/C+RPDWs6cBerbhMmOHoyX1GK7kJhZKIYPttoxj/E RcQpga6pS6qKP6gIFPx3p5dWO7hi1AAKIawNto+lKLlJ0ZGN4t6fW9niIqwRV6bB9odRsDeP8xA 7aSxh62G2HYZHnvWMZRqc5+TFk+1Y7jHd0oi4tLSsmcqZUbYsNi16YegBiH9VUEwL0Xw8Slpm7e +kBMoVHtt4jqlOSo/umoLS3JKhckGmrTj2BbyLchK7JjjaKd
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2009; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=+wiZzyRQMv0GyOksGeOGDn2tFrkfYPzBCr3yQcXURs8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWStg1nmm1BTapa/6w7RYOIrPy1k7h3dQxca Hh7vOMZ/3iJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1kgAKCRCPgPtYfRL+ TlggB/9nAlQC7TTM4UT5BnkYOfHhuTj+qr95d5h5Shj4gLjRb7SLI/v9DoXn9EurYmdpTMXSCMK HdH+pxl8jVzOaLCSMgKGYab3JaJnUyEyXzIPYtdv8FP6FsRl3tv7uSIdficnErUEp7SlbG7K+s9 rVeZOfWTxaO2Y+bfPN8WsxsBReCdQooagG9WVik+9lEcshCqgC7K+TZSW4gFVjMJiOwP/zifkhP 0+gYQ+tIDUz2Ahn4fO4yH4+FdOlTJf2KhYOrTDFbxX3DvgllNpdXNT//4uSxq6M5/fpiAjCvKHz PM95nabB1ZhgDpTkjHVWI/T4VutAnptPbkLFQZXMiW6rsCa5
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -40,83 +40,68 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-clk driver to further changes of the pwm core
+This prepares the pwm-keembay driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-clk.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-keembay.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
-index 9dd88b386907..86bf1ddedf89 100644
---- a/drivers/pwm/pwm-clk.c
-+++ b/drivers/pwm/pwm-clk.c
-@@ -28,12 +28,14 @@
- #include <linux/pwm.h>
+diff --git a/drivers/pwm/pwm-keembay.c b/drivers/pwm/pwm-keembay.c
+index ac824ecc3f64..2af5e6565705 100644
+--- a/drivers/pwm/pwm-keembay.c
++++ b/drivers/pwm/pwm-keembay.c
+@@ -36,7 +36,6 @@
+ #define KMB_PWM_HIGHLOW_OFFSET(ch)	(0x20 + 4 * (ch))
  
- struct pwm_clk_chip {
+ struct keembay_pwm {
 -	struct pwm_chip chip;
+ 	struct device *dev;
  	struct clk *clk;
- 	bool clk_enabled;
- };
+ 	void __iomem *base;
+@@ -44,7 +43,7 @@ struct keembay_pwm {
  
--#define to_pwm_clk_chip(_chip) container_of(_chip, struct pwm_clk_chip, chip)
-+static inline struct pwm_clk_chip *to_pwm_clk_chip(struct pwm_chip *chip)
-+{
-+	return pwmchip_priv(chip);
-+}
- 
- static int pwm_clk_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			 const struct pwm_state *state)
-@@ -81,35 +83,36 @@ static const struct pwm_ops pwm_clk_ops = {
- 
- static int pwm_clk_probe(struct platform_device *pdev)
+ static inline struct keembay_pwm *to_keembay_pwm_dev(struct pwm_chip *chip)
  {
-+	struct pwm_chip *chip;
- 	struct pwm_clk_chip *pcchip;
- 	int ret;
- 
--	pcchip = devm_kzalloc(&pdev->dev, sizeof(*pcchip), GFP_KERNEL);
--	if (!pcchip)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*pcchip));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	pcchip = to_pwm_clk_chip(chip);
- 
- 	pcchip->clk = devm_clk_get_prepared(&pdev->dev, NULL);
- 	if (IS_ERR(pcchip->clk))
- 		return dev_err_probe(&pdev->dev, PTR_ERR(pcchip->clk),
- 				     "Failed to get clock\n");
- 
--	pcchip->chip.dev = &pdev->dev;
--	pcchip->chip.ops = &pwm_clk_ops;
--	pcchip->chip.npwm = 1;
-+	chip->ops = &pwm_clk_ops;
- 
--	ret = pwmchip_add(&pcchip->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "Failed to add pwm chip\n");
- 
--	platform_set_drvdata(pdev, pcchip);
-+	platform_set_drvdata(pdev, chip);
- 	return 0;
+-	return container_of(chip, struct keembay_pwm, chip);
++	return pwmchip_priv(chip);
  }
  
- static void pwm_clk_remove(struct platform_device *pdev)
+ static void keembay_clk_unprepare(void *data)
+@@ -185,12 +184,14 @@ static const struct pwm_ops keembay_pwm_ops = {
+ static int keembay_pwm_probe(struct platform_device *pdev)
  {
--	struct pwm_clk_chip *pcchip = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct pwm_clk_chip *pcchip = to_pwm_clk_chip(chip);
+ 	struct device *dev = &pdev->dev;
++	struct pwm_chip *chip;
+ 	struct keembay_pwm *priv;
+ 	int ret;
  
--	pwmchip_remove(&pcchip->chip);
-+	pwmchip_remove(chip);
+-	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(dev, KMB_TOTAL_PWM_CHANNELS, sizeof(*priv));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	priv = to_keembay_pwm_dev(chip);
  
- 	if (pcchip->clk_enabled)
- 		clk_disable(pcchip->clk);
+ 	priv->clk = devm_clk_get(dev, NULL);
+ 	if (IS_ERR(priv->clk))
+@@ -204,11 +205,9 @@ static int keembay_pwm_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	priv->chip.dev = dev;
+-	priv->chip.ops = &keembay_pwm_ops;
+-	priv->chip.npwm = KMB_TOTAL_PWM_CHANNELS;
++	chip->ops = &keembay_pwm_ops;
+ 
+-	ret = devm_pwmchip_add(dev, &priv->chip);
++	ret = devm_pwmchip_add(dev, chip);
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "Failed to add PWM chip\n");
+ 
 -- 
 2.42.0
 
