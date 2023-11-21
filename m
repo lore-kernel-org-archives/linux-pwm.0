@@ -1,27 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA6610C9
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:02 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397E6D6E
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:00 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAV-0005eu-8q; Tue, 21 Nov 2023 14:51:59 +0100
+	id 1r5RAT-0005az-9C; Tue, 21 Nov 2023 14:51:57 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAS-00Aazv-2N; Tue, 21 Nov 2023 14:51:56 +0100
+	id 1r5RAR-00Aazk-Fx; Tue, 21 Nov 2023 14:51:55 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAR-004xeT-Pd; Tue, 21 Nov 2023 14:51:55 +0100
+	id 1r5RAR-004xeG-6s; Tue, 21 Nov 2023 14:51:55 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 056/108] pwm: img: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:49:58 +0100
-Message-ID: <20231121134901.208535-57-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 053/108] pwm: ep93xx: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:49:55 +0100
+Message-ID: <20231121134901.208535-54-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -32,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4166; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Jvkspjr7uzaPtxemBrHORmwQXRrDQd4lGppDFAHOOqE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWKR1stATiOg/XaVUG5VHYCiyK8hSHvSwDo9 kk+yDPso+uJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1igAKCRCPgPtYfRL+ Tm7SB/4q5mEAC0zJAml64cSz3BHzHU+dm1rVyGkuheE5h0KBoZGCiGaNFRqaMi02mVL+ePy8D9c DDUZz2eptgj/c/N+o2kK50YPewRinY/CwRKF56euP0eqGYPcarQgr71APktZoKaVsCgBZr+sFMN HYIbQJLHyvi8CCY5LQll7aCwQG8zitTPp3dgsy2TNFEtOVXKYSSI6/yh5lW41JlvYNvsKyl6ZD+ BJ6wPFdevnerAD/ba+IQAMm319v3DmxiU6PVG6NtIEC2r35CxZN08jQD4Bp19tOaD0LV+DlLM79 E5AFqTLbq6ZMXwD7x3K3m/MYw3fKUorM0eZyCQE1hc7XjMrA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1948; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=bPuoVwCfQPZF1EwR3vZXcL/NqvWx+0mBgRtjFgXYIo4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWGzXrvYHfNHLpMMM//n/HGPYL9MpQtu22lq fnWj0IpI9OJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1hgAKCRCPgPtYfRL+ TrRFB/403Cyh/BnPsUuppqnJEH4Ub9L+YVDgJxJ55CxCLi304tn6kVYGjpEqzvqI7djDZhpQrWh 7O6OrUJIUA4bJhh7FodTiKhhemm7b+7D/YnJciUsSO42EHkQ6QUpCoZNkHXQE1Um4rBzesvVX2+ 0j/zgq1tLHM5ZQINIK19LzRf3vyPly8GD1Hkt4JteMswi45TkTriod59RGMQO42bopQffIpy0O3 WDAwcqdFQnLbVkBWBjvKe5WbIBO8UWMpdcAjTOtpN5uX0+FImoLLLV7fu7oq474Digt3YWWPQrm YwpN/FGL8aQxCdgVQAFHuGB/0s6ELrNYwq14+fPVg97AdK4Y
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -40,135 +40,65 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-img driver to further changes of the pwm core
+This prepares the pwm-ep93xx driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-img.c | 35 ++++++++++++++++++-----------------
- 1 file changed, 18 insertions(+), 17 deletions(-)
+ drivers/pwm/pwm-ep93xx.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-index d5d50645530f..b0f5954f2643 100644
---- a/drivers/pwm/pwm-img.c
-+++ b/drivers/pwm/pwm-img.c
-@@ -60,7 +60,6 @@ struct img_pwm_soc_data {
+diff --git a/drivers/pwm/pwm-ep93xx.c b/drivers/pwm/pwm-ep93xx.c
+index e4c3546a61c8..5df541645d54 100644
+--- a/drivers/pwm/pwm-ep93xx.c
++++ b/drivers/pwm/pwm-ep93xx.c
+@@ -36,12 +36,11 @@
+ struct ep93xx_pwm {
+ 	void __iomem *base;
+ 	struct clk *clk;
+-	struct pwm_chip chip;
+ };
  
- struct img_pwm_chip {
- 	struct device	*dev;
--	struct pwm_chip	chip;
- 	struct clk	*pwm_clk;
- 	struct clk	*sys_clk;
- 	void __iomem	*base;
-@@ -74,7 +73,7 @@ struct img_pwm_chip {
- 
- static inline struct img_pwm_chip *to_img_pwm_chip(struct pwm_chip *chip)
+ static inline struct ep93xx_pwm *to_ep93xx_pwm(struct pwm_chip *chip)
  {
--	return container_of(chip, struct img_pwm_chip, chip);
+-	return container_of(chip, struct ep93xx_pwm, chip);
 +	return pwmchip_priv(chip);
  }
  
- static inline void img_pwm_writel(struct img_pwm_chip *imgchip,
-@@ -259,11 +258,13 @@ static int img_pwm_probe(struct platform_device *pdev)
- 	int ret;
- 	u64 val;
- 	unsigned long clk_rate;
-+	struct pwm_chip *chip;
- 	struct img_pwm_chip *imgchip;
+ static int ep93xx_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -163,12 +162,14 @@ static const struct pwm_ops ep93xx_pwm_ops = {
  
--	imgchip = devm_kzalloc(&pdev->dev, sizeof(*imgchip), GFP_KERNEL);
--	if (!imgchip)
+ static int ep93xx_pwm_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct ep93xx_pwm *ep93xx_pwm;
+ 	int ret;
+ 
+-	ep93xx_pwm = devm_kzalloc(&pdev->dev, sizeof(*ep93xx_pwm), GFP_KERNEL);
+-	if (!ep93xx_pwm)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, IMG_PWM_NPWM, sizeof(*imgchip));
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*ep93xx_pwm));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	imgchip = to_img_pwm_chip(chip);
++	ep93xx_pwm = to_ep93xx_pwm(chip);
  
- 	imgchip->dev = &pdev->dev;
+ 	ep93xx_pwm->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(ep93xx_pwm->base))
+@@ -178,11 +179,9 @@ static int ep93xx_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(ep93xx_pwm->clk))
+ 		return PTR_ERR(ep93xx_pwm->clk);
  
-@@ -290,7 +291,7 @@ static int img_pwm_probe(struct platform_device *pdev)
- 		return PTR_ERR(imgchip->pwm_clk);
- 	}
+-	ep93xx_pwm->chip.dev = &pdev->dev;
+-	ep93xx_pwm->chip.ops = &ep93xx_pwm_ops;
+-	ep93xx_pwm->chip.npwm = 1;
++	chip->ops = &ep93xx_pwm_ops;
  
--	platform_set_drvdata(pdev, imgchip);
-+	platform_set_drvdata(pdev, chip);
- 
- 	pm_runtime_set_autosuspend_delay(&pdev->dev, IMG_PWM_PM_TIMEOUT);
- 	pm_runtime_use_autosuspend(&pdev->dev);
-@@ -317,11 +318,9 @@ static int img_pwm_probe(struct platform_device *pdev)
- 	do_div(val, clk_rate);
- 	imgchip->min_period_ns = val;
- 
--	imgchip->chip.dev = &pdev->dev;
--	imgchip->chip.ops = &img_pwm_ops;
--	imgchip->chip.npwm = IMG_PWM_NPWM;
-+	chip->ops = &img_pwm_ops;
- 
--	ret = pwmchip_add(&imgchip->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
- 		goto err_suspend;
-@@ -340,19 +339,20 @@ static int img_pwm_probe(struct platform_device *pdev)
- 
- static void img_pwm_remove(struct platform_device *pdev)
- {
--	struct img_pwm_chip *imgchip = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
- 
- 	pm_runtime_disable(&pdev->dev);
- 	if (!pm_runtime_status_suspended(&pdev->dev))
- 		img_pwm_runtime_suspend(&pdev->dev);
- 
--	pwmchip_remove(&imgchip->chip);
-+	pwmchip_remove(chip);
- }
- 
- #ifdef CONFIG_PM_SLEEP
- static int img_pwm_suspend(struct device *dev)
- {
--	struct img_pwm_chip *imgchip = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct img_pwm_chip *imgchip = to_img_pwm_chip(chip);
- 	int i, ret;
- 
- 	if (pm_runtime_status_suspended(dev)) {
-@@ -361,7 +361,7 @@ static int img_pwm_suspend(struct device *dev)
- 			return ret;
- 	}
- 
--	for (i = 0; i < imgchip->chip.npwm; i++)
-+	for (i = 0; i < chip->npwm; i++)
- 		imgchip->suspend_ch_cfg[i] = img_pwm_readl(imgchip,
- 							   PWM_CH_CFG(i));
- 
-@@ -374,7 +374,8 @@ static int img_pwm_suspend(struct device *dev)
- 
- static int img_pwm_resume(struct device *dev)
- {
--	struct img_pwm_chip *imgchip = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct img_pwm_chip *imgchip = to_img_pwm_chip(chip);
- 	int ret;
- 	int i;
- 
-@@ -382,13 +383,13 @@ static int img_pwm_resume(struct device *dev)
- 	if (ret)
+-	ret = devm_pwmchip_add(&pdev->dev, &ep93xx_pwm->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret < 0)
  		return ret;
  
--	for (i = 0; i < imgchip->chip.npwm; i++)
-+	for (i = 0; i < chip->npwm; i++)
- 		img_pwm_writel(imgchip, PWM_CH_CFG(i),
- 			       imgchip->suspend_ch_cfg[i]);
- 
- 	img_pwm_writel(imgchip, PWM_CTRL_CFG, imgchip->suspend_ctrl_cfg);
- 
--	for (i = 0; i < imgchip->chip.npwm; i++)
-+	for (i = 0; i < chip->npwm; i++)
- 		if (imgchip->suspend_ctrl_cfg & BIT(i))
- 			regmap_clear_bits(imgchip->periph_regs,
- 					  PERIP_PWM_PDM_CONTROL,
 -- 
 2.42.0
 
