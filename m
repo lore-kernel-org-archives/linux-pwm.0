@@ -1,30 +1,31 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E23DD7C
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19591703
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:08 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAY-000616-Ff; Tue, 21 Nov 2023 14:52:02 +0100
+	id 1r5RAc-0006Nn-4V; Tue, 21 Nov 2023 14:52:06 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAV-00Ab0i-An; Tue, 21 Nov 2023 14:51:59 +0100
+	id 1r5RAZ-00Ab20-Im; Tue, 21 Nov 2023 14:52:03 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAV-004xfX-1t; Tue, 21 Nov 2023 14:51:59 +0100
+	id 1r5RAZ-004xgz-9g; Tue, 21 Nov 2023 14:52:03 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Conor Dooley <conor.dooley@microchip.com>,
-	Daire McNamara <daire.mcnamara@microchip.com>,
-	Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-riscv@lists.infradead.org,
-	linux-pwm@vger.kernel.org,
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: linux-pwm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 070/108] pwm: microchip-core: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:50:12 +0100
-Message-ID: <20231121134901.208535-71-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 090/108] pwm: stmpe: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:32 +0100
+Message-ID: <20231121134901.208535-91-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -35,7 +36,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2613; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=m4GyQiFXFJaqNI6WOpp3CmU9hg+F8DEVlbs8fT7JIU0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWZSTYln9e9/w1RE6dBuatGQK2RNYSXM6EYF CszlHEPUGeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1mQAKCRCPgPtYfRL+ Tso6CACWEICz+Jh2/S6FDrY1o+5J7hFt6zyH2dcAUsmNBuWJ4ZqL4miE/SUO657rMaSUg9Wtkhy wrFk8QVsIS04DXx4wHU1gic30T/u/3U7GisM5aBAwGKZ4S+xZy1TMkLOM9rOZxTJ21uecn8GM8G CEe+cLYLMAGgAJg/bfJYd5VkX9zCifzLtblcuAghcXnJSLVuutfJ8b7BHD9Xw59lRGWMFmz6jV0 nasGBbYyqmfwI8i8evkJ/BZo5i0cK4cCbXUyUbqnVSoI8LpAPwoZDKwgwLxn3LrWfQ2jNWr4e5y MqOLZ/CXnwJhoh0PzYy7JvOglfnnUh/Bk8uFWxLds8X3iQ4Q
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2448; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=9B7qqzhgfjxbe1H5uS6z3zQNzl3U1yIC6YrSepVecLc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWv+rF2TO83TDSJ2CfHci7IsQAcjoNFuQ7Rp vdocCUBBGCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1rwAKCRCPgPtYfRL+ TtZBCACgv2MrNeViSq1OXJkuk9JJ2nnExD93h/BY+cSIZyqMcWsr9xab3H+Iyroepr2BEJJIxzw weacrB0KOz7MAsKbU7WfjqZs2FgWA28rints+RIL1KFQYHzFHrfKUOCRH7mMqKmCkX4v+hoVO58 +UQU8ICb2/nvIjuQ8lEKnO4cS14RQA3sZqg9pmVnZKlnMYizPd1YCcQtW9yXZXts3o3UElDjQlq h2GzQr1k0Go5WPjXjvK0IOfLhn6FsSkLPojAMkO8RsEf20WHmwKjJ68LfIIIq8ssp5vsYPCqtX5 i2Dzrge19/rx2qrN8r3gTYvl17D/G235qtYr8RVjuT62hKNy
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -43,75 +44,87 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-microchip-core driver to further changes of the pwm core
+This prepares the pwm-stmpe driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-microchip-core.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-stmpe.c | 38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/pwm/pwm-microchip-core.c b/drivers/pwm/pwm-microchip-core.c
-index c0c53968f3e9..6e0c2cbfc120 100644
---- a/drivers/pwm/pwm-microchip-core.c
-+++ b/drivers/pwm/pwm-microchip-core.c
-@@ -54,7 +54,6 @@
- #define MCHPCOREPWM_TIMEOUT_MS	100u
+diff --git a/drivers/pwm/pwm-stmpe.c b/drivers/pwm/pwm-stmpe.c
+index 492494b73a87..dc9c7b69ab54 100644
+--- a/drivers/pwm/pwm-stmpe.c
++++ b/drivers/pwm/pwm-stmpe.c
+@@ -27,13 +27,12 @@
  
- struct mchp_core_pwm_chip {
+ struct stmpe_pwm {
+ 	struct stmpe *stmpe;
 -	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
- 	struct mutex lock; /* protects the shared period */
-@@ -65,7 +64,7 @@ struct mchp_core_pwm_chip {
+ 	u8 last_duty;
+ };
  
- static inline struct mchp_core_pwm_chip *to_mchp_core_pwm(struct pwm_chip *chip)
+ static inline struct stmpe_pwm *to_stmpe_pwm(struct pwm_chip *chip)
  {
--	return container_of(chip, struct mchp_core_pwm_chip, chip);
+-	return container_of(chip, struct stmpe_pwm, chip);
 +	return pwmchip_priv(chip);
  }
  
- static void mchp_core_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -447,13 +446,15 @@ MODULE_DEVICE_TABLE(of, mchp_core_of_match);
- 
- static int mchp_core_pwm_probe(struct platform_device *pdev)
+ static int stmpe_24xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -292,33 +291,36 @@ static const struct pwm_ops stmpe_24xx_pwm_ops = {
+ static int __init stmpe_pwm_probe(struct platform_device *pdev)
  {
+ 	struct stmpe *stmpe = dev_get_drvdata(pdev->dev.parent);
 +	struct pwm_chip *chip;
- 	struct mchp_core_pwm_chip *mchp_core_pwm;
- 	struct resource *regs;
+ 	struct stmpe_pwm *stmpe_pwm;
  	int ret;
  
--	mchp_core_pwm = devm_kzalloc(&pdev->dev, sizeof(*mchp_core_pwm), GFP_KERNEL);
--	if (!mchp_core_pwm)
+-	stmpe_pwm = devm_kzalloc(&pdev->dev, sizeof(*stmpe_pwm), GFP_KERNEL);
+-	if (!stmpe_pwm)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 16, sizeof(*mchp_core_pwm));
++	switch (stmpe->partnum) {
++	case STMPE2401:
++	case STMPE2403:
++		break;
++	case STMPE1601:
++		return dev_err_probe(&pdev->dev, -EINVAL,
++				     "STMPE1601 not yet supported\n");
++	default:
++		return dev_err_probe(&pdev->dev, -EINVAL,
++				     "Unknown STMPE PWM\n");
++	}
++
++	chip = devm_pwmchip_alloc(&pdev->dev, 3, sizeof(*stmpe_pwm));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	mchp_core_pwm = to_mchp_core_pwm(chip);
++	stmpe_pwm = to_stmpe_pwm(chip);
  
- 	mchp_core_pwm->base = devm_platform_get_and_ioremap_resource(pdev, 0, &regs);
- 	if (IS_ERR(mchp_core_pwm->base))
-@@ -470,9 +471,7 @@ static int mchp_core_pwm_probe(struct platform_device *pdev)
+ 	stmpe_pwm->stmpe = stmpe;
+-	stmpe_pwm->chip.dev = &pdev->dev;
  
- 	mutex_init(&mchp_core_pwm->lock);
+-	if (stmpe->partnum == STMPE2401 || stmpe->partnum == STMPE2403) {
+-		stmpe_pwm->chip.ops = &stmpe_24xx_pwm_ops;
+-		stmpe_pwm->chip.npwm = 3;
+-	} else {
+-		if (stmpe->partnum == STMPE1601)
+-			dev_err(&pdev->dev, "STMPE1601 not yet supported\n");
+-		else
+-			dev_err(&pdev->dev, "Unknown STMPE PWM\n");
+-
+-		return -ENODEV;
+-	}
++	chip->ops = &stmpe_24xx_pwm_ops;
  
--	mchp_core_pwm->chip.dev = &pdev->dev;
--	mchp_core_pwm->chip.ops = &mchp_core_pwm_ops;
--	mchp_core_pwm->chip.npwm = 16;
-+	chip->ops = &mchp_core_pwm_ops;
- 
- 	mchp_core_pwm->channel_enabled = readb_relaxed(mchp_core_pwm->base + MCHPCOREPWM_EN(0));
- 	mchp_core_pwm->channel_enabled |=
-@@ -485,7 +484,7 @@ static int mchp_core_pwm_probe(struct platform_device *pdev)
- 	writel_relaxed(1U, mchp_core_pwm->base + MCHPCOREPWM_SYNC_UPD);
- 	mchp_core_pwm->update_timestamp = ktime_get();
- 
--	ret = devm_pwmchip_add(&pdev->dev, &mchp_core_pwm->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	ret = stmpe_enable(stmpe, STMPE_BLOCK_PWM);
  	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "Failed to add pwmchip\n");
+ 		return ret;
  
+-	ret = pwmchip_add(&stmpe_pwm->chip);
++	ret = pwmchip_add(chip);
+ 	if (ret) {
+ 		stmpe_disable(stmpe, STMPE_BLOCK_PWM);
+ 		return ret;
 -- 
 2.42.0
 
