@@ -1,32 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E4E10C7
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:04 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AA010CF
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:03 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAP-0005Q5-8G; Tue, 21 Nov 2023 14:51:53 +0100
+	id 1r5RAV-0005ls-W4; Tue, 21 Nov 2023 14:52:00 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAO-00Aays-Fx; Tue, 21 Nov 2023 14:51:52 +0100
+	id 1r5RAT-00Ab09-2s; Tue, 21 Nov 2023 14:51:57 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAO-004xdN-6f; Tue, 21 Nov 2023 14:51:52 +0100
+	id 1r5RAS-004xet-Q6; Tue, 21 Nov 2023 14:51:56 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Hector Martin <marcan@marcan.st>,
-	Sven Peter <sven@svenpeter.dev>,
-	Thierry Reding <thierry.reding@gmail.com>
-Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-pwm@vger.kernel.org,
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 039/108] pwm: apple: Make use of devm_pwmchip_alloc() function
-Date: Tue, 21 Nov 2023 14:49:41 +0100
-Message-ID: <20231121134901.208535-40-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 060/108] pwm: intel-lgm: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:50:02 +0100
+Message-ID: <20231121134901.208535-61-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -37,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2020; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=EWFaSHTVoFTH6Q8XFdZqH8m+52FGb/WrCzVZKfXOE7M=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLV3gF0Dt26f+Jj0a8Rx27Z5PSPEkLvevmwOf 3dfY7agPSWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1dwAKCRCPgPtYfRL+ Tk0iB/4vG0QF7RRk4LEOjieZxNWkY/6kdzySkcqaSHsuKUhFVVzhDqnzpl7lo5YQpA3cGiySqXB 6rnOa+hvfp2S0Uv1ClQ0yIcCtUAIo4jxITiEn+Xx2G9Sk7xkdsO7pr9B8n5AceSiougOWg12aJa nZTkEP6NLCeqVyyMgvuUx1ComrQtil74wlqbb/FVa3jf7Ok6Sy5OLOKakow/9q6V2aRJK/Lin+8 nWURTy2kNumXKrgijWTSbJ0PDaVWPnBPFRP54ehOiQ0abLZ8uK8HyrFZg0QG3meMR8gcLqJzlOM Ve1fxR7+dFgt2Ir6Hdq4nauMzLYQVew92aowuB1dTzV0TOlO
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2022; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=IlzO9q5gGaNbUx8/J+aDP10e/8Rhqg+jg/m99dCsS+A=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWOpRMXvN4RFEofDwTzgnPcCd3HTEsSUPhsz 3xI05kyywyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1jgAKCRCPgPtYfRL+ Tr71B/9w22Mq3ZxdkJxZsw0QDaFpChtGJMb5NkK+N5LjDgFZD/t5a4REwb6p5f4fMvO17+PuZTz eorWWFBn5jYkCypmKSJi++p3A6J4XalLENTCLD9iHnt0jn3e+KmQ1fSuQRMIyuSkhYwjuH57NrV cV8uswQP/FJz+/wiLs/LX3asuYCiYgA7P5iGZQwaBGTCHzfNjZqDov6M2KbLfRAJqdgVs8rHK8k mGgD7keJS4weMUFQ8wcPFVu7eNWBgjnPvanSE7S+fVxpK3+bAWwFJwId7U/+THIOa82l0JJo48S GYVyG4iydho/qgrAmQ0t2goIo3uVHmwgxND+S5+q8URwOQMK
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -45,68 +40,70 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-apple driver to further changes of the pwm core
+This prepares the pwm-intel-lgm driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-apple.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-intel-lgm.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-apple.c b/drivers/pwm/pwm-apple.c
-index 4d755b628d9e..1560b6f88821 100644
---- a/drivers/pwm/pwm-apple.c
-+++ b/drivers/pwm/pwm-apple.c
-@@ -32,14 +32,13 @@
- #define APPLE_PWM_CTRL_OUTPUT_ENABLE BIT(14)
+diff --git a/drivers/pwm/pwm-intel-lgm.c b/drivers/pwm/pwm-intel-lgm.c
+index 54ecae7f937e..9abd8859f869 100644
+--- a/drivers/pwm/pwm-intel-lgm.c
++++ b/drivers/pwm/pwm-intel-lgm.c
+@@ -42,14 +42,13 @@
+ #define LGM_PWM_PERIOD_2WIRE_NS		(40 * NSEC_PER_MSEC)
  
- struct apple_pwm {
+ struct lgm_pwm_chip {
 -	struct pwm_chip chip;
- 	void __iomem *base;
- 	u64 clkrate;
+ 	struct regmap *regmap;
+ 	u32 period;
  };
  
- static inline struct apple_pwm *to_apple_pwm(struct pwm_chip *chip)
+ static inline struct lgm_pwm_chip *to_lgm_pwm_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct apple_pwm, chip);
+-	return container_of(chip, struct lgm_pwm_chip, chip);
 +	return pwmchip_priv(chip);
  }
  
- static int apple_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -103,13 +102,16 @@ static const struct pwm_ops apple_pwm_ops = {
- 
- static int apple_pwm_probe(struct platform_device *pdev)
+ static int lgm_pwm_enable(struct pwm_chip *chip, bool enable)
+@@ -168,14 +167,16 @@ static int lgm_pwm_probe(struct platform_device *pdev)
  {
+ 	struct device *dev = &pdev->dev;
+ 	struct reset_control *rst;
 +	struct pwm_chip *chip;
- 	struct apple_pwm *fpwm;
+ 	struct lgm_pwm_chip *pc;
+ 	void __iomem *io_base;
  	struct clk *clk;
  	int ret;
  
--	fpwm = devm_kzalloc(&pdev->dev, sizeof(*fpwm), GFP_KERNEL);
--	if (!fpwm)
+-	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+-	if (!pc)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*fpwm));
++	chip = devm_pwmchip_alloc(dev, 1, sizeof(*pc));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+
-+	fpwm = to_apple_pwm(chip);
++	pc = to_lgm_pwm_chip(chip);
  
- 	fpwm->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(fpwm->base))
-@@ -129,11 +131,9 @@ static int apple_pwm_probe(struct platform_device *pdev)
- 	if (fpwm->clkrate > NSEC_PER_SEC)
- 		return dev_err_probe(&pdev->dev, -EINVAL, "pwm clock out of range");
+ 	io_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(io_base))
+@@ -203,13 +204,11 @@ static int lgm_pwm_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "cannot deassert reset control\n");
  
--	fpwm->chip.dev = &pdev->dev;
--	fpwm->chip.npwm = 1;
--	fpwm->chip.ops = &apple_pwm_ops;
-+	chip->ops = &apple_pwm_ops;
+-	pc->chip.dev = dev;
+-	pc->chip.ops = &lgm_pwm_ops;
+-	pc->chip.npwm = 1;
++	chip->ops = &lgm_pwm_ops;
  
--	ret = devm_pwmchip_add(&pdev->dev, &fpwm->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	lgm_pwm_init(pc);
+ 
+-	ret = devm_pwmchip_add(dev, &pc->chip);
++	ret = devm_pwmchip_add(dev, chip);
  	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "unable to add pwm chip");
+ 		return dev_err_probe(dev, ret, "failed to add PWM chip\n");
  
 -- 
 2.42.0
