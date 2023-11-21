@@ -1,30 +1,31 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12408D6F
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8019A10C8
 	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:49 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAI-0004xX-Ss; Tue, 21 Nov 2023 14:51:46 +0100
+	id 1r5RAI-0004wA-8d; Tue, 21 Nov 2023 14:51:46 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAI-00Aawt-ES; Tue, 21 Nov 2023 14:51:46 +0100
+	id 1r5RAH-00Aawh-Rq; Tue, 21 Nov 2023 14:51:45 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAI-004xb3-5V; Tue, 21 Nov 2023 14:51:46 +0100
+	id 1r5RAH-004xar-Ia; Tue, 21 Nov 2023 14:51:45 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>,
-	Benson Leung <bleung@chromium.org>
-Cc: Guenter Roeck <groeck@chromium.org>,
-	linux-pwm@vger.kernel.org,
-	chrome-platform@lists.linux.dev,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Cc: linux-pwm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 008/108] pwm: cros-ec: Make use of pwmchip_parent() macro
-Date: Tue, 21 Nov 2023 14:49:10 +0100
-Message-ID: <20231121134901.208535-9-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 005/108] pwm: atmel-tcb: Make use of pwmchip_parent() macro
+Date: Tue, 21 Nov 2023 14:49:07 +0100
+Message-ID: <20231121134901.208535-6-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -35,7 +36,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=881; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Y6SybQdrptjmGL25w1qQN8taLORx4QehGQ0MqQwXx4o=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVW7G8g3B4WoIGznwQ3kx7w0eEuOHuAoS+Y9 q571iChN32JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1VgAKCRCPgPtYfRL+ TntsB/9Nj6A9eZjKBsj6nQfE/dfFW/JB2+Gc3gcXs3rnAozNlIFoDRihsY2UBSnBQYuFlNcQDGl NzVn7viCDI3j7dSvzyV5vFfBW05aOjqkyw8n/oovKxB3QbOp9hf98ROBHP2+dU1JFVt6a29kwNc QLaJSAS803j7KVaoNDiVwd23n5VMTNFOxz2GKTOUV4XRN+wS3zIS5kklDJsRgq4aoL3E2TKzsw2 uO3pKC15M2dl05ducMWbB8OhIi28HJ3WxtMvpuTfaTB6YnqbVlY5FmB1hm8zKa9PLFnOQ7Kfd48 2UCMMsiOsG5FDWS6I8Tc84amaoL0eV/kC1w8E0M0gWrgzGtF
+X-Developer-Signature: v=1; a=openpgp-sha256; l=941; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Z7zJIhly+7uC4LrIb4VoqhAbkY69P/aM5XQ5q8eyrBc=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtSYrUFzd1j5vF2y+cbOBWsv+LB9+BT1M/P/vSv/3BY7x RQ1Swaf6GQ0ZmFg5GKQFVNksW9ck2lVJRfZufbfZZhBrEwgUxi4OAVgIgfZ2f+XR2zS/mUfd6G3 /ojqqrNGHqujV33ez6Dsm3e11pR5d/C3wIYv+xOjT/bb6P/yvqStt+2y7TkxW8F/9/e0+2U1rlv PqM5yXbxGzD+0vcqAZaPj88m2YSXXQhwqS3LmbDwpZKu8xGT1QW/Rxoj69jBvH5P5+T6S4S0Hyy 5nfLDeFvcwmOlj7PbkNY1MDH/bX5TLfWx5+XFiUXV59MdD9XqP99+K0CxrebKRiatdoKmiiEMj/ N4UB11nge0nkmz4RBjPVctnVjy+wjz1++1pP7LD2F/LvBKeuNFZx9TLob52gmvmfeN3M2q2yO8P qbr7nmn/v0lePpU/KzoPblNZ/33rw+Qq2QfRgQUs65MTAQ==
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -49,22 +50,22 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-cros-ec.c | 2 +-
+ drivers/pwm/pwm-atmel-tcb.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-index 7345ca1c60f0..0ce8220646ea 100644
---- a/drivers/pwm/pwm-cros-ec.c
-+++ b/drivers/pwm/pwm-cros-ec.c
-@@ -173,7 +173,7 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, pwm->hwpwm);
- 	if (ret < 0) {
--		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
-+		dev_err(pwmchip_parent(chip), "error getting initial duty: %d\n", ret);
- 		return ret;
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index d42c897cb85e..80121ab81a01 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -327,7 +327,7 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if ((atcbpwm && atcbpwm->duty > 0 &&
+ 			atcbpwm->duty != atcbpwm->period) &&
+ 		(atcbpwm->div != i || atcbpwm->period != period)) {
+-		dev_err(chip->dev,
++		dev_err(pwmchip_parent(chip),
+ 			"failed to configure period_ns: PWM group already configured with a different value\n");
+ 		return -EINVAL;
  	}
- 
 -- 
 2.42.0
 
