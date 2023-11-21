@@ -1,27 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E3210D3
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:51 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A4E10C9
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:49 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAK-00056v-TZ; Tue, 21 Nov 2023 14:51:48 +0100
+	id 1r5RAJ-00050j-MA; Tue, 21 Nov 2023 14:51:47 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAK-00AaxO-2K; Tue, 21 Nov 2023 14:51:48 +0100
+	id 1r5RAJ-00Aax9-8H; Tue, 21 Nov 2023 14:51:47 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAJ-004xbj-PZ; Tue, 21 Nov 2023 14:51:47 +0100
+	id 1r5RAI-004xbT-VK; Tue, 21 Nov 2023 14:51:46 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 016/108] pwm: lpss: Make use of pwmchip_parent() macro
-Date: Tue, 21 Nov 2023 14:49:18 +0100
-Message-ID: <20231121134901.208535-17-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 012/108] pwm: img: Make use of parent device pointer in driver data
+Date: Tue, 21 Nov 2023 14:49:14 +0100
+Message-ID: <20231121134901.208535-13-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -32,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2474; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=r2bF3wrio8JPyyCXdxG5IDSji86EqujFlp0yknuZbGE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVeFSsC3XYn+exzJuigV2Z67dDq4RHZJ57+5 l4Honh/00uJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1XgAKCRCPgPtYfRL+ ThEVB/478OAWD7D4IG7LW6Ddk2fcogUXapoIJmMXZzLeZXFxhekK+LfScLbcraa+oGnmyYKzZLs jSgeDN95fliduxgh9k0hUDORToNHVSBSyAeB7ignd/JVG5smpG710PV1Xz9hjCW9IFL52+ex9Ra bZfFL4/yJxjQKFW/T6tPbguEpA5ITjEtaKQQORRvdJwfe+/0T9MSVqrEgdJEJnJqzmCcaNJeOHY 0Eo6fJ7ejZz25t0ZUZilvPICdBFUmHkvcUEcXCuLMkgNKFvh6s/pjVZrax19DOogvulU4p5Gwy6 xVgaNmeuq/gRpTSKTHqPLBouRSgUBLicCWtkM9Y+3fXk/zrx
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2510; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=0tlSCUu9kEZFvLsbsWj2csLUhLXwnv9amJBeZ26qPuI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVaVtsdIcOCI3AeMWsGXfJHLbv5bMutwDYnm Hr2xHf85j2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1WgAKCRCPgPtYfRL+ TjRSCACo7wFlsn5Uso0OZdmQJcY6LcYayctkI1XBk8pL5MvArpfrQw5bzE5czB5lx+B/enk/W3Q WwY7CZ3cj5WwDbNk4EqfK8gE8L5FfL/iueoTmUhm+7TBz4yGKiP2iXsiUfGQZdXYFJXKtJeibqr k0b3oYLklgDvzr7Kx/+8IN38VolHZHS4B6mrjZmAKaeNwrvjEoYCa8w93Y8YtSe+g4I3mdJ9kwR IMkS8bJwqJujqxjrXks3iZiHJwDABc+oT6OUTq7ljUbtBsueopMlH139KxSv2xDcPxbm+aL31th 5wCcrjYF0Yhau3QZGOKNU6uMzYuK1jm4MuHubzJTetZ+v+Yi
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -41,74 +41,75 @@ X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expand
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
 struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the macro
-provided for exactly this purpose.
+driver in the same commit as struct pwm_chip::dev, make use of the
+already existing pointer to the parent device in driver data.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-lpss.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/pwm/pwm-img.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index a6ea3ce7e019..394c768f5a5f 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -106,7 +106,7 @@ static int pwm_lpss_wait_for_update(struct pwm_device *pwm)
- 	 */
- 	err = readl_poll_timeout(addr, val, !(val & PWM_SW_UPDATE), 40, ms);
- 	if (err)
--		dev_err(pwm->chip->dev, "PWM_SW_UPDATE was not cleared\n");
-+		dev_err(pwmchip_parent(pwm->chip), "PWM_SW_UPDATE was not cleared\n");
+diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
+index 0d218c0b690e..d5d50645530f 100644
+--- a/drivers/pwm/pwm-img.c
++++ b/drivers/pwm/pwm-img.c
+@@ -99,7 +99,7 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
- 	return err;
- }
-@@ -114,7 +114,7 @@ static int pwm_lpss_wait_for_update(struct pwm_device *pwm)
- static inline int pwm_lpss_is_updating(struct pwm_device *pwm)
- {
- 	if (pwm_lpss_read(pwm) & PWM_SW_UPDATE) {
--		dev_err(pwm->chip->dev, "PWM_SW_UPDATE is still set, skipping update\n");
-+		dev_err(pwmchip_parent(pwm->chip), "PWM_SW_UPDATE is still set, skipping update\n");
- 		return -EBUSY;
+ 	if (period_ns < imgchip->min_period_ns ||
+ 	    period_ns > imgchip->max_period_ns) {
+-		dev_err(chip->dev, "configured period not in range\n");
++		dev_err(imgchip->dev, "configured period not in range\n");
+ 		return -ERANGE;
  	}
  
-@@ -190,16 +190,16 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	if (state->enabled) {
- 		if (!pwm_is_enabled(pwm)) {
--			pm_runtime_get_sync(chip->dev);
-+			pm_runtime_get_sync(pwmchip_parent(chip));
- 			ret = pwm_lpss_prepare_enable(lpwm, pwm, state);
- 			if (ret)
--				pm_runtime_put(chip->dev);
-+				pm_runtime_put(pwmchip_parent(chip));
- 		} else {
- 			ret = pwm_lpss_prepare_enable(lpwm, pwm, state);
- 		}
- 	} else if (pwm_is_enabled(pwm)) {
- 		pwm_lpss_write(pwm, pwm_lpss_read(pwm) & ~PWM_ENABLE);
--		pm_runtime_put(chip->dev);
-+		pm_runtime_put(pwmchip_parent(chip));
+@@ -120,14 +120,14 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		div = PWM_CTRL_CFG_SUB_DIV0_DIV1;
+ 		timebase = DIV_ROUND_UP(mul, 512);
+ 	} else {
+-		dev_err(chip->dev,
++		dev_err(imgchip->dev,
+ 			"failed to configure timebase steps/divider value\n");
+ 		return -EINVAL;
  	}
  
- 	return ret;
-@@ -213,7 +213,7 @@ static int pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	unsigned long long base_unit, freq, on_time_div;
- 	u32 ctrl;
+ 	duty = DIV_ROUND_UP(timebase * duty_ns, period_ns);
  
--	pm_runtime_get_sync(chip->dev);
-+	pm_runtime_get_sync(pwmchip_parent(chip));
+-	ret = pm_runtime_resume_and_get(chip->dev);
++	ret = pm_runtime_resume_and_get(imgchip->dev);
+ 	if (ret < 0)
+ 		return ret;
  
- 	base_unit_range = BIT(lpwm->info->base_unit_bits);
+@@ -141,8 +141,8 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	      (timebase << PWM_CH_CFG_TMBASE_SHIFT);
+ 	img_pwm_writel(imgchip, PWM_CH_CFG(pwm->hwpwm), val);
  
-@@ -235,7 +235,7 @@ static int pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	state->polarity = PWM_POLARITY_NORMAL;
- 	state->enabled = !!(ctrl & PWM_ENABLE);
- 
--	pm_runtime_put(chip->dev);
-+	pm_runtime_put(pwmchip_parent(chip));
+-	pm_runtime_mark_last_busy(chip->dev);
+-	pm_runtime_put_autosuspend(chip->dev);
++	pm_runtime_mark_last_busy(imgchip->dev);
++	pm_runtime_put_autosuspend(imgchip->dev);
  
  	return 0;
  }
+@@ -153,7 +153,7 @@ static int img_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct img_pwm_chip *imgchip = to_img_pwm_chip(chip);
+ 	int ret;
+ 
+-	ret = pm_runtime_resume_and_get(chip->dev);
++	ret = pm_runtime_resume_and_get(imgchip->dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -177,8 +177,8 @@ static void img_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	val &= ~BIT(pwm->hwpwm);
+ 	img_pwm_writel(imgchip, PWM_CTRL_CFG, val);
+ 
+-	pm_runtime_mark_last_busy(chip->dev);
+-	pm_runtime_put_autosuspend(chip->dev);
++	pm_runtime_mark_last_busy(imgchip->dev);
++	pm_runtime_put_autosuspend(imgchip->dev);
+ }
+ 
+ static int img_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 -- 
 2.42.0
 
