@@ -1,31 +1,27 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03D3D7E
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:56 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332EBD6D
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:52:02 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAM-0005KJ-UI; Tue, 21 Nov 2023 14:51:50 +0100
+	id 1r5RAV-0005dC-06; Tue, 21 Nov 2023 14:51:59 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAL-00Aaxx-UK; Tue, 21 Nov 2023 14:51:49 +0100
+	id 1r5RAR-00Aazq-Qh; Tue, 21 Nov 2023 14:51:55 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAL-004xcJ-LC; Tue, 21 Nov 2023 14:51:49 +0100
+	id 1r5RAR-004xeO-Hs; Tue, 21 Nov 2023 14:51:55 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Thierry Reding <thierry.reding@gmail.com>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-pwm@vger.kernel.org,
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 025/108] pwm: samsung: Make use of pwmchip_parent() macro
-Date: Tue, 21 Nov 2023 14:49:27 +0100
-Message-ID: <20231121134901.208535-26-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 055/108] pwm: hibvt: Make use of devm_pwmchip_alloc() function
+Date: Tue, 21 Nov 2023 14:49:57 +0100
+Message-ID: <20231121134901.208535-56-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -36,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3577; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=YI45MGg8M9zwqLaT36AYGl6F6OyAEfc/1qu6ZaMBZmA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVomsDFiLOfsA/45bt6C/1nyDIDffMKmbuE5 xlXK8YcoVyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1aAAKCRCPgPtYfRL+ TrvtB/0RP2pK7jtaMH0UksDqZu8M4wGQ0wkvxv21cRMBuVp99Lz9RyjuUeI60Pm2L5T6aMjP5Nb H6ronZlGBXOoDysMVyB/7JQnAmd/1G+InYKQbWIBgfAgOxlQEUjPkLi4A7MvnFv/HJaDiFTBw3c XDmXchUx4FrwibbF6Xy7gR3ExrgVhgfDpSX91hl7BShW6yFvta5NThrBK+xk6EqDkjy0d2VRE8q IYA8r2RrRT7vpQqndPwxvAf9f7k5BAmyYgD1XUap8aN4htyx/CXuSCEQ6JsZVOYK70BFK0bK14m z3z5amwZvWFmiSfzBKx/ljKxCih/hqNItm3crdhKDB2G2svz
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2992; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=H8zUpd6JrWoh58k1PJzTBVEr8mAeOolpVMPZzRPQkW4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLWJYb4h8jwQJCnspKFkQEMn6J4OChghJ5tAV Qu9Cixb8BGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1iQAKCRCPgPtYfRL+ TmuHB/96R7lYiqeMDZ5jIEYcqFhjo9nnpLM1zXMyr7umY5NjYOztcE0spieQB4eRtzOuEs7lHex TkOnXdqB+p2JdxJrBG2AFsZSwsU8t4Enj7sEuaBZDo5XmQRiOqKHph706ixDxEa79euJ/wpWgrS +QY9tgxCurhDOoirbL4FNG4SGcMYHkGSmFu8aWZfVILXwhZyQFyubpTm8jcfvvPVvkugAcvhW/k 36izWmTZqOXX99glHGhMzw7goPp/St1hgy5UnBTHgOpEzU6S0xfwx/9211uWtaHgAele4KvTu/v yDDUf3aBY6gQlc1Gl8xW1xe+KnD12L2nCvthlbvOYZ5gBjfI
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -44,95 +40,101 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the macro
-provided for exactly this purpose.
+This prepares the pwm-hibvt driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-samsung.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ drivers/pwm/pwm-hibvt.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index 6e77302f7368..a97cae49406e 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -197,12 +197,12 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *our_chip,
- 				return rate;
- 		}
+diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
+index c435776e2f78..60be59ce4320 100644
+--- a/drivers/pwm/pwm-hibvt.c
++++ b/drivers/pwm/pwm-hibvt.c
+@@ -33,7 +33,6 @@
+ #define PWM_DUTY_MASK       GENMASK(31, 0)
  
--		dev_warn(our_chip->chip.dev,
-+		dev_warn(pwmchip_parent(&our_chip->chip),
- 			"tclk of PWM %d is inoperational, using tdiv\n", chan);
- 	}
+ struct hibvt_pwm_chip {
+-	struct pwm_chip	chip;
+ 	struct clk *clk;
+ 	void __iomem *base;
+ 	struct reset_control *rstc;
+@@ -65,7 +64,7 @@ static const struct hibvt_pwm_soc hi3559v100_soc_info = {
  
- 	rate = pwm_samsung_get_tin_rate(our_chip, chan);
--	dev_dbg(our_chip->chip.dev, "tin parent at %lu\n", rate);
-+	dev_dbg(pwmchip_parent(&our_chip->chip), "tin parent at %lu\n", rate);
- 
- 	/*
- 	 * Compare minimum PWM frequency that can be achieved with possible
-@@ -232,7 +232,7 @@ static int pwm_samsung_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
- 
- 	if (!(our_chip->variant.output_mask & BIT(pwm->hwpwm))) {
--		dev_warn(chip->dev,
-+		dev_warn(pwmchip_parent(chip),
- 			"tried to request PWM channel %d without output\n",
- 			pwm->hwpwm);
- 		return -EINVAL;
-@@ -326,12 +326,12 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 		period = NSEC_PER_SEC / period_ns;
- 
--		dev_dbg(our_chip->chip.dev, "duty_ns=%d, period_ns=%d (%u)\n",
-+		dev_dbg(pwmchip_parent(chip), "duty_ns=%d, period_ns=%d (%u)\n",
- 						duty_ns, period_ns, period);
- 
- 		tin_rate = pwm_samsung_calc_tin(our_chip, pwm->hwpwm, period);
- 
--		dev_dbg(our_chip->chip.dev, "tin_rate=%lu\n", tin_rate);
-+		dev_dbg(pwmchip_parent(chip), "tin_rate=%lu\n", tin_rate);
- 
- 		tin_ns = NSEC_PER_SEC / tin_rate;
- 		tcnt = period_ns / tin_ns;
-@@ -355,8 +355,7 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* -1UL will give 100% duty. */
- 	--tcmp;
- 
--	dev_dbg(our_chip->chip.dev,
--				"tin_ns=%u, tcmp=%u/%u\n", tin_ns, tcmp, tcnt);
-+	dev_dbg(pwmchip_parent(chip), "tin_ns=%u, tcmp=%u/%u\n", tin_ns, tcmp, tcnt);
- 
- 	/* Update PWM registers. */
- 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
-@@ -368,7 +367,7 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * shortly afer this update (before it autoreloaded the new values).
- 	 */
- 	if (oldtcmp == (u32) -1) {
--		dev_dbg(our_chip->chip.dev, "Forcing manual update");
-+		dev_dbg(pwmchip_parent(chip), "Forcing manual update");
- 		pwm_samsung_manual_update(our_chip, pwm);
- 	}
- 
-@@ -509,7 +508,7 @@ MODULE_DEVICE_TABLE(of, samsung_pwm_matches);
- 
- static int pwm_samsung_parse_dt(struct samsung_pwm_chip *our_chip)
+ static inline struct hibvt_pwm_chip *to_hibvt_pwm_chip(struct pwm_chip *chip)
  {
--	struct device_node *np = our_chip->chip.dev->of_node;
-+	struct device_node *np = pwmchip_parent(&our_chip->chip)->of_node;
- 	const struct of_device_id *match;
- 	struct property *prop;
- 	const __be32 *cur;
-@@ -523,7 +522,7 @@ static int pwm_samsung_parse_dt(struct samsung_pwm_chip *our_chip)
+-	return container_of(chip, struct hibvt_pwm_chip, chip);
++	return pwmchip_priv(chip);
+ }
  
- 	of_property_for_each_u32(np, "samsung,pwm-outputs", prop, cur, val) {
- 		if (val >= SAMSUNG_PWM_NUM) {
--			dev_err(our_chip->chip.dev,
-+			dev_err(pwmchip_parent(&our_chip->chip),
- 				"%s: invalid channel index in samsung,pwm-outputs property\n",
- 								__func__);
- 			continue;
+ static void hibvt_pwm_set_bits(void __iomem *base, u32 offset,
+@@ -191,12 +190,14 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
+ {
+ 	const struct hibvt_pwm_soc *soc =
+ 				of_device_get_match_data(&pdev->dev);
++	struct pwm_chip	*chip;
+ 	struct hibvt_pwm_chip *pwm_chip;
+ 	int ret, i;
+ 
+-	pwm_chip = devm_kzalloc(&pdev->dev, sizeof(*pwm_chip), GFP_KERNEL);
+-	if (pwm_chip == NULL)
++	chip = devm_pwmchip_alloc(&pdev->dev, soc->num_pwms, sizeof(*pwm_chip));
++	if (chip == NULL)
+ 		return -ENOMEM;
++	pwm_chip = to_hibvt_pwm_chip(chip);
+ 
+ 	pwm_chip->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(pwm_chip->clk)) {
+@@ -205,9 +206,7 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
+ 		return PTR_ERR(pwm_chip->clk);
+ 	}
+ 
+-	pwm_chip->chip.ops = &hibvt_pwm_ops;
+-	pwm_chip->chip.dev = &pdev->dev;
+-	pwm_chip->chip.npwm = soc->num_pwms;
++	chip->ops = &hibvt_pwm_ops;
+ 	pwm_chip->soc = soc;
+ 
+ 	pwm_chip->base = devm_platform_ioremap_resource(pdev, 0);
+@@ -228,29 +227,31 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
+ 	msleep(30);
+ 	reset_control_deassert(pwm_chip->rstc);
+ 
+-	ret = pwmchip_add(&pwm_chip->chip);
++	ret = pwmchip_add(chip);
+ 	if (ret < 0) {
+ 		clk_disable_unprepare(pwm_chip->clk);
+ 		return ret;
+ 	}
+ 
+-	for (i = 0; i < pwm_chip->chip.npwm; i++) {
++	for (i = 0; i < chip->npwm; i++) {
+ 		hibvt_pwm_set_bits(pwm_chip->base, PWM_CTRL_ADDR(i),
+ 				PWM_KEEP_MASK, (0x1 << PWM_KEEP_SHIFT));
+ 	}
+ 
+-	platform_set_drvdata(pdev, pwm_chip);
++	platform_set_drvdata(pdev, chip);
+ 
+ 	return 0;
+ }
+ 
+ static void hibvt_pwm_remove(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct hibvt_pwm_chip *pwm_chip;
+ 
+-	pwm_chip = platform_get_drvdata(pdev);
++	chip = platform_get_drvdata(pdev);
++	pwm_chip = to_hibvt_pwm_chip(chip);
+ 
+-	pwmchip_remove(&pwm_chip->chip);
++	pwmchip_remove(chip);
+ 
+ 	reset_control_assert(pwm_chip->rstc);
+ 	msleep(30);
 -- 
 2.42.0
 
