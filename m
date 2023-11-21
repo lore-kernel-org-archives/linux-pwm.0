@@ -1,27 +1,31 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2722C10CF
-	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:53 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78783D79
+	for <linux-pwm@vger.kernel.org>; Tue, 21 Nov 2023 05:51:52 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAN-0005Nw-IS; Tue, 21 Nov 2023 14:51:51 +0100
+	id 1r5RAI-0004vx-3u; Tue, 21 Nov 2023 14:51:46 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAN-00AayQ-5h; Tue, 21 Nov 2023 14:51:51 +0100
+	id 1r5RAH-00Aawd-Ly; Tue, 21 Nov 2023 14:51:45 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1r5RAM-004xck-T4; Tue, 21 Nov 2023 14:51:50 +0100
+	id 1r5RAH-004xan-Ch; Tue, 21 Nov 2023 14:51:45 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org,
+To: Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: linux-arm-kernel@lists.infradead.org,
+	linux-pwm@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v3 032/108] pwm: tiehrpwm: Make use of pwmchip_parent() macro
-Date: Tue, 21 Nov 2023 14:49:34 +0100
-Message-ID: <20231121134901.208535-33-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 004/108] pwm: atmel: Make use of pwmchip_parent() macro
+Date: Tue, 21 Nov 2023 14:49:06 +0100
+Message-ID: <20231121134901.208535-5-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
 References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
@@ -32,7 +36,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3906; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=RVXlxyqQbN8EiIIgF1ezGnwlxppGH5jOUnQlVaRVzn4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVwLFAXL4V+4Z7aPRhGzQsmrRR+8hms4r3Zj YG8/ikCJrOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1cAAKCRCPgPtYfRL+ TjxlB/4kWALE4VpELq+gK/OihDvMjDwBajp8QOxVV6zr759FWC4/Zq+DQxsRcKhZC6j9nabVa+b aKtjWNCQRBd6AfzhttAmJTLEwsFrD7ki6Yu7cGYeOaLVIxLcHr4TeNB7gzk/gLdFhQ5rGowtpGC L8eX6aZLuawMtkfGgsGEWldJ6GNuManaAHGJBD5OzHiTdtAennRwolq6nWzuht8tGKFpMIW9Mxl opqSBppAeXDmTo3q4n8V52QlnBugjNcyWfzanoeqUCmLif7u0qn0SGxLvxJfBnS+DvoVK2zpT1O +8BP6UEVzX89XVJ1P4zrUVeU8jiLkIe62X3Z2t8efQFUhxtX
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2827; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=kchnmBeM6dTUrRyczIW+qjV7tOiXzRrzwU7RLUUbwus=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlXLVRhUyTKcE9gN6+Zc5xJTgAKfQ/XAJNfqJCV azqwn2Ia5yJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZVy1UQAKCRCPgPtYfRL+ TrN2CACMx1OVczmGHUxrb8adRLyrGUoGpcYA7CRvoCiu/9wjNhkBw5/anRtqSLSmaACk22rhoeM HuCqrl0NZRMplmIAnHTX9JHaRyLYP5PZVv7tbpTxhfv6/Ka+b+C7yxPZlTbM+UvtSFTs2ltu1nO TP93dPQAVMSmPVwfqMzASRcUlBjTCZz1XHIv/Y5L33oxoblJsJaHYKTuzMijCZwJm/ufTpzTNNV nrjd+WciFFd3qOt/GMljxFVFFRZ/gze7x08QpbTCEK1PXlKAxfypGHonQE/DbgCIlUC9RcRa9fL Hr9sC3EUrnlOAEzLxSIrEyrNhtJ0zF/yvErzRqVPdWHycBlW
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -46,103 +50,78 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-tiehrpwm.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-atmel.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
-index af231fa74fa9..80e22e373bc5 100644
---- a/drivers/pwm/pwm-tiehrpwm.c
-+++ b/drivers/pwm/pwm-tiehrpwm.c
-@@ -256,7 +256,7 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			if (i == pwm->hwpwm)
- 				continue;
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 47bcc8a3bf9d..4ef91fe6f147 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -210,7 +210,7 @@ static int atmel_pwm_calculate_cprd_and_pres(struct pwm_chip *chip,
+ 	shift = fls(cycles) - atmel_pwm->data->cfg.period_bits;
  
+ 	if (shift > PWM_MAX_PRES) {
+-		dev_err(chip->dev, "pres exceeds the maximum value\n");
++		dev_err(pwmchip_parent(chip), "pres exceeds the maximum value\n");
+ 		return -EINVAL;
+ 	} else if (shift > 0) {
+ 		*pres = shift;
+@@ -321,7 +321,7 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		ret = atmel_pwm_calculate_cprd_and_pres(chip, clkrate, state, &cprd,
+ 							&pres);
+ 		if (ret) {
 -			dev_err(chip->dev,
 +			dev_err(pwmchip_parent(chip),
- 				"period value conflicts with channel %u\n",
- 				i);
- 			return -EINVAL;
-@@ -268,11 +268,11 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* Configure clock prescaler to support Low frequency PWM wave */
- 	if (set_prescale_div(period_cycles/PERIOD_MAX, &ps_divval,
- 			     &tb_divval)) {
--		dev_err(chip->dev, "Unsupported values\n");
-+		dev_err(pwmchip_parent(chip), "Unsupported values\n");
- 		return -EINVAL;
- 	}
+ 				"failed to calculate cprd and prescaler\n");
+ 			return ret;
+ 		}
+@@ -333,7 +333,7 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		} else {
+ 			ret = clk_enable(atmel_pwm->clk);
+ 			if (ret) {
+-				dev_err(chip->dev, "failed to enable clock\n");
++				dev_err(pwmchip_parent(chip), "failed to enable clock\n");
+ 				return ret;
+ 			}
+ 		}
+@@ -462,8 +462,9 @@ static const struct of_device_id atmel_pwm_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
  
--	pm_runtime_get_sync(chip->dev);
-+	pm_runtime_get_sync(pwmchip_parent(chip));
- 
- 	/* Update clock prescaler values */
- 	ehrpwm_modify(pc->mmio_base, TBCTL, TBCTL_CLKDIV_MASK, tb_divval);
-@@ -299,7 +299,7 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	ehrpwm_write(pc->mmio_base, cmp_reg, duty_cycles);
- 
--	pm_runtime_put_sync(chip->dev);
-+	pm_runtime_put_sync(pwmchip_parent(chip));
- 
- 	return 0;
- }
-@@ -323,7 +323,7 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	int ret;
- 
- 	/* Leave clock enabled on enabling PWM */
--	pm_runtime_get_sync(chip->dev);
-+	pm_runtime_get_sync(pwmchip_parent(chip));
- 
- 	/* Disabling Action Qualifier on PWM output */
- 	if (pwm->hwpwm) {
-@@ -346,8 +346,8 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	/* Enable TBCLK */
- 	ret = clk_enable(pc->tbclk);
- 	if (ret) {
--		dev_err(chip->dev, "Failed to enable TBCLK for %s: %d\n",
--			dev_name(pc->chip.dev), ret);
-+		dev_err(pwmchip_parent(chip), "Failed to enable TBCLK for %s: %d\n",
-+			dev_name(pwmchip_parent(chip)), ret);
- 		return ret;
- 	}
- 
-@@ -385,7 +385,7 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	clk_disable(pc->tbclk);
- 
- 	/* Disable clock on PWM disable */
--	pm_runtime_put_sync(chip->dev);
-+	pm_runtime_put_sync(pwmchip_parent(chip));
- }
- 
- static void ehrpwm_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
-@@ -393,8 +393,8 @@ static void ehrpwm_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct ehrpwm_pwm_chip *pc = to_ehrpwm_pwm_chip(chip);
- 
- 	if (pwm_is_enabled(pwm)) {
--		dev_warn(chip->dev, "Removing PWM device without disabling\n");
--		pm_runtime_put_sync(chip->dev);
-+		dev_warn(pwmchip_parent(chip), "Removing PWM device without disabling\n");
-+		pm_runtime_put_sync(pwmchip_parent(chip));
- 	}
- 
- 	/* set period value to zero on free */
-@@ -523,7 +523,7 @@ static void ehrpwm_pwm_remove(struct platform_device *pdev)
- 
- static void ehrpwm_pwm_save_context(struct ehrpwm_pwm_chip *pc)
+-static int atmel_pwm_enable_clk_if_on(struct atmel_pwm_chip *atmel_pwm, bool on)
++static int atmel_pwm_enable_clk_if_on(struct pwm_chip *chip, bool on)
  {
--	pm_runtime_get_sync(pc->chip.dev);
-+	pm_runtime_get_sync(pwmchip_parent(&pc->chip));
++	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
+ 	unsigned int i, cnt = 0;
+ 	unsigned long sr;
+ 	int ret = 0;
+@@ -480,7 +481,7 @@ static int atmel_pwm_enable_clk_if_on(struct atmel_pwm_chip *atmel_pwm, bool on)
+ 	for (i = 0; i < cnt; i++) {
+ 		ret = clk_enable(atmel_pwm->clk);
+ 		if (ret) {
+-			dev_err(atmel_pwm->chip.dev,
++			dev_err(pwmchip_parent(chip),
+ 				"failed to enable clock for pwm %pe\n",
+ 				ERR_PTR(ret));
  
- 	pc->ctx.tbctl = ehrpwm_read(pc->mmio_base, TBCTL);
- 	pc->ctx.tbprd = ehrpwm_read(pc->mmio_base, TBPRD);
-@@ -534,7 +534,7 @@ static void ehrpwm_pwm_save_context(struct ehrpwm_pwm_chip *pc)
- 	pc->ctx.aqsfrc = ehrpwm_read(pc->mmio_base, AQSFRC);
- 	pc->ctx.aqcsfrc = ehrpwm_read(pc->mmio_base, AQCSFRC);
+@@ -525,7 +526,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 	atmel_pwm->chip.ops = &atmel_pwm_ops;
+ 	atmel_pwm->chip.npwm = 4;
  
--	pm_runtime_put_sync(pc->chip.dev);
-+	pm_runtime_put_sync(pwmchip_parent(&pc->chip));
+-	ret = atmel_pwm_enable_clk_if_on(atmel_pwm, true);
++	ret = atmel_pwm_enable_clk_if_on(&atmel_pwm->chip, true);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -538,7 +539,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ disable_clk:
+-	atmel_pwm_enable_clk_if_on(atmel_pwm, false);
++	atmel_pwm_enable_clk_if_on(&atmel_pwm->chip, false);
+ 
+ 	return ret;
  }
- 
- static void ehrpwm_pwm_restore_context(struct ehrpwm_pwm_chip *pc)
 -- 
 2.42.0
 
