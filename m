@@ -1,295 +1,200 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CQFAU0dR"
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC53524F
-	for <linux-pwm@vger.kernel.org>; Wed, 22 Nov 2023 07:46:56 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-a00f67f120aso341614666b.2
-        for <linux-pwm@vger.kernel.org>; Wed, 22 Nov 2023 07:46:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TrzZYS1V"
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C014C83;
+	Wed, 22 Nov 2023 09:15:36 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-a00b056ca38so405683266b.2;
+        Wed, 22 Nov 2023 09:15:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700668015; x=1701272815; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=r4Sh7iGlNxumB5VcLNDx/95ABOz0bRjlVPQnOa1w1Ss=;
-        b=CQFAU0dRlqcrLFCw7p3jXt7HpQVE0LgiA8/16q23Oc/Ps5o9mG4ZCpLHCTevOArdwC
-         bH9adRk4puluQzMW1Yd91V6bO9YX4qw4m3JjfiYvLTg8E92gs+Id4WnFGtIr6fOCCFj1
-         5/sOX7IDYe9JyOAbEsVCe+Z+Y3/iGKORdzA/Oz3jMPtjXjt35hlAQPqBLpw9uYVB3m5F
-         ruzmYj9+nhRbgybtVz1zZC8q+P36R0JqadVMzZEWgTEREKxeSb0glU9ub95KGpKHK6Dt
-         cbfRr4LzOkvvPbFE4yzu5uxsmP25GsmC8IMXoV26JFJ8ruDYlCJ/q/iqnStqT9UDGYHW
-         GAww==
+        d=gmail.com; s=20230601; t=1700673335; x=1701278135; darn=vger.kernel.org;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0A4v2zEkCQh6vK0gV5ezd/1QpRcyGTIPQVZmBBe+ht4=;
+        b=TrzZYS1VzuNRpU8VsOMxj1np5U7fDgb9+Y5Ycur++s8bN8m3ATWwQYtFPFUf5/PYpj
+         XK/g0EI2dWSDawD14H4r5h6EuRTN4jgCa9NszQgrl3/avH5GFN2RPaZnApEbBZ2JsRH5
+         y+SpYFpRvyebhTf8EPD/6BkZBBYmGJv+yU/GyK42WMEj/dlekZ00S52hH3GitkfUCNgL
+         LBMI9ruQHIfQ7WAtE81EXkHLPrm/Zt0xLkFk5dTvbiqiVEDxXEXg4uctKPByH/L2Cc40
+         cNnwiYB97Iz1wOymLYPL85hES1OVGwgcHUZxEQcOjoKVPKPyqjRrRrYT991cBCKImb3+
+         aRfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700668015; x=1701272815;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=r4Sh7iGlNxumB5VcLNDx/95ABOz0bRjlVPQnOa1w1Ss=;
-        b=IS0fxrZZrNHQGlf/W49PsfDkj2f7Wiqot5Thh948k7WSxOgECRYmNBLO7G/zROPdeH
-         UdK/vuMYgwJuCJDOh9011JI27uCKcjkfq0hXd57irk+OnG14z1zdmHa53GjC08qIu1+G
-         UhcNX/IX0LJBRZb7/gwm1ytxy86ceuRrLm+rLMfFte5Z8tKEL2VL/hSQMeAvpo1Acp9T
-         sFNzURO8nh+NHZU8Q+UieBMc8F+t0CpuU8ChFxQWGl9+KVvrh1p75d8y9jbWcUNgaSSY
-         LGk1/YBlrVGdZMzsO2waNqqR+fVIxwGC6gvdnHzmNa2I8ytcH3NqTKF9f/Yuy1HukSY8
-         8A+g==
-X-Gm-Message-State: AOJu0YwJdZJfI3t+G0h5EL8v9NsESwYVmygJdHpjox5j3+ZFifJ44q4/
-	1m8IcRD4xQ8oTVqlbVwLmejuiw==
-X-Google-Smtp-Source: AGHT+IFW5oX9fTLJ1szGuuAzjPMIHff7wKMRPiKVS9OPnwaHAonSoiXRvJddjViCI+jKD3t1JddOwQ==
-X-Received: by 2002:a17:906:b158:b0:9fe:392:c535 with SMTP id bt24-20020a170906b15800b009fe0392c535mr1526575ejb.69.1700668014674;
-        Wed, 22 Nov 2023 07:46:54 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.100])
-        by smtp.gmail.com with ESMTPSA id g26-20020a170906349a00b00a0451802b3csm1013123ejb.4.2023.11.22.07.46.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Nov 2023 07:46:54 -0800 (PST)
-Message-ID: <2d9c4c93-6cea-4a44-9093-c1fd51d0a21c@linaro.org>
-Date: Wed, 22 Nov 2023 16:46:52 +0100
+        d=1e100.net; s=20230601; t=1700673335; x=1701278135;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0A4v2zEkCQh6vK0gV5ezd/1QpRcyGTIPQVZmBBe+ht4=;
+        b=GusssjUcmBHiGtcL4y7n7bdDDOgwh5dRMH39Pcac8MX1ofRCkvOi/qPJe3l6bxnKAB
+         XDPMfbjrFQ6PtVIY816juDM5EPPdGXw9rTGCo3u3SOP8KpKpsO221KCMQa53q8lY3pqR
+         SgKm8bMSsptZgecA9+bm8YCKmzIsu17z2ui/r4lQtxnXWRqZ7Z8mpSFokfIk1wyMbsLO
+         CzBq3ie/IWGhOG1I4iO7rNnKTDrNTNPrzolfJU64NhYbm6JsCkrY6e+Msqd8eQcOou85
+         qonOPuFAtScKzeuSUKj2NDyLO49nNqP2bZP7BqqLmn3pXuQc1KwN/THZMXQFPJEZL16/
+         t8nw==
+X-Gm-Message-State: AOJu0YzufrThMsUaDZJ7DC7u+qUcF2BhINySHUFxhvMpSztOfCFK7aCe
+	uZiX83rdb8qOLS0khbOJLkU=
+X-Google-Smtp-Source: AGHT+IEnM+zdKXO3s2SNFBpyP4Rkmqts+o476UisMHXXSvyzUTzmcvUAoCzFE5Q9up+ZrBVe0d/6Dg==
+X-Received: by 2002:a17:906:7481:b0:9ff:1e84:76fc with SMTP id e1-20020a170906748100b009ff1e8476fcmr1721362ejl.5.1700673334755;
+        Wed, 22 Nov 2023 09:15:34 -0800 (PST)
+Received: from orome.fritz.box (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id f4-20020a170906560400b009ff10633221sm3805456ejq.128.2023.11.22.09.15.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Nov 2023 09:15:34 -0800 (PST)
+Date: Wed, 22 Nov 2023 18:15:32 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Lee Jones <lee@kernel.org>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Pavel Machek <pavel@ucw.cz>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Anjelique Melendez <quic_amelende@quicinc.com>,
+	Rob Herring <robh@kernel.org>, Kees Cook <keescook@chromium.org>,
+	Luca Weiss <luca@z3ntu.xyz>,
+	Bjorn Andersson <quic_bjorande@quicinc.com>,
+	linux-leds@vger.kernel.org, kernel@pengutronix.de,
+	linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3 102/108] leds: qcom-lpg: Make use of
+ devm_pwmchip_alloc() function
+Message-ID: <ZV43NHr1QN79lsaJ@orome.fritz.box>
+References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
+ <20231121134901.208535-103-u.kleine-koenig@pengutronix.de>
+ <20231122115621.GK173820@google.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/6] dt-bindings: pwm: amlogic: add new compatible for
- meson8 pwm type
-Content-Language: en-US
-To: Jerome Brunet <jbrunet@baylibre.com>
-Cc: neil.armstrong@linaro.org, Rob Herring <robh@kernel.org>,
- JunYi Zhao <junyi.zhao@amlogic.com>, devicetree@vger.kernel.org,
- Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Kevin Hilman <khilman@baylibre.com>,
- Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-References: <20231117125919.1696980-1-jbrunet@baylibre.com>
- <20231117125919.1696980-3-jbrunet@baylibre.com>
- <170040994064.269288.960284011884896046.robh@kernel.org>
- <4608012c-059f-4d6a-914b-e85ad0c32ff0@linaro.org>
- <1j5y1wg3sb.fsf@starbuckisacylon.baylibre.com>
- <2e7a65da-5c1d-4dd4-ac69-7559a53afdf3@linaro.org>
- <1j1qckg21u.fsf@starbuckisacylon.baylibre.com>
- <94e69281-93e1-41cd-9cf5-81cbbc15572c@linaro.org>
- <1jwmu9et6j.fsf@starbuckisacylon.baylibre.com>
- <2bbc2031-89d7-42e9-828e-068fa06eabf4@linaro.org>
- <1jo7flerag.fsf@starbuckisacylon.baylibre.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <1jo7flerag.fsf@starbuckisacylon.baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="bVcNKODKZhCay43z"
+Content-Disposition: inline
+In-Reply-To: <20231122115621.GK173820@google.com>
+User-Agent: Mutt/2.2.12 (2023-09-09)
 
-On 22/11/2023 16:23, Jerome Brunet wrote:
-> 
-> On Wed 22 Nov 2023 at 16:04, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> 
->> On 22/11/2023 15:34, Jerome Brunet wrote:
->>>
->>> On Wed 22 Nov 2023 at 09:37, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
->>>
->>>> On 20/11/2023 11:04, Jerome Brunet wrote:
->>>>>>>>>>    .../devicetree/bindings/pwm/pwm-amlogic.yaml  | 36 +++++++++++++++++--
->>>>>>>>>>    1 file changed, 34 insertions(+), 2 deletions(-)
->>>>>>>>>>
->>>>>>>>> Reviewed-by: Rob Herring <robh@kernel.org>
->>>>>>>>>
->>>>>>>>
->>>>>>>> I'm puzzled, isn't it recommended to have a per-soc compatible now ?
->>>>
->>>> Yes, it is.
->>>>
->>>>>>> I have specifically addressed this matter in the description,
->>>>>>> haven't I ? What good would it do in this case ?
->>>>
->>>> There is nothing about compatible naming in commit msg.
->>>
->>> Krzysztof, the whole commit desciption is explanation about why a new
->>> compatible is introduced. I don't understand this comment.
->>>
->>>>
->>>>>>
->>>>>> Yes you did but I was asked for the last year+ that all new compatible
->>>>>> should be soc specific (while imprecise, in our care soc family should be ok),
->>>>>> with a possible semi-generic callback with an IP version or a first soc
->>>>>> implementing the IP.
->>>>>>
->>>>>>> Plus the definition of a SoC is very vague. One could argue that
->>>>>>> the content of the list bellow are vaguely defined families. Should we
->>>>>>> add meson8b, gxl, gxm, sm1 ? ... or even the actual SoC reference ?
->>>>>>> This list gets huge for no reason.
->>>>>>
->>>>>> I think in our case soc family is reasonable since they share same silicon
->>>>>> design.
->>>>>>
->>>>>>> We know all existing PWM of this type are the same. We have been using
->>>>>>> them for years. It is not a new support we know nothing about.
->>>>>>>
->>>>>>>>
->>>>>>>> I thought something like:
->>>>>>>> - items:
->>>>>>>>      - enum:
->>>>>>>>          - amlogic,gxbb-pwm
->>>>>>>>          - amlogic,axg-pwm
->>>>>>>>          - amlogic,g12a-pwm
->>>>>>>>      - const: amlogic,pwm-v1
->>>>>>> I'm not sure I understand what you are suggesting here.
->>>>>>> Adding a "amlogic,pwm-v1" for the obsolete compatible ? No amlogic DT
->>>>>>> has that and I'm working to remove this type, so I don't get the point.
->>>>>>>
->>>>>>>>
->>>>>>>> should be preferred instead of a single amlogic,meson8-pwm-v2 ?
->>>>>>> This is named after the first SoC supporting the type.
->>>>>>> Naming it amlogic,pwm-v2 would feel weird with the s4 coming after.
->>>>>>> Plus the doc specifically advise against this type of names.
->>>>>>
->>>>>> The -v2 refers to a pure software/dt implementation versioning and not
->>>>>> an HW version, so I'm puzzled and I requires DT maintainers advice here.
->>>>>>
->>>>>> Yes meson8b is the first "known" platform, even if I'm pretty sure meson6 has
->>>>
->>>> Yes, this should be SoC-based compatible, unless you have clear
->>>> versioning scheme by SoC/IP block vendor. You named it not a HW version,
->>>> which kind of answers to the "unless" case - that's not hardware version.
->>>>
->>>
->>> This is specifically the point of the comment in commit description.
->>> We know all the PWMs compatible are the same HW (version) as one found
->>> in the meson8b.
->>>
->>> It is certain that adding more compatible, listing all the SoC, will be
->>> useless. I can do it if you insist.
->>
->> The docs you references insist on that, so yeah, I insist as well.
->>
->>>
->>>>>
->>>>> This is not my point. I picked this name because I have to pick a
->>>>> specific device based one. Not because it is actually the first or
->>>>> not. I don't see a problem with meson6 being compatible with
->>>>> meson8-pwm-v2, if that ever comes along.
->>>>
->>>> No, the point is not to use "v2". Use SoC compatibles.
->>>
->>> It is a SoC compatible. The second one.
->>
->> "v2" is not the soc. I assume meson8 is one specific SoC, right? Because
->> elinux says it is a *family*:
->> https://elinux.org/Amlogic/SoCs
->>
-> 
-> It is a family. yes
-> 
->>
->>>
->>> The first one, as explained in the description was describing the driver
->>> more that the HW.
->>>
->>> Changing the way clock are passed from DT to the driver would be break
->>> user of the old compatible. So a new compatible is introduced. I believe
->>> this is recommended way to introduce incompatible binding changes.
->>
->> The way is not to introduce incompatible changes. Your way is also not
->> good as it breaks other users of DTS.
->>
->>>
->>> v2 here denote a new interface version, nothing to do with HW
->>> versioning. I happy to pick something else to denote this.
->>
->> Sorry, then it is not a SoC-based compatible.
->>
->>>
->>>>
->>>>>
->>>>> I think the binding here satisfy the rule that it should be specific,
->>>>> and the intent that goes with it:
->>>>>
->>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/writing-bindings.rst?h=v6.7-rc2#n42
->>>>>
->>>>>> the same pwm architecture, this is why "amlogic,pwm-v1" as fallback seems more
->>>>>> reasonable and s4 and later pwm could use the "amlogic,pwm-v2"
->>>>>> fallback.
->>>>>
->>>>> That is not how understand this:
->>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/writing-bindings.rst?h=v6.7-rc2#n82
->>>>>
->>>>
->>>> Again, where the "v2" is defined? Where is any document explaining the
->>>> mapping between version blocks and SoC parts? Why do you list here only
->>>> major version? Blocks almost always have also minor (e.g. v2.0).
->>>
->>> Again, v2 does has nothing to do with the HW. Never wrote it was.
->>> The HW remains the same.
->>
->> Don't add compatibles which are not related to HW, but represent
->> software versioning. Software does not matter for the bindings.
-> 
-> What I did I explicitly what is recommended in Grant's presentation from
-> 2013. 10y old, but I assume slide 10 "Making an incompatible update" is
-> still valid.
-> 
-> https://elinux.org/images/1/1e/DT_Binding_Process_glikely_ksummit_2013_10_28.pdf
-> 
-> Breaking the ABI of the old compatible would break all boards which use
-> u-boot DT and pass it to the kernel, because the meaning of the clock
-> property would change.
 
-You broke U-Boot now as well - it will get your new DTS from the kernel
-and stop working.
+--bVcNKODKZhCay43z
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> Doing things has suggested in this slide, and this patch, allows every
-> device to continue to work properly, whether the DT given is the one
-> shipped with u-boot (using the old compatible for now) or the kernel.
+On Wed, Nov 22, 2023 at 11:56:21AM +0000, Lee Jones wrote:
+> On Tue, 21 Nov 2023, Uwe Kleine-K=C3=B6nig wrote:
+>=20
+> > This prepares the pwm sub-driver to further changes of the pwm core
+> > outlined in the commit introducing devm_pwmchip_alloc(). There is no
+> > intended semantical change and the driver should behave as before.
+> >=20
+> > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> >  drivers/leds/rgb/leds-qcom-lpg.c | 30 +++++++++++++++++++++---------
+> >  1 file changed, 21 insertions(+), 9 deletions(-)
+> >=20
+> > diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-q=
+com-lpg.c
+> > index 68d82a682bf6..283227e02df6 100644
+> > --- a/drivers/leds/rgb/leds-qcom-lpg.c
+> > +++ b/drivers/leds/rgb/leds-qcom-lpg.c
+> > @@ -77,7 +77,7 @@ struct lpg {
+> > =20
+> >  	struct mutex lock;
+> > =20
+> > -	struct pwm_chip pwm;
+> > +	struct pwm_chip *pwm;
+> > =20
+> >  	const struct lpg_data *data;
+> > =20
+> > @@ -977,9 +977,15 @@ static int lpg_pattern_mc_clear(struct led_classde=
+v *cdev)
+> >  	return lpg_pattern_clear(led);
+> >  }
+> > =20
+> > +static inline struct lpg *lpg_pwm_from_chip(struct pwm_chip *chip)
+> > +{
+> > +	struct lpg **lpg =3D pwmchip_priv(chip);
+> > +	return *lpg;
+> > +}
+>=20
+> I don't have easy-vis into the other patches, but if this is a common
+> pattern, perhaps add a generic helper in <linux/pwm.h>?
+>=20
+> >  static int lpg_pwm_request(struct pwm_chip *chip, struct pwm_device *p=
+wm)
+> >  {
+> > -	struct lpg *lpg =3D container_of(chip, struct lpg, pwm);
+> > +	struct lpg *lpg =3D lpg_pwm_from_chip(chip);
+> >  	struct lpg_channel *chan =3D &lpg->channels[pwm->hwpwm];
+> > =20
+> >  	return chan->in_use ? -EBUSY : 0;
+> > @@ -995,7 +1001,7 @@ static int lpg_pwm_request(struct pwm_chip *chip, =
+struct pwm_device *pwm)
+> >  static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> >  			 const struct pwm_state *state)
+> >  {
+> > -	struct lpg *lpg =3D container_of(chip, struct lpg, pwm);
+> > +	struct lpg *lpg =3D lpg_pwm_from_chip(chip);
+> >  	struct lpg_channel *chan =3D &lpg->channels[pwm->hwpwm];
+> >  	int ret =3D 0;
+> > =20
+> > @@ -1026,7 +1032,7 @@ static int lpg_pwm_apply(struct pwm_chip *chip, s=
+truct pwm_device *pwm,
+> >  static int lpg_pwm_get_state(struct pwm_chip *chip, struct pwm_device =
+*pwm,
+> >  			     struct pwm_state *state)
+> >  {
+> > -	struct lpg *lpg =3D container_of(chip, struct lpg, pwm);
+> > +	struct lpg *lpg =3D lpg_pwm_from_chip(chip);
+> >  	struct lpg_channel *chan =3D &lpg->channels[pwm->hwpwm];
+> >  	unsigned int resolution;
+> >  	unsigned int pre_div;
+> > @@ -1089,13 +1095,19 @@ static const struct pwm_ops lpg_pwm_ops =3D {
+> > =20
+> >  static int lpg_add_pwm(struct lpg *lpg)
+> >  {
+> > +	struct pwm_chip *chip;
+> >  	int ret;
+> > =20
+> > -	lpg->pwm.dev =3D lpg->dev;
+> > -	lpg->pwm.npwm =3D lpg->num_channels;
+> > -	lpg->pwm.ops =3D &lpg_pwm_ops;
+> > +	lpg->pwm =3D chip =3D devm_pwmchip_alloc(lpg->dev, lpg->num_channels,
+> > +					     sizeof(&lpg));
+> > +	if (IS_ERR(chip))
+> > +		return PTR_ERR(chip);
+> > =20
+> > -	ret =3D pwmchip_add(&lpg->pwm);
+> > +	*(struct lpg **)pwmchip_priv(chip) =3D lpg;
+>=20
+> This is vile!
 
-OK, that explains the reasons. I read your commit msg and nothing like
-this was mentioned there. What's more, you did not deprecate the old
-binding, thus the confusion - it looked like you add entirely new
-hardware (although you put "deprecated" but in some unrelated place, not
-next to the compatibles).
+Indeed. This highlights one of the weaker parts of this whole design and
+I really don't like it. The whole chip_alloc() construct works fine if
+you have everything isolated nicely in a single driver and subsystem
+(like you usually have in network land), but for cases like this where
+things are spread throughout and a device is actually more than just a
+PWM controller, it looks like we now have to work around this design
+because it doesn't fit.
 
-Anyway, the main point of Neil was that you started using generic
-compatible for all SoCs, which is wrong as well. I guess this was the
-original discussion.
+In fact, this reminds me about the "midlayer mistake" in many ways and
+combined with what Bartosz said, I'm not sure this is going to hold up
+very well the more special cases we get.
 
-Best regards,
-Krzysztof
+Thierry
 
+--bVcNKODKZhCay43z
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmVeNzIACgkQ3SOs138+
+s6GkTQ//ciTVXCzu6NSf0F65LnTXkqrp2w2cNJwJrskm+q/eRcHFVDJM9wFoZFS2
+zJrB3Xni/iRHJxtey5D1v2az1HdHq9JB4HbLaL6J8dA64Jk9RnXpDbUvt6k3UJAK
+RVZr2lySGc9kepWY7C2tUxtBHhQbxstHflYxL4DiFldlzPlupjjrimdT9uReGACn
+4PQpS1mXvLFFXA3zimM0JttGVzcPerrdOCAXcujI+gQwfow6Fw/ix+B/s/y4Uzmc
+opPqvD2ImklRhtwxyc8nhIWUaHvpNTa85OYScy3eWnEaV+bWWtrBruYclgK5OpCZ
+5tqcA2xynmIibbs+tRbTm96GtDPENWKueZg/7eM5liU4Q5efbLZEI7h5Oo68Q9XB
+kKauSQ2uLNsLNcPn1N3USiFQEGte4Axz6s+l+QkCAKvLj85e+PyuLweCp4R8cdfB
+g4X18gOSZUVZBGXJ1vVV5ZZgNkzTmJTLFCSnkBcAAtCl5EeY8jnVUAhKdMRTDByD
+JTRhG5ZphsGjAk+CqzKwN+2pU0yDxNnhCReg1fuqWuD1UMbJf1QUdkUSG12YxkeV
+Gx3HOfnnC5V504h5mz3SN63+PzDUDPqHaCONR3eHcNhwOkZHIjb5lR8m6xia9Qqu
+EJBW8Y0MCzBBOEz0qn9ebtvWiVlpbwGu1DECmySzSq5qOabU8js=
+=fmvG
+-----END PGP SIGNATURE-----
+
+--bVcNKODKZhCay43z--
