@@ -1,160 +1,111 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="TG61KYYx"
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8971A5
-	for <linux-pwm@vger.kernel.org>; Wed, 22 Nov 2023 09:18:16 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-409299277bbso32322755e9.2
-        for <linux-pwm@vger.kernel.org>; Wed, 22 Nov 2023 09:18:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hRZ1LhjI"
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0C883
+	for <linux-pwm@vger.kernel.org>; Wed, 22 Nov 2023 09:19:31 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id ffacd0b85a97d-32f737deedfso4383062f8f.3
+        for <linux-pwm@vger.kernel.org>; Wed, 22 Nov 2023 09:19:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1700673495; x=1701278295; darn=vger.kernel.org;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=EhO7+CVm1m1oUE9z/3Z07Nkno2ujdBPUPga6VKMIC2w=;
-        b=TG61KYYxYiZwFVhLw4zA98zhDdQXArTG98dhGxFPk4HoPJBs6obRLQe7VuxqadMPPO
-         eBuoZQJzoWtRBb+QrdgiUTgWx/uwlBOii4L2doWVCnyq0LaU0kZOn4OxP5YoEUReswZ/
-         MecotTcCxjzQdiFBk34/F4Q8R40jCF4ERuP8nC1nTOQRJKiyu+ivIANYVZPSL++sE/01
-         jNC8OuObEBaUzqV/Ni3frX/aR4r9BSBEDNe70liP5OgeqWYbusi3HdKo6DOUvVdauS/0
-         r9v7mzM0StyIFqLR0XQRVws90c2sEH1dD7F4mPpTlTpdm2sRuGtQ1x/yXkUrpEOyPCYv
-         0C/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700673495; x=1701278295;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1700673570; x=1701278370; darn=vger.kernel.org;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EhO7+CVm1m1oUE9z/3Z07Nkno2ujdBPUPga6VKMIC2w=;
-        b=FyGpShUgQ2adMlk9fdfps8+wNM6mjRHqmIp1croG/5flIz2xfImvAYBIUHM+9x8aAy
-         oFQ1JDLhWIVajS/+LGSj1/QU/S0k4Fc038gkFRIydfaIS9EeyPWsKpmUb3wyVSvDp+7W
-         BsHBoP7FarUANoA509COvTkBoHNDSZFicciRtBoKeTVZ3DwKJGG32IgL+1iZdfoWjWby
-         kHm28BLovPJsC7DbtAcrwtmiVYfPcD4c9S0gl7Q2mYpXCBUDT6s0eDu2UZjs5PlX2SJA
-         QgKoMR3olWGNJtyvwAIFnGe6GbnKWIV60j8nYz4/UsT+J9A0V9oniPr6TwJX2XzdtRgM
-         ITvQ==
-X-Gm-Message-State: AOJu0YzI8JVu759v3w6sNkWb6mFySMZ99J3HdjLIPQOThIUmvP91S5lW
-	4R2ciYS9j3v4gkIf+QpyzwBYLg==
-X-Google-Smtp-Source: AGHT+IFGdEFm+aNRJMiaufK8tp1EybalqBvtuMK496Fp/eAzQQiZ+CFnVm6AN+L996HflL2LKvAZfw==
-X-Received: by 2002:a05:600c:5102:b0:405:3455:e1a3 with SMTP id o2-20020a05600c510200b004053455e1a3mr2350009wms.17.1700673495188;
-        Wed, 22 Nov 2023 09:18:15 -0800 (PST)
-Received: from localhost ([2a01:e0a:3c5:5fb1:d0a1:9a3c:4f4b:fa20])
-        by smtp.gmail.com with ESMTPSA id n5-20020a7bc5c5000000b0040775501256sm8791wmk.16.2023.11.22.09.18.13
+        bh=/f21OxEl7cDdyy0tEczoV80ahY1lbR5S6hlsHjkSse4=;
+        b=hRZ1LhjIQhVidpj+ApO0qhXUCq1wONmxUZgwwAd7mDrMVOt83u6doS4NtwPux3V2O2
+         mLq/uCuXmtPbNdlgeGFBndtXdvO+mc7MDQATzfhh/pn0XrKz/BbFGOjYwg1m389g53FJ
+         hfUf2iU66rK4ebLYPbGHlCW05Ro7qWSaC3HH/QRwynsYIB7SaZQWWZefTuHkBIWyZ3cT
+         ZNwEYlSCf5RLcBBbO67kGhkgpS5YAQ8M5spNrxED5WBt+0smImRiaY/uu4hm7ruAQwS1
+         jumADgimUlHGJA73DJnG7PZSfrL46+wsMaO+giHyWiakoJf1EfTGw+4B/FP9Wsv6nxY/
+         mfug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700673570; x=1701278370;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/f21OxEl7cDdyy0tEczoV80ahY1lbR5S6hlsHjkSse4=;
+        b=KylzbyXJdWcGU3z3ADBsVCyzdlzbIgqvC8PwVt40EdwiOe9kfvhebTeb9o0e7f/x01
+         xpEPomK/Hp1zQMsXIv5w8BfJZVHu7nacFGTnfHWMGCWJCwWggj2PmOMdPhSJ4V63NM6o
+         wx6U3gYmsM8/LHuVjZ4/oEvIVPdyWkdmBIUUgpbWU3FqXjUJlLD1pflyufQypBCeQhvG
+         ub9bSylk8ZIHjY20uDGubkIW0ZHKEa+QnxT4lP2W8dKc6l50a45fuLBYrM3n5aGjYJzy
+         ZNJv9Iy33v0HUZjnzHGSOLGLTfP6bTUAknnO+EPdO1FZvQE8MMpdQ0E4lXVTTdVy96ee
+         dn+w==
+X-Gm-Message-State: AOJu0Yzvc49WyosC+eLbp9j9RpnBeEmOInFqcmp1DvSRe0x9LkWyF4Zj
+	Vba67TigqdIzStf5WNKHblgMzfiglMc=
+X-Google-Smtp-Source: AGHT+IFaPnkqu+EQ0B7jH6YDoV3MNPOxAaR4RGxd9NpMeuiWEeAbb1GFWwp7CvEuO1A5vIKnEwyN8w==
+X-Received: by 2002:a5d:64a4:0:b0:32f:79e5:8119 with SMTP id m4-20020a5d64a4000000b0032f79e58119mr1030690wrp.1.1700673569429;
+        Wed, 22 Nov 2023 09:19:29 -0800 (PST)
+Received: from orome.fritz.box (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id x5-20020adfffc5000000b0032fb17c65desm17642377wrs.19.2023.11.22.09.19.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Nov 2023 09:18:13 -0800 (PST)
-References: <20231117125919.1696980-1-jbrunet@baylibre.com>
- <20231117125919.1696980-3-jbrunet@baylibre.com>
- <170040994064.269288.960284011884896046.robh@kernel.org>
- <4608012c-059f-4d6a-914b-e85ad0c32ff0@linaro.org>
- <1j5y1wg3sb.fsf@starbuckisacylon.baylibre.com>
- <2e7a65da-5c1d-4dd4-ac69-7559a53afdf3@linaro.org>
- <1j1qckg21u.fsf@starbuckisacylon.baylibre.com>
- <94e69281-93e1-41cd-9cf5-81cbbc15572c@linaro.org>
- <1jwmu9et6j.fsf@starbuckisacylon.baylibre.com>
- <2bbc2031-89d7-42e9-828e-068fa06eabf4@linaro.org>
- <1jo7flerag.fsf@starbuckisacylon.baylibre.com>
- <2d9c4c93-6cea-4a44-9093-c1fd51d0a21c@linaro.org>
-User-agent: mu4e 1.10.7; emacs 29.1
-From: Jerome Brunet <jbrunet@baylibre.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Jerome Brunet <jbrunet@baylibre.com>, neil.armstrong@linaro.org, Rob
- Herring <robh@kernel.org>, JunYi Zhao <junyi.zhao@amlogic.com>,
- devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Kevin Hilman <khilman@baylibre.com>, Thierry Reding
- <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, Krzysztof
- Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH v2 2/6] dt-bindings: pwm: amlogic: add new compatible
- for meson8 pwm type
-Date: Wed, 22 Nov 2023 17:14:56 +0100
-In-reply-to: <2d9c4c93-6cea-4a44-9093-c1fd51d0a21c@linaro.org>
-Message-ID: <1jjzq9emga.fsf@starbuckisacylon.baylibre.com>
+        Wed, 22 Nov 2023 09:19:29 -0800 (PST)
+Date: Wed, 22 Nov 2023 18:19:27 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH v3 104/108] pwm: Ensure that pwm_chips are allocated
+ using pwmchip_alloc()
+Message-ID: <ZV44H9ZQDuEA217B@orome.fritz.box>
+References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
+ <20231121134901.208535-105-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="yzn7diKWROL6MmvN"
+Content-Disposition: inline
+In-Reply-To: <20231121134901.208535-105-u.kleine-koenig@pengutronix.de>
+User-Agent: Mutt/2.2.12 (2023-09-09)
 
 
-On Wed 22 Nov 2023 at 16:46, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+--yzn7diKWROL6MmvN
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Nov 21, 2023 at 02:50:46PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Memory holding a struct device must not be freed before the reference
+> count drops to zero. So a struct pwm_chip must not live in memory
+> freed by a driver on unbind. All in-tree drivers were fixed accordingly,
+> but as out-of-tree drivers, that were not adapted, still compile fine,
+> catch these in pwmchip_add().
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/pwm/core.c  | 10 ++++++++++
+>  include/linux/pwm.h |  1 +
+>  2 files changed, 11 insertions(+)
 
->>>>>
->>>>> Again, where the "v2" is defined? Where is any document explaining the
->>>>> mapping between version blocks and SoC parts? Why do you list here only
->>>>> major version? Blocks almost always have also minor (e.g. v2.0).
->>>>
->>>> Again, v2 does has nothing to do with the HW. Never wrote it was.
->>>> The HW remains the same.
->>>
->>> Don't add compatibles which are not related to HW, but represent
->>> software versioning. Software does not matter for the bindings.
->> 
->> What I did I explicitly what is recommended in Grant's presentation from
->> 2013. 10y old, but I assume slide 10 "Making an incompatible update" is
->> still valid.
->> 
->> https://elinux.org/images/1/1e/DT_Binding_Process_glikely_ksummit_2013_10_28.pdf
->> 
->> Breaking the ABI of the old compatible would break all boards which use
->> u-boot DT and pass it to the kernel, because the meaning of the clock
->> property would change.
->
-> You broke U-Boot now as well - it will get your new DTS from the kernel
-> and stop working.
+We don't usually care about out of tree drivers. But this also indicates
+to me that we're doing something wrong here. If we cared about out of
+tree drivers we should be implementing this in a way that doesn't break
+things immediately. If we don't care, we might as well make sure that
+compilation breaks for any drivers that haven't been adapted.
 
-U-boot will continue to match the old compatible and work properly.
-When the dts using the new compatible lands in u-boot, it won't
-match until proper driver support is added. It is a lot better than
-breaking the ABI, which would have silently broke u-boot.
+I don't see what this odd interim state would be good for.
 
-I don't really see a way around that.
+Thierry
 
-If you have better way to fix a bad interface, feel free to share it.
+--yzn7diKWROL6MmvN
+Content-Type: application/pgp-signature; name="signature.asc"
 
->
->> 
->> Doing things has suggested in this slide, and this patch, allows every
->> device to continue to work properly, whether the DT given is the one
->> shipped with u-boot (using the old compatible for now) or the kernel.
->
-> OK, that explains the reasons. I read your commit msg and nothing like
-> this was mentioned there. What's more, you did not deprecate the old
-> binding, thus the confusion - it looked like you add entirely new
-> hardware (although you put "deprecated" but in some unrelated place, not
-> next to the compatibles).
+-----BEGIN PGP SIGNATURE-----
 
-The old interface being obsoleted by the new one is mentionned in the
-commit description, the comments in the bindings and the bindings itself.
-Thanks a lot for pointing out the placement mistake. I'll fix it.
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmVeOB8ACgkQ3SOs138+
+s6GqYg//aWdIVq5QEqS4UqA4ZmpAyvTCBrpDzwzehsGhGrqDs9a7NKyONliNQO7Z
++MBZlFSKtu/4NXTXPhKTTAOmy/32UJx1O30Mvz1Eb8XWpoqnkt1q62lF/3uJvVmY
+zRMKbw+8uU2EY+dxMAlDVypDdf0jKP//s2arC/VppoaI1MhCabVqKLy9BdXrhDFg
+CGkU0NOe2GjEUO4q//wAOOpjM77XiI6IXdNeVZXTdNE9hZImu5uZgHtqv0g3kM1C
+VMOzPQOKkftmKHwRhE9/yUm/03BhqXOAS14BtDJha50OyTOfWZnQWu3hDRYuPHWG
+L8LWW63n9O09tn1FyV2VXrDWRhuEUp8anKm2o3Bhg39jZTZPoydB7x8a6qm+hwjg
++vI8yrrUzSmrPEnyw8aEPSqvxIzjXjEt2XK1AX9imOCdL4tx5CwYUNkV7dJaHDmK
+FIpg5mlctoripQ5Q3fZTBReQ+ev4NtJRsQx01lR9NJHLCF9le110JTmUOY6rMdWP
+NMinf7IWnqwjcn97kXS041sLqJzsP+VArRCi6aW6a3IEAlBQnP3UzFysqpuZZS5W
+o9buvPIKfo7ixScvTevLPPWug7XwVmhNMk0uuFj/RNnG8P7KyO15DTzmT1vC9tTO
+BIK/rTvtRVq43UtaFh5wihYs1JLX5LO7jLtCltlQhzjzZJBUUHE=
+=+rB0
+-----END PGP SIGNATURE-----
 
-The commit description says:
-* What the patch does
-* Why it does it:
-  * Why the old bindings is bad/broken
-  * How the new ones fixes the problem
-* Why a single compatible properly describes, IMO, all the related HW.
-
-This describes the entirety of what the change does.
-That seemed clear enough for Rob. If that is not enough for you and you
-would like it reworded, could please provide a few suggestions ?
-
->
-> Anyway, the main point of Neil was that you started using generic
-> compatible for all SoCs, which is wrong as well. I guess this was the
-> original discussion.
-
-The whole reason for this change is to properly describe the HW, which
-is the 100% same on all the SoCs, or SoC families, concerned. The only
-reason there was a lot of old compatibles is because it was used to match
-data in the driver (this is clearly wrong). This data would now be
-passed through DT.
-
-I have been clear about this in the change description.
-
-So why is it wrong to have single compatible for a type of device that
-is 100% the same HW ?
-
-It is lot a easier to apply a rule correctly when the intent is clear.
-
->
-> Best regards,
-> Krzysztof
-
+--yzn7diKWROL6MmvN--
