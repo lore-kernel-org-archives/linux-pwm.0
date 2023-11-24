@@ -1,88 +1,109 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="qnBC/031"
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B61C19A6
-	for <linux-pwm@vger.kernel.org>; Fri, 24 Nov 2023 13:21:22 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id 5614622812f47-3b84402923fso1236487b6e.0
-        for <linux-pwm@vger.kernel.org>; Fri, 24 Nov 2023 13:21:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1700860881; x=1701465681; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nnKHeU25e3GbyNJri6YXYszp+5TU6nTPAt9UQPE5y8A=;
-        b=qnBC/031fY/LzYHmOVguRsSYpZ0w8X98YZy066LXudbHct9hJSo8eX8lFBL8kzLQ33
-         JRKq9dZDiehezIIcOSuRi6/j/r7eMLXj/fD/BCFjcEJT7W8GaDhQA8C4LCsk2D/WnXIY
-         RQGwVnXeIHu11uWi2JUsj1vLNcZoGjSzlxixlGadNePsMgpu+3E1XyhP9D/Fb/KHF3jC
-         BHESqrWpSStIA5ecnWkjrEGtqA4tJaxRWINmwQJvhXcgLM0sUj206jpFAin3nRhXAbOJ
-         dpInHLUMy+SIBCq76cWjjN7DgDyfdoYvci5aw1fQprmYTtiVp2cxqph+9cf0aftEkOED
-         P/Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700860881; x=1701465681;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nnKHeU25e3GbyNJri6YXYszp+5TU6nTPAt9UQPE5y8A=;
-        b=Fnns2oOJ3+T939rM/4J4jJxFwEIsb8zwbDoe50qhzkri/usBaDCfVecYwVaaIrwmPd
-         EewymUgAVQF7eM2wXfsa7IcggZzZtw8ni9ZG/LJEZRe1nn5AgTNmGyRMeKAYwPI8WRXw
-         s2MAAjkyciPThgkV0WSFjTeBDvCKJCgkJBWOLD8W7NldGzuhT7Aa+V6pyvFzaoc+IdG2
-         56wtI3EZ4gi7YoIb2p9+ppjlsRWZPyTAxKT4H0lWomAalNrLSBrnLS9Ja9Va89+bkTps
-         TxpyJd6MMMaQm3iEWkxz1qs59No4OBMJvHkfH24Kymx2B4yb67rGyeAvEvFfYe/+rN3w
-         GNnA==
-X-Gm-Message-State: AOJu0YwNOfumYwVZ8xXh48pI9a4f2c3gdN36JTZrp4WsSKOj9aT4PSBT
-	Xt4aREHblsfFph5D2g9MtkJiC4DkuoRV45sRzQcSTA==
-X-Google-Smtp-Source: AGHT+IGKKBbw94VykJk9hcfCpD0tqOqjcIPyxhffqa24so6+G+3kcZKo+3FBtWc4bXyIfOk1pLb9VDXMsNjAME0otLY=
-X-Received: by 2002:a05:6358:6f87:b0:169:9859:ccc3 with SMTP id
- s7-20020a0563586f8700b001699859ccc3mr3049189rwn.12.1700860881296; Fri, 24 Nov
- 2023 13:21:21 -0800 (PST)
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CAB198D
+	for <linux-pwm@vger.kernel.org>; Fri, 24 Nov 2023 13:52:22 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1r6e5y-0002d2-Tn; Fri, 24 Nov 2023 22:52:18 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1r6e5y-00BLvt-Aw; Fri, 24 Nov 2023 22:52:18 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1r6e5y-007hOb-1q; Fri, 24 Nov 2023 22:52:18 +0100
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Lee Jones <lee@kernel.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: linux-pwm@vger.kernel.org,
+	kernel@pengutronix.de
+Subject: [PATCH 1/3] pwm: Provide wrappers for storing and getting private data
+Date: Fri, 24 Nov 2023 22:52:10 +0100
+Message-ID: <20231124215208.616551-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
+In-Reply-To: <20231124215208.616551-1-u.kleine-koenig@pengutronix.de>
+References: <20231124215208.616551-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231121134901.208535-1-u.kleine-koenig@pengutronix.de>
- <20231121134901.208535-103-u.kleine-koenig@pengutronix.de>
- <20231122115621.GK173820@google.com> <ZV43NHr1QN79lsaJ@orome.fritz.box>
- <20231123104458.2pfaowqylmpnynhx@pengutronix.de> <ZWCWqcxbAtmNPY85@orome.fritz.box>
- <20231124182252.r7br2vgr5ralwoua@pengutronix.de>
-In-Reply-To: <20231124182252.r7br2vgr5ralwoua@pengutronix.de>
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Fri, 24 Nov 2023 22:21:10 +0100
-Message-ID: <CAMRc=Mf_xndugSqoY+uLHxsE+c2ztDfZ=eSh4xCGVCAbA4hjSg@mail.gmail.com>
-Subject: Re: [PATCH v3 102/108] leds: qcom-lpg: Make use of
- devm_pwmchip_alloc() function
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh@kernel.org>, 
-	Bjorn Andersson <quic_bjorande@quicinc.com>, Kees Cook <keescook@chromium.org>, 
-	linux-pwm@vger.kernel.org, Lee Jones <lee@kernel.org>, Luca Weiss <luca@z3ntu.xyz>, 
-	Conor Dooley <conor.dooley@microchip.com>, Anjelique Melendez <quic_amelende@quicinc.com>, 
-	Pavel Machek <pavel@ucw.cz>, kernel@pengutronix.de, linux-leds@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1931; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=yCNKlXBCRVhLmYr9X+2N55yc5q20przbsEw/GOnGIQ4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlYRsKkzIgM5uiW4uFEIQYSiuto/LYMGX2OD9O1 TQf0V4cR5aJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZWEbCgAKCRCPgPtYfRL+ TgxWB/9yhU6XQyKQpgME3CPnlRKbhKaLQe3s02SpSNN0WihI/f+CnnD0aEofJ3ajL1J5kivArrs U2+Az0E/qWWCOFu+6x/lVC/jNwtI+zi1kA8h28UiSMuytVH7nhhmKDulwvtE5hL/W2HKNSKGSZ4 N43h36XJnc/jANMXR9Po/h6Tlr05NFY/0hFHRwyjTOj2g6qXTS78VSahnwe0Sewh+FvDdHIFdDF MEHJR01aBS6uARKX/vRCBZrYm7pvi3g7u1ks/7dbPTN4GjsCVwI+2L+bNoP8Crc1r1qiJbI3P4/ rN1KQi+Zmeky0rrzhZTjWFS16/Pd0YN1TbV7MNTH8tUPXlqG
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-On Fri, Nov 24, 2023 at 7:22=E2=80=AFPM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
+Also call pwmchip_set_drvdata() in pwmchip_alloc() to have a sane
+default. Might replace pwmchip_priv()?!
 
-[snip]
+After struct pwm_chip got its own struct device, this can make use of
+dev_get_drvdata() and dev_set_drvdata() on that device.
 
->   - gpio: See how both gpio_chip and gpio_device have base, ngpio, a
->     parent pointer (gpio_device has it in .dev), an owner and a label.
->     Do they all have the same semantic? Yes? -> that's bad. No? ->
->     that's IMHO even worse.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/core.c  |  2 ++
+ include/linux/pwm.h | 19 +++++++++++++++++++
+ 2 files changed, 21 insertions(+)
 
-For the record: I am very well aware there are a lot of things wrong
-with GPIO at the moment. It's years of technical debt biting back.
-I've racked up ~100 patches last release cycle alone fixing various
-cases of abuse of GPIOLIB in the wildest places (OMAP1?!). I'm slowly
-doing cleanups all around the place but since GPIO is so ubiquitous
-across the kernel tree, it's going quite slow. I'm going to get to the
-duplication between gpio_chip and gpio_device but we still have users
-in the kernel who shamelessly access gpio_chip directly without being
-GPIO providers.
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 17577a1c4efc..0cbce704cc0b 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -216,6 +216,8 @@ struct pwm_chip *devm_pwmchip_alloc(struct device *parent, unsigned int npwm, si
+ 	chip->dev = parent;
+ 	chip->npwm = npwm;
+ 
++	pwmchip_set_drvdata(chip, pwmchip_priv(chip));
++
+ 	return chip;
+ }
+ EXPORT_SYMBOL_GPL(devm_pwmchip_alloc);
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 3c62cf329ee0..7a32ac687717 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -302,6 +302,7 @@ struct pwm_chip {
+ 
+ 	/* only used internally by the PWM framework */
+ 	struct pwm_device *pwms;
++	void *drvdata;
+ };
+ 
+ static inline struct device *pwmchip_parent(struct pwm_chip *chip)
+@@ -309,6 +310,24 @@ static inline struct device *pwmchip_parent(struct pwm_chip *chip)
+ 	return chip->dev;
+ }
+ 
++static inline void *pwmchip_get_drvdata(struct pwm_chip *chip)
++{
++	/*
++	 * After pwm_chip got a dedicated struct device, this can be replaced by
++	 * dev_get_drvdata(&chip->dev);
++	 */
++	return chip->drvdata;
++}
++
++static inline void pwmchip_set_drvdata(struct pwm_chip *chip, void *data)
++{
++	/*
++	 * After pwm_chip got a dedicated struct device, this can be replaced by
++	 * dev_set_drvdata(&chip->dev, data);
++	 */
++	chip->drvdata = data;
++}
++
+ #if IS_ENABLED(CONFIG_PWM)
+ /* PWM user APIs */
+ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state);
+-- 
+2.42.0
 
-This is not an argument against the general approach I presented -
-it's an argument against stacking up years' worth of cruft.
-
-Bart
