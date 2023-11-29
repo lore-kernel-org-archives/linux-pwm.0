@@ -1,401 +1,229 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="l2Hv/CtR"
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6C410C9
-	for <linux-pwm@vger.kernel.org>; Wed, 29 Nov 2023 08:30:50 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id 38308e7fff4ca-2c9c39b7923so11281fa.0
-        for <linux-pwm@vger.kernel.org>; Wed, 29 Nov 2023 08:30:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="jqn7BXIE"
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED4E172E
+	for <linux-pwm@vger.kernel.org>; Wed, 29 Nov 2023 08:37:56 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-40b27b498c3so56346015e9.0
+        for <linux-pwm@vger.kernel.org>; Wed, 29 Nov 2023 08:37:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701275449; x=1701880249; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TqYU8iwztuDXjDfeokuEzlO5hW0j8v5I0bC84hrmW9g=;
-        b=l2Hv/CtRAMoLj1fodd6EEe8If7isLqMIiVyKkU1sAHIjTeZA4yg+SKSJelq4tPIml1
-         Cs9JPwAXtKrYjM6SaAB7s6MBJPdL4n/iUnqognqhWh7KrG0khGrj/kEXyGbWWAvow3ji
-         PciYR2DCj6rTpk1Bvbdcs9Os/t3H1xh+zURBGWOTTRxmBO2o+xKLvRondsGQJcRG+VJ+
-         k3aOWPlrwPX+MxJRQVIsjUxMy89cl3XOeIcOjlcQfJYXR5HUlE0WN8U3fx5/R5Dk5BY5
-         x+LdrIHwVeweEPCw7N8XlDeXyDjQIsoilb80gptPqdW78orYy6Uu8KamGQ5rgygC0M9g
-         7fwg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1701275875; x=1701880675; darn=vger.kernel.org;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=FWyzIycAhixRpcgq6BG+vxReDnTGBpSHfPY7iVZZqyo=;
+        b=jqn7BXIEMQoBUSApFhSdFzn9YVDSAoKtxRK+C1QP1PeygirJit9HbSuJTSjl+42K85
+         CyNUkhF1SVIpBbd2ftORV7d2e4ijAH8zENh24+9jrUjy83l8kuAyvYoT7q94PETP0JsG
+         rcSBc9LdObN+2IHicPWfEGXbVn6vc5cnU7K9bU6xrz1IMdb9gzeO2SzJLZ4iGme6PObt
+         miG5xdAHvWn8Qkm7EYgpPCs3Rjt4YSuLzLutEibzzfj1nHvXdRUHm2s+pHlsX9+u4t7P
+         p9xdIpaMvsjm2MtzcY9ezT1CycGVpqAEDjpGzYAW5txg4XIqQKXawR/EVCpooPLIqM7/
+         68mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701275449; x=1701880249;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=TqYU8iwztuDXjDfeokuEzlO5hW0j8v5I0bC84hrmW9g=;
-        b=phv7cxEgp13Lqbocof3GdkuNpJPeBTklcwSeu/2byqwT/ML12itGI1X3p5BQLMNXyh
-         vER3PMEfCQsqhLzS2nKN1oS9YKXYDCl0BW1eEh2sp9rY8JTeEI6+t85E4vK64jkJVLPX
-         hL5JehL6VXfTBU5wZn1Oob/rQWkULvjBvkYLWyNwHYDIXZPVYGOzTeVDAm3zBPGwWg1A
-         26jFSCkvCgEWLnND9HN/wraBZeRldefkSw/YRHK2GNiYjsKj1YVls/0Pe/DLCVIfAfh6
-         IKXlQ9yHTWT8V6RqnKkfWjtaH9DeoULfgEN+Pnk9RCt7ITOssFJlQB5eB7N9lNbAtRHH
-         gh/g==
-X-Gm-Message-State: AOJu0Yz5AcdAUYUbJS4+u6PWbOnSRUFKkAevMnyecvOO9JtEkn1pLVFm
-	YuKkptibVLHXDZ6K+9VaPGVjRw==
-X-Google-Smtp-Source: AGHT+IG4M7TjuTCHamYuuhPyqfoP5F2bi3uqy6qS1rEVtW3/lTvHjpUJChxo0Wm8gXoM5/Eg9z4qCA==
-X-Received: by 2002:a2e:914b:0:b0:2c9:c03d:58c8 with SMTP id q11-20020a2e914b000000b002c9c03d58c8mr1602632ljg.52.1701275448645;
-        Wed, 29 Nov 2023 08:30:48 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:982:cbb0:31d3:eea3:8f97:6a2c? ([2a01:e0a:982:cbb0:31d3:eea3:8f97:6a2c])
-        by smtp.gmail.com with ESMTPSA id g14-20020a05600c310e00b0040b481222e3sm2781843wmo.41.2023.11.29.08.30.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Nov 2023 08:30:48 -0800 (PST)
-Message-ID: <89b521d6-e069-4bd5-a24c-87c3bf620796@linaro.org>
-Date: Wed, 29 Nov 2023 17:30:47 +0100
+        d=1e100.net; s=20230601; t=1701275875; x=1701880675;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FWyzIycAhixRpcgq6BG+vxReDnTGBpSHfPY7iVZZqyo=;
+        b=PSAj+UZorBIT52u/ZtUA24VRhCYSVfwyiBoOGTeEhpuwiQgznBSdoyGVK9CaSWvGiu
+         GV4SRCAABdmy3TxrFwz8KyJ28aF3IDnrtuBuVoISrqBav3Hvbu70JTmHsT+OWFfoWxiX
+         t+aOyP5m8ozbSLvANwY71mCkjMLUwtR0hO1xna3e8t6RBcrn1dXOLZkjlbmUoVCHSKMl
+         sKyPnGn5aK3zoyMlJx3NJJSqymLGoP0l6tO0RYa15zmqDvM/tehzifo3F+ylzka/e52A
+         /7aI1jb7kaob0kfPzHupcyvNnxTSDqLDrhgimwJ0Akf0poNHQQ4dsvMTLKh5SNKR8GZw
+         8g0g==
+X-Gm-Message-State: AOJu0YyHDvJctbboqHzJi5B7viZS2OQz5GVgMG5hs6yGyVADGeIE79H9
+	bspXysJ+NW1EGCvtFTe2JBXuIg==
+X-Google-Smtp-Source: AGHT+IGPzQLHnNMiY0pGKwSqoSExLd5uE8iP+sPsfVle142Jbb03oHPeUBOVT+9ytx/MlONjkBmq2Q==
+X-Received: by 2002:a05:600c:4fc5:b0:402:ea96:c09a with SMTP id o5-20020a05600c4fc500b00402ea96c09amr14591359wmq.16.1701275874667;
+        Wed, 29 Nov 2023 08:37:54 -0800 (PST)
+Received: from localhost ([2a01:e0a:3c5:5fb1:1885:1b93:1f61:bf1b])
+        by smtp.gmail.com with ESMTPSA id u19-20020a05600c139300b0040b540ff0a5sm2430843wmf.19.2023.11.29.08.37.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Nov 2023 08:37:54 -0800 (PST)
+References: <20231129134004.3642121-1-jbrunet@baylibre.com>
+ <20231129134004.3642121-3-jbrunet@baylibre.com>
+ <8e78be99-3d4d-4f79-9791-404e60bcb67c@linaro.org>
+User-agent: mu4e 1.10.8; emacs 29.1
+From: Jerome Brunet <jbrunet@baylibre.com>
+To: neil.armstrong@linaro.org
+Cc: Jerome Brunet <jbrunet@baylibre.com>, Thierry Reding
+ <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Krzysztof
+ Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
+ <conor+dt@kernel.org>, Kevin Hilman <khilman@baylibre.com>,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, JunYi Zhao
+ <junyi.zhao@amlogic.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 2/4] dt-bindings: pwm: amlogic: add new compatible
+ for meson8 pwm type
+Date: Wed, 29 Nov 2023 17:26:35 +0100
+In-reply-to: <8e78be99-3d4d-4f79-9791-404e60bcb67c@linaro.org>
+Message-ID: <1jfs0ojz1a.fsf@starbuckisacylon.baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v3 4/4] pwm: meson: add generic compatible for meson8 to
- sm1
-Content-Language: en-US, fr
-To: Jerome Brunet <jbrunet@baylibre.com>,
- Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: Kevin Hilman <khilman@baylibre.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
- linux-pwm@vger.kernel.org, JunYi Zhao <junyi.zhao@amlogic.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-References: <20231129134004.3642121-1-jbrunet@baylibre.com>
- <20231129134004.3642121-5-jbrunet@baylibre.com>
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro Developer Services
-In-Reply-To: <20231129134004.3642121-5-jbrunet@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-HI,
 
-On 29/11/2023 14:40, Jerome Brunet wrote:
-> Introduce a new compatible support in the Amlogic PWM driver.
-> 
-> The PWM HW is actually the same for all SoCs supported so far.
-> A specific compatible is needed only because the clock sources
-> of the PWMs are hard-coded in the driver.
-> 
-> It is better to have the clock source described in DT but this
-> changes the bindings so a new compatible must be introduced.
-> 
-> When all supported platform have migrated to the new compatible,
-> support for the legacy ones may be removed from the driver.
-> 
-> Adding a callback to setup the clock will also make it easier
-> to add support for the new PWM HW found in a1, s4, c3 and t7 SoC
-> families.
-> 
-> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
-> ---
->   drivers/pwm/pwm-meson.c | 224 ++++++++++++++++++++++++----------------
->   1 file changed, 133 insertions(+), 91 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index 5cbd65cae28a..d5d745a651d3 100644
-> --- a/drivers/pwm/pwm-meson.c
-> +++ b/drivers/pwm/pwm-meson.c
-> @@ -95,6 +95,7 @@ struct meson_pwm_channel {
->   
->   struct meson_pwm_data {
->   	const char * const *parent_names;
-> +	int (*channels_init)(struct device *dev);
->   };
->   
->   struct meson_pwm {
-> @@ -333,95 +334,6 @@ static const struct pwm_ops meson_pwm_ops = {
->   	.get_state = meson_pwm_get_state,
->   };
->   
-> -static const char * const pwm_meson8b_parent_names[] = {
-> -	"xtal", NULL, "fclk_div4", "fclk_div3"
-> -};
-> -
-> -static const struct meson_pwm_data pwm_meson8b_data = {
-> -	.parent_names = pwm_meson8b_parent_names,
-> -};
-> -
-> -/*
-> - * Only the 2 first inputs of the GXBB AO PWMs are valid
-> - * The last 2 are grounded
-> - */
-> -static const char * const pwm_gxbb_ao_parent_names[] = {
-> -	"xtal", "clk81", NULL, NULL,
-> -};
-> -
-> -static const struct meson_pwm_data pwm_gxbb_ao_data = {
-> -	.parent_names = pwm_gxbb_ao_parent_names,
-> -};
-> -
-> -static const char * const pwm_axg_ee_parent_names[] = {
-> -	"xtal", "fclk_div5", "fclk_div4", "fclk_div3"
-> -};
-> -
-> -static const struct meson_pwm_data pwm_axg_ee_data = {
-> -	.parent_names = pwm_axg_ee_parent_names,
-> -};
-> -
-> -static const char * const pwm_axg_ao_parent_names[] = {
-> -	"xtal", "axg_ao_clk81", "fclk_div4", "fclk_div5"
-> -};
-> -
-> -static const struct meson_pwm_data pwm_axg_ao_data = {
-> -	.parent_names = pwm_axg_ao_parent_names,
-> -};
-> -
-> -static const char * const pwm_g12a_ao_ab_parent_names[] = {
-> -	"xtal", "g12a_ao_clk81", "fclk_div4", "fclk_div5"
-> -};
-> -
-> -static const struct meson_pwm_data pwm_g12a_ao_ab_data = {
-> -	.parent_names = pwm_g12a_ao_ab_parent_names,
-> -};
-> -
-> -static const char * const pwm_g12a_ao_cd_parent_names[] = {
-> -	"xtal", "g12a_ao_clk81", NULL, NULL,
-> -};
-> -
-> -static const struct meson_pwm_data pwm_g12a_ao_cd_data = {
-> -	.parent_names = pwm_g12a_ao_cd_parent_names,
-> -};
-> -
-> -static const struct of_device_id meson_pwm_matches[] = {
-> -	{
-> -		.compatible = "amlogic,meson8b-pwm",
-> -		.data = &pwm_meson8b_data
-> -	},
-> -	{
-> -		.compatible = "amlogic,meson-gxbb-pwm",
-> -		.data = &pwm_meson8b_data
-> -	},
-> -	{
-> -		.compatible = "amlogic,meson-gxbb-ao-pwm",
-> -		.data = &pwm_gxbb_ao_data
-> -	},
-> -	{
-> -		.compatible = "amlogic,meson-axg-ee-pwm",
-> -		.data = &pwm_axg_ee_data
-> -	},
-> -	{
-> -		.compatible = "amlogic,meson-axg-ao-pwm",
-> -		.data = &pwm_axg_ao_data
-> -	},
-> -	{
-> -		.compatible = "amlogic,meson-g12a-ee-pwm",
-> -		.data = &pwm_meson8b_data
-> -	},
-> -	{
-> -		.compatible = "amlogic,meson-g12a-ao-pwm-ab",
-> -		.data = &pwm_g12a_ao_ab_data
-> -	},
-> -	{
-> -		.compatible = "amlogic,meson-g12a-ao-pwm-cd",
-> -		.data = &pwm_g12a_ao_cd_data
-> -	},
-> -	{},
-> -};
-> -MODULE_DEVICE_TABLE(of, meson_pwm_matches);
-> -
->   static int meson_pwm_init_clocks_legacy(struct device *dev,
->   					struct clk_parent_data *mux_parent_data)
->   {
-> @@ -528,12 +440,15 @@ static int meson_pwm_init_clocks_legacy(struct device *dev,
->   	return 0;
->   }
->   
-> -static int meson_pwm_init_channels(struct device *dev)
-> +static int meson_pwm_init_channels_legacy(struct device *dev)
->   {
->   	struct clk_parent_data mux_parent_data[MESON_NUM_MUX_PARENTS] = {};
->   	struct meson_pwm *meson = dev_get_drvdata(dev);
->   	int i;
->   
-> +	dev_info(dev, "using obsolete compatible, please consider updating dt\n");
+On Wed 29 Nov 2023 at 17:20, Neil Armstrong <neil.armstrong@linaro.org> wrote:
 
-I think dev_warn_once would be more appropriate
+> Hi,
+>
+> On 29/11/2023 14:39, Jerome Brunet wrote:
+>> Add a new compatible for the pwm found in the meson8 to sm1 Amlogic SoCs,
+>> dealing with clocks differently. This does not enable new HW. It is meant
+>> to fix a bad DT ABI for the currently supported HW.
+>> The original clock bindings describe which input the PWM channel
+>> multiplexer should pick among its possible parents, which are
+>> hard-coded in the driver. As such, it is a setting tied to the driver
+>> implementation and does not describe the HW.
+>> The new bindings introduce here describe the clocks input of the PWM
+>> block
+>> as they exist.
+>> The old compatible is deprecated but kept to maintain ABI compatibility.
+>> The SoC specific compatibles introduced match the SoC families supported
+>> by the original bindings.
+>> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+>> ---
+>>   .../devicetree/bindings/pwm/pwm-amlogic.yaml  | 52 ++++++++++++++++---
+>>   1 file changed, 46 insertions(+), 6 deletions(-)
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+>> b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+>> index 387976ed36d5..eece390114a3 100644
+>> --- a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+>> @@ -21,23 +21,35 @@ properties:
+>>             - amlogic,meson-g12a-ee-pwm
+>>             - amlogic,meson-g12a-ao-pwm-ab
+>>             - amlogic,meson-g12a-ao-pwm-cd
+>> -          - amlogic,meson-s4-pwm
+>> +        deprecated: true
+>>         - items:
+>>             - const: amlogic,meson-gx-pwm
+>>             - const: amlogic,meson-gxbb-pwm
+>> +        deprecated: true
+>>         - items:
+>>             - const: amlogic,meson-gx-ao-pwm
+>>             - const: amlogic,meson-gxbb-ao-pwm
+>> +        deprecated: true
+>>         - items:
+>>             - const: amlogic,meson8-pwm
+>>             - const: amlogic,meson8b-pwm
+>> +        deprecated: true
+>
+> I think deprecated should be moved in a third patch
 
-> +
-> +
->   	for (i = 0; i < MESON_NUM_MUX_PARENTS; i++) {
->   		mux_parent_data[i].index = -1;
->   		mux_parent_data[i].name = meson->data->parent_names[i];
-> @@ -542,6 +457,133 @@ static int meson_pwm_init_channels(struct device *dev)
->   	return meson_pwm_init_clocks_legacy(dev, mux_parent_data);
->   }
->   
-> +static int meson_pwm_init_channels_meson8b_v2(struct device *dev)
-> +{
-> +	struct clk_parent_data mux_parent_data[MESON_NUM_MUX_PARENTS] = {};
-> +	int i;
-> +
-> +	/*
-> +	 * NOTE: Instead of relying on the hard coded names in the driver
-> +	 * as the legacy version, this relies on DT to provide the list of
-> +	 * clocks.
-> +	 * For once, using input numbers actually makes more sense than names.
-> +	 * Also DT requires clock-names to be explicitly ordered, so there is
-> +	 * no point bothering with clock names in this case.
-> +	 */
-> +	for (i = 0; i < MESON_NUM_MUX_PARENTS; i++)
-> +		mux_parent_data[i].index = i;
-> +
-> +	return meson_pwm_init_clocks_legacy(dev, mux_parent_data);
-> +}
-> +
-> +static const char * const pwm_meson8b_parent_names[] = {
-> +	"xtal", NULL, "fclk_div4", "fclk_div3"
-> +};
-> +
-> +static const struct meson_pwm_data pwm_meson8b_data = {
-> +	.parent_names = pwm_meson8b_parent_names,
-> +	.channels_init = meson_pwm_init_channels_legacy,
-> +};
-> +
-> +/*
-> + * Only the 2 first inputs of the GXBB AO PWMs are valid
-> + * The last 2 are grounded
-> + */
-> +static const char * const pwm_gxbb_ao_parent_names[] = {
-> +	"xtal", "clk81", NULL, NULL,
-> +};
-> +
-> +static const struct meson_pwm_data pwm_gxbb_ao_data = {
-> +	.parent_names = pwm_gxbb_ao_parent_names,
-> +	.channels_init = meson_pwm_init_channels_legacy,
-> +};
-> +
-> +static const char * const pwm_axg_ee_parent_names[] = {
-> +	"xtal", "fclk_div5", "fclk_div4", "fclk_div3"
-> +};
-> +
-> +static const struct meson_pwm_data pwm_axg_ee_data = {
-> +	.parent_names = pwm_axg_ee_parent_names,
-> +	.channels_init = meson_pwm_init_channels_legacy,
-> +};
-> +
-> +static const char * const pwm_axg_ao_parent_names[] = {
-> +	"xtal", "axg_ao_clk81", "fclk_div4", "fclk_div5"
-> +};
-> +
-> +static const struct meson_pwm_data pwm_axg_ao_data = {
-> +	.parent_names = pwm_axg_ao_parent_names,
-> +	.channels_init = meson_pwm_init_channels_legacy,
-> +};
-> +
-> +static const char * const pwm_g12a_ao_ab_parent_names[] = {
-> +	"xtal", "g12a_ao_clk81", "fclk_div4", "fclk_div5"
-> +};
-> +
-> +static const struct meson_pwm_data pwm_g12a_ao_ab_data = {
-> +	.parent_names = pwm_g12a_ao_ab_parent_names,
-> +	.channels_init = meson_pwm_init_channels_legacy,
-> +};
-> +
-> +static const char * const pwm_g12a_ao_cd_parent_names[] = {
-> +	"xtal", "g12a_ao_clk81", NULL, NULL,
-> +};
-> +
-> +static const struct meson_pwm_data pwm_g12a_ao_cd_data = {
-> +	.parent_names = pwm_g12a_ao_cd_parent_names,
-> +	.channels_init = meson_pwm_init_channels_legacy,
-> +};
-> +
-> +static const struct meson_pwm_data pwm_meson8_v2_data = {
-> +	.channels_init = meson_pwm_init_channels_meson8b_v2,
-> +};
-> +
-> +static const struct of_device_id meson_pwm_matches[] = {
-> +	{
-> +		.compatible = "amlogic,meson8-pwm-v2",
-> +		.data = &pwm_meson8_v2_data
-> +	},
-> +	/*
-> +	 * The following compatibles are obsolete.
-> +	 * Support for these may be removed once the related
-> +	 * platforms have been updated
-> +	 */
+The complain on v2 was that it was not clear the new binding was making
+the old one obsolete. It looked to me that the deprecation old bindings
+needed to go together with the introduction of the new.
 
-Not really, support will be needed until there's DT in the
-wild with the old bindings, which is likely forever.
-Drop the 2 last lines, only specify they are obsolete, and
-perhaps note support for legacy bindings will be kept as
-best effort but regressions may happen or something similar.
+I don't mind one way or the other
 
-> +	{
-> +		.compatible = "amlogic,meson8b-pwm",
-> +		.data = &pwm_meson8b_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-gxbb-pwm",
-> +		.data = &pwm_meson8b_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-gxbb-ao-pwm",
-> +		.data = &pwm_gxbb_ao_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-axg-ee-pwm",
-> +		.data = &pwm_axg_ee_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-axg-ao-pwm",
-> +		.data = &pwm_axg_ao_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-g12a-ee-pwm",
-> +		.data = &pwm_meson8b_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-g12a-ao-pwm-ab",
-> +		.data = &pwm_g12a_ao_ab_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-g12a-ao-pwm-cd",
-> +		.data = &pwm_g12a_ao_cd_data
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, meson_pwm_matches);
-> +
->   static int meson_pwm_probe(struct platform_device *pdev)
->   {
->   	struct meson_pwm *meson;
-> @@ -573,7 +615,7 @@ static int meson_pwm_probe(struct platform_device *pdev)
->   		return -ENODEV;
->   	}
->   
-> -	err = meson_pwm_init_channels(&pdev->dev);
-> +	err = meson->data->channels_init(&pdev->dev);
->   	if (err < 0)
->   		return err;
->   
+Is there a rule somewhere about this ?
 
-Apart the dev_info change and the meson_pwm_init_clocks_legacy rename, it looks fine.
+>
+>> +      - const: amlogic,meson8-pwm-v2
+>> +      - items:
+>> +          - enum:
+>> +              - amlogic,meson8b-pwm-v2
+>> +              - amlogic,meson-gxbb-pwm-v2
+>> +              - amlogic,meson-axg-pwm-v2
+>> +              - amlogic,meson-g12-pwm-v2
+>> +          - const: amlogic,meson8-pwm-v2
+>> +      - const: amlogic,meson-s4-pwm
+>>       reg:
+>>       maxItems: 1
+>>       clocks:
+>>       minItems: 1
+>> -    maxItems: 2
+>> +    maxItems: 4
+>>       clock-names:
+>>       minItems: 1
+>> @@ -58,7 +70,6 @@ allOf:
+>>           compatible:
+>>             contains:
+>>               enum:
+>> -              - amlogic,meson8-pwm
+>>                 - amlogic,meson8b-pwm
+>>                 - amlogic,meson-gxbb-pwm
+>>                 - amlogic,meson-gxbb-ao-pwm
+>> @@ -67,14 +78,15 @@ allOf:
+>>                 - amlogic,meson-g12a-ee-pwm
+>>                 - amlogic,meson-g12a-ao-pwm-ab
+>>                 - amlogic,meson-g12a-ao-pwm-cd
+>> -              - amlogic,meson-gx-pwm
+>> -              - amlogic,meson-gx-ao-pwm
+>
+> I don't understand why those entries are removed
 
-Neil
+It's a mistake. It should not have been added to begin with in
+the first patch. "amlogic,meson-gx-*" must go along with
+"amlogic,meson-gxbb-*" so it matches correctly without it.
+
+I'll fix it
+
+>
+>>       then:
+>> -      # Historic bindings tied to the driver implementation
+>> +      # Obsolete historic bindings tied to the driver implementation
+>>         # The clocks provided here are meant to be matched with the input
+>>         # known (hard-coded) in the driver and used to select pwm clock
+>>         # source. Currently, the linux driver ignores this.
+>> +      # This is kept to maintain ABI backward compatibility.
+>
+> Same here, this should go in a third patch
+>
+>>         properties:
+>> +        clocks:
+>> +          maxItems: 2
+>>           clock-names:
+>>             oneOf:
+>>               - items:
+>> @@ -83,6 +95,27 @@ allOf:
+>>                   - const: clkin0
+>>                   - const: clkin1
+>>   +  # Newer binding where clock describe the actual clock inputs of the
+>> pwm
+>> +  # block. These are necessary but some inputs may be grounded.
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            enum:
+>> +              - amlogic,meson8-pwm-v2
+>> +    then:
+>> +      properties:
+>> +        clocks:
+>> +          minItems: 1
+>> +          items:
+>> +            - description: input clock 0 of the pwm block
+>> +            - description: input clock 1 of the pwm block
+>> +            - description: input clock 2 of the pwm block
+>> +            - description: input clock 3 of the pwm block
+>> +        clock-names: false
+>> +      required:
+>> +        - clocks
+>> +
+>>     # Newer IP block take a single input per channel, instead of 4 inputs
+>>     # for both channels
+>>     - if:
+>> @@ -112,6 +145,13 @@ examples:
+>>         clock-names = "clkin0", "clkin1";
+>>         #pwm-cells = <3>;
+>>       };
+>> +  - |
+>> +    pwm@2000 {
+>> +      compatible = "amlogic,meson8-pwm-v2";
+>> +      reg = <0x1000 0x10>;
+>> +      clocks = <&xtal>, <0>, <&fdiv4>, <&fdiv5>;
+>> +      #pwm-cells = <3>;
+>> +    };
+>>     - |
+>>       pwm@1000 {
+>>         compatible = "amlogic,meson-s4-pwm";
+>
+> Neil
+
+
+-- 
+Jerome
