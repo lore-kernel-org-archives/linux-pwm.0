@@ -1,30 +1,31 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5DAD3
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE96C9
 	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:28 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO9-0006J2-P6; Wed, 06 Dec 2023 12:48:25 +0100
+	id 1rAqO8-00069j-9Y; Wed, 06 Dec 2023 12:48:24 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO9-00Dwt2-4l; Wed, 06 Dec 2023 12:48:25 +0100
+	id 1rAqO7-00DwsT-LQ; Wed, 06 Dec 2023 12:48:23 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO8-00FQyC-S0; Wed, 06 Dec 2023 12:48:24 +0100
+	id 1rAqO7-00FQxb-CR; Wed, 06 Dec 2023 12:48:23 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	NXP Linux Team <linux-imx@nxp.com>,
 	linux-pwm@vger.kernel.org,
-	linux-rpi-kernel@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 027/115] pwm: raspberrypi-poe: Make use of pwmchip_parent() macro
-Date: Wed,  6 Dec 2023 12:43:41 +0100
-Message-ID:  <01d8e34142c626cfd1ee6c8972728592286b22c8.1701860672.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 018/115] pwm: imx27: Make use of pwmchip_parent() macro
+Date: Wed,  6 Dec 2023 12:43:32 +0100
+Message-ID:  <5e8f73d0742507f4e7ddad050d2e79812a1cd62f.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -35,7 +36,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=941; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=7SoKIM/xkEZFVaeBKg/shON3CQblDARA/8PcLYb/Wys=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6AuBlCjOADPsbf4yerFks39YWNQqAiSelOU yhY1mmHxhaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBegAAKCRCPgPtYfRL+ Tn9hCACq9L4oYOToUW39huW7ICzDka55hTWKNKtg7kLthF5V0Z/Cty0UyH97hqGZPSuHYw0UKZx RnHqhquA1Rq0LmLz0bIc3SqbibMGiOQYnDuO/ynLEBPQznc4F88N5GysXzGYJ2cULX/ka7klkuU y5YEsLPF9X5/fZDPNtwq5kqNfpkACKi+v8BxX4PvN/pqdlVO1PFQDXmItZvlnFEHM9h2VoKBU6z SewphJBCLa9qAtJNQYu9I1lEX7ax6c1cvR8EDkliZSsBnqI4HDzpgk2ReJBo2nGSQinpNAd+llZ dVVDGDgEJWrD/HeXDewyf+qhQ2HLhwmUpRm02nTB9ETAmzn8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1477; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=21gVfHE440/T65WsIsIoIm1SwOOZ2P7hANAjmVXXXN4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF5rDa/KaXKZb0ymZqUkNMlwSUb3IEXUaV5oG Taafl8zC/2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBeawAKCRCPgPtYfRL+ TssSB/sHh+RrIESyXwRdBPXdhvRwnfneE5DVDTV+o2xuLEnePwDaEjBS3J5EFP6UVIwjtS1Qi0G cYaJGsJl0oP7ysaElMmn1S2yzu3q5kpzq4Bd/kDOpN93GRk7FNQvoOBoI/buoEWWg4rnh0/SiPQ LYdX9BxcLaPuSpBQID2Tr1/KTpPUeKT1aeqlUDoHRVwuY4Mtacl3iuYO3jf/ka1JdVCO3eIA0qb yqwD+AAUcWal2bu/i1nxhT9fy6PZ3EgdKZhf8JCerEczyL9bj/h/Ij3A7X+BNtQCAGrxYWIXoQN SgeWlxVjqED0nTJ62wrauWKExhm6Sgz371LQdE9njkx8BJaE
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -49,22 +50,40 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-raspberrypi-poe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-imx27.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-raspberrypi-poe.c b/drivers/pwm/pwm-raspberrypi-poe.c
-index 1ad814fdec6b..f10e8a624c51 100644
---- a/drivers/pwm/pwm-raspberrypi-poe.c
-+++ b/drivers/pwm/pwm-raspberrypi-poe.c
-@@ -122,7 +122,7 @@ static int raspberrypi_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	ret = raspberrypi_pwm_set_property(rpipwm->firmware, RPI_PWM_CUR_DUTY_REG,
- 					   duty_cycle);
- 	if (ret) {
--		dev_err(chip->dev, "Failed to set duty cycle: %pe\n",
-+		dev_err(pwmchip_parent(chip), "Failed to set duty cycle: %pe\n",
- 			ERR_PTR(ret));
- 		return ret;
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index 7d9bc43f12b0..5d796453519a 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -145,7 +145,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
+ 		state->polarity = PWM_POLARITY_INVERSED;
+ 		break;
+ 	default:
+-		dev_warn(chip->dev, "can't set polarity, output disconnected");
++		dev_warn(pwmchip_parent(chip), "can't set polarity, output disconnected");
  	}
+ 
+ 	prescaler = MX3_PWMCR_PRESCALER_GET(val);
+@@ -177,7 +177,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
+ static void pwm_imx27_sw_reset(struct pwm_chip *chip)
+ {
+ 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
+-	struct device *dev = chip->dev;
++	struct device *dev = pwmchip_parent(chip);
+ 	int wait_count = 0;
+ 	u32 cr;
+ 
+@@ -196,7 +196,7 @@ static void pwm_imx27_wait_fifo_slot(struct pwm_chip *chip,
+ 				     struct pwm_device *pwm)
+ {
+ 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
+-	struct device *dev = chip->dev;
++	struct device *dev = pwmchip_parent(chip);
+ 	unsigned int period_ms;
+ 	int fifoav;
+ 	u32 sr;
 -- 
 2.42.0
 
