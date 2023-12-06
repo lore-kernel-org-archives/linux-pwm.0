@@ -1,29 +1,28 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50032D7F
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4D48F
 	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:34 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOE-0006e6-RH; Wed, 06 Dec 2023 12:48:30 +0100
+	id 1rAqOF-0006fs-Fa; Wed, 06 Dec 2023 12:48:31 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOD-00Dwug-Dq; Wed, 06 Dec 2023 12:48:29 +0100
+	id 1rAqOD-00Dwuo-Na; Wed, 06 Dec 2023 12:48:29 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOD-00FQzw-4e; Wed, 06 Dec 2023 12:48:29 +0100
+	id 1rAqOD-00FR04-Ef; Wed, 06 Dec 2023 12:48:29 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Alexander Shiyan <shc_work@mail.ru>,
 	linux-pwm@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 053/115] pwm: brcmstb: Make use of devm_pwmchip_alloc() function
-Date: Wed,  6 Dec 2023 12:44:07 +0100
-Message-ID:  <806f32f9b50445908879b335e61a95f5403f34b1.1701860672.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 055/115] pwm: clps711x: Make use of devm_pwmchip_alloc() function
+Date: Wed,  6 Dec 2023 12:44:09 +0100
+Message-ID:  <e14e65eee15cee08c3b455691d6ade1844495f0d.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -34,7 +33,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2069; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=qPR3E77Q2c4nuHJu1gAGeuoFBuL9XUIda5fxAVW1rf8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6eR1ew7fFHaNtsEod2ldmotFVFIpEWRZGQw 3H/gh+U/NeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBengAKCRCPgPtYfRL+ Tv1WB/90ZORXayCTY6G2if/RuLxXEDMkf9ciIq/8WIOiemgRzyqQAbHBjeFFigINNlMDKGhs3iy qIne1kN9aD/3qAkTvFlCjW/eNsbvF3p+0Aovd/MTWYCfbHskJy0+GsVmrqnzMaGfXmJapjOfr8M a3h+SC0Y0PUqNt2QgCIj//RATYA/6gPP2G3Qbvw1Z/xodVQQmhH/K6D0yx4DqkdsP+kwEOIzpyP 80gnSOiUCo4KXfR1l9bWqmb5bX9VxjKxGPQ+hWLwJWz2LU3K82qQsIDWDJZS7A/TgCljIk9qS6U FaeHc2bpPwXX/caUZK889gh8Nfw1F8asNxAIS/9MzryWjD/X
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2246; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=Wr37IdjwwOXxsGpZcYj/oXfYT2gmwVJyT9d2Xd5D098=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6mMRn1GzSLYjMRnpw4O9qqHq4EZve5YrUvv ABJvEc+fxeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBepgAKCRCPgPtYfRL+ TknSB/wLgrhb0G+JwNEYBpU1k4wLDo07qs7t8TbAgngq33NgfDry7PVJufpeWKmBlVbXA6ZIOTk LuwVEuBqGNCYiwvQMyZAfQXIuHXj7pcsLIBZ0ZLxqriBqJCPE9NciYBToK6a8QXlrzcQYokHT23 mHl7kD6WiqoUVA96H3KppbYfxW+mNTjNB1wrMGgovPIwZRTuJBiXLMeUdZKLYE/emtsGzWrlMgQ Revj4hGsz9aRjJCPAB7MOVU4JsKJAKf8L/bFyHBq4uM5BKF79gvO7os7eba5PUOp5jGDZ0IT0zx psSlBOzmnMzJaPnd5IOF7loAlvFNBZ3WRgWSKfI6xm1RArbh
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -42,72 +41,73 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-brcmstb driver to further changes of the pwm core
+This prepares the pwm-clps711x driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-brcmstb.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-clps711x.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
-index 0fdeb0b2dbf3..82d27d07ba91 100644
---- a/drivers/pwm/pwm-brcmstb.c
-+++ b/drivers/pwm/pwm-brcmstb.c
-@@ -54,7 +54,6 @@
- struct brcmstb_pwm {
- 	void __iomem *base;
- 	struct clk *clk;
+diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+index 42179b3f7ec3..9b80077fef20 100644
+--- a/drivers/pwm/pwm-clps711x.c
++++ b/drivers/pwm/pwm-clps711x.c
+@@ -12,7 +12,6 @@
+ #include <linux/pwm.h>
+ 
+ struct clps711x_chip {
 -	struct pwm_chip chip;
- };
+ 	void __iomem *pmpcon;
+ 	struct clk *clk;
+ 	spinlock_t lock;
+@@ -20,7 +19,7 @@ struct clps711x_chip {
  
- static inline u32 brcmstb_pwm_readl(struct brcmstb_pwm *p,
-@@ -77,7 +76,7 @@ static inline void brcmstb_pwm_writel(struct brcmstb_pwm *p, u32 value,
- 
- static inline struct brcmstb_pwm *to_brcmstb_pwm(struct pwm_chip *chip)
+ static inline struct clps711x_chip *to_clps711x_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct brcmstb_pwm, chip);
+-	return container_of(chip, struct clps711x_chip, chip);
 +	return pwmchip_get_drvdata(chip);
  }
  
- /*
-@@ -230,12 +229,14 @@ MODULE_DEVICE_TABLE(of, brcmstb_pwm_of_match);
+ static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -85,11 +84,13 @@ static struct pwm_device *clps711x_pwm_xlate(struct pwm_chip *chip,
  
- static int brcmstb_pwm_probe(struct platform_device *pdev)
+ static int clps711x_pwm_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct brcmstb_pwm *p;
- 	int ret;
+ 	struct clps711x_chip *priv;
  
--	p = devm_kzalloc(&pdev->dev, sizeof(*p), GFP_KERNEL);
--	if (!p)
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 2, sizeof(*p));
++	chip = devm_pwmchip_alloc(&pdev->dev, 2, sizeof(*priv));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	p = to_brcmstb_pwm(chip);
++	priv = to_clps711x_chip(chip);
  
- 	p->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(p->clk))
-@@ -244,15 +245,13 @@ static int brcmstb_pwm_probe(struct platform_device *pdev)
+ 	priv->pmpcon = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->pmpcon))
+@@ -99,15 +100,13 @@ static int clps711x_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(priv->clk))
+ 		return PTR_ERR(priv->clk);
  
- 	platform_set_drvdata(pdev, p);
+-	priv->chip.ops = &clps711x_pwm_ops;
+-	priv->chip.dev = &pdev->dev;
+-	priv->chip.npwm = 2;
+-	priv->chip.of_xlate = clps711x_pwm_xlate;
+-	priv->chip.of_pwm_n_cells = 1;
++	chip->ops = &clps711x_pwm_ops;
++	chip->of_xlate = clps711x_pwm_xlate;
++	chip->of_pwm_n_cells = 1;
  
--	p->chip.dev = &pdev->dev;
--	p->chip.ops = &brcmstb_pwm_ops;
--	p->chip.npwm = 2;
-+	chip->ops = &brcmstb_pwm_ops;
+ 	spin_lock_init(&priv->lock);
  
- 	p->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(p->base))
- 		return PTR_ERR(p->base);
+-	return devm_pwmchip_add(&pdev->dev, &priv->chip);
++	return devm_pwmchip_add(&pdev->dev, chip);
+ }
  
--	ret = devm_pwmchip_add(&pdev->dev, &p->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
- 
+ static const struct of_device_id __maybe_unused clps711x_pwm_dt_ids[] = {
 -- 
 2.42.0
 
