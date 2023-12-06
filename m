@@ -1,26 +1,30 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA79137
-	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:30 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965EFD4E
+	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:33 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOC-0006QJ-G0; Wed, 06 Dec 2023 12:48:28 +0100
+	id 1rAqOD-0006an-W4; Wed, 06 Dec 2023 12:48:30 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOB-00Dwu9-Sy; Wed, 06 Dec 2023 12:48:27 +0100
+	id 1rAqOC-00DwuW-VD; Wed, 06 Dec 2023 12:48:28 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOB-00FQzM-K6; Wed, 06 Dec 2023 12:48:27 +0100
+	id 1rAqOC-00FQzk-M6; Wed, 06 Dec 2023 12:48:28 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	linux-pwm@vger.kernel.org
-Subject: [PATCH v4 044/115] pwm: ab8500: Make use of devm_pwmchip_alloc() function
-Date: Wed,  6 Dec 2023 12:43:58 +0100
-Message-ID:  <ec02fc2671420a2dce401be5506ad041bb44d817.1701860672.git.u.kleine-koenig@pengutronix.de>
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	linux-pwm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v4 050/115] pwm: bcm-iproc: Make use of devm_pwmchip_alloc() function
+Date: Wed,  6 Dec 2023 12:44:04 +0100
+Message-ID:  <e15c08ae19c3cf1d95768449283dcfc87894b61f.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -31,7 +35,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2015; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=EpaqVKfoXGh212IAe6dkd/Asvh1/g9kSGFS62OE534E=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6U0+9FWnqMv49gGBKB56godFKxKlZOGZqPq v08WVpPScSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBelAAKCRCPgPtYfRL+ ThiYCACYtee3Oj2fboGhvK5DYoeKJ3R96b2LHxFGAb9es8/FZc8zOOYEBB7VF4sQDUoZ8LAs7zG APNJLRfr43bLko/ItZdVKvfRxjau6d//LvQSTtvYkPAwCFfjj2uHW/FZflbS6Aa16oTAh/X3SlZ iKXcIILgYGEvFCqMxSNGTuGL/7+gbjS88+0goByJ2ZhxWkP2pD1fRYZObgyLK+bnGMavzPv4y57 l9e7jkawr8RhiLl1FhVwoeks7hpMe2kQh0W8LnpM3OQWgEK6aqckjp/ELw+ZmP9Ir7YW1KREYjy w4CFsvbnjws7kZ7p+dhdKcPgTc5NK0jxqBvdb9dg4D1L/GZj
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2342; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=uap70kVyur3xYK64MlPXrRzr1pXX7b/SOLPcx1i72Pc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6b7CvF+Lbxg6UPutx7hjnlk/L7lqI0SjKob 0Y+cysTKb+JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBemwAKCRCPgPtYfRL+ TpnGB/4qyhr2/Kefy0a5PkEqmoHsElv0fpVJL4yOgSHbtVkXs75osTe/ElG3tsfiNaY5mH14SPK xYW5EMiGrJqIhfbppRALX57ZDQNQm6zSmG0q/W1uEglL+0y7HcCOEsukfMG5YLLOxiBk5d1ju7k EV25LrdF6JxTJ9FxceZFu+bzZTpQcvVvBbUPWQaEg36b/fd2vtu8rumVuJW/18WJ5YFfcYBReWh 4KTUGsfuH7xcpCn8OrBHN1WBr8g7h1LqYavXluERWra2ZuKSUfDZ74UAjHOef8Ry6Q2jphyxfL2 IR7U+XF3/imzc1FrYErv0hEtScN5N9wJw6aukLBikLzsf+dD
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -39,66 +43,79 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-ab8500 driver to further changes of the pwm core
+This prepares the pwm-bcm-iproc driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-ab8500.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-bcm-iproc.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c
-index 719e4ccf1800..f000adab85b0 100644
---- a/drivers/pwm/pwm-ab8500.c
-+++ b/drivers/pwm/pwm-ab8500.c
-@@ -24,13 +24,12 @@
- #define AB8500_PWM_CLKRATE 9600000
+diff --git a/drivers/pwm/pwm-bcm-iproc.c b/drivers/pwm/pwm-bcm-iproc.c
+index 758254025683..f4c9f10e490e 100644
+--- a/drivers/pwm/pwm-bcm-iproc.c
++++ b/drivers/pwm/pwm-bcm-iproc.c
+@@ -34,14 +34,13 @@
+ #define IPROC_PWM_PRESCALE_MAX			0x3f
  
- struct ab8500_pwm_chip {
+ struct iproc_pwmc {
 -	struct pwm_chip chip;
- 	unsigned int hwid;
+ 	void __iomem *base;
+ 	struct clk *clk;
  };
  
- static struct ab8500_pwm_chip *ab8500_pwm_from_chip(struct pwm_chip *chip)
+ static inline struct iproc_pwmc *to_iproc_pwmc(struct pwm_chip *chip)
  {
--	return container_of(chip, struct ab8500_pwm_chip, chip);
+-	return container_of(chip, struct iproc_pwmc, chip);
 +	return pwmchip_get_drvdata(chip);
  }
  
- static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -185,6 +184,7 @@ static const struct pwm_ops ab8500_pwm_ops = {
+ static void iproc_pwmc_enable(struct iproc_pwmc *ip, unsigned int channel)
+@@ -187,20 +186,20 @@ static const struct pwm_ops iproc_pwm_ops = {
  
- static int ab8500_pwm_probe(struct platform_device *pdev)
+ static int iproc_pwmc_probe(struct platform_device *pdev)
  {
 +	struct pwm_chip *chip;
- 	struct ab8500_pwm_chip *ab8500;
- 	int err;
+ 	struct iproc_pwmc *ip;
+ 	unsigned int i;
+ 	u32 value;
+ 	int ret;
  
-@@ -195,16 +195,16 @@ static int ab8500_pwm_probe(struct platform_device *pdev)
- 	 * Nothing to be done in probe, this is required to get the
- 	 * device which is required for ab8500 read and write
- 	 */
--	ab8500 = devm_kzalloc(&pdev->dev, sizeof(*ab8500), GFP_KERNEL);
--	if (ab8500 == NULL)
+-	ip = devm_kzalloc(&pdev->dev, sizeof(*ip), GFP_KERNEL);
+-	if (!ip)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*ab8500));
++	chip = devm_pwmchip_alloc(&pdev->dev, 4, sizeof(*ip));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
++	ip = to_iproc_pwmc(chip);
  
--	ab8500->chip.dev = &pdev->dev;
--	ab8500->chip.ops = &ab8500_pwm_ops;
--	ab8500->chip.npwm = 1;
-+	ab8500 = ab8500_pwm_from_chip(chip);
-+
-+	chip->ops = &ab8500_pwm_ops;
- 	ab8500->hwid = pdev->id - 1;
+ 	platform_set_drvdata(pdev, ip);
  
--	err = devm_pwmchip_add(&pdev->dev, &ab8500->chip);
-+	err = devm_pwmchip_add(&pdev->dev, chip);
- 	if (err < 0)
- 		return dev_err_probe(&pdev->dev, err, "Failed to add pwm chip\n");
+-	ip->chip.dev = &pdev->dev;
+-	ip->chip.ops = &iproc_pwm_ops;
+-	ip->chip.npwm = 4;
++	chip->ops = &iproc_pwm_ops;
  
+ 	ip->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(ip->base))
+@@ -214,14 +213,14 @@ static int iproc_pwmc_probe(struct platform_device *pdev)
+ 	/* Set full drive and normal polarity for all channels */
+ 	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
+ 
+-	for (i = 0; i < ip->chip.npwm; i++) {
++	for (i = 0; i < chip->npwm; i++) {
+ 		value &= ~(1 << IPROC_PWM_CTRL_TYPE_SHIFT(i));
+ 		value |= 1 << IPROC_PWM_CTRL_POLARITY_SHIFT(i);
+ 	}
+ 
+ 	writel(value, ip->base + IPROC_PWM_CTRL_OFFSET);
+ 
+-	ret = devm_pwmchip_add(&pdev->dev, &ip->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret,
+ 				     "failed to add PWM chip\n");
 -- 
 2.42.0
 
