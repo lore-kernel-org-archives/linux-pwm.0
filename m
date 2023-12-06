@@ -1,26 +1,26 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864A410D1
-	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:39 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183A3D62
+	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:41 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOK-0007AA-Oi; Wed, 06 Dec 2023 12:48:36 +0100
+	id 1rAqOL-0007Ex-F8; Wed, 06 Dec 2023 12:48:37 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOH-00DwwI-OF; Wed, 06 Dec 2023 12:48:33 +0100
+	id 1rAqOI-00DwwX-EZ; Wed, 06 Dec 2023 12:48:34 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOH-00FR1l-FZ; Wed, 06 Dec 2023 12:48:33 +0100
+	id 1rAqOI-00FR21-5r; Wed, 06 Dec 2023 12:48:34 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
 	linux-pwm@vger.kernel.org
-Subject: [PATCH v4 080/115] pwm: omap-dmtimer: Make use of devm_pwmchip_alloc() function
-Date: Wed,  6 Dec 2023 12:44:34 +0100
-Message-ID:  <7a4d3a25edf7f1ab2a810e7e4546a0e0f0cd90b4.1701860672.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 084/115] pwm: rcar: Make use of devm_pwmchip_alloc() function
+Date: Wed,  6 Dec 2023 12:44:38 +0100
+Message-ID:  <9f614f1ff2d0d9bc83f265413e7d14e09ef3c0e8.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -31,7 +31,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3338; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=mhrsq4Q2GuIG0Rjq4zcdn3AP5ie/Zu6ZtubAK4qfqX8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF76QO9wdtBJE+O1B3HonXXkK1CvzJycJAEMd 1YtDHnaypyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBe+gAKCRCPgPtYfRL+ Tr37B/wPy8GCV1MU1HzaXr/mN9Roy+NBp6tjuv2NNfkJzhF1Gp7a82Ol7c+wph9DcSYecKMQQEu KeFL1ck1eQscFP1JPdQZ1eNtzyqzklzUISozcs8eGYLTP829goSXpXazQJwxCYsmyvBr7HVESNs IIvW+BIrjc8USXWTc3ZdbA4RBXcIGecSW8N4rnu37QQ3CWJMriyGUOvruipBVs1uCEQwkprO92+ 2ByV09qo+S+vzpO0wlyo0bX9BCZilNwPwQ5SeQSuHnej7y+fs+Z85aIrVCCgN4Lmse764vhwrCQ g+sjwv68wHhVpCC7qKet4Q1Px5CvVyFuUrxxWc0IZf34Dz70
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2449; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=HE6ZN3NeALth+gR/jcplxcPzGEtVpah73MW69+zPihI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF8ICNMJCb6zoI8+84XKZvboeQHzcUJdrXSyV pCEEkO/KbiJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBfCAAKCRCPgPtYfRL+ TpXiB/9V9SZnXMW4qGrCgaPOeyRpqrBvcDWmtBhAEqRdHtr+RCJeu2LYFbO5xZC3eMiFlqMAmcx EvFyswwiwvqana8nDhL4xhsP0TlsMDF5fmBfuInGoVaVTemF9sV+tc5upCbF14cOtOJn+/051Ha L7ycrbIBnAuAdIwWdo4tCN0K3zErvWKTfzG/q4U0V/r2mEzNhis1PO5J1Igzf6eEoCXvfmJhUYI +jJgGY4Lwddu7AE1TmYZaM3zJP8CXH3nHdNwRFSVlGqmAWt0q676T4x1Sfdw5iSWWeBg9FXazyP j7Qu2Guwd6ViCb7C3ymyv5VVp996lsllxRYImMxtFv2d7UmW
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -39,105 +39,83 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-omap-dmtimer driver to further changes of the pwm
-core outlined in the commit introducing devm_pwmchip_alloc(). There is
-no intended semantical change and the driver should behave as before.
+This prepares the pwm-rcar driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-omap-dmtimer.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-rcar.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-index c7c7383f4b14..42f3e33a8aa8 100644
---- a/drivers/pwm/pwm-omap-dmtimer.c
-+++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -61,7 +61,6 @@
-  * @dm_timer_pdev:	Pointer to omap dm timer platform device
-  */
- struct pwm_omap_dmtimer_chip {
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 4838762137d1..435d5587fd55 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -38,14 +38,13 @@
+ #define  RCAR_PWMCNT_PH0_SHIFT	0
+ 
+ struct rcar_pwm_chip {
 -	struct pwm_chip chip;
- 	/* Mutex to protect pwm apply state */
- 	struct mutex mutex;
- 	struct omap_dm_timer *dm_timer;
-@@ -72,7 +71,7 @@ struct pwm_omap_dmtimer_chip {
- static inline struct pwm_omap_dmtimer_chip *
- to_pwm_omap_dmtimer_chip(struct pwm_chip *chip)
+ 	void __iomem *base;
+ 	struct clk *clk;
+ };
+ 
+ static inline struct rcar_pwm_chip *to_rcar_pwm_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct pwm_omap_dmtimer_chip, chip);
+-	return container_of(chip, struct rcar_pwm_chip, chip);
 +	return pwmchip_get_drvdata(chip);
  }
  
- /**
-@@ -319,6 +318,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- 	struct dmtimer_platform_data *timer_pdata;
- 	const struct omap_dm_timer_ops *pdata;
- 	struct platform_device *timer_pdev;
+ static void rcar_pwm_write(struct rcar_pwm_chip *rp, u32 data,
+@@ -202,12 +201,14 @@ static const struct pwm_ops rcar_pwm_ops = {
+ 
+ static int rcar_pwm_probe(struct platform_device *pdev)
+ {
 +	struct pwm_chip *chip;
- 	struct pwm_omap_dmtimer_chip *omap;
- 	struct omap_dm_timer *dm_timer;
- 	struct device_node *timer;
-@@ -376,11 +376,12 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- 		goto err_request_timer;
+ 	struct rcar_pwm_chip *rcar_pwm;
+ 	int ret;
+ 
+-	rcar_pwm = devm_kzalloc(&pdev->dev, sizeof(*rcar_pwm), GFP_KERNEL);
+-	if (rcar_pwm == NULL)
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*rcar_pwm));
++	if (chip == NULL)
+ 		return -ENOMEM;
++	rcar_pwm = to_rcar_pwm_chip(chip);
+ 
+ 	rcar_pwm->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(rcar_pwm->base))
+@@ -219,15 +220,13 @@ static int rcar_pwm_probe(struct platform_device *pdev)
+ 		return PTR_ERR(rcar_pwm->clk);
  	}
  
--	omap = devm_kzalloc(&pdev->dev, sizeof(*omap), GFP_KERNEL);
--	if (!omap) {
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*omap));
-+	if (!chip) {
- 		ret = -ENOMEM;
- 		goto err_alloc_omap;
- 	}
-+	omap = to_pwm_omap_dmtimer_chip(chip);
- 
- 	omap->pdata = pdata;
- 	omap->dm_timer = dm_timer;
-@@ -400,13 +401,11 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- 	if (!of_property_read_u32(pdev->dev.of_node, "ti,clock-source", &v))
- 		omap->pdata->set_source(omap->dm_timer, v);
- 
--	omap->chip.dev = &pdev->dev;
--	omap->chip.ops = &pwm_omap_dmtimer_ops;
--	omap->chip.npwm = 1;
-+	chip->ops = &pwm_omap_dmtimer_ops;
- 
- 	mutex_init(&omap->mutex);
- 
--	ret = pwmchip_add(&omap->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to register PWM\n");
- 		goto err_pwmchip_add;
-@@ -414,14 +413,14 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- 
- 	of_node_put(timer);
- 
--	platform_set_drvdata(pdev, omap);
+-	platform_set_drvdata(pdev, rcar_pwm);
 +	platform_set_drvdata(pdev, chip);
  
- 	return 0;
+-	rcar_pwm->chip.dev = &pdev->dev;
+-	rcar_pwm->chip.ops = &rcar_pwm_ops;
+-	rcar_pwm->chip.npwm = 1;
++	chip->ops = &rcar_pwm_ops;
  
- err_pwmchip_add:
+ 	pm_runtime_enable(&pdev->dev);
  
- 	/*
--	 * *omap is allocated using devm_kzalloc,
-+	 * *omap is allocated using devm_pwmchip_alloc,
- 	 * so no free necessary here
- 	 */
- err_alloc_omap:
-@@ -442,9 +441,10 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+-	ret = pwmchip_add(&rcar_pwm->chip);
++	ret = pwmchip_add(chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to register PWM chip: %d\n", ret);
+ 		pm_runtime_disable(&pdev->dev);
+@@ -239,9 +238,9 @@ static int rcar_pwm_probe(struct platform_device *pdev)
  
- static void pwm_omap_dmtimer_remove(struct platform_device *pdev)
+ static void rcar_pwm_remove(struct platform_device *pdev)
  {
--	struct pwm_omap_dmtimer_chip *omap = platform_get_drvdata(pdev);
+-	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
 +	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct pwm_omap_dmtimer_chip *omap = to_pwm_omap_dmtimer_chip(chip);
  
--	pwmchip_remove(&omap->chip);
+-	pwmchip_remove(&rcar_pwm->chip);
 +	pwmchip_remove(chip);
  
- 	if (pm_runtime_active(&omap->dm_timer_pdev->dev))
- 		omap->pdata->stop(omap->dm_timer);
+ 	pm_runtime_disable(&pdev->dev);
+ }
 -- 
 2.42.0
 
