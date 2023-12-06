@@ -1,30 +1,26 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B933D64
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6AB10E0
 	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:41 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOD-0006VI-3n; Wed, 06 Dec 2023 12:48:29 +0100
+	id 1rAqON-0007TK-0D; Wed, 06 Dec 2023 12:48:39 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOC-00DwuK-Ey; Wed, 06 Dec 2023 12:48:28 +0100
+	id 1rAqOK-00Dwx6-QY; Wed, 06 Dec 2023 12:48:36 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOC-00FQzY-5T; Wed, 06 Dec 2023 12:48:28 +0100
+	id 1rAqOK-00FR2a-He; Wed, 06 Dec 2023 12:48:36 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	linux-arm-kernel@lists.infradead.org,
 	linux-pwm@vger.kernel.org
-Subject: [PATCH v4 047/115] pwm: atmel: Make use of devm_pwmchip_alloc() function
-Date: Wed,  6 Dec 2023 12:44:01 +0100
-Message-ID:  <da992a33bb17314d091ea63f12724147be23d887.1701860672.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 091/115] pwm: spear: Make use of devm_pwmchip_alloc() function
+Date: Wed,  6 Dec 2023 12:44:45 +0100
+Message-ID:  <3c943d7f45fbf25d34c91beb77126ee7e12d2fac.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -35,7 +31,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3197; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=gcNSIr60z1Q6ew/5ykPPEZLeTTEjXIN4yXThU5Sem7I=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6X6qRGg89hbyEc6Wt9rR70fC/9oKF0RUiZn HjJvy3q07OJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBelwAKCRCPgPtYfRL+ ThQNCACqGX5Ouvuy+KChK/rccIfYF0m8ij2ksq/HoEPFXBSLu5gNkdeKOXVuuWkygHNkGsTDwnc KUu8S4JjPHjboMdShNsmPlMFHga6n9TsSlpo8eaRrqHmPRg9zq5gpK6EWASlz9EtKCyShLjuOMi nPDqBZlAJCtp0si0jE62QVCkN3YsV+n0aIM3eOnDG72LQzGz6GS6MPraAVXkqy5DmLqG13sTinj uSukii6gpYAE6Zn3nq8L7SmwChKf/HToZH0Be9V7auOofd02jHFRUH3ERu6ZIWKsdEYh0SEPVZd 3DLYkvvUWRg0KBCmlkfmekmqQpWshoUByopRNuuJJsyVJTMS
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2235; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=JDZ+b8KyJpgZU37+SMNbCG8SPJQizrlIvLigFbBAAYc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF8Q4aI3u6L4Zb6Vs1822u7f5BdbKb4P/jWVl S++mB3emEqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBfEAAKCRCPgPtYfRL+ TirXB/43djLMpOR1RX+MF0HMFnNCxK7aJGbZ1fLrrXuDReJNnACan8ChnDH4Z0G29m0Qhh4H6cP xc9f0nwJuhe/VsCyE1krgIys/hra+ia7AqbvLzOOedSZJolewqqRJW1mFOzt16/bExcHpIrppeS bRghsCs6KROZ74E4BR6PQjv5rXGTjBOirDjbehyLL1ZDLglFU1RNeTOkT7yBnhZduHTpCLqhiPY o3581CiEioM2J9/Jt8mOdxbQYiYPAtcI0dk/xH+0i+3Z06VSaNssqFhRSub/lOLCbmymd3E2RdM h0u5o/8O4vSVdiG4VYK8r2JokeLE+ttsCsQM0d+yQC4Wg68/
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -43,103 +39,72 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-atmel driver to further changes of the pwm core
+This prepares the pwm-spear driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-atmel.c | 28 +++++++++++++---------------
- 1 file changed, 13 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-spear.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index 4ef91fe6f147..ab84229161ef 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -77,7 +77,6 @@ struct atmel_pwm_data {
+diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
+index ff991319feef..f1e08cb28ea6 100644
+--- a/drivers/pwm/pwm-spear.c
++++ b/drivers/pwm/pwm-spear.c
+@@ -53,12 +53,11 @@
+ struct spear_pwm_chip {
+ 	void __iomem *mmio_base;
+ 	struct clk *clk;
+-	struct pwm_chip chip;
  };
  
- struct atmel_pwm_chip {
--	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
- 	const struct atmel_pwm_data *data;
-@@ -99,7 +98,7 @@ struct atmel_pwm_chip {
- 
- static inline struct atmel_pwm_chip *to_atmel_pwm_chip(struct pwm_chip *chip)
+ static inline struct spear_pwm_chip *to_spear_pwm_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct atmel_pwm_chip, chip);
+-	return container_of(chip, struct spear_pwm_chip, chip);
 +	return pwmchip_get_drvdata(chip);
  }
  
- static inline u32 atmel_pwm_readl(struct atmel_pwm_chip *chip,
-@@ -473,7 +472,7 @@ static int atmel_pwm_enable_clk_if_on(struct pwm_chip *chip, bool on)
- 	if (!sr)
- 		return 0;
- 
--	cnt = bitmap_weight(&sr, atmel_pwm->chip.npwm);
-+	cnt = bitmap_weight(&sr, chip->npwm);
- 
- 	if (!on)
- 		goto disable_clk;
-@@ -481,9 +480,8 @@ static int atmel_pwm_enable_clk_if_on(struct pwm_chip *chip, bool on)
- 	for (i = 0; i < cnt; i++) {
- 		ret = clk_enable(atmel_pwm->clk);
- 		if (ret) {
--			dev_err(pwmchip_parent(chip),
--				"failed to enable clock for pwm %pe\n",
--				ERR_PTR(ret));
-+			dev_err_probe(pwmchip_parent(chip), ret,
-+				"failed to enable clock for pwm\n");
- 
- 			cnt = i;
- 			goto disable_clk;
-@@ -501,12 +499,14 @@ static int atmel_pwm_enable_clk_if_on(struct pwm_chip *chip, bool on)
- 
- static int atmel_pwm_probe(struct platform_device *pdev)
+ static inline u32 spear_pwm_readl(struct spear_pwm_chip *chip, unsigned int num,
+@@ -194,13 +193,15 @@ static const struct pwm_ops spear_pwm_ops = {
+ static int spear_pwm_probe(struct platform_device *pdev)
  {
+ 	struct device_node *np = pdev->dev.of_node;
 +	struct pwm_chip *chip;
- 	struct atmel_pwm_chip *atmel_pwm;
+ 	struct spear_pwm_chip *pc;
  	int ret;
+ 	u32 val;
  
--	atmel_pwm = devm_kzalloc(&pdev->dev, sizeof(*atmel_pwm), GFP_KERNEL);
--	if (!atmel_pwm)
+-	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+-	if (!pc)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 4, sizeof(*atmel_pwm));
++	chip = devm_pwmchip_alloc(&pdev->dev, NUM_PWM, sizeof(*pc));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	atmel_pwm = to_atmel_pwm_chip(chip);
++	pc = to_spear_pwm_chip(chip);
  
- 	atmel_pwm->data = of_device_get_match_data(&pdev->dev);
+ 	pc->mmio_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pc->mmio_base))
+@@ -211,9 +212,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk),
+ 				     "Failed to get clock\n");
  
-@@ -522,15 +522,13 @@ static int atmel_pwm_probe(struct platform_device *pdev)
- 		return dev_err_probe(&pdev->dev, PTR_ERR(atmel_pwm->clk),
- 				     "failed to get prepared PWM clock\n");
+-	pc->chip.dev = &pdev->dev;
+-	pc->chip.ops = &spear_pwm_ops;
+-	pc->chip.npwm = NUM_PWM;
++	chip->ops = &spear_pwm_ops;
  
--	atmel_pwm->chip.dev = &pdev->dev;
--	atmel_pwm->chip.ops = &atmel_pwm_ops;
--	atmel_pwm->chip.npwm = 4;
-+	chip->ops = &atmel_pwm_ops;
+ 	if (of_device_is_compatible(np, "st,spear1340-pwm")) {
+ 		ret = clk_enable(pc->clk);
+@@ -232,7 +231,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
+ 		clk_disable(pc->clk);
+ 	}
  
--	ret = atmel_pwm_enable_clk_if_on(&atmel_pwm->chip, true);
-+	ret = atmel_pwm_enable_clk_if_on(chip, true);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = devm_pwmchip_add(&pdev->dev, &atmel_pwm->chip);
+-	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
 +	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0) {
- 		dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
- 		goto disable_clk;
-@@ -539,7 +537,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
- 	return 0;
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "pwmchip_add() failed\n");
  
- disable_clk:
--	atmel_pwm_enable_clk_if_on(&atmel_pwm->chip, false);
-+	atmel_pwm_enable_clk_if_on(chip, false);
- 
- 	return ret;
- }
 -- 
 2.42.0
 
