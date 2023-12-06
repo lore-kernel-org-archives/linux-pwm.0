@@ -1,81 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="SRK+pabr"
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F059E
-	for <linux-pwm@vger.kernel.org>; Tue,  5 Dec 2023 18:35:36 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id 3f1490d57ef6-db35caa1749so4758569276.2
-        for <linux-pwm@vger.kernel.org>; Tue, 05 Dec 2023 18:35:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1701830136; x=1702434936; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xlDuu53vbrn6lPFwY45IWnvR+3YA7mUVyinONkEtmto=;
-        b=SRK+pabrlkiwbYXkzJtUFX14s18ngYJbY2/idV6bttR4EnH3nzHEp7QhkddKFrwg9o
-         kwBc3JqH9Hoggz/idJkLT3G+sTiL4D2/8ngF4v2flkhwMWbU3m7I/mhQ9WxrsbHgb9kn
-         z7o+vcJdntMjiBc48pEbcpS/uZJvxLfqfDvQgshB226/Z4VlGwJKeo4xXVxlqvZwBl37
-         VDp9bYFtDJJICEcDjSF9jHw1CFUjLejSq9jJwmkdQZ3vW3s425xbN1isioU8ipAp2Run
-         X27EKXF1lbzhF/v4pGvl/b9XNrxl4SoMphI86lo7IDERngZIbX5510PXciYgT1Sl66Gi
-         sW2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701830136; x=1702434936;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xlDuu53vbrn6lPFwY45IWnvR+3YA7mUVyinONkEtmto=;
-        b=hIzosYyxqzjISW8jBtJ7yLadxX48gj92OQhMwGoKwOq1ocTxeYpUTEWQVKREIazEb9
-         9gFXcEe4BAvjZHxQON83qxpRlJPdnu0wWIXS7s584Qa31ZfIB/kOMRGCC37QhFKrH+wV
-         MH8+wzI1ctVUWpXuPc7FMFIPMTr0Co1UVUbVWXiAbqTxzYRxjduA0khU3afOcF/wAbzx
-         rgwAUM6nCvxVzhACiCEd0vATOsxYWzcXPNmuTBZo/SpU7CJyXAUcfObVGWNMXuqNh8EP
-         tXAHmOAJlk9Xd51v97I6KJuI7udqEo1Y4KKqfbyoVSzgI62d+65bwKYgmOHwSND0BDQr
-         0BpA==
-X-Gm-Message-State: AOJu0YyrADFAf0UY7r+nAOgxMMntHN7pSp9UwBOUxRl9VEHHft7nnL/c
-	KPVwqHTKs+ZX6FejsBGZ6rV4/0cwRT+pOTtNWV396g==
-X-Google-Smtp-Source: AGHT+IEAAK7nw9Tt/NLs1EhilQZoE6ZJOZfYmBJo7cb7QrMdkaOgVc2RlX9xN6TjZVgIA+w28XmZQLETw6at2bm172k=
-X-Received: by 2002:a05:6902:522:b0:db7:dacf:3faf with SMTP id
- y2-20020a056902052200b00db7dacf3fafmr126141ybs.92.1701830135801; Tue, 05 Dec
- 2023 18:35:35 -0800 (PST)
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E5218D
+	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:23 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rAqO5-0005yQ-H3; Wed, 06 Dec 2023 12:48:21 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rAqO4-00DwrS-VU; Wed, 06 Dec 2023 12:48:20 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rAqO4-00FQwZ-M9; Wed, 06 Dec 2023 12:48:20 +0100
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: kernel@pengutronix.de,
+	linux-pwm@vger.kernel.org,
+	Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v4 002/115] pwm: crc: Use consistent variable naming for driver data
+Date: Wed,  6 Dec 2023 12:43:16 +0100
+Message-ID:  <628ab3ffd95306bb697c5f2ee0ff5abc1d987870.1701860672.git.u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.42.0
+In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
+References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231024101902.6689-1-nylon.chen@sifive.com> <20231024101902.6689-3-nylon.chen@sifive.com>
- <CAHh=Yk_i-tH-n_5wuwp6H8QRu3cZovkukDzMbeUZrgiih46V8g@mail.gmail.com> <21985579-e017-4a56-b5e3-697fd9d0c9d7@linaro.org>
-In-Reply-To: <21985579-e017-4a56-b5e3-697fd9d0c9d7@linaro.org>
-From: Nylon Chen <nylon.chen@sifive.com>
-Date: Wed, 6 Dec 2023 10:35:24 +0800
-Message-ID: <CAHh=Yk_=JJnBXVY4nrcmam6aQVN6Db=sPp59je=_BXj140QP3Q@mail.gmail.com>
-Subject: Re: [v5 2/2] pwm: sifive: change the PWM controlled LED algorithm
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, 
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, 
-	thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, 
-	emil.renner.berthing@canonical.com, vincent.chen@sifive.com, 
-	greentime.hu@sifive.com, zong.li@sifive.com, nylon7717@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1762; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=IaLDIhayzDamEHQOnzIsO80oYzoddxnRmfJJqdexG/s=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF5UhbTBnFVPIFeqMnnBWH1n6Awzwr0UTo+OI tvbzAd/t+aJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBeVAAKCRCPgPtYfRL+ TrFFB/43kfIoi2Ldzrc6LdGI+N7qsdyb6ZH3C9quPSflvYhL0xIuYWVMbdjn2VoLV5/MuR+aLdf PVRs7kpMP9c/HwAAdfsuwhW9ZIMIErJnCv9KCOgCI/CdfALr9+N9EtbCbYy6/8d30RKex3fytDw eJbJB6XgqD7jbOxzNcBZ+R+HAnD6f4xPcU0wKQtnxU5HfH07L7ub1hota0OML5+epvD8fnPL3C8 gtgzbdXt25pnQ1GYiDdEa+rPtACd0lw8KV1ZhHu6eHGNbeVnMd4Rwq2QAWYxuxBACgLGclQXjg3 n9OScSPC9A90KD8yZ1DChBqVqkek1xewvPmmuIiDc7ebka0v
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-Hi Ping on the series.
+All but one local variable of type pointer to struct crystalcove_pwm are
+called "crc_pwm", the one outlier is called "pwm" which is usually
+reserved for variables of type pointer to struct pwm_device.
 
-The merge window should have ended.
+So rename that one "pwm" to "crc_pwm" for consistency.
 
-Is there anything more I can do to push the process forward?
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Note this patch was already sent out individually, find it at
+https://lore.kernel.org/linux-pwm/20231130074133.969806-1-u.kleine-koenig@pengutronix.de
 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> =E6=96=BC 2023=E5=B9=
-=B411=E6=9C=889=E6=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=884:22=E5=AF=AB=
-=E9=81=93=EF=BC=9A
->
-> On 09/11/2023 08:02, Nylon Chen wrote:
-> > Hi, Ping on the series.
-> >
-> > Uwe, is there anything more I can do to push the process forward?
->
-> It's merge window. What do you exactly expect to happen?
->
-> Best regards,
-> Krzysztof
->
+ drivers/pwm/pwm-crc.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
+index 2b0b659eee97..e09358901ab5 100644
+--- a/drivers/pwm/pwm-crc.c
++++ b/drivers/pwm/pwm-crc.c
+@@ -160,22 +160,22 @@ static const struct pwm_ops crc_pwm_ops = {
+ 
+ static int crystalcove_pwm_probe(struct platform_device *pdev)
+ {
+-	struct crystalcove_pwm *pwm;
++	struct crystalcove_pwm *crc_pwm;
+ 	struct device *dev = pdev->dev.parent;
+ 	struct intel_soc_pmic *pmic = dev_get_drvdata(dev);
+ 
+-	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+-	if (!pwm)
++	crc_pwm = devm_kzalloc(&pdev->dev, sizeof(*crc_pwm), GFP_KERNEL);
++	if (!crc_pwm)
+ 		return -ENOMEM;
+ 
+-	pwm->chip.dev = &pdev->dev;
+-	pwm->chip.ops = &crc_pwm_ops;
+-	pwm->chip.npwm = 1;
++	crc_pwm->chip.dev = &pdev->dev;
++	crc_pwm->chip.ops = &crc_pwm_ops;
++	crc_pwm->chip.npwm = 1;
+ 
+ 	/* get the PMIC regmap */
+-	pwm->regmap = pmic->regmap;
++	crc_pwm->regmap = pmic->regmap;
+ 
+-	return devm_pwmchip_add(&pdev->dev, &pwm->chip);
++	return devm_pwmchip_add(&pdev->dev, &crc_pwm->chip);
+ }
+ 
+ static struct platform_driver crystalcove_pwm_driver = {
+-- 
+2.42.0
+
