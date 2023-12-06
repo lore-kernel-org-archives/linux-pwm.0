@@ -1,26 +1,31 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F92C10CF
-	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:39 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17A110DB
+	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:43 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOK-0007Be-Sc; Wed, 06 Dec 2023 12:48:36 +0100
+	id 1rAqON-0007Vn-GE; Wed, 06 Dec 2023 12:48:39 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOH-00DwwL-Th; Wed, 06 Dec 2023 12:48:33 +0100
+	id 1rAqOL-00DwxK-AA; Wed, 06 Dec 2023 12:48:37 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOH-00FR1p-KX; Wed, 06 Dec 2023 12:48:33 +0100
+	id 1rAqOL-00FR2k-12; Wed, 06 Dec 2023 12:48:37 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	linux-pwm@vger.kernel.org
-Subject: [PATCH v4 081/115] pwm: pca9685: Make use of devm_pwmchip_alloc() function
-Date: Wed,  6 Dec 2023 12:44:35 +0100
-Message-ID:  <5bf14e652eb20de9c567bee4e3794cbe55aa74e4.1701860672.git.u.kleine-koenig@pengutronix.de>
+	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	linux-pwm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v4 094/115] pwm: stm32-lp: Make use of devm_pwmchip_alloc() function
+Date: Wed,  6 Dec 2023 12:44:48 +0100
+Message-ID:  <08caf1d4a05831c7372d5f9c888dd495c01ddb26.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -31,7 +36,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8919; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=xl/mMBac0YZAzvsu5xINE1pRknsK90zSmE60MUTobUE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF8AL+Wne+4uFjKGbrI2Hgw+yh4019P8+UJOI YhMm5kBSIeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBfAAAKCRCPgPtYfRL+ TllyB/9g7pRcsNl2dl7Z7gzDQr8jzStJU2p/Fx3OTeYZLTdD+upLwv7f+PLG3hm2Iupkhd1/9YR vqpZml9ZfuKHFb/dLSx/ojQUTAs5e/LpdchE4m3ysmnvClj7BkKbRHsBeL8C1yljx2SQQa5g4OQ SJbOH2mR/SN0wZQtiQ9tOBFznk4XpZN33QTOPwVjFt4KSxDyiPXRTDZ/5+ns3pDdUwRXbyig5fa uC6M8l4Ev4z9uBv0nqlNyqqTmDWck2jjPmLuUzlo6bGi4y6lsIDbxgZSc992irKBShvJOf+lGMl 9p6/IXCJexAJK+iA8RfIs0lsxSQnTSlvmRRiW132YXZqumLO
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2375; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=fUvyGLEsmdMLS9fUd3TDhVk3pL+KBTfDCccgiYGomQI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF8j9+D52Bo6wMkF+nbCxh26G6YrEXw1s8xhE OOBGvElwj6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBfIwAKCRCPgPtYfRL+ TnSqB/95x30HM0fSMYu4cFoDcq1fkeemIN0qStKihS5vGg2r7f4QBzukXXhlmtpmyc2/Ut2YWGu mnrzdBzy1VIV9ENbMp2eNztK+xqaJ08iFu7/D/Yd/jL4jxNZHeuod0JJ8gtnYIqG8+sbrSG9hsL Yh7lWfpw7JEnnoe4F5AR5J0cq2jrXQgKtGQIRqscxpUSlHlhpk6n6DlP8yMoWFO/11AnHiDRzKK 8uL5+5T0d4hTdQ5kfBsn5qwprAjfL6+LrF5gGdOpPxi8dTszsCXsyKcgkVF/CwrBTnB6WEOWufK bir+a0TShU1kP0p1ogfA1A7yMDbH71xTS1L6lKDjVGMC3q4P
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -39,254 +44,80 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-pca9685 driver to further changes of the pwm
-core outlined in the commit introducing devm_pwmchip_alloc(). There is
-no intended semantical change and the driver should behave as before.
+This prepares the pwm-stm32-lp driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-pca9685.c | 76 +++++++++++++++++++++------------------
- 1 file changed, 41 insertions(+), 35 deletions(-)
+ drivers/pwm/pwm-stm32-lp.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 04e713ef790f..f88cc4c9c193 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -76,7 +76,6 @@
- #define REG_OFF_L(C)	((C) >= PCA9685_MAXCHAN ? PCA9685_ALL_LED_OFF_L : LED_N_OFF_L((C)))
+diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
+index 3754faeca838..579fea9a0da4 100644
+--- a/drivers/pwm/pwm-stm32-lp.c
++++ b/drivers/pwm/pwm-stm32-lp.c
+@@ -18,14 +18,13 @@
+ #include <linux/pwm.h>
  
- struct pca9685 {
+ struct stm32_pwm_lp {
 -	struct pwm_chip chip;
+ 	struct clk *clk;
  	struct regmap *regmap;
- 	struct mutex lock;
- 	struct device *parent;
-@@ -89,7 +88,7 @@ struct pca9685 {
+ };
  
- static inline struct pca9685 *to_pca(struct pwm_chip *chip)
+ static inline struct stm32_pwm_lp *to_stm32_pwm_lp(struct pwm_chip *chip)
  {
--	return container_of(chip, struct pca9685, chip);
+-	return container_of(chip, struct stm32_pwm_lp, chip);
 +	return pwmchip_get_drvdata(chip);
  }
  
- /* This function is supposed to be called with the lock mutex held */
-@@ -133,9 +132,9 @@ static int pca9685_write_reg(struct pca9685 *pca, unsigned int reg, unsigned int
- }
- 
- /* Helper function to set the duty cycle ratio to duty/4096 (e.g. duty=2048 -> 50%) */
--static void pca9685_pwm_set_duty(struct pca9685 *pca, int channel, unsigned int duty)
-+static void pca9685_pwm_set_duty(struct pwm_chip *chip, struct pca9685 *pca, int channel, unsigned int duty)
+ /* STM32 Low-Power Timer is preceded by a configurable power-of-2 prescaler */
+@@ -196,20 +195,20 @@ static const struct pwm_ops stm32_pwm_lp_ops = {
+ static int stm32_pwm_lp_probe(struct platform_device *pdev)
  {
--	struct pwm_device *pwm = &pca->chip.pwms[channel];
-+	struct pwm_device *pwm = &chip->pwms[channel];
- 	unsigned int on, off;
- 
- 	if (duty == 0) {
-@@ -172,9 +171,9 @@ static void pca9685_pwm_set_duty(struct pca9685 *pca, int channel, unsigned int
- 	pca9685_write_reg(pca, REG_OFF_H(channel), (off >> 8) & 0xf);
- }
- 
--static unsigned int pca9685_pwm_get_duty(struct pca9685 *pca, int channel)
-+static unsigned int pca9685_pwm_get_duty(struct pwm_chip *chip, struct pca9685 *pca, int channel)
- {
--	struct pwm_device *pwm = &pca->chip.pwms[channel];
-+	struct pwm_device *pwm = &chip->pwms[channel];
- 	unsigned int off = 0, on = 0, val = 0;
- 
- 	if (WARN_ON(channel >= PCA9685_MAXCHAN)) {
-@@ -248,7 +247,8 @@ static void pca9685_pwm_clear_inuse(struct pca9685 *pca, int pwm_idx)
- 
- static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
- {
--	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_chip *chip = gpiochip_get_data(gpio);
-+	struct pca9685 *pca = to_pca(chip);
- 
- 	if (pca9685_pwm_test_and_set_inuse(pca, offset))
- 		return -EBUSY;
-@@ -258,24 +258,27 @@ static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
- 
- static int pca9685_pwm_gpio_get(struct gpio_chip *gpio, unsigned int offset)
- {
--	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_chip *chip = gpiochip_get_data(gpio);
-+	struct pca9685 *pca = to_pca(chip);
- 
--	return pca9685_pwm_get_duty(pca, offset) != 0;
-+	return pca9685_pwm_get_duty(chip, pca, offset) != 0;
- }
- 
- static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
- 				 int value)
- {
--	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_chip *chip = gpiochip_get_data(gpio);
-+	struct pca9685 *pca = to_pca(chip);
- 
--	pca9685_pwm_set_duty(pca, offset, value ? PCA9685_COUNTER_RANGE : 0);
-+	pca9685_pwm_set_duty(chip, pca, offset, value ? PCA9685_COUNTER_RANGE : 0);
- }
- 
- static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
- {
--	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_chip *chip = gpiochip_get_data(gpio);
-+	struct pca9685 *pca = to_pca(chip);
- 
--	pca9685_pwm_set_duty(pca, offset, 0);
-+	pca9685_pwm_set_duty(chip, pca, offset, 0);
- 	pm_runtime_put(pca->parent);
- 	pca9685_pwm_clear_inuse(pca, offset);
- }
-@@ -307,7 +310,7 @@ static int pca9685_pwm_gpio_direction_output(struct gpio_chip *gpio,
-  * expose a GPIO chip here which can exclusively take over the underlying
-  * PWM channel.
-  */
--static int pca9685_pwm_gpio_probe(struct pca9685 *pca)
-+static int pca9685_pwm_gpio_probe(struct pwm_chip *chip, struct pca9685 *pca)
- {
- 	struct device *dev = pca->parent;
- 
-@@ -324,7 +327,7 @@ static int pca9685_pwm_gpio_probe(struct pca9685 *pca)
- 	pca->gpio.ngpio = PCA9685_MAXCHAN;
- 	pca->gpio.can_sleep = true;
- 
--	return devm_gpiochip_add_data(dev, &pca->gpio, pca);
-+	return devm_gpiochip_add_data(dev, &pca->gpio, chip);
- }
- #else
- static inline bool pca9685_pwm_test_and_set_inuse(struct pca9685 *pca,
-@@ -338,7 +341,7 @@ pca9685_pwm_clear_inuse(struct pca9685 *pca, int pwm_idx)
- {
- }
- 
--static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
-+static inline int pca9685_pwm_gpio_probe(struct pwm_chip *chip, struct pca9685 *pca)
- {
- 	return 0;
- }
-@@ -379,7 +382,7 @@ static int __pca9685_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	}
- 
- 	if (!state->enabled) {
--		pca9685_pwm_set_duty(pca, pwm->hwpwm, 0);
-+		pca9685_pwm_set_duty(chip, pca, pwm->hwpwm, 0);
- 		return 0;
- 	}
- 
-@@ -409,7 +412,7 @@ static int __pca9685_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	duty = PCA9685_COUNTER_RANGE * state->duty_cycle;
- 	duty = DIV_ROUND_UP_ULL(duty, state->period);
--	pca9685_pwm_set_duty(pca, pwm->hwpwm, duty);
-+	pca9685_pwm_set_duty(chip, pca, pwm->hwpwm, duty);
- 	return 0;
- }
- 
-@@ -463,7 +466,7 @@ static int pca9685_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	}
- 
- 	state->enabled = true;
--	duty = pca9685_pwm_get_duty(pca, pwm->hwpwm);
-+	duty = pca9685_pwm_get_duty(chip, pca, pwm->hwpwm);
- 	state->duty_cycle = DIV_ROUND_DOWN_ULL(duty * state->period, PCA9685_COUNTER_RANGE);
- 
- 	return 0;
-@@ -493,7 +496,7 @@ static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct pca9685 *pca = to_pca(chip);
- 
- 	mutex_lock(&pca->lock);
--	pca9685_pwm_set_duty(pca, pwm->hwpwm, 0);
-+	pca9685_pwm_set_duty(chip, pca, pwm->hwpwm, 0);
- 	clear_bit(pwm->hwpwm, pca->pwms_enabled);
- 	mutex_unlock(&pca->lock);
- 
-@@ -517,13 +520,16 @@ static const struct regmap_config pca9685_regmap_i2c_config = {
- 
- static int pca9685_pwm_probe(struct i2c_client *client)
- {
+ 	struct stm32_lptimer *ddata = dev_get_drvdata(pdev->dev.parent);
 +	struct pwm_chip *chip;
- 	struct pca9685 *pca;
- 	unsigned int reg;
+ 	struct stm32_pwm_lp *priv;
  	int ret;
  
--	pca = devm_kzalloc(&client->dev, sizeof(*pca), GFP_KERNEL);
--	if (!pca)
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
 -		return -ENOMEM;
-+	/* Add an extra channel for ALL_LED */
-+	chip = devm_pwmchip_alloc(&client->dev, PCA9685_MAXCHAN + 1, sizeof(*pca));
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*priv));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	pca = to_pca(chip);
++	priv = to_stm32_pwm_lp(chip);
  
- 	pca->regmap = devm_regmap_init_i2c(client, &pca9685_regmap_i2c_config);
- 	if (IS_ERR(pca->regmap)) {
-@@ -533,7 +539,7 @@ static int pca9685_pwm_probe(struct i2c_client *client)
- 		return ret;
- 	}
+ 	priv->regmap = ddata->regmap;
+ 	priv->clk = ddata->clk;
+-	priv->chip.dev = &pdev->dev;
+-	priv->chip.ops = &stm32_pwm_lp_ops;
+-	priv->chip.npwm = 1;
++	chip->ops = &stm32_pwm_lp_ops;
  
--	i2c_set_clientdata(client, pca);
-+	i2c_set_clientdata(client, chip);
- 
- 	mutex_init(&pca->lock);
- 
-@@ -566,20 +572,17 @@ static int pca9685_pwm_probe(struct i2c_client *client)
- 	pca9685_write_reg(pca, PCA9685_ALL_LED_ON_L, 0);
- 	pca9685_write_reg(pca, PCA9685_ALL_LED_ON_H, LED_FULL);
- 
--	pca->chip.ops = &pca9685_pwm_ops;
--	/* Add an extra channel for ALL_LED */
--	pca->chip.npwm = PCA9685_MAXCHAN + 1;
-+	chip->ops = &pca9685_pwm_ops;
- 
--	pca->chip.dev = &client->dev;
- 	pca->parent = &client->dev;
- 
--	ret = pwmchip_add(&pca->chip);
-+	ret = pwmchip_add(chip);
+-	ret = devm_pwmchip_add(&pdev->dev, &priv->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
  	if (ret < 0)
  		return ret;
  
--	ret = pca9685_pwm_gpio_probe(pca);
-+	ret = pca9685_pwm_gpio_probe(chip, pca);
- 	if (ret < 0) {
--		pwmchip_remove(&pca->chip);
-+		pwmchip_remove(chip);
- 		return ret;
+@@ -220,13 +219,13 @@ static int stm32_pwm_lp_probe(struct platform_device *pdev)
+ 
+ static int stm32_pwm_lp_suspend(struct device *dev)
+ {
+-	struct stm32_pwm_lp *priv = dev_get_drvdata(dev);
++	struct pwm_chip *chip = dev_get_drvdata(dev);
+ 	struct pwm_state state;
+ 
+-	pwm_get_state(&priv->chip.pwms[0], &state);
++	pwm_get_state(&chip->pwms[0], &state);
+ 	if (state.enabled) {
+ 		dev_err(dev, "The consumer didn't stop us (%s)\n",
+-			priv->chip.pwms[0].label);
++			chip->pwms[0].label);
+ 		return -EBUSY;
  	}
  
-@@ -602,9 +605,10 @@ static int pca9685_pwm_probe(struct i2c_client *client)
- 
- static void pca9685_pwm_remove(struct i2c_client *client)
- {
--	struct pca9685 *pca = i2c_get_clientdata(client);
-+	struct pwm_chip *chip = i2c_get_clientdata(client);
-+	struct pca9685 *pca = to_pca(chip);
- 
--	pwmchip_remove(&pca->chip);
-+	pwmchip_remove(chip);
- 
- 	if (!pm_runtime_enabled(&client->dev)) {
- 		/* Put chip in sleep state if runtime PM is disabled */
-@@ -617,7 +621,8 @@ static void pca9685_pwm_remove(struct i2c_client *client)
- static int __maybe_unused pca9685_pwm_runtime_suspend(struct device *dev)
- {
- 	struct i2c_client *client = to_i2c_client(dev);
--	struct pca9685 *pca = i2c_get_clientdata(client);
-+	struct pwm_chip *chip = i2c_get_clientdata(client);
-+	struct pca9685 *pca = to_pca(chip);
- 
- 	pca9685_set_sleep_mode(pca, true);
- 	return 0;
-@@ -626,7 +631,8 @@ static int __maybe_unused pca9685_pwm_runtime_suspend(struct device *dev)
- static int __maybe_unused pca9685_pwm_runtime_resume(struct device *dev)
- {
- 	struct i2c_client *client = to_i2c_client(dev);
--	struct pca9685 *pca = i2c_get_clientdata(client);
-+	struct pwm_chip *chip = i2c_get_clientdata(client);
-+	struct pca9685 *pca = to_pca(chip);
- 
- 	pca9685_set_sleep_mode(pca, false);
- 	return 0;
 -- 
 2.42.0
 
