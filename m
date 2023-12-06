@@ -1,26 +1,26 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E51AD51
-	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:27 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96585D5E
+	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:28 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO9-0006KK-Sx; Wed, 06 Dec 2023 12:48:25 +0100
+	id 1rAqOB-0006NT-44; Wed, 06 Dec 2023 12:48:27 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO9-00DwtA-E9; Wed, 06 Dec 2023 12:48:25 +0100
+	id 1rAqOA-00Dwth-NC; Wed, 06 Dec 2023 12:48:26 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO9-00FQyJ-5I; Wed, 06 Dec 2023 12:48:25 +0100
+	id 1rAqOA-00FQyu-EX; Wed, 06 Dec 2023 12:48:26 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
 	linux-pwm@vger.kernel.org
-Subject: [PATCH v4 029/115] pwm: rz-mtu3: Make use of pwmchip_parent() macro
-Date: Wed,  6 Dec 2023 12:43:43 +0100
-Message-ID:  <bba8d7647063016eff19712ad67c133a5c0c120e.1701860672.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 037/115] pwm: tiehrpwm: Make use of pwmchip_parent() macro
+Date: Wed,  6 Dec 2023 12:43:51 +0100
+Message-ID:  <05c0a9c4c3d2cc0c21530673d5e2a13ef6ade536.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -31,7 +31,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1662; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=RXUL+Bul1j2UW9auOAT9GLPfTlq3Ul9LsGuF3oz8Iec=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6Ck8tUS4prH/3cZeXbJsBMex4Q1tJiYocNA TtbrQeil3GJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBeggAKCRCPgPtYfRL+ TpqzB/0YNFw9Fw78u4fQWByvFWxRqFwLuH44jvs+g6P0pQ0kpm8NeRp8hyYJRPYrodVoeSIUoOh rw05pPxeX/39telqckp3ZI2LAB5T0f6psT3f64VVuF1tfrantoGex++F6kS/qMXq8TFdDIFMQgO F8dH1qr2BAzkQjQ4L+NJ1p3udKw7ILqu0HJGLDd+9211237vILgp4+kzl6/do6L1IusjCm9gpoM UnSeiy6Y2cKlRnDEQOS4OngJ+q8K2en1Jw+N3sCsw0TBj3zPrtkwqMyQjYKFbyYuv7JWiefAGL7 vZxJTTbVKE0Q898jf3GX8d1uqJZLISDjS6kvlcO66pAioWi4
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3906; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=RVXlxyqQbN8EiIIgF1ezGnwlxppGH5jOUnQlVaRVzn4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6MvV2/x6b2CrhMDynTOXAuUXpjOOhDQJEiU Y3dkFnTgz2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBejAAKCRCPgPtYfRL+ TkrpB/9x9Y98sD8sGMnY4OAmSZeah5Ai9+7tGPfjEYoxlnSP8UVV7bu2U6IekRI50V9u36gtGwT 0LSgFTv5uDGxAsrlhINqEIQf0pDR9nQSpxJiioTqOmzsubxiimcIrS3Yx5Tbqx6le//GuJZiZc/ VAN61cQpyJpUKbwXqFaUu/UATpH6np7dafSaDwKIi35kmC27I1xFCsuOSegyDrbmiamp+lCJvr0 J2dweAYrZkMi4ypvdcUNampfe3FBS12JDROMS0mZpGho2Y0ZJdW5OwLFT3Dx7Io6eRoK2eraf1J YsQpE6fcvP8CNruKDP0762j3zKkIHXRpWngDRPEN23+haZdU
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -45,49 +45,103 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-rz-mtu3.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-tiehrpwm.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rz-mtu3.c b/drivers/pwm/pwm-rz-mtu3.c
-index bdda315b3bd3..45d075560a21 100644
---- a/drivers/pwm/pwm-rz-mtu3.c
-+++ b/drivers/pwm/pwm-rz-mtu3.c
-@@ -274,7 +274,7 @@ static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
- 	int rc;
+diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
+index af231fa74fa9..80e22e373bc5 100644
+--- a/drivers/pwm/pwm-tiehrpwm.c
++++ b/drivers/pwm/pwm-tiehrpwm.c
+@@ -256,7 +256,7 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			if (i == pwm->hwpwm)
+ 				continue;
  
--	rc = pm_runtime_resume_and_get(chip->dev);
-+	rc = pm_runtime_resume_and_get(pwmchip_parent(chip));
- 	if (rc)
- 		return rc;
- 
-@@ -307,7 +307,7 @@ static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+-			dev_err(chip->dev,
++			dev_err(pwmchip_parent(chip),
+ 				"period value conflicts with channel %u\n",
+ 				i);
+ 			return -EINVAL;
+@@ -268,11 +268,11 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	/* Configure clock prescaler to support Low frequency PWM wave */
+ 	if (set_prescale_div(period_cycles/PERIOD_MAX, &ps_divval,
+ 			     &tb_divval)) {
+-		dev_err(chip->dev, "Unsupported values\n");
++		dev_err(pwmchip_parent(chip), "Unsupported values\n");
+ 		return -EINVAL;
  	}
  
- 	state->polarity = PWM_POLARITY_NORMAL;
--	pm_runtime_put(chip->dev);
-+	pm_runtime_put(pwmchip_parent(chip));
+-	pm_runtime_get_sync(chip->dev);
++	pm_runtime_get_sync(pwmchip_parent(chip));
+ 
+ 	/* Update clock prescaler values */
+ 	ehrpwm_modify(pc->mmio_base, TBCTL, TBCTL_CLKDIV_MASK, tb_divval);
+@@ -299,7 +299,7 @@ static int ehrpwm_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	ehrpwm_write(pc->mmio_base, cmp_reg, duty_cycles);
+ 
+-	pm_runtime_put_sync(chip->dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
  
  	return 0;
  }
-@@ -362,7 +362,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (!pwm->state.enabled) {
- 		int rc;
+@@ -323,7 +323,7 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	int ret;
  
--		rc = pm_runtime_resume_and_get(chip->dev);
-+		rc = pm_runtime_resume_and_get(pwmchip_parent(chip));
- 		if (rc)
- 			return rc;
+ 	/* Leave clock enabled on enabling PWM */
+-	pm_runtime_get_sync(chip->dev);
++	pm_runtime_get_sync(pwmchip_parent(chip));
+ 
+ 	/* Disabling Action Qualifier on PWM output */
+ 	if (pwm->hwpwm) {
+@@ -346,8 +346,8 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	/* Enable TBCLK */
+ 	ret = clk_enable(pc->tbclk);
+ 	if (ret) {
+-		dev_err(chip->dev, "Failed to enable TBCLK for %s: %d\n",
+-			dev_name(pc->chip.dev), ret);
++		dev_err(pwmchip_parent(chip), "Failed to enable TBCLK for %s: %d\n",
++			dev_name(pwmchip_parent(chip)), ret);
+ 		return ret;
  	}
-@@ -399,7 +399,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
- 	/* If the PWM is not enabled, turn the clock off again to save power. */
- 	if (!pwm->state.enabled)
--		pm_runtime_put(chip->dev);
-+		pm_runtime_put(pwmchip_parent(chip));
+@@ -385,7 +385,7 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	clk_disable(pc->tbclk);
  
- 	return 0;
+ 	/* Disable clock on PWM disable */
+-	pm_runtime_put_sync(chip->dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
  }
+ 
+ static void ehrpwm_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -393,8 +393,8 @@ static void ehrpwm_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct ehrpwm_pwm_chip *pc = to_ehrpwm_pwm_chip(chip);
+ 
+ 	if (pwm_is_enabled(pwm)) {
+-		dev_warn(chip->dev, "Removing PWM device without disabling\n");
+-		pm_runtime_put_sync(chip->dev);
++		dev_warn(pwmchip_parent(chip), "Removing PWM device without disabling\n");
++		pm_runtime_put_sync(pwmchip_parent(chip));
+ 	}
+ 
+ 	/* set period value to zero on free */
+@@ -523,7 +523,7 @@ static void ehrpwm_pwm_remove(struct platform_device *pdev)
+ 
+ static void ehrpwm_pwm_save_context(struct ehrpwm_pwm_chip *pc)
+ {
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(&pc->chip));
+ 
+ 	pc->ctx.tbctl = ehrpwm_read(pc->mmio_base, TBCTL);
+ 	pc->ctx.tbprd = ehrpwm_read(pc->mmio_base, TBPRD);
+@@ -534,7 +534,7 @@ static void ehrpwm_pwm_save_context(struct ehrpwm_pwm_chip *pc)
+ 	pc->ctx.aqsfrc = ehrpwm_read(pc->mmio_base, AQSFRC);
+ 	pc->ctx.aqcsfrc = ehrpwm_read(pc->mmio_base, AQCSFRC);
+ 
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(&pc->chip));
+ }
+ 
+ static void ehrpwm_pwm_restore_context(struct ehrpwm_pwm_chip *pc)
 -- 
 2.42.0
 
