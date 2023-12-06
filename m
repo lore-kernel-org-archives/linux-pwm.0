@@ -1,31 +1,27 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF0910E7
-	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:42 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC3610D4
+	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:41 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOK-00077o-IK; Wed, 06 Dec 2023 12:48:36 +0100
+	id 1rAqOL-0007NC-7q; Wed, 06 Dec 2023 12:48:37 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOH-00DwwB-EL; Wed, 06 Dec 2023 12:48:33 +0100
+	id 1rAqOJ-00Dwwx-Hz; Wed, 06 Dec 2023 12:48:35 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOH-00FR1d-5L; Wed, 06 Dec 2023 12:48:33 +0100
+	id 1rAqOJ-00FR2P-8u; Wed, 06 Dec 2023 12:48:35 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 078/115] pwm: mxs: Make use of devm_pwmchip_alloc() function
-Date: Wed,  6 Dec 2023 12:44:32 +0100
-Message-ID:  <953de9fc4e4d34d32ce27b7ec6b301cd08c1fff2.1701860672.git.u.kleine-koenig@pengutronix.de>
+	Michael Walle <michael@walle.cc>,
+	linux-pwm@vger.kernel.org
+Subject: [PATCH v4 090/115] pwm: sl28cpld: Make use of devm_pwmchip_alloc() function
+Date: Wed,  6 Dec 2023 12:44:44 +0100
+Message-ID:  <9d30dfa31b849d57a1769a39af597e102e3da3c8.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -36,7 +32,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2587; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=3nUrfV60h5KmytKDcbHfZr4EO0tXGSDK6pbsReL2Kxs=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtSCuE9av9bKBroH1LjrafSsLtf5OE3OWLiJw75ZXFL23 OvelTKdjMYsDIxcDLJiiiz2jWsyrarkIjvX/rsMM4iVCWQKAxenAEzkTSH7/6By74zPaxm01lY4 Hdq7wjlM82vIldBtr6b8nDvtPK93rPA2iY+u7dvj1Dzz9uzO3n5594e93bna7IwfpRX/Hn5UU3y 2eZHyJuacwg1VJ7YY+G6Qi2S6EDXzSP1lCyevawoL9tutiggxkd/fmRrQUMTXE2Y2qeyHSYE7k3 TNrk6tINlgIfNv8zlLpMP2sj48kCLgwdedq38lrvRM869ER8m8DHEmhqzWbdubOVXmlDfxMCdMX 6jy7EDqa+vJXDs2ZG6UTjkkkanA+XrmYw9Ru4/zHbnZp935ecSn6LIbu5HM/y1fJBgZlbcVy6/W jmtUfNd9Re5u5R7tH1Vvq+2/Nq7o2Hrn8B73+hs/H9wDAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1747; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=sswbAV+zBzYeVO1IFM+012HWgn2W/2K9ehtnV0csJaM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF8PspHlg7zn9C03QCV2SnDhFugG1esAFzVxi FNxV8ivP1CJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBfDwAKCRCPgPtYfRL+ Ti72B/4pNkdPlVOFrMXYTA1fq8wHMZBCcrf3pBZLmSZTjruuWP7iZiTXvdLLGCPehmytC3cqykf dnkrAyub7M5PyAUZXlP2/oGhdqQWPWB8wBOcUV2mNk/tdoVzJE2B8XwTeybv2e2QiKWTSN2v1LO XzlVU74Q1S/HboMEagiBGcxl6f9NNStpI/+UkK7yumbrZ34YNVt+FROtn41bCjB+l9cSGZMQieC w8+vwA37slTiwXjUqAm+vyQe/EINxCghBXoXPGUYmi+LODhiBZeCp55HQ4cIRCJceSIGPGRqNws l3c1ncU2lWxJm5OaiZ/yyYeEFZsnHZbdjd85Rh+HE8qpMVfz
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -44,85 +40,60 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-mxs driver to further changes of the pwm core
+This prepares the pwm-sl28cpld driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-mxs.c | 32 ++++++++++++++++++--------------
- 1 file changed, 18 insertions(+), 14 deletions(-)
+ drivers/pwm/pwm-sl28cpld.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index 1b5e787d78f1..8cad214b1c29 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -37,12 +37,14 @@ static const u8 cdiv_shift[PERIOD_CDIV_MAX] = {
- };
+diff --git a/drivers/pwm/pwm-sl28cpld.c b/drivers/pwm/pwm-sl28cpld.c
+index 88b01ff9e460..934378d6a002 100644
+--- a/drivers/pwm/pwm-sl28cpld.c
++++ b/drivers/pwm/pwm-sl28cpld.c
+@@ -81,14 +81,13 @@
+ 	regmap_write((priv)->regmap, (priv)->offset + (reg), (val))
  
- struct mxs_pwm_chip {
+ struct sl28cpld_pwm {
 -	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
+ 	struct regmap *regmap;
+ 	u32 offset;
  };
  
--#define to_mxs_pwm_chip(_chip) container_of(_chip, struct mxs_pwm_chip, chip)
-+static inline struct mxs_pwm_chip *to_mxs_pwm_chip(struct pwm_chip *chip)
-+{
-+	return pwmchip_get_drvdata(chip);
-+}
- 
- static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			 const struct pwm_state *state)
-@@ -120,12 +122,21 @@ static const struct pwm_ops mxs_pwm_ops = {
- static int mxs_pwm_probe(struct platform_device *pdev)
+ static inline struct sl28cpld_pwm *sl28cpld_pwm_from_chip(struct pwm_chip *chip)
  {
- 	struct device_node *np = pdev->dev.of_node;
-+	struct pwm_chip *chip;
- 	struct mxs_pwm_chip *mxs;
-+	u32 npwm;
- 	int ret;
+-	return container_of(chip, struct sl28cpld_pwm, chip);
++	return pwmchip_get_drvdata(chip);
+ }
  
--	mxs = devm_kzalloc(&pdev->dev, sizeof(*mxs), GFP_KERNEL);
--	if (!mxs)
+ static int sl28cpld_pwm_get_state(struct pwm_chip *chip,
+@@ -213,9 +212,10 @@ static int sl28cpld_pwm_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
 -		return -ENOMEM;
-+	ret = of_property_read_u32(np, "fsl,pwm-number", &npwm);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
-+		return ret;
-+	}
-+
-+	chip = devm_pwmchip_alloc(&pdev->dev, npwm, sizeof(*mxs));
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*priv));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	mxs = to_mxs_pwm_chip(chip);
++	priv = sl28cpld_pwm_from_chip(chip);
  
- 	mxs->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(mxs->base))
-@@ -135,21 +146,14 @@ static int mxs_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(mxs->clk))
- 		return PTR_ERR(mxs->clk);
+ 	priv->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+ 	if (!priv->regmap) {
+@@ -231,10 +231,7 @@ static int sl28cpld_pwm_probe(struct platform_device *pdev)
+ 	}
  
--	mxs->chip.dev = &pdev->dev;
--	mxs->chip.ops = &mxs_pwm_ops;
--
--	ret = of_property_read_u32(np, "fsl,pwm-number", &mxs->chip.npwm);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
--		return ret;
--	}
-+	chip->ops = &mxs_pwm_ops;
+ 	/* Initialize the pwm_chip structure */
+-	chip = &priv->chip;
+-	chip->dev = &pdev->dev;
+ 	chip->ops = &sl28cpld_pwm_ops;
+-	chip->npwm = 1;
  
- 	/* FIXME: Only do this if the PWM isn't already running */
- 	ret = stmp_reset_block(mxs->base);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to reset PWM\n");
- 
--	ret = devm_pwmchip_add(&pdev->dev, &mxs->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to add pwm chip %d\n", ret);
- 		return ret;
+ 	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret) {
 -- 
 2.42.0
 
