@@ -1,26 +1,32 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1BA18F
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E6810CA
 	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:40 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOL-0007IW-Qe; Wed, 06 Dec 2023 12:48:37 +0100
+	id 1rAqOC-0006PQ-PJ; Wed, 06 Dec 2023 12:48:28 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOI-00Dwwk-Tk; Wed, 06 Dec 2023 12:48:34 +0100
+	id 1rAqOB-00Dwu5-ON; Wed, 06 Dec 2023 12:48:27 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOI-00FR2D-Kt; Wed, 06 Dec 2023 12:48:34 +0100
+	id 1rAqOB-00FQzI-F3; Wed, 06 Dec 2023 12:48:27 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
+	Jonathan Corbet <corbet@lwn.net>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	James Clark <james.clark@arm.com>,
+	linux-doc@vger.kernel.org,
 	linux-pwm@vger.kernel.org
-Subject: [PATCH v4 087/115] pwm: rz-mtu3: Make use of devm_pwmchip_alloc() function
-Date: Wed,  6 Dec 2023 12:44:41 +0100
-Message-ID:  <36b677868023c40bfe90fea01ec37c54787a4b29.1701860672.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 043/115] pwm: Provide devm_pwmchip_alloc() function
+Date: Wed,  6 Dec 2023 12:43:57 +0100
+Message-ID:  <593e5cdd23808295c969ad402711423dc3dbc56e.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -31,7 +37,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3530; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=FtXGfMmcsXm4AX7OCNI/4XrVkT/oAKv6x1Ki3bjLRrw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF8MnExHMbyCyntmzFbcA6qUKpcRA8Dy/f0dn bkMQ0mgPLuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBfDAAKCRCPgPtYfRL+ Tu7jB/4kMCcSOmtzeoX3/IuL5S/jd5+vWc8TxM88tTxyzGQ9v7pJ1++wXt/3SKxKLqlUNCO84NF 86klNqImONZIW18s19CaiKEXqoQAVVVUg7FWjEpE3vOtw1F7iYhZynIZjwuKC+IvOqnd3/VJJZ7 GpbUg9uWRw9I3Dvw2VasbjbCHZeWauAEByRlYqp/Hm4s95tT9LEc1A5bFGbrcHOWqg+CfzR5pv5 BgbB8yinYZjVgz+i+GHkYSZEv3M/EYD12q0BptJVEZ0LmNr37hzctObT4jfNuUtDZ+6o7JYrjzg sQEFK7BLaazEfdDmTDiUlKyHoDOD4bsZ6vipNKJ5n5OnAtvz
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4565; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=crFEY9yLfwgz3JHLxY/zoxZjOtaQPP+LP1dr7ok2m9I=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6TP6S2JvkxtilHRBU3Jor9/Clg/qZP5JmSz 0s2pRFQ/xKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBekwAKCRCPgPtYfRL+ Tp0dB/wNx1vtyTq8BTK0qHKsxUepi81hP+QjSJofOeRP6NE2D2f0dpqbdygwd/PFLGV9Svod4ou HrtrZqa6zpdprRSDrVoNVFd+V28gjBiPaLkOT+QH8u5Eo6Klxvthlt8LrqomsvYeNoiWYpolKeP pHTkLM9HlJtgBt62D7YjlViPAPD6JFA863Q1RjBJcW9MpHMNT2rbVph8LkQ2S1enf5utgX4R9dd gKpLdpiYNPxzyIz5CvHIIG+T4RFyimRwnQHHcfNCj0IRRw30DbKCqvgKo9R1Csz2HCIxDKcBAxA bttXAChb4kXPk0Ux/3VfWuJ3444mxXJ/Asf2Y4265zH2ofpI
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -39,107 +45,119 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-rz-mtu3 driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+This function allocates a struct pwm_chip and driver data. Compared to
+the status quo the split into pwm_chip and driver data is new, otherwise
+it doesn't change anything relevant (yet).
+
+The intention is that after all drivers are switched to use this
+allocation function, its possible to add a struct device to struct
+pwm_chip to properly track the latter's lifetime without touching all
+drivers again. Proper lifetime tracking is a necessary precondition to
+introduce character device support for PWMs (that implements atomic
+setting and doesn't suffer from the sysfs overhead of the /sys/class/pwm
+userspace support).
+
+The new function pwmchip_priv() (obviously?) only works for chips
+allocated with devm_pwmchip_alloc().
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-rz-mtu3.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ .../driver-api/driver-model/devres.rst        |  1 +
+ Documentation/driver-api/pwm.rst              | 10 ++++----
+ drivers/pwm/core.c                            | 25 +++++++++++++++++++
+ include/linux/pwm.h                           |  3 +++
+ 4 files changed, 34 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rz-mtu3.c b/drivers/pwm/pwm-rz-mtu3.c
-index 45d075560a21..a6c75f708abf 100644
---- a/drivers/pwm/pwm-rz-mtu3.c
-+++ b/drivers/pwm/pwm-rz-mtu3.c
-@@ -72,7 +72,6 @@ struct rz_mtu3_pwm_channel {
-  */
+diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
+index c5f99d834ec5..e4df72c408d2 100644
+--- a/Documentation/driver-api/driver-model/devres.rst
++++ b/Documentation/driver-api/driver-model/devres.rst
+@@ -420,6 +420,7 @@ POWER
+   devm_reboot_mode_unregister()
  
- struct rz_mtu3_pwm_chip {
--	struct pwm_chip chip;
- 	struct clk *clk;
- 	struct mutex lock;
- 	unsigned long rate;
-@@ -92,7 +91,7 @@ static const struct rz_mtu3_channel_io_map channel_map[] = {
+ PWM
++  devm_pwmchip_alloc()
+   devm_pwmchip_add()
+   devm_pwm_get()
+   devm_fwnode_pwm_get()
+diff --git a/Documentation/driver-api/pwm.rst b/Documentation/driver-api/pwm.rst
+index bb264490a87a..994ea5368805 100644
+--- a/Documentation/driver-api/pwm.rst
++++ b/Documentation/driver-api/pwm.rst
+@@ -134,11 +134,11 @@ to implement the pwm_*() functions itself. This means that it's impossible
+ to have multiple PWM drivers in the system. For this reason it's mandatory
+ for new drivers to use the generic PWM framework.
  
- static inline struct rz_mtu3_pwm_chip *to_rz_mtu3_pwm_chip(struct pwm_chip *chip)
- {
--	return container_of(chip, struct rz_mtu3_pwm_chip, chip);
-+	return pwmchip_get_drvdata(chip);
+-A new PWM controller/chip can be added using pwmchip_add() and removed
+-again with pwmchip_remove(). pwmchip_add() takes a filled in struct
+-pwm_chip as argument which provides a description of the PWM chip, the
+-number of PWM devices provided by the chip and the chip-specific
+-implementation of the supported PWM operations to the framework.
++A new PWM controller/chip can be allocated using devm_pwmchip_alloc, then added
++using pwmchip_add() and removed again with pwmchip_remove(). pwmchip_add()
++takes a filled in struct pwm_chip as argument which provides a description of
++the PWM chip, the number of PWM devices provided by the chip and the
++chip-specific implementation of the supported PWM operations to the framework.
+ 
+ When implementing polarity support in a PWM driver, make sure to respect the
+ signal conventions in the PWM framework. By definition, normal polarity
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index eea93ed8a49b..fda72963016b 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -198,6 +198,31 @@ static bool pwm_ops_check(const struct pwm_chip *chip)
+ 	return true;
  }
  
- static void rz_mtu3_pwm_read_tgr_registers(struct rz_mtu3_pwm_channel *priv,
-@@ -219,7 +218,7 @@ static int rz_mtu3_pwm_enable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
- 	u8 val;
- 	int rc;
- 
--	rc = pm_runtime_resume_and_get(rz_mtu3_pwm->chip.dev);
-+	rc = pm_runtime_resume_and_get(pwmchip_parent(pwm->chip));
- 	if (rc)
- 		return rc;
- 
-@@ -265,7 +264,7 @@ static void rz_mtu3_pwm_disable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
- 
- 	mutex_unlock(&rz_mtu3_pwm->lock);
- 
--	pm_runtime_put_sync(rz_mtu3_pwm->chip.dev);
-+	pm_runtime_put_sync(pwmchip_parent(pwm->chip));
- }
- 
- static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -462,24 +461,27 @@ static DEFINE_RUNTIME_DEV_PM_OPS(rz_mtu3_pwm_pm_ops,
- 
- static void rz_mtu3_pwm_pm_disable(void *data)
- {
--	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = data;
-+	struct pwm_chip *chip = data;
-+	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
- 
- 	clk_rate_exclusive_put(rz_mtu3_pwm->clk);
--	pm_runtime_disable(rz_mtu3_pwm->chip.dev);
--	pm_runtime_set_suspended(rz_mtu3_pwm->chip.dev);
-+	pm_runtime_disable(pwmchip_parent(chip));
-+	pm_runtime_set_suspended(pwmchip_parent(chip));
- }
- 
- static int rz_mtu3_pwm_probe(struct platform_device *pdev)
- {
- 	struct rz_mtu3 *parent_ddata = dev_get_drvdata(pdev->dev.parent);
++static void *pwmchip_priv(struct pwm_chip *chip)
++{
++	return (void *)chip + sizeof(*chip);
++}
++
++struct pwm_chip *devm_pwmchip_alloc(struct device *parent, unsigned int npwm, size_t sizeof_priv)
++{
 +	struct pwm_chip *chip;
- 	struct rz_mtu3_pwm_chip *rz_mtu3_pwm;
- 	struct device *dev = &pdev->dev;
- 	unsigned int i, j = 0;
- 	int ret;
++	size_t alloc_size;
++
++	alloc_size = size_add(sizeof(*chip), sizeof_priv);
++
++	chip = devm_kzalloc(parent, alloc_size, GFP_KERNEL);
++	if (!chip)
++		return ERR_PTR(-ENOMEM);
++
++	chip->dev = parent;
++	chip->npwm = npwm;
++
++	pwmchip_set_drvdata(chip, pwmchip_priv(chip));
++
++	return chip;
++}
++EXPORT_SYMBOL_GPL(devm_pwmchip_alloc);
++
+ /**
+  * __pwmchip_add() - register a new PWM chip
+  * @chip: the PWM chip to add
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index e07b7a0c8471..b410ff38beb5 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -5,6 +5,7 @@
+ #include <linux/err.h>
+ #include <linux/mutex.h>
+ #include <linux/of.h>
++#include <linux/compiler_attributes.h>
  
--	rz_mtu3_pwm = devm_kzalloc(&pdev->dev, sizeof(*rz_mtu3_pwm), GFP_KERNEL);
--	if (!rz_mtu3_pwm)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, RZ_MTU3_MAX_PWM_CHANNELS, sizeof(*rz_mtu3_pwm));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
+ struct pwm_chip;
  
- 	rz_mtu3_pwm->clk = parent_ddata->clk;
+@@ -403,6 +404,8 @@ static inline void pwm_disable(struct pwm_device *pwm)
+ int pwm_capture(struct pwm_device *pwm, struct pwm_capture *result,
+ 		unsigned long timeout);
  
-@@ -514,15 +516,13 @@ static int rz_mtu3_pwm_probe(struct platform_device *pdev)
- 
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
--	rz_mtu3_pwm->chip.dev = &pdev->dev;
- 	ret = devm_add_action_or_reset(&pdev->dev, rz_mtu3_pwm_pm_disable,
--				       rz_mtu3_pwm);
-+				       chip);
- 	if (ret < 0)
- 		return ret;
- 
--	rz_mtu3_pwm->chip.ops = &rz_mtu3_pwm_ops;
--	rz_mtu3_pwm->chip.npwm = RZ_MTU3_MAX_PWM_CHANNELS;
--	ret = devm_pwmchip_add(&pdev->dev, &rz_mtu3_pwm->chip);
-+	chip->ops = &rz_mtu3_pwm_ops;
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
- 
++struct pwm_chip *devm_pwmchip_alloc(struct device *parent, unsigned int npwm, size_t sizeof_priv);
++
+ int __pwmchip_add(struct pwm_chip *chip, struct module *owner);
+ #define pwmchip_add(chip) __pwmchip_add(chip, THIS_MODULE)
+ void pwmchip_remove(struct pwm_chip *chip);
 -- 
 2.42.0
 
