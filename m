@@ -1,31 +1,26 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE96C9
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716FFD5A
 	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:28 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO8-00069j-9Y; Wed, 06 Dec 2023 12:48:24 +0100
+	id 1rAqOA-0006N9-Va; Wed, 06 Dec 2023 12:48:26 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO7-00DwsT-LQ; Wed, 06 Dec 2023 12:48:23 +0100
+	id 1rAqOA-00Dwtd-IG; Wed, 06 Dec 2023 12:48:26 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO7-00FQxb-CR; Wed, 06 Dec 2023 12:48:23 +0100
+	id 1rAqOA-00FQyq-9b; Wed, 06 Dec 2023 12:48:26 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 018/115] pwm: imx27: Make use of pwmchip_parent() macro
-Date: Wed,  6 Dec 2023 12:43:32 +0100
-Message-ID:  <5e8f73d0742507f4e7ddad050d2e79812a1cd62f.1701860672.git.u.kleine-koenig@pengutronix.de>
+	linux-pwm@vger.kernel.org
+Subject: [PATCH v4 036/115] pwm: tiecap: Make use of pwmchip_parent() macro
+Date: Wed,  6 Dec 2023 12:43:50 +0100
+Message-ID:  <3b43a4cce6061c6dc64a3d28b6986ae4d7e9d1ce.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -36,7 +31,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1477; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=21gVfHE440/T65WsIsIoIm1SwOOZ2P7hANAjmVXXXN4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF5rDa/KaXKZb0ymZqUkNMlwSUb3IEXUaV5oG Taafl8zC/2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBeawAKCRCPgPtYfRL+ TssSB/sHh+RrIESyXwRdBPXdhvRwnfneE5DVDTV+o2xuLEnePwDaEjBS3J5EFP6UVIwjtS1Qi0G cYaJGsJl0oP7ysaElMmn1S2yzu3q5kpzq4Bd/kDOpN93GRk7FNQvoOBoI/buoEWWg4rnh0/SiPQ LYdX9BxcLaPuSpBQID2Tr1/KTpPUeKT1aeqlUDoHRVwuY4Mtacl3iuYO3jf/ka1JdVCO3eIA0qb yqwD+AAUcWal2bu/i1nxhT9fy6PZ3EgdKZhf8JCerEczyL9bj/h/Ij3A7X+BNtQCAGrxYWIXoQN SgeWlxVjqED0nTJ62wrauWKExhm6Sgz371LQdE9njkx8BJaE
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2801; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=ppATWHEHhEGXwkBa8MbiFsBDgYN2JkTUM2rhAJWXqHA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6KJCWp2WDXPL+oT2N6Aa5z7kpLLnPoy+EL7 cc7m8IB9WOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBeigAKCRCPgPtYfRL+ TsFQB/9A6obPv8XBEymgque1vNX6JkagLSnNJy4sonvXuduYux197xHo2mMh4ETggbYWY49kBPG l34tpQ3A7ZR18qM46O1TRZ6SteVSwlPEZvTMLr2J6P7uN+JuFGdLYmZtUyBibrsQ6GZD6v/zGuY 8S7uIQVCOiR0TboQaT/m5gnPDiF5KsdyJYDt15F0D1YvEgkUo2Y9y4nm0SqK27sWuRW/YM+LZiT U2DfKL+Lj8oAn9Y3qkcICOMrXj+dICtXMuo7Z7Qp1p9a9lg3SJV5z2syNr0FxC7V53gsTH+MkET n+VPDRy4QsjSpnAFOjW+iRRJYuzd8txxVbNf7+YcLSiJ4KWB
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -50,40 +45,81 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx27.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-tiecap.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 7d9bc43f12b0..5d796453519a 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -145,7 +145,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
- 		state->polarity = PWM_POLARITY_INVERSED;
- 		break;
- 	default:
--		dev_warn(chip->dev, "can't set polarity, output disconnected");
-+		dev_warn(pwmchip_parent(chip), "can't set polarity, output disconnected");
+diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
+index d974f4414ac9..8c4f67774f24 100644
+--- a/drivers/pwm/pwm-tiecap.c
++++ b/drivers/pwm/pwm-tiecap.c
+@@ -70,7 +70,7 @@ static int ecap_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		duty_cycles = (u32)c;
  	}
  
- 	prescaler = MX3_PWMCR_PRESCALER_GET(val);
-@@ -177,7 +177,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
- static void pwm_imx27_sw_reset(struct pwm_chip *chip)
- {
- 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
--	struct device *dev = chip->dev;
-+	struct device *dev = pwmchip_parent(chip);
- 	int wait_count = 0;
- 	u32 cr;
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(chip));
  
-@@ -196,7 +196,7 @@ static void pwm_imx27_wait_fifo_slot(struct pwm_chip *chip,
- 				     struct pwm_device *pwm)
+ 	value = readw(pc->mmio_base + ECCTL2);
+ 
+@@ -100,7 +100,7 @@ static int ecap_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		writew(value, pc->mmio_base + ECCTL2);
+ 	}
+ 
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
+ 
+ 	return 0;
+ }
+@@ -111,7 +111,7 @@ static int ecap_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct ecap_pwm_chip *pc = to_ecap_pwm_chip(chip);
+ 	u16 value;
+ 
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(chip));
+ 
+ 	value = readw(pc->mmio_base + ECCTL2);
+ 
+@@ -124,7 +124,7 @@ static int ecap_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	writew(value, pc->mmio_base + ECCTL2);
+ 
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
+ 
+ 	return 0;
+ }
+@@ -135,7 +135,7 @@ static int ecap_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	u16 value;
+ 
+ 	/* Leave clock enabled on enabling PWM */
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(chip));
+ 
+ 	/*
+ 	 * Enable 'Free run Time stamp counter mode' to start counter
+@@ -162,7 +162,7 @@ static void ecap_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	writew(value, pc->mmio_base + ECCTL2);
+ 
+ 	/* Disable clock on PWM disable */
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
+ }
+ 
+ static int ecap_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -271,11 +271,11 @@ static void ecap_pwm_remove(struct platform_device *pdev)
+ 
+ static void ecap_pwm_save_context(struct ecap_pwm_chip *pc)
  {
- 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
--	struct device *dev = chip->dev;
-+	struct device *dev = pwmchip_parent(chip);
- 	unsigned int period_ms;
- 	int fifoav;
- 	u32 sr;
+-	pm_runtime_get_sync(pc->chip.dev);
++	pm_runtime_get_sync(pwmchip_parent(&pc->chip));
+ 	pc->ctx.ecctl2 = readw(pc->mmio_base + ECCTL2);
+ 	pc->ctx.cap4 = readl(pc->mmio_base + CAP4);
+ 	pc->ctx.cap3 = readl(pc->mmio_base + CAP3);
+-	pm_runtime_put_sync(pc->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(&pc->chip));
+ }
+ 
+ static void ecap_pwm_restore_context(struct ecap_pwm_chip *pc)
 -- 
 2.42.0
 
