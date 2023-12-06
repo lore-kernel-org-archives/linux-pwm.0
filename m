@@ -1,31 +1,26 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5B61BD
-	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:29 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA79137
+	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:30 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOA-0006Ls-CS; Wed, 06 Dec 2023 12:48:26 +0100
+	id 1rAqOC-0006QJ-G0; Wed, 06 Dec 2023 12:48:28 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO9-00DwtN-Uf; Wed, 06 Dec 2023 12:48:25 +0100
+	id 1rAqOB-00Dwu9-Sy; Wed, 06 Dec 2023 12:48:27 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO9-00FQya-Li; Wed, 06 Dec 2023 12:48:25 +0100
+	id 1rAqOB-00FQzM-K6; Wed, 06 Dec 2023 12:48:27 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	linux-pwm@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 032/115] pwm: stm32-lp: Make use of pwmchip_parent() macro
-Date: Wed,  6 Dec 2023 12:43:46 +0100
-Message-ID:  <ba8f7a49a8206d24854777b65c2e679f93852fe3.1701860672.git.u.kleine-koenig@pengutronix.de>
+	linux-pwm@vger.kernel.org
+Subject: [PATCH v4 044/115] pwm: ab8500: Make use of devm_pwmchip_alloc() function
+Date: Wed,  6 Dec 2023 12:43:58 +0100
+Message-ID:  <ec02fc2671420a2dce401be5506ad041bb44d817.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -36,7 +31,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1687; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=8GTUfYbqD+5GD5mrEVpFS9bTtV3cMkLFhtuMi1iJw5k=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6G7un905HHfA/LXXzvzNjnU6AdxmMub7RNl LYax0QqA3CJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBehgAKCRCPgPtYfRL+ Tm1rCAC3RTd0mfQnKD8mThUZ+hnBLc7lcxLx0DmKDP+7CnPzGnM8NWYuqHckQqHg1cHs/zqtUeC h5IM1PIL1TD5IXfQqHBIIcQX/CC43gCnGsSCMqKoEry+CWG9cnI6E6pQ9FshAnl6JANs79QHpLb 792WjXMkJMR3zoDMJi+xaKQcx/fcByFvwrmxNDZ+UuDkj4Up2Ja3ujwpMu/5CWqFo0Fa/v9wwMA UAZNEHSldWcdwTj3X+s9yysXYrP0lQ9bM2xPa+iW0qXVYgJETvjFbxqXFfIoKijGTIhyNj17o8z vr1FflwXP+sBNVRLlER3ASS9bDX30n2L1gN8nPzFETGhruTx
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2015; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=EpaqVKfoXGh212IAe6dkd/Asvh1/g9kSGFS62OE534E=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6U0+9FWnqMv49gGBKB56godFKxKlZOGZqPq v08WVpPScSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBelAAKCRCPgPtYfRL+ ThiYCACYtee3Oj2fboGhvK5DYoeKJ3R96b2LHxFGAb9es8/FZc8zOOYEBB7VF4sQDUoZ8LAs7zG APNJLRfr43bLko/ItZdVKvfRxjau6d//LvQSTtvYkPAwCFfjj2uHW/FZflbS6Aa16oTAh/X3SlZ iKXcIILgYGEvFCqMxSNGTuGL/7+gbjS88+0goByJ2ZhxWkP2pD1fRYZObgyLK+bnGMavzPv4y57 l9e7jkawr8RhiLl1FhVwoeks7hpMe2kQh0W8LnpM3OQWgEK6aqckjp/ELw+ZmP9Ir7YW1KREYjy w4CFsvbnjws7kZ7p+dhdKcPgTc5NK0jxqBvdb9dg4D1L/GZj
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -44,46 +39,66 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the macro
-provided for exactly this purpose.
+This prepares the pwm-ab8500 driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-stm32-lp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-ab8500.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-index 439068f3eca1..3754faeca838 100644
---- a/drivers/pwm/pwm-stm32-lp.c
-+++ b/drivers/pwm/pwm-stm32-lp.c
-@@ -61,7 +61,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	do_div(div, NSEC_PER_SEC);
- 	if (!div) {
- 		/* Clock is too slow to achieve requested period. */
--		dev_dbg(priv->chip.dev, "Can't reach %llu ns\n", state->period);
-+		dev_dbg(pwmchip_parent(chip), "Can't reach %llu ns\n", state->period);
- 		return -EINVAL;
- 	}
+diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c
+index 719e4ccf1800..f000adab85b0 100644
+--- a/drivers/pwm/pwm-ab8500.c
++++ b/drivers/pwm/pwm-ab8500.c
+@@ -24,13 +24,12 @@
+ #define AB8500_PWM_CLKRATE 9600000
  
-@@ -69,7 +69,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	while (div > STM32_LPTIM_MAX_ARR) {
- 		presc++;
- 		if ((1 << presc) > STM32_LPTIM_MAX_PRESCALER) {
--			dev_err(priv->chip.dev, "max prescaler exceeded\n");
-+			dev_err(pwmchip_parent(chip), "max prescaler exceeded\n");
- 			return -EINVAL;
- 		}
- 		div = prd >> presc;
-@@ -130,7 +130,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 				       (val & STM32_LPTIM_CMPOK_ARROK) == STM32_LPTIM_CMPOK_ARROK,
- 				       100, 1000);
- 	if (ret) {
--		dev_err(priv->chip.dev, "ARR/CMP registers write issue\n");
-+		dev_err(pwmchip_parent(chip), "ARR/CMP registers write issue\n");
- 		goto err;
- 	}
- 	ret = regmap_write(priv->regmap, STM32_LPTIM_ICR,
+ struct ab8500_pwm_chip {
+-	struct pwm_chip chip;
+ 	unsigned int hwid;
+ };
+ 
+ static struct ab8500_pwm_chip *ab8500_pwm_from_chip(struct pwm_chip *chip)
+ {
+-	return container_of(chip, struct ab8500_pwm_chip, chip);
++	return pwmchip_get_drvdata(chip);
+ }
+ 
+ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -185,6 +184,7 @@ static const struct pwm_ops ab8500_pwm_ops = {
+ 
+ static int ab8500_pwm_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct ab8500_pwm_chip *ab8500;
+ 	int err;
+ 
+@@ -195,16 +195,16 @@ static int ab8500_pwm_probe(struct platform_device *pdev)
+ 	 * Nothing to be done in probe, this is required to get the
+ 	 * device which is required for ab8500 read and write
+ 	 */
+-	ab8500 = devm_kzalloc(&pdev->dev, sizeof(*ab8500), GFP_KERNEL);
+-	if (ab8500 == NULL)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*ab8500));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
+ 
+-	ab8500->chip.dev = &pdev->dev;
+-	ab8500->chip.ops = &ab8500_pwm_ops;
+-	ab8500->chip.npwm = 1;
++	ab8500 = ab8500_pwm_from_chip(chip);
++
++	chip->ops = &ab8500_pwm_ops;
+ 	ab8500->hwid = pdev->id - 1;
+ 
+-	err = devm_pwmchip_add(&pdev->dev, &ab8500->chip);
++	err = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (err < 0)
+ 		return dev_err_probe(&pdev->dev, err, "Failed to add pwm chip\n");
+ 
 -- 
 2.42.0
 
