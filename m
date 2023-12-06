@@ -1,31 +1,31 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3C01BF
-	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:32 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5B61BD
+	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:29 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOA-0006Mp-Qw; Wed, 06 Dec 2023 12:48:26 +0100
+	id 1rAqOA-0006Ls-CS; Wed, 06 Dec 2023 12:48:26 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOA-00DwtZ-DQ; Wed, 06 Dec 2023 12:48:26 +0100
+	id 1rAqO9-00DwtN-Uf; Wed, 06 Dec 2023 12:48:25 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqOA-00FQym-4N; Wed, 06 Dec 2023 12:48:26 +0100
+	id 1rAqO9-00FQya-Li; Wed, 06 Dec 2023 12:48:25 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
+	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
 	linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev
-Subject: [PATCH v4 035/115] pwm: sun4i: Make use of pwmchip_parent() macro
-Date: Wed,  6 Dec 2023 12:43:49 +0100
-Message-ID:  <e3f7af28e1a9c18e021be4d2180be68015a345e1.1701860672.git.u.kleine-koenig@pengutronix.de>
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v4 032/115] pwm: stm32-lp: Make use of pwmchip_parent() macro
+Date: Wed,  6 Dec 2023 12:43:46 +0100
+Message-ID:  <ba8f7a49a8206d24854777b65c2e679f93852fe3.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -36,7 +36,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1321; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=3GBsTcGHc+vpgWtdJ9fkda6/sPdRCK00xa66RjIchzs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6JVAIF1g8nQTkYrQRAJKu8ySNZnIG+yXrCc KDfkRfTVkuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBeiQAKCRCPgPtYfRL+ Tsn1CACLP/GU/FeH8EqTceSD1WrlBRk44zrR2+OtiO92fFXpgfUFuVNaWFvY64lD8JIlS8YJEt1 ipeoSEdsOThQ/9kkVq5IHR0Fb1O1RMq8PxeThJjfV721v6jqolDTtSEefXooSPoaGXWqiqk7ACC aGsbjVwXosiGTBAHxNIxYr+swOyy/fOKctQMpdGSP9XJwjgkURFVAEa1kG8S8cwQHNlavsNdKMj MeZ5LnlB3ad0KU4WR/gzXf5dP33T/zFKLaQ3CQnhxWyXhcJXca8UwQGkjD05kOv116LzUZ+6tvM uLe+Cu8ThrOEG/Bt0eih8x02tM5XHEST0y3xmMIQxzjLyqRB
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1687; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=8GTUfYbqD+5GD5mrEVpFS9bTtV3cMkLFhtuMi1iJw5k=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6G7un905HHfA/LXXzvzNjnU6AdxmMub7RNl LYax0QqA3CJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBehgAKCRCPgPtYfRL+ Tm1rCAC3RTd0mfQnKD8mThUZ+hnBLc7lcxLx0DmKDP+7CnPzGnM8NWYuqHckQqHg1cHs/zqtUeC h5IM1PIL1TD5IXfQqHBIIcQX/CC43gCnGsSCMqKoEry+CWG9cnI6E6pQ9FshAnl6JANs79QHpLb 792WjXMkJMR3zoDMJi+xaKQcx/fcByFvwrmxNDZ+UuDkj4Up2Ja3ujwpMu/5CWqFo0Fa/v9wwMA UAZNEHSldWcdwTj3X+s9yysXYrP0lQ9bM2xPa+iW0qXVYgJETvjFbxqXFfIoKijGTIhyNj17o8z vr1FflwXP+sBNVRLlER3ASS9bDX30n2L1gN8nPzFETGhruTx
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -48,34 +48,42 @@ struct pwm_chip::dev is about to change. To not have to touch this
 driver in the same commit as struct pwm_chip::dev, use the macro
 provided for exactly this purpose.
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-sun4i.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-stm32-lp.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 1a439025540d..44edf1ce5739 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -245,7 +245,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (!cstate.enabled) {
- 		ret = clk_prepare_enable(sun4i_pwm->clk);
- 		if (ret) {
--			dev_err(chip->dev, "failed to enable PWM clock\n");
-+			dev_err(pwmchip_parent(chip), "failed to enable PWM clock\n");
- 			return ret;
- 		}
+diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
+index 439068f3eca1..3754faeca838 100644
+--- a/drivers/pwm/pwm-stm32-lp.c
++++ b/drivers/pwm/pwm-stm32-lp.c
+@@ -61,7 +61,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	do_div(div, NSEC_PER_SEC);
+ 	if (!div) {
+ 		/* Clock is too slow to achieve requested period. */
+-		dev_dbg(priv->chip.dev, "Can't reach %llu ns\n", state->period);
++		dev_dbg(pwmchip_parent(chip), "Can't reach %llu ns\n", state->period);
+ 		return -EINVAL;
  	}
-@@ -253,7 +253,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	ret = sun4i_pwm_calculate(sun4i_pwm, state, &duty, &period, &prescaler,
- 				  &bypass);
+ 
+@@ -69,7 +69,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	while (div > STM32_LPTIM_MAX_ARR) {
+ 		presc++;
+ 		if ((1 << presc) > STM32_LPTIM_MAX_PRESCALER) {
+-			dev_err(priv->chip.dev, "max prescaler exceeded\n");
++			dev_err(pwmchip_parent(chip), "max prescaler exceeded\n");
+ 			return -EINVAL;
+ 		}
+ 		div = prd >> presc;
+@@ -130,7 +130,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 				       (val & STM32_LPTIM_CMPOK_ARROK) == STM32_LPTIM_CMPOK_ARROK,
+ 				       100, 1000);
  	if (ret) {
--		dev_err(chip->dev, "period exceeds the maximum value\n");
-+		dev_err(pwmchip_parent(chip), "period exceeds the maximum value\n");
- 		if (!cstate.enabled)
- 			clk_disable_unprepare(sun4i_pwm->clk);
- 		return ret;
+-		dev_err(priv->chip.dev, "ARR/CMP registers write issue\n");
++		dev_err(pwmchip_parent(chip), "ARR/CMP registers write issue\n");
+ 		goto err;
+ 	}
+ 	ret = regmap_write(priv->regmap, STM32_LPTIM_ICR,
 -- 
 2.42.0
 
