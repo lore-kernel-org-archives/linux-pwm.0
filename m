@@ -1,30 +1,26 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7463BD53
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A64918D
 	for <linux-pwm@vger.kernel.org>; Wed,  6 Dec 2023 03:48:27 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO9-0006GW-90; Wed, 06 Dec 2023 12:48:25 +0100
+	id 1rAqO9-0006Jy-RD; Wed, 06 Dec 2023 12:48:25 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO8-00Dwsq-J2; Wed, 06 Dec 2023 12:48:24 +0100
+	id 1rAqO9-00Dwt6-9e; Wed, 06 Dec 2023 12:48:25 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rAqO8-00FQxz-A6; Wed, 06 Dec 2023 12:48:24 +0100
+	id 1rAqO9-00FQyG-0g; Wed, 06 Dec 2023 12:48:25 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: kernel@pengutronix.de,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: [PATCH v4 024/115] pwm: mtk-disp: Make use of pwmchip_parent() macro
-Date: Wed,  6 Dec 2023 12:43:38 +0100
-Message-ID:  <93ee3518cd35dd9ec88b83b9657c9857e7be58e3.1701860672.git.u.kleine-koenig@pengutronix.de>
+	linux-pwm@vger.kernel.org
+Subject: [PATCH v4 028/115] pwm: rcar: Make use of pwmchip_parent() macro
+Date: Wed,  6 Dec 2023 12:43:42 +0100
+Message-ID:  <b890eb8edbd96cb52bde21e103d56828fa5d3496.1701860672.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1701860672.git.u.kleine-koenig@pengutronix.de>
@@ -35,7 +31,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1778; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=vXuY2V8WhGS3JT93BuIQZEPRXMh4TZPOCFwd/uY3uho=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF58mdlTqGe/5tEN+95CriSc4xxiMsWOGLVtc 9feixsE7E6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBefAAKCRCPgPtYfRL+ TpFZCAC4QtiSBvKJjI0hvUgSNMcdzTy2tDb5uIvhxo4XOk2P/eTuYw/U+aEJ2FOPQHJov/OuXsz xUy6ZyeWBaqIPm7hRLBP04NfYYHgJiMT4tJDoJejISfNNXPZL0ETUWgxSu+BgknrCxHwPzPZ8N5 4qmzzO/jy7CnsavXOW1/KZRAQrwO52VT1cY6bZdPuAXc0kWetvSrhXS01OFxiA8f/LB3nfwD8N9 8LAU9or4c5XArj1tAzzBpYIpqdK8uL7dYIxYzohAMta29ick0wu/cBNUba2BH3wkloqFX8ZYp7I a3RhldNpNw8U76romVxIrq+rft1pUY+QgoajqgFws0u/bTHL
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1007; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=u7VyIWqdVHbmuZe1jcG6zXrm7SUTQzA8yhVAYBguXFI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlcF6B3NrOCnsMLvi6pBDmJUQp7Atm8lYwUJoNJ M0Ha1A/9LeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZXBegQAKCRCPgPtYfRL+ TjvNB/0VE7X5bNIiIe7ZzUSTFKNFSfBZ8IWkUXdioNElgmP3pIMvcMYpXCsFSGcrqRzP1eb1nJp YL4eD8uaI353xpzROpevmqNkjJN7gK14b3I51LT85Kl2abAslrwPZsFT6szrYcWoEES1v6445SX 2VuAzqk2B2N0BcvD3tUtWBR5hqOb21d1y1zENsALnj756du2knu8+dwENLQ/IqWrdXLKehV6Q3J jDToPDME/jJ//WJ+g49s196JkF68Pu5KoT5Ja9bdG+PSw1jbjAqkrx/QU/3D/3zLNvq6leGnhOE Vdc01/BybHVlaOfvOrE26FiuIg1g5a3ApyNX2ax7jcE6NdkW
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -49,46 +45,28 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-mtk-disp.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-rcar.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
-index a72f7be36996..186aa5c04435 100644
---- a/drivers/pwm/pwm-mtk-disp.c
-+++ b/drivers/pwm/pwm-mtk-disp.c
-@@ -91,14 +91,14 @@ static int mtk_disp_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (!mdp->enabled) {
- 		err = clk_prepare_enable(mdp->clk_main);
- 		if (err < 0) {
--			dev_err(chip->dev, "Can't enable mdp->clk_main: %pe\n",
-+			dev_err(pwmchip_parent(chip), "Can't enable mdp->clk_main: %pe\n",
- 				ERR_PTR(err));
- 			return err;
- 		}
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 13269f55fccf..4838762137d1 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -132,12 +132,12 @@ static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, int duty_ns,
  
- 		err = clk_prepare_enable(mdp->clk_mm);
- 		if (err < 0) {
--			dev_err(chip->dev, "Can't enable mdp->clk_mm: %pe\n",
-+			dev_err(pwmchip_parent(chip), "Can't enable mdp->clk_mm: %pe\n",
- 				ERR_PTR(err));
- 			clk_disable_unprepare(mdp->clk_main);
- 			return err;
-@@ -181,13 +181,13 @@ static int mtk_disp_pwm_get_state(struct pwm_chip *chip,
+ static int rcar_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	return pm_runtime_get_sync(chip->dev);
++	return pm_runtime_get_sync(pwmchip_parent(chip));
+ }
  
- 	err = clk_prepare_enable(mdp->clk_main);
- 	if (err < 0) {
--		dev_err(chip->dev, "Can't enable mdp->clk_main: %pe\n", ERR_PTR(err));
-+		dev_err(pwmchip_parent(chip), "Can't enable mdp->clk_main: %pe\n", ERR_PTR(err));
- 		return err;
- 	}
+ static void rcar_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	pm_runtime_put(chip->dev);
++	pm_runtime_put(pwmchip_parent(chip));
+ }
  
- 	err = clk_prepare_enable(mdp->clk_mm);
- 	if (err < 0) {
--		dev_err(chip->dev, "Can't enable mdp->clk_mm: %pe\n", ERR_PTR(err));
-+		dev_err(pwmchip_parent(chip), "Can't enable mdp->clk_mm: %pe\n", ERR_PTR(err));
- 		clk_disable_unprepare(mdp->clk_main);
- 		return err;
- 	}
+ static int rcar_pwm_enable(struct rcar_pwm_chip *rp)
 -- 
 2.42.0
 
