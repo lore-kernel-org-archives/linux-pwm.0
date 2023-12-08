@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="j7tdR86u"
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="qx41GLFp"
 Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39187172C
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2C21733
 	for <linux-pwm@vger.kernel.org>; Thu,  7 Dec 2023 23:50:24 -0800 (PST)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-	by mailout4.samsung.com (KnoxPortal) with ESMTP id 20231208075021epoutp04dfaf2725ad9e1af211e1dd5f13132d88~ey9RMi_Cg0970109701epoutp04i
-	for <linux-pwm@vger.kernel.org>; Fri,  8 Dec 2023 07:50:21 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20231208075021epoutp04dfaf2725ad9e1af211e1dd5f13132d88~ey9RMi_Cg0970109701epoutp04i
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+	by mailout4.samsung.com (KnoxPortal) with ESMTP id 20231208075022epoutp043aaeac5f465c5fd099a7e36b1e03d9f9~ey9Rc444Z0969309693epoutp04c
+	for <linux-pwm@vger.kernel.org>; Fri,  8 Dec 2023 07:50:22 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20231208075022epoutp043aaeac5f465c5fd099a7e36b1e03d9f9~ey9Rc444Z0969309693epoutp04c
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1702021821;
-	bh=jf0IfkFwZ1DhJlD4BeDhp4v+pYjblUlZQuCAeIU8Emk=;
+	s=mail20170921; t=1702021822;
+	bh=tDx7+j5DykI148IvsokWJUA3ERR2qHhvO15Vvo+brS4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=j7tdR86ukoJ/WT/emcDk7CDLozqYfjXopF/u8JqIs0fZ4kfY1z5CXeeFKpdRf32h1
-	 FONzztmKTa+jbI5JVr0vvfth7v+SoLWik1xpTggIUev/75mnrE0ybLE1oKT5QoX7mI
-	 lkRwMaQ9x+f/bgSAmFA0UGZuPYhVk4gSIb5nesYE=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+	b=qx41GLFpCix6yG6WToUPIbRxheV62itvLf4+9xgoGCv27APHgcNzsvimgFxz6FC6L
+	 N12c/wW72xotEdqSK84t14P8VU71UxREi/qXqS8iV8oSk9FaVD+q8sGWRHoY/BpxaI
+	 I7bauuH0eRkDmxiWis0hxezZm5MbzqpWvW/EXID8=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
 	epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-	20231208075021epcas2p384030ade76947fd563d54d1b9731ca12~ey9QpPT0x0598705987epcas2p3j;
+	20231208075021epcas2p3a079d1a5512c90ba6e2d2a98a9002f2b~ey9Q5Ug5P0598705987epcas2p3n;
 	Fri,  8 Dec 2023 07:50:21 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.100]) by
-	epsnrtp2.localdomain (Postfix) with ESMTP id 4Smjwr4m6Jz4x9Q7; Fri,  8 Dec
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.70]) by
+	epsnrtp4.localdomain (Postfix) with ESMTP id 4Smjwr6vH2z4x9Q1; Fri,  8 Dec
 	2023 07:50:20 +0000 (GMT)
 Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
 	epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-	44.D3.10006.CBAC2756; Fri,  8 Dec 2023 16:50:20 +0900 (KST)
+	C6.D3.10006.CBAC2756; Fri,  8 Dec 2023 16:50:20 +0900 (KST)
 Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-	epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-	20231208075020epcas2p30e46ea65e921664930b337510461892f~ey9Pqwdgm1398013980epcas2p3H;
+	epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
+	20231208075020epcas2p414c85e03d18327665eeff54082314b56~ey9P6bxPo0754707547epcas2p48;
 	Fri,  8 Dec 2023 07:50:20 +0000 (GMT)
-Received: from epsmgmcp1.samsung.com (unknown [182.195.42.82]) by
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
 	epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20231208075020epsmtrp121750879f0952f633efe0c28ae518131~ey9PppGt70202202022epsmtrp1z;
+	20231208075020epsmtrp1a874498b4d1f8fb3e2635c9b45b4a7c1~ey9P36vit0202202022epsmtrp11;
 	Fri,  8 Dec 2023 07:50:20 +0000 (GMT)
-X-AuditID: b6c32a45-179ff70000002716-7a-6572cabc8c6b
+X-AuditID: b6c32a45-3ebfd70000002716-7c-6572cabca78e
 Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-	epsmgmcp1.samsung.com (Symantec Messaging Gateway) with SMTP id
-	7D.40.18939.CBAC2756; Fri,  8 Dec 2023 16:50:20 +0900 (KST)
+	epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+	DB.C4.08755.CBAC2756; Fri,  8 Dec 2023 16:50:20 +0900 (KST)
 Received: from localhost.localdomain (unknown [10.229.9.55]) by
 	epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20231208075019epsmtip22aa869371b7b30fef6916db6cafcccc5~ey9PVDIMi1340013400epsmtip2n;
-	Fri,  8 Dec 2023 07:50:19 +0000 (GMT)
+	20231208075020epsmtip24c69b3412c34bfffa92e5bd6c348fd89~ey9PmcHxA1333813338epsmtip2Z;
+	Fri,  8 Dec 2023 07:50:20 +0000 (GMT)
 From: Jaewon Kim <jaewon02.kim@samsung.com>
 To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Alim Akhtar
 	<alim.akhtar@samsung.com>, Rob Herring <robh+dt@kernel.org>, Conor Dooley
@@ -52,10 +52,9 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
 	linux-serial@vger.kernel.org, Jaewon Kim <jaewon02.kim@samsung.com>
-Subject: [PATCH v3 2/4] arm64: dts: exynos: add minimal support for
- exynosautov920 sadk board
-Date: Fri,  8 Dec 2023 16:45:25 +0900
-Message-ID: <20231208074527.50840-3-jaewon02.kim@samsung.com>
+Subject: [PATCH v3 4/4] pinctrl: samsung: add exynosautov920 pinctrl
+Date: Fri,  8 Dec 2023 16:45:27 +0900
+Message-ID: <20231208074527.50840-5-jaewon02.kim@samsung.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20231208074527.50840-1-jaewon02.kim@samsung.com>
 Precedence: bulk
@@ -65,172 +64,314 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMJsWRmVeSWpSXmKPExsWy7bCmhe6eU0WpBl8OqFg8mLeNzWLN3nNM
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Te0xbdRTH8+ttby8QyKUw91u7sdrFGSBASyi9kLEtguYmg4UpMWZO8Ao3
+	hVHaprc1G2oECTBAnh1sLa+yYiYNG1mhS4dUkVZFgqCDDWXjYcQpLyMsbsrGYuntdP99f+d8
+	vr9zzu+BIYIpVIgVqPW0Tk2pJGgg97o7kogZGtPR0ukmObHYcR0lel0THKLTM8Ejyqx9KOEs
+	8fCIP9r3Eq5VB584//gyh7D/cptH9Hc+BsTUYBtKzM3ZAHFx8nMOMW6t5RPlLg+fcK9V8oh/
+	Bju4hG3Qy91pNIKjYeQN8xyftNuqUPLu7SGU/KK9l0/2d39I1m9LyboBGyDv2yMysZOFh/Jp
+	Ko/WiWl1riavQK1MkRx7LSc1R54olcXIkgiFRKymiugUSVp6ZswrBSrvOBLxu5TK4A1lUgwj
+	iTt8SKcx6GlxvobRp0hobZ5Kq9DGMlQRY1ArY9W0PlkmlcbLveDbhfnDGys87cdvnrHcaOaW
+	gKmMahCAQTwBrj4y8qtBICbAnQC6v5pB2cUmgLWTHyHs4gGALabfeE8tTdeaeGzCBaBj4aqf
+	2gDwZtV5zg6F4tHwYZ/V5wjHFxC4WvHeDoTglRzY8WCZu5MIw9PgZFsZsqO5+Avwlu2uLx6M
+	p8DtlicoW24/tDov+5gA/DC01DoRlgmF35qWfDziZcocrQjLj2PQ6jjC6jTYuHaVw+owuPLN
+	AJ/VQrhcX+HXGlgxPe7X78NrlpuA1Ueg+dGAdwDMu38k7BuM25EQPwA9s/6qIfCce5vPhoPh
+	uQoBazwIF5on/M3vhU2eHn8DJBy7M+RrUoA3Alh+T9UAxOZnZjE/M4v5/7oWgNjAc7SWKVLS
+	TLxW9t8F52qK7MD3uqNedgLj+p+xI4CDgREAMUQSHqya1NCC4DzqbDGt0+ToDCqaGQFy70k3
+	IsJduRrv91Drc2QJSdKExESZIl4uVUh2B8+Xt+cJcCWlpwtpWkvrnvo4WICwhBO1tZiV7Om8
+	gmd1IwFryz2iU9np+w4e6+0ZNZSj87rwU/V7AnPiQu2iH9ZfPT3pUIXZRgPt/Z9EL5yMWO4L
+	kUdWCvGf58XjennWcND9lT2/ZxebGraMjaWbH6SNbJS6m5SLhoWO5Ldc2SI9N1VZfUDYbA5J
+	r1vkt176einoR8tEze6HxghHRtdo/fAbx6+8pPhefvZvIAx/3iXiBoTWbF4ofXFWsX4C636i
+	vvX6X2hmRujMdybC5DaUhH0a/xkTlTS//ydp++nQrtmxC9G/HqVrjtcFdc0023chdV+SVdSJ
+	aaeoLvFMQ+uQE23bmukSJW7uK8q41PJOavG9pWHpImmUcJl8ShaF6BjqX/8r/IxmBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprAIsWRmVeSWpSXmKPExsWy7bCSvO6eU0WpBqvOCFs8mLeNzWLN3nNM
 	FvOPnGO1aF68ns1iR8MRVot3c2Us9r7eym4x5c9yJotNj6+xWmye/4fR4vKuOWwWd++uYrSY
 	cX4fk8WZxb3sFq17j7BbHH7Tzmrxc9c8FotVu4Dqbk+czOgg7LFz1l12j02rOtk87lzbw+ax
-	f+4ado/NS+o9+v8aePRtWcXo8XmTXABHVLZNRmpiSmqRQmpecn5KZl66rZJ3cLxzvKmZgaGu
-	oaWFuZJCXmJuqq2Si0+ArltmDtA7SgpliTmlQKGAxOJiJX07m6L80pJUhYz84hJbpdSClJwC
-	8wK94sTc4tK8dL281BIrQwMDI1OgwoTsjI/9B9gKbopXdLw9xt7AOF+4i5GTQ0LAROLu9C2s
-	XYxcHEICOxglji7ayg7hfGKUmPShhRnOOXLlADtMy6ftkxlBbCGBnYwSDw5yQBR9ZJS4P3s6
-	WIJNQFvi+/rFrCC2iMB9ZonXbdUgRcwC7UwS8769ZAFJCAvES8xe9hHMZhFQlXjw8y/QOg4O
-	XgFbidcP7SGWyUss3rGcGcTmFLCTWNC7A8zmFRCUODnzCVgrM1BN89bZYJdKCJzhkJjy7Qwz
-	RLOLxPmX91ghbGGJV8e3QH0gJfGyvw3Kzpdou3IGyq6R2LjgEiOEbS8x6zcoYDiAFmhKrN+l
-	D2JKCChLHLkFtZZPouPwX3aIMK9ER5sQRKOaxP2p59ggbBmJSUdWMkHYHhJPfi5igwTVREaJ
-	15sPskxgVJiF5JtZSL6ZhbB4ASPzKkax1ILi3PTUYqMCQ3gEJ+fnbmIEp24t1x2Mk99+0DvE
-	yMTBeIhRgoNZSYQ353x+qhBvSmJlVWpRfnxRaU5q8SFGU2BQT2SWEk3OB2aPvJJ4QxNLAxMz
-	M0NzI1MDcyVx3nutc1OEBNITS1KzU1MLUotg+pg4OKUamFjkXcv+KZu2zzwQWWmbuthOJj/9
-	tcIKm9+X8+48mXc/mC/JLlff3T4w9//GppvSn+8dT7+y9IW38j/7qcYv9Qp+bXtz/MP+1n8e
-	U19ovmNYGzc3nUeiT7z32ZmCnfUfP96oPz5LSOyCn/j5Vfmf+nt+3NTWS1qdXNPWqFMovXe2
-	SPyMGZ8TWffvtk1f6bI2/olXZGhzb3J/QOaMP/+03TdP0EpnEQuo8GS+qf8pwP9OQNS1FYYd
-	jva73LfahjGfmek3OamvW2+a9UTZ1suvJlybJXlbNn7S8XOzTrsaLjuyIvrizPLDSca5elsU
-	b0v/lLp6seBgbY9t5I2q20li4aYv93XLnDmzWjiq7kKmvRJLcUaioRZzUXEiAM80zBJmBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupikeLIzCtJLcpLzFFi42LZdlhJXnfPqaJUg7ZPzBYP5m1js1iz9xyT
-	xfwj51gtmhevZ7PY0XCE1eLdXBmLva+3sltM+bOcyWLT42usFpvn/2G0uLxrDpvF3burGC1m
-	nN/HZHFmcS+7ReveI+wWh9+0s1r83DWPxWLVLqC62xMnMzoIe+ycdZfdY9OqTjaPO9f2sHns
-	n7uG3WPzknqP/r8GHn1bVjF6fN4kF8ARxWWTkpqTWZZapG+XwJXxsf8AW8FN8YqOt8fYGxjn
-	C3cxcnJICJhIfNo+mRHEFhLYzijRcyseIi4jsfxZHxuELSxxv+UIaxcjF1DNe0aJl2fOgyXY
-	BLQlvq9fDJYQEXjOLHH2zyNmkASzQD+TxPVNCSC2sECsRPuGF2AbWARUJR78/AtUw8HBK2Ar
-	8fqhPcQCeYnFO5aDtXIK2Eks6N3BDHGQrcSarR3sIDavgKDEyZlPWCDGy0s0b53NPIFRYBaS
-	1CwkqQWMTKsYRVMLinPTc5MLDPWKE3OLS/PS9ZLzczcxgqNLK2gH47L1f/UOMTJxMB5ilOBg
-	VhLhzTmfnyrEm5JYWZValB9fVJqTWnyIUZqDRUmcVzmnM0VIID2xJDU7NbUgtQgmy8TBKdXA
-	FD0xq1DxPo/Gp4LF9w8xzxcwdld5xd3n+9T+svBDJrZWSetIoWebP1q6HTNUW/dA9/yT865J
-	qhEv+pwVrVxFbwXpvHrSFL3bbd2fsr7ie2siVeQFnjlJzn1Yuz9jvdlOBi2x1wd1TvTGls9Z
-	P5vPPe9AxpYarpXv4lM/ffF7KrckUuiN3H4pwxWZP//mnrzF7bdgWd2XTQ8N7+/VnWK9RUby
-	GPfK5BObupvjd/3ktY88d5HxnuxJL5f3zkctPsxY0OFxuNHD77OSQ5NL0YyqC68boi9+jVA4
-	++L9igXt81l1nTUUNxny21sZi6yqO8Mk4nTW9zXLsWsrv87n1nd4JSL8NKbTJWRn3YsGFZYX
-	SizFGYmGWsxFxYkAOCExrx0DAAA=
-X-CMS-MailID: 20231208075020epcas2p30e46ea65e921664930b337510461892f
+	f+4ado/NS+o9+v8aePRtWcXo8XmTXABHFJdNSmpOZllqkb5dAlfGgY+vWAt6oisW7JzK0sB4
+	2beLkZNDQsBEYtLGSaxdjFwcQgK7GSX6Zs5mhUjISCx/1scGYQtL3G85AlX0nlHi96GPzCAJ
+	NgFtie/rF4MlRASeM0uc/fMILMEs0M8kcX1TAogtLOAicX5OM1icRUBV4uqqOywgNq+ArcTf
+	af+gNshLLN6xHKyGU8BOYkHvDjBbCKhmzdYOdoh6QYmTM5+wQMyXl2jeOpt5AqPALCSpWUhS
+	CxiZVjFKphYU56bnFhsWGOallusVJ+YWl+al6yXn525iBEealuYOxu2rPugdYmTiYDzEKMHB
+	rCTCm3M+P1WINyWxsiq1KD++qDQntfgQozQHi5I4r/iL3hQhgfTEktTs1NSC1CKYLBMHp1QD
+	k9HVZJnOeVrzfWIL0oVeNR/jnX73z2WWuEyuC8yZ7J/SdwVE3I6QuqE9WbVk+mPmW7ZeCdOa
+	j6aEMWn/CGNynGy/p4OheinH/U5RTu2KN3eXs02RE7Fwa1hrqCBYtj4pt0xW3qfnZDm3r4hJ
+	rmVA482QhIl3yl9xXFDdMKftgsGxl+Vnk5SDKnJyzsW7ptQW/byZ+fXWqXmV7/k4Tv1RWPnk
+	7JFtvjfbNV78WBPzs0FOsf1QttuljZxvcjXzz306mVgSzLLKsv6z36Mdv9c7SV1RyJS+uenF
+	wtzpv+LLDN2eM/8wZcvJP51n+5hjjyjX7y9LleI6vzE3lzI32jNEbEgI5nIK9YtRf7mJa7IS
+	S3FGoqEWc1FxIgCYdcqgIwMAAA==
+X-CMS-MailID: 20231208075020epcas2p414c85e03d18327665eeff54082314b56
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: AUTO_CONFIDENTIAL
 CMS-TYPE: 102P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20231208075020epcas2p30e46ea65e921664930b337510461892f
+X-CMS-RootMailID: 20231208075020epcas2p414c85e03d18327665eeff54082314b56
 References: <20231208074527.50840-1-jaewon02.kim@samsung.com>
-	<CGME20231208075020epcas2p30e46ea65e921664930b337510461892f@epcas2p3.samsung.com>
+	<CGME20231208075020epcas2p414c85e03d18327665eeff54082314b56@epcas2p4.samsung.com>
 
-ExynosAutov920 SADK is ExynosAutov920 SoC based SADK(Samsung Automotive
-Development Kit) board. It has 16GB(8GB + 8GB) LPDDR5 RAM and 256GB
-(128GB + 128GB) UFS.
+Add pinctrl data for ExynosAutov920 SoC.
 
-This is minimal support board device-tree.
- * Serial console
- * GPIO Key
- * PWM FAN
+Pinctrl data for ExynosAutoV920 SoC.
+ - GPA0,GPA1 (10): External wake up interrupt
+ - GPQ0 (2): SPMI (PMIC I/F)
+ - GPB0,GPB1,GPB2,GPB3,GPB4,GPB5,GPB6 (47): I2S Audio
+ - GPH0,GPH1,GPH2,GPH3,GPH4,GPH5,GPH6,GPH8 (49): PCIE, UFS, Ethernet
+ - GPG0,GPG1,GPG2,GPG3,GPG4,GPG5 (29): General purpose
+ - GPP0,GPP1,GPP2,GPP3,GPP4,GPP5,GPP6,GPP7,GPP8,GPP9,GPP10 (77): USI
 
 Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
 ---
- arch/arm64/boot/dts/exynos/Makefile           |  3 +-
- .../boot/dts/exynos/exynosautov920-sadk.dts   | 88 +++++++++++++++++++
- 2 files changed, 90 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
+ .../pinctrl/samsung/pinctrl-exynos-arm64.c    | 140 ++++++++++++++++++
+ drivers/pinctrl/samsung/pinctrl-exynos.c      |  18 +++
+ drivers/pinctrl/samsung/pinctrl-exynos.h      |  24 +++
+ drivers/pinctrl/samsung/pinctrl-samsung.c     |   2 +
+ drivers/pinctrl/samsung/pinctrl-samsung.h     |   1 +
+ 5 files changed, 185 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/exynos/Makefile b/arch/arm64/boot/dts/exynos/Makefile
-index 6e4ba69268e5..da06e1a9456c 100644
---- a/arch/arm64/boot/dts/exynos/Makefile
-+++ b/arch/arm64/boot/dts/exynos/Makefile
-@@ -5,4 +5,5 @@ dtb-$(CONFIG_ARCH_EXYNOS) += \
- 	exynos7-espresso.dtb		\
- 	exynos7885-jackpotlte.dtb	\
- 	exynos850-e850-96.dtb		\
--	exynosautov9-sadk.dtb
-+	exynosautov9-sadk.dtb		\
-+	exynosautov920-sadk.dtb
-diff --git a/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts b/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
-new file mode 100644
-index 000000000000..e250b5594b58
---- /dev/null
-+++ b/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
-@@ -0,0 +1,88 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Samsung's ExynosAutov920 SADK board device tree source
-+ *
-+ * Copyright (c) 2023 Samsung Electronics Co., Ltd.
-+ *
-+ */
+diff --git a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+index cb965cf93705..a998c296dd05 100644
+--- a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
++++ b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+@@ -796,3 +796,143 @@ const struct samsung_pinctrl_of_match_data fsd_of_data __initconst = {
+ 	.ctrl		= fsd_pin_ctrl,
+ 	.num_ctrl	= ARRAY_SIZE(fsd_pin_ctrl),
+ };
 +
-+/dts-v1/;
-+#include "exynosautov920.dtsi"
-+#include "exynos-pinctrl.h"
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
-+
-+/ {
-+	model = "Samsung ExynosAutov920 SADK board";
-+	compatible = "samsung,exynosautov920-sadk", "samsung,exynosautov920";
-+
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	aliases {
-+		serial0 = &serial_0;
-+	};
-+
-+	chosen {
-+		stdout-path = &serial_0;
-+	};
-+
-+	memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x0 0x80000000 0x0 0x70000000>,
-+		      <0x8 0x80000000 0x1 0xfba00000>,
-+		      <0xa 0x00000000 0x2 0x00000000>;
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&key_wakeup &key_back>;
-+
-+		key-wakeup {
-+			label = "KEY_WAKEUP";
-+			linux,code = <KEY_WAKEUP>;
-+			gpios = <&gpa0 0 GPIO_ACTIVE_LOW>;
-+			wakeup-source;
-+		};
-+
-+		key-back {
-+			label = "KEY_BACK";
-+			linux,code = <KEY_BACK>;
-+			gpios = <&gpp6 3 GPIO_ACTIVE_LOW>;
-+		};
-+	};
++/* pin banks of exynosautov920 pin-controller 0 (ALIVE) */
++static const struct samsung_pin_bank_data exynosautov920_pin_banks0[] = {
++	EXYNOSV920_PIN_BANK_EINTW(8, 0x0000, "gpa0", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTW(2, 0x1000, "gpa1", 0x18, 0x20, 0x24),
++	EXYNOS850_PIN_BANK_EINTN(2, 0x2000, "gpq0"),
 +};
 +
-+&pinctrl_alive {
-+	key_wakeup: key-wakeup-pins {
-+		samsung,pins = "gpa0-0";
-+		samsung,pin-function = <EXYNOS_PIN_FUNC_EINT>;
-+	};
++/* pin banks of exynosautov920 pin-controller 1 (AUD) */
++static const struct samsung_pin_bank_data exynosautov920_pin_banks1[] = {
++	EXYNOSV920_PIN_BANK_EINTG(7, 0x0000, "gpb0", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(6, 0x1000, "gpb1", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x2000, "gpb2", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x3000, "gpb3", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x4000, "gpb4", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(5, 0x5000, "gpb5", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(5, 0x6000, "gpb6", 0x18, 0x24, 0x28),
 +};
 +
-+&pinctrl_peric1 {
-+	key_back: key-back-pins {
-+		samsung,pins = "gpp6-3";
-+		samsung,pin-function = <EXYNOS_PIN_FUNC_EINT>;
-+	};
++/* pin banks of exynosautov920 pin-controller 2 (HSI0) */
++static const struct samsung_pin_bank_data exynosautov920_pin_banks2[] = {
++	EXYNOSV920_PIN_BANK_EINTG(6, 0x0000, "gph0", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(2, 0x1000, "gph1", 0x18, 0x20, 0x24),
 +};
 +
-+&pwm {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pwm_tout0>;
-+	status = "okay";
++/* pin banks of exynosautov920 pin-controller 3 (HSI1) */
++static const struct samsung_pin_bank_data exynosautov920_pin_banks3[] = {
++	EXYNOSV920_PIN_BANK_EINTG(7, 0x000, "gph8", 0x18, 0x24, 0x28),
 +};
 +
-+&serial_0 {
-+	status = "okay";
++/* pin banks of exynosautov920 pin-controller 4 (HSI2) */
++static const struct samsung_pin_bank_data exynosautov920_pin_banks4[] = {
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x0000, "gph3", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(7, 0x1000, "gph4", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x2000, "gph5", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(7, 0x3000, "gph6", 0x18, 0x24, 0x28),
 +};
 +
-+&usi_0 {
-+	samsung,clkreq-on; /* needed for UART mode */
-+	status = "okay";
++/* pin banks of exynosautov920 pin-controller 5 (HSI2UFS) */
++static const struct samsung_pin_bank_data exynosautov920_pin_banks5[] = {
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x000, "gph2", 0x18, 0x20, 0x24),
 +};
 +
-+&xtcxo {
-+	clock-frequency = <38400000>;
++/* pin banks of exynosautov920 pin-controller 6 (PERIC0) */
++static const struct samsung_pin_bank_data exynosautov920_pin_banks6[] = {
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x0000, "gpp0", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x1000, "gpp1", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x2000, "gpp2", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(5, 0x3000, "gpg0", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x4000, "gpp3", 0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x5000, "gpp4", 0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x6000, "gpg2", 0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x7000, "gpg5", 0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(3, 0x8000, "gpg3", 0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(5, 0x9000, "gpg4", 0x18, 0x24, 0x28),
 +};
++
++/* pin banks of exynosautov920 pin-controller 7 (PERIC1) */
++static const struct samsung_pin_bank_data exynosautov920_pin_banks7[] = {
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x0000, "gpp5",  0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(5, 0x1000, "gpp6",  0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x2000, "gpp10", 0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x3000, "gpp7",  0x18, 0x24, 0x28),
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x4000, "gpp8",  0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x5000, "gpp11", 0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x6000, "gpp9",  0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(4, 0x7000, "gpp12", 0x18, 0x20, 0x24),
++	EXYNOSV920_PIN_BANK_EINTG(8, 0x8000, "gpg1",  0x18, 0x24, 0x28),
++};
++
++static const struct samsung_retention_data exynosautov920_retention_data __initconst = {
++	.regs	 = NULL,
++	.nr_regs = 0,
++	.value	 = 0,
++	.refcnt	 = &exynos_shared_retention_refcnt,
++	.init	 = exynos_retention_init,
++};
++
++static const struct samsung_pin_ctrl exynosautov920_pin_ctrl[] = {
++	{
++		/* pin-controller instance 0 ALIVE data */
++		.pin_banks	= exynosautov920_pin_banks0,
++		.nr_banks	= ARRAY_SIZE(exynosautov920_pin_banks0),
++		.eint_wkup_init	= exynos_eint_wkup_init,
++		.suspend	= exynos_pinctrl_suspend,
++		.resume		= exynos_pinctrl_resume,
++		.retention_data	= &exynosautov920_retention_data,
++	}, {
++		/* pin-controller instance 1 AUD data */
++		.pin_banks	= exynosautov920_pin_banks1,
++		.nr_banks	= ARRAY_SIZE(exynosautov920_pin_banks1),
++	}, {
++		/* pin-controller instance 2 HSI0 data */
++		.pin_banks	= exynosautov920_pin_banks2,
++		.nr_banks	= ARRAY_SIZE(exynosautov920_pin_banks2),
++		.eint_gpio_init	= exynos_eint_gpio_init,
++		.suspend	= exynos_pinctrl_suspend,
++		.resume		= exynos_pinctrl_resume,
++	}, {
++		/* pin-controller instance 3 HSI1 data */
++		.pin_banks	= exynosautov920_pin_banks3,
++		.nr_banks	= ARRAY_SIZE(exynosautov920_pin_banks3),
++		.eint_gpio_init	= exynos_eint_gpio_init,
++		.suspend	= exynos_pinctrl_suspend,
++		.resume		= exynos_pinctrl_resume,
++	}, {
++		/* pin-controller instance 4 HSI2 data */
++		.pin_banks	= exynosautov920_pin_banks4,
++		.nr_banks	= ARRAY_SIZE(exynosautov920_pin_banks4),
++		.eint_gpio_init	= exynos_eint_gpio_init,
++		.suspend	= exynos_pinctrl_suspend,
++		.resume		= exynos_pinctrl_resume,
++	}, {
++		/* pin-controller instance 5 HSI2UFS data */
++		.pin_banks	= exynosautov920_pin_banks5,
++		.nr_banks	= ARRAY_SIZE(exynosautov920_pin_banks5),
++		.eint_gpio_init	= exynos_eint_gpio_init,
++		.suspend	= exynos_pinctrl_suspend,
++		.resume		= exynos_pinctrl_resume,
++	}, {
++		/* pin-controller instance 6 PERIC0 data */
++		.pin_banks	= exynosautov920_pin_banks6,
++		.nr_banks	= ARRAY_SIZE(exynosautov920_pin_banks6),
++		.eint_gpio_init	= exynos_eint_gpio_init,
++		.suspend	= exynos_pinctrl_suspend,
++		.resume		= exynos_pinctrl_resume,
++	}, {
++		/* pin-controller instance 7 PERIC1 data */
++		.pin_banks	= exynosautov920_pin_banks7,
++		.nr_banks	= ARRAY_SIZE(exynosautov920_pin_banks7),
++		.eint_gpio_init	= exynos_eint_gpio_init,
++		.suspend	= exynos_pinctrl_suspend,
++		.resume		= exynos_pinctrl_resume,
++	},
++};
++
++const struct samsung_pinctrl_of_match_data exynosautov920_of_data __initconst = {
++	.ctrl		= exynosautov920_pin_ctrl,
++	.num_ctrl	= ARRAY_SIZE(exynosautov920_pin_ctrl),
++};
+diff --git a/drivers/pinctrl/samsung/pinctrl-exynos.c b/drivers/pinctrl/samsung/pinctrl-exynos.c
+index f798f64b1122..593633d09aa2 100644
+--- a/drivers/pinctrl/samsung/pinctrl-exynos.c
++++ b/drivers/pinctrl/samsung/pinctrl-exynos.c
+@@ -487,6 +487,22 @@ static const struct exynos_irq_chip exynos7_wkup_irq_chip __initconst = {
+ 	.set_eint_wakeup_mask = exynos_pinctrl_set_eint_wakeup_mask,
+ };
+ 
++static const struct exynos_irq_chip exynosautov920_wkup_irq_chip __initconst = {
++	.chip = {
++		.name = "exynosautov920_wkup_irq_chip",
++		.irq_unmask = exynos_irq_unmask,
++		.irq_mask = exynos_irq_mask,
++		.irq_ack = exynos_irq_ack,
++		.irq_set_type = exynos_irq_set_type,
++		.irq_set_wake = exynos_wkup_irq_set_wake,
++		.irq_request_resources = exynos_irq_request_resources,
++		.irq_release_resources = exynos_irq_release_resources,
++	},
++	.eint_wake_mask_value = &eint_wake_mask_value,
++	.eint_wake_mask_reg = EXYNOS5433_EINT_WAKEUP_MASK,
++	.set_eint_wakeup_mask = exynos_pinctrl_set_eint_wakeup_mask,
++};
++
+ /* list of external wakeup controllers supported */
+ static const struct of_device_id exynos_wkup_irq_ids[] = {
+ 	{ .compatible = "samsung,s5pv210-wakeup-eint",
+@@ -499,6 +515,8 @@ static const struct of_device_id exynos_wkup_irq_ids[] = {
+ 			.data = &exynos7_wkup_irq_chip },
+ 	{ .compatible = "samsung,exynosautov9-wakeup-eint",
+ 			.data = &exynos7_wkup_irq_chip },
++	{ .compatible = "samsung,exynosautov920-wakeup-eint",
++			.data = &exynosautov920_wkup_irq_chip },
+ 	{ }
+ };
+ 
+diff --git a/drivers/pinctrl/samsung/pinctrl-exynos.h b/drivers/pinctrl/samsung/pinctrl-exynos.h
+index 5049c170e958..305cb1d31de4 100644
+--- a/drivers/pinctrl/samsung/pinctrl-exynos.h
++++ b/drivers/pinctrl/samsung/pinctrl-exynos.h
+@@ -141,6 +141,30 @@
+ 		.name		= id				\
+ 	}
+ 
++#define EXYNOSV920_PIN_BANK_EINTG(pins, reg, id, con_offs, mask_offs, pend_offs)	\
++	{							\
++		.type			= &exynos850_bank_type_off,	\
++		.pctl_offset		= reg,				\
++		.nr_pins		= pins,				\
++		.eint_type		= EINT_TYPE_GPIO,		\
++		.eint_con_offset	= con_offs,			\
++		.eint_mask_offset	= mask_offs,			\
++		.eint_pend_offset	= pend_offs,			\
++		.name			= id				\
++	}
++
++#define EXYNOSV920_PIN_BANK_EINTW(pins, reg, id, con_offs, mask_offs, pend_offs)	\
++	{							\
++		.type			= &exynos850_bank_type_alive,	\
++		.pctl_offset		= reg,				\
++		.nr_pins		= pins,				\
++		.eint_type		= EINT_TYPE_WKUP,		\
++		.eint_con_offset	= con_offs,			\
++		.eint_mask_offset	= mask_offs,			\
++		.eint_pend_offset	= pend_offs,			\
++		.name			= id				\
++	}
++
+ /**
+  * struct exynos_weint_data: irq specific data for all the wakeup interrupts
+  * generated by the external wakeup interrupt controller.
+diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.c b/drivers/pinctrl/samsung/pinctrl-samsung.c
+index 362e99566919..800a2f0a026a 100644
+--- a/drivers/pinctrl/samsung/pinctrl-samsung.c
++++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
+@@ -1324,6 +1324,8 @@ static const struct of_device_id samsung_pinctrl_dt_match[] = {
+ 		.data = &exynosautov9_of_data },
+ 	{ .compatible = "tesla,fsd-pinctrl",
+ 		.data = &fsd_of_data },
++	{ .compatible = "samsung,exynosautov920-pinctrl",
++		.data = &exynosautov920_of_data },
+ #endif
+ #ifdef CONFIG_PINCTRL_S3C64XX
+ 	{ .compatible = "samsung,s3c64xx-pinctrl",
+diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.h b/drivers/pinctrl/samsung/pinctrl-samsung.h
+index 789358bcd9c5..987086fa0d1d 100644
+--- a/drivers/pinctrl/samsung/pinctrl-samsung.h
++++ b/drivers/pinctrl/samsung/pinctrl-samsung.h
+@@ -362,6 +362,7 @@ extern const struct samsung_pinctrl_of_match_data exynos7_of_data;
+ extern const struct samsung_pinctrl_of_match_data exynos7885_of_data;
+ extern const struct samsung_pinctrl_of_match_data exynos850_of_data;
+ extern const struct samsung_pinctrl_of_match_data exynosautov9_of_data;
++extern const struct samsung_pinctrl_of_match_data exynosautov920_of_data;
+ extern const struct samsung_pinctrl_of_match_data fsd_of_data;
+ extern const struct samsung_pinctrl_of_match_data s3c64xx_of_data;
+ extern const struct samsung_pinctrl_of_match_data s3c2412_of_data;
 -- 
 2.43.0
 
