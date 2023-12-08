@@ -1,163 +1,236 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EFD199B
-	for <linux-pwm@vger.kernel.org>; Thu,  7 Dec 2023 13:42:06 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rBM8A-00016p-9Y; Thu, 07 Dec 2023 22:42:02 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rBM87-00EHBk-UV; Thu, 07 Dec 2023 22:41:59 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rBM87-00GEFH-Kz; Thu, 07 Dec 2023 22:41:59 +0100
-Date: Thu, 7 Dec 2023 22:41:59 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v17 3/4] pwm: Add support for RZ/G2L GPT
-Message-ID: <20231207214159.i5347ikpbt2ihznr@pengutronix.de>
-References: <20231120113307.80710-1-biju.das.jz@bp.renesas.com>
- <20231120113307.80710-4-biju.das.jz@bp.renesas.com>
- <20231206183824.g6dc5ib2dfb7um7n@pengutronix.de>
- <TYCPR01MB1126952E843AC08DB732C18A5868BA@TYCPR01MB11269.jpnprd01.prod.outlook.com>
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="j7tdR86u"
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39187172C
+	for <linux-pwm@vger.kernel.org>; Thu,  7 Dec 2023 23:50:24 -0800 (PST)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+	by mailout4.samsung.com (KnoxPortal) with ESMTP id 20231208075021epoutp04dfaf2725ad9e1af211e1dd5f13132d88~ey9RMi_Cg0970109701epoutp04i
+	for <linux-pwm@vger.kernel.org>; Fri,  8 Dec 2023 07:50:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20231208075021epoutp04dfaf2725ad9e1af211e1dd5f13132d88~ey9RMi_Cg0970109701epoutp04i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1702021821;
+	bh=jf0IfkFwZ1DhJlD4BeDhp4v+pYjblUlZQuCAeIU8Emk=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=j7tdR86ukoJ/WT/emcDk7CDLozqYfjXopF/u8JqIs0fZ4kfY1z5CXeeFKpdRf32h1
+	 FONzztmKTa+jbI5JVr0vvfth7v+SoLWik1xpTggIUev/75mnrE0ybLE1oKT5QoX7mI
+	 lkRwMaQ9x+f/bgSAmFA0UGZuPYhVk4gSIb5nesYE=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+	epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+	20231208075021epcas2p384030ade76947fd563d54d1b9731ca12~ey9QpPT0x0598705987epcas2p3j;
+	Fri,  8 Dec 2023 07:50:21 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.100]) by
+	epsnrtp2.localdomain (Postfix) with ESMTP id 4Smjwr4m6Jz4x9Q7; Fri,  8 Dec
+	2023 07:50:20 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+	epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+	44.D3.10006.CBAC2756; Fri,  8 Dec 2023 16:50:20 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+	epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+	20231208075020epcas2p30e46ea65e921664930b337510461892f~ey9Pqwdgm1398013980epcas2p3H;
+	Fri,  8 Dec 2023 07:50:20 +0000 (GMT)
+Received: from epsmgmcp1.samsung.com (unknown [182.195.42.82]) by
+	epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20231208075020epsmtrp121750879f0952f633efe0c28ae518131~ey9PppGt70202202022epsmtrp1z;
+	Fri,  8 Dec 2023 07:50:20 +0000 (GMT)
+X-AuditID: b6c32a45-179ff70000002716-7a-6572cabc8c6b
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+	epsmgmcp1.samsung.com (Symantec Messaging Gateway) with SMTP id
+	7D.40.18939.CBAC2756; Fri,  8 Dec 2023 16:50:20 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.229.9.55]) by
+	epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20231208075019epsmtip22aa869371b7b30fef6916db6cafcccc5~ey9PVDIMi1340013400epsmtip2n;
+	Fri,  8 Dec 2023 07:50:19 +0000 (GMT)
+From: Jaewon Kim <jaewon02.kim@samsung.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Alim Akhtar
+	<alim.akhtar@samsung.com>, Rob Herring <robh+dt@kernel.org>, Conor Dooley
+	<conor+dt@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Sylwester
+	Nawrocki <s.nawrocki@samsung.com>, Linus Walleij <linus.walleij@linaro.org>,
+	Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-K?nig
+	<u.kleine-koenig@pengutronix.de>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-serial@vger.kernel.org, Jaewon Kim <jaewon02.kim@samsung.com>
+Subject: [PATCH v3 2/4] arm64: dts: exynos: add minimal support for
+ exynosautov920 sadk board
+Date: Fri,  8 Dec 2023 16:45:25 +0900
+Message-ID: <20231208074527.50840-3-jaewon02.kim@samsung.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20231208074527.50840-1-jaewon02.kim@samsung.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ekhwc4sfyeifnj5w"
-Content-Disposition: inline
-In-Reply-To: <TYCPR01MB1126952E843AC08DB732C18A5868BA@TYCPR01MB11269.jpnprd01.prod.outlook.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMJsWRmVeSWpSXmKPExsWy7bCmhe6eU0WpBl8OqFg8mLeNzWLN3nNM
+	FvOPnGO1aF68ns1iR8MRVot3c2Us9r7eym4x5c9yJotNj6+xWmye/4fR4vKuOWwWd++uYrSY
+	cX4fk8WZxb3sFq17j7BbHH7Tzmrxc9c8FotVu4Dqbk+czOgg7LFz1l12j02rOtk87lzbw+ax
+	f+4ado/NS+o9+v8aePRtWcXo8XmTXABHVLZNRmpiSmqRQmpecn5KZl66rZJ3cLxzvKmZgaGu
+	oaWFuZJCXmJuqq2Si0+ArltmDtA7SgpliTmlQKGAxOJiJX07m6L80pJUhYz84hJbpdSClJwC
+	8wK94sTc4tK8dL281BIrQwMDI1OgwoTsjI/9B9gKbopXdLw9xt7AOF+4i5GTQ0LAROLu9C2s
+	XYxcHEICOxglji7ayg7hfGKUmPShhRnOOXLlADtMy6ftkxlBbCGBnYwSDw5yQBR9ZJS4P3s6
+	WIJNQFvi+/rFrCC2iMB9ZonXbdUgRcwC7UwS8769ZAFJCAvES8xe9hHMZhFQlXjw8y/QOg4O
+	XgFbidcP7SGWyUss3rGcGcTmFLCTWNC7A8zmFRCUODnzCVgrM1BN89bZYJdKCJzhkJjy7Qwz
+	RLOLxPmX91ghbGGJV8e3QH0gJfGyvw3Kzpdou3IGyq6R2LjgEiOEbS8x6zcoYDiAFmhKrN+l
+	D2JKCChLHLkFtZZPouPwX3aIMK9ER5sQRKOaxP2p59ggbBmJSUdWMkHYHhJPfi5igwTVREaJ
+	15sPskxgVJiF5JtZSL6ZhbB4ASPzKkax1ILi3PTUYqMCQ3gEJ+fnbmIEp24t1x2Mk99+0DvE
+	yMTBeIhRgoNZSYQ353x+qhBvSmJlVWpRfnxRaU5q8SFGU2BQT2SWEk3OB2aPvJJ4QxNLAxMz
+	M0NzI1MDcyVx3nutc1OEBNITS1KzU1MLUotg+pg4OKUamFjkXcv+KZu2zzwQWWmbuthOJj/9
+	tcIKm9+X8+48mXc/mC/JLlff3T4w9//GppvSn+8dT7+y9IW38j/7qcYv9Qp+bXtz/MP+1n8e
+	U19ovmNYGzc3nUeiT7z32ZmCnfUfP96oPz5LSOyCn/j5Vfmf+nt+3NTWS1qdXNPWqFMovXe2
+	SPyMGZ8TWffvtk1f6bI2/olXZGhzb3J/QOaMP/+03TdP0EpnEQuo8GS+qf8pwP9OQNS1FYYd
+	jva73LfahjGfmek3OamvW2+a9UTZ1suvJlybJXlbNn7S8XOzTrsaLjuyIvrizPLDSca5elsU
+	b0v/lLp6seBgbY9t5I2q20li4aYv93XLnDmzWjiq7kKmvRJLcUaioRZzUXEiAM80zBJmBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupikeLIzCtJLcpLzFFi42LZdlhJXnfPqaJUg7ZPzBYP5m1js1iz9xyT
+	xfwj51gtmhevZ7PY0XCE1eLdXBmLva+3sltM+bOcyWLT42usFpvn/2G0uLxrDpvF3burGC1m
+	nN/HZHFmcS+7ReveI+wWh9+0s1r83DWPxWLVLqC62xMnMzoIe+ycdZfdY9OqTjaPO9f2sHns
+	n7uG3WPzknqP/r8GHn1bVjF6fN4kF8ARxWWTkpqTWZZapG+XwJXxsf8AW8FN8YqOt8fYGxjn
+	C3cxcnJICJhIfNo+mRHEFhLYzijRcyseIi4jsfxZHxuELSxxv+UIaxcjF1DNe0aJl2fOgyXY
+	BLQlvq9fDJYQEXjOLHH2zyNmkASzQD+TxPVNCSC2sECsRPuGF2AbWARUJR78/AtUw8HBK2Ar
+	8fqhPcQCeYnFO5aDtXIK2Eks6N3BDHGQrcSarR3sIDavgKDEyZlPWCDGy0s0b53NPIFRYBaS
+	1CwkqQWMTKsYRVMLinPTc5MLDPWKE3OLS/PS9ZLzczcxgqNLK2gH47L1f/UOMTJxMB5ilOBg
+	VhLhzTmfnyrEm5JYWZValB9fVJqTWnyIUZqDRUmcVzmnM0VIID2xJDU7NbUgtQgmy8TBKdXA
+	FD0xq1DxPo/Gp4LF9w8xzxcwdld5xd3n+9T+svBDJrZWSetIoWebP1q6HTNUW/dA9/yT865J
+	qhEv+pwVrVxFbwXpvHrSFL3bbd2fsr7ie2siVeQFnjlJzn1Yuz9jvdlOBi2x1wd1TvTGls9Z
+	P5vPPe9AxpYarpXv4lM/ffF7KrckUuiN3H4pwxWZP//mnrzF7bdgWd2XTQ8N7+/VnWK9RUby
+	GPfK5BObupvjd/3ktY88d5HxnuxJL5f3zkctPsxY0OFxuNHD77OSQ5NL0YyqC68boi9+jVA4
+	++L9igXt81l1nTUUNxny21sZi6yqO8Mk4nTW9zXLsWsrv87n1nd4JSL8NKbTJWRn3YsGFZYX
+	SizFGYmGWsxFxYkAOCExrx0DAAA=
+X-CMS-MailID: 20231208075020epcas2p30e46ea65e921664930b337510461892f
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20231208075020epcas2p30e46ea65e921664930b337510461892f
+References: <20231208074527.50840-1-jaewon02.kim@samsung.com>
+	<CGME20231208075020epcas2p30e46ea65e921664930b337510461892f@epcas2p3.samsung.com>
 
+ExynosAutov920 SADK is ExynosAutov920 SoC based SADK(Samsung Automotive
+Development Kit) board. It has 16GB(8GB + 8GB) LPDDR5 RAM and 256GB
+(128GB + 128GB) UFS.
 
---ekhwc4sfyeifnj5w
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is minimal support board device-tree.
+ * Serial console
+ * GPIO Key
+ * PWM FAN
 
-Hello Biju,
+Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+---
+ arch/arm64/boot/dts/exynos/Makefile           |  3 +-
+ .../boot/dts/exynos/exynosautov920-sadk.dts   | 88 +++++++++++++++++++
+ 2 files changed, 90 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
 
-On Thu, Dec 07, 2023 at 06:26:44PM +0000, Biju Das wrote:
-> > -----Original Message-----
-> > From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > Sent: Wednesday, December 6, 2023 6:38 PM
-> > Subject: Re: [PATCH v17 3/4] pwm: Add support for RZ/G2L GPT
-> > On Mon, Nov 20, 2023 at 11:33:06AM +0000, Biju Das wrote:
-> > > +static u64 calculate_period_or_duty(struct rzg2l_gpt_chip *rzg2l_gpt,
-> > > +u32 val, u8 prescale) {
-> > > +	u64 retval;
-> > > +	u64 tmp;
-> > > +
-> > > +	tmp =3D NSEC_PER_SEC * (u64)val;
-> > > +	/*
-> > > +	 * To avoid losing precision for smaller period/duty cycle values
-> > > +	 * ((2^32 * 10^9 << 2) < 2^64), do not process the rounded values.
-> > > +	 */
-> > > +	if (prescale < 2)
-> > > +		retval =3D DIV64_U64_ROUND_UP(tmp << (2 * prescale), rzg2l_gpt-
-> > >rate);
-> > > +	else
-> > > +		retval =3D DIV64_U64_ROUND_UP(tmp, rzg2l_gpt->rate) << (2 *
-> > > +prescale);
-> >=20
-> > Maybe introduce a mul_u64_u64_div64_roundup (similar to
-> > mul_u64_u64_div64) to also be exact for prescale >=3D 2?
->=20
-> mul_u64_u64_div_u64()has a bug already and we are losing precision with v=
-ery high values.
-> See the output with CONFIG_PWM_DEBUG enabled[1]. So we cannot reuse mul_u=
-64_u64_div64()
-> for roundup operation.
->=20
-> Maybe we need to come with 128bit operations for mul_u64_u64_div64_roundu=
-p().
-> Do you have any specific algorithm in mind for doing mul_u64_u64_div64_ro=
-undup()?
->=20
-> Fabrizio already developed an algorithm for 128 bit operation, I could re=
-use once it
-> hits the mainline.
->=20
-> [1]
-> ######[  304.213944] pwm-rzg2l-gpt 10048000.pwm: .apply is not idempotent=
- (ena=3D1 pol=3D0 5500000000000/43980352512000) -> (ena=3D1 pol=3D0 5500000=
-000000/43980239923200)
-> 	 High setting##
-> 	[  304.230854] pwm-rzg2l-gpt 10048000.pwm: .apply is not idempotent (ena=
-=3D1 pol=3D0 23980465100800/43980352512000) -> (ena=3D1 pol=3D0 23980465100=
-800/43980239923200)
+diff --git a/arch/arm64/boot/dts/exynos/Makefile b/arch/arm64/boot/dts/exynos/Makefile
+index 6e4ba69268e5..da06e1a9456c 100644
+--- a/arch/arm64/boot/dts/exynos/Makefile
++++ b/arch/arm64/boot/dts/exynos/Makefile
+@@ -5,4 +5,5 @@ dtb-$(CONFIG_ARCH_EXYNOS) += \
+ 	exynos7-espresso.dtb		\
+ 	exynos7885-jackpotlte.dtb	\
+ 	exynos850-e850-96.dtb		\
+-	exynosautov9-sadk.dtb
++	exynosautov9-sadk.dtb		\
++	exynosautov920-sadk.dtb
+diff --git a/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts b/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
+new file mode 100644
+index 000000000000..e250b5594b58
+--- /dev/null
++++ b/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
+@@ -0,0 +1,88 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Samsung's ExynosAutov920 SADK board device tree source
++ *
++ * Copyright (c) 2023 Samsung Electronics Co., Ltd.
++ *
++ */
++
++/dts-v1/;
++#include "exynosautov920.dtsi"
++#include "exynos-pinctrl.h"
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "Samsung ExynosAutov920 SADK board";
++	compatible = "samsung,exynosautov920-sadk", "samsung,exynosautov920";
++
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	aliases {
++		serial0 = &serial_0;
++	};
++
++	chosen {
++		stdout-path = &serial_0;
++	};
++
++	memory@80000000 {
++		device_type = "memory";
++		reg = <0x0 0x80000000 0x0 0x70000000>,
++		      <0x8 0x80000000 0x1 0xfba00000>,
++		      <0xa 0x00000000 0x2 0x00000000>;
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&key_wakeup &key_back>;
++
++		key-wakeup {
++			label = "KEY_WAKEUP";
++			linux,code = <KEY_WAKEUP>;
++			gpios = <&gpa0 0 GPIO_ACTIVE_LOW>;
++			wakeup-source;
++		};
++
++		key-back {
++			label = "KEY_BACK";
++			linux,code = <KEY_BACK>;
++			gpios = <&gpp6 3 GPIO_ACTIVE_LOW>;
++		};
++	};
++};
++
++&pinctrl_alive {
++	key_wakeup: key-wakeup-pins {
++		samsung,pins = "gpa0-0";
++		samsung,pin-function = <EXYNOS_PIN_FUNC_EINT>;
++	};
++};
++
++&pinctrl_peric1 {
++	key_back: key-back-pins {
++		samsung,pins = "gpp6-3";
++		samsung,pin-function = <EXYNOS_PIN_FUNC_EINT>;
++	};
++};
++
++&pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm_tout0>;
++	status = "okay";
++};
++
++&serial_0 {
++	status = "okay";
++};
++
++&usi_0 {
++	samsung,clkreq-on; /* needed for UART mode */
++	status = "okay";
++};
++
++&xtcxo {
++	clock-frequency = <38400000>;
++};
+-- 
+2.43.0
 
-Have you tried to understand that? What is the clk rate when this
-happens? You're not suggesting that mul_u64_u64_div_u64 is wrong, are
-you?
-
-> > With prescale <=3D 5 and rzg2l_gpt->rate >=3D 1024 this shouldn't work =
-just
-> > fine.
-
-I meant here "this should work just fine", I guess you understood that
-right.
-
-> Practically this is not possible. Yes, from theoretical point, rate=3D1kH=
-z=20
-> compared to the practical case, 100MHz won't work.
->=20
-> For the practical case, the current logic is fine. If we need to achieve
-> theoretical example like you mentioned then we need to have=20
-> mul_u64_u64_div64_roundup().
-
-That shouldn't be so hard to implement.
-
-> > > +	rzg2l_gpt->max_val =3D mul_u64_u64_div_u64(U32_MAX, NSEC_PER_SEC,
-> > > +						 rzg2l_gpt->rate) * RZG2L_MAX_SCALE_FACTOR;
-> >=20
-> > Is it clear that this won't overflow?
-
-U32_MAX * NSEC_PER_SEC doesn't even overflow an u64, so using a plain
-u64 division would be more efficient.
-
-You'd get a smaller rounding error with:
-
-	rzg2l_gpt->max_val =3D mul_u64_u64_div_u64((u64)U32_MAX * NSEC_PER_SEC, RZ=
-G2L_MAX_SCALE_FACTOR, rzg2l_gpt->rate);
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---ekhwc4sfyeifnj5w
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmVyPCYACgkQj4D7WH0S
-/k5SEAf9FJQJGPRf6pVXHNRm7nyoiMjxWH7+X8Of6LjANoPBeK20X/3ttyA31dUI
-Q6OsRib0QxS9zH2khyPy1Fxigxc1QOmSBbUfXzlqdcIl2LkgntOkTKK3TIHBc1zd
-WfWwx+tv0h9XJ/m7DS1Puv9ihmUOSchAy6/lpM/JgM2ga4GSTQT4UDVWvC/tg3GY
-OQIDdF2C6/CPHHdzqHCLyjpPZoRr93SKBA9JjI7SO9foYk+rnryj7x5Ewh4DqVDC
-ftXVeKm63LpkxdcnbDstFgP0wa+rrw7vpdf6rYzSzoqXAl2JiPf3DT0XKRJTxp6j
-Fcw1bYcxs+iqDBQqf/Nuf0XimMMCxw==
-=sEx9
------END PGP SIGNATURE-----
-
---ekhwc4sfyeifnj5w--
