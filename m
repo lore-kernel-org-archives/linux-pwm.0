@@ -1,17 +1,17 @@
-Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B16B8E;
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC1C10CA;
 	Fri,  8 Dec 2023 01:42:15 -0800 (PST)
 Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
 	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-	by fd01.gateway.ufhost.com (Postfix) with ESMTP id 216B48022;
-	Fri,  8 Dec 2023 17:42:12 +0800 (CST)
+	by ex01.ufhost.com (Postfix) with ESMTP id D3A8824E199;
+	Fri,  8 Dec 2023 17:42:13 +0800 (CST)
 Received: from EXMBX068.cuchost.com (172.16.6.68) by EXMBX165.cuchost.com
  (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 8 Dec
- 2023 17:42:12 +0800
+ 2023 17:42:13 +0800
 Received: from williamqiu-virtual-machine.starfivetech.com (171.223.208.138)
  by EXMBX068.cuchost.com (172.16.6.68) with Microsoft SMTP Server (TLS) id
- 15.0.1497.42; Fri, 8 Dec 2023 17:42:10 +0800
+ 15.0.1497.42; Fri, 8 Dec 2023 17:42:12 +0800
 From: William Qiu <william.qiu@starfivetech.com>
 To: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-riscv@lists.infradead.org>, <linux-pwm@vger.kernel.org>
@@ -23,9 +23,9 @@ CC: Emil Renner Berthing <kernel@esmil.dk>, Rob Herring <robh+dt@kernel.org>,
  Feng" <hal.feng@starfivetech.com>, Paul Walmsley <paul.walmsley@sifive.com>,
 	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
 	William Qiu <william.qiu@starfivetech.com>
-Subject: [PATCH v9 1/4] dt-bindings: pwm: Add bindings for OpenCores PWM Controller
-Date: Fri, 8 Dec 2023 17:42:06 +0800
-Message-ID: <20231208094209.1910934-2-william.qiu@starfivetech.com>
+Subject: [PATCH v9 3/4] riscv: dts: starfive: jh7100: Add PWM node and pins configuration
+Date: Fri, 8 Dec 2023 17:42:08 +0800
+Message-ID: <20231208094209.1910934-4-william.qiu@starfivetech.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231208094209.1910934-1-william.qiu@starfivetech.com>
 References: <20231208094209.1910934-1-william.qiu@starfivetech.com>
@@ -41,80 +41,79 @@ X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX068.cuchost.com
 X-YovoleRuleAgent: yovoleflag
 Content-Transfer-Encoding: quoted-printable
 
-Add bindings for OpenCores PWM Controller.
+Add OpenCores PWM controller node and add PWM pins configuration
+on VisionFive 1 board.
 
 Signed-off-by: William Qiu <william.qiu@starfivetech.com>
-Reviewed-by: Hal Feng <hal.feng@starfivetech.com>
 ---
- .../bindings/pwm/opencores,pwm.yaml           | 55 +++++++++++++++++++
- 1 file changed, 55 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/opencores,pwm.y=
-aml
+ .../boot/dts/starfive/jh7100-common.dtsi      | 24 +++++++++++++++++++
+ arch/riscv/boot/dts/starfive/jh7100.dtsi      |  9 +++++++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml b/D=
-ocumentation/devicetree/bindings/pwm/opencores,pwm.yaml
-new file mode 100644
-index 000000000000..0b85dd861dfd
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
-@@ -0,0 +1,55 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/opencores,pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/riscv/boot/dts/starfive/jh7100-common.dtsi b/arch/riscv=
+/boot/dts/starfive/jh7100-common.dtsi
+index b93ce351a90f..11876906cc05 100644
+--- a/arch/riscv/boot/dts/starfive/jh7100-common.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7100-common.dtsi
+@@ -84,6 +84,24 @@ GPO_I2C2_PAD_SDA_OEN,
+ 		};
+ 	};
+=20
++	pwm_pins: pwm-0 {
++		pwm-pins {
++			pinmux =3D <GPIOMUX(7,
++				  GPO_PWM_PAD_OUT_BIT0,
++				  GPO_PWM_PAD_OE_N_BIT0,
++				  GPI_NONE)>,
++				 <GPIOMUX(5,
++				  GPO_PWM_PAD_OUT_BIT1,
++				  GPO_PWM_PAD_OE_N_BIT1,
++				  GPI_NONE)>;
++			bias-disable;
++			drive-strength =3D <35>;
++			input-disable;
++			input-schmitt-disable;
++			slew-rate =3D <0>;
++		};
++	};
 +
-+title: OpenCores PWM controller
+ 	uart3_pins: uart3-0 {
+ 		rx-pins {
+ 			pinmux =3D <GPIOMUX(13, GPO_LOW, GPO_DISABLE,
+@@ -154,6 +172,12 @@ &osc_aud {
+ 	clock-frequency =3D <27000000>;
+ };
+=20
++&pwm {
++	pinctrl-names =3D "default";
++	pinctrl-0 =3D <&pwm_pins>;
++	status =3D "okay";
++};
 +
-+maintainers:
-+  - William Qiu <william.qiu@starfivetech.com>
+ &uart3 {
+ 	pinctrl-names =3D "default";
+ 	pinctrl-0 =3D <&uart3_pins>;
+diff --git a/arch/riscv/boot/dts/starfive/jh7100.dtsi b/arch/riscv/boot/d=
+ts/starfive/jh7100.dtsi
+index e68cafe7545f..4f5eb2f60856 100644
+--- a/arch/riscv/boot/dts/starfive/jh7100.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+@@ -280,6 +280,15 @@ watchdog@12480000 {
+ 				 <&rstgen JH7100_RSTN_WDT>;
+ 		};
+=20
++		pwm: pwm@12490000 {
++			compatible =3D "starfive,jh7100-pwm", "opencores,pwm-v1";
++			reg =3D <0x0 0x12490000 0x0 0x10000>;
++			clocks =3D <&clkgen JH7100_CLK_PWM_APB>;
++			resets =3D <&rstgen JH7100_RSTN_PWM_APB>;
++			#pwm-cells =3D <3>;
++			status =3D "disabled";
++		};
 +
-+description:
-+  The OpenCores PTC ip core contains a PWM controller. When operating in=
- PWM
-+  mode, the PTC core generates binary signal with user-programmable low =
-and
-+  high periods. All PTC counters and registers are 32-bit.
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - starfive,jh7100-pwm
-+          - starfive,jh7110-pwm
-+      - const: opencores,pwm-v1
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pwm@12490000 {
-+        compatible =3D "starfive,jh7110-pwm", "opencores,pwm-v1";
-+        reg =3D <0x12490000 0x10000>;
-+        clocks =3D <&clkgen 181>;
-+        resets =3D <&rstgen 109>;
-+        #pwm-cells =3D <3>;
-+    };
+ 		sfctemp: temperature-sensor@124a0000 {
+ 			compatible =3D "starfive,jh7100-temp";
+ 			reg =3D <0x0 0x124a0000 0x0 0x10000>;
 --=20
 2.34.1
 
