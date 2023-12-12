@@ -1,92 +1,95 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE02ECE
-	for <linux-pwm@vger.kernel.org>; Tue, 12 Dec 2023 10:09:59 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1E3A1
+	for <linux-pwm@vger.kernel.org>; Tue, 12 Dec 2023 10:14:52 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rD7CY-00018b-62; Tue, 12 Dec 2023 19:09:50 +0100
+	id 1rD7HK-00040L-KK; Tue, 12 Dec 2023 19:14:46 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rD7CX-00FOY0-9i; Tue, 12 Dec 2023 19:09:49 +0100
+	id 1rD7HI-00FOxL-SC; Tue, 12 Dec 2023 19:14:44 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rD7CX-001opH-09; Tue, 12 Dec 2023 19:09:49 +0100
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Russell King <linux@armlinux.org.uk>
-Cc: linux-clk@vger.kernel.org,
-	kernel@pengutronix.de,
-	Sean Anderson <sean.anderson@seco.com>,
+	id 1rD7HI-001p8f-I9; Tue, 12 Dec 2023 19:14:44 +0100
+Date: Tue, 12 Dec 2023 19:14:44 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Sean Young <sean@mess.org>
+Cc: linux-media@vger.kernel.org, linux-pwm@vger.kernel.org,
+	Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
 	Thierry Reding <thierry.reding@gmail.com>,
-	Michal Simek <michal.simek@amd.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-pwm@vger.kernel.org
-Subject: [PATCH 0/2] clk: Add a devm variant of clk_rate_exclusive_get()
-Date: Tue, 12 Dec 2023 19:09:41 +0100
-Message-ID: <cover.1702403904.git.u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.42.0
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 5/6] pwm: bcm2835: Allow PWM driver to be used in
+ atomic context
+Message-ID: <20231212181444.mw5kxff5ijz676qh@pengutronix.de>
+References: <cover.1702369869.git.sean@mess.org>
+ <e9e32c9789da3c90b5a2aa7d5a093120b76421fb.1702369869.git.sean@mess.org>
+ <20231212160838.k4z4csy455a7qnje@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1789; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=fSIBxfQRnF716sj+kWc1Bpd5EavDQYK0nov+457/BrI=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtSKhU/VOm3b5BQyFv742uLkt01ZehPLg+K/SZytOfmBU WYpGx07GY1ZGBi5GGTFFFnsG9dkWlXJRXau/XcZZhArE8gUBi5OAZgIixcHw7y4SSrMbtcmp2l9 bD7e3H1buvzHgdDvSimylu7dN15cu5ksOrPsbNpma6lMzoqnnoLTecX80vo50mwYfr/hM1W+ojd d6dmP2WxiKU92fNjbXjj97ROL/XN7q2+2ajis3dmZccDz+J6tLC+VzghO77lZpBIsI6ax2I3LUe BB0pa/W923eSR6n3MzsH202WKpc9XHwLbLXEz3Lf4wtuwtcOJ+xdSkuWtXsaL4MkOuFnG2HPYA4 +7TVQFXW2e2mh9IMJsebDWbX3fdvAhJrtWRWd5fPglMfe9jdNZCQqvY8+/tK5KMbketHXd4Vfxq DYr6u4kvKu3L682r+CN1A/YecJlSs1s5Vdv4/eGPXmUA
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="llbhn5mnvxkhmahv"
+Content-Disposition: inline
+In-Reply-To: <20231212160838.k4z4csy455a7qnje@pengutronix.de>
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-Hello,
 
-patch #1 adds a new function devm_clk_rate_exclusive_get() that
-simplifies usage of clk_rate_exclusive_get() in probe functions.
+--llbhn5mnvxkhmahv
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-One downside is that a caller of clk_rate_exclusive_get() doesn't need
-to check the return value, devm_clk_rate_exclusive_get() can fail
-however. So to benefit from the new function you usually need to add a
-check for devm_clk_rate_exclusive_get() failing in return to simplifying
-error paths in .probe() and .remove().
+Hello Sean,
 
-Patch #2 shows an example conversion. Note that without
-devm_clk_rate_exclusive_get() the pwm-xilinx driver cannot benefit from
-devm_pwmchip_add().
+On Tue, Dec 12, 2023 at 05:08:38PM +0100, Uwe Kleine-K=F6nig wrote:
+> On Tue, Dec 12, 2023 at 08:34:04AM +0000, Sean Young wrote:
+> > @@ -169,6 +179,7 @@ static int bcm2835_pwm_suspend(struct device *dev)
+> >  {
+> >  	struct bcm2835_pwm *pc =3D dev_get_drvdata(dev);
+> > =20
+> > +	clk_rate_exclusive_put(pc->clk);
+> >  	clk_disable_unprepare(pc->clk);
+>=20
+> I thought this was the remove function, but that's suspend. Adding
+> clk_rate_exclusive_put() there is wrong.
 
-This series bases on
-https://lore.kernel.org/linux-clk/cover.1702400947.git.u.kleine-koenig@pengutronix.de/T/#t
-. That's not a "hard" dependency, it can easily be rebased to next.
-There is only a trivial context conflict in include/linux/clk.h.
-
-Regarding how to merge this: I suggest to take patch #1 via clk. When
-this is merged I will take care for the pwm-xilinx driver (and others
-that might benefit).
+https://lore.kernel.org/linux-clk/744a6371f94fe96f527eea6e52a600914e6fb6b5.=
+1702403904.git.u.kleine-koenig@pengutronix.de/
+might be useful to fix this.
 
 Best regards
 Uwe
 
-Uwe Kleine-König (2):
-  clk: Add a devm variant of clk_rate_exclusive_get()
-  pwm: xilinx: Simplify using devm functions
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
- drivers/clk/clk.c        | 15 +++++++++++++++
- drivers/pwm/pwm-xilinx.c | 25 ++++++-------------------
- include/linux/clk.h      | 12 ++++++++++++
- 3 files changed, 33 insertions(+), 19 deletions(-)
+--llbhn5mnvxkhmahv
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-base-commit: bbd220ce4e29ed55ab079007cff0b550895258eb
-prerequisite-patch-id: 5a986d744a054000998ce06e3dbaaedede71c8ac
-prerequisite-patch-id: cdb26f72d1fbd7fef4a9ef4476e0218dd3fcba22
-prerequisite-patch-id: 838e3cb639cf13c7b571d77c1dea3d4ec479465d
-prerequisite-patch-id: d5059c23f752a4861e5bbfe70b8ab771727bf68d
-prerequisite-patch-id: c7ca9e00334dabe41f39e006ceb2b7d1afddcaa5
--- 
-2.42.0
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmV4oxMACgkQj4D7WH0S
+/k4mdAgAn2zEXY7AwmY1SR/n2nlH95E9ZMWuZsWEE5YGkmiMVuu3Vxndi5GvL9Dh
+dd1KzI3rvGRWEOh7sNhr8gdfyRFVBwFE8N0IMRWH5SOOL6uMiDV5qB8gcQF4cHJf
+sVZp1wxCIrv8QVmdNVhafSAIz7ojkYJpls9Hp18MfZWAJ40kwuUQSRqx3zu565rr
+fAujilnhb2J/JgM+SBmkERoG5p7RPdJ7Txck7nT2/poL7wwwhxBK5uBAHsIzLbiq
+iiM1wU/uYHSSEln0EYdz74u47W65H8hiKG6e/CdhThnLh6p29h+R9UtQpNSktAe6
+nfXqhhqc2AWJJk1y3kL2nDV/gkykzg==
+=ZifV
+-----END PGP SIGNATURE-----
 
+--llbhn5mnvxkhmahv--
