@@ -1,142 +1,89 @@
 Received: from gofer.mess.org (gofer.mess.org [88.97.38.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 313B4171D8;
-	Tue, 19 Dec 2023 16:30:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 417801D54D;
+	Tue, 19 Dec 2023 16:31:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mess.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mess.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mess.org header.i=@mess.org header.b="Ud803sgk";
-	dkim=pass (2048-bit key) header.d=mess.org header.i=@mess.org header.b="ReHiDNTR"
+	dkim=pass (2048-bit key) header.d=mess.org header.i=@mess.org header.b="bE1UADNe";
+	dkim=pass (2048-bit key) header.d=mess.org header.i=@mess.org header.b="V7XnzUo5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mess.org; s=2020;
-	t=1703003448; bh=fOWuvxGGsnWIrUNGcwxEGN7UpLks/52oxfAvQTJwFQE=;
-	h=From:To:Cc:Subject:Date:From;
-	b=Ud803sgkFLxmpbS0P5igkXKJiTKaVYTMbOzUGOE4Wg/ylYpoQzD6UAMx5z3XUGA9/
-	 iy4WjMOgLW/JKe/u45Q5aXUSch834oK6i7faKmn384NbOcVLXqYDWjfC8KpN+34hr+
-	 +J+dI5wgik1qFtWY2Uz5JTr2bEkSNLSlyYmZuUS2IZaXK8MYkOLb6faEGnSlLGj6qw
-	 X9ZmY4BJz0WEC8l8CTLFYCqoUTnfstdGzLCrQGEm/t2DlCDxdXztJSNiB2+QUvZVzS
-	 FHfiMDTC0wV8LpPdvFki5Z+UHfqRzrcEhJ36dZWsJlRhukLr57qrjTslOTNHuVrCzb
-	 URtD+Ars2xvsQ==
+	t=1703003463; bh=M9WlBbQS+py4vER3IqEGVhXVemW9VnxieqHLqtwQ3LU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=bE1UADNeB2uspHMYO3fCWbYA2MtHZ1o6vQMX7OMEAWNWK04X2PNGmfHb215SMxQxF
+	 aVTUi56JUtqcQZsLaz+d8QiQ/edH37rBaUsa754r5Jhbmb65DmIn+9GbDx5g7MMGWW
+	 cY0sQW3gmOSn0TQLrYCv/GA4sVyxKOY9BIXB2Ns7cDUOQ5egfO3FYDO4B4GLxWvmHW
+	 07dvld+veB3/EhCgjVUHZVRrryXhZNJ2ay0uva29oAbkrz0+qyrCUCas0ta8bi3oQZ
+	 TYC7siMKU3sI6hfbjqCaCEncklEGdCpulOZOwbFlezPqrX0MetIN8XfXeGL3k65hkp
+	 PWM90dkxrTnQQ==
 Received: by gofer.mess.org (Postfix, from userid 501)
-	id C4B891009FE; Tue, 19 Dec 2023 16:30:48 +0000 (GMT)
+	id 91B1D100A03; Tue, 19 Dec 2023 16:31:03 +0000 (GMT)
 X-Spam-Level: 
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mess.org; s=2020;
-	t=1703003446; bh=fOWuvxGGsnWIrUNGcwxEGN7UpLks/52oxfAvQTJwFQE=;
-	h=From:To:Cc:Subject:Date:From;
-	b=ReHiDNTRtvQEIa091mcj1QrwngGSl5CbIW2j9Ye+Ac5s+4TN03ONR2GWFs2ZSAFQ/
-	 nx9L86MBHDAoSWZ7PjldQXEwVIyNtD2JE5eipptuMXMSstRF93yX5/fZ+3E/kyoimR
-	 h8//MBZ5e/K1I5kJYH+knMEyr0Uo/rwBQwsnmxgiTQHRXhSt2/Dh4/WoEn+aKo0/sN
-	 PHboelYE3c6xmNC5a2XYct9G4rAnM2I/txSbRbHIcOX8aTQ6WS3c8aUzwYJxiq8dH3
-	 t7kFw+WqkoNocUGnbqJjPVJg2dbYeBL7I/l84IhGsooAqkV1PBCccKOCSa6Mn+XBbX
-	 XYrLbfuIdpBKg==
+	t=1703003448; bh=M9WlBbQS+py4vER3IqEGVhXVemW9VnxieqHLqtwQ3LU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=V7XnzUo5dtNydJL1osYe+LHZrYzldF0f0Pklco8NJlaQDeRO5p+9Em3YRowZIWJui
+	 G8uS0cpyjiI//V/DYUBXOPhdlyV45rF6Rt7JYopQNXkEGscmYTXP3jopTyleeL7X10
+	 wb5LcWt1O39zsUWteKERN6vnpjFiUzBWp6QupRHyI5BU/35Y/lsrWf870vYJQ4FZt9
+	 iHW7xQlVgOCIvUoAOlZ+IGC1hagKPFSfj3RG9B7xVVv1yXBk6bw0+K4S5/xjFQHKwg
+	 7qLFhAAIOQgcOMiNj+lb1T1nuN+WNm1okZj8I1O19ae1g2uV8G065uz7g0h8zkcVEp
+	 89WzAqwfgFQtQ==
 Received: from localhost.localdomain (bigcore.local [IPv6:2a02:8011:d000:212:ca7f:54ff:fe51:14d6])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by gofer.mess.org (Postfix) with ESMTPSA id E0CF91000CC;
-	Tue, 19 Dec 2023 16:30:46 +0000 (GMT)
+	by gofer.mess.org (Postfix) with ESMTPSA id 970D11002A3;
+	Tue, 19 Dec 2023 16:30:48 +0000 (GMT)
 From: Sean Young <sean@mess.org>
 To: linux-media@vger.kernel.org,
 	linux-pwm@vger.kernel.org,
 	Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
 	Thierry Reding <thierry.reding@gmail.com>,
 	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Sean Young <sean@mess.org>
-Subject: [PATCH v10 0/6] Improve pwm-ir-tx precision
-Date: Tue, 19 Dec 2023 16:30:23 +0000
-Message-ID: <cover.1703003288.git.sean@mess.org>
+Cc: Sean Young <sean@mess.org>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v10 2/6] pwm: Replace ENOTSUPP with EOPNOTSUPP
+Date: Tue, 19 Dec 2023 16:30:25 +0000
+Message-ID: <7d6c10b52bbb29925fff9d2f16788a65c138921e.1703003288.git.sean@mess.org>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1703003288.git.sean@mess.org>
+References: <cover.1703003288.git.sean@mess.org>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The pwm-ir-tx driver has to turn the pwm signal on and off, and suffers
-from delays as this is done in process context. Make this work in atomic
-context.
+According to Documentation/dev-tools/checkpatch.rst ENOTSUPP is
+not recommended and EOPNOTSUPP should be used instead.
 
-changes:
+Signed-off-by: Sean Young <sean@mess.org>
+---
+ include/linux/pwm.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-v10:
- - Uwe Kleine-König review comments/fixes
-
-v9:
- - Uwe Kleine-König review comments/fixes
-
-v8:
- - Uwe Kleine-König review comments
- - Minor cleanups
-
-v7:
- - Thierry Reding review comments
- - Minor cleanups
- - rebase
-
-v6:
- - Rename pwm_apply_cansleep() to pwm_apply_might_sleep()
- - rebase
-
-v5:
- - Use dev_err_probe() as Uwe suggested
- - rebase
-
-v4:
- - Split out the pwm_apply_state() rename into seperate commit
- - Atomic pwm function is called pwm_apply_atomic() and sleeping
-   counterpart pwm_apply_cansleep()
- - Fix commit messages
-
-v3:
- - Renamed pwm_apply_state() to pwm_apply_cansleep()
- - Moved pwm atomic to struct pwm_chip
- - Fixed pwm docs
- - Other minor code review comments
-
-v2:
- - Simplified the pwm ir tx based on Ivaylo Dimitrov suggestions
- - Renamed pwm_can_sleep() to pwm_is_atomic
- - Fix sleeping issue in pwm-bcm2835 (clk_get_rate() can sleep)
- - use non_block_start() in pwm to check atomic-ness
-
-
-Sean Young (6):
-  pwm: Rename pwm_apply_state() to pwm_apply_might_sleep()
-  pwm: Replace ENOTSUPP with EOPNOTSUPP
-  pwm: renesas: Remove unused include
-  pwm: Make it possible to apply PWM changes in atomic context
-  pwm: bcm2835: Allow PWM driver to be used in atomic context
-  media: pwm-ir-tx: Trigger edges from hrtimer interrupt context
-
- Documentation/driver-api/pwm.rst              | 17 +++-
- MAINTAINERS                                   |  2 +-
- .../gpu/drm/i915/display/intel_backlight.c    |  6 +-
- drivers/gpu/drm/solomon/ssd130x.c             |  2 +-
- drivers/hwmon/pwm-fan.c                       |  8 +-
- drivers/input/misc/da7280.c                   |  4 +-
- drivers/input/misc/pwm-beeper.c               |  4 +-
- drivers/input/misc/pwm-vibra.c                |  8 +-
- drivers/leds/leds-pwm.c                       |  2 +-
- drivers/leds/rgb/leds-pwm-multicolor.c        |  4 +-
- drivers/media/rc/pwm-ir-tx.c                  | 87 +++++++++++++++++--
- drivers/platform/x86/lenovo-yogabook.c        |  2 +-
- drivers/pwm/core.c                            | 74 ++++++++++++----
- drivers/pwm/pwm-bcm2835.c                     | 34 ++++++--
- drivers/pwm/pwm-renesas-tpu.c                 |  1 -
- drivers/pwm/pwm-twl-led.c                     |  2 +-
- drivers/pwm/pwm-vt8500.c                      |  2 +-
- drivers/pwm/sysfs.c                           | 10 +--
- drivers/regulator/pwm-regulator.c             |  4 +-
- drivers/video/backlight/lm3630a_bl.c          |  2 +-
- drivers/video/backlight/lp855x_bl.c           |  2 +-
- drivers/video/backlight/pwm_bl.c              | 12 +--
- drivers/video/fbdev/ssd1307fb.c               |  2 +-
- include/linux/pwm.h                           | 57 ++++++++----
- 24 files changed, 255 insertions(+), 93 deletions(-)
-
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index b64b8a82415c..c9cb87b59ac8 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -407,12 +407,12 @@ static inline int pwm_apply_might_sleep(struct pwm_device *pwm,
+ 					const struct pwm_state *state)
+ {
+ 	might_sleep();
+-	return -ENOTSUPP;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline int pwm_adjust_config(struct pwm_device *pwm)
+ {
+-	return -ENOTSUPP;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline int pwm_config(struct pwm_device *pwm, int duty_ns,
 -- 
 2.43.0
 
