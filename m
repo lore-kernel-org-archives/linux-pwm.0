@@ -1,116 +1,53 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D67E4C8E1
-	for <linux-pwm@vger.kernel.org>; Tue, 19 Dec 2023 06:44:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rFTq9-0008Bm-5y; Tue, 19 Dec 2023 07:44:29 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rFTq7-00Gs4p-P9; Tue, 19 Dec 2023 07:44:27 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rFTq7-005oH1-Fc; Tue, 19 Dec 2023 07:44:27 +0100
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: kernel@pengutronix.de,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org
-Subject: [PATCH 1/2] bus: ts-nbus: Convert to atomic pwm API
-Date: Tue, 19 Dec 2023 07:44:14 +0100
-Message-ID:  <6ae9784dfb98ff63b44735b903e7f4d4e3980222.1702967898.git.u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.42.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C00412B69;
+	Tue, 19 Dec 2023 08:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vAgyGFav"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E70BC433C8;
+	Tue, 19 Dec 2023 08:26:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1702974402;
+	bh=RXS2+8wrVZn1cgNBgmJ9bhqenDhrBEvY/SJyQRX+so4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=vAgyGFavYPKYx8aEZelEFOgs9QsVWVyFeThCQa33plPSsm7YnONT5BTXGXcm4XWf9
+	 u/PbDO5aPyJD0lV3oUoY/7RebLbJ7z/Yts4v8PWJARO9BECPXlJIHpzhBDAmWzf8tp
+	 15qkcrZSVKMBaD276t/wvexLctnWI3Q4nnuKa2Qtg4GfnDZZhFDhD//sB2248Cj0Bb
+	 qBBdpEEgQgnEN6TXQFCxyQvHIIt2DElrk+tb3neD9Sb7D86TZTTne02Mh/KEP/ejK5
+	 zlFJnxInYj8UFd5g3M2+dwdd1kO7jhcS/tddhdiKzToywOGnvAO9NpVfDVplgt8aZL
+	 NZdfZ2aSPiXSQ==
+Date: Tue, 19 Dec 2023 16:26:39 +0800
+From: Tzung-Bi Shih <tzungbi@kernel.org>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>,
+	Benson Leung <bleung@chromium.org>,
+	Guenter Roeck <groeck@chromium.org>, linux-pwm@vger.kernel.org,
+	chrome-platform@lists.linux.dev, kernel@pengutronix.de,
+	kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] pwm: cros-ec: Drop documentation for dropped struct
+ member
+Message-ID: <ZYFTvzsw1-z_MAZ_@google.com>
+References: <20231219063316.167905-2-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1898; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=Y75lwnbkJyYsgOfhDJ0vdUpyY0E8lmiDU57c9pD1TA4=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtRG633veybq1ofUuDQebL1oobJQxp8x7kH2zX+PLr0tz 1s3Y0pNJ6MxCwMjF4OsmCKLfeOaTKsqucjOtf8uwwxiZQKZwsDFKQAT6RJk/x/EsEiB6bHxDqYw 74z19438vi95d1zx3868JPc76bc0PqSplSrfkQ4V25Vh6FWz9VM8v8j6XiYekZvTJSNceA/5s/2 9LPVjpt4ruQzRY8emzT5ZFXxqKcuUKKf4nM8Hf0y/+eWO4NIAjk/+KeyPkxdOeNYQsffneTl+9s 3r/W/a+h4wjjNcEawu5Hvg8gKetCUPD5+T/RaYrSGaJRVgkas40Y7v0rdwRY/wRKWp1voPlnOtE vCeEWZj9JTDUc39b5xRk46ZQH8zY+AOBbmcJ8c0Tkv3TBDmfNAvWefQ9b31SMX9/TMe1Rorbvu3 hC3c5MnneEFnT6ZsWdfwNs+/qtsu12/fpNFykvce29ptAA==
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+In-Reply-To: <20231219063316.167905-2-u.kleine-koenig@pengutronix.de>
 
-With this change the PWM hardware is only configured once (instead of
-three times).
+On Tue, Dec 19, 2023 at 07:33:17AM +0100, Uwe Kleine-König wrote:
+> Recently an unused member was removed from struct cros_ec_pwm_device,
+> but the kernel doc wasn't adapted accordingly. Catch up and drop the
+> documentation, too.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Closes: https://lore.kernel.org/oe-kbuild-all/202312190757.O4M9dsln-lkp@intel.com/
+> Fixes: ffb150737fee ("pwm: cros-ec: Drop unused member from driver private data")
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Signed-off-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
----
-Changes since (implicit) v1
-(https://lore.kernel.org/linux-kernel/c3db8ab2bb447f55aa0f2af0aa3cc6e758b6acc9.1702160838.git.u.kleine-koenig@pengutronix.de):
-
-- Add a closing parenthesis to the commit log (xkcd#859)
-- Rebase to todays next/master (trivial)
-
-Arnd, there is no dedicated maintainer for drivers/bus. Would you take
-these patches? Tell me if you prefer a PR.
-
-Best regards
-Uwe
-
- drivers/bus/ts-nbus.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/bus/ts-nbus.c b/drivers/bus/ts-nbus.c
-index 4fa932cb0915..19c5d1f4e4d7 100644
---- a/drivers/bus/ts-nbus.c
-+++ b/drivers/bus/ts-nbus.c
-@@ -273,7 +273,7 @@ EXPORT_SYMBOL_GPL(ts_nbus_write);
- static int ts_nbus_probe(struct platform_device *pdev)
- {
- 	struct pwm_device *pwm;
--	struct pwm_args pargs;
-+	struct pwm_state state;
- 	struct device *dev = &pdev->dev;
- 	struct ts_nbus *ts_nbus;
- 	int ret;
-@@ -296,25 +296,22 @@ static int ts_nbus_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	pwm_get_args(pwm, &pargs);
--	if (!pargs.period) {
-+	pwm_init_state(pwm, &state);
-+	if (!state.period) {
- 		dev_err(&pdev->dev, "invalid PWM period\n");
- 		return -EINVAL;
- 	}
- 
--	/*
--	 * FIXME: pwm_apply_args() should be removed when switching to
--	 * the atomic PWM API.
--	 */
--	pwm_apply_args(pwm);
--	ret = pwm_config(pwm, pargs.period, pargs.period);
-+	state.duty_cycle = state.period;
-+	state.enabled = true;
-+
-+	ret = pwm_apply_state(pwm, &state);
- 	if (ret < 0)
- 		return ret;
- 
- 	/*
- 	 * we can now start the FPGA and populate the peripherals.
- 	 */
--	pwm_enable(pwm);
- 	ts_nbus->pwm = pwm;
- 
- 	/*
-
-base-commit: aa4db8324c4d0e67aa4670356df4e9fae14b4d37
--- 
-2.42.0
-
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
