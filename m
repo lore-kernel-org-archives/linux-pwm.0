@@ -1,92 +1,140 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE9386AB9F
-	for <linux-pwm@vger.kernel.org>; Thu, 21 Dec 2023 11:17:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rGH3U-00059L-Jp; Thu, 21 Dec 2023 12:17:32 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rGH3S-000Vit-Sp; Thu, 21 Dec 2023 12:17:31 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rGH3T-001POd-MZ; Thu, 21 Dec 2023 12:17:31 +0100
-Date: Thu, 21 Dec 2023 12:17:31 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Neil Armstrong <neil.armstrong@linaro.org>, linux-pwm@vger.kernel.org, 
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Kevin Hilman <khilman@baylibre.com>, kernel@pengutronix.de, 
-	linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	Jerome Brunet <jbrunet@baylibre.com>
-Subject: Re: [PATCH] MAINTAINERS: pwm: Thierry steps down, Uwe takes over
-Message-ID: <bgydjom2y32ahs7y5o5xel67ybpifydmeokc7ew7ocm66gway2@v76vqgxrw3ho>
-References: <20231206214817.1783227-2-u.kleine-koenig@pengutronix.de>
- <ZXM72QYBbb32Q_aL@orome.fritz.box>
- <20231208190620.5qobgtyii2wt7tfa@pengutronix.de>
- <ZXbsDRslZNKCeJF9@orome.fritz.box>
- <20231211141900.x6tpyctch5fv3uqf@pengutronix.de>
- <ZXcpswXxb1oQldp5@orome.fritz.box>
- <20231212203352.wl3rzob75fct4lov@pengutronix.de>
- <ZYMPc50eBi6oBClu@orome.fritz.box>
- <6nj7rmq36hj5m26b7yhlbmpfps5wuxkx4zwyvttg4cpgocimj7@xtqm4qleo3s6>
- <ZYQMA-tM-zl5IJyC@orome.fritz.box>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 050EC65194;
+	Thu, 21 Dec 2023 18:59:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ltUYREeg"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BLEqabE008807;
+	Thu, 21 Dec 2023 18:59:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-transfer-encoding:content-type; s=
+	qcppdkim1; bh=kpE5sCFq3dmk4U1+LA8mrhI3/a/VConRpuJvlSn/PyE=; b=lt
+	UYREegUJL+kfWGBvYbEzdEh2tcvCc8BzZAayDJolYDU8L6hgVT5uQV/wcIfoNaJz
+	rK04H81G52DhLJJcIgM9P9dSBU2hJN4+fTKTepzaGEDFCNyRR+wHNL1YQOBzOyXD
+	wwDuXOoXxaxdu2n7dbTsjK9U5nRa77oks2biDxnIci1MmqhVeVBboyUq6xxtq1QI
+	m5niSa9OVjcWUdp7xxPecFugvWQOnSB5lm4aPQFNC2ZWAUizBI2MgVuSz1lKAaR3
+	awCMbMhngoPu7FlRArQc8gT0p0RHcmUEfXikBFjSoKZqXvmvCSGKcftdSUrTU4w4
+	WhoThVeNwl+RGaffxUsg==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v4qe2rq6d-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 21 Dec 2023 18:58:59 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BLIwxp0008617
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 21 Dec 2023 18:58:59 GMT
+Received: from hu-amelende-lv.qualcomm.com (10.49.16.6) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Thu, 21 Dec 2023 10:58:58 -0800
+From: Anjelique Melendez <quic_amelende@quicinc.com>
+To: <pavel@ucw.cz>, <lee@kernel.org>, <thierry.reding@gmail.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <agross@kernel.org>, <andersson@kernel.org>
+CC: <luca.weiss@fairphone.com>, <konrad.dybcio@linaro.org>,
+        <u.kleine-koenig@pengutronix.de>, <quic_subbaram@quicinc.com>,
+        <quic_gurus@quicinc.com>, <linux-leds@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        "Anjelique
+ Melendez" <quic_amelende@quicinc.com>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v8 1/7] dt-bindings: soc: qcom: Add qcom,pbs bindings
+Date: Thu, 21 Dec 2023 10:58:31 -0800
+Message-ID: <20231221185838.28440-2-quic_amelende@quicinc.com>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20231221185838.28440-1-quic_amelende@quicinc.com>
+References: <20231221185838.28440-1-quic_amelende@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="i3hpii6aoqhh5mej"
-Content-Disposition: inline
-In-Reply-To: <ZYQMA-tM-zl5IJyC@orome.fritz.box>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: FOZr0BEv5iF3laM7ulFWeNNZAA-g8EDm
+X-Proofpoint-ORIG-GUID: FOZr0BEv5iF3laM7ulFWeNNZAA-g8EDm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ suspectscore=0 mlxlogscore=999 clxscore=1011 malwarescore=0 phishscore=0
+ spamscore=0 adultscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2311290000
+ definitions=main-2312210144
 
+Add binding for the Qualcomm Programmable Boot Sequencer device.
 
---i3hpii6aoqhh5mej
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../bindings/soc/qcom/qcom,pbs.yaml           | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,pbs.yaml
 
-Hello Thierry,
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,pbs.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,pbs.yaml
+new file mode 100644
+index 000000000000..b502ca72266a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,pbs.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/qcom/qcom,pbs.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm Technologies, Inc. Programmable Boot Sequencer
++
++maintainers:
++  - Anjelique Melendez <quic_amelende@quicinc.com>
++
++description: |
++  The Qualcomm Technologies, Inc. Programmable Boot Sequencer (PBS)
++  supports triggering power up and power down sequences for clients
++  upon request.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - qcom,pmi632-pbs
++      - const: qcom,pbs
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/spmi/spmi.h>
++
++    pmic@0 {
++      reg = <0x0 SPMI_USID>;
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      pbs@7400 {
++        compatible = "qcom,pmi632-pbs", "qcom,pbs";
++        reg = <0x7400>;
++      };
++    };
+-- 
+2.41.0
 
-On Thu, Dec 21, 2023 at 10:57:23AM +0100, Thierry Reding wrote:
-> Looks all good to me. I'll keep things going until the next merge window
-> and will then send out my last PWM pull request and let Linus know to
-> expect future requests to come from you.
-
-Sounds good.
-
-Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---i3hpii6aoqhh5mej
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmWEHsoACgkQj4D7WH0S
-/k6XeggAolfcwyJ6/eHa78Mwclwm/k8z28O6swoIpBNWbgoSO0Zr97YOtHDzmRrn
-DE2m1Wu4CbQDVE03wRkDcTP0zbgqzj8f9MzFoONQLczlFf/jIgsR7DhyIV8IyxuR
-WJ0tvVWBsrWG2dYDEgyuD84d8xLcMWOIHRL3P5KDsuy5p0Oae0CER58u4wnlHP9P
-iBk5Vp8tDsBZp2EL6TE2ggc7pQLwbusyvC/0bgd3mWmGslmpYjWl6GkW/PgxhQKi
-4Zj2aW+eXeBen1ZvVBhr+k/+t+ZapWLcYiymaEKw2I0mD4OlKOkV6/BMz2PW7yCc
-hU/SnqoH0eJ+V0+WBLG1bDx5Oyq8TA==
-=0/BY
------END PGP SIGNATURE-----
-
---i3hpii6aoqhh5mej--
