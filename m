@@ -1,221 +1,99 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2E1B179A5
-	for <linux-pwm@vger.kernel.org>; Fri, 22 Dec 2023 11:17:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7369618AE5;
+	Fri, 22 Dec 2023 11:53:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="QUtPrCTh"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2cc794df8aaso20743571fa.0
-        for <linux-pwm@vger.kernel.org>; Fri, 22 Dec 2023 03:17:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1703243846; x=1703848646; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MJqa3kVWWYiQcg8Win00bhuGpmvRZlPGwxPFmgF93ro=;
-        b=QUtPrCThDWE2tB/JiHmwddGMIycm2skmsOb/CY3wMiHAOsJDQrkMvlG/5aHXi7z7/m
-         xfERMGl5AShV+k2MHtAoo7N1jbkilJk0Lu/LZ8Pz3p5WXpMi+UTQyvvt/smPxOMThYiL
-         2QCWkzkIUiScG2vVEo6t0hGyhRDz9OMn3X4jnEGP+HAUMa7DfAViujJSG/s/FZShAF1o
-         5StZqjyNiWbBIlGgH816iy1oVC19UVv4Qv0mheCh80OubuWGXv1VmulBozM0xbPAWbAe
-         nDOCQRTnymRMN5hT+y6YEaiy+48TsIxT8XQoD2V5Zd549XA/0HdLs2dR1r2g/7YDrork
-         eWLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703243846; x=1703848646;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=MJqa3kVWWYiQcg8Win00bhuGpmvRZlPGwxPFmgF93ro=;
-        b=vVpHT6NqMM1KZmL4p/4vV3JGAZx9OwOdnTp/eN2/3Z5HmbuEdfrdrl0JCW5xvvPOgg
-         ouVO4fQip1ZNua1TCdig83ntGWXn57Kd2h1JwVni4/NZZ3D8sMO75yDc8FRNPRMn2ipc
-         XqXq6Ncf0vNYHFwMWkQlvOVTswoyDKQOZNIninMpDTMkL11r3DeN5oIFdluYb8+xbf9x
-         pdrG074HZv9sEeseqZ+9jTHQqKCqGFZl6ObPxBR2baABob34ap0aDdzTOEhkIOTEmU/I
-         bhCY4CTcAD87S1pJyafytfM+5TZrvrrSjbr78HEaYe0m581tcVKsR8546NtEWxO65ttd
-         Kk7w==
-X-Gm-Message-State: AOJu0YzXK07XDei4p5gE9pAIhVYR0hKbIn5bGTReXMyigIH6E4bXJMel
-	S6viPih1HpVH9aU2k2BSqct5tGbW96fWrg==
-X-Google-Smtp-Source: AGHT+IE8MY2ShungujTaWAHUKjrfZf/vr4bgoomQQiP61LoKa4gO0MC/5GYmz//gJ3hg6/9jWtMVMA==
-X-Received: by 2002:a2e:86d7:0:b0:2cc:769e:723d with SMTP id n23-20020a2e86d7000000b002cc769e723dmr528564ljj.87.1703243845072;
-        Fri, 22 Dec 2023 03:17:25 -0800 (PST)
-Received: from toaster.lan ([2a01:e0a:3c5:5fb1:c099:e596:3179:b0fa])
-        by smtp.googlemail.com with ESMTPSA id f8-20020adffcc8000000b003366b500047sm4054069wrs.50.2023.12.22.03.17.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Dec 2023 03:17:24 -0800 (PST)
-From: Jerome Brunet <jbrunet@baylibre.com>
-To: Thierry Reding <thierry.reding@gmail.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: Jerome Brunet <jbrunet@baylibre.com>,
-	Kevin Hilman <khilman@baylibre.com>,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-amlogic@lists.infradead.org,
-	linux-pwm@vger.kernel.org,
-	JunYi Zhao <junyi.zhao@amlogic.com>
-Subject: [PATCH v4 4/6] pwm: meson: use device data to carry information around
-Date: Fri, 22 Dec 2023 12:16:52 +0100
-Message-ID: <20231222111658.832167-5-jbrunet@baylibre.com>
-X-Mailer: git-send-email 2.42.0
-In-Reply-To: <20231222111658.832167-1-jbrunet@baylibre.com>
-References: <20231222111658.832167-1-jbrunet@baylibre.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hrqUVWwB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF083C433C9;
+	Fri, 22 Dec 2023 11:53:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1703246029;
+	bh=NB+xhNYLL2YOdGSpb6W2PV8TAmLE5kyfK0/CSF8eFIg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hrqUVWwBAexAmLH6SS89GdnnPZVenC6P6AoqYY0UThGRiUAno75Gh6cHuyckYQINa
+	 1Jj+4RW1ipA/uzJyVng4YogC9NnCoVqqG87AO2yIjoi25EGrPE06YyXvpPZsycCT5w
+	 v9tr41gtXiPbx7purKSLuw/zjsyao1Xxse05sA2kNtAi0Zux31V4aYOZd7LXWispLx
+	 X2reeQDUco/vioRoNOs1JgYoRx7gozydCH3INKjBUBvDKW8s6z868oFgaM+SWyVhWb
+	 rctVbS2HVc9lLYWRtgpR9MTJU4wdTtBiCNJOdpJt9DBVUNedKKmQTvwqqyzMAgcZzL
+	 UK4pucHaUaDuA==
+Date: Fri, 22 Dec 2023 11:53:44 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	lgirdwood@gmail.com, linux-pwm@vger.kernel.org,
+	linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Subject: Re: [RFC PATCH v1] regulator: pwm-regulator: Fix continuous
+ get_voltage for disabled PWM
+Message-ID: <54905287-855d-47b4-880f-bfb1b8b1f49d@sirena.org.uk>
+References: <20231221211222.1380658-1-martin.blumenstingl@googlemail.com>
+ <0c99b575-5cf2-4bd6-8cfd-af19f5fd58da@sirena.org.uk>
+ <jx2vspy4cfuidf3mwmje675igspxdpgrenw5jz35ud5bm65klc@s4ovjad4fusg>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="KJDHjVYfXsFaJRDn"
+Content-Disposition: inline
+In-Reply-To: <jx2vspy4cfuidf3mwmje675igspxdpgrenw5jz35ud5bm65klc@s4ovjad4fusg>
+X-Cookie: Familiarity breeds attempt.
 
-Use struct device data to carry the information data around, instead
-of embedded the pwm structure in it and using container_of()
 
-Doing so works just as well and makes it a little easier to add setup
-callback depending on the DT compatible.
+--KJDHjVYfXsFaJRDn
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
----
- drivers/pwm/pwm-meson.c | 39 +++++++++++++++++++++++----------------
- 1 file changed, 23 insertions(+), 16 deletions(-)
+On Thu, Dec 21, 2023 at 11:07:41PM +0100, Uwe Kleine-K=F6nig wrote:
+> On Thu, Dec 21, 2023 at 09:45:49PM +0000, Mark Brown wrote:
 
-diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index ef50c337f444..15c44185d784 100644
---- a/drivers/pwm/pwm-meson.c
-+++ b/drivers/pwm/pwm-meson.c
-@@ -101,7 +101,6 @@ struct meson_pwm_data {
- };
- 
- struct meson_pwm {
--	struct pwm_chip chip;
- 	const struct meson_pwm_data *data;
- 	struct meson_pwm_channel channels[MESON_NUM_PWMS];
- 	void __iomem *base;
-@@ -114,7 +113,7 @@ struct meson_pwm {
- 
- static inline struct meson_pwm *to_meson_pwm(struct pwm_chip *chip)
- {
--	return container_of(chip, struct meson_pwm, chip);
-+	return dev_get_drvdata(chip->dev);
- }
- 
- static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
-@@ -146,6 +145,7 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 			  const struct pwm_state *state)
- {
- 	struct meson_pwm_channel *channel = &meson->channels[pwm->hwpwm];
-+	struct device *dev = pwm->chip->dev;
- 	unsigned int cnt, duty_cnt;
- 	unsigned long fin_freq;
- 	u64 duty, period, freq;
-@@ -168,19 +168,19 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 
- 	fin_freq = clk_round_rate(channel->clk, freq);
- 	if (fin_freq == 0) {
--		dev_err(meson->chip.dev, "invalid source clock frequency\n");
-+		dev_err(dev, "invalid source clock frequency\n");
- 		return -EINVAL;
- 	}
- 
--	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
-+	dev_dbg(dev, "fin_freq: %lu Hz\n", fin_freq);
- 
- 	cnt = div_u64(fin_freq * period, NSEC_PER_SEC);
- 	if (cnt > 0xffff) {
--		dev_err(meson->chip.dev, "unable to get period cnt\n");
-+		dev_err(dev, "unable to get period cnt\n");
- 		return -EINVAL;
- 	}
- 
--	dev_dbg(meson->chip.dev, "period=%llu cnt=%u\n", period, cnt);
-+	dev_dbg(dev, "period=%llu cnt=%u\n", period, cnt);
- 
- 	if (duty == period) {
- 		channel->hi = cnt;
-@@ -191,7 +191,7 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 	} else {
- 		duty_cnt = div_u64(fin_freq * duty, NSEC_PER_SEC);
- 
--		dev_dbg(meson->chip.dev, "duty=%llu duty_cnt=%u\n", duty, duty_cnt);
-+		dev_dbg(dev, "duty=%llu duty_cnt=%u\n", duty, duty_cnt);
- 
- 		channel->hi = duty_cnt;
- 		channel->lo = cnt - duty_cnt;
-@@ -214,7 +214,7 @@ static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
- 
- 	err = clk_set_rate(channel->clk, channel->rate);
- 	if (err)
--		dev_err(meson->chip.dev, "setting clock rate failed\n");
-+		dev_err(pwm->chip->dev, "setting clock rate failed\n");
- 
- 	spin_lock_irqsave(&meson->lock, flags);
- 
-@@ -425,10 +425,10 @@ static const struct of_device_id meson_pwm_matches[] = {
- };
- MODULE_DEVICE_TABLE(of, meson_pwm_matches);
- 
--static int meson_pwm_init_channels(struct meson_pwm *meson)
-+static int meson_pwm_init_channels(struct device *dev)
- {
- 	struct clk_parent_data mux_parent_data[MESON_NUM_MUX_PARENTS] = {};
--	struct device *dev = meson->chip.dev;
-+	struct meson_pwm *meson = dev_get_drvdata(dev);
- 	unsigned int i;
- 	char name[255];
- 	int err;
-@@ -438,7 +438,7 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
- 		mux_parent_data[i].name = meson->data->parent_names[i];
- 	}
- 
--	for (i = 0; i < meson->chip.npwm; i++) {
-+	for (i = 0; i < MESON_NUM_PWMS; i++) {
- 		struct meson_pwm_channel *channel = &meson->channels[i];
- 		struct clk_parent_data div_parent = {}, gate_parent = {};
- 		struct clk_init_data init = {};
-@@ -519,28 +519,35 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
- static int meson_pwm_probe(struct platform_device *pdev)
- {
- 	struct meson_pwm *meson;
-+	struct pwm_chip *chip;
- 	int err;
- 
-+	chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
-+	if (!chip)
-+		return -ENOMEM;
-+
- 	meson = devm_kzalloc(&pdev->dev, sizeof(*meson), GFP_KERNEL);
- 	if (!meson)
- 		return -ENOMEM;
- 
-+	platform_set_drvdata(pdev, meson);
-+
- 	meson->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(meson->base))
- 		return PTR_ERR(meson->base);
- 
- 	spin_lock_init(&meson->lock);
--	meson->chip.dev = &pdev->dev;
--	meson->chip.ops = &meson_pwm_ops;
--	meson->chip.npwm = MESON_NUM_PWMS;
-+	chip->dev = &pdev->dev;
-+	chip->ops = &meson_pwm_ops;
-+	chip->npwm = MESON_NUM_PWMS;
- 
- 	meson->data = of_device_get_match_data(&pdev->dev);
- 
--	err = meson_pwm_init_channels(meson);
-+	err = meson_pwm_init_channels(&pdev->dev);
- 	if (err < 0)
- 		return err;
- 
--	err = devm_pwmchip_add(&pdev->dev, &meson->chip);
-+	err = devm_pwmchip_add(&pdev->dev, chip);
- 	if (err < 0)
- 		return dev_err_probe(&pdev->dev, err,
- 				     "failed to register PWM chip\n");
--- 
-2.42.0
+> > > -       voltage =3D pwm_get_relative_duty_cycle(&pstate, duty_unit);
+> > > +       if (pstate.enabled)
+> > > +               voltage =3D pwm_get_relative_duty_cycle(&pstate, duty=
+_unit);
+> > > +       else if (max_uV_duty < min_uV_duty)
+> > > +               voltage =3D max_uV_duty;
+> > > +       else
+> > > +               voltage =3D min_uV_duty;
 
+> > AFAICT this means that enabling the PWM changes the voltage read back
+> > which isn't what we expect (other than a change from 0 to target) and is
+> > likely to cause issues.  get_voltage() should not change after an
+> > enable(), and indeed I'm unclear how this change works?  I'd expect a
+> > change in the init_state() function, possibly one that programs the PWM
+> > to reflect the actual hardware state but I'm not 100% confident on that
+> > without digging into the PWM API more.
+
+> What is your question here? Looking at pwm_regulator_set_voltage() I
+> think this lacks a
+
+> 	pstate.enabled =3D true;
+
+> which might also fix Martin's problem?
+
+That's not really a question, it's a statement - I don't see how the
+change works at all and as it stands it introduces a problem with the
+behaviour when the regulator is enabled.
+
+--KJDHjVYfXsFaJRDn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmWFeMcACgkQJNaLcl1U
+h9DDmAf+MtgUxQLU77WJx9BvRbmHOIj3BusmZ5Vz4wKLhcxHaZ6kCJ6cqgwBBMv0
+HLih1IgKLkKVBYuFGW3v3I2a8KjNglIqo9zDArCmFI16cB7zJ/XB7/oOQoBipnxd
+ttQtIshQIlBeLbxFQcdK9iecfoyYw4uxVoDdmCwo4OKvTIGYz8DEY2ahHEZdDl20
+BpfrAA9JeECG/IuFn3SbSlrKzJ5uNwnctynsPfTOMVqKh7bD6kK2OpVx7W2huR7G
+Gsd8LXK2UGABOa5zc4dC5pe4pG2aqRbwRHoUbHOlC6N1ZF0NNP4cmDxQ8YnJZZG3
+sQafS5nyBfCGJlWOmwecR7JkXeEFhg==
+=Hl8j
+-----END PGP SIGNATURE-----
+
+--KJDHjVYfXsFaJRDn--
