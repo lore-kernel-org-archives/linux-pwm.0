@@ -1,119 +1,125 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from TWMBX03.aspeed.com (mail.aspeedtech.com [211.20.114.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44E5E19444
-	for <linux-pwm@vger.kernel.org>; Wed,  3 Jan 2024 12:28:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rL0MF-0005Mi-3Y; Wed, 03 Jan 2024 13:28:27 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rL0ME-00074u-0N; Wed, 03 Jan 2024 13:28:26 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rL0MD-003LfH-2x;
-	Wed, 03 Jan 2024 13:28:25 +0100
-Date: Wed, 3 Jan 2024 13:28:25 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Sean Young <sean@mess.org>, 
-	Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui <rjui@broadcom.com>, 
-	Scott Branden <sbranden@broadcom.com>, 
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] pwm: bcm2835: Remove duplicate call to
- clk_rate_exclusive_put()
-Message-ID: <sbcslehlbdhjggyb4thughrzuzjrbc3knbh3ulfhhi6mcrvayd@rbheyjouom6d>
-References: <20231222131312.174491-1-sean@mess.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58B10111A7;
+	Thu,  4 Jan 2024 03:42:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=aspeedtech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aspeedtech.com
+Received: from TWMBX02.aspeed.com (192.168.0.24) by TWMBX03.aspeed.com
+ (192.168.0.62) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 4 Jan
+ 2024 11:41:21 +0800
+Received: from twmbx02.aspeed.com (192.168.10.10) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 4 Jan 2024 11:41:21 +0800
+From: Billy Tsai <billy_tsai@aspeedtech.com>
+To: <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
+	<krzysztof.kozlowski+dt@linaro.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
+	<corbet@lwn.net>, <thierry.reding@gmail.com>,
+	<u.kleine-koenig@pengutronix.de>, <p.zabel@pengutronix.de>,
+	<billy_tsai@aspeedtech.com>, <naresh.solanki@9elements.com>,
+	<linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-aspeed@lists.ozlabs.org>,
+	<linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+	<linux-pwm@vger.kernel.org>, <BMC-SW@aspeedtech.com>, <patrick@stwcx.xyz>
+Subject: [PATCH v11 2/3] dt-bindings: hwmon: Support Aspeed g6 PWM TACH Control
+Date: Thu, 4 Jan 2024 11:41:19 +0800
+Message-ID: <20240104034120.3516290-3-billy_tsai@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240104034120.3516290-1-billy_tsai@aspeedtech.com>
+References: <20240104034120.3516290-1-billy_tsai@aspeedtech.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="j2t4mrma5c4f7diw"
-Content-Disposition: inline
-In-Reply-To: <20231222131312.174491-1-sean@mess.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
+Document the compatible for aspeed,ast2600-pwm-tach device, which can
+support up to 16 PWM outputs and 16 fan tach input.
 
---j2t4mrma5c4f7diw
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+---
+ .../bindings/hwmon/aspeed,g6-pwm-tach.yaml    | 69 +++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
 
-Hello Thierry,
+diff --git a/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+new file mode 100644
+index 000000000000..c615fb10705c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+@@ -0,0 +1,69 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2023 Aspeed, Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/aspeed,g6-pwm-tach.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ASPEED G6 PWM and Fan Tach controller
++
++maintainers:
++  - Billy Tsai <billy_tsai@aspeedtech.com>
++
++description: |
++  The ASPEED PWM controller can support up to 16 PWM outputs.
++  The ASPEED Fan Tacho controller can support up to 16 fan tach input.
++  They are independent hardware blocks, which are different from the
++  previous version of the ASPEED chip.
++
++properties:
++  compatible:
++    enum:
++      - aspeed,ast2600-pwm-tach
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++patternProperties:
++  "^fan-[0-9]+$":
++    $ref: fan-common.yaml#
++    unevaluatedProperties: false
++    required:
++      - tach-ch
++
++required:
++  - reg
++  - clocks
++  - resets
++  - "#pwm-cells"
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/aspeed-clock.h>
++    pwm_tach: pwm-tach-controller@1e610000 {
++      compatible = "aspeed,ast2600-pwm-tach";
++      reg = <0x1e610000 0x100>;
++      clocks = <&syscon ASPEED_CLK_AHB>;
++      resets = <&syscon ASPEED_RESET_PWM>;
++      #pwm-cells = <3>;
++
++      fan-0 {
++        tach-ch = /bits/ 8 <0x0>;
++      };
++
++      fan-1 {
++        tach-ch = /bits/ 8 <0x1 0x2>;
++      };
++    };
+-- 
+2.25.1
 
-On Fri, Dec 22, 2023 at 01:13:11PM +0000, Sean Young wrote:
-> devm_add_action_or_reset() already calls the action in the error case.
->=20
-> Reported-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> Closes: https://lore.kernel.org/linux-pwm/fuku3b5ur6y4k4refd3vmeoenzjo6mw=
-e3b3gtel34rhhhtvnsa@w4uktgbqsc3w/
-> Fixes: fcc760729359 ("pwm: bcm2835: Allow PWM driver to be used in atomic=
- context")
-> Signed-off-by: Sean Young <sean@mess.org>
-> Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/pwm/pwm-bcm2835.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
-> index 307c0bd5f885..283cf27f25ba 100644
-> --- a/drivers/pwm/pwm-bcm2835.c
-> +++ b/drivers/pwm/pwm-bcm2835.c
-> @@ -160,10 +160,8 @@ static int bcm2835_pwm_probe(struct platform_device =
-*pdev)
-> =20
->  	ret =3D devm_add_action_or_reset(&pdev->dev, devm_clk_rate_exclusive_pu=
-t,
->  				       pc->clk);
-> -	if (ret) {
-> -		clk_rate_exclusive_put(pc->clk);
-> +	if (ret)
->  		return ret;
-> -	}
-> =20
->  	pc->rate =3D clk_get_rate(pc->clk);
->  	if (!pc->rate)
-
-this patch should be added to your for-next branch and then your PR for
-the next merge window.
-
-Also "pwm: linux/pwm.h: fix Excess kernel-doc description warning"
-(Message-Id: 20231223050621.13994-1-rdunlap@infradead.org) should be
-added IMHO.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---j2t4mrma5c4f7diw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmWVUugACgkQj4D7WH0S
-/k4FPgf+KciZuFT4wJCWNSuCGXQuJYPIGrhYmOixhFTfChRratxydUme6qGd0hRC
-Pvvyw9As/U4FF5tv/3CWxuFC/ZiXe75ZgekP/Hn3NF2e0mQFSVTZtL5MZtNLC3X0
-gGnWSV3k33UrNvxBp6x7ib176BVTXeQ13n+w5AHdMHXy8thKsc5sIHCPfKqm0Scu
-otgt5pUJsVwnIVVP8eEDB4XjLD9SDZGaJB8zjpDPLh5CuKYdRmJcvi1Z/Cs1AtSt
-NNIRcHUZxrrfDj/RWXtmwS+T8yRS4+/LEUOWnQjwnxapskk0M90JZhiUfrNuQIk6
-7r6iI9Nd7GkkUyxIsO0FIeSV0gED4A==
-=9tQB
------END PGP SIGNATURE-----
-
---j2t4mrma5c4f7diw--
