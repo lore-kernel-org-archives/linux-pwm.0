@@ -1,94 +1,86 @@
-Received: from forward502c.mail.yandex.net (forward502c.mail.yandex.net [178.154.239.210])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51900F9C7;
-	Sat,  6 Jan 2024 21:29:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yandex.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C70B2101EF;
+	Sat,  6 Jan 2024 23:25:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=yandex.com header.i=@yandex.com header.b="U5FCXBzs"
-Received: from mail-nwsmtp-smtp-production-main-59.iva.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-59.iva.yp-c.yandex.net [IPv6:2a02:6b8:c0c:1580:0:640:de7b:0])
-	by forward502c.mail.yandex.net (Yandex) with ESMTP id F07F660C8A;
-	Sun,  7 Jan 2024 00:25:13 +0300 (MSK)
-Received: by mail-nwsmtp-smtp-production-main-59.iva.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id BPmPnMOr9iE0-yopHyjDh;
-	Sun, 07 Jan 2024 00:25:13 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.com; s=mail;
-	t=1704576313; bh=aOO8K1kRwYNcAd+V6oNlanooC+SLRLZcpv5ZyxlV6v4=;
-	h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
-	b=U5FCXBzs+6/1MnWeYpNMk1BZUW7fx9e5L7a+PS9D9vlrOqHIk6oXEIC2jpEqdmXn7
-	 KBdh4vkHaB+y38iNU6ONbTqf6Y0bisN+9Ik9t2wuoWH6eeBKMljE1alvDE+Nwqs0xq
-	 0BMcYg8yRF6wU3dqaIRX6/KLqy9rfgmfUHqyWzQU=
-Authentication-Results: mail-nwsmtp-smtp-production-main-59.iva.yp-c.yandex.net; dkim=pass header.i=@yandex.com
-Message-ID: <94ad0f59-4095-40ee-963d-4ac379fc8852@yandex.com>
-Date: Sat, 6 Jan 2024 22:25:10 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n2c6fGJo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89546C433C8;
+	Sat,  6 Jan 2024 23:25:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1704583557;
+	bh=Al9b7pXV2lMcYDhcUjppfXRiqoAACjOOL3wemTiQtUI=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=n2c6fGJonpcZprmd/eax+R8i0wY9VB49sLj49dwj9ucUWWWpzqJ34Kiwq0MLJsBEJ
+	 XqR6vG4mQyXVb9rPwLafKhOMAwIZpEIg9zbesMeS5nK5GuktOVeiw80vzWlqsXMJ78
+	 NtlnY33fo8Zx87jO7u1/W3OnE+KRxO7JupxFeOaqTpPRRyQ14TWaPXYZOyulrvHpyC
+	 VNrObERZ8qJv2gmOoBPrLwSbTiqHArdos5QwGD0ZGHgI/F35YR1mjQMfemWFAyYcxG
+	 VvFX8KM6Klks+2+V9qmKnYBjVJ4bp4hEl+/cArWadL0rzSg1M45+TVHnZYMb0w3xNI
+	 WMZHZMDypYJ9A==
+Received: (nullmailer pid 2165963 invoked by uid 1000);
+	Sat, 06 Jan 2024 23:25:55 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: pwm: rockchip: Allow "interrupts" prooperty
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-rockchip@lists.infradead.org, kernel@pengutronix.de
-References: <20240106142654.1262758-2-u.kleine-koenig@pengutronix.de>
- <7dea73a6-d733-4cd2-b2d5-02f09e2a6dd9@linaro.org>
-Content-Language: en-US
-From: Johan Jonker <jbx6244@yandex.com>
-In-Reply-To: <7dea73a6-d733-4cd2-b2d5-02f09e2a6dd9@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-Hi,
-
-On 1/6/24 18:10, Krzysztof Kozlowski wrote:
-> On 06/01/2024 15:26, Uwe Kleine-König wrote:
->> This fixes the dtbs_check error
->>
->> 	arch/arm/boot/dts/rockchip/rv1108-elgin-r1.dtb: pwm@10280030: 'interrupts' does not match any of the regexes: 'pinctrl-[0-9]+'
->> 	from schema $id: http://devicetree.org/schemas/pwm/pwm-rockchip.yaml#
->>
->> in several device trees.
->>
->> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-NAK
-
-There's a reason why this isn't implemented before:
-
-[RFC PATCH v1 1/2] dt-bindings: pwm: rockchip: add interrupts property <https://lore.kernel.org/linux-rockchip/ed3df2c8-ffb5-1723-0ed7-3a2721972852@gmail.com/#r>
-
-https://lore.kernel.org/linux-rockchip/ed3df2c8-ffb5-1723-0ed7-3a2721972852@gmail.com/
-
-[PATCH 1/1] dt-bindings: pwm: rockchip: Add description for rk3588 <https://lore.kernel.org/linux-rockchip/20220901135523.52151-1-sebastian.reichel@collabora.com/#r>
-
-https://lore.kernel.org/linux-rockchip/66b5b616-ae9f-a1aa-e2b5-450f570cfcdd@gmail.com/
-
-[PATCH v1 03/11] dt-bindings: pwm: rockchip: add rockchip,rk3128-pwm <https://lore.kernel.org/linux-rockchip/f5dd0ee4-d97e-d878-ffde-c06e9b233e38@gmail.com/>
-
-https://lore.kernel.org/linux-rockchip/946d8ac2-6ff2-093a-ad3c-aa755e00d1dd@arm.com/
+From: Rob Herring <robh@kernel.org>
+To: =?utf-8?q?Duje_Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Conor Dooley <conor+dt@kernel.org>
+In-Reply-To: <20240106-pxa-pwm-yaml-v2-1-9578ff5f2d7f@skole.hr>
+References: <20240106-pxa-pwm-yaml-v2-1-9578ff5f2d7f@skole.hr>
+Message-Id: <170458355548.2165868.8484556713925715613.robh@kernel.org>
+Subject: Re: [PATCH v2] dt-bindings: pxa-pwm: Convert to YAML
+Date: Sat, 06 Jan 2024 16:25:55 -0700
 
 
-On how to correctly model the DT with common interrupts , PWM and one shot as a sort of MFD etc there's no consensus yet.
+On Sat, 06 Jan 2024 21:45:46 +0100, Duje Mihanović wrote:
+> Convert the PXA PWM binding file from TXT to YAML.
+> 
+> The original binding does not mention any clocks, but the PWM controller
+> will not probe without a clock.
+> 
+> Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
+> ---
+> Changes in v2:
+> - Rename to marvell,pxa-pwm.yaml
+> - Note addition of clock property
+> - Update trailers
+> - Link to v1: https://lore.kernel.org/r/20240105-pxa-pwm-yaml-v1-1-4ded9d00c38f@skole.hr
+> ---
+>  .../devicetree/bindings/pwm/marvell,pxa-pwm.yaml   | 51 ++++++++++++++++++++++
+>  Documentation/devicetree/bindings/pwm/pxa-pwm.txt  | 30 -------------
+>  2 files changed, 51 insertions(+), 30 deletions(-)
+> 
 
-Leaf it as it is till someone made a working driver demo, so that the coder is free to model a DT solution that fits to him/her.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
+yamllint warnings/errors:
 
-Johan
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/pwm/marvell,pxa-pwm.yaml: $id: Cannot determine base path from $id, relative path/filename doesn't match actual path or filename
+ 	 $id: http://devicetree.org/schemas/pwm/pwm-pxa.yaml
+ 	file: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/pwm/marvell,pxa-pwm.yaml
 
-> Best regards,
-> Krzysztof
->
->
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240106-pxa-pwm-yaml-v2-1-9578ff5f2d7f@skole.hr
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
