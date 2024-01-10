@@ -1,209 +1,112 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F6A13DB81
-	for <linux-pwm@vger.kernel.org>; Tue,  9 Jan 2024 21:35:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rNJkD-0006cp-6D; Tue, 09 Jan 2024 22:34:45 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rNJkB-001Z2C-GH; Tue, 09 Jan 2024 22:34:43 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rNJkB-00667w-1H;
-	Tue, 09 Jan 2024 22:34:43 +0100
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Douglas Anderson <dianders@chromium.org>,
-	Andrzej Hajda <andrzej.hajda@intel.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Robert Foss <rfoss@kernel.org>,
-	Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-	Jonas Karlman <jonas@kwiboo.se>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Alexander Shiyan <shc_work@mail.ru>,
-	Benson Leung <bleung@chromium.org>,
-	Guenter Roeck <groeck@chromium.org>,
-	dri-devel@lists.freedesktop.org,
-	kernel@pengutronix.de,
-	linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	chrome-platform@lists.linux.dev
-Subject: [PATCH 2/5] pwm: Drop useless member .of_pwm_n_cells of struct pwm_chip
-Date: Tue,  9 Jan 2024 22:34:32 +0100
-Message-ID:  <53d8c545aa8f79a920358be9e72e382b3981bdc4.1704835845.git.u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1704835845.git.u.kleine-koenig@pengutronix.de>
-References: <cover.1704835845.git.u.kleine-koenig@pengutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B3C7ED
+	for <linux-pwm@vger.kernel.org>; Wed, 10 Jan 2024 00:23:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="WGpJBoC1"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a28ee72913aso797529466b.1
+        for <linux-pwm@vger.kernel.org>; Tue, 09 Jan 2024 16:23:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1704846184; x=1705450984; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5kAqGhucPMVtfo1InPdfTFWkdNUtgMKoqN9J3JzON2c=;
+        b=WGpJBoC1zQDY/+xKZMnmg3rglYNyP4/W4jFoqeraadr3/G7D3zuzxO4nEtDmN/ounG
+         ONCRJcPsUIRGWp/YRk0CHlst9rfV2fDPoQT7hQxXJtTunqoki147KExMP9ZOXcR2skEV
+         bfEitFh2xdWHcRSPyG7nqBqoj230SrQnm1Pe4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704846184; x=1705450984;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5kAqGhucPMVtfo1InPdfTFWkdNUtgMKoqN9J3JzON2c=;
+        b=F2qaXhY+gayiDGKJrQXhutomNRE/vB4UiytQ0ukFN0JKf2neMdhC7SP8hGxus7hX+d
+         TtngGE3Ud42zwDRYvGRBuX4fSWq+LsH/h8PecfoIc+SWjfVaEASPURRWI3wBAcyZwlvs
+         hP3l7CZX6T1idYEmPhfOg57SDUczo5+TikZoLqSUTnQxAAyRx5KsVk0cfauJNXsQPhhP
+         /4LK7ubKr2esr4rDoxd4sDEZU93WM97PIJ3k9HgOicWcDmmDfkQylbm53hFDynvyGrHg
+         LeSbYP92S+stgfwL+ITG3JwykXRrw0SxZ8xZc4yA/o/HvoYfv6lhbC36b5RD1OWk9Rgj
+         MFRA==
+X-Gm-Message-State: AOJu0Yz50aU8+l+aKgZ+29gJgdOzmGdM6VAf9w3Zon91nSIOCr8+Z9t0
+	N8nPTpZwcyd1m0ZgrSSdlhqXsSLq2ILxNryAceG62Agf+QseCdw=
+X-Google-Smtp-Source: AGHT+IHRltMNk61bxBt53XNpqKgn/W2hkvv/KIAPhgn6t6akwyLvxs2WlTNWGDwL9u0gMWNyJDFdQA==
+X-Received: by 2002:a17:906:7c8d:b0:a2b:a027:467d with SMTP id w13-20020a1709067c8d00b00a2ba027467dmr278791ejo.36.1704846183804;
+        Tue, 09 Jan 2024 16:23:03 -0800 (PST)
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
+        by smtp.gmail.com with ESMTPSA id k9-20020a1709065fc900b00a26abf393d0sm1519008ejv.138.2024.01.09.16.23.03
+        for <linux-pwm@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Jan 2024 16:23:03 -0800 (PST)
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-40e4afe9ea7so10385e9.1
+        for <linux-pwm@vger.kernel.org>; Tue, 09 Jan 2024 16:23:03 -0800 (PST)
+X-Received: by 2002:a05:600c:43c5:b0:40d:5fee:130 with SMTP id
+ f5-20020a05600c43c500b0040d5fee0130mr62920wmn.5.1704845704513; Tue, 09 Jan
+ 2024 16:15:04 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5203; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=GJ0QtTqjWHKutYbvp2zQTs/Phsuql2QUxQ8yJz35gAI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlnbvrhTT7y69ES64JrD+RrccwPuJTtkKJygiSm Ib3qp9QMJ6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZZ276wAKCRCPgPtYfRL+ Tr3HCACFpOQpAlmiIB6gDwhfqub+Og4pnYAbOzF4PJ2YCxccK/gZciaqUudnsp5w0RRaOeU+ff+ WeBIldrVZ5lRQocQKX9qtV835zLJb9JXBRrFQuf0EWgQuBVUE5Rg6o2Gi5JYgAZeNsQMdv9krS5 kD6J/hQe11lAcHqtTkNrsJo8VQUZlaAwkvym+M7C5Etu3wL0f1HljxFTk3fOX2rrv74rIQuSDe2 5q56LeQ2/n2c/5mdHh83xUYTyCQ90yaJuVCpyRuppNBUoEWVahX95fVi11/MqIohHSLQKXd69O+ L89MtSMdfG0C/ghykbapH2IcDu+wlwjhgJ8fW+Jq7BL4p3rF
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+References: <cover.1704835845.git.u.kleine-koenig@pengutronix.de> <53d8c545aa8f79a920358be9e72e382b3981bdc4.1704835845.git.u.kleine-koenig@pengutronix.de>
+In-Reply-To: <53d8c545aa8f79a920358be9e72e382b3981bdc4.1704835845.git.u.kleine-koenig@pengutronix.de>
+From: Doug Anderson <dianders@chromium.org>
+Date: Tue, 9 Jan 2024 16:14:49 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=UyoSc7fpvaO08Bhj54UG5b1OGteXV95tCVkpDzrvzwsw@mail.gmail.com>
+Message-ID: <CAD=FV=UyoSc7fpvaO08Bhj54UG5b1OGteXV95tCVkpDzrvzwsw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] pwm: Drop useless member .of_pwm_n_cells of struct pwm_chip
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Andrzej Hajda <andrzej.hajda@intel.com>, 
+	Neil Armstrong <neil.armstrong@linaro.org>, Robert Foss <rfoss@kernel.org>, 
+	Laurent Pinchart <Laurent.pinchart@ideasonboard.com>, Jonas Karlman <jonas@kwiboo.se>, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Alexander Shiyan <shc_work@mail.ru>, Benson Leung <bleung@chromium.org>, 
+	Guenter Roeck <groeck@chromium.org>, dri-devel@lists.freedesktop.org, 
+	kernel@pengutronix.de, linux-pwm@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, chrome-platform@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Apart from the two of_xlate implementations this member is write-only.
-In the of_xlate functions of_pwm_xlate_with_flags() and
-of_pwm_single_xlate() it's more sensible to check for args->args_count
-because this is what is actually used in the device tree.
+Hi,
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/gpu/drm/bridge/ti-sn65dsi86.c |  1 -
- drivers/pwm/core.c                    | 22 +++-------------------
- drivers/pwm/pwm-clps711x.c            |  1 -
- drivers/pwm/pwm-cros-ec.c             |  1 -
- drivers/pwm/pwm-pxa.c                 |  4 +---
- include/linux/pwm.h                   |  2 --
- 6 files changed, 4 insertions(+), 27 deletions(-)
+On Tue, Jan 9, 2024 at 1:35=E2=80=AFPM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Apart from the two of_xlate implementations this member is write-only.
+> In the of_xlate functions of_pwm_xlate_with_flags() and
+> of_pwm_single_xlate() it's more sensible to check for args->args_count
+> because this is what is actually used in the device tree.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/gpu/drm/bridge/ti-sn65dsi86.c |  1 -
+>  drivers/pwm/core.c                    | 22 +++-------------------
+>  drivers/pwm/pwm-clps711x.c            |  1 -
+>  drivers/pwm/pwm-cros-ec.c             |  1 -
+>  drivers/pwm/pwm-pxa.c                 |  4 +---
+>  include/linux/pwm.h                   |  2 --
+>  6 files changed, 4 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-index c45c07840f64..02d9449956e5 100644
---- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-+++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-@@ -1591,7 +1591,6 @@ static int ti_sn_pwm_probe(struct auxiliary_device *adev,
- 	pdata->pchip.ops = &ti_sn_pwm_ops;
- 	pdata->pchip.npwm = 1;
- 	pdata->pchip.of_xlate = of_pwm_single_xlate;
--	pdata->pchip.of_pwm_n_cells = 1;
- 
- 	return pwmchip_add(&pdata->pchip);
- }
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index f2728ee787d7..31f210872a07 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -107,9 +107,6 @@ of_pwm_xlate_with_flags(struct pwm_chip *chip, const struct of_phandle_args *arg
- {
- 	struct pwm_device *pwm;
- 
--	if (chip->of_pwm_n_cells < 2)
--		return ERR_PTR(-EINVAL);
--
- 	/* flags in the third cell are optional */
- 	if (args->args_count < 2)
- 		return ERR_PTR(-EINVAL);
-@@ -124,10 +121,8 @@ of_pwm_xlate_with_flags(struct pwm_chip *chip, const struct of_phandle_args *arg
- 	pwm->args.period = args->args[1];
- 	pwm->args.polarity = PWM_POLARITY_NORMAL;
- 
--	if (chip->of_pwm_n_cells >= 3) {
--		if (args->args_count > 2 && args->args[2] & PWM_POLARITY_INVERTED)
--			pwm->args.polarity = PWM_POLARITY_INVERSED;
--	}
-+	if (args->args_count > 2 && args->args[2] & PWM_POLARITY_INVERTED)
-+		pwm->args.polarity = PWM_POLARITY_INVERSED;
- 
- 	return pwm;
- }
-@@ -138,9 +133,6 @@ of_pwm_single_xlate(struct pwm_chip *chip, const struct of_phandle_args *args)
- {
- 	struct pwm_device *pwm;
- 
--	if (chip->of_pwm_n_cells < 1)
--		return ERR_PTR(-EINVAL);
--
- 	/* validate that one cell is specified, optionally with flags */
- 	if (args->args_count != 1 && args->args_count != 2)
- 		return ERR_PTR(-EINVAL);
-@@ -164,16 +156,8 @@ static void of_pwmchip_add(struct pwm_chip *chip)
- 	if (!chip->dev || !chip->dev->of_node)
- 		return;
- 
--	if (!chip->of_xlate) {
--		u32 pwm_cells;
--
--		if (of_property_read_u32(chip->dev->of_node, "#pwm-cells",
--					 &pwm_cells))
--			pwm_cells = 2;
--
-+	if (!chip->of_xlate)
- 		chip->of_xlate = of_pwm_xlate_with_flags;
--		chip->of_pwm_n_cells = pwm_cells;
--	}
- 
- 	of_node_get(chip->dev->of_node);
- }
-diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
-index 42179b3f7ec3..06562d4bb963 100644
---- a/drivers/pwm/pwm-clps711x.c
-+++ b/drivers/pwm/pwm-clps711x.c
-@@ -103,7 +103,6 @@ static int clps711x_pwm_probe(struct platform_device *pdev)
- 	priv->chip.dev = &pdev->dev;
- 	priv->chip.npwm = 2;
- 	priv->chip.of_xlate = clps711x_pwm_xlate;
--	priv->chip.of_pwm_n_cells = 1;
- 
- 	spin_lock_init(&priv->lock);
- 
-diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-index 5fe303b8656d..339cedf3a7b1 100644
---- a/drivers/pwm/pwm-cros-ec.c
-+++ b/drivers/pwm/pwm-cros-ec.c
-@@ -279,7 +279,6 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
- 	chip->dev = dev;
- 	chip->ops = &cros_ec_pwm_ops;
- 	chip->of_xlate = cros_ec_pwm_xlate;
--	chip->of_pwm_n_cells = 1;
- 
- 	if (ec_pwm->use_pwm_type) {
- 		chip->npwm = CROS_EC_PWM_DT_COUNT;
-diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
-index 76685f926c75..61b74fa1d348 100644
---- a/drivers/pwm/pwm-pxa.c
-+++ b/drivers/pwm/pwm-pxa.c
-@@ -180,10 +180,8 @@ static int pwm_probe(struct platform_device *pdev)
- 	pc->chip.ops = &pxa_pwm_ops;
- 	pc->chip.npwm = (id->driver_data & HAS_SECONDARY_PWM) ? 2 : 1;
- 
--	if (IS_ENABLED(CONFIG_OF)) {
-+	if (IS_ENABLED(CONFIG_OF))
- 		pc->chip.of_xlate = of_pwm_single_xlate;
--		pc->chip.of_pwm_n_cells = 1;
--	}
- 
- 	pc->mmio_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pc->mmio_base))
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index fcc2c4496f73..8ffe9ae7a23a 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -271,7 +271,6 @@ struct pwm_ops {
-  * @id: unique number of this PWM chip
-  * @npwm: number of PWMs controlled by this chip
-  * @of_xlate: request a PWM device given a device tree PWM specifier
-- * @of_pwm_n_cells: number of cells expected in the device tree PWM specifier
-  * @atomic: can the driver's ->apply() be called in atomic context
-  * @pwms: array of PWM devices allocated by the framework
-  */
-@@ -284,7 +283,6 @@ struct pwm_chip {
- 
- 	struct pwm_device * (*of_xlate)(struct pwm_chip *chip,
- 					const struct of_phandle_args *args);
--	unsigned int of_pwm_n_cells;
- 	bool atomic;
- 
- 	/* only used internally by the PWM framework */
--- 
-2.43.0
+I haven't done massive thinking about this, but it seems reasonable to
+me. I remember being confused about why we needed some of these extra
+checks ages ago when I looked at this code, so getting rid of them
+makes sense to me.
 
+I've been involved with both the ti-sn65dsi86.c and the pwm-cros-ec.c
+code and both looks fine to me.
+
+I'm an official reviewer for ti-sn65dsi86.c and I'm fairly happy with
+this tag for it:
+
+Acked-by: Douglas Anderson <dianders@chromium.org>
+
+...and I think it would be fine to go through the PWM tree. If one of
+the senior drm-misc maintainers disagrees with me, however, then you
+should listen to them rather than me.
+
+-Doug
