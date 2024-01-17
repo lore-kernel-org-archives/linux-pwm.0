@@ -1,278 +1,474 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A72C1DDC9
-	for <linux-pwm@vger.kernel.org>; Wed, 17 Jan 2024 10:57:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78D791DFFB
+	for <linux-pwm@vger.kernel.org>; Wed, 17 Jan 2024 12:51:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705489071; cv=none; b=SClLmDNsEWs7frJL6nB6p9awrIliavtLm6d4+KLojhXINmd2KUpUzMYxhcROltEEyvEBzkSw/Zwhyn9XhAJy3lWW3PogvRPmsKnRGXBNb1B+Lgd37BhStFjWTXYxiEQNnpTZZj+CFVAKbdfbpDzyv0wzvbEpFwS+7ZvZhNJ2/BU=
+	t=1705495892; cv=none; b=CeiFxzKRL5+B0b3ejk/HxW39jbrLBSZkdNBsW+WZtuSqf8tr9TcXWE0lHTtLtsUfbpoGEAx62zDyutxxHsV1ammB/7dIQK/tuZEviZr4vc6+1IqWzWP4koE0dOGIPvkXpV9dOycSCuvlVOzU9KrWvNU2yZKAO52+lF6sXJx13iw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705489071; c=relaxed/simple;
-	bh=dFrcmnmkmmZdK1/Cl3suXD/fcMVdImKuOSnKRYIPDMQ=;
+	s=arc-20240116; t=1705495892; c=relaxed/simple;
+	bh=St3Z/kw6cJnFDVGylMzuFV0mluiCY7evkTV4HtGezhQ=;
 	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
-	 References:User-agent:From:To:Cc:Subject:Date:In-reply-to:
-	 Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; b=PQTBLkAJvfjE/Y9XjLBZ1FzWdHDgOutJHt/aw41Vxbtp5eZl1YUF6gbVw5sWi3GTiAPQitlmAYVm8fbtCUm3cAF9DcBcOvhbkPsWcB4mp3yordJztCPK2dDuCJXDTUPV0YSg1NDhoS002cQl6VZ1xhc80sgtvP+jDoQaBASRMgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=SZoNNMed; arc=none smtp.client-ip=209.85.128.52
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:Content-Language:
+	 To:Cc:References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding; b=tGuA38R38ALK9WUe/q6bL6VUySRfYsiVrsl1pJyeWunsAPgXsfeuD2dgcBuxXfBZA5HWlCLD1elPLvz0qZNX5Dd3LuhZy56GGmiUQNRZ7+qgXjdkOZwoEZTqZ41igFrlLXTSBdKDwktTH5Qoq2KEOjuslCvNnAd8az7En40s+aE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=vV9OtZUr; arc=none smtp.client-ip=209.85.160.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="SZoNNMed"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-40e8801221cso6587805e9.1
-        for <linux-pwm@vger.kernel.org>; Wed, 17 Jan 2024 02:57:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="vV9OtZUr"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-429d7896d35so24350501cf.3
+        for <linux-pwm@vger.kernel.org>; Wed, 17 Jan 2024 04:51:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1705489066; x=1706093866; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:cc:to:from:user-agent:references:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AZ0irsFSW2hXq1lOFv0C5tcSeX7I48ojxIzsNWQWXR4=;
-        b=SZoNNMedalO4Md7WPsiM4gwIJgP0t5mz/ggMg3LqIBvVGCPw+b5m+sxqhbiZMti8w6
-         q4z7C5q9ZQTGV+l65wwrsUcfNAOzwTJ2wXMvAmUJ+wVPA5JEIKx9IpQ3qcjnmotKsQ1b
-         pSWtRgx1cgxhN3wi3Q/TmzxpkiaQHb25BF/B70MKHW0SztFwvevWvunv7+dcch1G+lt3
-         /sK2tzZivYaJ+RuFRS7jdJS5pHk5hFgitvwb2TdXoiIgOcMty61EOfwqLgx4CkbWk5oQ
-         2B8vyfkVy46/qEk9oIoRs12XjqWcDz4rvxDWQkIzNlmXmfs58QtEji059HpeBKfDbMCv
-         Nk3w==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1705495888; x=1706100688; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EbhitSRWJTy3R5qEGWrKyL5/UYX6dud/VfUqn6JgH6M=;
+        b=vV9OtZUrPPVW9mhBbVOKLNxc8/B10ueBWnJNj3q6px8Lozg5PC6AX2sfxK6X1x7bAU
+         4K9g6zIt7SzB4PjbefShKb2o+XAyLLhmElOmVo0aTCGWt8YjNqf7Aak+Taa7Hm2qSMb/
+         vbTzqxybEyvc3/x7ybdDWNrYvdICK7CFggQLmlhastiO87Za887rDgy1+qXtgYZ38yoN
+         b3pv4HfBaPkAOC+R1bM9lH0SOqlNmI8pwT42pHzOp0xvrAXh7y0l8YyydLs0XT5+KxAy
+         7g4lIPFwV/PCuDw+D2XrFE/YVCEfutVxBvWWPZM/jAFODDt+koRmCO5EL4uk6gUp86ZP
+         +CWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705489066; x=1706093866;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=AZ0irsFSW2hXq1lOFv0C5tcSeX7I48ojxIzsNWQWXR4=;
-        b=ap430DG+8K4TMDESnANKGXbOevyNx4RN/IfFtinfnS5P7oVnmYUlBhkpLOybAx8lDT
-         18dWCy1N8oF0eq0/a8qr8LyZymoMcvgVa8m2QLsVfVsCWPuLE0eMkgKiwD1Y3w2LjBfe
-         NgO3pc+uDMp2uHu66RXhzad74qAEJ86qfkRpSVRMA25fLXl3Nkoh0iDt+sYbwR7UF1mz
-         dxfp1JS/mNax5MkLaz5GjndfnhHebZEiko/pNQBvxJ7n8RqPeyICfC/tmf7YdUOWoTxU
-         EtVh3u6RZEzF1hqmiKMSKk86b0RD6Kq+fDKa2R2ETyn8u3hf4H2oYxdDSNUSaewTXxtK
-         p8hw==
-X-Gm-Message-State: AOJu0YxHGTMSU4eIJo9uFHM4wh/dpadl31NDG6va4SFi3YlUwenAHc5R
-	K6LPLbRIO559p+1Eb6Xbi0reYzO6WzQCJQ==
-X-Google-Smtp-Source: AGHT+IG34Dap1ZJ3WGb+r28aPogMiJUvvKsLDnVhtoSaXpgGSZDDBQgsqehv2GQXT9TcoQZSM36iVw==
-X-Received: by 2002:a05:600c:364c:b0:40e:89f6:e2b with SMTP id y12-20020a05600c364c00b0040e89f60e2bmr434240wmq.31.1705489066317;
-        Wed, 17 Jan 2024 02:57:46 -0800 (PST)
-Received: from localhost ([2a01:e0a:3c5:5fb1:c1f6:14ce:b96f:2df5])
-        by smtp.gmail.com with ESMTPSA id f7-20020adffcc7000000b00337bf3586d6sm1376674wrs.103.2024.01.17.02.57.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jan 2024 02:57:45 -0800 (PST)
-References: <20231222111658.832167-1-jbrunet@baylibre.com>
- <20231222111658.832167-2-jbrunet@baylibre.com>
- <awxboh3nv4r5p7v7vcgwttu2m74fws47johb73c5f7econ2qqu@zl5xbnoeyclq>
-User-agent: mu4e 1.10.8; emacs 29.1
-From: Jerome Brunet <jbrunet@baylibre.com>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Jerome Brunet <jbrunet@baylibre.com>, Thierry Reding
- <thierry.reding@gmail.com>, Neil Armstrong <neil.armstrong@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
- Kevin Hilman <khilman@baylibre.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
- linux-pwm@vger.kernel.org, JunYi Zhao <junyi.zhao@amlogic.com>, Rob
- Herring <robh@kernel.org>
-Subject: Re: [PATCH v4 1/6] dt-bindings: pwm: amlogic: fix s4 bindings
-Date: Wed, 17 Jan 2024 11:30:08 +0100
-In-reply-to: <awxboh3nv4r5p7v7vcgwttu2m74fws47johb73c5f7econ2qqu@zl5xbnoeyclq>
-Message-ID: <1jbk9kxm52.fsf@starbuckisacylon.baylibre.com>
+        d=1e100.net; s=20230601; t=1705495888; x=1706100688;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EbhitSRWJTy3R5qEGWrKyL5/UYX6dud/VfUqn6JgH6M=;
+        b=SEv56lwb3LUFqLzYNyz4YW5YdBxcCPsVnK9nT9FEwhnHD/QiwJL8ZqvxXtIxiPncG+
+         PuMtxvZb8qAQcihV/0pb3fncSUrqbA4IXlulVOe1WiH1cwfWJC0+/g4YtJoaZpSqNSRp
+         VFjIM2cJwTdyh1CGh+I2X/fghoYEz7rYijRK6JZR7tMTotXScVAYaVvAS6GnTl8GzD2b
+         pLfcvT73hjb5HpuiLUOnA0ti8E/5vp7k+SfS9/BFw2218QO0KMYXqvFX88laNQ3g9mN0
+         8yVpj+27myu72Z+nyF9wJznoTVg57VvqotRT7cOJT6A1lMDA/SLWHmuhdRH5Cx8cpSWI
+         Rp/w==
+X-Gm-Message-State: AOJu0YxQSC91emI1lkpI+Bq9uSvJyiJN2sWBYdkqNj5aecekFUwoadsT
+	hC0pMasyVnxvz0Rsdko0ZWP4lICMBne5ww==
+X-Google-Smtp-Source: AGHT+IEeWsuwfXwh+3HoWh3GBCGTS2lq37xxT/85A/ffizSnArVvOc+1roEQij7ctzi+ETf/fTKafA==
+X-Received: by 2002:ac8:7e92:0:b0:429:c765:b327 with SMTP id w18-20020ac87e92000000b00429c765b327mr11377765qtj.102.1705495888255;
+        Wed, 17 Jan 2024 04:51:28 -0800 (PST)
+Received: from [192.168.40.12] (d24-150-219-207.home.cgocable.net. [24.150.219.207])
+        by smtp.gmail.com with ESMTPSA id t26-20020ac86a1a000000b00419732075b4sm5758900qtr.84.2024.01.17.04.51.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Jan 2024 04:51:27 -0800 (PST)
+Message-ID: <e6fbf553-f2f8-47ea-8781-cf01d37196a5@baylibre.com>
+Date: Wed, 17 Jan 2024 07:51:26 -0500
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] pwm: Add driver for AXI PWM generator
+Content-Language: en-US
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ michael.hennerich@analog.com, nuno.sa@analog.com,
+ devicetree@vger.kernel.org, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org
+References: <20240115201222.1423626-1-tgamblin@baylibre.com>
+ <20240115201222.1423626-3-tgamblin@baylibre.com>
+ <gbessnmierg5gvdguhwauoe2mxr3krwcfk2afhazrqvz45md64@itbchezepncg>
+From: Trevor Gamblin <tgamblin@baylibre.com>
+In-Reply-To: <gbessnmierg5gvdguhwauoe2mxr3krwcfk2afhazrqvz45md64@itbchezepncg>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+Hello,
 
-On Wed 17 Jan 2024 at 11:03, Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutr=
-onix.de> wrote:
+Responses inline - I'll have another series with all fixes submitted soon.
 
-> [[PGP Signed Part:Undecided]]
-> On Fri, Dec 22, 2023 at 12:16:49PM +0100, Jerome Brunet wrote:
->> s4 has been added to the compatible list while converting the Amlogic PWM
->> binding documentation from txt to yaml.
->>=20
->> However, on the s4, the clock bindings have different meaning compared to
->> the previous SoCs.
->>=20
->> On the previous SoCs the clock bindings used to describe which input the
->> PWM channel multiplexer should pick among its possible parents.
->>=20
->> This is very much tied to the driver implementation, instead of describi=
-ng
->> the HW for what it is. When support for the Amlogic PWM was first added,
->> how to deal with clocks through DT was not as clear as it nowadays.
->> The Linux driver now ignores this DT setting, but still relies on the
->> hard-coded list of clock sources.
->>=20
->> On the s4, the input multiplexer is gone. The clock bindings actually
->> describe the clock as it exists, not a setting. The property has a
->> different meaning, even if it is still 2 clocks and it would pass the ch=
-eck
->> when support is actually added.
->>=20
->> Also the s4 cannot work if the clocks are not provided, so the property =
-no
->> longer optional.
+On 2024-01-15 16:18, Uwe Kleine-König wrote:
+> Hello,
 >
-> s/no/is no/
->
->> Finally, for once it makes sense to see the input as being numbered
->> somehow. No need to bother with clock-names on the s4 type of PWM.
->>=20
->> Fixes: 43a1c4ff3977 ("dt-bindings: pwm: Convert Amlogic Meson PWM bindin=
-g")
->> Reviewed-by: Rob Herring <robh@kernel.org>
->> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+> On Mon, Jan 15, 2024 at 03:12:21PM -0500, Trevor Gamblin wrote:
+>> From: Drew Fustini <dfustini@baylibre.com>
+>>
+>> Add support for the Analog Devices AXI PWM Generator. This device is an
+>> FPGA-implemented peripheral used as PWM signal generator and can be
+>> interfaced with AXI4. The register map of this peripheral makes it
+>> possible to configure the period and duty cycle of the output signal.
+>>
+>> Link: https://wiki.analog.com/resources/fpga/docs/axi_pwm_gen
+>> Co-developed-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+>> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+>> Co-developed-by: David Lechner <dlechner@baylibre.com>
+>> Signed-off-by: David Lechner <dlechner@baylibre.com>
+>> Signed-off-by: Drew Fustini <dfustini@baylibre.com>
+>> Co-developed-by: Trevor Gamblin <tgamblin@baylibre.com>
+>> Signed-off-by: Trevor Gamblin <tgamblin@baylibre.com>
 >> ---
->>  .../devicetree/bindings/pwm/pwm-amlogic.yaml  | 67 ++++++++++++++++---
->>  1 file changed, 58 insertions(+), 9 deletions(-)
->>=20
->> diff --git a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml b/Do=
-cumentation/devicetree/bindings/pwm/pwm-amlogic.yaml
->> index 527864a4d855..a1d382aacb82 100644
->> --- a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
->> +++ b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
->> @@ -9,9 +9,6 @@ title: Amlogic PWM
->>  maintainers:
->>    - Heiner Kallweit <hkallweit1@gmail.com>
->>=20=20
->> -allOf:
->> -  - $ref: pwm.yaml#
->> -
->>  properties:
->>    compatible:
->>      oneOf:
->> @@ -43,12 +40,8 @@ properties:
->>      maxItems: 2
->>=20=20
->>    clock-names:
->> -    oneOf:
->> -      - items:
->> -          - enum: [clkin0, clkin1]
->> -      - items:
->> -          - const: clkin0
->> -          - const: clkin1
->> +    minItems: 1
->> +    maxItems: 2
->>=20=20
->>    "#pwm-cells":
->>      const: 3
->> @@ -57,6 +50,55 @@ required:
->>    - compatible
->>    - reg
->>=20=20
->> +allOf:
->> +  - $ref: pwm.yaml#
+>>   MAINTAINERS                  |   1 +
+>>   drivers/pwm/Kconfig          |  12 ++
+>>   drivers/pwm/Makefile         |   1 +
+>>   drivers/pwm/pwm-axi-pwmgen.c | 229 +++++++++++++++++++++++++++++++++++
+>>   4 files changed, 243 insertions(+)
+>>   create mode 100644 drivers/pwm/pwm-axi-pwmgen.c
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index 7b0f3aec5381..3abe90dec82e 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -3422,6 +3422,7 @@ L:	linux-pwm@vger.kernel.org
+>>   S:	Supported
+>>   W:	https://ez.analog.com/linux-software-drivers
+>>   F:	Documentation/devicetree/bindings/pwm/adi,axi-pwmgen.yaml
+>> +F:	drivers/pwm/pwm-axi-pwmgen.c
+>>   
+>>   AXXIA I2C CONTROLLER
+>>   M:	Krzysztof Adamski <krzysztof.adamski@nokia.com>
+>> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+>> index 4b956d661755..b105c0db4936 100644
+>> --- a/drivers/pwm/Kconfig
+>> +++ b/drivers/pwm/Kconfig
+>> @@ -98,6 +98,18 @@ config PWM_ATMEL_TCB
+>>   	  To compile this driver as a module, choose M here: the module
+>>   	  will be called pwm-atmel-tcb.
+>>   
+>> +config PWM_AXI_PWMGEN
+>> +	tristate "Analog Devices AXI PWM generator"
+>> +	select REGMAP_MMIO
+> Assuming you won't find the device on all machines, can you please add a
+> reasonable dependency to not annoy users?
+Will do.
+>
+>> +	help
+>> +	  This enables support for the Analog Devices AXI PWM generator.
 >> +
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          contains:
->> +            enum:
->> +              - amlogic,meson8-pwm
->> +              - amlogic,meson8b-pwm
->> +              - amlogic,meson-gxbb-pwm
->> +              - amlogic,meson-gxbb-ao-pwm
->> +              - amlogic,meson-axg-ee-pwm
->> +              - amlogic,meson-axg-ao-pwm
->> +              - amlogic,meson-g12a-ee-pwm
->> +              - amlogic,meson-g12a-ao-pwm-ab
->> +              - amlogic,meson-g12a-ao-pwm-cd
->> +    then:
->> +      # Historic bindings tied to the driver implementation
->> +      # The clocks provided here are meant to be matched with the input
->> +      # known (hard-coded) in the driver and used to select pwm clock
->> +      # source. Currently, the linux driver ignores this.
->
-> I admit I didn't understand the relevant difference between the old and
-> the new binding yet.
-
-Let's try to explain differently then:
-* So far each AML PWM IP has 2 pwm.
-* Up to G12, 4 input PLL/clocks are wired to the HW IP and there=20
-  mux/div/gate to select which input to take.
-  - The historic bindings just described how to setup each of the 2
-    internal muxes - 2 optionnal clocks.
-    The actual 4 inputs names from CCF are hard coded in
-    the driver. This is a pretty bad description. The driver has been
-    updated since then to use CCF to figure out the best parent
-    according to pwm rate so this setting is ignored now.
-  - The 'new' bindings (introduced in patch #2) fixes the problem above
-    but the meaning of the clock binding is different. It describes the
-    actual HW parents - 4 clocks, optionnal since some are not wired on
-    some PWM blocks. To avoid breaking the ABI, a new compatible for
-    these SoC is introduced.
-=20=20=20=20
-> (The driver currently doesn't support the s4, right?)
-
-Indeed. I know Amlogic is preparing the support. I could do it in this
-series but I prefer to encourage them to contribute. It should come
-shortly after this series is merged.
-
-Starting from s4 (prbably even a1 - up to people contributing this SoC
-to say) the mux/div/gate is no longer in the PWM IP. It has moved to the
-main clock controller. Again the clock binding describes something
-different. It is the 2 input clocks of each block, they are mandatory
-this time.
-
-> Is it possible to detect if the dt uses the old or the new
-> binding?
-
-Apart from the compatible, no.
-
-> If yes, I suggest to drop the old one from the binding and only
-> keep it in the driver for legacy systems.
-
-I don't this would be allowed by the DT maintainers.
-My understanding is that the old binding doc is here to stay.
-What could happen after sufficient time has past it remove the support
-for the old/historic binding in the driver. Driver are not required to
-support all possible bindings after all, especially if it is not used/tested
-anymore.
-
->
->> +      properties:
->> +        clock-names:
->> +          oneOf:
->> +            - items:
->> +                - enum: [clkin0, clkin1]
->> +            - items:
->> +                - const: clkin0
->> +                - const: clkin1
+>> +	  This is a configurable PWM generator with variable pulse width and
+>> +	  period.
 >> +
->> +  # Newer IP block take a single input per channel, instead of 4 inputs
->> +  # for both channels
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          contains:
->> +            enum:
->> +              - amlogic,meson-s4-pwm
->
-> The expectation is that this list contains all compatibles that are not
-> included in the "historic" list above, right? Then maybe use "else:"
-> instead of another explicit list?
->
-
-I suppose if, elseif, else is possible.
-
-I've done it this way because is slightly easier for human to read the
-doc and find what is related to what. If you this is important for you,
-I can change it.
-
->> +    then:
->> +      properties:
->> +        clocks:
->> +          items:
->> +            - description: input clock of PWM channel A
->> +            - description: input clock of PWM channel B
->> +        clock-names: false
->> +      required:
->> +        - clocks
+>> +	  To compile this driver as a module, choose M here: the module will be
+>> +	  called pwm-axi-pwmgen.
 >> +
->>  additionalProperties: false
+>>   config PWM_BCM_IPROC
+>>   	tristate "iProc PWM support"
+>>   	depends on ARCH_BCM_IPROC || COMPILE_TEST
+>> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+>> index c5ec9e168ee7..8322089954e9 100644
+>> --- a/drivers/pwm/Makefile
+>> +++ b/drivers/pwm/Makefile
+>> @@ -6,6 +6,7 @@ obj-$(CONFIG_PWM_APPLE)		+= pwm-apple.o
+>>   obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
+>>   obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
+>>   obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
+>> +obj-$(CONFIG_PWM_AXI_PWMGEN)	+= pwm-axi-pwmgen.o
+>>   obj-$(CONFIG_PWM_BCM_IPROC)	+= pwm-bcm-iproc.o
+>>   obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
+>>   obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
+>> diff --git a/drivers/pwm/pwm-axi-pwmgen.c b/drivers/pwm/pwm-axi-pwmgen.c
+>> new file mode 100644
+>> index 000000000000..5e91636b88b4
+>> --- /dev/null
+>> +++ b/drivers/pwm/pwm-axi-pwmgen.c
+>> @@ -0,0 +1,229 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Analog Devices AXI PWM generator
+>> + *
+>> + * Copyright 2024 Analog Devices Inc.
+>> + * Copyright 2024 Baylibre SAS
+>> + */
+>> +#include <linux/bits.h>
+>> +#include <linux/clk.h>
+>> +#include <linux/err.h>
+>> +#include <linux/io.h>
+>> +#include <linux/module.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/pwm.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/slab.h>
+>> +
+>> +#define AXI_PWMGEN_NPWM			4
+>> +#define AXI_PWMGEN_REG_CORE_VERSION	0x00
+>> +#define AXI_PWMGEN_REG_ID		0x04
+>> +#define AXI_PWMGEN_REG_SCRATCHPAD	0x08
+>> +#define AXI_PWMGEN_REG_CORE_MAGIC	0x0C
+>> +#define AXI_PWMGEN_REG_CONFIG		0x10
+>> +#define AXI_PWMGEN_REG_NPWM		0x14
+>> +#define AXI_PWMGEN_CH_PERIOD_BASE	0x40
+>> +#define AXI_PWMGEN_CH_DUTY_BASE		0x44
+>> +#define AXI_PWMGEN_CH_OFFSET_BASE	0x48
+>> +#define AXI_PWMGEN_CHX_PERIOD(ch)	(AXI_PWMGEN_CH_PERIOD_BASE + (12 * (ch)))
+>> +#define AXI_PWMGEN_CHX_DUTY(ch)		(AXI_PWMGEN_CH_DUTY_BASE + (12 * (ch)))
+>> +#define AXI_PWMGEN_CHX_OFFSET(ch)	(AXI_PWMGEN_CH_OFFSET_BASE + (12 * (ch)))
+> I'd drop the name AXI_PWMGEN_CH_PERIOD_BASE and just hard code it in the
+> definition of AXI_PWMGEN_CHX_PERIOD. Ditto for the two other macros.
 >
+>> +#define AXI_PWMGEN_TEST_DATA		0x5A0F0081
+> Is this a documented constant, or just a random (as in xkcd#221) value?
+This is just a random (as in xkcd#221) value to write to the scratch 
+register.
+>
+>> +#define AXI_PWMGEN_LOAD_CONFIG		BIT(1)
+>> +#define AXI_PWMGEN_RESET		BIT(0)
+>> +#define AXI_PWMGEN_MAX_REGISTER		0x6C
+>> +
+>> +struct axi_pwmgen {
+>> +	struct pwm_chip		chip;
+>> +	struct clk		*clk;
+>> +	struct regmap		*regmap;
+>> +
+>> +	/* Used to store the period when the channel is disabled */
+>> +	unsigned int		ch_period[AXI_PWMGEN_NPWM];
+>> +	bool			ch_enabled[AXI_PWMGEN_NPWM];
+>> +};
+> I'm not a fan of this alignment. If you don't have a strong opinion here
+> please just use a single space here. (I would expect you to not have a
+> strong opinion as other structs in this driver are not aligned in this
+> way.)
+>
+>> +
+>> +static const struct regmap_config axi_pwm_regmap_config = {
+>> +	.reg_bits = 32,
+>> +	.reg_stride = 4,
+>> +	.val_bits = 32,
+>> +	.max_register = AXI_PWMGEN_MAX_REGISTER,
+>> +};
+>> +
+>> +static struct axi_pwmgen *to_axi_pwmgen(struct pwm_chip *chip)
+> I'm a big fan of common symbol prefixes. I suggest to rename
+> axi_pwm_regmap_config to axi_pwmgen_regmap_config and to_axi_pwmgen to
+> axi_pwmgen_from_chip.
+>
+>> +{
+>> +	return container_of(chip, struct axi_pwmgen, chip);
+>> +}
+>> +
+>> +static int axi_pwmgen_apply(struct pwm_chip *chip, struct pwm_device *device,
+>> +			    const struct pwm_state *state)
+>> +{
+>> +	struct axi_pwmgen *pwm = to_axi_pwmgen(chip);
+> Please pick a different name. "pwm" is reserved for pwm_device
+> variables. (And please use it for these.) A typical name would be
+> "ddata", or "pc" or "apg". (Maybe also rename axi_pwmgen to
+> axi_pwmgen_ddata?)
+>
+>> +	unsigned long clk_rate_hz = clk_get_rate(pwm->clk);
+>> +	unsigned int ch = device->hwpwm;
+>> +	struct regmap *regmap = pwm->regmap;
+>> +	u64 period_cnt, duty_cnt;
+>> +	int ret;
+> You didn't check for state->polarity. You should however. Also
+> .get_state() needs to assign that one.
+>
+>> +	if (!clk_rate_hz)
+>> +		return -EINVAL;
+>> +
+>> +	period_cnt = DIV_ROUND_UP_ULL(state->period * clk_rate_hz, NSEC_PER_SEC);
+> The multiplication might overflow. Please use mul_u64_u64_div_u64() (or
+> one of its variant) and error out on clk_rate_hz > NSEC_PER_SEC.
+>
+> Also round-up is wrong. I would expect that enabling PWM_DEBUG and
+> enough testing should tell you that. .apply is supposed to implement the
+> biggest period not bigger than the requested one. So you have to round
+> down here.
+To be clear, I should use mul_u64_u64_div_u64 only, or should I round 
+down afterwards with another function as well?
+>
+>> +	if (period_cnt > UINT_MAX)
+>> +		return -EINVAL;
+> That's wrong. Please continue with period_cnd = UINT_MAX here.
+>
+> Instead you should probably error out on period_cnt == 0.
+>
+>> +	pwm->ch_period[ch] = period_cnt;
+>> +	pwm->ch_enabled[ch] = state->enabled;
+>> +	ret = regmap_write(regmap, AXI_PWMGEN_CHX_PERIOD(ch), state->enabled ? period_cnt : 0);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	duty_cnt = DIV_ROUND_UP_ULL(state->duty_cycle * clk_rate_hz, NSEC_PER_SEC);
+>> +	ret = regmap_write(regmap, AXI_PWMGEN_CHX_DUTY(ch), duty_cnt);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return regmap_write(regmap, AXI_PWMGEN_REG_CONFIG, AXI_PWMGEN_LOAD_CONFIG);
+> I assume this means that the writes above are to shadow registers and on
+> this write they are latched into the hardware. So there is no glitch?!
+>
+> Does this wait for the currently running period to complete before
+> switching to the new configuration?
+>
+> Please document these two hardware properties in a "Limitations"
+> paragraph at the top of the driver. See other drivers for the format.
+
+The registers are shadow registers and changes don't take effect right 
+away. It also keeps the phase offset in sync between outputs.
+
+>
+>> +}
+>> +
+>> +static int axi_pwmgen_get_state(struct pwm_chip *chip, struct pwm_device *device,
+>> +				struct pwm_state *state)
+>> +{
+>> +	struct axi_pwmgen *pwm = to_axi_pwmgen(chip);
+>> +	unsigned long clk_rate_hz = clk_get_rate(pwm->clk);
+>> +	struct regmap *regmap = pwm->regmap;
+>> +	unsigned int ch = device->hwpwm;
+>> +	u32 cnt;
+>> +	int ret;
+>> +
+>> +	if (!clk_rate_hz) {
+>> +		dev_err(device->chip->dev, "axi pwm clock has no frequency\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	state->enabled = pwm->ch_enabled[ch];
+>> +
+>> +	if (state->enabled) {
+>> +		ret = regmap_read(regmap, AXI_PWMGEN_CHX_PERIOD(ch), &cnt);
+>> +		if (ret)
+>> +			return ret;
+>> +	} else {
+>> +		cnt = pwm->ch_period[ch];
+>> +	}
+> If state->enabled is false, state->period is (or should) be ignored by
+> the caller, so there shouldn't be a need to track ch_period.
+>
+> Also ch_enabled shouldn't be needed. Just reporting
+> AXI_PWMGEN_CHX_PERIOD(ch) == 0 as disabled should work fine?!
+>
+> I think then you also don't need to artificially limit npwm to four.
+The only concern I have with not tracking ch_period is that it might not 
+be clear what period to restore after disabling and re-enabling the 
+device, unless I'm missing something.
+>
+>> +	state->period = DIV_ROUND_CLOSEST_ULL((u64)cnt * NSEC_PER_SEC, clk_rate_hz);
+> As feeding the result for .get_state() to .apply() should not modify the
+> hardware state, you have to round up here.
+>
+>> +	ret = regmap_read(regmap, AXI_PWMGEN_CHX_DUTY(ch), &cnt);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	state->duty_cycle = DIV_ROUND_CLOSEST_ULL((u64)cnt * NSEC_PER_SEC, clk_rate_hz);
+> ditto.
+>
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct pwm_ops axi_pwmgen_pwm_ops = {
+>> +	.apply = axi_pwmgen_apply,
+>> +	.get_state = axi_pwmgen_get_state,
+>> +};
+>> +
+>> +static int axi_pwmgen_setup(struct axi_pwmgen *pwm, struct device *dev)
+>> +{
+>> +	struct regmap *regmap = pwm->regmap;
+>> +	int idx;
+>> +	int ret;
+>> +	u32 val;
+>> +
+>> +	ret = regmap_write(regmap, AXI_PWMGEN_REG_SCRATCHPAD, AXI_PWMGEN_TEST_DATA);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret = regmap_read(regmap, AXI_PWMGEN_REG_SCRATCHPAD, &val);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	if (val != AXI_PWMGEN_TEST_DATA)
+>> +		return dev_err_probe(dev, -EIO, "failed to access the device registers\n");
+>> +
+>> +	ret = regmap_read(regmap, AXI_PWMGEN_REG_NPWM, &pwm->chip.npwm);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	if (pwm->chip.npwm > AXI_PWMGEN_NPWM) {
+>> +		dev_warn(dev, "driver is limited to %d channels but hardware reported %u\n",
+>> +				AXI_PWMGEN_NPWM, pwm->chip.npwm);
+>> +		pwm->chip.npwm = AXI_PWMGEN_NPWM;
+>> +	}
+>> +
+>> +	/* Disable all the outputs */
+> Please don't. If the bootloader setup a splash screen, loading the pwm
+> driver shouldn't disable the backlight. So please don't touch the
+> configuration in .probe().
+Thank you for the catch.
+>
+>> +	for (idx = 0; idx < pwm->chip.npwm; idx++) {
+>> +		ret = regmap_write(regmap, AXI_PWMGEN_CHX_PERIOD(idx), 0);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = regmap_write(regmap, AXI_PWMGEN_CHX_DUTY(idx), 0);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = regmap_write(regmap, AXI_PWMGEN_CHX_OFFSET(idx), 0);
+>> +		if (ret)
+>> +			return ret;
+>> +	}
+>> +
+>> +	/* Enable the core */
+>> +	return regmap_update_bits(regmap, AXI_PWMGEN_REG_CONFIG, AXI_PWMGEN_RESET, 0);
+>> +}
+>> +
+>> +static int axi_pwmgen_probe(struct platform_device *pdev)
+>> +{
+>> +	struct axi_pwmgen *pwm;
+>> +	void __iomem *io_base;
+>> +	int ret;
+>> +
+>> +	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+>> +	if (!pwm)
+>> +		return -ENOMEM;
+>> +
+>> +	io_base = devm_platform_ioremap_resource(pdev, 0);
+>> +	if (IS_ERR(io_base))
+>> +		return PTR_ERR(io_base);
+>> +
+>> +	pwm->regmap = devm_regmap_init_mmio(&pdev->dev, io_base, &axi_pwm_regmap_config);
+>> +	if (IS_ERR(pwm->regmap))
+>> +		return dev_err_probe(&pdev->dev, PTR_ERR(pwm->regmap),
+>> +				     "failed to init register map\n");
+>> +
+>> +	pwm->clk = devm_clk_get_enabled(&pdev->dev, NULL);
+>> +	if (IS_ERR(pwm->clk))
+>> +		return dev_err_probe(&pdev->dev, PTR_ERR(pwm->clk), "failed to get clock\n");
+> Please call clk_rate_exclusive_get() on pwm->clk and cache the rate in
+> struct axi_pwmgen.
+>
+>> +	pwm->chip.dev = &pdev->dev;
+>> +	pwm->chip.ops = &axi_pwmgen_pwm_ops;
+>> +	pwm->chip.base = -1;
+> Don't assign .base.
+Alright. I will set pwm->chip.atomic as per Sean's comment as well.
+>
+>> +
+>> +	ret = axi_pwmgen_setup(pwm, &pdev->dev);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	return devm_pwmchip_add(&pdev->dev, &pwm->chip);
+>> +}
+>> +
+>> +static const struct of_device_id axi_pwmgen_ids[] = {
+>> +	{ .compatible = "adi,axi-pwmgen-1.00.a" },
+>> +	{ }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, axi_pwmgen_ids);
+>> +
+>> +static struct platform_driver axi_pwmgen_driver = {
+>> +	.driver = {
+>> +		.name = "axi-pwmgen",
+>> +		.of_match_table = axi_pwmgen_ids,
+>> +	},
+>> +	.probe = axi_pwmgen_probe,
+>> +};
+>> +
+> Drop this empty line.
+>
+>> +module_platform_driver(axi_pwmgen_driver);
+>> +
+>> +MODULE_LICENSE("GPL");
+>> +MODULE_AUTHOR("Sergiu Cuciurean <sergiu.cuciurean@analog.com>");
+>> +MODULE_DESCRIPTION("Driver for the Analog Devices AXI PWM generator");
 > Best regards
 > Uwe
-
-
---=20
-Jerome
+>
