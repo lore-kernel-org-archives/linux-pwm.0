@@ -1,29 +1,29 @@
-Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
+Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CF1520DF0
-	for <linux-pwm@vger.kernel.org>; Mon, 22 Jan 2024 08:19:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61BBA20DEA
+	for <linux-pwm@vger.kernel.org>; Mon, 22 Jan 2024 08:19:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=222.66.158.135
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705911563; cv=none; b=s7ckP4tbhgEFfmF1PRmkPl6ohVI6layefWVgmkEb4k2nOC+EKF1vdInwcZ2rA0wb+hqtqkVH/udrD06Z5CJaXcZO+8fS9CP47IJYU/SyEAj4aotBjdjIFV8NcSR/k1wDE+N/LHGoljta1DeybDo94Qc7lPcRIvfbAPp9I/LV3Uc=
+	t=1705911582; cv=none; b=KbFuCXnDW902Y8CeRcY+S7OEOhMDadb2Fo3Kqi+YKovBfVtFgR3nLWBZlKyTTCTSfmYYpiFdp9IPWQ+4uS4qehmqMIJw0ZsDYRCAPXICIBfor0CTOg2Spj3qySwef513PEquxZG87KLtPM4XsgC8DgCS+e2uPscJ8QcyT91TZA4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705911563; c=relaxed/simple;
-	bh=BWzqwv+5BLR9iJ/cwRZDzelnwRi5bJX8TzYd0bzhZqw=;
+	s=arc-20240116; t=1705911582; c=relaxed/simple;
+	bh=ucncD4LgxTJrxIeRTuDJbk8/gy62TUU+zwKtbsZDx/c=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NXjRVGDlEEFXWvyi8z9e5M+KFDbVozFPT3OlK7Q2eLTbUsKpRkIb/C+NGYFFK8IyCe6BytQmFHxNmWQekN+894xTITEEJYyjAdsBGNABEeOz8E2Orgu/RQhNkJFwEE1PF/n7F/eplZ1AYpKMiRWYdIRGCsrIG5nZt0z9kFVXzgs=
+	 MIME-Version:Content-Type; b=Rduydcl6L1C31NOtG0D8KmEKNhaBu1QScp8LjqmTBOMd16LuwYoXPhQxN7GuTOAD81I6E0zvSX/AQ7rYqawtUe2NH37f3fc6L6iP9Rge3MXTCvDzZ9zyA4y+B/Y+3lPfqvuRBYLhdlE0rfPQ435X5RdaerA3NLbjn0mRij2VAFw=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com; spf=pass smtp.mailfrom=unisoc.com; arc=none smtp.client-ip=222.66.158.135
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
 Received: from dlp.unisoc.com ([10.29.3.86])
-	by SHSQR01.spreadtrum.com with ESMTP id 40M8I8DK055611;
-	Mon, 22 Jan 2024 16:18:08 +0800 (+08)
+	by SHSQR01.spreadtrum.com with ESMTP id 40M8I4kT055344;
+	Mon, 22 Jan 2024 16:18:04 +0800 (+08)
 	(envelope-from Wenhua.Lin@unisoc.com)
 Received: from SHDLP.spreadtrum.com (shmbx06.spreadtrum.com [10.0.1.11])
-	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4TJNFj2Zzxz2Rb03v;
-	Mon, 22 Jan 2024 16:10:49 +0800 (CST)
+	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4TJNFd1Jnrz2Rb68b;
+	Mon, 22 Jan 2024 16:10:45 +0800 (CST)
 Received: from xm9614pcu.spreadtrum.com (10.13.2.29) by shmbx06.spreadtrum.com
  (10.0.1.11) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Mon, 22 Jan
- 2024 16:18:06 +0800
+ 2024 16:18:02 +0800
 From: Wenhua Lin <Wenhua.Lin@unisoc.com>
 To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 CC: Orson Zhai <orsonzhai@gmail.com>,
@@ -39,9 +39,9 @@ CC: Orson Zhai <orsonzhai@gmail.com>,
         Zhaochen Su
 	<Zhaochen.Su@unisoc.com>,
         Xiaolong Wang <Xiaolong.Wang@unisoc.com>
-Subject: [PATCH 6/6] dt-bindings: pwm: sprd: Add sprd,mod attribute
-Date: Mon, 22 Jan 2024 16:17:54 +0800
-Message-ID: <20240122081754.17058-7-Wenhua.Lin@unisoc.com>
+Subject: [PATCH 1/6] pwm: sprd: Add support for UMS9620
+Date: Mon, 22 Jan 2024 16:17:49 +0800
+Message-ID: <20240122081754.17058-2-Wenhua.Lin@unisoc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20240122081754.17058-1-Wenhua.Lin@unisoc.com>
 References: <20240122081754.17058-1-Wenhua.Lin@unisoc.com>
@@ -54,53 +54,113 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
  shmbx06.spreadtrum.com (10.0.1.11)
-X-MAIL:SHSQR01.spreadtrum.com 40M8I8DK055611
+X-MAIL:SHSQR01.spreadtrum.com 40M8I4kT055344
 
-Add sprd,mod attribute, which set the number of different
-duty cycles that PWM's waveform could output, to dts.
+The PMW unit on the current Unisoc's SoCs has 4 channels but has different
+address offsets. On UMS512, they are 0x0, 0x20, 0x40, 0x60 respectively,
+while are 0x0, 0x4000, 0x8000, 0xC000 on UMS9620.
 
 Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 ---
- Documentation/devicetree/bindings/pwm/pwm-sprd.yaml | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/pwm/pwm-sprd.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml b/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
-index 02e039fee3b4..7c956b840fa1 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
-+++ b/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
-@@ -55,6 +55,16 @@ properties:
-     minItems: 4
-     maxItems: 4
+diff --git a/drivers/pwm/pwm-sprd.c b/drivers/pwm/pwm-sprd.c
+index 77939e161006..bc1e3ed13528 100644
+--- a/drivers/pwm/pwm-sprd.c
++++ b/drivers/pwm/pwm-sprd.c
+@@ -9,6 +9,7 @@
+ #include <linux/math64.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
  
-+  sprd,mod:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 4
-+    maxItems: 4
-+    items:
-+      minimum: 0xFF
-+      maximum: 0xFFF
-+    description: |
-+      The number of different duty cycles that could be set for PWM's waveform output.
+@@ -23,7 +24,6 @@
+ #define SPRD_PWM_ENABLE_BIT	BIT(0)
+ 
+ #define SPRD_PWM_CHN_NUM	4
+-#define SPRD_PWM_REGS_SHIFT	5
+ #define SPRD_PWM_CHN_CLKS_NUM	2
+ #define SPRD_PWM_CHN_OUTPUT_CLK	1
+ 
+@@ -32,14 +32,27 @@ struct sprd_pwm_chn {
+ 	u32 clk_rate;
+ };
+ 
++struct sprd_pwm_data {
++	int reg_shift;
++};
 +
-   "#pwm-cells":
-     const: 2
+ struct sprd_pwm_chip {
+ 	void __iomem *base;
+ 	struct device *dev;
+ 	struct pwm_chip chip;
++	const struct sprd_pwm_data *pdata;
+ 	int num_pwms;
+ 	struct sprd_pwm_chn chn[SPRD_PWM_CHN_NUM];
+ };
  
-@@ -63,6 +73,7 @@ required:
-   - reg
-   - clocks
-   - clock-names
-+  - sprd,mod
++static const struct sprd_pwm_data ums512_data = {
++	.reg_shift = 5,
++};
++
++static const struct sprd_pwm_data ums9620_data = {
++	.reg_shift = 14,
++};
++
+ static inline struct sprd_pwm_chip* sprd_pwm_from_chip(struct pwm_chip *chip)
+ {
+ 	return container_of(chip, struct sprd_pwm_chip, chip);
+@@ -58,7 +71,7 @@ static const char * const sprd_pwm_clks[] = {
  
- additionalProperties: false
+ static u32 sprd_pwm_read(struct sprd_pwm_chip *spc, u32 hwid, u32 reg)
+ {
+-	u32 offset = reg + (hwid << SPRD_PWM_REGS_SHIFT);
++	u32 offset = reg + (hwid << spc->pdata->reg_shift);
  
-@@ -88,6 +99,7 @@ examples:
-                                  <&ext_26m>,
-                                  <&ext_26m>,
-                                  <&ext_26m>;
-+        sprd,mod = <0xFF 0x1FF 0x3FF 0xFFF>;
-         #pwm-cells = <2>;
-     };
+ 	return readl_relaxed(spc->base + offset);
+ }
+@@ -66,7 +79,7 @@ static u32 sprd_pwm_read(struct sprd_pwm_chip *spc, u32 hwid, u32 reg)
+ static void sprd_pwm_write(struct sprd_pwm_chip *spc, u32 hwid,
+ 			   u32 reg, u32 val)
+ {
+-	u32 offset = reg + (hwid << SPRD_PWM_REGS_SHIFT);
++	u32 offset = reg + (hwid << spc->pdata->reg_shift);
  
+ 	writel_relaxed(val, spc->base + offset);
+ }
+@@ -253,6 +266,7 @@ static int sprd_pwm_clk_init(struct sprd_pwm_chip *spc)
+ static int sprd_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct sprd_pwm_chip *spc;
++	const void *priv;
+ 	int ret;
+ 
+ 	spc = devm_kzalloc(&pdev->dev, sizeof(*spc), GFP_KERNEL);
+@@ -263,6 +277,11 @@ static int sprd_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(spc->base))
+ 		return PTR_ERR(spc->base);
+ 
++	priv = of_device_get_match_data(&pdev->dev);
++	if (!priv)
++		return dev_err_probe(&pdev->dev, -EINVAL, "get regs shift failed!\n");
++	spc->pdata = priv;
++
+ 	spc->dev = &pdev->dev;
+ 
+ 	ret = sprd_pwm_clk_init(spc);
+@@ -281,7 +300,8 @@ static int sprd_pwm_probe(struct platform_device *pdev)
+ }
+ 
+ static const struct of_device_id sprd_pwm_of_match[] = {
+-	{ .compatible = "sprd,ums512-pwm", },
++	{ .compatible = "sprd,ums512-pwm",	.data = (void *)&ums512_data},
++	{ .compatible = "sprd,ums9620-pwm",	.data = (void *)&ums9620_data},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, sprd_pwm_of_match);
 -- 
 2.17.1
 
