@@ -1,49 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49867139B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20F6517F8;
 	Mon, 22 Jan 2024 03:02:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705892575; cv=none; b=SUxoWODzqaCm8StZOLHU7O4f1XKXExj7PzNuUAMOoOUxF/zFoclYY9CrrYCAelsnI8iw05EtUcaPMDcxl2awE4QtefIa5alhykLn//9TSITqxb9emzN4nlEOiR0Rye1feRGa6khnxS+klQ3ac3TJs0SSyKVvWxeZ/+EwMMVdlso=
+	t=1705892576; cv=none; b=XBxZRMPiD69Var2+1CUZBrX6PVP3bFuZCP+pHpyBIhnp83/VrWF47Dj+nKjw13vF3o9TuYBEA7Vn4YmKxo/7KZZnjJhafpl4fqYllvQW8Yi2Tc/e4F7UiV19a3BIcI5DaU8W+xJKhRtDsjDI/34v3DB8MIvxOj0AhRczejPOGDs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705892575; c=relaxed/simple;
-	bh=xXgc14YVJHCCXERS4eQXjRO7DnYkSw+VIjrQ5G10S6o=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=B6aIGh8y3BRuE9qIQJottR8RuW4y2HfnHiy1qGthxEEI4xUpPOSZ8VY+G9DxmYF+AnmSz+BG5vsGOM1XYH0dwl2UifD22Q/+Tn14depvgmQZkpY3pIONA3uX8HKVvnNsCoDY7TtmeYUG8K5BzW6Dja6z50CLXJyMxlYHuFAL67o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=none smtp.mailfrom=ecsmtp.iind.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=l3n6ufZI; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1705892576; c=relaxed/simple;
+	bh=JU9q0bJ7a4jYOvykJk01qQpv3D5tvVRO+GJ+CDcsGr4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OIu6/n3eMENcq+CA2GWif1a6N69gj1ckvWawLXsonGur9+qBeeM08ZEKNdI+QsOQjZmK1JodVV8pTK3w8EvDZYpwAfivrjCrHjDXpqU8N+GnaDPfxDPxILzD7xvyBasx35/7d9QaaOV+v4b1HgExBPu+q1KbxJp2JaHAhLK9noE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=none smtp.mailfrom=ecsmtp.iind.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PwS3fHC6; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ecsmtp.iind.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l3n6ufZI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PwS3fHC6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1705892575; x=1737428575;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xXgc14YVJHCCXERS4eQXjRO7DnYkSw+VIjrQ5G10S6o=;
-  b=l3n6ufZIdeWo6updMVGtFHJhY8qibh7qlaUyv+wmdOZmsLewhLIwh4AR
-   fMjTXDm5b9gkNdq5zR8qQvG4hVFqnY69BO7x8vM/0PcyjZL9QvrhqcSD8
-   yBuvqZmodR0cybDY/iwFMR3auM1qs2tHI51CDIAfM6ChqaiqDL0nHEoSu
-   NBIOjR62P4ALaeBpAW/oMAjosp+WcUutGUownejUVub0bnjjnSEQwgRQB
-   d0QeRtyx+nvMKwco2FsTJLnLmfVGdIrbUms9YspfmWYETx492Eme0XxxE
-   UhKKPeJzDx2iCl0Pga06WuCB1xfalJ6XXRjpUrwo57tNUbwSH5lHIo+Ch
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10960"; a="14607323"
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JU9q0bJ7a4jYOvykJk01qQpv3D5tvVRO+GJ+CDcsGr4=;
+  b=PwS3fHC6LmoPS8UCvDbnq0zn6jox3QbhMuoT3NLt3xM4sRAm/M19LLk5
+   X/z7t81aT7+95RjsGh8LTGg6cYiDOgatVlZMzhGvnPYizoyHe1H8Ss528
+   dAfG5Mlj1uoCql7pTeRFwH5c+naK8O3KXxaCbcbHiauzGdiOXmXA0uBCn
+   OeEUH4o2XmCtAObNc/4ARARlI5xbmqFqDGGTNHMmbAfBKZCQwoPYyWGv8
+   noN5DB4qNGPxMZ7qpsjdjTHYJ6E+/J4jtLOPT6hpMueZz/YKP2oUf60XQ
+   jMtAWDaArioROOeuZUcI3cvZQQ13IhaaNmsi18RnjbspotwUX3L92YqAi
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10960"; a="14607320"
 X-IronPort-AV: E=Sophos;i="6.05,211,1701158400"; 
-   d="scan'208";a="14607323"
+   d="scan'208";a="14607320"
 Received: from orviesa003.jf.intel.com ([10.64.159.143])
   by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2024 19:02:45 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.05,211,1701158400"; 
-   d="scan'208";a="1085521"
+   d="scan'208";a="1085519"
 Received: from inesxmail01.iind.intel.com ([10.223.57.40])
   by orviesa003.jf.intel.com with ESMTP; 21 Jan 2024 19:02:42 -0800
 Received: from inlubt0316.iind.intel.com (inlubt0316.iind.intel.com [10.191.20.213])
-	by inesxmail01.iind.intel.com (Postfix) with ESMTP id 218854851;
+	by inesxmail01.iind.intel.com (Postfix) with ESMTP id 1C3D147C1;
 	Mon, 22 Jan 2024 08:32:41 +0530 (IST)
 Received: by inlubt0316.iind.intel.com (Postfix, from userid 12101951)
-	id 1C4E11600102; Mon, 22 Jan 2024 08:32:41 +0530 (IST)
+	id 1785C1600100; Mon, 22 Jan 2024 08:32:41 +0530 (IST)
 From: Raag Jadav <raag.jadav@intel.com>
 To: u.kleine-koenig@pengutronix.de,
 	jarkko.nikula@linux.intel.com,
@@ -53,12 +52,10 @@ To: u.kleine-koenig@pengutronix.de,
 Cc: linux-pwm@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Raag Jadav <raag.jadav@intel.com>
-Subject: [PATCH v1 2/3] pwm: dwc: simplify error handling
-Date: Mon, 22 Jan 2024 08:32:37 +0530
-Message-Id: <20240122030238.29437-3-raag.jadav@intel.com>
+Subject: [PATCH v1 0/3] DesignWare PWM improvements
+Date: Mon, 22 Jan 2024 08:32:35 +0530
+Message-Id: <20240122030238.29437-1-raag.jadav@intel.com>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20240122030238.29437-1-raag.jadav@intel.com>
-References: <20240122030238.29437-1-raag.jadav@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -67,48 +64,20 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Simplify error handling in ->probe() function using dev_err_probe() helper.
+This series adds 16 channel support for Intel Elkhart Lake and simplifies
+code using standard helpers in DesignWare PWM driver.
 
-Signed-off-by: Raag Jadav <raag.jadav@intel.com>
----
- drivers/pwm/pwm-dwc.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+Raag Jadav (3):
+  pwm: dwc: Add 16 channel support for Intel Elkhart Lake
+  pwm: dwc: simplify error handling
+  pwm: dwc: use to_pci_dev() helper
 
-diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index fd64313cb38d..8f8035b047c1 100644
---- a/drivers/pwm/pwm-dwc.c
-+++ b/drivers/pwm/pwm-dwc.c
-@@ -68,24 +68,18 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	int ret;
- 
- 	ret = pcim_enable_device(pci);
--	if (ret) {
--		dev_err(dev, "Failed to enable device (%pe)\n", ERR_PTR(ret));
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable device (%pe)\n", ERR_PTR(ret));
- 
- 	pci_set_master(pci);
- 
- 	ret = pcim_iomap_regions(pci, BIT(0), pci_name(pci));
--	if (ret) {
--		dev_err(dev, "Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
- 
- 	base = pcim_iomap_table(pci)[0];
--	if (!base) {
--		dev_err(dev, "Base address missing\n");
--		return -ENOMEM;
--	}
-+	if (!base)
-+		return dev_err_probe(dev, -ENOMEM, "Base address missing\n");
- 
- 	info = (const struct dwc_pwm_info *)id->driver_data;
- 	ret = dwc_pwm_init(dev, info, base);
+ drivers/pwm/pwm-dwc.c | 71 +++++++++++++++++++++++++++++--------------
+ drivers/pwm/pwm-dwc.h |  5 +++
+ 2 files changed, 54 insertions(+), 22 deletions(-)
+
+
+base-commit: 6613476e225e090cc9aad49be7fa504e290dd33d
 -- 
 2.35.3
 
