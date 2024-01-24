@@ -1,125 +1,178 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from forward501b.mail.yandex.net (forward501b.mail.yandex.net [178.154.239.145])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A89BB182A3
-	for <linux-pwm@vger.kernel.org>; Wed, 24 Jan 2024 09:48:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6B818035;
+	Wed, 24 Jan 2024 09:48:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706089709; cv=none; b=ikAi+fof/0r0mPcJCBiHlnQuckhlu1TusqHUMq1ZtcpEy7NlUgrLlQnUklBwY7wxtut7DNdDFqBWFMIbNGf1DO3um2iRy93teHvp7BzGFEn4JckHJRLoK6sTJTtDYeA48sS5tGLp5dZLx6nVOkVgikadac3ejVUbbuQeKClxePQ=
+	t=1706089709; cv=none; b=mx/Re3/0WLN7EPoypd3TgXStcVCeBb7dj4iyMDXm5o2zCDFoMFYWBCd8QB+7xodM0qbXSbdX+jqki7wXEB7Jp/+JM8NtIn/70YttXhz7A4nvpdi6hB5u3wF4PKIvNK6z0fz1+y1ScqmoEKshQ9oixhB/h8b11xe+SqLtayK2Quk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706089709; c=relaxed/simple;
-	bh=y22HqRzsmOQsYLr4WGwc3QzMljL/aweeW4ciyd4mkKU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V41AXFJbMLNQ6aaTjmufHy19DXVdmxO2fzu8RFfqPa3VycI5hkqg6R31rhTwpuDK+xY0DZV+8qlydQaojHNOHUHOPj7bg9bl+KQcd/VcwNvJTilMkPzNe2+MFCrZfnrT1Iahu7FPVnBnmEZZQeVMvc4mBjGquSR195x9mh2Rb1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rSZrk-0004BM-78; Wed, 24 Jan 2024 10:48:16 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rSZrj-0021hH-Cn; Wed, 24 Jan 2024 10:48:15 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rSZrj-0071yh-0x;
-	Wed, 24 Jan 2024 10:48:15 +0100
-Date: Wed, 24 Jan 2024 10:48:15 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Jerome Brunet <jbrunet@baylibre.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, 
-	Neil Armstrong <neil.armstrong@linaro.org>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Kevin Hilman <khilman@baylibre.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, JunYi Zhao <junyi.zhao@amlogic.com>
-Subject: Re: [PATCH v4 5/6] pwm: meson: don't carry internal clock elements
- around
-Message-ID: <jlrptw2norojxgpfmsybv6b5aq3epkdkqvri2l2rkvtx5qofjd@q4ggezt47a42>
-References: <20231222111658.832167-1-jbrunet@baylibre.com>
- <20231222111658.832167-6-jbrunet@baylibre.com>
- <gyhea42rtydw3g45lfkfbxfm6xcbwibz67vw7xke2sm7powz2a@i33g4pyanu4l>
- <1jttn3w0ja.fsf@starbuckisacylon.baylibre.com>
+	bh=IHE+8qzpbTdog9EETVfiN/fpJqzJXicsqlvDrjk5K34=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PvrawPj92dH0tI+uPudQybMuSWre8bqDX/osFO4Fs7tmeRJqGlWzHJLy2OF7jkmsqwtI+otoj8dOsf3rZ7X2fRpgx9GKUcrnstvY7c9F7xv/7CsmWdZi+o1MgM15a/w2KEet9Pe9+mkQ4Siw08DfXVJ+1LYVzJ/ea06DfgQkw0E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.com; spf=pass smtp.mailfrom=yandex.com; dkim=pass (1024-bit key) header.d=yandex.com header.i=@yandex.com header.b=ke/H2ct2; arc=none smtp.client-ip=178.154.239.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yandex.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=yandex.com header.i=@yandex.com header.b="ke/H2ct2"
+Received: from mail-nwsmtp-smtp-production-main-81.myt.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-81.myt.yp-c.yandex.net [IPv6:2a02:6b8:c12:5da3:0:640:8139:0])
+	by forward501b.mail.yandex.net (Yandex) with ESMTP id 78C0861427;
+	Wed, 24 Jan 2024 12:40:18 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-81.myt.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id FeP8xM9oCSw0-tAQ2TBMr;
+	Wed, 24 Jan 2024 12:40:17 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.com; s=mail;
+	t=1706089217; bh=TdjvEzF9jVygdn01MqhB1dSKqKyYHG7CGfPsh6+QX2M=;
+	h=In-Reply-To:Cc:References:To:From:Subject:Date:Message-ID;
+	b=ke/H2ct2DrdVKkEyDm3aAFiHVVDIK/feQYkkT/8SVgxQg1moKmlyUvcuNmhXuJI+t
+	 Fe16e9E98XOkpUr95bjahG9wBBir26dK38iIAI8tSnM+tDzf4zoA2/PfRq9wO8F0kK
+	 +Mns/UIHdXHSiNKFjYaK4Eh67fbXchjAVxD30CYE=
+Authentication-Results: mail-nwsmtp-smtp-production-main-81.myt.yp-c.yandex.net; dkim=pass header.i=@yandex.com
+Message-ID: <b03fc42e-653a-49b2-8835-6cfb7a7bb39e@yandex.com>
+Date: Wed, 24 Jan 2024 10:40:15 +0100
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="bi3q4dz4cz4stt46"
-Content-Disposition: inline
-In-Reply-To: <1jttn3w0ja.fsf@starbuckisacylon.baylibre.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: pwm: rockchip: Allow "interrupts" prooperty
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: linux-pwm@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
+ Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
+ Rob Herring <robh+dt@kernel.org>, linux-rockchip@lists.infradead.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ kernel@pengutronix.de
+References: <20240106142654.1262758-2-u.kleine-koenig@pengutronix.de>
+ <7dea73a6-d733-4cd2-b2d5-02f09e2a6dd9@linaro.org>
+ <94ad0f59-4095-40ee-963d-4ac379fc8852@yandex.com>
+ <cvvifoctmgdsgqfadqbhgywfw2ff57fz33w26hghf5kyo5j5sw@mj75xtvczr2h>
+ <210132de-a46b-4f9f-8546-0c36d8a34665@linaro.org>
+ <5swqcqpc5zwa3bfhuoyjnymozyzy3lgurnbsurebybj2c7fck3@ycwk2ugo2ouf>
+Content-Language: en-US
+From: Johan Jonker <jbx6244@yandex.com>
+In-Reply-To: <5swqcqpc5zwa3bfhuoyjnymozyzy3lgurnbsurebybj2c7fck3@ycwk2ugo2ouf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 
---bi3q4dz4cz4stt46
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 1/24/24 09:26, Uwe Kleine-König wrote:
+> Hello Johan,
+>
+> On Sun, Jan 07, 2024 at 11:30:14AM +0100, Krzysztof Kozlowski wrote:
+>> On 07/01/2024 00:25, Uwe Kleine-König wrote:
+>>> On Sat, Jan 06, 2024 at 10:25:10PM +0100, Johan Jonker wrote:
+>>>> On 1/6/24 18:10, Krzysztof Kozlowski wrote:
+>>>>> On 06/01/2024 15:26, Uwe Kleine-König wrote:
+>>>>>> This fixes the dtbs_check error
+>>>>>>
+>>>>>> 	arch/arm/boot/dts/rockchip/rv1108-elgin-r1.dtb: pwm@10280030: 'interrupts' does not match any of the regexes: 'pinctrl-[0-9]+'
+>>>>>> 	from schema $id: http://devicetree.org/schemas/pwm/pwm-rockchip.yaml#
+>>>>>>
+>>>>>> in several device trees.
+>>>>>>
+>>>>>> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+>>>>> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>>> NAK
+>>>>
+>>>> There's a reason why this isn't implemented before:
+>>>>
+>>>> [RFC PATCH v1 1/2] dt-bindings: pwm: rockchip: add interrupts property <https://lore.kernel.org/linux-rockchip/ed3df2c8-ffb5-1723-0ed7-3a2721972852@gmail.com/#r>
+>>>>
+>>>> https://lore.kernel.org/linux-rockchip/ed3df2c8-ffb5-1723-0ed7-3a2721972852@gmail.com/
+>>>>
+>>>> [PATCH 1/1] dt-bindings: pwm: rockchip: Add description for rk3588 <https://lore.kernel.org/linux-rockchip/20220901135523.52151-1-sebastian.reichel@collabora.com/#r>
+>>>>
+>>>> https://lore.kernel.org/linux-rockchip/66b5b616-ae9f-a1aa-e2b5-450f570cfcdd@gmail.com/
+>>>>
+>>>> [PATCH v1 03/11] dt-bindings: pwm: rockchip: add rockchip,rk3128-pwm <https://lore.kernel.org/linux-rockchip/f5dd0ee4-d97e-d878-ffde-c06e9b233e38@gmail.com/>
+>>>>
+>>>> https://lore.kernel.org/linux-rockchip/946d8ac2-6ff2-093a-ad3c-aa755e00d1dd@arm.com/
+>>>>
+>>>>
+>>>> On how to correctly model the DT with common interrupts , PWM and one shot as a sort of MFD etc there's no consensus yet.
+>>>>
+>>>> Leaf it as it is till someone made a working driver demo, so that the coder is free to model a DT solution that fits to him/her.
+>>> Having the warnings until this happens is bad though. If describing the
+>>> irqs in the schema is considered wrong, we should remove the interrupts
+>>> properties from the device tree sources.
+>> I think the previous thread mixes bindings with driver. Does the
+>> hardware have interrupt? Yes? Add it to the bindings. No? Don't add it.
+>>
+>> However Johan's reply is saying something about driver, so how is it
+>> related?
+> Following Krzysztof's argumentation I'm inclined to apply the patch
+> despite Johan's objection as the irqs are already described in the
+> device trees and not having them in the binding only adds warnings to
+> the dt checks.
+The interrupts are common interrupts for a group of 4 PWM channels!
 
-Hello Jerome,
+The name PWM channels is somewhat confusing.
 
-On Wed, Jan 24, 2024 at 10:16:17AM +0100, Jerome Brunet wrote:
-> On Wed 24 Jan 2024 at 10:02, Uwe Kleine-K=F6nig <u.kleine-koenig@pengutro=
-nix.de> wrote:
-> > On Fri, Dec 22, 2023 at 12:16:53PM +0100, Jerome Brunet wrote:
-> >> @@ -442,6 +439,13 @@ static int meson_pwm_init_channels(struct device =
-*dev)
-> >>  		struct meson_pwm_channel *channel =3D &meson->channels[i];
-> >>  		struct clk_parent_data div_parent =3D {}, gate_parent =3D {};
-> >>  		struct clk_init_data init =3D {};
-> >> +		struct clk_divider *div;
-> >> +		struct clk_gate *gate;
-> >> +		struct clk_mux *mux;
-> >> +
-> >> +		mux =3D devm_kzalloc(dev, sizeof(*mux), GFP_KERNEL);
-> >> +		if (!mux)
-> >> +			return -ENOMEM;
-> >
-> > I don't like this change. While it doesn't increase the memory used, it
-> > fragments the used memory and increases the overhead of memory
-> > management and the number of devm allocations.
-> >
-> > Are these members of meson_pwm_channel in the way for anything later?
->=20
-> Not really. It is just not useful on the SoCs which do use it and not
-> used at all starting from s4/a1.
+It has various modes not related to PWM
 
-This remembers me about the old pwm-imx driver. This was essentially a
-single file containing two drivers just because both types appeared on
-imx machines. Later it was split into imx1 and imx27.
 
-I didn't look at the relevant differences between the existing driver
-and the changes needed for s4, but please don't repeat this issue for
-meson. Not sure this fear is justified, just saying ...
+From Rockchip RK3368 TRM V2.0.pdf:
 
-Best regards
-Uwe
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Continuous Mode:
+No interrupts.
 
---bi3q4dz4cz4stt46
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+One-shot Mode:
+an interrupt is asserted to inform that the operation has been finished
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmWw3N4ACgkQj4D7WH0S
-/k4dMAgAozpZ4OhSVfUnrblhtpzwr4SXMznUu/lW+ZcUZ39z8nQi29MQxtKkYOnJ
-UmUDaTwxqWcWOCGOuIL7XksK2uJOhIpH/kRatrulGYfDznloAAhSN/TSrpQ/BPuX
-4P+kRVTDpJggZ6AjKnPZgRqxNOxIpdFhRcKbgpCMuA7FKRNZhB7FzB5qJPn1VM3D
-ghXMcPWD8wH1gG4q/4bVk2vnpZFekLy14qP2MNYk+uEptXHM6bFtHhhxyWaCx/lQ
-Jd6oR9jeQLudBE0oel+3dHv4rPLV4bc3XSKZBzK5xT5rv2ZXk8IgRoZpRopCkz4O
-apNjdhV0xQJvpJ5gDWpPw1TLQVFVxA==
-=SWXC
------END PGP SIGNATURE-----
+Reference mode:
 
---bi3q4dz4cz4stt46--
+asserts an interrupt when the polarity of the input waveform changes.
+
+Also IR
+
+===
+
+PWM_INTSTS0x00040 W0x00000000 Interrupt Status Register
+PWM_INT_EN0x00044 W0x00000000 Interrupt Enable Register
+PWM_FIFO_CTRL0x00050 W0x00000000
+PWM Channel 3 FIFO Mode Control Register
+PWM_FIFO_INTSTS0x00054 W0x00000000 FIFO Interrupts Status Register
+
+
+===
+    pwm0: pwm@ff680000 {
+        compatible = "rockchip,rk3368-pwm", "rockchip,rk3288-pwm";
+        reg = <0x0 0xff680000 0x0 0x10>;
+    };
+
+    pwm1: pwm@ff680010 {
+        compatible = "rockchip,rk3368-pwm", "rockchip,rk3288-pwm";
+        reg = <0x0 0xff680010 0x0 0x10>;
+    };
+
+    pwm2: pwm@ff680020 {
+        compatible = "rockchip,rk3368-pwm", "rockchip,rk3288-pwm";
+        reg = <0x0 0xff680020 0x0 0x10>;
+    };
+
+    pwm3: pwm@ff680030 {
+        compatible = "rockchip,rk3368-pwm", "rockchip,rk3288-pwm";
+        reg = <0x0 0xff680030 0x0 0x10>;
+    };
+
+===
+
+The interrupt registers are located outside the PWM range and have nothing to do with the PWM driver.
+Adding them to a PWM binding is just bogus.
+They are a left over from the manufacturer tree that use them in a IR detection driver.
+Heiko keeps them because someone outside mainline kernel might use them?
+They should be removed and remodeled in a new sort of MFD node that handles all operating 3 modes.
+
+
+Johan
+>
+> Best regards
+> Uwe
+>
