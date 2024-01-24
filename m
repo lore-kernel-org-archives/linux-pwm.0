@@ -1,141 +1,113 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4CC182DA
-	for <linux-pwm@vger.kernel.org>; Wed, 24 Jan 2024 09:20:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6750618032
+	for <linux-pwm@vger.kernel.org>; Wed, 24 Jan 2024 09:42:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706088013; cv=none; b=T77Vt4zOqBnHcPOaFqQoqIzmD1b5BPZ1wOFzM75yKBROuLqrDhPBMpZuTnouVfnj3NlAzaUeeJnPbL/z3jAPuMj4buE2PWBfXRHmQskadvNRqHTDBXZNQ5VpFq9ZKgTOMG/1SJKGuoC/upDoNtIPOPmAgFVKz2WRsJZC2h83LBc=
+	t=1706089378; cv=none; b=EDor7dKQO8R7f8A4d3ouhdNiOlz95s7bVynumSxFbtHjTl3AmNtbNLVnmTH/j0Do7/pWibc8unjh2NK73tYOCpPwpxS+T23iC7lO+PF2FZdr+e2IdW0iT7dOiMfDSzWdxPdFiDOjhM7iVPR17GURAr5M9camxRD8lWPKJmqOIo8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706088013; c=relaxed/simple;
-	bh=SEqCpZT6APAqjYjHdfthclsSjN9J9NtcFcgDByg6704=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=mIxA0fzD/+94E+ts1kUPaG5Za66PUie9Yl8WhIVVHgM9WIqcrBoBqK4UTUV4nbxr5Gj1Y/mhekx/cZuTgwJ08IhG661n0lyUeADaY06VbIHwGK7RawN94S87VcOVGcipyU5SRUNK8R2LZPzrRO9p9/lzhMC7ulRY3MFejbtK5V4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=lNPdkd1a; arc=none smtp.client-ip=209.85.208.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="lNPdkd1a"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2cdf69bb732so56794401fa.3
-        for <linux-pwm@vger.kernel.org>; Wed, 24 Jan 2024 01:20:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1706088010; x=1706692810; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:cc:to:from:user-agent:references:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XKfrsIh+is/CrcG9RcsWASRz9/Tq/yuaNYUtRHDrGYY=;
-        b=lNPdkd1ar7PFVviCpzhXDewaVecUKlLnzjPk3HY9rmPz59I/WszYxTx6SG1hoInhWf
-         NMDDJ2kISFP7DNQk7x+JsHcomdQ/UrL3VPCrY7jsqwau8sprZShZ5ZLwfynfXCkpGRY9
-         IqAJKpuFgvKbpraglPjNItwmJFG8NgIWv/S+HhNwAmOuVHuwYdP26RPGT3qP4TbaS37a
-         A6DWoc/cyK1dhjrcj0MI84jXqnqatCxK5ZgtPXUYckNRi2WnjhFOW/NrKjSrFtFnHt/v
-         m0EtZakTWAtFUDnXOCMKW2AZfLCfG7E2yvS0PrbOHoAKvSjPnCqW7X0WH6DZdpdet6v0
-         cQOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706088010; x=1706692810;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=XKfrsIh+is/CrcG9RcsWASRz9/Tq/yuaNYUtRHDrGYY=;
-        b=W/q5Se3Cn7jljL2HuizTIZ+qmQU5RVEN4BRPWiL/PM/RCQ4rKftM74YlB98Uf3mi/z
-         fy+rvqXZ30vHw6126GyFoH/TpSHg7HhgG0A8GtUII3W12I7y3mQXo2kfcVbKvi79JDxK
-         dh8/XQh6p/vUkmnWNF/XAQBjeyyn5QBfP6O1/Sv6RwvT6XaZoX1tvBSsE2XzGFBt8r9l
-         fFmVWdNKoxwje0TzpLruRGs6bJ8YUwBEgop1BT9OxD2c0oqnAPwDiYqqh5esReKCUl0T
-         8NDWJERZJmDu2Gywn5f8Q+AoBnjXcHTHqJ7GEzB1tllueOztNqRkPB/wC0PJcSTAlrkY
-         7IgQ==
-X-Gm-Message-State: AOJu0Yw5lLSxd6FKJfMbFe2NuZAMHJccTZCx4qherhsodLyfHAxWidNf
-	9tq3HOmpSs3EwPPhXjnvytUh+ClhszUsSDavvk7VN+sVd83HS1RP7EGmUiPKpvE=
-X-Google-Smtp-Source: AGHT+IEZUUso/GaClxXInQJERF5pL3kfwim7rmyD5VQKB34/cKfjEP6E08ieSs6LZXIkiNyWTfvtDA==
-X-Received: by 2002:a2e:9c95:0:b0:2cd:5cfd:b13 with SMTP id x21-20020a2e9c95000000b002cd5cfd0b13mr332903lji.17.1706088009899;
-        Wed, 24 Jan 2024 01:20:09 -0800 (PST)
-Received: from localhost ([2a01:e0a:3c5:5fb1:d8b6:17b6:386f:c67b])
-        by smtp.gmail.com with ESMTPSA id bw12-20020a0560001f8c00b00337cef427f8sm15938313wrb.70.2024.01.24.01.20.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jan 2024 01:20:09 -0800 (PST)
+	s=arc-20240116; t=1706089378; c=relaxed/simple;
+	bh=c7AtDwtfUT29Girxwftwf36NoI+3PFJkKiX9LOmNFk4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NTb1nyMaXq0V0iQtWtxh5O+7b7Bru8Xr8+qDWxjKlkpkL1VDJ/Yi8uCH31aB/yfG3FfIPjk2YbgBUJ0tV4euoiaKYJjZrIUPa3I7jd683fGcWHUyYte4eDDSa2wQyXkthlgigA9R74QZDC5AQxmhr0HgiFc8r8S9XNfJBXqKYEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rSZmM-0003ht-Lz; Wed, 24 Jan 2024 10:42:42 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rSZmL-0021gA-J6; Wed, 24 Jan 2024 10:42:41 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rSZmL-0071nX-1a;
+	Wed, 24 Jan 2024 10:42:41 +0100
+Date: Wed, 24 Jan 2024 10:42:41 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Jerome Brunet <jbrunet@baylibre.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, 
+	Neil Armstrong <neil.armstrong@linaro.org>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Kevin Hilman <khilman@baylibre.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, JunYi Zhao <junyi.zhao@amlogic.com>
+Subject: Re: [PATCH v4 3/6] pwm: meson: generalize 4 inputs clock on meson8
+ pwm type
+Message-ID: <oyayapgrwaetyhuu6ua2nejcpgydmkijqdgtdlfqvq5jvc6nzp@xgvnwvjja3im>
 References: <20231222111658.832167-1-jbrunet@baylibre.com>
- <20231222111658.832167-6-jbrunet@baylibre.com>
- <gyhea42rtydw3g45lfkfbxfm6xcbwibz67vw7xke2sm7powz2a@i33g4pyanu4l>
-User-agent: mu4e 1.10.8; emacs 29.1
-From: Jerome Brunet <jbrunet@baylibre.com>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Jerome Brunet <jbrunet@baylibre.com>, Thierry Reding
- <thierry.reding@gmail.com>, Neil Armstrong <neil.armstrong@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
- Kevin Hilman <khilman@baylibre.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
- linux-pwm@vger.kernel.org, JunYi Zhao <junyi.zhao@amlogic.com>
-Subject: Re: [PATCH v4 5/6] pwm: meson: don't carry internal clock elements
- around
-Date: Wed, 24 Jan 2024 10:16:17 +0100
-In-reply-to: <gyhea42rtydw3g45lfkfbxfm6xcbwibz67vw7xke2sm7powz2a@i33g4pyanu4l>
-Message-ID: <1jttn3w0ja.fsf@starbuckisacylon.baylibre.com>
+ <20231222111658.832167-4-jbrunet@baylibre.com>
+ <4kcbh4dezgpic2dpgdi2swtx2puqiq74w2tungmxipf4nznpn7@u4g4f3cimps4>
+ <1jy1cfw0qa.fsf@starbuckisacylon.baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="a3xdp7xgdzkgzofk"
+Content-Disposition: inline
+In-Reply-To: <1jy1cfw0qa.fsf@starbuckisacylon.baylibre.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+
+
+--a3xdp7xgdzkgzofk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
+On Wed, Jan 24, 2024 at 10:11:59AM +0100, Jerome Brunet wrote:
+> On Wed 24 Jan 2024 at 10:08, Uwe Kleine-K=F6nig <u.kleine-koenig@pengutro=
+nix.de> wrote:
+> > I suggest to make this
+> >
+> > 	const char *parent_names[MESON_NUM_MUX_PARENTS];
+>=20
+> Ok.
+>=20
+> >
+> > to make it more explicit that really four entries are needed here. This
+> > also makes is unnecessary to add the additional NULL entries to
+> > pwm_gxbb_ao_parent_names and the other arrays.
+>=20
+> I would normally agree but I'd prefer to be explicit.
+>=20
+> There are some instance where the NULL is in the middle, this can't go
+> away. I think it looks if some inputs are explicitly NULL while the
+> other are implicit.
 
-On Wed 24 Jan 2024 at 10:02, Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutr=
-onix.de> wrote:
+Adding soem NULLs explicitly is fine for me. Using an array of fixed length
+still (somewhat) ensures that later no shorter arrays are added which
+result in surprises.
 
-> [[PGP Signed Part:Undecided]]
-> On Fri, Dec 22, 2023 at 12:16:53PM +0100, Jerome Brunet wrote:
->> Pointers to the internal clock elements of the PWM are useless
->> after probe. There is no need to carry this around in the device
->> data. Just let devres deal with it.
->>=20
->> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
->> ---
->>  drivers/pwm/pwm-meson.c | 67 ++++++++++++++++++++++++-----------------
->>  1 file changed, 39 insertions(+), 28 deletions(-)
->>=20
->> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
->> index 15c44185d784..fb113bc8da29 100644
->> --- a/drivers/pwm/pwm-meson.c
->> +++ b/drivers/pwm/pwm-meson.c
->> @@ -90,9 +90,6 @@ struct meson_pwm_channel {
->>  	unsigned int hi;
->>  	unsigned int lo;
->>=20=20
->> -	struct clk_mux mux;
->> -	struct clk_divider div;
->> -	struct clk_gate gate;
->>  	struct clk *clk;
->>  };
->>=20=20
->> @@ -442,6 +439,13 @@ static int meson_pwm_init_channels(struct device *d=
-ev)
->>  		struct meson_pwm_channel *channel =3D &meson->channels[i];
->>  		struct clk_parent_data div_parent =3D {}, gate_parent =3D {};
->>  		struct clk_init_data init =3D {};
->> +		struct clk_divider *div;
->> +		struct clk_gate *gate;
->> +		struct clk_mux *mux;
->> +
->> +		mux =3D devm_kzalloc(dev, sizeof(*mux), GFP_KERNEL);
->> +		if (!mux)
->> +			return -ENOMEM;
->
-> I don't like this change. While it doesn't increase the memory used, it
-> fragments the used memory and increases the overhead of memory
-> management and the number of devm allocations.
->
-> Are these members of meson_pwm_channel in the way for anything later?
-
-Not really. It is just not useful on the SoCs which do use it and not
-used at all starting from s4/a1.
-
-What about a dedicated struct for the 3 clock elements and a single
-devm_kzalloc() instead of 3 ?=20
-
->
-> Best regards
-> Uwe
-
+Best reagrds
+Uwe
 
 --=20
-Jerome
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--a3xdp7xgdzkgzofk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmWw25AACgkQj4D7WH0S
+/k5e0wf7BlbmFsY4+YWO4iLdNo0BVoOnMnfSSNw2yPZA+YdUvXeulZDQTshMRkgQ
+xNmIvXbYDeBBIUFQ64FzQQ89VyKcwTX459zycaNAg06N51FSdCM1EQO1F/Y6fqy1
+g4+9fH3mHi+UJkcekm0st27G0uTvfiJ7RtkyQYK2KMD1OBmYr2ADURGmMppLzvLX
+6XMsShbScQdqNKMGa2MGjB4plt3IzjyX5ZMRYaMdZABnZJsKJGXWfcr9p3fLZ3I+
+Dvkti+CdMw7zHXAelVFD2EMKCMbV33PjedcIzBe9TTOQM5SPtoZHy3QIbQ+WdqNK
+sbr4C8C10SJBSSUbB1NJfIJfQUTNhw==
+=ENZk
+-----END PGP SIGNATURE-----
+
+--a3xdp7xgdzkgzofk--
