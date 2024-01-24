@@ -1,24 +1,22 @@
 Received: from TWMBX02.aspeed.com (mail.aspeedtech.com [211.20.114.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3BADF4F3;
-	Wed, 24 Jan 2024 06:07:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDD7AF9C2;
+	Wed, 24 Jan 2024 06:07:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.20.114.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706076441; cv=none; b=LmH7wAR6s7rKKoiVGsPGQCw/jZveFZ0A+zX+Fh+rw+H9yrkEXJ/A6rj5o2zWTvcMtpJxThgl6rZoQvxKIdKrL63wH8lbQ1XmO1E+7/lqT2LUgLuB1KxmO8+XdH4NCsXXWxG9VC9qklE3II6rEwulPAYrRU2fq1Bgrc1jsH5FxEI=
+	t=1706076447; cv=none; b=iN4pC8TV10LHgHp7zWmf4m4nPzQ/ej0Jb3iZ8AoRexY/dm78LWj5wU8HD6FkvZWuf5OvsEhBa1IrXj8A/yUaMBqv2i31SSmIuzNoCJF9NEDwzavPyY+Q7/mqENhM6zUQrN4S1zT87Sai+cO6zlO0PEwoCucntRENvWvF1C8Ajvc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706076441; c=relaxed/simple;
-	bh=Kc1d2j+jkCpcf2qdDVWfdgxdZfcLEBWFJISvlWZjS64=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Q3dSKrbOJo6KzVvzPw9oo4WhxV1uHgN0oC2Sowb9Qo3RP3+zn0ORgFCYBAoqvXSqVQL1kZi3narT5oMg0JqHxcQ1vEC2y8+N0QMtTszgnb+kedyz9sQ6oSzoGNYNfC2BEQkcK1+FAdP0ub1rzXw0Ko7fA2iZ0ReWWCBq7IbqDnU=
+	s=arc-20240116; t=1706076447; c=relaxed/simple;
+	bh=0yhz4sgrkGLrZFFp1Dc8nacN1MARb64w5yjArFzHj3Q=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rb4YgXPNxgcerLXOiWHJcu3hHAeLvt0GjiJ96QI7xk61OyDIvPDBhaXEtDIvkEZCYczcDdBMdbHS+sb1wjibdwbnXq+TJotA3DrjuPR7Bz8Nzr/qGfZfrx10N97j0eqEBbOYoOEsmUCUsP4nW01EFUShL2pZCgUpKVMyZUVGENE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=aspeedtech.com; spf=pass smtp.mailfrom=aspeedtech.com; arc=none smtp.client-ip=211.20.114.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=aspeedtech.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aspeedtech.com
-Received: from TWMBX03.aspeed.com (192.168.0.62) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 24 Jan
- 2024 14:07:08 +0800
-Received: from TWMBX02.aspeed.com (192.168.0.24) by TWMBX03.aspeed.com
- (192.168.0.62) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 24 Jan
- 2024 14:07:34 +0800
+Received: from TWMBX02.aspeed.com (192.168.0.25) by TWMBX02.aspeed.com
+ (192.168.0.25) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 24 Jan
+ 2024 14:07:07 +0800
 Received: from twmbx02.aspeed.com (192.168.10.10) by TWMBX02.aspeed.com
  (192.168.0.24) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
  Transport; Wed, 24 Jan 2024 14:07:07 +0800
@@ -32,10 +30,12 @@ To: <jdelvare@suse.com>, <linux@roeck-us.net>, <robh+dt@kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-aspeed@lists.ozlabs.org>,
 	<linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
 	<linux-pwm@vger.kernel.org>, <BMC-SW@aspeedtech.com>, <patrick@stwcx.xyz>
-Subject: [PATCH v13 0/3] Support pwm/tach driver for aspeed ast26xx
-Date: Wed, 24 Jan 2024 14:07:02 +0800
-Message-ID: <20240124060705.1342461-1-billy_tsai@aspeedtech.com>
+Subject: [PATCH v13 2/3] dt-bindings: hwmon: Support Aspeed g6 PWM TACH Control
+Date: Wed, 24 Jan 2024 14:07:04 +0800
+Message-ID: <20240124060705.1342461-3-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240124060705.1342461-1-billy_tsai@aspeedtech.com>
+References: <20240124060705.1342461-1-billy_tsai@aspeedtech.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -44,118 +44,99 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+Received-SPF: Fail (TWMBX02.aspeed.com: domain of billy_tsai@aspeedtech.com
+ does not designate 192.168.10.10 as permitted sender)
+ receiver=TWMBX02.aspeed.com; client-ip=192.168.10.10;
+ helo=twmbx02.aspeed.com;
 
-Unlike the old design that the register setting of the TACH should based
-on the configure of the PWM. In ast26xx, the dependency between pwm and
-tach controller is eliminated and becomes a separate hardware block. One
-is used to provide pwm output and another is used to monitor the frequency
-of the input. This driver implements them by exposing two kernel
-subsystems: PWM and HWMON. The PWM subsystem can be utilized alongside
-existing drivers for controlling elements such as fans (pwm-fan.c),
-beepers (pwm-beeper.c) and so on. Through the HWMON subsystem, the driver
-provides sysfs interfaces for fan.
+Document the compatible for aspeed,ast2600-pwm-tach device, which can
+support up to 16 PWM outputs and 16 fan tach input.
 
-Changes since v12:
-Merge the pwm-fan configure information into the fan node.
-Add the of_platform_populate function to the driver to treat the child
-node as a platform device.
-
-Changes since v11:
-Fix the compiler error of the driver.
-The owner member has to be moved to struct pwm_chip.
-
-Changes since v10:
-Add the enum for the 'fan-driving-mode' properties in the fan-common.yaml.
-
-Changes since v9:
-Change the type of fan-driving-mode to string
-Fix some typos and formatting issues.
-
-Changes since v8:
-Fix the fail of fan div register setting. (FIELD_GET -> FIELD_PREP)
-Change the type of tach-ch from uint32_t to uint8-array
-Add additional properties and apply constraints to certain properties.
-
-Changes since v7:
-Cherry-pick the fan-common.yaml and add the following properties:
-- min-rpm
-- div
-- mode
-- tach-ch
-Fix the warning which is reported by the kernel test robot.
-
-Changes since v6:
-Consolidate the PWM and TACH functionalities into a unified driver.
-
-Changes since v5:
-- pwm/tach:
-  - Remove the utilization of common resources from the parent node.
-  - Change the concept to 16 PWM/TACH controllers, each with one channel,
-  instead of 1 PWM/TACH controller with 16 channels.
-- dt-binding:
-  - Eliminate the usage of simple-mfd.
-
-Changes since v4:
-- pwm:
-  - Fix the return type of get_status function.
-- tach:
-  - read clk source once and re-use it
-  - Remove the constants variables
-  - Allocate tach_channel as array
-  - Use dev->parent
-- dt-binding:
-  - Fix the order of the patches
-  - Add example and description for tach child node
-  - Remove pwm extension property
-
-Changes since v3:
-- pwm:
-  - Remove unnecessary include header
-  - Fix warning Prefer "GPL" over "GPL v2"
-- tach:
-  - Remove the paremeter min_rpm and max_rpm and return the tach value 
-  directly without any polling or delay.
-  - Fix warning Prefer "GPL" over "GPL v2"
-- dt-binding:
-  - Replace underscore in node names with dashes
-  - Split per subsystem
-
-Changes since v2:
-- pwm:
-  - Use devm_* api to simplify the error cleanup
-  - Fix the multi-line alignment problem
-- tach:
-  - Add tach-aspeed-ast2600 to index.rst
-  - Fix the multi-line alignment problem
-  - Remove the tach enable/disable when read the rpm
-  - Fix some coding format issue
-
-Changes since v1:
-- tach:
-  - Add the document tach-aspeed-ast2600.rst
-  - Use devm_* api to simplify the error cleanup.
-  - Change hwmon register api to devm_hwmon_device_register_with_info
-
-Billy Tsai (2):
-  dt-bindings: hwmon: Support Aspeed g6 PWM TACH Control
-  hwmon: (aspeed-g6-pwm-tacho): Support for ASPEED g6 PWM/Fan tach
-
-Naresh Solanki (1):
-  dt-bindings: hwmon: fan: Add fan binding to schema
-
- .../bindings/hwmon/aspeed,g6-pwm-tach.yaml    |  73 +++
- .../devicetree/bindings/hwmon/fan-common.yaml |  79 +++
- Documentation/hwmon/aspeed-g6-pwm-tach.rst    |  26 +
- Documentation/hwmon/index.rst                 |   1 +
- drivers/hwmon/Kconfig                         |  11 +
- drivers/hwmon/Makefile                        |   1 +
- drivers/hwmon/aspeed-g6-pwm-tach.c            | 540 ++++++++++++++++++
- 7 files changed, 731 insertions(+)
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+---
+ .../bindings/hwmon/aspeed,g6-pwm-tach.yaml    | 73 +++++++++++++++++++
+ 1 file changed, 73 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
- create mode 100644 Documentation/devicetree/bindings/hwmon/fan-common.yaml
- create mode 100644 Documentation/hwmon/aspeed-g6-pwm-tach.rst
- create mode 100644 drivers/hwmon/aspeed-g6-pwm-tach.c
 
+diff --git a/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+new file mode 100644
+index 000000000000..7d2b020ec693
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/aspeed,g6-pwm-tach.yaml
+@@ -0,0 +1,73 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2023 Aspeed, Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/aspeed,g6-pwm-tach.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ASPEED G6 PWM and Fan Tach controller
++
++maintainers:
++  - Billy Tsai <billy_tsai@aspeedtech.com>
++
++description: |
++  The ASPEED PWM controller can support up to 16 PWM outputs.
++  The ASPEED Fan Tacho controller can support up to 16 fan tach input.
++  They are independent hardware blocks, which are different from the
++  previous version of the ASPEED chip.
++
++properties:
++  compatible:
++    enum:
++      - aspeed,ast2600-pwm-tach
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++patternProperties:
++  "^fan-[0-9]+$":
++    $ref: fan-common.yaml#
++    unevaluatedProperties: false
++    required:
++      - tach-ch
++
++required:
++  - reg
++  - clocks
++  - resets
++  - "#pwm-cells"
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/aspeed-clock.h>
++    pwm_tach: pwm-tach-controller@1e610000 {
++      compatible = "aspeed,ast2600-pwm-tach";
++      reg = <0x1e610000 0x100>;
++      clocks = <&syscon ASPEED_CLK_AHB>;
++      resets = <&syscon ASPEED_RESET_PWM>;
++      #pwm-cells = <3>;
++
++      fan-0 {
++        tach-ch = /bits/ 8 <0x0>;
++        compatible = "pwm-fan";
++        pwms = <&pwm_tach 0 40000 0>;
++      };
++
++      fan-1 {
++        tach-ch = /bits/ 8 <0x1 0x2>;
++        compatible = "pwm-fan";
++        pwms = <&pwm_tach 1 40000 0>;
++      };
++    };
 -- 
 2.25.1
 
