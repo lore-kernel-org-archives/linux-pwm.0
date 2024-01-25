@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36AE93D98E
-	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29DCC376E1
+	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184646; cv=none; b=Tm++o4GtleotDjzs0QGDevKu1xVgdjdX6vr85sUZwe81WbrpywOYjqCf+dmJ1YWsof/AwrJOlkqfqxB25p6IDlZ4mTZ4izGwx3LNSvhavoajHSf2qvASYXa2RqCTEB/UINY7ukZc+nJBrcoBZNgIpgU8t+Bh2hkTXdXRkQm7CfI=
+	t=1706184646; cv=none; b=muy9mbHP/vTxrfv7tPbZn2Z+gPd5CIIrD8KU9nimnZ9vBxWVD9VQt1hfbirji1QRdKFQZv+RKab1R/U1M2qCN6GBYadk64yAYLxPDgrNmjxQCmuSfYk+n7ATduEl73neR+dRFC79jvzrRGbWeRvkwoUb1rWVAHgyPQ3pGYGnhjE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184646; c=relaxed/simple;
-	bh=FjGukNj1cYfdDeJbaFr89/JaJYedpj7bOyWFB1DfTbE=;
+	bh=74KiAob4DCgNHoLYu3wxcnMyhxw+QLO1gn9EmhyVpZ0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=t0e2p46EF38Sf68Edm0wAmP94XW6XPjhTJVNLALkKPsdiW+gjozITD/YCF5FO5u45UA09zAdBfx7ip9mMCabsxF1Hw53LVRmpJSHaCeR7/uvPCwXiwZLrxjuCsQHMl0GAKqtAvImrSx5gfDhlWDaJKoGVxOVl0wFto2bBjY+tzk=
+	 MIME-Version:Content-Type; b=YtLsTfWN6aZDqXxXRGRfZtKhA9d1w4TanAwaqLGSzh/HDNUei1MBh8/I5CWDuzQ+xqCHBH77ypHQxcraxRqQgnQBUtoUeVu0SJK+p7Yb1GSTanKuIDhZPBatmxb6lbxZ306e6G7JBtwPDZieIEFI4SgZ2YK6SslZngHcGZcSotU=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,27 +18,26 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ9-0003gR-D6; Thu, 25 Jan 2024 13:10:43 +0100
+	id 1rSyZ8-0003cB-4R; Thu, 25 Jan 2024 13:10:42 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ8-002HPa-Jm; Thu, 25 Jan 2024 13:10:42 +0100
+	id 1rSyZ7-002HPE-JY; Thu, 25 Jan 2024 13:10:41 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ8-007mz3-1j;
-	Thu, 25 Jan 2024 13:10:42 +0100
+	id 1rSyZ7-007mye-1h;
+	Thu, 25 Jan 2024 13:10:41 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
+To: Benson Leung <bleung@chromium.org>,
 	linux-pwm@vger.kernel.org
-Cc: Fabio Estevam <festevam@gmail.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	linux-arm-kernel@lists.infradead.org,
-	kernel@pengutronix.de
-Subject: [PATCH v5 014/111] pwm: imx27: Make use of pwmchip_parent() macro
-Date: Thu, 25 Jan 2024 13:08:36 +0100
-Message-ID:  <b4c1865612be7f5f78fc77a6cd858dec09dd46fe.1706182805.git.u.kleine-koenig@pengutronix.de>
+Cc: Guenter Roeck <groeck@chromium.org>,
+	chrome-platform@lists.linux.dev,
+	kernel@pengutronix.de,
+	Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH v5 009/111] pwm: cros-ec: Make use of pwmchip_parent() macro
+Date: Thu, 25 Jan 2024 13:08:31 +0100
+Message-ID:  <ff7c2a67903d4cb6cd89ca066dcb0b5598a3c659.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -49,7 +48,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1477; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=FjGukNj1cYfdDeJbaFr89/JaJYedpj7bOyWFB1DfTbE=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtRN/l6V/GWyigEb/iTefuf1aK6L1azGyfUZrOuL7CxSM 5vSdD52MhqzMDByMciKKbLYN67JtKqSi+xc++8yzCBWJpApDFycAjARCS72/xFfpuToNHFLdZUs +BL1VFcgS42XnT9nw5UYo/UHY7b9018atnh64P2Sx1kqDj8svO7te39S2ctK9nxypHkk8620fbs Vu2MyAvSfz96jsf3BghiPbOv2rge+JT7mCe739qzPUM81/zlhh/GsdYtvKy/N28R3kffknZh0md fubyXNWB558AeUWLN9kpG9Xvvmm9gvwT2c9zyWbL9p0CY/5T9n+Q+NnesVm20PWqQJTG1RlPhXO HHdinIjcZ2FgvcX/Hj3vn/F3sU979Mc3gpqayX8a7zKl9rqs4JdqM/WbPG3mDMu2mu3NlyK+m+0 YE2UoL/j0clNztOMXmkxnvpvdI75yOKmfQoFE4oaCsR6AA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=930; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=74KiAob4DCgNHoLYu3wxcnMyhxw+QLO1gn9EmhyVpZ0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9ET8qdPEDfgq3Vl9JuIMjJxck9S6N/Lz7sC 4mnt4liVy6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPRAAKCRCPgPtYfRL+ Ti9GB/93N/aieXClsVPd9TdOVVjj6oXgWeGBioAracO7/u9oO6Qa7zWqxJOklkpMkyU4GuLIDVT 9bXpt2mbGO+T3ei/zipBJMMfqWjSNedCX5Svwbi6Tp/DYb2KspulCL2/Ac/GAaca7y/FiEqUj3Q AcZEe1DTrYoSgCykroQbQE/HkqvdyLrMK9G32VEZapM1jHh81eQFWqp3w634PdkT0CG7p33I/NT eXwxdMvp+e17knJmmOMS1FMTt9NimyyWq8VkbF0UXgIUcBCYjg+lslr3il/AcdEQbdKcdH3SRpG BC+grd3k2iwKEiOPRvFgJq8WMXePiR2mqntgER0ReU71D1xu
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -61,42 +60,25 @@ struct pwm_chip::dev is about to change. To not have to touch this
 driver in the same commit as struct pwm_chip::dev, use the macro
 provided for exactly this purpose.
 
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx27.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-cros-ec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 7d9bc43f12b0..5d796453519a 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -145,7 +145,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
- 		state->polarity = PWM_POLARITY_INVERSED;
- 		break;
- 	default:
--		dev_warn(chip->dev, "can't set polarity, output disconnected");
-+		dev_warn(pwmchip_parent(chip), "can't set polarity, output disconnected");
+diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+index e556f6218dd7..968e300e9f06 100644
+--- a/drivers/pwm/pwm-cros-ec.c
++++ b/drivers/pwm/pwm-cros-ec.c
+@@ -172,7 +172,7 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, pwm->hwpwm);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
++		dev_err(pwmchip_parent(chip), "error getting initial duty: %d\n", ret);
+ 		return ret;
  	}
  
- 	prescaler = MX3_PWMCR_PRESCALER_GET(val);
-@@ -177,7 +177,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
- static void pwm_imx27_sw_reset(struct pwm_chip *chip)
- {
- 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
--	struct device *dev = chip->dev;
-+	struct device *dev = pwmchip_parent(chip);
- 	int wait_count = 0;
- 	u32 cr;
- 
-@@ -196,7 +196,7 @@ static void pwm_imx27_wait_fifo_slot(struct pwm_chip *chip,
- 				     struct pwm_device *pwm)
- {
- 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
--	struct device *dev = chip->dev;
-+	struct device *dev = pwmchip_parent(chip);
- 	unsigned int period_ms;
- 	int fifoav;
- 	u32 sr;
 -- 
 2.43.0
 
