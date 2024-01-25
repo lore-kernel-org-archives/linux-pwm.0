@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B7084502A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 957F345030
 	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184652; cv=none; b=Y372eRSnKEzOpRXmm9rAbfSE89gFqJWAn3f2IxjJpVWB/9i38KpPits5ysstlsowQ9dG6Qlbo/rJtkDycSvuO4D/nNC0e8jXCJ7OrHNCQTkTNcbCRjJZzRpZMkxHOx/TiBx1jVRAYKYAPs+DrDIkknnqEd4IYqF5qDdsjty9LIg=
+	t=1706184652; cv=none; b=fc9oHrbdlP6WMDglqn7t62XbHkEn34zTNGGXr2RNv6lWgn4gSIP/06Ag+3XMQut1r8cyorUhHXSMVlTAZe4+LUUzm5ZV4Fvj0xpmDOrFYVcNza6aVa5C4clXgAz421EMyW8ob5NSKyg8fLekcT6CSZPmuRSQeIMQSkjUo6uAQBQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184652; c=relaxed/simple;
-	bh=VtRkOXadk7PhuJR6plzr6JlXTjGn2qEhYa+ucY8hwas=;
+	bh=6N+OroGyfr8Zv9hj4gyioNXSGQtISRkgGmItwvdinxg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LDZVHgggRp401+jb0tw4ePh31ZhQB3frBK1YaKnqkkpyMMM9czOeAqv5I/F6vezA7mkZWsenfMnZNpvt2uB/pgn4YmvmCdyt5HsGdzhw9dOmeI1UsxQdFXCqXaPYiGBTO/ar/D522fOjqb9p0HPnwM2gD/HDoXFo/LjUpSwc+so=
+	 MIME-Version:Content-Type; b=GxBN/APqMYpWgChWky9/s/kMf42mz+2SwnjDXzB2St8zKOFDI942B48KtRXltogluxRfsC88rZBVgTWQXzDioBgAJFX7NGxkzLlc4yDpa7gxSyghJMZF0f8OjDbhJS+K7tdI2HNywdcY97L3ro5dVwBZHiuwEBIW8syn4q7/ioU=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,26 +18,23 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZD-0003ul-8c; Thu, 25 Jan 2024 13:10:47 +0100
+	id 1rSyZE-00043y-59; Thu, 25 Jan 2024 13:10:48 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZB-002HQb-Re; Thu, 25 Jan 2024 13:10:45 +0100
+	id 1rSyZD-002HQx-3B; Thu, 25 Jan 2024 13:10:47 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZB-007n05-2V;
-	Thu, 25 Jan 2024 13:10:45 +0100
+	id 1rSyZD-007n0Y-05;
+	Thu, 25 Jan 2024 13:10:47 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	linux-pwm@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
+To: linux-pwm@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v5 030/111] pwm: stmpe: Make use of pwmchip_parent() macro
-Date: Thu, 25 Jan 2024 13:08:52 +0100
-Message-ID:  <4429d56b2b4452687bbd34fcd7129ef1b8b215cd.1706182805.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v5 036/111] pwm: vt8500: Make use of pwmchip_parent() macro
+Date: Thu, 25 Jan 2024 13:08:58 +0100
+Message-ID:  <fd4fc1503a00838679d05b5d1eb249e2bc50ed35.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -48,7 +45,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3973; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=VtRkOXadk7PhuJR6plzr6JlXTjGn2qEhYa+ucY8hwas=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9ckt6biCk699tUOev2DxKkJzNUlodamAnyZ kxKeQYSZleJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPXAAKCRCPgPtYfRL+ Th/DB/4z/0rMH//RkTf+FSP2aenm4/eapOxa/9SLJi8ipYxWgrNFPGMJU8fy8UjG8iEyvbND+oc S2d6ICSvHXUz17y0He6YSslmx0e5i+YtqfwB/5TLYZdF0ed167ebRKLK2H6mQjiTIYypUxmxOza w/Hd2MCFGhePZ/Ok/F9ZThYFTAcgBNOIz5TLIKynzZerEGTwPmR8eWKus/KAQoOkkHN6Lk6T7Ue DMNthTKUthQyEDLShlseLTkXNHrkC0M++61juVWb5LVEB3uOlrEIvt4LvkoGdMZe4qAMtCklXoE H+s/5aZ13UNf1oKnpZoFt5rvFHIjQjY7QwOWPi+RXCKlUEZ+
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3929; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=6N+OroGyfr8Zv9hj4gyioNXSGQtISRkgGmItwvdinxg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9j/mLFlyrsxTGO2eCSVCFlG6ZLpf+YL32wz bb53hfgDkuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPYwAKCRCPgPtYfRL+ TtR7CAC4qdbDwKFYVfHl7bjXxXjZ0IpOEkbbINYFcsKJStB5zCgCUS7Ye+h8SqVh7heSBrAcADD kHQRfEeFK3eMsRtddqOEYFseKqx9AElNZL5e414ne0dbfYNcaiLopllhHZQ4YBnRO8xMeqgUgCf ms6Ou7+jV/2OVHj49gJlHSx/CbWFgPlIXjevUlqEnNzayW3CuEn9MiqpU6bxuKBmEr3UO7NfWvE kVyQVTfMM/wMnK8ZUrtnTO6V06lYQJvLHtFMfme/LrTyPna1yWS2ualr8EKrTPbKdJro7TTvP/o RS30qWYBqzmqfBO1zuKKkjuBl/aN6qsPQ0VouEZ1RS14PHvF
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -62,100 +59,97 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-stmpe.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/pwm/pwm-vt8500.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/pwm-stmpe.c b/drivers/pwm/pwm-stmpe.c
-index 19c0c0f39675..05f3f38031ee 100644
---- a/drivers/pwm/pwm-stmpe.c
-+++ b/drivers/pwm/pwm-stmpe.c
-@@ -44,7 +44,7 @@ static int stmpe_24xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
+index 7bfeacee05d0..def48dbef808 100644
+--- a/drivers/pwm/pwm-vt8500.c
++++ b/drivers/pwm/pwm-vt8500.c
+@@ -53,8 +53,9 @@ struct vt8500_chip {
+ #define to_vt8500_chip(chip)	container_of(chip, struct vt8500_chip, chip)
  
- 	ret = stmpe_reg_read(stmpe_pwm->stmpe, STMPE24XX_PWMCS);
- 	if (ret < 0) {
--		dev_dbg(chip->dev, "error reading PWM#%u control\n",
-+		dev_dbg(pwmchip_parent(chip), "error reading PWM#%u control\n",
- 			pwm->hwpwm);
- 		return ret;
- 	}
-@@ -53,7 +53,7 @@ static int stmpe_24xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ #define msecs_to_loops(t) (loops_per_jiffy / 1000 * HZ * t)
+-static inline void vt8500_pwm_busy_wait(struct vt8500_chip *vt8500, int nr, u8 bitmask)
++static inline void vt8500_pwm_busy_wait(struct pwm_chip *chip, int nr, u8 bitmask)
+ {
++	struct vt8500_chip *vt8500 = to_vt8500_chip(chip);
+ 	int loops = msecs_to_loops(10);
+ 	u32 mask = bitmask << (nr << 8);
  
- 	ret = stmpe_reg_write(stmpe_pwm->stmpe, STMPE24XX_PWMCS, value);
- 	if (ret) {
--		dev_dbg(chip->dev, "error writing PWM#%u control\n",
-+		dev_dbg(pwmchip_parent(chip), "error writing PWM#%u control\n",
- 			pwm->hwpwm);
- 		return ret;
- 	}
-@@ -70,7 +70,7 @@ static int stmpe_24xx_pwm_disable(struct pwm_chip *chip,
+@@ -62,7 +63,7 @@ static inline void vt8500_pwm_busy_wait(struct vt8500_chip *vt8500, int nr, u8 b
+ 		cpu_relax();
  
- 	ret = stmpe_reg_read(stmpe_pwm->stmpe, STMPE24XX_PWMCS);
- 	if (ret < 0) {
--		dev_dbg(chip->dev, "error reading PWM#%u control\n",
-+		dev_dbg(pwmchip_parent(chip), "error reading PWM#%u control\n",
- 			pwm->hwpwm);
- 		return ret;
- 	}
-@@ -79,7 +79,7 @@ static int stmpe_24xx_pwm_disable(struct pwm_chip *chip,
- 
- 	ret = stmpe_reg_write(stmpe_pwm->stmpe, STMPE24XX_PWMCS, value);
- 	if (ret)
--		dev_dbg(chip->dev, "error writing PWM#%u control\n",
-+		dev_dbg(pwmchip_parent(chip), "error writing PWM#%u control\n",
- 			pwm->hwpwm);
- 	return ret;
+ 	if (unlikely(!loops))
+-		dev_warn(vt8500->chip.dev, "Waiting for status bits 0x%x to clear timed out\n",
++		dev_warn(pwmchip_parent(chip), "Waiting for status bits 0x%x to clear timed out\n",
+ 			 mask);
  }
-@@ -125,7 +125,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		ret = stmpe_set_altfunc(stmpe_pwm->stmpe, BIT(pin),
- 					STMPE_BLOCK_PWM);
- 		if (ret) {
--			dev_err(chip->dev, "unable to connect PWM#%u to pin\n",
-+			dev_err(pwmchip_parent(chip), "unable to connect PWM#%u to pin\n",
- 				pwm->hwpwm);
- 			return ret;
- 		}
-@@ -150,7 +150,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		return -ENODEV;
+ 
+@@ -77,7 +78,7 @@ static int vt8500_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	err = clk_enable(vt8500->clk);
+ 	if (err < 0) {
+-		dev_err(chip->dev, "failed to enable clock\n");
++		dev_err(pwmchip_parent(chip), "failed to enable clock\n");
+ 		return err;
  	}
  
--	dev_dbg(chip->dev, "PWM#%u: config duty %d ns, period %d ns\n",
-+	dev_dbg(pwmchip_parent(chip), "PWM#%u: config duty %d ns, period %d ns\n",
- 		pwm->hwpwm, duty_ns, period_ns);
+@@ -103,18 +104,18 @@ static int vt8500_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	dc = div64_u64(c, period_ns);
  
- 	if (duty_ns == 0) {
-@@ -216,7 +216,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			program[1] = BRANCH;
- 		}
+ 	writel(prescale, vt8500->base + REG_SCALAR(pwm->hwpwm));
+-	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_SCALAR_UPDATE);
++	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_SCALAR_UPDATE);
  
--		dev_dbg(chip->dev,
-+		dev_dbg(pwmchip_parent(chip),
- 			"PWM#%u: value = %02x, last_duty = %02x, program=%04x,%04x,%04x\n",
- 			pwm->hwpwm, value, last, program[0], program[1],
- 			program[2]);
-@@ -233,7 +233,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	writel(pv, vt8500->base + REG_PERIOD(pwm->hwpwm));
+-	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_PERIOD_UPDATE);
++	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_PERIOD_UPDATE);
  
- 		ret = stmpe_reg_write(stmpe_pwm->stmpe, offset, value);
- 		if (ret) {
--			dev_dbg(chip->dev, "error writing register %02x: %d\n",
-+			dev_dbg(pwmchip_parent(chip), "error writing register %02x: %d\n",
- 				offset, ret);
- 			return ret;
- 		}
-@@ -242,7 +242,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	writel(dc, vt8500->base + REG_DUTY(pwm->hwpwm));
+-	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_DUTY_UPDATE);
++	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_DUTY_UPDATE);
  
- 		ret = stmpe_reg_write(stmpe_pwm->stmpe, offset, value);
- 		if (ret) {
--			dev_dbg(chip->dev, "error writing register %02x: %d\n",
-+			dev_dbg(pwmchip_parent(chip), "error writing register %02x: %d\n",
- 				offset, ret);
- 			return ret;
- 		}
-@@ -255,7 +255,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* Sleep for 200ms so we're sure it will take effect */
- 	msleep(200);
+ 	val = readl(vt8500->base + REG_CTRL(pwm->hwpwm));
+ 	val |= CTRL_AUTOLOAD;
+ 	writel(val, vt8500->base + REG_CTRL(pwm->hwpwm));
+-	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_CTRL_UPDATE);
++	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_CTRL_UPDATE);
  
--	dev_dbg(chip->dev, "programmed PWM#%u, %u bytes\n", pwm->hwpwm, i);
-+	dev_dbg(pwmchip_parent(chip), "programmed PWM#%u, %u bytes\n", pwm->hwpwm, i);
+ 	clk_disable(vt8500->clk);
+ 	return 0;
+@@ -128,14 +129,14 @@ static int vt8500_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	err = clk_enable(vt8500->clk);
+ 	if (err < 0) {
+-		dev_err(chip->dev, "failed to enable clock\n");
++		dev_err(pwmchip_parent(chip), "failed to enable clock\n");
+ 		return err;
+ 	}
+ 
+ 	val = readl(vt8500->base + REG_CTRL(pwm->hwpwm));
+ 	val |= CTRL_ENABLE;
+ 	writel(val, vt8500->base + REG_CTRL(pwm->hwpwm));
+-	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_CTRL_UPDATE);
++	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_CTRL_UPDATE);
+ 
+ 	return 0;
+ }
+@@ -148,7 +149,7 @@ static void vt8500_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	val = readl(vt8500->base + REG_CTRL(pwm->hwpwm));
+ 	val &= ~CTRL_ENABLE;
+ 	writel(val, vt8500->base + REG_CTRL(pwm->hwpwm));
+-	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_CTRL_UPDATE);
++	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_CTRL_UPDATE);
+ 
+ 	clk_disable(vt8500->clk);
+ }
+@@ -168,7 +169,7 @@ static int vt8500_pwm_set_polarity(struct pwm_chip *chip,
+ 		val &= ~CTRL_INVERT;
+ 
+ 	writel(val, vt8500->base + REG_CTRL(pwm->hwpwm));
+-	vt8500_pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_CTRL_UPDATE);
++	vt8500_pwm_busy_wait(chip, pwm->hwpwm, STATUS_CTRL_UPDATE);
  
  	return 0;
  }
