@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 673193D98E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8211344368
 	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184654; cv=none; b=Nlqrprbcovin43EygNWzMi7XoDuJv0YxukFFIo2/JBnKtnvGH8i2i19lOKQkP5l1AGPYu/K56JKo0ae1mL4lOAEZ+RUO2qPSyRuuPwPtmhBxryzZf5q9AK2Q88bYKtlbg0nGyaloYU4DEJT9bu6TaEXVhWe8g7qJwKePWfohip0=
+	t=1706184654; cv=none; b=USvAVgSpOa46mdtNPexSlVqFDPA81ukLqPXsUhMJOe2bQr7ZS8CSRcxBs9xTzI9UPMJwt0xxhd4KknkMj0lirT1xe9ZHREjtqMOvr2bdUo6QK7RdqqtlnuglAT3fmVXjlTlw/djs5CJbM9QhqYU0yc0nd1Fmm1o1ML4kGwzIekg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184654; c=relaxed/simple;
-	bh=jjY2kkYkkj8AYXzFgZVbJHxcNLlKbgf5gvxM/X6Wwys=;
+	bh=u09bAlZCYe9ZqxMNX4bi+tIh6MWYvJyYs/iFuE1kLeI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mojuLf4RYwLo0r9P1Stu18L+OpT62pqKNF6aUxjh/nK+kTGOGyby7BtTDzaqwaBPOMaFmr0SebRt+YtWNB26pYfx6FQLJGYWuBBx2iuYzdgbfCIvVRGvvoqFgWLdsUZBTY5dIec0mQQRidhDtr6MzGu69WiSjiUphgGfXIJjnNU=
+	 MIME-Version:Content-Type; b=egKTqCSDbtl2kcrq0/Mku7UM8iCwypKMQ20tup55RUUpgBML0M1LaQoeyVsDk8ZfqJcSfmXJVfWGyoqukpHukdtyNihWpzukca2G/k8PSUML6qDSVecZirDeuxOjYdKuGOYh3CuojpmFsJ172zzTCtLReoQamGMzUA00QiIeS0g=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,26 +18,22 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZB-0003nb-Ut; Thu, 25 Jan 2024 13:10:45 +0100
+	id 1rSyZG-0004HD-E5; Thu, 25 Jan 2024 13:10:50 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZB-002HQM-1K; Thu, 25 Jan 2024 13:10:45 +0100
+	id 1rSyZF-002HRp-Rl; Thu, 25 Jan 2024 13:10:49 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZA-007mzp-36;
-	Thu, 25 Jan 2024 13:10:44 +0100
+	id 1rSyZF-007n1P-2W;
+	Thu, 25 Jan 2024 13:10:49 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-pwm@vger.kernel.org
-Cc: Alim Akhtar <alim.akhtar@samsung.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	kernel@pengutronix.de
-Subject: [PATCH v5 026/111] pwm: samsung: Make use of pwmchip_parent() macro
-Date: Thu, 25 Jan 2024 13:08:48 +0100
-Message-ID:  <e45e1d89d451e9329d68b046cb0bfda529ebd0ea.1706182805.git.u.kleine-koenig@pengutronix.de>
+To: linux-pwm@vger.kernel.org
+Cc: kernel@pengutronix.de
+Subject: [PATCH v5 049/111] pwm: berlin: Make use of devm_pwmchip_alloc() function
+Date: Thu, 25 Jan 2024 13:09:11 +0100
+Message-ID:  <6b4a7aa88ea10bc7718e239a154848550889329a.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -48,7 +44,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3577; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=jjY2kkYkkj8AYXzFgZVbJHxcNLlKbgf5gvxM/X6Wwys=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9Y1IufeL63Y1mple+o5ralvOu3YuMO/Y+uD 901bGwiQQyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPWAAKCRCPgPtYfRL+ TkhVB/9BdSGxcu86jJ0V9wqEHF09XJgSSHoGyC4OxM/N1dQoP9yAjfztp7WOsvVbqq6JD3eOnV1 lEnmCx+YmAEPzoZ8x0GfyLhT05o0/Xg4ClmpIKPUiwKzHJ3aPtih/3/WQOFEGT1tIPKIwtPgPzG MRjKMQ8ccDEgvu2ALI5lQlBw2wW8njbKueZRN23aG4oWkUpfq/sJUYk+oYtnUpLJ5FRzOwxspb6 RFab5yUM5xXAaiA9czUE/YPSbqiWLiXfk5SGjpsPVrvxsr1J+KFxwKBctubWb0bCF8QuK4qiLPq OUue2dAY0xE+c3MjJGejqKDuMvhEvKrJDPQAA5x8yaxYYC6I
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3286; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=u09bAlZCYe9ZqxMNX4bi+tIh6MWYvJyYs/iFuE1kLeI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9zl3k5evJKP1O17+8Kr4bYwGUbs67qOU1SV NjQbJoQFg2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPcwAKCRCPgPtYfRL+ Tv1FB/4m8nEL5/shcOM/yHFLWW1jo1guy/RGUKeDbIA8q/r0IjVj7LUtEiM4UK9+pNFgQYLRBiQ rRezJ/XyXyW8jRHlPLQjYwKml/WIYymAPqjXvipNKMsAWianmziPei0zPUdlk4h9oFchrmlj9kc FLhJQo3Ppb0r3A5ROb0Z3U89dab8lcdvEIAT3Kl8f0NSPdQjPO5pU1S9Mi04h69sZycKjyvd9Pu Rx3Q5AdBq/E+xYpq2lB4h7ZNIIj/viwVvgwXVmWxvngOWc7F/u2GlxqQKXEHlGatcMsQP0i1YhD ViLbFnDnKu3dCp20sXHfi+JLxdbMvWVa6b+GAmfc/Qn3Z4sE
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,95 +52,105 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the macro
-provided for exactly this purpose.
+This prepares the pwm-berlin driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-samsung.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ drivers/pwm/pwm-berlin.c | 29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index 6e77302f7368..a97cae49406e 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -197,12 +197,12 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *our_chip,
- 				return rate;
- 		}
+diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
+index 442913232dc0..831aed228caf 100644
+--- a/drivers/pwm/pwm-berlin.c
++++ b/drivers/pwm/pwm-berlin.c
+@@ -49,7 +49,6 @@ struct berlin_pwm_channel {
+ };
  
--		dev_warn(our_chip->chip.dev,
-+		dev_warn(pwmchip_parent(&our_chip->chip),
- 			"tclk of PWM %d is inoperational, using tdiv\n", chan);
- 	}
+ struct berlin_pwm_chip {
+-	struct pwm_chip chip;
+ 	struct clk *clk;
+ 	void __iomem *base;
+ 	struct berlin_pwm_channel channel[BERLIN_PWM_NUMPWMS];
+@@ -57,7 +56,7 @@ struct berlin_pwm_chip {
  
- 	rate = pwm_samsung_get_tin_rate(our_chip, chan);
--	dev_dbg(our_chip->chip.dev, "tin parent at %lu\n", rate);
-+	dev_dbg(pwmchip_parent(&our_chip->chip), "tin parent at %lu\n", rate);
- 
- 	/*
- 	 * Compare minimum PWM frequency that can be achieved with possible
-@@ -232,7 +232,7 @@ static int pwm_samsung_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
- 
- 	if (!(our_chip->variant.output_mask & BIT(pwm->hwpwm))) {
--		dev_warn(chip->dev,
-+		dev_warn(pwmchip_parent(chip),
- 			"tried to request PWM channel %d without output\n",
- 			pwm->hwpwm);
- 		return -EINVAL;
-@@ -326,12 +326,12 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 		period = NSEC_PER_SEC / period_ns;
- 
--		dev_dbg(our_chip->chip.dev, "duty_ns=%d, period_ns=%d (%u)\n",
-+		dev_dbg(pwmchip_parent(chip), "duty_ns=%d, period_ns=%d (%u)\n",
- 						duty_ns, period_ns, period);
- 
- 		tin_rate = pwm_samsung_calc_tin(our_chip, pwm->hwpwm, period);
- 
--		dev_dbg(our_chip->chip.dev, "tin_rate=%lu\n", tin_rate);
-+		dev_dbg(pwmchip_parent(chip), "tin_rate=%lu\n", tin_rate);
- 
- 		tin_ns = NSEC_PER_SEC / tin_rate;
- 		tcnt = period_ns / tin_ns;
-@@ -355,8 +355,7 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* -1UL will give 100% duty. */
- 	--tcmp;
- 
--	dev_dbg(our_chip->chip.dev,
--				"tin_ns=%u, tcmp=%u/%u\n", tin_ns, tcmp, tcnt);
-+	dev_dbg(pwmchip_parent(chip), "tin_ns=%u, tcmp=%u/%u\n", tin_ns, tcmp, tcnt);
- 
- 	/* Update PWM registers. */
- 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
-@@ -368,7 +367,7 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * shortly afer this update (before it autoreloaded the new values).
- 	 */
- 	if (oldtcmp == (u32) -1) {
--		dev_dbg(our_chip->chip.dev, "Forcing manual update");
-+		dev_dbg(pwmchip_parent(chip), "Forcing manual update");
- 		pwm_samsung_manual_update(our_chip, pwm);
- 	}
- 
-@@ -509,7 +508,7 @@ MODULE_DEVICE_TABLE(of, samsung_pwm_matches);
- 
- static int pwm_samsung_parse_dt(struct samsung_pwm_chip *our_chip)
+ static inline struct berlin_pwm_chip *to_berlin_pwm_chip(struct pwm_chip *chip)
  {
--	struct device_node *np = our_chip->chip.dev->of_node;
-+	struct device_node *np = pwmchip_parent(&our_chip->chip)->of_node;
- 	const struct of_device_id *match;
- 	struct property *prop;
- 	const __be32 *cur;
-@@ -523,7 +522,7 @@ static int pwm_samsung_parse_dt(struct samsung_pwm_chip *our_chip)
+-	return container_of(chip, struct berlin_pwm_chip, chip);
++	return pwmchip_get_drvdata(chip);
+ }
  
- 	of_property_for_each_u32(np, "samsung,pwm-outputs", prop, cur, val) {
- 		if (val >= SAMSUNG_PWM_NUM) {
--			dev_err(our_chip->chip.dev,
-+			dev_err(pwmchip_parent(&our_chip->chip),
- 				"%s: invalid channel index in samsung,pwm-outputs property\n",
- 								__func__);
- 			continue;
+ static inline u32 berlin_pwm_readl(struct berlin_pwm_chip *bpc,
+@@ -198,12 +197,14 @@ MODULE_DEVICE_TABLE(of, berlin_pwm_match);
+ 
+ static int berlin_pwm_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct berlin_pwm_chip *bpc;
+ 	int ret;
+ 
+-	bpc = devm_kzalloc(&pdev->dev, sizeof(*bpc), GFP_KERNEL);
+-	if (!bpc)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, BERLIN_PWM_NUMPWMS, sizeof(*bpc));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	bpc = to_berlin_pwm_chip(chip);
+ 
+ 	bpc->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(bpc->base))
+@@ -213,25 +214,24 @@ static int berlin_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(bpc->clk))
+ 		return PTR_ERR(bpc->clk);
+ 
+-	bpc->chip.dev = &pdev->dev;
+-	bpc->chip.ops = &berlin_pwm_ops;
+-	bpc->chip.npwm = BERLIN_PWM_NUMPWMS;
++	chip->ops = &berlin_pwm_ops;
+ 
+-	ret = devm_pwmchip_add(&pdev->dev, &bpc->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
+ 
+-	platform_set_drvdata(pdev, bpc);
++	platform_set_drvdata(pdev, chip);
+ 
+ 	return 0;
+ }
+ 
+ static int berlin_pwm_suspend(struct device *dev)
+ {
+-	struct berlin_pwm_chip *bpc = dev_get_drvdata(dev);
++	struct pwm_chip *chip = dev_get_drvdata(dev);
++	struct berlin_pwm_chip *bpc = to_berlin_pwm_chip(chip);
+ 	unsigned int i;
+ 
+-	for (i = 0; i < bpc->chip.npwm; i++) {
++	for (i = 0; i < chip->npwm; i++) {
+ 		struct berlin_pwm_channel *channel = &bpc->channel[i];
+ 
+ 		channel->enable = berlin_pwm_readl(bpc, i, BERLIN_PWM_ENABLE);
+@@ -247,7 +247,8 @@ static int berlin_pwm_suspend(struct device *dev)
+ 
+ static int berlin_pwm_resume(struct device *dev)
+ {
+-	struct berlin_pwm_chip *bpc = dev_get_drvdata(dev);
++	struct pwm_chip *chip = dev_get_drvdata(dev);
++	struct berlin_pwm_chip *bpc = to_berlin_pwm_chip(chip);
+ 	unsigned int i;
+ 	int ret;
+ 
+@@ -255,7 +256,7 @@ static int berlin_pwm_resume(struct device *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	for (i = 0; i < bpc->chip.npwm; i++) {
++	for (i = 0; i < chip->npwm; i++) {
+ 		struct berlin_pwm_channel *channel = &bpc->channel[i];
+ 
+ 		berlin_pwm_writel(bpc, i, channel->ctrl, BERLIN_PWM_CONTROL);
 -- 
 2.43.0
 
