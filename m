@@ -1,28 +1,29 @@
-Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
+Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD069111B0;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFED5111B1;
 	Thu, 25 Jan 2024 03:09:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=222.66.158.135
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706152168; cv=none; b=edAAfqaewsfWu7t5Sua9mXmF3a9ukRLazxe8ORJdC++pMml+AgtiVLXGHdTPXK1X4qFtoV4fnw6mpeobH3vXeY0ibGoCcNEpTdUZX4BBF96972Wcah5rZZ8LAL3IjXJORnWM5FIm97Vd4jsZubOSxU4FdG3/oGeoXETIq01d7c8=
+	t=1706152168; cv=none; b=L0rzycMIAMzbDciGYe+ol4M/kLAEU2Dc5CzIJqHk2jZ9tXKm/VRP71+KGtr8uoS1LX8COxLd691WSWOl7curThmVxpEgI0QhKanD73XcwDM4CwXyRmaKFkvouqt/UhFE5ASiPSv/wWY8R8NUtPA/TK6ECwWiQX+MKQ9kbCVQ0Rk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706152168; c=relaxed/simple;
-	bh=n/DGsSIprR6XGAQ6RgUSyszmBIaUb47hbAeYspfQ4mg=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qT2fUiesotpfRr+aC3oTlhfAIwJTz+RPuVE0I+blE4+SHVFWEfeReOu1JfYkz2atOHIGOCGSUHc19/a3Mj6VnRqvx/bzq4Sl/SD4F17uQ/xzWzZlMLY0HLNRhh/cm3tdSzFn4K0Nd1JTuCV1LyLs74bR0qSkK32ZKyPm+o7TKS4=
+	bh=QdoVm85CYjnptAKMSZUac9+Lf2ap7MRXkWP7LpnIxeU=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=sFmJ5iqVMbs2LxYWk07MjixQojZ2lIFdwg5CckHbNcY4vsHc4RwLmcPuoN9U4dRspV6TXhd6/EbEwmdpuph0RIBjyTkTsLU/zRrPFpcGfNPE/nKN8nIAIwbcjbQ8/YUqYkd0poMWLdNZsUylMoIhR7saBztDuGoXyg3cFwr0nFI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com; spf=pass smtp.mailfrom=unisoc.com; arc=none smtp.client-ip=222.66.158.135
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
 Received: from dlp.unisoc.com ([10.29.3.86])
-	by SHSQR01.spreadtrum.com with ESMTP id 40P38asi061327;
-	Thu, 25 Jan 2024 11:08:36 +0800 (+08)
+	by SHSQR01.spreadtrum.com with ESMTP id 40P38eM7061701;
+	Thu, 25 Jan 2024 11:08:40 +0800 (+08)
 	(envelope-from Wenhua.Lin@unisoc.com)
 Received: from SHDLP.spreadtrum.com (shmbx06.spreadtrum.com [10.0.1.11])
-	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4TL5F31L4pz2Rq2lq;
-	Thu, 25 Jan 2024 11:01:11 +0800 (CST)
+	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4TL5F76jRwz2Rq2lr;
+	Thu, 25 Jan 2024 11:01:15 +0800 (CST)
 Received: from xm9614pcu.spreadtrum.com (10.13.2.29) by shmbx06.spreadtrum.com
  (10.0.1.11) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Thu, 25 Jan
- 2024 11:08:34 +0800
+ 2024 11:08:39 +0800
 From: Wenhua Lin <Wenhua.Lin@unisoc.com>
 To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
         Rob
@@ -44,10 +45,12 @@ CC: Orson Zhai <orsonzhai@gmail.com>,
         Zhaochen Su <Zhaochen.Su@unisoc.com>,
         Xiaolong
  Wang <Xiaolong.Wang@unisoc.com>
-Subject: [PATCH V2 0/6] pwm: sprd: Modification of UNISOC Platform PWM Driver
-Date: Thu, 25 Jan 2024 10:55:27 +0800
-Message-ID: <20240125025533.10315-1-Wenhua.Lin@unisoc.com>
+Subject: [PATCH V2 5/6] pwm: sprd: Add sprd,ums9620-pwm compatible
+Date: Thu, 25 Jan 2024 10:55:32 +0800
+Message-ID: <20240125025533.10315-6-Wenhua.Lin@unisoc.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20240125025533.10315-1-Wenhua.Lin@unisoc.com>
+References: <20240125025533.10315-1-Wenhua.Lin@unisoc.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -57,35 +60,27 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
  shmbx06.spreadtrum.com (10.0.1.11)
-X-MAIL:SHSQR01.spreadtrum.com 40P38asi061327
+X-MAIL:SHSQR01.spreadtrum.com 40P38eM7061701
 
-Due to new usage scenarios, some upgrades are made to unisoc's pwm driver.
-Patch 1 supports the change of channel offset on UMS9620.
-Patch 2 supports more brightness levels (duty cycle) for backlight control.
-Patch 3 optimizes the calculation method of duty.
-Patch 4 converts dt-binding file from txt to yaml
-Patch 5-6 update pwm-sprd.yaml according to patch 1 and patch 2.
+Add sprd,ums9620-pwm compatible string to binding document.
 
-Change in V2:
+Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+---
+ Documentation/devicetree/bindings/pwm/pwm-sprd.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
--Change dev_err to dev_info in PATCH 2/6.
--Add maintainer to gitconfig.
-
-Wenhua Lin (6):
-  pwm: sprd: Add support for UMS9620
-  pwm: sprd: Improve the pwm backlight control function
-  pwm: sprd: Optimize the calculation method of duty
-  dt-bindings: pwm: sprd: Convert to YAML
-  pwm: sprd: Add sprd,ums9620-pwm compatible
-  dt-bindings: pwm: sprd: Add sprd,mod attribute
-
- .../devicetree/bindings/pwm/pwm-sprd.txt      |  40 -------
- .../devicetree/bindings/pwm/pwm-sprd.yaml     | 106 ++++++++++++++++++
- drivers/pwm/pwm-sprd.c                        |  71 ++++++++++--
- 3 files changed, 165 insertions(+), 52 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-sprd.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml b/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
+index 81c5fd688c3c..02e039fee3b4 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
++++ b/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
+@@ -23,6 +23,7 @@ properties:
+     items:
+       - enum:
+           - sprd,ums512-pwm
++          - sprd,ums9620-pwm
+ 
+   reg:
+     maxItems: 1
 -- 
 2.17.1
 
