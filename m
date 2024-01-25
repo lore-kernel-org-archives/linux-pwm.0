@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC6854501B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2828374F5
 	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184654; cv=none; b=iHwSsXYDUy/xPKV0Tjp/1vUlWbhHFl6mW3rcnRj4dEVYs1KbdUdcnhlIhppCH1lG2vWHPVzT36CbNARmUcJ6ArY7YG8ZieQlCrrS2Ucz0i4kjVNgZMX7cEnnvlnYx/XPd2OsjbtsgVOdgYvXGA8CF4OKRqwomZTcj2H24Hh4dHk=
+	t=1706184654; cv=none; b=aP6OFwccnC8IZcUDtg1t9gkmqZYfMn0aJNWvZ0Fm49bA70bnbJQZoGBLyiRlvzH4HYo1N8AYjt1ZdKzebec6IWGGOt1MekEnQ/uTe70DO3+/R6xsva/ZGP2V5pVUJBelmQ2CuVcSiwzfLmRYeA1OySFKAYVcZ0UxwIR/DFZ1ys0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184654; c=relaxed/simple;
-	bh=Qrt9vaeR4KUuMfztIWBoWRb0aAUfBcwyeUrVK67lMM4=;
+	bh=gyrgGlXTWMnebiB+hz+WH9nrN2SBwKfFMXH7r00+5dc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=obKMcm88zADnt9ySrES6kC1yxzD6i2ZdZUdm6+FrKuzzbl7QLn0WueIGU2CCCKm24pDGEe3r/kQD21oYFjGOEyKhAioIsxKssAJDhAgoPKzWPMYC83UT/NgsZvroCHsMq15Z2wDfWpjkcpVHkdQaWTj1Pjb1sMrtNcwvYpnl1Hs=
+	 MIME-Version:Content-Type; b=NaoVsnc27DLMsPYieXkcwtRkTzvAdg7pNG1r++TI1aCup4GacsSZvhNoMAQib78Hs3UB/ibs3vJQJSL9T+lYsJz9hSFdkjechAPp4fR8AI7GhNbktsWcwRUCHjxa56lVuH8okGwaxWZmP5XbrGZhAN5mRbdk8YN0n6Ac9GruYO4=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,26 +18,24 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZF-0004DE-Rp; Thu, 25 Jan 2024 13:10:49 +0100
+	id 1rSyZH-0004Is-1u; Thu, 25 Jan 2024 13:10:51 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZE-002HRZ-Vj; Thu, 25 Jan 2024 13:10:48 +0100
+	id 1rSyZG-002HS3-DA; Thu, 25 Jan 2024 13:10:50 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZE-007n19-2u;
-	Thu, 25 Jan 2024 13:10:48 +0100
+	id 1rSyZG-007n1b-14;
+	Thu, 25 Jan 2024 13:10:50 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+To: Alexander Shiyan <shc_work@mail.ru>,
 	linux-pwm@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v5 045/111] pwm: atmel-tcb: Make use of devm_pwmchip_alloc() function
-Date: Thu, 25 Jan 2024 13:09:07 +0100
-Message-ID:  <929bfbd2695535c73260647e16f44de17ec892af.1706182805.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v5 052/111] pwm: clps711x: Make use of devm_pwmchip_alloc() function
+Date: Thu, 25 Jan 2024 13:09:14 +0100
+Message-ID:  <b8961cbf198100a0e0814b16d15cc9175f7c4976.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -48,7 +46,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2971; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=Qrt9vaeR4KUuMfztIWBoWRb0aAUfBcwyeUrVK67lMM4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9uVoZxZ932+hxCc1MLX7pX118ipIVmyxMd7 QEJ8McityaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPbgAKCRCPgPtYfRL+ TiGrB/9ietXPsxs0oMkY3xy79/6GRlF8x68TjvUWo6tC7zsKbLXZ53MwqX5oBPo7J+iuB6mRJZ/ uH9Sfi80JKlq0LaAc7SoFKRgkN9LrRlXv98D4Mes1pIRpQJ/bierH/KprkGEei5EBVXVlMESWa0 z/13bIk3NpzCGZSHUkhjBI74HIhwaxeH9m1mdCIilmE+yY6q1E9KPe0at0CSC0Sh3srV4R1aUoM kZc3i5S4C80ye/akqyniiltBU1cxNmGugVMF1RNiO3p9J0tsaiI4rYWf5RGNuqrPEepzBk9gPWX qHofFlXGd8ChFgWMoE8DbB+Cp4SYOYblw989mVo3JK0Gkho+
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2072; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=gyrgGlXTWMnebiB+hz+WH9nrN2SBwKfFMXH7r00+5dc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk93mtoZRyWudm1BUXmc9BtNwlBmywQ1/B3Jz HCnQsCwdWuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPdwAKCRCPgPtYfRL+ TnWNB/4mmUjrRAHYVj0jSHnjtG2K8vmGaLx/+qfdqceud8IEQ2EvNaBDAZ/RKtEjiByyUVDllEZ nuAnrG26Z+5RaOZ3gCT5DNu6aYyL17xrTNRFCXoc5rd3effrQkEBIHLXDbP6lE1Npy9M4fK6LAZ DMWt1P/ok1CLWikaCzMTH8wuWt2H0DiMyR3H6OiVdQYIc/4pf4JxgOVEKgV4TmF5fNOhyQ1egAO aX9Pbx0LtIW0Fg9pA//la30KlgS3C7h+J6K3K45ra6Ki54NKJaUYcWpB9Er7SZq4FEaDfGdWay6 A83vCJqh/mCsizIuZSRR4kjw7pdzyAMHU3+HFHO3ScjKg2dN
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,96 +54,69 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-atmel-tcb driver to further changes of the pwm core
+This prepares the pwm-clps711x driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-atmel-tcb.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-clps711x.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-index 80121ab81a01..0663685532ec 100644
---- a/drivers/pwm/pwm-atmel-tcb.c
-+++ b/drivers/pwm/pwm-atmel-tcb.c
-@@ -47,7 +47,6 @@ struct atmel_tcb_channel {
- };
+diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+index f3b4af7963be..c950e1dbd2b8 100644
+--- a/drivers/pwm/pwm-clps711x.c
++++ b/drivers/pwm/pwm-clps711x.c
+@@ -12,7 +12,6 @@
+ #include <linux/pwm.h>
  
- struct atmel_tcb_pwm_chip {
+ struct clps711x_chip {
 -	struct pwm_chip chip;
+ 	void __iomem *pmpcon;
+ 	struct clk *clk;
  	spinlock_t lock;
- 	u8 channel;
- 	u8 width;
-@@ -63,7 +62,7 @@ static const u8 atmel_tcb_divisors[] = { 2, 8, 32, 128, 0, };
+@@ -20,7 +19,7 @@ struct clps711x_chip {
  
- static inline struct atmel_tcb_pwm_chip *to_tcb_chip(struct pwm_chip *chip)
+ static inline struct clps711x_chip *to_clps711x_chip(struct pwm_chip *chip)
  {
--	return container_of(chip, struct atmel_tcb_pwm_chip, chip);
+-	return container_of(chip, struct clps711x_chip, chip);
 +	return pwmchip_get_drvdata(chip);
  }
  
- static int atmel_tcb_pwm_request(struct pwm_chip *chip,
-@@ -389,6 +388,7 @@ static const struct of_device_id atmel_tcb_of_match[] = {
- static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- {
- 	const struct of_device_id *match;
-+	struct pwm_chip *chip;
- 	struct atmel_tcb_pwm_chip *tcbpwm;
- 	const struct atmel_tcb_config *config;
- 	struct device_node *np = pdev->dev.of_node;
-@@ -396,9 +396,10 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 	int err;
- 	int channel;
+ static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -76,11 +75,13 @@ static const struct pwm_ops clps711x_pwm_ops = {
  
--	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
--	if (tcbpwm == NULL)
+ static int clps711x_pwm_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct clps711x_chip *priv;
+ 
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, NPWM, sizeof(*tcbpwm));
++	chip = devm_pwmchip_alloc(&pdev->dev, 2, sizeof(*priv));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	tcbpwm = to_tcb_chip(chip);
++	priv = to_clps711x_chip(chip);
  
- 	err = of_property_read_u32(np, "reg", &channel);
- 	if (err < 0) {
-@@ -436,9 +437,7 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 		}
- 	}
+ 	priv->pmpcon = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->pmpcon))
+@@ -90,13 +91,11 @@ static int clps711x_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(priv->clk))
+ 		return PTR_ERR(priv->clk);
  
--	tcbpwm->chip.dev = &pdev->dev;
--	tcbpwm->chip.ops = &atmel_tcb_pwm_ops;
--	tcbpwm->chip.npwm = NPWM;
-+	chip->ops = &atmel_tcb_pwm_ops;
- 	tcbpwm->channel = channel;
- 	tcbpwm->width = config->counter_width;
+-	priv->chip.ops = &clps711x_pwm_ops;
+-	priv->chip.dev = &pdev->dev;
+-	priv->chip.npwm = 2;
++	chip->ops = &clps711x_pwm_ops;
  
-@@ -448,11 +447,11 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 	spin_lock_init(&priv->lock);
  
- 	spin_lock_init(&tcbpwm->lock);
+-	return devm_pwmchip_add(&pdev->dev, &priv->chip);
++	return devm_pwmchip_add(&pdev->dev, chip);
+ }
  
--	err = pwmchip_add(&tcbpwm->chip);
-+	err = pwmchip_add(chip);
- 	if (err < 0)
- 		goto err_disable_clk;
- 
--	platform_set_drvdata(pdev, tcbpwm);
-+	platform_set_drvdata(pdev, chip);
- 
- 	return 0;
- 
-@@ -473,9 +472,10 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 
- static void atmel_tcb_pwm_remove(struct platform_device *pdev)
- {
--	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct atmel_tcb_pwm_chip *tcbpwm = to_tcb_chip(chip);
- 
--	pwmchip_remove(&tcbpwm->chip);
-+	pwmchip_remove(chip);
- 
- 	clk_disable_unprepare(tcbpwm->slow_clk);
- 	clk_put(tcbpwm->gclk);
+ static const struct of_device_id __maybe_unused clps711x_pwm_dt_ids[] = {
 -- 
 2.43.0
 
