@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36BA4501E
-	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73C0145023
+	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184654; cv=none; b=LQUKPrI/C7DZQTzMF93br8WJGVmhaAP72HRjpkXZ2kKP1UvV+34FrwtoBoRYh0wHJePtj9f1EQF8wwZPNXf6kMgDZ6KP0HA094nGVrEsjpdKWYQvdVhRHfegZhkSSy0ckHGv/EfZoNlDSfX0jSbO0nu7Lb3WCdQedtxm3x7BmDo=
+	t=1706184655; cv=none; b=Epdlx5cX4Is289HAoUXJ7yhDvqyAYjkGIWdKOLe25OpTJ/8uGMeXaN45KhkN3JuK4l5p2ajA5x5+vMZmhjMhionJG6yAqSQxw70SbvSmCdjoZbto/4yEwIyPT1M/WFBd4AbmpNJuCgyZyeEv6YqMfU/SDaQqXkW1SLe+iM/+agg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706184654; c=relaxed/simple;
-	bh=dLFZTDMUC6xoGbG+9xpu86busFxUvBdf0vDphT6lr2Y=;
+	s=arc-20240116; t=1706184655; c=relaxed/simple;
+	bh=ub0WxYuNvfVeLqdF4qWEv1rpq9BZQti4qy+xj5yg8qE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Y6TEXImg8jMDiu3NS8leKRZ/zPeKblokXAL3pegYi7Iv8re7OnLeNMOtUHQVqJrvyZuOK+YjE83f2CjMR9kXPFFlfV5w3cKDex5ZEoEFEn4/maA4qzloCctkRNP3CrkLWX+cPxsO9AVZYDGyN9VGbtR9parYyMS0SCBN0KKLE3w=
+	 MIME-Version:Content-Type; b=YmPBFjx3uy78p5NAJES4HFcg6/Mkz3ppvOrkJPaZvsPp9bV66h4iFHOP/BbrrZD7TBlBx1De5M0EGqx8eZIL/BQFaEwevXcoa7/xkwvL7eJWAuHUfmNWQ6nKCHSw/kJ/tjfXa/Oun+HC1ZR5PxVqV0y0gO48WFbZ6Km/r5VFF1Y=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,26 +18,22 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZF-0004Bl-Qe; Thu, 25 Jan 2024 13:10:49 +0100
+	id 1rSyZH-0004KD-Fa; Thu, 25 Jan 2024 13:10:51 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZE-002HRT-JE; Thu, 25 Jan 2024 13:10:48 +0100
+	id 1rSyZG-002HSF-TU; Thu, 25 Jan 2024 13:10:50 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZE-007n11-1e;
-	Thu, 25 Jan 2024 13:10:48 +0100
+	id 1rSyZG-007n1n-2h;
+	Thu, 25 Jan 2024 13:10:50 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org,
-	kernel@pengutronix.de
-Subject: [PATCH v5 043/111] pwm: atmel-hlcdc: Make use of devm_pwmchip_alloc() function
-Date: Thu, 25 Jan 2024 13:09:05 +0100
-Message-ID:  <fd2e57dd4485e7faa43d9eec6599e9dfc52ab28d.1706182805.git.u.kleine-koenig@pengutronix.de>
+To: linux-pwm@vger.kernel.org
+Cc: kernel@pengutronix.de
+Subject: [PATCH v5 055/111] pwm: dwc: Make use of devm_pwmchip_alloc() function
+Date: Thu, 25 Jan 2024 13:09:17 +0100
+Message-ID:  <0705dd2b796e50e73959be1054b536f1ccc349d3.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -48,7 +44,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4042; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=dLFZTDMUC6xoGbG+9xpu86busFxUvBdf0vDphT6lr2Y=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9s0h3gK6rFD/kqyrpeUbSStlKuipc0ZZiel 0jwMgKdzzyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPbAAKCRCPgPtYfRL+ TjQ/CACxujpWZNvzJn4Gg7OPhFPTJ7RRHbsQv2C8UA37deCkyxEiKPA8CZYiRRkswSQk6N8zh1o e6ZozKwQ3Ai9KFJ2BnE6LK/1dt1f2xAp1k/esRnSWm1F04Wdenyk/PH8xV+uX0QxJINIVsfy+p6 EYC1EzDqHuyKDk6EGIpbjeis5NbUEXSkL3oe5SVbHIzlph2vb5AC96jjKVI27DQDFFB+o0OiPY6 HffJiLydDPFbZkhRWnIg4UfQEugKTe2zTgccFJKkCeJjHpP+qMB+bHUOuwml4SvGbDlqCK0hXrT lg4SNRTYtEjrPLP0zKQYnOIOQui1daCp1iOgOdG6CgaPxp+k
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4156; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=ub0WxYuNvfVeLqdF4qWEv1rpq9BZQti4qy+xj5yg8qE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk96kbrruJUZGTkJoA9FUDXFnLvcWCrILaBqW a0vvy3WAxSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPegAKCRCPgPtYfRL+ TgVpB/4nReQNmG8PSGSCE/sFj0VMXGBR9tFqlnzH3Ffa0oT/8eHEzEQGgAPVVZ8sX8GRgBLsp7e Dicwup63VMOAB6INn+5Ux29Xrec0iYIbHrzh8u5+g0gBLxEJYeV6kkd+sHY9fqJk9+oHuna8ISs KwCm4qcLugVZkxuvrMYbtkMihfqvxZb65wJGWyaFLE2TJ1kMCNbHa8ThIoAQ8GacIh8G7auCTcW vn9u0Adytvxtxo3jiPQeKSQm0FWuz30H7jV5IWkkbtTT/zg5H3MMHiS/LzB8Fqf4JvNCn7IQORn xHhEFzeV7QksOk/ajq1iXG0eesKc6HOzMqSzbrUq1fn53BjX
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,123 +52,138 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-atme-hlcdc driver to further changes of the pwm core
+This prepares the pwm-dwc driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-atmel-hlcdc.c | 35 ++++++++++++++++++-----------------
- 1 file changed, 18 insertions(+), 17 deletions(-)
+ drivers/pwm/pwm-dwc-core.c | 17 +++++++++--------
+ drivers/pwm/pwm-dwc.c      | 18 +++++++++++-------
+ drivers/pwm/pwm-dwc.h      |  9 ++++++---
+ 3 files changed, 26 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-index 3f2c5031a3ba..aa1b67b6f2ea 100644
---- a/drivers/pwm/pwm-atmel-hlcdc.c
-+++ b/drivers/pwm/pwm-atmel-hlcdc.c
-@@ -28,7 +28,6 @@ struct atmel_hlcdc_pwm_errata {
+diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
+index 146e40ccc4d3..761c215ce5ee 100644
+--- a/drivers/pwm/pwm-dwc-core.c
++++ b/drivers/pwm/pwm-dwc-core.c
+@@ -159,21 +159,22 @@ static const struct pwm_ops dwc_pwm_ops = {
+ 	.get_state = dwc_pwm_get_state,
  };
  
- struct atmel_hlcdc_pwm {
--	struct pwm_chip chip;
- 	struct atmel_hlcdc *hlcdc;
- 	struct clk *cur_clk;
- 	const struct atmel_hlcdc_pwm_errata *errata;
-@@ -36,7 +35,7 @@ struct atmel_hlcdc_pwm {
- 
- static inline struct atmel_hlcdc_pwm *to_atmel_hlcdc_pwm(struct pwm_chip *chip)
+-struct dwc_pwm *dwc_pwm_alloc(struct device *dev)
++struct pwm_chip *dwc_pwm_alloc(struct device *dev)
  {
--	return container_of(chip, struct atmel_hlcdc_pwm, chip);
-+	return pwmchip_get_drvdata(chip);
++	struct pwm_chip *chip;
+ 	struct dwc_pwm *dwc;
+ 
+-	dwc = devm_kzalloc(dev, sizeof(*dwc), GFP_KERNEL);
+-	if (!dwc)
++	chip = devm_pwmchip_alloc(dev, DWC_TIMERS_TOTAL, sizeof(struct dwc_pwm));
++	if (!chip)
+ 		return NULL;
++	dwc = to_dwc_pwm(chip);
+ 
+ 	dwc->clk_ns = 10;
+-	dwc->chip.dev = dev;
+-	dwc->chip.ops = &dwc_pwm_ops;
+-	dwc->chip.npwm = DWC_TIMERS_TOTAL;
+ 
+-	dev_set_drvdata(dev, dwc);
+-	return dwc;
++	chip->ops = &dwc_pwm_ops;
++
++	dev_set_drvdata(dev, chip);
++	return chip;
  }
+ EXPORT_SYMBOL_GPL(dwc_pwm_alloc);
  
- static int atmel_hlcdc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -182,10 +181,11 @@ static const struct atmel_hlcdc_pwm_errata atmel_hlcdc_pwm_sama5d3_errata = {
- 
- static int atmel_hlcdc_pwm_suspend(struct device *dev)
+diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
+index 4929354f8cd9..1a20babb16fc 100644
+--- a/drivers/pwm/pwm-dwc.c
++++ b/drivers/pwm/pwm-dwc.c
+@@ -28,12 +28,14 @@
+ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
  {
--	struct atmel_hlcdc_pwm *atmel = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct atmel_hlcdc_pwm *atmel = to_atmel_hlcdc_pwm(chip);
- 
- 	/* Keep the periph clock enabled if the PWM is still running. */
--	if (pwm_is_enabled(&atmel->chip.pwms[0]))
-+	if (pwm_is_enabled(&chip->pwms[0]))
- 		clk_disable_unprepare(atmel->hlcdc->periph_clk);
- 
- 	return 0;
-@@ -193,11 +193,12 @@ static int atmel_hlcdc_pwm_suspend(struct device *dev)
- 
- static int atmel_hlcdc_pwm_resume(struct device *dev)
- {
--	struct atmel_hlcdc_pwm *atmel = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct atmel_hlcdc_pwm *atmel = to_atmel_hlcdc_pwm(chip);
- 	struct pwm_state state;
+ 	struct device *dev = &pci->dev;
++	struct pwm_chip *chip;
+ 	struct dwc_pwm *dwc;
  	int ret;
  
--	pwm_get_state(&atmel->chip.pwms[0], &state);
-+	pwm_get_state(&chip->pwms[0], &state);
+-	dwc = dwc_pwm_alloc(dev);
+-	if (!dwc)
++	chip = dwc_pwm_alloc(dev);
++	if (!chip)
+ 		return -ENOMEM;
++	dwc = to_dwc_pwm(chip);
  
- 	/* Re-enable the periph clock it was stopped during suspend. */
- 	if (!state.enabled) {
-@@ -206,8 +207,7 @@ static int atmel_hlcdc_pwm_resume(struct device *dev)
- 			return ret;
+ 	ret = pcim_enable_device(pci);
+ 	if (ret) {
+@@ -55,7 +57,7 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 		return -ENOMEM;
  	}
  
--	return atmel_hlcdc_pwm_apply(&atmel->chip, &atmel->chip.pwms[0],
--				     &state);
-+	return atmel_hlcdc_pwm_apply(chip, &chip->pwms[0], &state);
- }
- 
- static DEFINE_SIMPLE_DEV_PM_OPS(atmel_hlcdc_pwm_pm_ops,
-@@ -243,15 +243,17 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
- {
- 	const struct of_device_id *match;
- 	struct device *dev = &pdev->dev;
-+	struct pwm_chip *chip;
- 	struct atmel_hlcdc_pwm *atmel;
- 	struct atmel_hlcdc *hlcdc;
- 	int ret;
- 
- 	hlcdc = dev_get_drvdata(dev->parent);
- 
--	atmel = devm_kzalloc(dev, sizeof(*atmel), GFP_KERNEL);
--	if (!atmel)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(dev, 1, sizeof(*atmel));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	atmel = to_atmel_hlcdc_pwm(chip);
- 
- 	ret = clk_prepare_enable(hlcdc->periph_clk);
+-	ret = devm_pwmchip_add(dev, &dwc->chip);
++	ret = devm_pwmchip_add(dev, chip);
  	if (ret)
-@@ -262,11 +264,9 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
- 		atmel->errata = match->data;
- 
- 	atmel->hlcdc = hlcdc;
--	atmel->chip.ops = &atmel_hlcdc_pwm_ops;
--	atmel->chip.dev = dev;
--	atmel->chip.npwm = 1;
-+	chip->ops = &atmel_hlcdc_pwm_ops;
- 
--	ret = pwmchip_add(&atmel->chip);
-+	ret = pwmchip_add(chip);
- 	if (ret) {
- 		clk_disable_unprepare(hlcdc->periph_clk);
  		return ret;
-@@ -279,9 +279,10 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
  
- static void atmel_hlcdc_pwm_remove(struct platform_device *pdev)
+@@ -74,13 +76,14 @@ static void dwc_pwm_remove(struct pci_dev *pci)
+ static int dwc_pwm_suspend(struct device *dev)
  {
--	struct atmel_hlcdc_pwm *atmel = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct atmel_hlcdc_pwm *atmel = to_atmel_hlcdc_pwm(chip);
+ 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+-	struct dwc_pwm *dwc = pci_get_drvdata(pdev);
++	struct pwm_chip *chip = pci_get_drvdata(pdev);
++	struct dwc_pwm *dwc = to_dwc_pwm(chip);
+ 	int i;
  
--	pwmchip_remove(&atmel->chip);
-+	pwmchip_remove(chip);
+ 	for (i = 0; i < DWC_TIMERS_TOTAL; i++) {
+-		if (dwc->chip.pwms[i].state.enabled) {
++		if (chip->pwms[i].state.enabled) {
+ 			dev_err(dev, "PWM %u in use by consumer (%s)\n",
+-				i, dwc->chip.pwms[i].label);
++				i, chip->pwms[i].label);
+ 			return -EBUSY;
+ 		}
+ 		dwc->ctx[i].cnt = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(i));
+@@ -94,7 +97,8 @@ static int dwc_pwm_suspend(struct device *dev)
+ static int dwc_pwm_resume(struct device *dev)
+ {
+ 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+-	struct dwc_pwm *dwc = pci_get_drvdata(pdev);
++	struct pwm_chip *chip = pci_get_drvdata(pdev);
++	struct dwc_pwm *dwc = to_dwc_pwm(chip);
+ 	int i;
  
- 	clk_disable_unprepare(atmel->hlcdc->periph_clk);
+ 	for (i = 0; i < DWC_TIMERS_TOTAL; i++) {
+diff --git a/drivers/pwm/pwm-dwc.h b/drivers/pwm/pwm-dwc.h
+index 64795247c54c..83f4091031fc 100644
+--- a/drivers/pwm/pwm-dwc.h
++++ b/drivers/pwm/pwm-dwc.h
+@@ -40,12 +40,15 @@ struct dwc_pwm_ctx {
+ };
+ 
+ struct dwc_pwm {
+-	struct pwm_chip chip;
+ 	void __iomem *base;
+ 	unsigned int clk_ns;
+ 	struct dwc_pwm_ctx ctx[DWC_TIMERS_TOTAL];
+ };
+-#define to_dwc_pwm(p)	(container_of((p), struct dwc_pwm, chip))
++
++static inline struct dwc_pwm *to_dwc_pwm(struct pwm_chip *chip)
++{
++       return pwmchip_get_drvdata(chip);
++}
+ 
+ static inline u32 dwc_pwm_readl(struct dwc_pwm *dwc, u32 offset)
+ {
+@@ -57,4 +60,4 @@ static inline void dwc_pwm_writel(struct dwc_pwm *dwc, u32 value, u32 offset)
+ 	writel(value, dwc->base + offset);
  }
+ 
+-extern struct dwc_pwm *dwc_pwm_alloc(struct device *dev);
++extern struct pwm_chip *dwc_pwm_alloc(struct device *dev);
 -- 
 2.43.0
 
