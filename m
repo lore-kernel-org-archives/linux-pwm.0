@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BFF332C92
-	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EF8141742
+	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184648; cv=none; b=Soou3jODiRDLhYzFidwKRifCarAoBFvs0TrW3ahsu4jTK1W4Z+CsHRPRyT9QQpR6g9QNx78KFNW46aKMRIv/cMp9ilZQfjiJtIVh9+EvBd3QhzLuhAi9DAiKr+Ppgm35Neg5R3Ej9oy/3BkV9kGbpKoMSJDiYLjNziKXHKb+UTw=
+	t=1706184648; cv=none; b=T4v0J/BY1epJQS/rMMofTyRLANFme6Tac3dJWX77yG9tvVnoXrmSz2MtS3WHb8csQg3iQXNBXTYtrE1E/z2OOcX5BXQCzAN5Bv+SdIeonunEOUa/XZ/Ag2HnmWwXPhElRc4HzPRuvwKHMqoMcQ7Ypn8HNb79VDnPJMqspbu3dhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184648; c=relaxed/simple;
-	bh=0dQgcY2HF1eIjp3vD8TcbyUnDhEvbLPvWkzK9X+p9bc=;
+	bh=u3GNrzdZ0E6VhvixW9xjo+R0sSVqJ6WMNnaZDq30XSE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pJ788Sq3/sZWtMzpLmMT6S9bDGSEdAOW6XoFiBO44s5zM/BFlhw7uxuXZT7urVvn2joR/SlX5vgAY3k6Ob8eOK3IsavK1TGQlblUPF1QUlsz5NDxd11c/xbdoZABqSpnWZAIiXzXbHjyt097LM54jZCrfqVMdbh2LAgrwCgnXyM=
+	 MIME-Version:Content-Type; b=HLGPrrDKKjAtx1nEuaSx2SnjuM3vPklhYmhDaz2s8baMR6i+E0xxNS8w/ClPwBCbvgkZksEhhhvGIaapUQIQjYAqM6sS6bK5KywFFuEDhio2B32enP5J3GgYfowJqhf70BUv0gxbsTlYCbOoMp2zly+Drb8DSOTxXojtEpMdXHs=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,26 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZB-0003kQ-1u; Thu, 25 Jan 2024 13:10:45 +0100
+	id 1rSyZ9-0003iz-R1; Thu, 25 Jan 2024 13:10:43 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZA-002HQE-KZ; Thu, 25 Jan 2024 13:10:44 +0100
+	id 1rSyZ9-002HPp-Df; Thu, 25 Jan 2024 13:10:43 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZA-007mzh-1n;
-	Thu, 25 Jan 2024 13:10:44 +0100
+	id 1rSyZ9-007mzJ-17;
+	Thu, 25 Jan 2024 13:10:43 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de
-Subject: [PATCH v5 024/111] pwm: rcar: Make use of pwmchip_parent() macro
-Date: Thu, 25 Jan 2024 13:08:46 +0100
-Message-ID:  <d97349209a2bf06bb2573a25baa9c8729894bb54.1706182805.git.u.kleine-koenig@pengutronix.de>
+To: Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	linux-pwm@vger.kernel.org
+Cc: kernel@pengutronix.de,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: [PATCH v5 018/111] pwm: mediatek: Make use of pwmchip_parent() macro
+Date: Thu, 25 Jan 2024 13:08:40 +0100
+Message-ID:  <a8659059ce62805d5a499edb823ace388f374d6c.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +48,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1007; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=0dQgcY2HF1eIjp3vD8TcbyUnDhEvbLPvWkzK9X+p9bc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9V0DGRT0LBvbfDAJn54a8VNHgeOT35QNTPT JmsSPeg/ySJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPVQAKCRCPgPtYfRL+ TtkfB/9zbM0BGRbBWM5L6nbdTyz2PgKO0lbtImuv+7Eyp6teXt+s81LjizQQNk7a7ET/8fu2u+B GCqAmlyzrAYOlEbhbJvhcwcLnz3C2lHbtu8FkKJv4JIoaRpwyrhmAi4KWVhMYyNiJgIz/iaOz5L jZHxkxwjYLamwSbxA9N+zvkdToSGpuFj84Ekvv5Yp1vbnIXg7+V/6/mYNrVLqeFT5aIkoZHLZu9 cM30gktPEGMMwvhH2Y22I7CjLn0u6FRIdrJJnDwIuA3yH8hQb5ZQDAwxpLsl9AU9vCjcoAdVXFm ljrajjByIYSnb7g2CA/tyS20UGBUItl4o5sZTVHhHwcVj0aJ
+X-Developer-Signature: v=1; a=openpgp-sha256; l=879; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=u3GNrzdZ0E6VhvixW9xjo+R0sSVqJ6WMNnaZDq30XSE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9OmFrBGbhFht5Thk81FH0FpaFGolMcp7/J6 C6IpjBvbTaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPTgAKCRCPgPtYfRL+ TljzCACbatZ+qvtz/DkM39dSpNt8mCZBcG3gGoIJumxpmQWDQKS9u/tVmbD5QiiDapasn50JKaC JYrHAROuEMyVO1hDSoZLQPhSGzlTJW0lhwhtVTDKEiTUZ1gy2vdCjxH/NI9d+2lyuGsWhvs/w5m joYWO05vgVrbB6Z5Hw4QDsDw9Zv3NL3u1tRoDkwGk+H/EQ7ies9ArY+92pIl/z4tTn585jXXT1o twBTa5tiE3O4lbsF7PPM8gxjwGsOQiPJmuZwCXY0NCUmTWJ0CMPNgZ4GhGSAhgbXFszVfrREqnK z9HYAyt3i6OJEim6eLUrWSsxVMVdGh/gjLYaL20S+TH2lhfA
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -58,28 +62,22 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-rcar.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-mediatek.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 13269f55fccf..4838762137d1 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -132,12 +132,12 @@ static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, int duty_ns,
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index 562102a47ac0..6cf7543a3826 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -149,7 +149,7 @@ static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
- static int rcar_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
--	return pm_runtime_get_sync(chip->dev);
-+	return pm_runtime_get_sync(pwmchip_parent(chip));
- }
+ 	if (clkdiv > PWM_CLK_DIV_MAX) {
+ 		pwm_mediatek_clk_disable(chip, pwm);
+-		dev_err(chip->dev, "period of %d ns not supported\n", period_ns);
++		dev_err(pwmchip_parent(chip), "period of %d ns not supported\n", period_ns);
+ 		return -EINVAL;
+ 	}
  
- static void rcar_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
--	pm_runtime_put(chip->dev);
-+	pm_runtime_put(pwmchip_parent(chip));
- }
- 
- static int rcar_pwm_enable(struct rcar_pwm_chip *rp)
 -- 
 2.43.0
 
