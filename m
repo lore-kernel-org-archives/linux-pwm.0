@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D3136B10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 651E7374F5
 	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:11:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184663; cv=none; b=GUr4fMfRJ/nHsTWrkkUdmgj3X5dGpqI6k9mQ9sLXBCkPOZMAUVbofReuahXWluayBPLgYEC86QLuId0BDtbt2XHkGqGuieofSSKMMfAmSxqj+U0mbaUe3bW4zq7H/W1Lb0Jbzna9YQH4tRk9JIRtv+J35Mb2e0TvBTObMkWh8+Y=
+	t=1706184663; cv=none; b=r1hg8r+FbIQzxLTugvMnjctemP+vh8W60/gK5AyJFPIaO8Wgnl4hHdD3xTN2m4ohr4dd7XEQOSaWfTJWdAHnw7oaTL+0ZcyscxrbyqZ588h22zbvBseRkmUHTvQNEYpYCK9MxftZ/a5YD4MvNw4g0h2Oxqzy8pc01J7lFJYGAOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184663; c=relaxed/simple;
-	bh=KJEuGC/52+vOnMm9CNKDLGMayPv+GmDgxwikRzww63k=;
+	bh=5crgfzM9h8QstH1wGkHc8bfPWS3UUWzoWy5opErr66o=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XHG9vIV8C+29bAb6sT+VyvgtqrAcrvqSzJRRPnmlZTWG+w/G5TD2q6zRWy8CM2KWJFFDtn5A8eO/hWQgb3i4Fv32ZS7rx1q2EnM6gAMwzTuhqAgMivPcv+h5ZWlJiNyvYM9NM81xeo3FVU9CT3sg0KT5s22T4xk5jRa0gyH5MPk=
+	 MIME-Version:Content-Type; b=u3F3VC55yMtWXDZ9eQuJ/yPzNW5spNVPS8nF4230hRyAGJDC0Co7/jg1jH2tpxWNplt0Obn19ekpVRm5DyPJYDCKEpVgrFc4JJ3OzuBAd88uZJUvpJNaAY1GDuc03YE+3I7GwjOqf6TB7CSprZvj7m7m9B862+1WA8d3rbs6os0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,25 +18,23 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZO-0004X2-Fs; Thu, 25 Jan 2024 13:10:58 +0100
+	id 1rSyZP-0004ZG-FC; Thu, 25 Jan 2024 13:10:59 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZM-002HUF-Pb; Thu, 25 Jan 2024 13:10:56 +0100
+	id 1rSyZO-002HUn-7x; Thu, 25 Jan 2024 13:10:58 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZM-007n3s-2J;
-	Thu, 25 Jan 2024 13:10:56 +0100
+	id 1rSyZO-007n4X-0X;
+	Thu, 25 Jan 2024 13:10:58 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
+To: Hammer Hsieh <hammerh0314@gmail.com>,
 	linux-pwm@vger.kernel.org
-Cc: linux-riscv@lists.infradead.org,
-	kernel@pengutronix.de
-Subject: [PATCH v5 086/111] pwm: sifive: Make use of devm_pwmchip_alloc() function
-Date: Thu, 25 Jan 2024 13:09:48 +0100
-Message-ID:  <1758e7c75c4a573c01e430c4b13619b5ee11ca11.1706182805.git.u.kleine-koenig@pengutronix.de>
+Cc: kernel@pengutronix.de
+Subject: [PATCH v5 095/111] pwm: sunplus: Make use of devm_pwmchip_alloc() function
+Date: Thu, 25 Jan 2024 13:09:57 +0100
+Message-ID:  <ceef343a6a4b1432ceaff2d8a227f6a7a2f2075c.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -47,7 +45,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3195; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=KJEuGC/52+vOnMm9CNKDLGMayPv+GmDgxwikRzww63k=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk+fXRBe1dlXQzxd4bAHXKAnQxtLUVnGVrumk 3H6DoKuetCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPnwAKCRCPgPtYfRL+ Tro8CACrgRebmLSi4QmerWXLYIeCpCfjEBL/pkMgGZM5Q0yNcJn8W81vn0uUa4tMK0BD6Czsbjk HgnPcx8kkl0sIJhZC1CdVWQkdjaOIeU1zvSd/BdBJcMraVsqupJQh4Xl5Fsd1MNKlyNVhv0XVmQ NsLKWVuJv8ey5LNOkdsPsO5IxKiZKCJU60i1wb13+0vxBH3XAUxWxmG6RNlf+hQjwh01yE2Wi1E joE31JHn2W53hzluHlc13jJClBQ9uSfhu0ql18L+vwZR+3ef0TGDgsUTPfY+mr/OVKWNpQcC5+v pq+fWS+ubX73ivgYKYIF+WO2DiQKDkETtvsD5JF416U8ORON
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1960; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=5crgfzM9h8QstH1wGkHc8bfPWS3UUWzoWy5opErr66o=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk+p/G3dutsAAtyeLEPwKXmHsfdsZl6ZzZwSs 6N/gD3//maJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPqQAKCRCPgPtYfRL+ Tm51B/9i32ESD0/FKx4T8YzZtxu05MKOSlPVlFcEyOHQjTvrKIJPs0WcC9v9oNHr/GV/7cv24af enHhlQr3Y7m/Z0fxKPz7O0nInKaTMH9QxDgBqSDxdl6kv+sX01Ni1c8K3j4+NY+9ifan8uzRWIC dssvlzV0jCvPz8/x2vrZow4ipA/EZVmkYY3g6uehZ3EUPCapO/zl4Uo1e4OYaMCijMHp6V76/z7 PziYZhJNMLClQl9NCBhklT7fuE93PIIsMMYFugdpVgQCJijAy2LbWrdUfQka2epe+wHB/zOv61M HbhTmFl6YsU0uGUPKyjdxIX7QUCbb+zdwt/Cie09DVXTJzGp
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -55,97 +53,67 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-sifive driver to further changes of the pwm core
+This prepares the pwm-sunplus driver to further changes of the pwm core
 outlined in the commit introducing devm_pwmchip_alloc(). There is no
 intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-sifive.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/pwm/pwm-sunplus.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index c1b412905d9e..cf3fcffe7b3a 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -41,7 +41,7 @@
- #define PWM_SIFIVE_DEFAULT_PERIOD	10000000
+diff --git a/drivers/pwm/pwm-sunplus.c b/drivers/pwm/pwm-sunplus.c
+index 773e2f80526e..b342b843247b 100644
+--- a/drivers/pwm/pwm-sunplus.c
++++ b/drivers/pwm/pwm-sunplus.c
+@@ -43,14 +43,13 @@
+ #define SP7021_PWM_NUM			4
  
- struct pwm_sifive_ddata {
--	struct pwm_chip	chip;
-+	struct pwm_chip *chip;
- 	struct mutex lock; /* lock to protect user_count and approx_period */
- 	struct notifier_block notifier;
+ struct sunplus_pwm {
+-	struct pwm_chip chip;
+ 	void __iomem *base;
  	struct clk *clk;
-@@ -54,7 +54,7 @@ struct pwm_sifive_ddata {
- static inline
- struct pwm_sifive_ddata *pwm_sifive_chip_to_ddata(struct pwm_chip *chip)
+ };
+ 
+ static inline struct sunplus_pwm *to_sunplus_pwm(struct pwm_chip *chip)
  {
--	return container_of(chip, struct pwm_sifive_ddata, chip);
+-	return container_of(chip, struct sunplus_pwm, chip);
 +	return pwmchip_get_drvdata(chip);
  }
  
- static int pwm_sifive_request(struct pwm_chip *chip, struct pwm_device *pwm)
-@@ -102,7 +102,7 @@ static void pwm_sifive_update_clock(struct pwm_sifive_ddata *ddata,
- 	/* As scale <= 15 the shift operation cannot overflow. */
- 	num = (unsigned long long)NSEC_PER_SEC << (PWM_SIFIVE_CMPWIDTH + scale);
- 	ddata->real_period = div64_ul(num, rate);
--	dev_dbg(pwmchip_parent(&ddata->chip),
-+	dev_dbg(pwmchip_parent(ddata->chip),
- 		"New real_period = %u ns\n", ddata->real_period);
- }
+ static int sunplus_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -175,12 +174,14 @@ static void sunplus_pwm_clk_release(void *data)
+ static int sunplus_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
++	struct pwm_chip *chip;
+ 	struct sunplus_pwm *priv;
+ 	int ret;
  
-@@ -230,15 +230,14 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- 	u32 val;
- 	unsigned int enabled_pwms = 0, enabled_clks = 1;
- 
--	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
--	if (!ddata)
+-	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(dev, 4, sizeof(*ddata));
++	chip = devm_pwmchip_alloc(dev, SP7021_PWM_NUM, sizeof(*priv));
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	ddata = pwm_sifive_chip_to_ddata(chip);
-+	ddata->chip = chip;
++	priv = to_sunplus_pwm(chip);
  
- 	mutex_init(&ddata->lock);
--	chip = &ddata->chip;
--	chip->dev = dev;
- 	chip->ops = &pwm_sifive_ops;
--	chip->npwm = 4;
- 
- 	ddata->regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(ddata->regs))
-@@ -296,7 +295,7 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- 		goto unregister_clk;
+ 	priv->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->base))
+@@ -203,11 +204,9 @@ static int sunplus_pwm_probe(struct platform_device *pdev)
+ 		return ret;
  	}
  
--	platform_set_drvdata(pdev, ddata);
-+	platform_set_drvdata(pdev, chip);
- 	dev_dbg(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
+-	priv->chip.dev = dev;
+-	priv->chip.ops = &sunplus_pwm_ops;
+-	priv->chip.npwm = SP7021_PWM_NUM;
++	chip->ops = &sunplus_pwm_ops;
  
- 	return 0;
-@@ -314,15 +313,16 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+-	ret = devm_pwmchip_add(dev, &priv->chip);
++	ret = devm_pwmchip_add(dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "Cannot register sunplus PWM\n");
  
- static void pwm_sifive_remove(struct platform_device *dev)
- {
--	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
-+	struct pwm_chip *chip = platform_get_drvdata(dev);
-+	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
- 	struct pwm_device *pwm;
- 	int ch;
- 
--	pwmchip_remove(&ddata->chip);
-+	pwmchip_remove(chip);
- 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
- 
--	for (ch = 0; ch < ddata->chip.npwm; ch++) {
--		pwm = &ddata->chip.pwms[ch];
-+	for (ch = 0; ch < chip->npwm; ch++) {
-+		pwm = &chip->pwms[ch];
- 		if (pwm->state.enabled)
- 			clk_disable(ddata->clk);
- 	}
 -- 
 2.43.0
 
