@@ -1,29 +1,29 @@
-Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
+Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDCEA749F;
-	Thu, 25 Jan 2024 03:09:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48B5F111B1;
+	Thu, 25 Jan 2024 03:09:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=222.66.158.135
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706152171; cv=none; b=CiD38gw5Qn0q4SVoUS86q9jaoy0ujPyfhuNudY7kcvfxBc0X6jVBP0JCVZh8uAqqnDTlAnsThK0aJw/sW+7/0LVyYpzU/Khr3ndov7kMnO863qx25iDxZ/pEG5kperzwZjMoTnZ6h1l/XdZ3/pmHRg7kDJkZbuYWU+izyo55Y9c=
+	t=1706152174; cv=none; b=ITw57POy3wx10Rz4hMCGWfVTGaL5GT8iyE/8ehQoqOH6iFSsWm02YNbonxwdjHM/Co73z0UyMUgDfCAp3LgvF+b127EsmHH9H2hSPYlRiZrm+HC8fXTc2fckWjWtZW8qFsoUyXpUC06AWig4jOQsCHaTp6nOF4aK8rxBji0xoIw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706152171; c=relaxed/simple;
-	bh=+HxDaiSN4fpd2HAPliDEpKUcx7oxWusM6UlFtpvLUiA=;
+	s=arc-20240116; t=1706152174; c=relaxed/simple;
+	bh=BWzqwv+5BLR9iJ/cwRZDzelnwRi5bJX8TzYd0bzhZqw=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ASoM2ZmCdtTroy6hdJWVXvnh7sOq6unr1QT3QDx4/4Qe6MTN4MYS7SGXjO+DJlwrWcic2qdFKovdGwCfG32UyKv3V2Et2wbrrVKXjk6gzQLRTTqd8z3c/Is3P+9oky/bQocnkZrS1nAVkrgn6f/Wn3VFT7d8pJ51QzkrLke+Eb0=
+	 MIME-Version:Content-Type; b=YEFD6Xp3ET2aPzY6aDBWr+KAp6WEQx1eDwkD/+IDaOgTNVgH333sXovfSIVhXJvLG6DUAOJpMqDrFYmHZgJYZ/Fje617sSUJjwwDx4PfLEXYMj0JHImGkum2OvCQImZB976MNggqCKDwPa+90FXlEZJduWHmftxKPOBfLZfZu/k=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com; spf=pass smtp.mailfrom=unisoc.com; arc=none smtp.client-ip=222.66.158.135
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
 Received: from dlp.unisoc.com ([10.29.3.86])
-	by SHSQR01.spreadtrum.com with ESMTP id 40P38dAg061552;
-	Thu, 25 Jan 2024 11:08:39 +0800 (+08)
+	by SHSQR01.spreadtrum.com with ESMTP id 40P38fm3061776;
+	Thu, 25 Jan 2024 11:08:41 +0800 (+08)
 	(envelope-from Wenhua.Lin@unisoc.com)
 Received: from SHDLP.spreadtrum.com (shmbx06.spreadtrum.com [10.0.1.11])
-	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4TL5F60P66z2Rq2lv;
-	Thu, 25 Jan 2024 11:01:14 +0800 (CST)
+	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4TL5F86NPcz2Rq2lq;
+	Thu, 25 Jan 2024 11:01:16 +0800 (CST)
 Received: from xm9614pcu.spreadtrum.com (10.13.2.29) by shmbx06.spreadtrum.com
  (10.0.1.11) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Thu, 25 Jan
- 2024 11:08:37 +0800
+ 2024 11:08:40 +0800
 From: Wenhua Lin <Wenhua.Lin@unisoc.com>
 To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
         Rob
@@ -45,9 +45,9 @@ CC: Orson Zhai <orsonzhai@gmail.com>,
         Zhaochen Su <Zhaochen.Su@unisoc.com>,
         Xiaolong
  Wang <Xiaolong.Wang@unisoc.com>
-Subject: [PATCH V2 3/6] pwm: sprd: Optimize the calculation method of duty
-Date: Thu, 25 Jan 2024 10:55:30 +0800
-Message-ID: <20240125025533.10315-4-Wenhua.Lin@unisoc.com>
+Subject: [PATCH V2 6/6] dt-bindings: pwm: sprd: Add sprd,mod attribute
+Date: Thu, 25 Jan 2024 10:55:33 +0800
+Message-ID: <20240125025533.10315-7-Wenhua.Lin@unisoc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20240125025533.10315-1-Wenhua.Lin@unisoc.com>
 References: <20240125025533.10315-1-Wenhua.Lin@unisoc.com>
@@ -60,30 +60,53 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
  shmbx06.spreadtrum.com (10.0.1.11)
-X-MAIL:SHSQR01.spreadtrum.com 40P38dAg061552
+X-MAIL:SHSQR01.spreadtrum.com 40P38fm3061776
 
-Use DIV_ROUND_CLOSEST_ULL to avoid overflow and improve accuracy
-when calculating duty.
+Add sprd,mod attribute, which set the number of different
+duty cycles that PWM's waveform could output, to dts.
 
 Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 ---
- drivers/pwm/pwm-sprd.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/pwm/pwm-sprd.yaml | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sprd.c b/drivers/pwm/pwm-sprd.c
-index cc54aa77c7e6..8de3f9e154ce 100644
---- a/drivers/pwm/pwm-sprd.c
-+++ b/drivers/pwm/pwm-sprd.c
-@@ -156,7 +156,8 @@ static int sprd_pwm_config(struct sprd_pwm_chip *spc, struct pwm_device *pwm,
- 	 * given settings (MOD and input clock).
- 	 */
- 	mod = spc->mod[pwm->hwpwm];
--	duty = duty_ns * mod / period_ns;
-+	tmp = (u64)duty_ns * mod;
-+	duty = DIV_ROUND_CLOSEST_ULL(tmp, period_ns);
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml b/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
+index 02e039fee3b4..7c956b840fa1 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
++++ b/Documentation/devicetree/bindings/pwm/pwm-sprd.yaml
+@@ -55,6 +55,16 @@ properties:
+     minItems: 4
+     maxItems: 4
  
- 	tmp = (u64)chn->clk_rate * period_ns;
- 	do_div(tmp, NSEC_PER_SEC);
++  sprd,mod:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    minItems: 4
++    maxItems: 4
++    items:
++      minimum: 0xFF
++      maximum: 0xFFF
++    description: |
++      The number of different duty cycles that could be set for PWM's waveform output.
++
+   "#pwm-cells":
+     const: 2
+ 
+@@ -63,6 +73,7 @@ required:
+   - reg
+   - clocks
+   - clock-names
++  - sprd,mod
+ 
+ additionalProperties: false
+ 
+@@ -88,6 +99,7 @@ examples:
+                                  <&ext_26m>,
+                                  <&ext_26m>,
+                                  <&ext_26m>;
++        sprd,mod = <0xFF 0x1FF 0x3FF 0xFFF>;
+         #pwm-cells = <2>;
+     };
+ 
 -- 
 2.17.1
 
