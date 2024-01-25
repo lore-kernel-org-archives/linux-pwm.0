@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68764374F5
-	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:11:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C51A36B10
+	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:11:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184667; cv=none; b=P8AEUG08Y7Nt9Wya1AvzwkPm+xsWvA9n7oX736BTOl5l9fUeXx3q1faVwszOIqyBwt0IDFqtH+hdEG9b1L8rntYaRu4QrC9yvpfZ0iksN02elAZvV7km58Rb0p3gfrsyUTL5FygJHmziSFFi4kOb88OMg5pUlwy6j1vyYoMoNU4=
+	t=1706184672; cv=none; b=gljeFK/2bGGtHz/mJ7RovnBLLHws1W2wVJVYGlMN5qeNZ+EzNHQuYkghX+d2W+wW5rTC43V55csP3rEIgQxYwdnH4fF+gtNGNwLTLXZqgkY4nZYzx+y4hCeVKc2e/oF5mQ0JNEpm0BXhQPT9JHA7cOnWiExsGZeWPD3DXGZPanw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706184667; c=relaxed/simple;
-	bh=RFARFJlAlpRYrUAQzUAT2bIj2rzOdFoJcaeIlMiSCWs=;
+	s=arc-20240116; t=1706184672; c=relaxed/simple;
+	bh=jfd7dhSo9SXhSxJXmsfOIedemR7rT5AGTOA/yBz+qOs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kBJrrfPe0ghsZe3vDve93LApdhVB9ZHUSr9xb4BKtDys2lPbPKQ0P+eD+Cwmmd5b3YMkfvJPpTb2anQcRmOq9M0uE3EgDeA6hByAmF5tX7BTY4V1xgsbPW+OUpyIJ0eitEQX65QnB9mJQfPSCwcNWsHDLl8LeZZoYGhyPh8haUM=
+	 MIME-Version:Content-Type; b=iXWrLrwn5nBTUBnkTPSxyY24L131Tzes4XGtH3Kp8Dksm23N7ET+K8d3Rkb/yj6kwyDM2jSzgAo/f6rXrPSF4aLQMS0PeFNLGYkYTgqKyBfksFgfqw2r6x9L6Fn8KgLSai1OowffFcm6fIcwd0V4l24ukCDmw7yhLe+nBFniGik=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,35 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZR-0004f2-WC; Thu, 25 Jan 2024 13:11:02 +0100
+	id 1rSyZR-0004e8-Sk; Thu, 25 Jan 2024 13:11:01 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZQ-002HVZ-Kg; Thu, 25 Jan 2024 13:11:00 +0100
+	id 1rSyZQ-002HVO-14; Thu, 25 Jan 2024 13:11:00 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZQ-007n5L-1p;
-	Thu, 25 Jan 2024 13:11:00 +0100
+	id 1rSyZP-007n59-30;
+	Thu, 25 Jan 2024 13:10:59 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de
-Subject: [PATCH v5 107/111] pwm: Ensure that pwm_chips are allocated using pwmchip_alloc()
-Date: Thu, 25 Jan 2024 13:10:09 +0100
-Message-ID:  <89afb1f6191aff726f537b5d450cc74f90236ea4.1706182805.git.u.kleine-koenig@pengutronix.de>
+To: Andrzej Hajda <andrzej.hajda@intel.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Robert Foss <rfoss@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	linux-pwm@vger.kernel.org
+Cc: Douglas Anderson <dianders@chromium.org>,
+	Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+	Jonas Karlman <jonas@kwiboo.se>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	dri-devel@lists.freedesktop.org,
+	kernel@pengutronix.de
+Subject: [PATCH v5 104/111] drm/bridge: ti-sn65dsi86: Make use of devm_pwmchip_alloc() function
+Date: Thu, 25 Jan 2024 13:10:06 +0100
+Message-ID:  <0316aaec9dbfc0c73788bcd3ee532ae7ecadb180.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +57,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2200; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=RFARFJlAlpRYrUAQzUAT2bIj2rzOdFoJcaeIlMiSCWs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk+3p9h2xtcgZgefvR3Es+lhRqc2bc6VNp5wo v1/AQqk6KWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPtwAKCRCPgPtYfRL+ TssfCACXOsaJebKNQfExu644YlmBioZ3oIy/fx9yMf0oPf/2rG9JW+rSQHqOiUGBAR5oA4FSTC8 pTyExtYolEM6QwYb/18KECxUYwRmhRV0oJtosu/RxmxAbOvO5n67OyOQWq0JVX5fJ9AIQ9IJ2nF xHwoTs7DE1+fC14vySUhc5dAziJzSvkht717Pagh1cqoiVHNtgqDeRy9shG23gX5IJY3ud6snn1 ti5l5GjCQBRlr7DXCkoLnMoPM82VMgl2dNE9/x0hMkSjFsMXr3p5Dz2zVDdiS4wsfWmneN4bYXB PpilCYso9X2qwwfrOGRoI2ku1NeEtW2gnJMTzBGaWQNtA7ta
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2284; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=jfd7dhSo9SXhSxJXmsfOIedemR7rT5AGTOA/yBz+qOs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk+0Hn3I7mIKyDHt1G6tNUNJDqYsr2W8GJlsf qDxctNCWjCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPtAAKCRCPgPtYfRL+ TqkhB/9PMw0gY/Sd9TxtH6zKb7tvvsAYnB/chUPlIXZhvx6CRKDcnOLjI5/NUuIjTrA/ZC+w4kc wg4C5TYcHZYkm6+Nr76mXRxD4qsH5SMh+83hDRAMIC/2XHIVK+fmXzh32qUZDYcuRsUCy2V9xFS 0sTUm9LAFLKWXfBsLHOwQoOphkkBcZ5gLe+UUHN9edyWhPOqRzgkKVRd3nLqChwm/lXut7GgbJQ f6UCOOjMcvdZTbt0jMXAJO7dmJsx0WbwQpdCpePzBcMonvS8Js/iR20XWPFbXlJXzYxOwyIJTij PKB7H0ccVUElvO8Rdh/TG5JZUJQ/4hzAiyinQiQp8nbtoWIq
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,66 +65,73 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-Memory holding a struct device must not be freed before the reference
-count drops to zero. So a struct pwm_chip must not live in memory
-freed by a driver on unbind. All in-tree drivers were fixed accordingly,
-but as out-of-tree drivers, that were not adapted, still compile fine,
-catch these in pwmchip_add().
+This prepares the pwm driver of the ti-sn65dsi86 to further changes of
+the pwm core outlined in the commit introducing devm_pwmchip_alloc().
+There is no intended semantical change and the driver should behave as
+before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/core.c  | 10 ++++++++++
- include/linux/pwm.h |  2 ++
- 2 files changed, 12 insertions(+)
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index b821a2b0b172..80acae5fed11 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -472,6 +472,7 @@ struct pwm_chip *devm_pwmchip_alloc(struct device *parent, unsigned int npwm, si
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+index f1fffbef3324..7fbc307cc025 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+@@ -197,7 +197,7 @@ struct ti_sn65dsi86 {
+ 	DECLARE_BITMAP(gchip_output, SN_NUM_GPIOS);
+ #endif
+ #if defined(CONFIG_PWM)
+-	struct pwm_chip			pchip;
++	struct pwm_chip			*pchip;
+ 	bool				pwm_enabled;
+ 	atomic_t			pwm_pin_busy;
+ #endif
+@@ -1374,7 +1374,7 @@ static void ti_sn_pwm_pin_release(struct ti_sn65dsi86 *pdata)
  
- 	chip->dev = parent;
- 	chip->npwm = npwm;
-+	chip->uses_pwmchip_alloc = true;
+ static struct ti_sn65dsi86 *pwm_chip_to_ti_sn_bridge(struct pwm_chip *chip)
+ {
+-	return container_of(chip, struct ti_sn65dsi86, pchip);
++	return pwmchip_get_drvdata(chip);
+ }
  
- 	pwmchip_set_drvdata(chip, pwmchip_priv(chip));
+ static int ti_sn_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -1585,23 +1585,28 @@ static const struct pwm_ops ti_sn_pwm_ops = {
+ static int ti_sn_pwm_probe(struct auxiliary_device *adev,
+ 			   const struct auxiliary_device_id *id)
+ {
++	struct pwm_chip *chip;
+ 	struct ti_sn65dsi86 *pdata = dev_get_drvdata(adev->dev.parent);
  
-@@ -528,6 +529,15 @@ int __pwmchip_add(struct pwm_chip *chip, struct module *owner)
- 	if (!chip || !chip->dev || !chip->ops || !chip->npwm)
- 		return -EINVAL;
- 
-+	/*
-+	 * a struct pwm_chip must be allocated using (devm_)pwmchip_alloc,
-+	 * otherwise the embedded struct device might disappear too early
-+	 * resulting in memory corruption.
-+	 * Catch drivers that were not converted appropriately.
-+	 */
-+	if (!chip->uses_pwmchip_alloc)
-+		return -EINVAL;
+-	pdata->pchip.dev = &adev->dev;
+-	pdata->pchip.ops = &ti_sn_pwm_ops;
+-	pdata->pchip.npwm = 1;
+-	pdata->pchip.of_xlate = of_pwm_single_xlate;
++	pdata->pchip = chip = devm_pwmchip_alloc(&adev->dev, 1, 0);
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
 +
- 	if (!pwm_ops_check(chip))
- 		return -EINVAL;
++	pwmchip_set_drvdata(chip, pdata);
++
++	chip->ops = &ti_sn_pwm_ops;
++	chip->of_xlate = of_pwm_single_xlate;
  
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 8bc7504aa7d4..1620a1eef165 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -272,6 +272,7 @@ struct pwm_ops {
-  * @npwm: number of PWMs controlled by this chip
-  * @of_xlate: request a PWM device given a device tree PWM specifier
-  * @atomic: can the driver's ->apply() be called in atomic context
-+ * @uses_pwmchip_alloc: signals if pwmchip_allow was used to allocate this chip
-  * @driver_data: Private pointer for driver specific info
-  * @pwms: array of PWM devices allocated by the framework
-  */
-@@ -287,6 +288,7 @@ struct pwm_chip {
- 	bool atomic;
+ 	devm_pm_runtime_enable(&adev->dev);
  
- 	/* only used internally by the PWM framework */
-+	bool uses_pwmchip_alloc;
- 	void *driver_data;
- 	struct pwm_device *pwms;
- };
+-	return pwmchip_add(&pdata->pchip);
++	return pwmchip_add(chip);
+ }
+ 
+ static void ti_sn_pwm_remove(struct auxiliary_device *adev)
+ {
+ 	struct ti_sn65dsi86 *pdata = dev_get_drvdata(adev->dev.parent);
+ 
+-	pwmchip_remove(&pdata->pchip);
++	pwmchip_remove(pdata->pchip);
+ 
+ 	if (pdata->pwm_enabled)
+ 		pm_runtime_put_sync(&adev->dev);
 -- 
 2.43.0
 
