@@ -1,203 +1,206 @@
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2122.outbound.protection.outlook.com [40.107.255.122])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49D9711183;
-	Thu, 25 Jan 2024 06:53:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.255.122
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706165639; cv=fail; b=Io5Hu7fWbPr5COiIBn2ghROtRVXE+zbVqUzkoVQkYAweK0hi52MBVwAq9vYKaDbfGro0ir71ah2DBBcHHU5ofOoJgZawepr9ahXJ2+6sogQzM1w+H0CdahQPjfZsZDWEDh9D/pWKXo1V3MW/T9MLztj9rCCcc02mghEucubSx+I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706165639; c=relaxed/simple;
-	bh=U9QHKCX2LE/sc+h+sngfMzirOGUCF2J7SqQCWHssA5I=;
-	h=Message-ID:Date:From:Subject:To:Cc:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=FOlF7jyiCx/qWceeygAuVCPdX4czB3fvh7Lw+xQS8toB+sj08gKzmG98ZgzETlPSzbSH7QM07hn6Ks4oiYYN+YEeY5VMzs0otVZ6haPxngCXLw7dOdScch6+RCpUgOCxWS1QYicoeDlO/XDH/eJifRGJLahwh0obAi8ktx5nfhU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amlogic.com; spf=pass smtp.mailfrom=amlogic.com; dkim=pass (2048-bit key) header.d=amlogic.com header.i=@amlogic.com header.b=m3FKd5PF; arc=fail smtp.client-ip=40.107.255.122
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amlogic.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amlogic.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E7E311713;
+	Thu, 25 Jan 2024 07:20:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706167243; cv=none; b=gI5bSOred/fB14LybWxpaJP7/1r786wg0IngoekiuKP6+ZGl4v/MueHpH2x2gLC3U0N/dM1Lfb6ecDf7sIGy3htWGSCHZkCEDElGoA78H0kFgYviJQy7DGl5d3AQTWLlnBRqrUvjds2nuOWMlBa4UiRAGkEp+Ti2aeKgwp1EzM0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706167243; c=relaxed/simple;
+	bh=ihulYfjCfEWVoZz/Z/GfoBK+jSFE4nHTh23lsVfj3aY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=F9LHtjiQn78064W5d1qubhThVqSErfT4LOb1oV2mQ43w0FyxmWmNebRLtbK264oIUbw81g/FWTmlKDPGftinl7jvqzQnHFI+hMCDJgjxHi8RMy8Uz3H+furmwHx1Z+LI8929FMsISqD360CdSYbjaAOcCwMixA6Q3THGT1usskk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tdlwibwj; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amlogic.com header.i=@amlogic.com header.b="m3FKd5PF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BK1RQYkZaeqbIjBnKnoWeTzDYAWPjjwho+nB/gn1GvunvyvZM143H0jEHXX1TteuA9gVo7/3EP2x6GHjcpjSmgg7srB2Av6WrtuVRRldxicji1veq1/xqmmn2Phksu/V16PQIRH6MOUiIdTeaL1r9jQeHX6b1mztkvu8CJJfRfr6e4veDBZkAoyNiPfzgLcbf1v3HeVw0pMmV/Dk1uimSRxUHyTanIdzOdgZCrvNMpQUH8OWNIu4rcvsqrsu38xV70A+4sk+V6gc0NGzTNzMWrF3OYeJOJKGVtmKS79quttfUSR85jDRu8bKsH/1+BwnqiUryqTxwrDpsS1v+4vscw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mHXGpeSObhmcSLNQnnT/spDPJj19r6OYUOIBEUEkAlw=;
- b=S5kK2OXE70q3yhxyxq5s0HFf16/lVwNa7Z6HRatOY3Wi6E/emE0SGfsbVqw+VqzFsudaFP2mG7/Q1PwZVhbgfuYTbRNQ/cUjJQw16aUnbA/8SiIuhrr6h9m9PorDY7FxXaw8jJgiwCqRaz2XJ0FkPzgLmJhl0obhN7NXCym5IXaskiavpM79RX87c4IOt1VSQJRVWiAQo3+mEdxpTsIMrRiatT7l5D9zi5bjQHDVf6E3Qcwcyb8fOeB5wa1JhqGrfDvLs0LNrsb0g7PIc2sLbXIXAuJyjzPeSWySOdTvzvYZ9HeqwBFK41ympmlWgN4w/qH8BWh8OvORivYcWPnRHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amlogic.com; dmarc=pass action=none header.from=amlogic.com;
- dkim=pass header.d=amlogic.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amlogic.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mHXGpeSObhmcSLNQnnT/spDPJj19r6OYUOIBEUEkAlw=;
- b=m3FKd5PFD1Um3DlReielKGPgw7BUVHXgHqz2uiCOKpXyQhoqjlDg5nWHAOk6E/HG5eTAr7jVapyutoJQjeXmzJWJseu9oC6Obz5TqS8kbT1aQyn+0lSFKs812/H/bM+9wzpZhf04ykSvdZeZrc3Q1ygTff7r/Fn77uC5BMvoGhQitvnfjLRLw18FmGaaJbUoNsL9yh1ADm06kqzMWFulgD1ezVG2Kv26uLnhe0WBTqeP5CAE0k+qCcSOa6Gm8Ohp7KFseSFAA4Lkkd8qWRV2D/KoN+Hbb3gMV4FfuBhH9CLi9gDdTSrHqEBg7xcpFTzIGuPXYhvaVDL8e0Uf1kt99w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amlogic.com;
-Received: from KL1PR03MB5732.apcprd03.prod.outlook.com (2603:1096:820:70::7)
- by SEYPR03MB7780.apcprd03.prod.outlook.com (2603:1096:101:141::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.22; Thu, 25 Jan
- 2024 06:53:52 +0000
-Received: from KL1PR03MB5732.apcprd03.prod.outlook.com
- ([fe80::d8bc:1799:661e:dc86]) by KL1PR03MB5732.apcprd03.prod.outlook.com
- ([fe80::d8bc:1799:661e:dc86%7]) with mapi id 15.20.7228.026; Thu, 25 Jan 2024
- 06:53:52 +0000
-Message-ID: <6ee50584-38f8-4c34-8b54-4ee6af4c3906@amlogic.com>
-Date: Thu, 25 Jan 2024 14:53:46 +0800
-User-Agent: Mozilla Thunderbird
-From: Junyi Zhao <junyi.zhao@amlogic.com>
-Subject: Re: [PATCH v4 5/6] pwm: meson: don't carry internal clock elements
- around
-To: Jerome Brunet <jbrunet@baylibre.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>,
- Neil Armstrong <neil.armstrong@linaro.org>, Rob Herring
- <robh+dt@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
- Kevin Hilman <khilman@baylibre.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
- linux-pwm@vger.kernel.org
-References: <20231222111658.832167-1-jbrunet@baylibre.com>
- <20231222111658.832167-6-jbrunet@baylibre.com>
- <gyhea42rtydw3g45lfkfbxfm6xcbwibz67vw7xke2sm7powz2a@i33g4pyanu4l>
- <1jttn3w0ja.fsf@starbuckisacylon.baylibre.com>
- <jlrptw2norojxgpfmsybv6b5aq3epkdkqvri2l2rkvtx5qofjd@q4ggezt47a42>
- <1jplxrvyin.fsf@starbuckisacylon.baylibre.com>
-Content-Language: en-GB
-In-Reply-To: <1jplxrvyin.fsf@starbuckisacylon.baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: TY1PR01CA0186.jpnprd01.prod.outlook.com (2603:1096:403::16)
- To KL1PR03MB5732.apcprd03.prod.outlook.com (2603:1096:820:70::7)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tdlwibwj"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-6e0e08c70f7so3330911a34.2;
+        Wed, 24 Jan 2024 23:20:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1706167241; x=1706772041; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3pofvpEUvE2DG0LQ8xo53uhzJmM6FRGjdvVMnUevHNs=;
+        b=TdlwibwjuaL5grg5vfElJsN2G0tCeqXaDf0MKJJ4fY7DHupQ6Yz8mDaKEvZbvXW6UJ
+         u21SaK15Dd4YXTo+UylKMRwrj61lAhZjhEkYNh5yP9QoHNCnTmPUpWg27vsaN+Fhhb6z
+         e5uCSoZ5K2ctJJhLsyS2/Nbpzc7k9l3I5XgQM1CETONVO4EIpq5PLQDNX2f5a9u118Na
+         1Jh6JXzZd0KlGBGexDVTh0dB6+ATBSj7femGlZ3JVbV96Zr0EvKHVAGClaBLqS516LI9
+         +8xRLXfR9QgVS4Mmc6qXMH1ExF0zzGVbze31mQcq3tvHM6Q9ABKgDC/WMCYEOP2itUDY
+         mixA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706167241; x=1706772041;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3pofvpEUvE2DG0LQ8xo53uhzJmM6FRGjdvVMnUevHNs=;
+        b=It0B0ib8DAndCSfIwPgs5ZeEblYq0jDsPIlnSHm/eqdS0zm4ZyghBdIqd3SUvJHOaG
+         jvuAo9tQ1sJwYbr+rg2o5oihSZYkkJDfH0I6TBpa0MB3ptDaM7obsGEd0RRMEiCQZ6DM
+         OzJp97TahYwPk5achun2KWCK6Irw123+865TJ8qTceqt4zOeN/3FFK3fNRPv62NYzjAf
+         PrSic8B561F17/bh3rj7mY/kxcjH3TtId3t/VCpcupMqL1vLWxNqSz93R3nVTLild0Ad
+         H69C1kCYEJ7PwL62Y1zVIUI3nozyjd7f8euRVrw7+yoHQLUYkqDrqZM8jwxO1dS7g7mG
+         wK9w==
+X-Gm-Message-State: AOJu0YwIeFyn5gvGU1/Mq55sTw3YRLFgbCyQnxAOlEeai9990Lw0CkTj
+	RohFxqB2u7hDpesYr8J6cxoQwkUL8JJSz9Q805sOluGFQuWW8GZQPudYiRCbSHyXae0tgKkyLxd
+	BA5M38IGppZoMdveJ1Rdh4AV/5yA=
+X-Google-Smtp-Source: AGHT+IEvvRZvW1Z6yIqBkAu9YjlW5ApPGFtR6jRbJbnK1TME2cQlVfAOReWvV/ty4FhATo9HE+mlqFjqa3Ij2GopCgM=
+X-Received: by 2002:a05:6871:7994:b0:210:aec0:e8ed with SMTP id
+ pb20-20020a056871799400b00210aec0e8edmr523829oac.73.1706167241216; Wed, 24
+ Jan 2024 23:20:41 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: KL1PR03MB5732:EE_|SEYPR03MB7780:EE_
-X-MS-Office365-Filtering-Correlation-Id: 685a3964-44dd-4c0c-a99b-08dc1d726426
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	tZC56CGuT1Ty5SPcSfcAdg4BGbwIuABh2mra9WvniEEhRSnggtURvqO/wpwRdkDzmY7u7d5x4JY4xTs7W1sZGzwkjCzQMYhtZWWJ+1krMn2eVZ+h8ZV+bf9MFyKa8eEeelbrK7CtDy0/9fSbf0qQK6PTDAt4zvjYkTRbR65vCzhLvnwL434gJC9JEhuAMoEIYJwaLJEqh56nY+R9JcW/Zo23xLPDJ/Mc12a3Ldr6WepEVhZQYytbX6svXsHn2c4ttNdowDNrzZ9Bxm0ZgWThXd7cDcAWfkO6Arz3D8pM/f60UMykFbX2IN1Eh6v4XA4Dlygg8V8fxXJkuesluQ1t85NCCF452qAkfWaEzEwPkecqBtTagwhLliU2tu4W0IlaMJnwSbJX0TOfw8fgF436hn6r4Qzj34gWlrpuSe7xKZRl/b5HNQcsyMaI6SM6oKGJp/TZ0SNz/bVTJErV+MU6f96y5KSIGXYK0zIV4BSqAk9FBWjTqDfJEKfW/n+L3/i2KtmxHAdbg0CRG98qDeGs0HQdo5a6guu0thtwQHm/n4v8o9xFFcQ9/FMOi7q2AH3xQA8xjbWRJlclxTtksTwkPPs9eB0T7QWtaC3sw3YiREfekZOXnvewgzUCZpho2Fc5bQjlex1u+ajI7eyStrnAr1AJ/e+jwu2wvOQjRvUc1Pa/m/bhhpYGrcTg07uNtaV/
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:KL1PR03MB5732.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(346002)(396003)(136003)(39850400004)(366004)(230273577357003)(230922051799003)(230173577357003)(1800799012)(186009)(64100799003)(451199024)(83380400001)(316002)(8676002)(4326008)(44832011)(8936002)(41300700001)(31686004)(2616005)(54906003)(66476007)(66556008)(66946007)(26005)(36756003)(110136005)(86362001)(31696002)(6506007)(6512007)(6666004)(2906002)(7416002)(6486002)(38100700002)(478600001)(5660300002)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?cnh4VkJra2tDb24xYjlDNk1wb3p3TERSRGxuaFFZVHorc0d0ZUUreU5STVUy?=
- =?utf-8?B?QlhhaThZTWY3RHREblRiWjRPbFppbCtVcnIxQ3Z0TFB1czkzbCtDZ2N4Z3pp?=
- =?utf-8?B?MjNoaitZakhjeUZnQ3QyVjlLRVEwUTR5aHpwUDBxdmRHRU9JRjY1enRBT1VW?=
- =?utf-8?B?M1ZBcmtTNDNyQ215cWFCcFA0OVR2TFdweDFxbE04NzUvSzUwWVFWRWxCOWdB?=
- =?utf-8?B?MXNIVmx0ZzJsNzJFS3EvejBwOGZOZ1J6L1hDYmR4K3hRcENqTmMyZThXdTBs?=
- =?utf-8?B?VGNXY3lDd1Z4Y082blNkOGhDc3h1MFV1b2ZpM2MwanA0aFlCbVpRZ2M2eXo1?=
- =?utf-8?B?YjJhZ1B5a0V0MlBETU5EOVptUHdVeHorSnlhdWZ1aHhUS1hQd3ZwOGRHcTln?=
- =?utf-8?B?R2h4cXVRay9tNGpkUjRGalFxVWovUW44ZDg4bWZxVTNGV0t5OVZ2VE1IeStr?=
- =?utf-8?B?Wi9QZlZXbHRUYjJsUEs3QWlkeVVjVGgyazFkUUtaQjZXeDc5S0hzOUNUdG5t?=
- =?utf-8?B?TTVWWS9lak9sMXFDamVkYXZKdHdmQ0RRQmNSUENKbEpxeE12bW1BcnNWL3BX?=
- =?utf-8?B?QW1VSkpaT1FEMnJ1M09oUDBzd0lpb2RGVVBMTGpuby9tdElIOXFXWUFJd0x0?=
- =?utf-8?B?dzFoV3JqOE4yZmpwcUVSQXlFNG9rTjdYVjhLVkNtbGlOZTdLU1pNMnpMckI3?=
- =?utf-8?B?KzlxVEducjV3aUl4ZmRRbWNSZWpGTE5WSXZRcUc0dHZMUHNXNFBKS2xML0pj?=
- =?utf-8?B?YnVaWDNqQTFaci9laFVoT3UxRk15OVJpOHZMUUd1aUFpTmtyMlIzaG56OFlF?=
- =?utf-8?B?cU9xMVJreWZwZnRBUzl6cm0rUTJBZ0R6RDZIUkoxdnNqUC9OenlRbmhnMlpt?=
- =?utf-8?B?VldndkFVR1FHaXZsQldDTE11RnQxTkpWSzlJbEFIUmY2NzVrTUlOMS9CRm5L?=
- =?utf-8?B?N2V6TU1Ra1VWMDZZWGUwU0pTaGlpQmw1L3JQN21PWVo2SWh2TUxqVlZueXhv?=
- =?utf-8?B?RHYyUEtJZTVBWC8zQ0QwYnYwVUxiNDVNd3JHWldHTVVqME5iT1NRMlEwSlhU?=
- =?utf-8?B?OUpGSFZSaDZqUFJrclRlSCtWVFc2RkVPcExWTjBMbXRuSDVWTGRBbzJKeS80?=
- =?utf-8?B?MUJ5VVdpbm1TUTU0UWg3ZTJYUlQ3S2tNWDhkcXM2U2VVQjlqakgxb09rMU1m?=
- =?utf-8?B?WDFRMWpSNzdGOW9YZkRLOTZucmN2R2RoMVhzK1ltZ2N0UlMyRCszSlZCenJ3?=
- =?utf-8?B?bEpGa21IN1RTSXJFdHNYQXdXN0ZOb3lBQVJrSkc5QnRNa055ODZPYUlFZkNk?=
- =?utf-8?B?Zy9XejI2aVRESGNhSkw2MnFsM0ExdHEyUFVpSWxRNWo1TmVFdm1sQnJGT3VH?=
- =?utf-8?B?dWRZYVVQbTZSV2dkc25NdTlabjRlTnZYMEZsNnNqcG5oMFNnRnRud1R4N2hN?=
- =?utf-8?B?THJyVUZzZEZKNkNUN216OW1YNmlwRHltQkIxa3AyK0JKQlArUTdReXVWUzlh?=
- =?utf-8?B?NUlhRDAvY3ZlT2swb2YxdXVna0l5UHorSUZDclM4OUZEUXcxblpQL1psa1Jl?=
- =?utf-8?B?aVlHMTFkci9xanVWbzg4NWhGTm5Yc1hSaytPQVJVYkRwTnVRTVpCbEM0b1lI?=
- =?utf-8?B?TWxjNHZZK3NOUnF5KzJmZUJoVXplRGlNUWdqOVFVYVBSanpsV1B5ZFdqcEhR?=
- =?utf-8?B?REZ2QjR0b2UrT1VXSHRJQk1xMkFWMFFmRk01bDlqMTl2bXZNNno3MzRtOG1x?=
- =?utf-8?B?TFVaMGJJWEpNYXMyaElHLzlESU5URTNmbnJEdWRrbHRoOW15YSsxbGpRRDlh?=
- =?utf-8?B?VGF5V1JQb3grNFNhMlRZakY0Z1Q1STYvVWhzZ3FhcHB3L0J3SXkwS0lhN2kw?=
- =?utf-8?B?enVrNFJYYmQ2WG56ckZBQVViSHo0NnREU1NxS3I5cnVReFVuOVJSL3g0K1hl?=
- =?utf-8?B?L3RKNVh6enQxVFd3bGFtL3VjNWF5VW5aeFJxdjAzdEFhSEN1N0E4TVBjcXFL?=
- =?utf-8?B?MThEMlBsVU1FQWJaOUVmREZ2MGJRbTJFa2owUVluL0FKUnVSZFNZWG12VkhG?=
- =?utf-8?B?Z2pwYVJ5ckl6dHpSOXBqbmNWbDVaaVM2ZkFwZFp4djJoWjFlc05lTEkyWlA1?=
- =?utf-8?Q?hVJosRjUd8SLsZDjvAGVd7wnZ?=
-X-OriginatorOrg: amlogic.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 685a3964-44dd-4c0c-a99b-08dc1d726426
-X-MS-Exchange-CrossTenant-AuthSource: KL1PR03MB5732.apcprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2024 06:53:52.6219
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 0df2add9-25ca-4b3a-acb4-c99ddf0b1114
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: g/2cW1mGaOrray2ftp+wYFBg8JORagDBj4SyEEen5HotY57C6lYzvYNik/VHAn2EWHCV0U+2M2Sm0aaxxVFf5Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR03MB7780
+References: <20240125025533.10315-1-Wenhua.Lin@unisoc.com> <20240125025533.10315-3-Wenhua.Lin@unisoc.com>
+In-Reply-To: <20240125025533.10315-3-Wenhua.Lin@unisoc.com>
+From: Chunyan Zhang <zhang.lyra@gmail.com>
+Date: Thu, 25 Jan 2024 15:20:04 +0800
+Message-ID: <CAAfSe-t68Jq+mKaSdzz5P2tPetxup7w1UoMsk+Z__3YWtV6EhQ@mail.gmail.com>
+Subject: Re: [PATCH V2 2/6] pwm: sprd: Improve the pwm backlight control function
+To: Wenhua Lin <Wenhua.Lin@unisoc.com>
+Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, wenhua lin <wenhua.lin1994@gmail.com>, 
+	Xiongpeng Wu <xiongpeng.wu@unisoc.com>, zhaochen su <zhaochen.su29@gmail.com>, 
+	Zhaochen Su <Zhaochen.Su@unisoc.com>, Xiaolong Wang <Xiaolong.Wang@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
+
+On Thu, 25 Jan 2024 at 11:09, Wenhua Lin <Wenhua.Lin@unisoc.com> wrote:
+>
+> The pwm-sprd driver support only 8-bit linear control of backlight. Now,
+> new requests of supporting 9-bit, 10-bit, 11-bit and 12-bit linear
+> control of backlight are proposed. Besides, different channels of pwm
+> could be configured into different linear control of backlight. Thus,
+> sprd,mod attribute is introduced into dts for every channel of pwm
+> device. This attribute would determine the value of MOD and eventually
+> realize the new requirements.
+>
+> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+> ---
+>  drivers/pwm/pwm-sprd.c | 42 ++++++++++++++++++++++++++++++++++--------
+>  1 file changed, 34 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-sprd.c b/drivers/pwm/pwm-sprd.c
+> index bc1e3ed13528..cc54aa77c7e6 100644
+> --- a/drivers/pwm/pwm-sprd.c
+> +++ b/drivers/pwm/pwm-sprd.c
+> @@ -18,7 +18,8 @@
+>  #define SPRD_PWM_DUTY          0x8
+>  #define SPRD_PWM_ENABLE                0x18
+>
+> -#define SPRD_PWM_MOD_MAX       GENMASK(7, 0)
+> +#define SPRD_PWM_MOD_MAX       GENMASK(15, 0)
+> +#define SPRD_PWM_MOD_DEFAULT   GENMASK(9, 0)
+>  #define SPRD_PWM_DUTY_MSK      GENMASK(15, 0)
+>  #define SPRD_PWM_PRESCALE_MSK  GENMASK(7, 0)
+>  #define SPRD_PWM_ENABLE_BIT    BIT(0)
+> @@ -43,6 +44,7 @@ struct sprd_pwm_chip {
+>         const struct sprd_pwm_data *pdata;
+>         int num_pwms;
+>         struct sprd_pwm_chn chn[SPRD_PWM_CHN_NUM];
+> +       u32 mod[SPRD_PWM_CHN_NUM];
+>  };
+>
+>  static const struct sprd_pwm_data ums512_data = {
+> @@ -120,7 +122,7 @@ static int sprd_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+>          */
+>         val = sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_PRESCALE);
+>         prescale = val & SPRD_PWM_PRESCALE_MSK;
+> -       tmp = (prescale + 1) * NSEC_PER_SEC * SPRD_PWM_MOD_MAX;
+> +       tmp = (prescale + 1) * NSEC_PER_SEC * spc->mod[pwm->hwpwm];
+>         state->period = DIV_ROUND_CLOSEST_ULL(tmp, chn->clk_rate);
+>
+>         val = sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_DUTY);
+> @@ -140,7 +142,7 @@ static int sprd_pwm_config(struct sprd_pwm_chip *spc, struct pwm_device *pwm,
+>                            int duty_ns, int period_ns)
+>  {
+>         struct sprd_pwm_chn *chn = &spc->chn[pwm->hwpwm];
+> -       u32 prescale, duty;
+> +       u32 prescale, duty, mod;
+>         u64 tmp;
+>
+>         /*
+> @@ -148,16 +150,21 @@ static int sprd_pwm_config(struct sprd_pwm_chip *spc, struct pwm_device *pwm,
+>          * The period length is (PRESCALE + 1) * MOD counter steps.
+>          * The duty cycle length is (PRESCALE + 1) * DUTY counter steps.
+>          *
+> -        * To keep the maths simple we're always using MOD = SPRD_PWM_MOD_MAX.
+> +        * The value for MOD is obtained from dts.
+>          * The value for PRESCALE is selected such that the resulting period
+>          * gets the maximal length not bigger than the requested one with the
+> -        * given settings (MOD = SPRD_PWM_MOD_MAX and input clock).
+> +        * given settings (MOD and input clock).
+>          */
+> -       duty = duty_ns * SPRD_PWM_MOD_MAX / period_ns;
+> +       mod = spc->mod[pwm->hwpwm];
+> +       duty = duty_ns * mod / period_ns;
+>
+>         tmp = (u64)chn->clk_rate * period_ns;
+>         do_div(tmp, NSEC_PER_SEC);
+> -       prescale = DIV_ROUND_CLOSEST_ULL(tmp, SPRD_PWM_MOD_MAX) - 1;
+> +       prescale = DIV_ROUND_CLOSEST_ULL(tmp, mod);
+> +       if (prescale < 1)
+> +               prescale = 1;
+> +       prescale--;
+> +
+>         if (prescale > SPRD_PWM_PRESCALE_MSK)
+>                 prescale = SPRD_PWM_PRESCALE_MSK;
+>
+> @@ -170,7 +177,7 @@ static int sprd_pwm_config(struct sprd_pwm_chip *spc, struct pwm_device *pwm,
+>          * before changing a new configuration to avoid mixed settings.
+>          */
+>         sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_PRESCALE, prescale);
+> -       sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_MOD, SPRD_PWM_MOD_MAX);
+> +       sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_MOD, mod);
+>         sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_DUTY, duty);
+>
+>         return 0;
+> @@ -263,6 +270,21 @@ static int sprd_pwm_clk_init(struct sprd_pwm_chip *spc)
+>         return 0;
+>  }
+>
+> +static int sprd_pwm_get_mod(struct platform_device *pdev)
+> +{
+> +       int i, ret;
+> +       struct sprd_pwm_chip *spc = platform_get_drvdata(pdev);
+
+Before using platform_get_drvdata(), you have to call
+platform_set_drvdata, otherwise spc is NULL here and it will cause a
+crash.
+
+> +
+> +       ret = of_property_read_u32_array(pdev->dev.of_node,
+> +                                        "sprd,mod", spc->mod, spc->num_pwms);
+> +       if (ret) {
 
 
-
-On 2024/1/24 17:59, Jerome Brunet wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> On Wed 24 Jan 2024 at 10:48, Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote:
-> 
->> [[PGP Signed Part:Undecided]]
->> Hello Jerome,
->>
->> On Wed, Jan 24, 2024 at 10:16:17AM +0100, Jerome Brunet wrote:
->>> On Wed 24 Jan 2024 at 10:02, Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote:
->>>> On Fri, Dec 22, 2023 at 12:16:53PM +0100, Jerome Brunet wrote:
->>>>> @@ -442,6 +439,13 @@ static int meson_pwm_init_channels(struct device *dev)
->>>>>            struct meson_pwm_channel *channel = &meson->channels[i];
->>>>>            struct clk_parent_data div_parent = {}, gate_parent = {};
->>>>>            struct clk_init_data init = {};
->>>>> +         struct clk_divider *div;
->>>>> +         struct clk_gate *gate;
->>>>> +         struct clk_mux *mux;
->>>>> +
->>>>> +         mux = devm_kzalloc(dev, sizeof(*mux), GFP_KERNEL);
->>>>> +         if (!mux)
->>>>> +                 return -ENOMEM;
->>>>
->>>> I don't like this change. While it doesn't increase the memory used, it
->>>> fragments the used memory and increases the overhead of memory
->>>> management and the number of devm allocations.
->>>>
->>>> Are these members of meson_pwm_channel in the way for anything later?
->>>
->>> Not really. It is just not useful on the SoCs which do use it and not
->>> used at all starting from s4/a1.
->>
->> This remembers me about the old pwm-imx driver. This was essentially a
->> single file containing two drivers just because both types appeared on
->> imx machines. Later it was split into imx1 and imx27.
->>
->> I didn't look at the relevant differences between the existing driver
->> and the changes needed for s4, but please don't repeat this issue for
->> meson. Not sure this fear is justified, just saying ...
-> 
-> Noted. Don't worry. s4 is indeed the same PWM block as before, just
-> mux/div/gate migrated from the pwm IP to the main clk controller.
-> That's all ... I know ;)
-> 
-> Only the clock registration should change and simplify.
-> 
->>
->> Best regards
->> Uwe
-> 
-> 
+> +               for (i = 0; i < spc->num_pwms; i++)
+> +                       spc->mod[i] = SPRD_PWM_MOD_DEFAULT;
+> +       }
+> +
+> +       return ret;
+> +}
+> +
+>  static int sprd_pwm_probe(struct platform_device *pdev)
+>  {
+>         struct sprd_pwm_chip *spc;
+> @@ -288,6 +310,10 @@ static int sprd_pwm_probe(struct platform_device *pdev)
+>         if (ret)
+>                 return ret;
+>
+> +       ret = sprd_pwm_get_mod(pdev);
+> +       if (ret)
+> +               dev_info(&pdev->dev, "get pwm mod failed! Use default setting\n");
+> +
+>         spc->chip.dev = &pdev->dev;
+>         spc->chip.ops = &sprd_pwm_ops;
+>         spc->chip.npwm = spc->num_pwms;
 > --
-> Jerome
-Hi ,Uwe and Jerom.
-Compared with m8b g12a and sm1, s4 and A1 are new pwm ip that moved 
-MUX/DIV/GATE from pwm chip to clock tree module and the pwm block are same.
-About new s7，compared with s4，one pwmchip corresponds one pwm channel. 
-Like，we separate PWMAB into PWMA and PWMB.
-Here is a version from Amlogic. We will start the following work of pwm 
-driver. Welcom to give comments.
-
-Best regards
---
-Junyi
+> 2.17.1
+>
