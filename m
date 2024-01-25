@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DCEC3D99E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A80F3EA62
 	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184647; cv=none; b=JG+K4cqggM0pO/7F4c4AoDAuo8BiDToSOSiUIypyRECTKz9X6QDaRMcy5J0kU0YbFtzGhWpAbcbAYn+nqwbl7VMMcQN19tctWS3CjT5gGSNzoYAc2Kwk7/x6FZ1n55p3SHo73C17B3DT0SHnhpsxB6AQbNpEkAdOSB/BCK3tlsA=
+	t=1706184647; cv=none; b=fuh5mpzERuBNjBpCE9/rSRl2d9Nh+t1TyMptn4hNAOT0Zh6CreIjKuekA2ssAG2CyJBIcVCFHLNtnb19OWgBVbcyPGhNfPjgz9PWNFUPC4MjAreaQg4OJtMl4YH9diVy6eD+pmMC4YRfdp8UTNMDyZeNQsh0+q3LeJrpNTBk08U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184647; c=relaxed/simple;
-	bh=PNPQamBsT4Zn4V3oUXhqfORlkwxK5GpAVyXPuBqnRYE=;
+	bh=toAW/efX1boJm8BkufsQI2RsQDbOMmC1WhC5mdC1O8Y=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pMfALgkRQSN2tyE/Oclu8atQuzGSDXZiiVFxF24CGkzznIJrGmV4JsO++3+0u6BoSH5xuw5YoP/x5fQBOVa/Z0opY9cEc/yIgIzrsl3ynW0voNil1Q8ZulZ0erUWJtQ8mAfhc+XUAPFDYmj5/gH81Vkv7iXYHpIy24Yc78o10BI=
+	 MIME-Version:Content-Type; b=YjnXgxdq1ydlH7Z+l6VT+kfsjd5MB1i97hKK+RGB7uoCHaW0y6Ab0wjZbRRR08Fq7STN5JMNYIH9qJEQsFKNDdf1Pu2gXYL8l6oZefZvRmT3zms+EOas9wtR3/XQZT6tmCzyFZPpKgW7rbuJSkaD10SYHV23KN4znC3sCFzTtXk=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,26 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ9-0003iN-IN; Thu, 25 Jan 2024 13:10:43 +0100
+	id 1rSyZ8-0003Zp-BR; Thu, 25 Jan 2024 13:10:42 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ9-002HPl-4v; Thu, 25 Jan 2024 13:10:43 +0100
+	id 1rSyZ6-002HP1-Rn; Thu, 25 Jan 2024 13:10:40 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ9-007mzF-0F;
-	Thu, 25 Jan 2024 13:10:43 +0100
+	id 1rSyZ6-007myO-2W;
+	Thu, 25 Jan 2024 13:10:40 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de
-Subject: [PATCH v5 017/111] pwm: lpss: Make use of pwmchip_parent() macro
-Date: Thu, 25 Jan 2024 13:08:39 +0100
-Message-ID:  <8f91c9226935c1dde5f8f1ae51e7b458560ba620.1706182805.git.u.kleine-koenig@pengutronix.de>
+To: Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	linux-pwm@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org,
+	kernel@pengutronix.de
+Subject: [PATCH v5 005/111] pwm: atmel: Make use of pwmchip_parent() macro
+Date: Thu, 25 Jan 2024 13:08:27 +0100
+Message-ID:  <33b1da62f00242be38a5804ef046f2c7f65402c9.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +48,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2474; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=PNPQamBsT4Zn4V3oUXhqfORlkwxK5GpAVyXPuBqnRYE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9NrR+fUMqQObDbSzYCUeKCvTuAlYjBMLJ8U i9IAf8M3x6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPTQAKCRCPgPtYfRL+ Th1JCACO7VYHLOPBY9oJw5ygwFKX3hTvz70sxUx8SasmdS18JdUUzkGyVImWJBCgsU/qMolQ/b1 18pKENP61tHG6KG7p3lopmtZG2qu+CaZPNFMxYeMFfNhXQ3yohJ0/M1rgYiHZs+S16sHLjhErqJ crVDt7oJExkLmwTnHCqnq30Ld2ksU0JGRWfa6+1VVVsOyYisqUDwFWUMAwZx329YYFRbsYjr90k AQHh1pQ3f3hTKj2XOF49voHX53K986YX75ldBIxnLzR3kW8HXiDmu+I3ME8HsgBmccyyYp59W41 6U2PAO3rrumGptRJfaLPNchavPWj8FoN81/tsMQ6cEtop00f
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2827; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=toAW/efX1boJm8BkufsQI2RsQDbOMmC1WhC5mdC1O8Y=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk8/hWYPV9wcyN0d9t8ww6T4FARCszgsYBCgd CrF7YrXrrGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPPwAKCRCPgPtYfRL+ Tmh0CACRtfusaeNOqY7cy6oTyJOATo3TYMTHD5EXWKMMaoGM06TJMW3Kj0fPD36eiIQLj+CMu37 80xpkLPTapUWmzUsEcJeEo2LUzTa78QFB7gEy9zd212aaVOTv9T69Osy50/1tv93PZH4QkewnvQ Q/3xFgqKFIpRtEs5e6Jm9v8iCuiKPS1m1kftHe4QdYz+lGyWMdxafSb7vmb7i/IIykiuw1kGrlY 275IHrB0qllB+FAK4GqgP6ZIrMcFvS/iIDRI0lLcFCJKEf/DdP6czXOQT+bb2hQpWV93SQQjajd 7nGL25GeKWtR7V53jMEwYC5SeqRB/6WddmZyyS6FCCMj3eo5
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -58,68 +62,77 @@ provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-lpss.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/pwm/pwm-atmel.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index a6ea3ce7e019..394c768f5a5f 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -106,7 +106,7 @@ static int pwm_lpss_wait_for_update(struct pwm_device *pwm)
- 	 */
- 	err = readl_poll_timeout(addr, val, !(val & PWM_SW_UPDATE), 40, ms);
- 	if (err)
--		dev_err(pwm->chip->dev, "PWM_SW_UPDATE was not cleared\n");
-+		dev_err(pwmchip_parent(pwm->chip), "PWM_SW_UPDATE was not cleared\n");
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 47bcc8a3bf9d..4ef91fe6f147 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -210,7 +210,7 @@ static int atmel_pwm_calculate_cprd_and_pres(struct pwm_chip *chip,
+ 	shift = fls(cycles) - atmel_pwm->data->cfg.period_bits;
  
- 	return err;
- }
-@@ -114,7 +114,7 @@ static int pwm_lpss_wait_for_update(struct pwm_device *pwm)
- static inline int pwm_lpss_is_updating(struct pwm_device *pwm)
- {
- 	if (pwm_lpss_read(pwm) & PWM_SW_UPDATE) {
--		dev_err(pwm->chip->dev, "PWM_SW_UPDATE is still set, skipping update\n");
-+		dev_err(pwmchip_parent(pwm->chip), "PWM_SW_UPDATE is still set, skipping update\n");
- 		return -EBUSY;
- 	}
- 
-@@ -190,16 +190,16 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	if (state->enabled) {
- 		if (!pwm_is_enabled(pwm)) {
--			pm_runtime_get_sync(chip->dev);
-+			pm_runtime_get_sync(pwmchip_parent(chip));
- 			ret = pwm_lpss_prepare_enable(lpwm, pwm, state);
- 			if (ret)
--				pm_runtime_put(chip->dev);
-+				pm_runtime_put(pwmchip_parent(chip));
- 		} else {
- 			ret = pwm_lpss_prepare_enable(lpwm, pwm, state);
+ 	if (shift > PWM_MAX_PRES) {
+-		dev_err(chip->dev, "pres exceeds the maximum value\n");
++		dev_err(pwmchip_parent(chip), "pres exceeds the maximum value\n");
+ 		return -EINVAL;
+ 	} else if (shift > 0) {
+ 		*pres = shift;
+@@ -321,7 +321,7 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		ret = atmel_pwm_calculate_cprd_and_pres(chip, clkrate, state, &cprd,
+ 							&pres);
+ 		if (ret) {
+-			dev_err(chip->dev,
++			dev_err(pwmchip_parent(chip),
+ 				"failed to calculate cprd and prescaler\n");
+ 			return ret;
  		}
- 	} else if (pwm_is_enabled(pwm)) {
- 		pwm_lpss_write(pwm, pwm_lpss_read(pwm) & ~PWM_ENABLE);
--		pm_runtime_put(chip->dev);
-+		pm_runtime_put(pwmchip_parent(chip));
- 	}
+@@ -333,7 +333,7 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		} else {
+ 			ret = clk_enable(atmel_pwm->clk);
+ 			if (ret) {
+-				dev_err(chip->dev, "failed to enable clock\n");
++				dev_err(pwmchip_parent(chip), "failed to enable clock\n");
+ 				return ret;
+ 			}
+ 		}
+@@ -462,8 +462,9 @@ static const struct of_device_id atmel_pwm_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
+ 
+-static int atmel_pwm_enable_clk_if_on(struct atmel_pwm_chip *atmel_pwm, bool on)
++static int atmel_pwm_enable_clk_if_on(struct pwm_chip *chip, bool on)
+ {
++	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
+ 	unsigned int i, cnt = 0;
+ 	unsigned long sr;
+ 	int ret = 0;
+@@ -480,7 +481,7 @@ static int atmel_pwm_enable_clk_if_on(struct atmel_pwm_chip *atmel_pwm, bool on)
+ 	for (i = 0; i < cnt; i++) {
+ 		ret = clk_enable(atmel_pwm->clk);
+ 		if (ret) {
+-			dev_err(atmel_pwm->chip.dev,
++			dev_err(pwmchip_parent(chip),
+ 				"failed to enable clock for pwm %pe\n",
+ 				ERR_PTR(ret));
+ 
+@@ -525,7 +526,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 	atmel_pwm->chip.ops = &atmel_pwm_ops;
+ 	atmel_pwm->chip.npwm = 4;
+ 
+-	ret = atmel_pwm_enable_clk_if_on(atmel_pwm, true);
++	ret = atmel_pwm_enable_clk_if_on(&atmel_pwm->chip, true);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -538,7 +539,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ disable_clk:
+-	atmel_pwm_enable_clk_if_on(atmel_pwm, false);
++	atmel_pwm_enable_clk_if_on(&atmel_pwm->chip, false);
  
  	return ret;
-@@ -213,7 +213,7 @@ static int pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	unsigned long long base_unit, freq, on_time_div;
- 	u32 ctrl;
- 
--	pm_runtime_get_sync(chip->dev);
-+	pm_runtime_get_sync(pwmchip_parent(chip));
- 
- 	base_unit_range = BIT(lpwm->info->base_unit_bits);
- 
-@@ -235,7 +235,7 @@ static int pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	state->polarity = PWM_POLARITY_NORMAL;
- 	state->enabled = !!(ctrl & PWM_ENABLE);
- 
--	pm_runtime_put(chip->dev);
-+	pm_runtime_put(pwmchip_parent(chip));
- 
- 	return 0;
  }
 -- 
 2.43.0
