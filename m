@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBCFA405F9
-	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38D0A4502F
+	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184655; cv=none; b=FUvHV2uUS/XrS/zVrB3JrrVSDlIFwjz92AMxs1XHwKaMHWlasGSNGyVyvdDRguNgWXHdbJ5kq3OxIvniA9pnoWCBOSbLdp6cyegxu3UDcmCtU+AZOq02q5pE2tk6tTAk+dk43o8OTSbXQo6vIsW8M267jwXil0I12EVsxkUD8WU=
+	t=1706184655; cv=none; b=OMtuKU9TytR7dXVMl/4z1wrSp62sKG7plSaQKZU2WqWQKzFb/RmXoABlKI1sH9wxxw/I/voKtnV6OV4VVx8v/GOKyciMFZ1kU9y6OHUv7q69wCbuhlHkzPafgit8HbhIQo5kkKaFGacKqMBb5ozVrSoFHNQRjsA3wbGRyW1I7M0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184655; c=relaxed/simple;
-	bh=Yo6420w9dPgmTPswboA7SwJA2LCycKMLXUcUeusg2wY=;
+	bh=H2gBKJqPhxEH02LxqBcE7cgJijeXYph95OqB+mGaqEU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Z0p6xH5/lI/R0fxTozXUyaROrcGm7tM3dExpEzDfcYBNRf1CT/mynwhtKSe1YiRT/6eRABfxmmgOGIRegOAAy9O5nUaspWxFz7eroUZpIuUBn+KGUqalt787BPZxXvrrylOM2nH/0K46CWFiskH61VS6h4dBR1rVkVTzpQCqhvc=
+	 MIME-Version:Content-Type; b=tzoQ6qHmiHDx4xq1KawH0azpj47UCP5cI3Pf+i3WxmfhW0lSp/soLTm1pX1oEQ8GhM3eVPCUnsuVg9sXmHzR40yhnubKIho18xfsXXeknFj16xfackL/Q2S17xK1KLYySuJg6qnNhFw2TzkhrENnMVKyUwIsJuFYBCxcsDBJXlk=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,27 +18,27 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZD-0003wU-G3; Thu, 25 Jan 2024 13:10:47 +0100
+	id 1rSyZF-0004B7-SP; Thu, 25 Jan 2024 13:10:49 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZC-002HQe-26; Thu, 25 Jan 2024 13:10:46 +0100
+	id 1rSyZE-002HRP-Dv; Thu, 25 Jan 2024 13:10:48 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZB-007n09-3A;
-	Thu, 25 Jan 2024 13:10:45 +0100
+	id 1rSyZE-007n0x-17;
+	Thu, 25 Jan 2024 13:10:48 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
+To: Hector Martin <marcan@marcan.st>,
+	Sven Peter <sven@svenpeter.dev>,
 	linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev,
+Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v5 031/111] pwm: sun4i: Make use of pwmchip_parent() macro
-Date: Thu, 25 Jan 2024 13:08:53 +0100
-Message-ID:  <a87b5bce4f2c09fccb35ac990c93e0327666a598.1706182805.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v5 042/111] pwm: apple: Make use of devm_pwmchip_alloc() function
+Date: Thu, 25 Jan 2024 13:09:04 +0100
+Message-ID:  <2e206fd150681b9723ab19e3cccee6888a3b46de.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -49,7 +49,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1321; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=Yo6420w9dPgmTPswboA7SwJA2LCycKMLXUcUeusg2wY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9dgDg56kpyhjNfeMv9DpxDruYzLJ61u+zTj P5zOqm+z8WJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPXQAKCRCPgPtYfRL+ TuBrB/4zTmfwVgGCMKd/3WeDkLXoFcndR3WQBzEwLpyzuAowHlixCYbjoiQRznu8edYBIj91bwJ VTGTxeRS01JRhniYM3qDoJlAAtaFjA66IYNbTIvpi+RxeAqFb8j0RnbCDgAMSbgrSUhrcHFW7Oo Glib/4p0ATZK002PxHdeAWF3r0d4CKQYCpOcf5cgjVxqhZDMQQV9cD0gXR3pPj+wRjrNRjlo0tv 8O/2e2wW2ZM6QfrVNI+oGMXkM1ML1KJjoxAxx0e1nz03c6mzG5SZrwHpW3nmnuOJGh3iBrlLAIL gAcJAQzLnV0qdAMXHM055zMFrdiAg7/67smfmUr1AA38b7tc
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2027; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=H2gBKJqPhxEH02LxqBcE7cgJijeXYph95OqB+mGaqEU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9rlpZFHURacBlhG0kY5bULxwpd5zYoQh1k7 lR9eSFMJHaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPawAKCRCPgPtYfRL+ Ti5SB/9YqXuqNC3bQ8hqIp2f5nMBxU8URTKYa2VuwlklztiyBxaGLZkKep9xeaYBMJ/AuKpWY5e 4F/vGHWma3E2FxesQJn65+H9I+o2bu4w/KiwJLmwgCi/eAcPyfYc7UAwskM6FRmwUXuwZdiXLHU FJ6jlxBm+a/+rzEJdFeuUZEhKNmxHoIQGu3Tgh3+JvRg6AxVGE+Iy++WuuhC47meesmW11BLbU0 e0teupMjotHCBgM5u6sWu6Uk/3dyTxSQjvbiaq7Xn1996TMvKAj1kP7p0xyzFxO1xd8xBaHx1LS fbqHrHjx5fcVZOq9If0XCtolQo9ixqeNCLK7VtiaPPVR10N9
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -57,38 +57,69 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the macro
-provided for exactly this purpose.
+This prepares the pwm-apple driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-sun4i.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-apple.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 1a439025540d..44edf1ce5739 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -245,7 +245,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (!cstate.enabled) {
- 		ret = clk_prepare_enable(sun4i_pwm->clk);
- 		if (ret) {
--			dev_err(chip->dev, "failed to enable PWM clock\n");
-+			dev_err(pwmchip_parent(chip), "failed to enable PWM clock\n");
- 			return ret;
- 		}
- 	}
-@@ -253,7 +253,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	ret = sun4i_pwm_calculate(sun4i_pwm, state, &duty, &period, &prescaler,
- 				  &bypass);
- 	if (ret) {
--		dev_err(chip->dev, "period exceeds the maximum value\n");
-+		dev_err(pwmchip_parent(chip), "period exceeds the maximum value\n");
- 		if (!cstate.enabled)
- 			clk_disable_unprepare(sun4i_pwm->clk);
- 		return ret;
+diff --git a/drivers/pwm/pwm-apple.c b/drivers/pwm/pwm-apple.c
+index 4d755b628d9e..6e58aca2f13c 100644
+--- a/drivers/pwm/pwm-apple.c
++++ b/drivers/pwm/pwm-apple.c
+@@ -32,14 +32,13 @@
+ #define APPLE_PWM_CTRL_OUTPUT_ENABLE BIT(14)
+ 
+ struct apple_pwm {
+-	struct pwm_chip chip;
+ 	void __iomem *base;
+ 	u64 clkrate;
+ };
+ 
+ static inline struct apple_pwm *to_apple_pwm(struct pwm_chip *chip)
+ {
+-	return container_of(chip, struct apple_pwm, chip);
++	return pwmchip_get_drvdata(chip);
+ }
+ 
+ static int apple_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -103,13 +102,16 @@ static const struct pwm_ops apple_pwm_ops = {
+ 
+ static int apple_pwm_probe(struct platform_device *pdev)
+ {
++	struct pwm_chip *chip;
+ 	struct apple_pwm *fpwm;
+ 	struct clk *clk;
+ 	int ret;
+ 
+-	fpwm = devm_kzalloc(&pdev->dev, sizeof(*fpwm), GFP_KERNEL);
+-	if (!fpwm)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*fpwm));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++
++	fpwm = to_apple_pwm(chip);
+ 
+ 	fpwm->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(fpwm->base))
+@@ -129,11 +131,9 @@ static int apple_pwm_probe(struct platform_device *pdev)
+ 	if (fpwm->clkrate > NSEC_PER_SEC)
+ 		return dev_err_probe(&pdev->dev, -EINVAL, "pwm clock out of range");
+ 
+-	fpwm->chip.dev = &pdev->dev;
+-	fpwm->chip.npwm = 1;
+-	fpwm->chip.ops = &apple_pwm_ops;
++	chip->ops = &apple_pwm_ops;
+ 
+-	ret = devm_pwmchip_add(&pdev->dev, &fpwm->chip);
++	ret = devm_pwmchip_add(&pdev->dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "unable to add pwm chip");
+ 
 -- 
 2.43.0
 
