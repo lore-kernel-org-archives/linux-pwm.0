@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A816C1CA83
-	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D005036B0E
+	for <linux-pwm@vger.kernel.org>; Thu, 25 Jan 2024 12:10:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706184645; cv=none; b=IeKg4BI2NWGSQ1Dep4+0EZ2pua1race0e13cg2ytMIN9EcOjrhWogzmpWmtCqrGmKbAGFQUsVOlQVhIU2LnHnCG0W3PgZF/lY3qmffdeVvuk6zi2zNVtK5XuObxKMVQvqukPF+x9ViWIZTAyBAIRRFELwHdbkdOuqxzTzDGCF0I=
+	t=1706184645; cv=none; b=XiL9ySTdOaJz889O3tFJMh/AWzKOgYym8BygQUpsobEM1zyPZZ5T4n9b+PIlyQRyDnMtSmuWek8zkWXwCu25YRo0OfK762QAa8J45ZC5EFpX6SIixDitBrnsBskI2p7wTnTs0zwiIEYygOcBqu1Zpeu2HHbrQBlQTr1+nbN6Cd4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706184645; c=relaxed/simple;
-	bh=hJgSdC2n9RSk5u06nSDoTge/3JwjiJ/09/04zNqldz0=;
+	bh=QAwdGsDD3nCsJGs4OgRRdVziw7oMhwIuCi4wAgw2bGY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tshR0XKP64h3t6EDTASC29oLyKy6qnv0c5YhYHb9mvfjazIR6mtJarfVNg1Fv5qYhAENmumxvNFus7zPjHivlPw9QRRri9UnPGixFqWez8eO5IqVIBFwuCNr8xVmya3FvWoN0Bu+WAe7SM322Ne3zsRUfMTA2VvdL+V9pBd7JBQ=
+	 MIME-Version:Content-Type; b=S50WnN8vAQHMBwZRacoR7Qj7kjFU3dWxjfl6fXgNr8PW1a34PxWtOYwCFQv9IBtDK0zT4T9Dv9e3kBKWm/GZ7a0fZHRYU5p0Ss79+k2MaCh1DrQ77kaLaof6SRY7iR1o9gLE0Z+nOYdsC0hwUAuLjAZOFa8T9Sq9n0cg5nARIpc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,26 +18,22 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ6-0003ZO-LH; Thu, 25 Jan 2024 13:10:40 +0100
+	id 1rSyZ7-0003aL-RM; Thu, 25 Jan 2024 13:10:41 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ6-002HOp-7X; Thu, 25 Jan 2024 13:10:40 +0100
+	id 1rSyZ7-002HPB-DE; Thu, 25 Jan 2024 13:10:41 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rSyZ6-007myC-0V;
-	Thu, 25 Jan 2024 13:10:40 +0100
+	id 1rSyZ7-007mya-14;
+	Thu, 25 Jan 2024 13:10:41 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Benson Leung <bleung@chromium.org>,
-	linux-pwm@vger.kernel.org
-Cc: Guenter Roeck <groeck@chromium.org>,
-	chrome-platform@lists.linux.dev,
-	kernel@pengutronix.de,
-	Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH v5 002/111] pwm: cros-ec: Change prototype of helpers to prepare further changes
-Date: Thu, 25 Jan 2024 13:08:24 +0100
-Message-ID:  <578f3c0f4394ed97da2d7ff1a4d2f4b95f3b24f6.1706182805.git.u.kleine-koenig@pengutronix.de>
+To: linux-pwm@vger.kernel.org
+Cc: kernel@pengutronix.de
+Subject: [PATCH v5 008/111] pwm: crc: Make use of pwmchip_parent() macro
+Date: Thu, 25 Jan 2024 13:08:30 +0100
+Message-ID:  <033e9bcf766a9fc3a62952c694a4c2010c4857c0.1706182805.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1706182805.git.u.kleine-koenig@pengutronix.de>
@@ -48,7 +44,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2990; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=hJgSdC2n9RSk5u06nSDoTge/3JwjiJ/09/04zNqldz0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk879DTV5RgyMuiu5l76SHkNXAULB1F4/+1P8 +yKEemB7DWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPOwAKCRCPgPtYfRL+ ToUdCACGKvwElqSgGqz6RsHoD/sCB/nxRoi97yR5kSsBsvSUyTFnaYKUo1WZnNKYeGHQhU+O6uj pzNcjNn1WsUMBfMWvoIXrmfEAQUE5WAILJ+81eyAy/v8Vrf0y+dCNDcbe91Us4QtUBFsBSmQhVD JQ9MwpsWnYnVNRg7TzGp0Y6KKLNJSE+P5sYjbonQ6zeSdRT7/yi33lsRGZ8yN7WOxnVH+z//+/T Wauigka+AIPfPF6schhs3Hloqoha1EOT9AqXCBMCg29ug7XeYVuLWnNO4unDkGXx5fKn7HXBVfl sMtzmqKvK+Ut0WsbzEOIqAOa8Gaq3oIKEjBpQI8NEIvcM7jF
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1187; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=QAwdGsDD3nCsJGs4OgRRdVziw7oMhwIuCi4wAgw2bGY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlsk9Dxjy4365oK7pOGQ5AdmDv2X1NF3q3IO5Zz WrfA26cUdKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZbJPQwAKCRCPgPtYfRL+ TmX+CAC5OaRFf0TiPuNogfcoju5VL8ifLWCY+QbdsCI5tD2HRZSSfMv+bW1pGbkYti//1qTrfKq o21RIwu91YstLx1m59YlhlZM7Dbwy5l56UDW9luIrMc4fwgyLnuteZlRdupgl3qSQQlDNdWCT4v /8h528mbx/8iKqRTASr1L0StrsbelbxRAkAZpAWz/nuzYzqIAS4uwmUBP1xmw/i6Yu30wawNapt /ePxOpjL+1ZipMQRYwu3+TiTj9/3z4IwTUDw0ZU9dfcpwgmqyl7oWe3x5lAcGx/nT3cYmYUf5z2 E5V0TeTvdC7LKkHAANInzpE45YEBADp2bWulWbQqxNv851xM
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,79 +52,37 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-pwm_chip allocation and registration is about to change. For that the
-number of PWM devices must be known earlier in cros_ec_pwm_probe(). So
-make cros_ec_pwm_get_duty() and cros_ec_num_pwms() independent of
-struct cros_ec_pwm_device which is only available later.
+struct pwm_chip::dev is about to change. To not have to touch this
+driver in the same commit as struct pwm_chip::dev, use the macro
+provided for exactly this purpose.
 
-Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-cros-ec.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/pwm/pwm-crc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-index 339cedf3a7b1..e556f6218dd7 100644
---- a/drivers/pwm/pwm-cros-ec.c
-+++ b/drivers/pwm/pwm-cros-ec.c
-@@ -93,9 +93,8 @@ static int cros_ec_pwm_set_duty(struct cros_ec_pwm_device *ec_pwm, u8 index,
- 	return cros_ec_cmd_xfer_status(ec, msg);
- }
- 
--static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
-+static int cros_ec_pwm_get_duty(struct cros_ec_device *ec, bool use_pwm_type, u8 index)
+diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
+index e09358901ab5..c8a852345a97 100644
+--- a/drivers/pwm/pwm-crc.c
++++ b/drivers/pwm/pwm-crc.c
+@@ -55,7 +55,7 @@ static int crc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			 const struct pwm_state *state)
  {
--	struct cros_ec_device *ec = ec_pwm->ec;
- 	struct {
- 		struct cros_ec_command msg;
- 		union {
-@@ -115,7 +114,7 @@ static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
- 	msg->insize = sizeof(*resp);
- 	msg->outsize = sizeof(*params);
+ 	struct crystalcove_pwm *crc_pwm = to_crc_pwm(chip);
+-	struct device *dev = crc_pwm->chip.dev;
++	struct device *dev = pwmchip_parent(chip);
+ 	int err;
  
--	if (ec_pwm->use_pwm_type) {
-+	if (use_pwm_type) {
- 		ret = cros_ec_dt_type_to_pwm_type(index, &params->pwm_type);
- 		if (ret) {
- 			dev_err(ec->dev, "Invalid PWM type index: %d\n", index);
-@@ -171,7 +170,7 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct cros_ec_pwm *channel = &ec_pwm->channel[pwm->hwpwm];
- 	int ret;
- 
--	ret = cros_ec_pwm_get_duty(ec_pwm, pwm->hwpwm);
-+	ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, pwm->hwpwm);
- 	if (ret < 0) {
- 		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
- 		return ret;
-@@ -226,13 +225,17 @@ static const struct pwm_ops cros_ec_pwm_ops = {
-  * of PWMs it supports directly, so we have to read the pwm duty cycle for
-  * subsequent channels until we get an error.
-  */
--static int cros_ec_num_pwms(struct cros_ec_pwm_device *ec_pwm)
-+static int cros_ec_num_pwms(struct cros_ec_device *ec)
+ 	if (state->period > PWM_MAX_PERIOD_NS) {
+@@ -125,7 +125,7 @@ static int crc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			     struct pwm_state *state)
  {
- 	int i, ret;
+ 	struct crystalcove_pwm *crc_pwm = to_crc_pwm(chip);
+-	struct device *dev = crc_pwm->chip.dev;
++	struct device *dev = pwmchip_parent(chip);
+ 	unsigned int clk_div, clk_div_reg, duty_cycle_reg;
+ 	int error;
  
- 	/* The index field is only 8 bits */
- 	for (i = 0; i <= U8_MAX; i++) {
--		ret = cros_ec_pwm_get_duty(ec_pwm, i);
-+		/*
-+		 * Note that this function is only called when use_pwm_type is
-+		 * false. With use_pwm_type == true the number of PWMs is fixed.
-+		 */
-+		ret = cros_ec_pwm_get_duty(ec, false, i);
- 		/*
- 		 * We look for SUCCESS, INVALID_COMMAND, or INVALID_PARAM
- 		 * responses; everything else is treated as an error.
-@@ -283,7 +286,7 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
- 	if (ec_pwm->use_pwm_type) {
- 		chip->npwm = CROS_EC_PWM_DT_COUNT;
- 	} else {
--		ret = cros_ec_num_pwms(ec_pwm);
-+		ret = cros_ec_num_pwms(ec);
- 		if (ret < 0)
- 			return dev_err_probe(dev, ret, "Couldn't find PWMs\n");
- 		chip->npwm = ret;
 -- 
 2.43.0
 
