@@ -1,60 +1,59 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C91C625773;
-	Sun, 28 Jan 2024 14:53:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8AC208A5;
+	Sun, 28 Jan 2024 15:03:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.88
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706453612; cv=none; b=ganLNE8ZrdiAifWrl2mPMdtyTzJ/Q70bss4m4rXDCXfz1gVKtVRtwZKtCczY+5ZsqkM9y+XGV+nJXnMZdHKyzCM6u2qqJcX6jewvc1VoVkOUEGLy1rGx4j1/G8i91jmXqIUDyYn1tRnExu6/CkIvFf241MrSMfJSEWmC0qQiMg0=
+	t=1706454184; cv=none; b=dUMuXTELDeWqzJiey72gshc1QY6yBe5RC6z6MiwhHkN6dK9oKvET36EbXMXlJ/rLtHdGR8O1CGf8iZfmOzUJwy27cwXhhPXohXp+MxjBjH/nsu7BAsoyH2xX89S1DfENfzot+Mn31lgWhuKcUFTNWdUyGpTfqa+daCh4viDdk5c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706453612; c=relaxed/simple;
-	bh=FPNPXRGcYW+3LdmTeX/GEGVmsrCrRC4A0cjQ4DkFE/k=;
+	s=arc-20240116; t=1706454184; c=relaxed/simple;
+	bh=kx6bsX0OE3XS8U8hsFaidy9FE0hwsYAbgmFip0JKzNY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C7eT0MR6/EbXs8KyEz5k8d+xNX3EWebTpjZ/u9PnHx3zXd8nH7m6l47oH8+/CayNqfWztskjSAKoddyBM17tec5NSdbKgZOcWjw1jKNz7XesD4GKhErPcOkxDczD0onLbevTWNk5f4qdJZJBPZYmsd8M5gcHs/iAyDSKyNDxWQ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=buo9Wmlw; arc=none smtp.client-ip=192.55.52.88
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZulVKOCy0+9VUxDeivBlP6sVnG3ecaI8iKyOzWkc2XdckXS4O6wts7JqgxPJBaSCPQiBR8dLlPOizfaY1z0cQJed7rOduoHZYwo7HveQCxNLOt6KxuLg9aTSh9iMOkKfAHO1PK1zGdZIk5wBMPTKr1HOT/81ClqvrH1xjLW9exE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SCHu8FHX; arc=none smtp.client-ip=192.55.52.88
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="buo9Wmlw"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SCHu8FHX"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706453610; x=1737989610;
+  t=1706454183; x=1737990183;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=FPNPXRGcYW+3LdmTeX/GEGVmsrCrRC4A0cjQ4DkFE/k=;
-  b=buo9WmlwrhFOMF6M+nAxJrpiztosiUxl4YVyb9Ffdeh8BtnjvBWoogw2
-   krz4F5Z81Zsb/TV/jRFT1y0BJbEB+vlKLERWBklzg8pqgmT/AgrUXYrgl
-   39gXPqw9INo+zN0PaIlRso+s40pTxRxzAguGY4M3fuW3PYuAFwC90BXGr
-   XO2FmDq98j1Z4c/geHq8kK935KZssE4Vcjv4Yan4gdaBxJCnAG5lJQhvQ
-   mtDS/8tgL4zAvKKBPC/bRCs0FqjQTM1A7oPgRdnIf1eEZFBTppL6Kxzfv
-   98nNMOH4CGD2KItjBnL7r92A/s1tXEj21lSewyeUFZuHnGrG/Rc2uNG73
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10966"; a="433942007"
+  bh=kx6bsX0OE3XS8U8hsFaidy9FE0hwsYAbgmFip0JKzNY=;
+  b=SCHu8FHXfJlp7BeZdXkIkaeObPUTxE0RqeLfC079MJHRJV+uc1R0nzUL
+   kdzTLZOacsnD/4E2oFdr6/DNqgsYKSZwuQhXFCIYsPuxlBeGnri6NaZaJ
+   CNEiRTEljxhH/+AFl74K60Im3O4APVYPd4leP7wZt/lXOS5Me6xbbbhLC
+   B5U9UfWEGG0plU5PaAGZ0OYmoTZAhOYWucSC+bzVeEEETOAK9RRXqrYkN
+   LJ9zD89zfGUIa+3WYw/Q0TBUtmwv+QigxBT1ab0ImRICPb3/jxI/aX71I
+   A5XcZyhXN5aDMnNbX5DxqEOyDHAvHdTlFn0nDGDQjKeHA/Cj6YHplYNO5
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10966"; a="433942732"
 X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="433942007"
+   d="scan'208";a="433942732"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 06:53:29 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 07:03:02 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10966"; a="960671412"
+X-IronPort-AV: E=McAfee;i="6600,9927,10966"; a="960672159"
 X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="960671412"
+   d="scan'208";a="960672159"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 06:53:27 -0800
+  by orsmga005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 07:03:00 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rU6XE-0000000HU1q-2r1s;
-	Sun, 28 Jan 2024 16:53:24 +0200
-Date: Sun, 28 Jan 2024 16:53:24 +0200
+	id 1rU6Qq-0000000HTxG-3LXC;
+	Sun, 28 Jan 2024 16:46:48 +0200
+Date: Sun, 28 Jan 2024 16:46:48 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Raag Jadav <raag.jadav@intel.com>
 Cc: u.kleine-koenig@pengutronix.de, jarkko.nikula@linux.intel.com,
 	mika.westerberg@linux.intel.com, lakshmi.sowjanya.d@intel.com,
 	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/3] pwm: dwc: Add 16 channel support for Intel
- Elkhart Lake
-Message-ID: <ZbZqZDvdw-_D3hyb@smile.fi.intel.com>
+Subject: Re: [PATCH v1 3/3] pwm: dwc: use to_pci_dev() helper
+Message-ID: <ZbZo2A3qU9RIz568@smile.fi.intel.com>
 References: <20240122030238.29437-1-raag.jadav@intel.com>
- <20240122030238.29437-2-raag.jadav@intel.com>
+ <20240122030238.29437-4-raag.jadav@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -63,59 +62,34 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240122030238.29437-2-raag.jadav@intel.com>
+In-Reply-To: <20240122030238.29437-4-raag.jadav@intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, Jan 22, 2024 at 08:32:36AM +0530, Raag Jadav wrote:
-> Intel Elkhart Lake PSE includes two instances of PWM as a single PCI
-> function with 8 channels each. Add support for the remaining channels.
+On Mon, Jan 22, 2024 at 08:32:38AM +0530, Raag Jadav wrote:
+> Use to_pci_dev() helper to get pci device reference.
+
+PCI
 
 ...
 
-> +static int dwc_pwm_init(struct device *dev, const struct dwc_pwm_info *info, void __iomem *base)
-> +{
-> +	/* Default values for single instance devices */
-> +	unsigned int nr = 1, size = 0;
-> +	int i, ret;
-> +
-> +	/* Fill up values from driver_data, if any */
-> +	if (info) {
-> +		nr = info->nr;
-> +		size = info->size;
-> +	}
-> +
-> +	for (i = 0; i < nr; i++) {
-> +		struct dwc_pwm *dwc;
-> +
-> +		dwc = dwc_pwm_alloc(dev);
-> +		if (!dwc)
-> +			return -ENOMEM;
-> +
-> +		dwc->base = base + (i * size);
-> +
-> +		ret = devm_pwmchip_add(dev, &dwc->chip);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	return 0;
-> +}
+>  static int dwc_pwm_suspend(struct device *dev)
+>  {
+> -	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+>  	struct dwc_pwm *dwc = pci_get_drvdata(pdev);
+>  	int i;
+>  
+> @@ -120,7 +120,7 @@ static int dwc_pwm_suspend(struct device *dev)
+>  
+>  static int dwc_pwm_resume(struct device *dev)
+>  {
+> -	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+>  	struct dwc_pwm *dwc = pci_get_drvdata(pdev);
+>  	int i;
 
-Why not doing this slightly differently?
-
-First option: Always provide driver data (info is never NULL).
-
-Second option, have the body of the for-loop be factored to a helper
-dwc_pwm_init_one() and here
-
-	if (!info)
-		return dwc_pwm_init_one(..., 1, 0);
-
-	for (i = 0; i < info->nr; i++) {
-		ret = dwc_pwm_init_one(...);
-		if (ret)
-			return ret;
-	}
+I don't see how pdev is being used. That said, why dev_get_drvdata() is not
+suffice?
 
 -- 
 With Best Regards,
