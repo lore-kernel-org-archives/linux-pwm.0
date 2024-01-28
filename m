@@ -1,42 +1,59 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F33469E;
-	Sun, 28 Jan 2024 02:46:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 480721E521;
+	Sun, 28 Jan 2024 14:48:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706409988; cv=none; b=MzngP4JpxmyVe2fOVMi0LcnFOfIafxcQnPfm64aDxI+H7kMVCtjdkjhYTcQwWWJv3my5HB2M9fSLMT2d3MfbpD1NLS6yeSAU1dXQgznUY7bL+plDijelAhNY+IV1r9KMDkB8gXlI49qTnXVeHleHy3Q9e7f0Tw5olGqT4P32zAY=
+	t=1706453303; cv=none; b=OeqVgBnD4X+9P5vxRowxy9qy6x2rUw/qg3kKuL9UVhL+0H3OrjkLXBSuMchUohtDt2KhnekMNIK/i0e9pjp72UKbhq9w2fgvijfksUaxbsUSgVTRYeXb9oT4qhmN1dzJ1+7Ym3KWCUD0WQEhcYSiLR3iNcNV71SuGPvAUnC2Oco=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706409988; c=relaxed/simple;
-	bh=XnuWDgu/gKqnvw3vLWc64kzWM3OFBScvj3GiIupgVyw=;
+	s=arc-20240116; t=1706453303; c=relaxed/simple;
+	bh=DW13tZN6c+m58d9dFkxbVPlRiqjS6lW/WuCth1mXG/c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IJaU8rkLLLFIq34EIPH25bnSO7hTpcdQxM4IG/ZPLcYQoSNPCameBAWskepX+UBNvKHFxJmxGdF6A3NypoTQHzkOyyspc/3xUhPNAeLbDsvKVQaIzDzsEDSzllb8Y7dzUnWnsnDQVy5LfmxGU0GJHbmRbTT577WfN9MlerLP+x0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ekkuEtNm; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=cDBCJFmXvB/c65AQebySTf4Pgx3tKm6OPHO4Np9/TY/i/q7zyKQ4+knM2MgW30/UUDRiXZiacYlX8GVHGFQwKpzNkKJ1XITUrjXMSP2pyYxxMez3/Q9ML/3GOA91NyakRS4ggcgN0TZ9qyP/ITG11sU/U0pz6V/ELli+D5+Uatw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BIAOT+Ok; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ekkuEtNm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17B51C433F1;
-	Sun, 28 Jan 2024 02:46:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706409988;
-	bh=XnuWDgu/gKqnvw3vLWc64kzWM3OFBScvj3GiIupgVyw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ekkuEtNm7fKAadlCzQSnsYyn2ZphjymLYQ3A7Z/Cf5OPr31oYoS2CgeTZTUHq2B/q
-	 0AD6f7Kq0DUIMQU0WxCdCZK442OoW4QBwTRWrpws12R4whPQDepPJA679gXyoqpECo
-	 Z0F/GOYbq7OCi9AIUzWn70UsQZgX5E09B6YbJf8S2ZC3iMsNO6g7n5xfY1OMdB9VSk
-	 KrF2VfL78iJqKJMD8OInDG1tbckIqFuePCHIxfUxBsfUTWkwMVKBv351J+XepDJyit
-	 tU5zlQpcVu/ptSyoSZpv0zTQI1PmJjA3rprfeuTVNB/DqBoXmtFuh6GTUk5+mu6dUi
-	 tqgaPEkP4HLtw==
-Date: Sat, 27 Jan 2024 20:46:25 -0600
-From: Bjorn Andersson <andersson@kernel.org>
-To: Devi Priya <quic_devipriy@quicinc.com>
-Cc: agross@kernel.org, konrad.dybcio@linaro.org, lee@kernel.org, 
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
-	thierry.reding@gmail.com, baruch@tkos.co.il, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, 
-	linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 0/4] Enable pwm support for IPQ5332 & IPQ9574 SoCs
-Message-ID: <okn4ejzcwxgrcuoo4u2tx4adx37mle25urh2s2dda7huqfeans@gzzra4y776v4>
-References: <20231006045317.1056625-1-quic_devipriy@quicinc.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BIAOT+Ok"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706453302; x=1737989302;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DW13tZN6c+m58d9dFkxbVPlRiqjS6lW/WuCth1mXG/c=;
+  b=BIAOT+OkQhshPn5xYLbsoDsf2SJdI4030Msc0BgSK04oHfNzBHlUfl95
+   rQ6WFdq/+TZcIt+HGxllO+45ZWwb5aVmiMWC4nSBil5xj/V/0nRq/KIHe
+   KC3tDfsrO9h4C1qPdpnXdXn3mrlZXRzgRjA+Y0l3qNv6EgdbjX96N6gLJ
+   QuHHZYCThMZPT0svEuOl5/Jv8B7n2Tdn8vDyVaVw9vhLNLI3cJAoDjat8
+   Cb1nbMSXCeMgWvwd86LkpW64MfZ3+TOK9ZBMZ2f1aBHP/gKvdaJ+gzSQu
+   r2hTqe0lTmtHa2TgZ76X3Aoj5VDYmK53fjdlMA+GPjXz7+18C7aNHMfBc
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10966"; a="1713457"
+X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
+   d="scan'208";a="1713457"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 06:48:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10966"; a="1118702503"
+X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
+   d="scan'208";a="1118702503"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 06:48:19 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rU6SH-0000000HTye-19bL;
+	Sun, 28 Jan 2024 16:48:17 +0200
+Date: Sun, 28 Jan 2024 16:48:16 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Raag Jadav <raag.jadav@intel.com>
+Cc: u.kleine-koenig@pengutronix.de, jarkko.nikula@linux.intel.com,
+	mika.westerberg@linux.intel.com, lakshmi.sowjanya.d@intel.com,
+	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 2/3] pwm: dwc: simplify error handling
+Message-ID: <ZbZpMO9b7L-DNIcb@smile.fi.intel.com>
+References: <20240122030238.29437-1-raag.jadav@intel.com>
+ <20240122030238.29437-3-raag.jadav@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -45,40 +62,38 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231006045317.1056625-1-quic_devipriy@quicinc.com>
+In-Reply-To: <20240122030238.29437-3-raag.jadav@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, Oct 06, 2023 at 10:23:13AM +0530, Devi Priya wrote:
-> Enable pwm support for IPQ5332 & IPQ9574 SoCs and document the
-> pwm compatibles.
-> While at it, use qcom,ipq6018-pwm as the fallback compatible and extend the
-> simple-mfd support for ipq5332 & ipq9574 targets.
-> 
-> This series depends on the below series which adds support
-> for the PWM driver on IPQ targets:
-> https://lore.kernel.org/linux-arm-msm/20231005160550.2423075-1-quic_devipriy@quicinc.com/
+On Mon, Jan 22, 2024 at 08:32:37AM +0530, Raag Jadav wrote:
+> Simplify error handling in ->probe() function using dev_err_probe() helper.
 
-I've kept this series in my inbox, hoping that you would work out the DT
-bindings with the maintainers. Dropping them now, please resend the DTS
-patches once the bindings are in order.
+...
 
-Thanks,
-Bjorn
+>  	ret = pcim_iomap_regions(pci, BIT(0), pci_name(pci));
+> -	if (ret) {
+> -		dev_err(dev, "Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
+> -		return ret;
+> -	}
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
+>  
+>  	base = pcim_iomap_table(pci)[0];
 
-> 
-> Devi Priya (4):
->   dt-bindings: pwm: Document the pwm compatible for ipq5332 & ipq9574
->   dt-bindings: mfd: qcom,tcsr: Extend simple-mfd & pwm support for IPQ
->     targets
->   arm64: dts: qcom: ipq9574: Add pwm support
->   arm64: dts: qcom: ipq5332: Add pwm support
-> 
->  .../devicetree/bindings/mfd/qcom,tcsr.yaml        |  9 ++++++---
->  .../devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml |  9 ++++++++-
->  arch/arm64/boot/dts/qcom/ipq5332.dtsi             | 15 ++++++++++++++-
->  arch/arm64/boot/dts/qcom/ipq9574-rdp418.dts       | 12 ++++++++++++
->  arch/arm64/boot/dts/qcom/ipq9574.dtsi             | 15 ++++++++++++++-
->  5 files changed, 54 insertions(+), 6 deletions(-)
-> 
-> -- 
-> 2.34.1
-> 
+> -	if (!base) {
+> -		dev_err(dev, "Base address missing\n");
+> -		return -ENOMEM;
+> -	}
+> +	if (!base)
+> +		return dev_err_probe(dev, -ENOMEM, "Base address missing\n");
+
+This check is bogus. Just remove it completely.
+
+The pcim_iomap_table() fails IFF pcim_iomap_regions() fails.
+You have checked the latter already.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
