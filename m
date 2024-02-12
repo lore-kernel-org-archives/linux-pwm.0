@@ -1,78 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F6B6FD5;
-	Mon, 12 Feb 2024 06:10:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C54B2B9D5
+	for <linux-pwm@vger.kernel.org>; Mon, 12 Feb 2024 07:14:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707718258; cv=none; b=hzv9Mozidj/BP5F7epX9+lWZmhQyLVHUPxw3QFZzW/KS8Y3SfiG0yZRvpcDiecDTJzZMzyuS1zT5VyN5cQ5M7fkGveMr+19f1W7imGdhqTOwfOeJcR+tV+wSLVrCdwP8/Wgtj8OuU6FGwNx7hoRRjY2svOjyvdjt98ZwCCNRiHQ=
+	t=1707722102; cv=none; b=vE/rzkDS50oqyqQTa4rTI+sOeEYqikTHw4WMOK+Xu2Ca1ADpyIokcXKLVmDLXmJ1Og3K5J8T8RcOk1TYdp6KKmkPs9y0EkBuIvhnDmEoS3Jk2+lATl9x5VgkSjZpQMbDty7ZW4yWak5sBZtycZH8fY4pLorSdcpogtvSIEn56xI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707718258; c=relaxed/simple;
-	bh=newBKw0c8jig6ktCcY0jjtH6UsmB7dIdqXuaHfTPnS0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rNro4diyjwIV2M5Zbcxb5AHImO9vRt96G3Udhe20l2llodAU3lJGUh/J8z8ic/mRlm+43m3Ddujhe88WRSz/7j6e0oXfZLFuIAX1OmcFEyL2ipcYueO/yyIwwif7AYG5iVALvg1vfxsBq+y7xIAGeaRPStwWemUsW/d2mUuDXwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=none smtp.mailfrom=ecsmtp.iind.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fw1F03iR; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ecsmtp.iind.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fw1F03iR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707718257; x=1739254257;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=newBKw0c8jig6ktCcY0jjtH6UsmB7dIdqXuaHfTPnS0=;
-  b=fw1F03iRxs3nkjBIVBP/yeZ7bJzpXInJ9xTHDdLYrJpKw90LP8D6hk76
-   srbPKQ2qEBkx9Er1H9yDy8JPiVrAvEj52UBeM1ODutaUWWP0JaeDQMGf3
-   eKzzlxTyTUZtSv9s9bIN17z7nCpooyBQ16WmCP6Fxr9wQfyReGdK3L1X/
-   5K/h/LGln7JXf5ITbA0ZkaxbBS8GnHWO9aDKGcguZer1ziC/OEhO3OaWW
-   +T8szVknqfFl1sMxe2S7BYu4RoclR9KZzbONQNkFb0z4iUE86pPnUA66J
-   jpuuU+uaBop4R1O6Y3qJJStVlG/4QCntI+K3YJDs3AMrx35UtA3WA1Aln
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10981"; a="1833039"
-X-IronPort-AV: E=Sophos;i="6.05,262,1701158400"; 
-   d="scan'208";a="1833039"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2024 22:10:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,262,1701158400"; 
-   d="scan'208";a="33574485"
-Received: from inesxmail01.iind.intel.com ([10.223.57.40])
-  by fmviesa001.fm.intel.com with ESMTP; 11 Feb 2024 22:10:40 -0800
-Received: from inlubt0316.iind.intel.com (inlubt0316.iind.intel.com [10.191.20.213])
-	by inesxmail01.iind.intel.com (Postfix) with ESMTP id 557C21CAE8;
-	Mon, 12 Feb 2024 11:40:39 +0530 (IST)
-Received: by inlubt0316.iind.intel.com (Postfix, from userid 12101951)
-	id 512F41600100; Mon, 12 Feb 2024 11:40:39 +0530 (IST)
-From: Raag Jadav <raag.jadav@intel.com>
-To: u.kleine-koenig@pengutronix.de,
-	jarkko.nikula@linux.intel.com,
-	mika.westerberg@linux.intel.com,
-	andriy.shevchenko@linux.intel.com
-Cc: linux-pwm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Raag Jadav <raag.jadav@intel.com>
-Subject: [PATCH v1 0/2] LPSS PWM cleanups
-Date: Mon, 12 Feb 2024 11:40:35 +0530
-Message-Id: <20240212061037.4271-1-raag.jadav@intel.com>
-X-Mailer: git-send-email 2.35.3
+	s=arc-20240116; t=1707722102; c=relaxed/simple;
+	bh=jYjodvYdPgaA2R6RTwlHo99I3LADJFhgrLfeHWg5EAg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nrp+dd9gygtRD0fJKjjXTJHIanQXu4FVivzic7X/A8gUelON+Cjczmuy2e0qFXtR0XLIyeSvkyU8jm0+KKtPhxDoVztrBzOBtgdgqYRdSjsBa0+BVKnRTCiKnXTso2kC1DP3Sjn03VcpH8tFI2hX0ETAdNa82FPkIwu37bjnAww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rZQWU-0003cF-7C; Mon, 12 Feb 2024 08:14:38 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rZQWT-000EsZ-1a; Mon, 12 Feb 2024 08:14:37 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rZQWS-002wvz-37;
+	Mon, 12 Feb 2024 08:14:36 +0100
+Date: Mon, 12 Feb 2024 08:14:36 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Raag Jadav <raag.jadav@intel.com>
+Cc: jarkko.nikula@linux.intel.com, mika.westerberg@linux.intel.com, 
+	andriy.shevchenko@linux.intel.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 0/2] LPSS PWM cleanups
+Message-ID: <lfenqtr2hgjfisn6x6gffme55htmt3o6cbdiroilwanm52zyvs@frlnph7kkwg7>
+References: <20240212061037.4271-1-raag.jadav@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="7dxxvd6dgm2rpgvr"
+Content-Disposition: inline
+In-Reply-To: <20240212061037.4271-1-raag.jadav@intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This series implements minor cleanups for LPSS PWM driver.
 
-Raag Jadav (2):
-  pwm: lpss: use devm_pm_runtime_enable() helper
-  pwm: lpss: drop redundant runtime PM handles
+--7dxxvd6dgm2rpgvr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
- drivers/pwm/pwm-lpss-pci.c      | 22 ----------------------
- drivers/pwm/pwm-lpss-platform.c | 10 +---------
- 2 files changed, 1 insertion(+), 31 deletions(-)
+Hello,
 
--- 
-2.35.3
+On Mon, Feb 12, 2024 at 11:40:35AM +0530, Raag Jadav wrote:
+> This series implements minor cleanups for LPSS PWM driver.
+>=20
+> Raag Jadav (2):
+>   pwm: lpss: use devm_pm_runtime_enable() helper
+>   pwm: lpss: drop redundant runtime PM handles
+>=20
+>  drivers/pwm/pwm-lpss-pci.c      | 22 ----------------------
+>  drivers/pwm/pwm-lpss-platform.c | 10 +---------
+>  2 files changed, 1 insertion(+), 31 deletions(-)
 
+the series looks fine to me. Will give others some more time to comment
+and apply later.
+
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--7dxxvd6dgm2rpgvr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmXJxVsACgkQj4D7WH0S
+/k6Qewf8D2r0SZoTgNIPbAgqzXZmkWt05MDzsZuccY6QBwKTpI997AoIWkBIqYtT
+5Q758V6bxBOV9OE092c/Xv3ZkTWS1BYQ+rM8ZPvzFlvaLFuIrAo4NrXW1UJAZFF6
+9iAOJ1JpcAOwHcQgSdGS8A7Ji4h/xKwVuQXx+BMV7k6JFq7gM4v+Wdqc0JjBFO0D
+hQYNPHUdvu4OQqoeMe0tsNg3P616uXxWERVEk64bJzOAxRYBsVROmPvWowhmbTaR
+LC92Xoqq01FKtg7Y80HGxkd9HSDHHL906WlbJ08S8bwwd/CLA5/c0Jq1qeoXbPH8
+RT5V8q0Ly7Le9sPGwVb26OkpiKX0Vg==
+=Y5op
+-----END PGP SIGNATURE-----
+
+--7dxxvd6dgm2rpgvr--
