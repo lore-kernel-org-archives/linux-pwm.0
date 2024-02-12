@@ -1,49 +1,49 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EF2F3A8EA;
-	Mon, 12 Feb 2024 13:02:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE4613A8CB;
+	Mon, 12 Feb 2024 13:02:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707742979; cv=none; b=Tm4e15nhEG0XG3bpJWJPTWXw6fAdF0qyHFIV7g+VZlhvKOg4+gbEJPeCBfVZxXgJVTOxi4Vp2Ag3z+fwdUcXWmhsR4i4AG9CEX0WvIT+DVW6ojRHt4Drw2kZrQOPhrN+TEEY8Pcbkt5t3SL6hy7SAQuPZGUmXQ7/0l+QDzN37ss=
+	t=1707742979; cv=none; b=rC3ntrSbZSSTKLipimGEty5/ByYzyBz6KetL1tRqRFVvxvM0peKkVp6somb7rV+614AuzWcoMQOVSbwWx8zlXong0504ESrOE0JCNHYO8WawRrn9Vl8haqPCRGP34gBXhMMELjQZlYqcaG/vBQ9ntNwtAi7CnDvbSxZReCC4l2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707742979; c=relaxed/simple;
-	bh=iXxsS0W5mU5/Io+UvC+pcKSPNr+I3Jfk8yxtNeL8oyU=;
+	bh=B3s2F89GzkRqiCuF715R3/bfNCpfUIA+Ssd1CZYkmYM=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=d6tP5MP+EvHrVXd3YLpldYy2NCT748XHRs5+A6WWBwno6MrUCQMKdHm0iAMyE/FgLz6/NqQhG2owLnyuAxtGnvkwg2x2JPnQ1HN2acRYlmacY3HlhUGzzxAeLmCZmFrB3qqMxDDBFfFzclzf+yy2C81vnwUB7NaRmCE61OGIw3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=none smtp.mailfrom=ecsmtp.iind.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EexXGJ1S; arc=none smtp.client-ip=192.198.163.17
+	 MIME-Version; b=YLm4W626qoX7GHdUFK+5NUwF8vTmHWhXKIrT4XhONyuhJ1dzwNuw0gmeBwFf3RIxP1wvPaYpWCNIB8CeT/ac9y38zBnXLvKk95Eq5bqs4Yljy68yetsq9EkgtUtJqn0IWBVdg+VbOoSjQqSeqh2BUm4GFimmj1AYHEeGDjQPZVs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=none smtp.mailfrom=ecsmtp.iind.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c5N0YQ00; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ecsmtp.iind.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EexXGJ1S"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c5N0YQ00"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707742977; x=1739278977;
+  t=1707742976; x=1739278976;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=iXxsS0W5mU5/Io+UvC+pcKSPNr+I3Jfk8yxtNeL8oyU=;
-  b=EexXGJ1SN2RfRPT/soSOyQl4/3XnpM9bmbeB8HHec/k0LrHYY4IrG0Bp
-   CLmqVAmdAH9f4zMlC4oV6ReZP1tczO/YFERRl0CmCnorrN8Ai9kUwc4Gg
-   UhzTdpu/J38rkNXcr3wx97liIi7aDaMLn1XEJKHyHeL3qQZx4VnlD3STx
-   qR/A/bdiBq7fzNK6MKbaglW3OM/U4WV9xvVzmYS/neizORPGBnjvryhlR
-   r1mRUXfn6I25XERfUgq121e8HZNlfd8dera5EAJqkfgHRvCTXJ4hlXcrX
-   t43gp26tGk0FUVxSd7+haPC0/8CVAph0YLpnRUErH3brFkcrKOxCHHU2n
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10981"; a="1594839"
+  bh=B3s2F89GzkRqiCuF715R3/bfNCpfUIA+Ssd1CZYkmYM=;
+  b=c5N0YQ00+km2atJAvKL6Qz9OIf0gPKhRXUc+GEa/vVE0lXAcyrzDkeMB
+   aflft9KcFCsYb2F4cwMIR37SUqR7RkdNZFmGBlo9nlkgHmJStN5fE1LWY
+   Bov+ugEOMIeBPcTNbvLEs5kQGfARtZ+rrQkugC9B3O9Y9ATo6qNmHBgRf
+   XfcT2YeSor9osh3vVlXLE9DDH030ksLnd8xZVdnoT4fTLThq9l+WXAd6o
+   UDIjJXiaXNQGqxzrxpBXxGmmE4jECNxXZbkXGNPM/jECk5j9dtk3oV3L/
+   C3Cp6D97z0UMPJDoiXynyM+eQNRva1Sz6uJDm33LLPwZVlr1CypwfBSKr
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10981"; a="1594836"
 X-IronPort-AV: E=Sophos;i="6.06,263,1705392000"; 
-   d="scan'208";a="1594839"
+   d="scan'208";a="1594836"
 Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2024 05:02:54 -0800
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2024 05:02:52 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,263,1705392000"; 
-   d="scan'208";a="33378399"
+   d="scan'208";a="33378392"
 Received: from inesxmail01.iind.intel.com ([10.223.57.40])
-  by orviesa002.jf.intel.com with ESMTP; 12 Feb 2024 05:02:52 -0800
+  by orviesa002.jf.intel.com with ESMTP; 12 Feb 2024 05:02:50 -0800
 Received: from inlubt0316.iind.intel.com (inlubt0316.iind.intel.com [10.191.20.213])
-	by inesxmail01.iind.intel.com (Postfix) with ESMTP id 5A13B1CAFF;
+	by inesxmail01.iind.intel.com (Postfix) with ESMTP id 5756C1CACF;
 	Mon, 12 Feb 2024 18:32:49 +0530 (IST)
 Received: by inlubt0316.iind.intel.com (Postfix, from userid 12101951)
-	id 54EA81600104; Mon, 12 Feb 2024 18:32:49 +0530 (IST)
+	id 541C51600101; Mon, 12 Feb 2024 18:32:49 +0530 (IST)
 From: Raag Jadav <raag.jadav@intel.com>
 To: u.kleine-koenig@pengutronix.de,
 	jarkko.nikula@linux.intel.com,
@@ -53,9 +53,9 @@ To: u.kleine-koenig@pengutronix.de,
 Cc: linux-pwm@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Raag Jadav <raag.jadav@intel.com>
-Subject: [PATCH v3 4/5] pwm: dwc: simplify error handling
-Date: Mon, 12 Feb 2024 18:32:46 +0530
-Message-Id: <20240212130247.9985-5-raag.jadav@intel.com>
+Subject: [PATCH v3 1/5] pwm: dwc: use pm_sleep_ptr() macro
+Date: Mon, 12 Feb 2024 18:32:43 +0530
+Message-Id: <20240212130247.9985-2-raag.jadav@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20240212130247.9985-1-raag.jadav@intel.com>
 References: <20240212130247.9985-1-raag.jadav@intel.com>
@@ -67,40 +67,29 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Simplify error handling in ->probe() function using dev_err_probe() helper
-and while at it, drop error codes from the message to prevent duplication.
+Since we don't have runtime PM handles here, we should be using
+pm_sleep_ptr() macro, so that the compiler can discard it in case
+CONFIG_PM_SLEEP=n.
 
+Fixes: 30b5b066fa83 ("pwm: dwc: Use DEFINE_SIMPLE_DEV_PM_OPS for PM functions")
 Signed-off-by: Raag Jadav <raag.jadav@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/pwm/pwm-dwc.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-dwc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index 6d922afcb20a..56fac8655c7b 100644
+index 4929354f8cd9..a4a057ae03ea 100644
 --- a/drivers/pwm/pwm-dwc.c
 +++ b/drivers/pwm/pwm-dwc.c
-@@ -51,18 +51,14 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	int i, ret;
- 
- 	ret = pcim_enable_device(pci);
--	if (ret) {
--		dev_err(dev, "Failed to enable device (%pe)\n", ERR_PTR(ret));
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable device\n");
- 
- 	pci_set_master(pci);
- 
- 	ret = pcim_iomap_regions(pci, BIT(0), pci_name(pci));
--	if (ret) {
--		dev_err(dev, "Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to iomap PCI BAR\n");
- 
- 	info = (const struct dwc_pwm_info *)id->driver_data;
+@@ -120,7 +120,7 @@ static struct pci_driver dwc_pwm_driver = {
+ 	.remove = dwc_pwm_remove,
+ 	.id_table = dwc_pwm_id_table,
+ 	.driver = {
+-		.pm = pm_ptr(&dwc_pwm_pm_ops),
++		.pm = pm_sleep_ptr(&dwc_pwm_pm_ops),
+ 	},
+ };
  
 -- 
 2.35.3
