@@ -1,116 +1,137 @@
-Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A77D91427F;
-	Wed, 14 Feb 2024 09:34:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0221401D
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903242; cv=none; b=MkM+wdcvl4wEYTf0Z6LE+oQ3EWuW9s275wDubuMYqtPeD8klT1A9lQFHl9nbTC+cdvTT+MK3VtY2SicpuwegqOQDAaMfYdQudBEhVwuRgv7fEf9DByTplxK6Vg9URN0H4vRTnutnEJurtseTKaS8h9eQ48oyiAM8GwPfvjKEsN8=
+	t=1707903263; cv=none; b=l+K5HDPhoLCl6Pq+1WQxyJ7NQOgqOXYUmxkPCKb+18r0ULgADDEod5YbSVxy1j4Tu0VVqwWx3QrAzzLMZkAfPoZ4iyJGALB1+mFiE9FyyObPog+ad0i5KIYC+jQt81wDua/noe8eJvrsbT/vuZqUu0X0tPMZnG9fwu6lg3uV1C0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707903242; c=relaxed/simple;
-	bh=U4bNMH+xtiCB6Y3mK6uVJUXqmlGYS1dPqnhcpgvAQPY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GspFXtVWEyJwsckBJSiBWZ6P9CoK5Rzn/i8y9XGGHwGGNBnSZlmTOfg1clDc9DtWtAaJ/RtY4GpFNbqaKRuBHjyVIJGrejShrT8ygkLJUVOD7DC7dy8c+/st7NxChkdelQkOmDpQ25tSqBKzXd1Tx2IIdQkW0Cl4zOV1aNLMO70=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=rDMgrC6r; arc=none smtp.client-ip=46.235.227.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="rDMgrC6r"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1707903238;
-	bh=U4bNMH+xtiCB6Y3mK6uVJUXqmlGYS1dPqnhcpgvAQPY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=rDMgrC6rjZB/wQwJNDPBTssIhx6YtdbvO59smkyyIL2/OBTXaqrPZL+cF4R45oZs1
-	 /HdY2mIKiqSR1mfojtQ2NUox3hQnvpMy1WZlMVPDuhBFwPE0wYXiNMUhOPhT+PdcGA
-	 Si20XPPYL7ZSjL93bDlF68G8vD+9Kv9ESDhHcDkDUi7ThJm66cwp5XpxaDWLux9hqs
-	 rdQHyJDWST73v+C4egSDmNxCdIN4ulD9+YSybmD8yPt+FhXxZUzcyF38b3VVrkbaZq
-	 h02UjL0Y32yX4y7TSEeotI54jaHGLGrbNhe6rFBiKBZqO3lBEDUQ6FP7JWv/xrcyR1
-	 WMp9oKkBefdCw==
-Received: from [100.113.186.2] (cola.collaboradmins.com [195.201.22.229])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 0AEF23782076;
-	Wed, 14 Feb 2024 09:33:57 +0000 (UTC)
-Message-ID: <b5dce02f-414a-42df-8210-3e80a769e324@collabora.com>
-Date: Wed, 14 Feb 2024 10:33:57 +0100
+	s=arc-20240116; t=1707903263; c=relaxed/simple;
+	bh=NzDEL+u7F2a54H4wAxwSi2DYIpmxT7EUioxE8IrVQw8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=h0EihloNq4uPeqGbjMT7jIDxkcS+qrQ5sUZwP8NYh8TY19ePs+GjzIAGhkQtqK4+jn2sl+DuFWffjSGefaGX5dNLQz8+DD67i3mBleKCCBoRpxDrAV1JIH4E+2oYjMu+PIWwx7GO9rvpNNKCfmMZPn8UIEzWzO1AjXerEv4ol0w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1raBek-0004OB-R4; Wed, 14 Feb 2024 10:34:18 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1raBek-000f6a-Dm; Wed, 14 Feb 2024 10:34:18 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1raBek-004Xzu-16;
+	Wed, 14 Feb 2024 10:34:18 +0100
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: linux-pwm@vger.kernel.org
+Cc: kernel@pengutronix.de
+Subject: [PATCH v6 004/164] pwm: ab8500: Make use of pwmchip_parent() accessor
+Date: Wed, 14 Feb 2024 10:30:51 +0100
+Message-ID:  <24028d8d0add621a0c054235e6281a05a83d8fb4.1707900770.git.u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
+References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] arm64: dts: mediatek: mt7988: add PWM controller
-Content-Language: en-US
-To: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
- Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20240213164633.25447-1-zajec5@gmail.com>
- <20240213164633.25447-2-zajec5@gmail.com>
- <36baacb4-4aa9-421f-bde0-c4be7d7f4aa1@collabora.com>
- <bbacfaad-a182-4df5-8317-640e32a1954a@gmail.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <bbacfaad-a182-4df5-8317-640e32a1954a@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3167; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=NzDEL+u7F2a54H4wAxwSi2DYIpmxT7EUioxE8IrVQw8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIhPPzpIm139H3p+lvO+z12wX3JPX8FGiYv6u zGsTIL5MW6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyITwAKCRCPgPtYfRL+ TuptCACaps8AxY3QvTdT0XhErMiDUT4Zl3CZCv6tg4evjO5ktkHg2BiuREnESu94HhKTIjzLjm7 DfNWqSEwkFKcnDZg/aqvUfjsA00agYrZbSDq+Ljg1PNV4e6iqH9Qkxkt5wu62f6R+Cbvo5hXhbO Ns4KfXjctlgyl3WSyf2oqnLMAnDERdOocO0OWGgqOTqZxKVoHXgWNTKdXva1dnXBgj6R/sOmX7U ci20+tUJu1nIehvaHpn1yiiwAljDqHsaNz5yS1uIIoYtpPUEmBPt62gDJ27QBz8B4CmTB4WJuRv 1IkwzFAqlORTraPP9WLR48QLILp3mwzO2mzXZeSTnnaQUcJP
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-Il 14/02/24 10:24, Rafał Miłecki ha scritto:
-> On 14.02.2024 10:09, AngeloGioacchino Del Regno wrote:
->> Il 13/02/24 17:46, Rafał Miłecki ha scritto:
->>> From: Rafał Miłecki <rafal@milecki.pl>
->>>
->>> Add binding for on-SoC controller that can control up to 8 PWMs.
->>>
->>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
->>> ---
->>>   arch/arm64/boot/dts/mediatek/mt7988a.dtsi | 21 ++++++++++++++++++++-
->>>   1 file changed, 20 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/arch/arm64/boot/dts/mediatek/mt7988a.dtsi 
->>> b/arch/arm64/boot/dts/mediatek/mt7988a.dtsi
->>> index bba97de4fb44..67007626b5cd 100644
->>> --- a/arch/arm64/boot/dts/mediatek/mt7988a.dtsi
->>> +++ b/arch/arm64/boot/dts/mediatek/mt7988a.dtsi
->>> @@ -1,5 +1,6 @@
->>>   // SPDX-License-Identifier: GPL-2.0-only OR MIT
->>> +#include <dt-bindings/clock/mediatek,mt7988-clk.h>
->>>   #include <dt-bindings/interrupt-controller/arm-gic.h>
->>>   / {
->>> @@ -78,7 +79,7 @@ gic: interrupt-controller@c000000 {
->>>               #interrupt-cells = <3>;
->>>           };
->>> -        clock-controller@10001000 {
->>> +        infracfg: clock-controller@10001000 {
->>>               compatible = "mediatek,mt7988-infracfg", "syscon";
->>>               reg = <0 0x10001000 0 0x1000>;
->>>               #clock-cells = <1>;
->>> @@ -103,6 +104,24 @@ clock-controller@1001e000 {
->>>               #clock-cells = <1>;
->>>           };
->>> +        pwm@10048000 {
->>> +            compatible = "mediatek,mt7988-pwm";
->>
->> I can't take this unless there's a driver that supports your device.
-> 
-> I'd argue you should rather look for a documented binding rather than a
-> (Linux?) driver. Otherwise you would refuse changes that are not
-> strictly Linux related. DTS files are meant to describe hardware in a
-> generic way and not be driven by Linux drivers / design.
-> 
+struct pwm_chip::dev is about to change. To not have to touch this
+driver in the same commit as struct pwm_chip::dev, use the accessor
+function provided for exactly this purpose.
 
-Of course, devicetree describes hardware - that is pretty much globally known.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-ab8500.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-As I wrote in the bindings patch, I still anyway want to see the driver part
-for this block before deciding if your description of this hardware is correct.
-
-Regards,
-Angelo
+diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c
+index 670d33daea84..719e4ccf1800 100644
+--- a/drivers/pwm/pwm-ab8500.c
++++ b/drivers/pwm/pwm-ab8500.c
+@@ -92,12 +92,12 @@ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * when disabled.
+ 	 */
+ 	if (!state->enabled || duty_steps == 0) {
+-		ret = abx500_mask_and_set_register_interruptible(chip->dev,
++		ret = abx500_mask_and_set_register_interruptible(pwmchip_parent(chip),
+ 					AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG,
+ 					1 << ab8500->hwid, 0);
+ 
+ 		if (ret < 0)
+-			dev_err(chip->dev, "%s: Failed to disable PWM, Error %d\n",
++			dev_err(pwmchip_parent(chip), "%s: Failed to disable PWM, Error %d\n",
+ 								pwm->label, ret);
+ 		return ret;
+ 	}
+@@ -115,22 +115,22 @@ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	reg = AB8500_PWM_OUT_CTRL1_REG + (ab8500->hwid * 2);
+ 
+-	ret = abx500_set_register_interruptible(chip->dev, AB8500_MISC,
++	ret = abx500_set_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
+ 			reg, lower_val);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = abx500_set_register_interruptible(chip->dev, AB8500_MISC,
++	ret = abx500_set_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
+ 			(reg + 1), higher_val);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	/* enable */
+-	ret = abx500_mask_and_set_register_interruptible(chip->dev,
++	ret = abx500_mask_and_set_register_interruptible(pwmchip_parent(chip),
+ 				AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG,
+ 				1 << ab8500->hwid, 1 << ab8500->hwid);
+ 	if (ret < 0)
+-		dev_err(chip->dev, "%s: Failed to enable PWM, Error %d\n",
++		dev_err(pwmchip_parent(chip), "%s: Failed to enable PWM, Error %d\n",
+ 							pwm->label, ret);
+ 
+ 	return ret;
+@@ -144,7 +144,7 @@ static int ab8500_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct ab8500_pwm_chip *ab8500 = ab8500_pwm_from_chip(chip);
+ 	unsigned int div, duty_steps;
+ 
+-	ret = abx500_get_register_interruptible(chip->dev, AB8500_MISC,
++	ret = abx500_get_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
+ 						AB8500_PWM_OUT_CTRL7_REG,
+ 						&ctrl7);
+ 	if (ret)
+@@ -157,13 +157,13 @@ static int ab8500_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		return 0;
+ 	}
+ 
+-	ret = abx500_get_register_interruptible(chip->dev, AB8500_MISC,
++	ret = abx500_get_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
+ 						AB8500_PWM_OUT_CTRL1_REG + (ab8500->hwid * 2),
+ 						&lower_val);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = abx500_get_register_interruptible(chip->dev, AB8500_MISC,
++	ret = abx500_get_register_interruptible(pwmchip_parent(chip), AB8500_MISC,
+ 						AB8500_PWM_OUT_CTRL2_REG + (ab8500->hwid * 2),
+ 						&higher_val);
+ 	if (ret)
+-- 
+2.43.0
 
