@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDD0D199BC
-	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC2661AAD0
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903290; cv=none; b=J0Su3Sv+5UT9J5eRF7lvOG2rVj/amoSHl+/oqJZSCQUPGJif1zg0ncHik0/5Na4j6fPeq5nsQ9QjoyjIX2P6gOgMNIyvc6eEZ23Q2misn4QWruIbZUCE9G4wwK1IJgmuGNQEJgeDh/IbQUozazAvV2oPQWCPyi1dSS+PIq0lnZI=
+	t=1707903290; cv=none; b=ofgGZr35yETqaPDRakz/I0WlglNCalaP0Bw0M7fGZmUOostHjrvDRO0nicZDoghNLIoz+vRKFlJSETewAELS7v0MZKSyypdrneKULCiQrA6LSG5dJsO1LO44QIQuWIN3DSnrN1j/EJycD0EyRAQ5g08ciZ8DTkEvRvZuKmV0JMw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903290; c=relaxed/simple;
-	bh=DhwVfYK3PSVBUzZ2FBq5DeLipOrGjyXL7mQwfO9Ate8=;
+	bh=AueSBh20l+IvmTnMku/uAxXaCwl5AScvfIDtGYeyXxg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=O/lw8vzTa/51vK4ufr9dtQ8RgeEWBGZksKEi4w22122sLss1drZe1M8anvq5r2g8rmfG/TjuXG6l4iAoz6Gm+5O0XPGTOQOiwmfYUoxC38HsuBX4+S2/JWJUDigH9D4EZfq+tTrNh+mpB+PAyC/mQ8gNFOpdad7vpB4xl0VgwkA=
+	 MIME-Version:Content-Type; b=iT7fVydrUUWde2nma+Ut42OJfWBo3+gspDNU2zIn/REeT3RqkvlDTOfWA+dfGbLkAx5FqKSAzUkhgKcedJQHUS2JPZ5FVcWuQGgG9IB7nQGTtc94T2kIgOEb+5JH4DBcQaiMfDtLgZdFYZ/9udrAj9pwaHPw91bvTh7FkVU/Jbk=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,27 +18,27 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf5-0005nZ-SR; Wed, 14 Feb 2024 10:34:39 +0100
+	id 1raBf5-0005st-Vy; Wed, 14 Feb 2024 10:34:40 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf2-000fG6-57; Wed, 14 Feb 2024 10:34:36 +0100
+	id 1raBf3-000fGT-3o; Wed, 14 Feb 2024 10:34:37 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf2-004Y7p-0H;
-	Wed, 14 Feb 2024 10:34:36 +0100
+	id 1raBf3-004Y8D-08;
+	Wed, 14 Feb 2024 10:34:37 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+To: Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
 	linux-pwm@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
+Cc: linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev,
 	kernel@pengutronix.de
-Subject: [PATCH v6 119/164] pwm: stm32-lp: Prepare removing pwm_chip from driver data
-Date: Wed, 14 Feb 2024 10:32:46 +0100
-Message-ID:  <df47d1aff9b529c9a4762b6ba339a18cecba1497.1707900770.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v6 125/164] pwm: sun4i: Prepare removing pwm_chip from driver data
+Date: Wed, 14 Feb 2024 10:32:52 +0100
+Message-ID:  <f8e3fb96fe341ba0a4bed982aa731c5c7c355b83.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -49,7 +49,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1932; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=DhwVfYK3PSVBUzZ2FBq5DeLipOrGjyXL7mQwfO9Ate8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIjTLu8CxBTkFi4qgs8ztGE1w3A0T1K4W9gN1 Cf6LJm4zEqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyI0wAKCRCPgPtYfRL+ TqylCACvPMxKFHFT15Jn4qEunBjFxMOoreUu6c1bQn0YeYAJE92+RJJrGaq/H5m8Y0oJXkRh2ah 0+tWpqd9Xo6AjXK/turnQ8KpIxTiPKZ0zIJBhKDCuXZ118TeLWjZ08AAvpm4FbtCyA3ehpVcQCr kLW4ZH/C1bcX15IpZ/LLZuiR8l9qokNWcYjWsQe76+6QxYDScfEBhbg2+tfsxN6YF2YAr6grLSK 2oqEdkFkyO9R4cYl+h5cdgo5vwWfA7SpxOEMAPQCY/Fp5RWPrxcXxIw41dr4+2twuCUAKnQD/BH zp1n2M7sNTgMEJrpoDvsmd429z1jC8PkbYGENujrDOBBC/hN
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2191; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=AueSBh20l+IvmTnMku/uAxXaCwl5AScvfIDtGYeyXxg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIjaRcrH/Di3kXiX+2H/62isgprTTbchcjoRV XNyA2Z72KSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyI2gAKCRCPgPtYfRL+ Tk7uCACQKU8wijfW5XTvrUoBIFZpXyJP4eFodXHJNx5MUXhZp+D7toClZKgb7XRdVgCsbAxnLdn CzEnmZTpm3beiNytFEAkZnC33LdIMo/sh7PWQ7Zeo1hmcL2/SOE926dzq+2vJWR7fTgHBziHF6x oGb80w8h9qONuV7o3QKZqL4eSsgw3jZs7ou3Yxo8QG3TYD8XJmAeNWN2QUyY78TrR0RCx3u9Ubm GIqlxCc409hLFN8CPQnVWqLnRGhCVU6AIDUkYN13tc0YB0yg0MKtZaUVvh5JfgVcbCjgTUWJQ1Z +UFDKwc14laD4XSymg32R/GWoUJidJ00KG4Tk3FQE3aW5P89
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -58,65 +58,72 @@ X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expand
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
 This prepares the driver for further changes that will drop struct
-pwm_chip chip from struct stm32_pwm_lp. Use the pwm_chip as driver
-data instead of the stm32_pwm_lp to get access to the pwm_chip in
-stm32_pwm_lp_suspend() without using priv->chip.
+pwm_chip chip from struct sun4i_pwm_chip. Use the pwm_chip as driver
+data instead of the sun4i_pwm_chip to get access to the pwm_chip in
+sun4i_pwm_remove() without using sun4ichip->chip.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-stm32-lp.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-sun4i.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-index bbab6be314a8..b46d8193dd0f 100644
---- a/drivers/pwm/pwm-stm32-lp.c
-+++ b/drivers/pwm/pwm-stm32-lp.c
-@@ -197,6 +197,7 @@ static int stm32_pwm_lp_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 44edf1ce5739..c2f579043915 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -384,12 +384,14 @@ MODULE_DEVICE_TABLE(of, sun4i_pwm_dt_ids);
+ 
+ static int sun4i_pwm_probe(struct platform_device *pdev)
  {
- 	struct stm32_lptimer *ddata = dev_get_drvdata(pdev->dev.parent);
- 	struct stm32_pwm_lp *priv;
 +	struct pwm_chip *chip;
+ 	struct sun4i_pwm_chip *sun4ichip;
  	int ret;
  
- 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-@@ -205,28 +206,29 @@ static int stm32_pwm_lp_probe(struct platform_device *pdev)
+ 	sun4ichip = devm_kzalloc(&pdev->dev, sizeof(*sun4ichip), GFP_KERNEL);
+ 	if (!sun4ichip)
+ 		return -ENOMEM;
++	chip = &sun4ichip->chip;
  
- 	priv->regmap = ddata->regmap;
- 	priv->clk = ddata->clk;
--	priv->chip.dev = &pdev->dev;
--	priv->chip.ops = &stm32_pwm_lp_ops;
--	priv->chip.npwm = 1;
-+	chip = &priv->chip;
+ 	sun4ichip->data = of_device_get_match_data(&pdev->dev);
+ 	if (!sun4ichip->data)
+@@ -451,19 +453,19 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 		goto err_bus;
+ 	}
+ 
+-	sun4ichip->chip.dev = &pdev->dev;
+-	sun4ichip->chip.ops = &sun4i_pwm_ops;
+-	sun4ichip->chip.npwm = sun4ichip->data->npwm;
 +	chip->dev = &pdev->dev;
-+	chip->ops = &stm32_pwm_lp_ops;
-+	chip->npwm = 1;
++	chip->ops = &sun4i_pwm_ops;
++	chip->npwm = sun4ichip->data->npwm;
  
--	ret = devm_pwmchip_add(&pdev->dev, &priv->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0)
- 		return ret;
+ 	spin_lock_init(&sun4ichip->ctrl_lock);
  
--	platform_set_drvdata(pdev, priv);
+-	ret = pwmchip_add(&sun4ichip->chip);
++	ret = pwmchip_add(chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
+ 		goto err_pwm_add;
+ 	}
+ 
+-	platform_set_drvdata(pdev, sun4ichip);
 +	platform_set_drvdata(pdev, chip);
  
  	return 0;
- }
  
- static int stm32_pwm_lp_suspend(struct device *dev)
+@@ -477,9 +479,10 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 
+ static void sun4i_pwm_remove(struct platform_device *pdev)
  {
--	struct stm32_pwm_lp *priv = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
- 	struct pwm_state state;
+-	struct sun4i_pwm_chip *sun4ichip = platform_get_drvdata(pdev);
++	struct pwm_chip *chip = platform_get_drvdata(pdev);
++	struct sun4i_pwm_chip *sun4ichip = to_sun4i_pwm_chip(chip);
  
--	pwm_get_state(&priv->chip.pwms[0], &state);
-+	pwm_get_state(&chip->pwms[0], &state);
- 	if (state.enabled) {
- 		dev_err(dev, "The consumer didn't stop us (%s)\n",
--			priv->chip.pwms[0].label);
-+			chip->pwms[0].label);
- 		return -EBUSY;
- 	}
+-	pwmchip_remove(&sun4ichip->chip);
++	pwmchip_remove(chip);
  
+ 	clk_disable_unprepare(sun4ichip->bus_clk);
+ 	reset_control_assert(sun4ichip->rst);
 -- 
 2.43.0
 
