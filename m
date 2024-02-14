@@ -1,140 +1,84 @@
-Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19651429C;
-	Wed, 14 Feb 2024 09:27:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1798A14A93;
+	Wed, 14 Feb 2024 09:32:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707902880; cv=none; b=XE58aZvStvjhIznJ/mUrji2H5u6HQOnxM5+Q02p9TGUrummMpupbVzxDPg6gb8yaQNmtGhax1T3/w/w5QNaRu6j4K50gvGuRmjilzUEOC0wZATlEIQrZvd6E1uce6jVwS4YvIwPY+xYNFs25za4CNmosZ+ei8QkPYIdjMwGS/DM=
+	t=1707903152; cv=none; b=sdMBuY9OUiv2n555OUEoLTrZMyDmJhAm3r2CbuikOafkZPdPGFuIiwClf8UUbmBETpnXDNFbgLjTCnJNShwV3htbTia87qQm458lZ9F8FhYL3JZhs6MN9bkWN8RA782bX84ePKCwz5gA2i4Okw+mSvoTj2+SxjoXz0Bu2GdbZuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707902880; c=relaxed/simple;
-	bh=R7/bEBifI4lBAh8QUwfn+H3MAcMLkC8MOxtp6x/n10M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KLLP0nyULMPB05MmIOFj/C7ttkD8947q1sQDtHVXm0lhzjEqbRkP+J2u675Y6zAkISwtKv969zMQIk2hmLnuo7qVLdaDrKFnUpp3C7Z0hy3adl/TN7dtf4ju3PUOhqX1DoClROrf4aUakC6D/c4CcIwV4h+TeDjzn2T4Bkyy7l8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=4uggz3V0; arc=none smtp.client-ip=46.235.227.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1707903152; c=relaxed/simple;
+	bh=sgHsCHxDoO5MTtQjA5HZm+TAMiYkv40VOYSxH54M9zo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tGsy30tp2JyrByWb1KjZbDPW5VgJ0QN35ge/IX2WllcmItoFCfOfJGVMkmySEV70RndalWiP8rhoqownFGVa8u35vBkAaOIDnoeqa5JUjbBj77znlg4vJNWqidmMTbZcNpZQuEU8iNkKpUYon8PwD6mQf9AA6aYSoLJpoIe2Ous=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nU6797v1; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="4uggz3V0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1707902876;
-	bh=R7/bEBifI4lBAh8QUwfn+H3MAcMLkC8MOxtp6x/n10M=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=4uggz3V0Edxv8IP6cRbU05flDUjer1IhQ4PFjTRlQUhgVduHUEqnpHW8Yyrkwsz1z
-	 sjZU2G8VmNpGDZ/ZLCnoWGrsECWcSlKn+UrXq0aJARQmubB0T9vXZNDct5ks00j1xp
-	 gouKT9E02DbzrkddLKKJnCfwm0z0SmFeC6KjChIh2b5d9un4TFz7S0lAX3YDDjLi2i
-	 OVDzwPrPBVsr8eHkabjEMthfceQ2mC49sVxKGSR+ts4dE2KhXN0vhmgecQXbG2csbq
-	 HK3kP2gG+VcB6Dfnu6p3GxbPtxBPPvaNsRGhjGhQiq+NzvRLEa1wL08BAbxB6AA7Fc
-	 pnQhu/Fs7tksg==
-Received: from [100.113.186.2] (cola.collaboradmins.com [195.201.22.229])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 3AD113781FEF;
-	Wed, 14 Feb 2024 09:27:55 +0000 (UTC)
-Message-ID: <e957b044-fe84-4b72-bdf1-cbc40c722019@collabora.com>
-Date: Wed, 14 Feb 2024 10:27:54 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nU6797v1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707903150; x=1739439150;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sgHsCHxDoO5MTtQjA5HZm+TAMiYkv40VOYSxH54M9zo=;
+  b=nU6797v17Rn6J/S4CVT0fMXk0cVMUCBHqbnM1OBU9KDlrEjcoKWfVHF8
+   UH1S1Ijxb/+iLC+LtjeSbRHGdpVP4IOn5q6irVIC2SRgQwOcVg/wnatZF
+   waOlaz7CiEeMSHplGuEndRCx76mTi8KEEsipwgQ1/O7Dz/IcbJDesoKcE
+   vA0kVfM2TKOxtV4ZYQPrdt86fwYO765yu819pjeWQnau7eR3R2n+SuBn4
+   zxAEFVkdRf44FbtHsUCScO8JbnUKP9xM/1CppEkDX6AyIj8nwVbIOT948
+   6f9rUAsH4LsM7JbkjhRfY1l52xjznzQ+boZboIj8YVK1b3XH2urkXzRa4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="2303707"
+X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
+   d="scan'208";a="2303707"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 01:32:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="935606727"
+X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
+   d="scan'208";a="935606727"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 01:32:27 -0800
+Date: Wed, 14 Feb 2024 11:32:24 +0200
+From: Raag Jadav <raag.jadav@intel.com>
+To: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Cc: u.kleine-koenig@pengutronix.de, mika.westerberg@linux.intel.com,
+	andriy.shevchenko@linux.intel.com, linux-pwm@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 2/2] pwm: lpss: drop redundant runtime PM handles
+Message-ID: <ZcyIqEFufO39WMqn@black.fi.intel.com>
+References: <20240212061037.4271-1-raag.jadav@intel.com>
+ <20240212061037.4271-3-raag.jadav@intel.com>
+ <91bbea2c-b6f7-48cf-b540-83c73750d1d2@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: pwm: mediatek,mt2712: add compatible for
- MT7988
-Content-Language: en-US
-To: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
- Conor Dooley <conor@kernel.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20240213164633.25447-1-zajec5@gmail.com>
- <20240213-resource-evaluator-0754cfd5882d@spud>
- <d4391868-ddcd-4f66-b539-28d245fa83df@gmail.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <d4391868-ddcd-4f66-b539-28d245fa83df@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <91bbea2c-b6f7-48cf-b540-83c73750d1d2@linux.intel.com>
 
-Il 14/02/24 07:34, Rafał Miłecki ha scritto:
-> On 13.02.2024 19:18, Conor Dooley wrote:
->> On Tue, Feb 13, 2024 at 05:46:32PM +0100, Rafał Miłecki wrote:
->>> From: Rafał Miłecki <rafal@milecki.pl>
->>>
->>> MT7988 has on-SoC controller that can control up to 8 PWMs.
->>
->> I see a binding and a dts patch, but no driver patch, how come?
+On Wed, Feb 14, 2024 at 09:04:09AM +0200, Jarkko Nikula wrote:
+> On 2/12/24 08:10, Raag Jadav wrote:
+> > We no longer need empty runtime PM handles for PCI devices after commit
+> > c5eb1190074c ("PCI / PM: Allow runtime PM without callback functions").
+> > Drop them and let PCI core take care of power state transitions.
+> > 
+> > Signed-off-by: Raag Jadav <raag.jadav@intel.com>
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> >   drivers/pwm/pwm-lpss-pci.c | 22 ----------------------
+> >   1 file changed, 22 deletions(-)
+> > 
+> Will this patch cause a regression if applied without your another patch to
+> the drivers/pci/pci-driver.c?
 > 
-> I believe that to avoid cross-trees patchsets (which are sometimes
-> tricky for maintainers) there are two ways of submiting such changes:
-> 1. dt-binding + driver; then (separately) DTS
-> 2. dt-binding + DTS; then (separately) driver
-> 
-> I chose later in this case as my personal priority right now is to deal
-> with all MediaTek DTS files.
-> 
-> Is that wrong or unacceptable?
-> 
+> https://lore.kernel.org/linux-pci/20240212063233.5599-1-raag.jadav@intel.com/
 
-It's not wrong but it's partially unacceptable, at least on my side.
+Yes, I'll send out a v2 with updated commit message after the PCI
+one is accepted.
 
-In my opinion (and I believe many do agree with me), sending the binding along
-with the driver is the right choice, and if you also want to include the dts
-that is also appreciated: series can go through multiple maintainers applying
-subsets - it's ok to do.
-
-I want to put emphasis on sending the binding with the driver, as this allows
-for a better review on everyone's side because we do see the full picture and
-we can give better advices: in this case, I'm not sure whether adding a new
-compatible for MT7988 in an enum is a good idea, as the compatible string may
-be shared with one of the *eleven* SoCs that are supported in the PWM driver,
-meaning that (hardware speaking!) the PWM controller in 7988 might be the same
-as the one in mt1234.
-
-Thanks for the great work that you're doing on the bindings btw.
-Keep it up!
-Angelo
-
-> 
->> Also, what makes this incompatibly different with the other devices in
->> the binding, like the 8183?
-> 
-> It can control 8 PWMs unlike any other SoC block except for MT2712.
-> It uses different registers than MT2712 thought.
-> 
-> 
->> Cheers,
->> Conor.
->>
->>>
->>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
->>> ---
->>>   Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml | 1 +
->>>   1 file changed, 1 insertion(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml 
->>> b/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
->>> index 0fbe8a6469eb..a5c308801619 100644
->>> --- a/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
->>> +++ b/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
->>> @@ -24,6 +24,7 @@ properties:
->>>             - mediatek,mt7629-pwm
->>>             - mediatek,mt7981-pwm
->>>             - mediatek,mt7986-pwm
->>> +          - mediatek,mt7988-pwm
->>>             - mediatek,mt8183-pwm
->>>             - mediatek,mt8365-pwm
->>>             - mediatek,mt8516-pwm
->>> -- 
->>> 2.35.3
->>>
-> 
-
-
+Raag
