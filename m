@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C8118B02
-	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9118A18638
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903271; cv=none; b=ZXoVwxCve0jS94cGAUvWnnbhqoySVUyhUcs3/8/SVOCn7VsbPzPEQZDdkTeR7R2ENh4lPW4VIFeJho+iPPou0hI8rIVI9XLPtkwntq6wVWPOzWsRTJnBsG/an+FwyV+tUwmtSCOsrig/I5FMM/5Gvbx2UTgFoi1aWn81wDIDIFA=
+	t=1707903271; cv=none; b=EF47nSsvPbDRcFKv2iIlOMfBcLxl0PicBCRov/FkvU3AhW7dhQcsWpfS6eXazsoV4+LnAWwOsrDXEtB3CcyqYdvam6E6Zp8PoAzzuQWiaktgLUMPd6FgiMlfD+WWBTisy7o0voulHG0f1Gxs0lfjiEBcnyd+uTUGTkEi60xwSm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903271; c=relaxed/simple;
-	bh=aV+8xYJnCvfIi2Ta/CNMW2gzEdLgM6XRsj1xOw9beLQ=;
+	bh=RuNDzuLdvJRxR0ckpJ+3ys/tCVKtgBXKMYvbIUdoyZg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=A2wO8JXuzmeOS684rLSOFAox/RtEeHHoZm64Fs0onGNHDNKTqHgL6xuQ8PlBkZn6IJgtyOHFKMMp8867UjaKi99lxjSoyZDFcxkXjXg8QbR3eKOTEPAiXNe5148RRUybJW6g+pgfYlEZInw9Wzhk6kypyo3bTHutbI7VhFqcQrE=
+	 MIME-Version:Content-Type; b=l/OeWk0n0c35Q1tIfOJNyfPZOvj8Mf6C92dwvDvXaxyTIOx7jzW69sI77Xvi80ZJr6/UTVlqNaRgdnwHi0EaLFvYi218cEEHubGmIlmx9Q+0pCN7Kp3+qn4Pt3T51UCaz3tWP9B8y6iNKOE3rGXBRstmKw9d4tJlBvNrS6T8Qa0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,15 +18,15 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBes-0004lg-8Z; Wed, 14 Feb 2024 10:34:26 +0100
+	id 1raBer-0004jL-Uu; Wed, 14 Feb 2024 10:34:25 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBer-000fBx-L8; Wed, 14 Feb 2024 10:34:25 +0100
+	id 1raBer-000fBp-Al; Wed, 14 Feb 2024 10:34:25 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBer-004Y33-1q;
+	id 1raBer-004Y2v-0m;
 	Wed, 14 Feb 2024 10:34:25 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: Shawn Guo <shawnguo@kernel.org>,
@@ -36,9 +36,9 @@ Cc: Fabio Estevam <festevam@gmail.com>,
 	NXP Linux Team <linux-imx@nxp.com>,
 	linux-arm-kernel@lists.infradead.org,
 	kernel@pengutronix.de
-Subject: [PATCH v6 050/164] pwm: imx-tpm: Make use of devm_pwmchip_alloc() function
-Date: Wed, 14 Feb 2024 10:31:37 +0100
-Message-ID:  <5de5d53295fa445d58a79f83421dd3406166c3c6.1707900770.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v6 048/164] pwm: imx27: Make use of pwmchip_parent() accessor
+Date: Wed, 14 Feb 2024 10:31:35 +0100
+Message-ID:  <a8e3e3b3ea0684c9b289999c6f09eedbc2520f54.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -49,7 +49,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2599; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=aV+8xYJnCvfIi2Ta/CNMW2gzEdLgM6XRsj1xOw9beLQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIiE/gw/YmlmFDigqQyu8T9Vq/opOc0QDk9gQ 4+iAIXSPJKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIhAAKCRCPgPtYfRL+ TmvqB/0cP4uicdQzdlVh23o8AAcr/9AMQbQ9cCTPO6hAoWmajR+nMwXrXsSChYGmb+6TRjoUiPd +meksPH5p6+LCH+RyqHXRArVuDlfZBN200wJIrrJQr5Ho3wTIYT1zUBI1GD5QRG5piuytRnb9We AzxPNm0rSR5Toog9IWoqvphMK6zjQV3PWj9EBaN5elnYIDKPhoXuzEv9KHq3l8vJHXkzoH6jhvH 0mN2S3GhqmujbO4RPAQPfVcT1rAiIl7/wdnDXnFOJOMNrey98QumZ5YiQ3Qrzh+GbMZ69U2iLFs AaIumHHJZnMAO7wJXWr3AmbQVJGRyRvYWLBNJhFuz67Fimkq
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1489; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=RuNDzuLdvJRxR0ckpJ+3ys/tCVKtgBXKMYvbIUdoyZg=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIiBZ0q35U/jB2Oz5eygTO2iXNMY+QWm/6azQ ShvztQDekKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIgQAKCRCPgPtYfRL+ TjIjCACeZlXTYvp10oOet167MF9Mb7oGaPaSnHl6Xj/Pdp2HT2IrmANnlQNDwI5qE4oYBKa4t/D IRRTLwy0eOOTYsQOfgx9CT9Hx+gRDtjv4fG7yU7sLd8WHoKwFvK0PAxrDwPF86tFnIaJzYvxkVR RJNiQiIvIsScfUSS8phZ3Ff2Lp5DWQnmXdz7DmpfeuxOiQlPmlmT/4NsVIxdR+DIZ/QOQYXyHpB 8q/nXK9wafiZSY2dwgCvg5P2uLXQJPVi/KMY5lrnmr8B0Yw2X1EBdiwF8OZ0Y03RftP18jZE3pB gOcdcsN1ttMUOBuJ2oDkf6IrPLPazZbGa8Ls3w3OZTnFfDqS
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -57,90 +57,46 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-tmp driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+struct pwm_chip::dev is about to change. To not have to touch this
+driver in the same commit as struct pwm_chip::dev, use the accessor
+function provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx-tpm.c | 34 +++++++++++++++++++---------------
- 1 file changed, 19 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-imx27.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
-index 9fc290e647e1..b04b974c5f32 100644
---- a/drivers/pwm/pwm-imx-tpm.c
-+++ b/drivers/pwm/pwm-imx-tpm.c
-@@ -57,7 +57,6 @@
- #define PWM_IMX_TPM_MOD_MOD	GENMASK(PWM_IMX_TPM_MOD_WIDTH - 1, 0)
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index 7d9bc43f12b0..5d796453519a 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -145,7 +145,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
+ 		state->polarity = PWM_POLARITY_INVERSED;
+ 		break;
+ 	default:
+-		dev_warn(chip->dev, "can't set polarity, output disconnected");
++		dev_warn(pwmchip_parent(chip), "can't set polarity, output disconnected");
+ 	}
  
- struct imx_tpm_pwm_chip {
--	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
- 	struct mutex lock;
-@@ -75,7 +74,7 @@ struct imx_tpm_pwm_param {
- static inline struct imx_tpm_pwm_chip *
- to_imx_tpm_pwm_chip(struct pwm_chip *chip)
+ 	prescaler = MX3_PWMCR_PRESCALER_GET(val);
+@@ -177,7 +177,7 @@ static int pwm_imx27_get_state(struct pwm_chip *chip,
+ static void pwm_imx27_sw_reset(struct pwm_chip *chip)
  {
--	return container_of(chip, struct imx_tpm_pwm_chip, chip);
-+	return pwmchip_get_drvdata(chip);
- }
+ 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
+-	struct device *dev = chip->dev;
++	struct device *dev = pwmchip_parent(chip);
+ 	int wait_count = 0;
+ 	u32 cr;
  
- /*
-@@ -336,35 +335,40 @@ static const struct pwm_ops imx_tpm_pwm_ops = {
- 
- static int pwm_imx_tpm_probe(struct platform_device *pdev)
+@@ -196,7 +196,7 @@ static void pwm_imx27_wait_fifo_slot(struct pwm_chip *chip,
+ 				     struct pwm_device *pwm)
  {
-+	struct pwm_chip *chip;
- 	struct imx_tpm_pwm_chip *tpm;
-+	void __iomem *base;
- 	int ret;
-+	unsigned int npwm;
- 	u32 val;
- 
--	tpm = devm_kzalloc(&pdev->dev, sizeof(*tpm), GFP_KERNEL);
--	if (!tpm)
--		return -ENOMEM;
-+	base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(base))
-+		return PTR_ERR(base);
-+
-+	/* get number of channels */
-+	val = readl(base + PWM_IMX_TPM_PARAM);
-+	npwm = FIELD_GET(PWM_IMX_TPM_PARAM_CHAN, val);
-+
-+	chip = devm_pwmchip_alloc(&pdev->dev, npwm, sizeof(*tpm));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	tpm = to_imx_tpm_pwm_chip(chip);
- 
- 	platform_set_drvdata(pdev, tpm);
- 
--	tpm->base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(tpm->base))
--		return PTR_ERR(tpm->base);
-+	tpm->base = base;
- 
- 	tpm->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(tpm->clk))
- 		return dev_err_probe(&pdev->dev, PTR_ERR(tpm->clk),
- 				     "failed to get PWM clock\n");
- 
--	tpm->chip.dev = &pdev->dev;
--	tpm->chip.ops = &imx_tpm_pwm_ops;
--
--	/* get number of channels */
--	val = readl(tpm->base + PWM_IMX_TPM_PARAM);
--	tpm->chip.npwm = FIELD_GET(PWM_IMX_TPM_PARAM_CHAN, val);
-+	chip->ops = &imx_tpm_pwm_ops;
- 
- 	mutex_init(&tpm->lock);
- 
--	ret = devm_pwmchip_add(&pdev->dev, &tpm->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
- 
+ 	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
+-	struct device *dev = chip->dev;
++	struct device *dev = pwmchip_parent(chip);
+ 	unsigned int period_ms;
+ 	int fifoav;
+ 	u32 sr;
 -- 
 2.43.0
 
