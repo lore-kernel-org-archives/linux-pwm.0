@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CA23134A0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31C58134AD
 	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903281; cv=none; b=b04l7xsqV+5tYYknlWhVtu4SMd0tzaxHg+99E2nkTECaGBXCZ9Cf056dP9eKCUUiDivLVDwSrhfWjRxVcODLglIW4lRhNiQ2jGqknNCLGKYIjVUU4QXfruTQ+ZyGY7C2YdpTJSfU9yv2NLseNx+vLtbBjcKyHN/AzEi8a0v24KE=
+	t=1707903281; cv=none; b=I578s37UKclVddl7zevXhpKdELsFTJI+Q/fomjPSs1YKooj01SM5DW426nxTs4OI8uBr0QBPgwtWq7hUqwJZl2ZI+x7rvRlQgaYOrXLF8PGBkdhKWb0xWTSU7Mss5zINMH1f8EApk7LulFin94iAWOsyoVsrQ+geILjD1++Jr2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903281; c=relaxed/simple;
-	bh=cQXa2ZxyI6L4pSJu/p9Pzs8FtX8fWzpfSAwzoyRgqHE=;
+	bh=/2pXPOuSmi0JOEICtFc+ZUbDiXGwS0BPt9xWNJheEuY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F29irm+9XlW4AX/X5/fLorxRiigJGyTRdQ++sqLNiXvK1ngu3ONdFfSzFmi+Misu0WiOgAlqTRan4HKVSHVQJTTrpXDiRmARJpF+yozE+1cYZLcERBcCCcAPbzPg1tYvU9ls3rCQYoib7L5UuiKE831rL8hwRJ8krkNML+EkGDs=
+	 MIME-Version:Content-Type; b=biZH0qum5U03N6rsERn+ZCR58Z6B9mAJKI+I4zuE/j3iTtmXU0E5fKlLWyPldkC0Pe43Uh7u8THqoJz4hnZRDQVhguWYoMY4rZVoR4AccfOnkzo7ef0/LfO7/TuwlyFsvtYwAeaUkZoBOVPkHaRxVyy15j4iZzNlR6U729FV+4Y=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,22 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf0-0005HL-6N; Wed, 14 Feb 2024 10:34:34 +0100
+	id 1raBf1-0005Ku-2F; Wed, 14 Feb 2024 10:34:35 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBew-000fDs-QU; Wed, 14 Feb 2024 10:34:30 +0100
+	id 1raBex-000fE6-Cx; Wed, 14 Feb 2024 10:34:31 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBew-004Y5L-2O;
-	Wed, 14 Feb 2024 10:34:30 +0100
+	id 1raBex-004Y5b-14;
+	Wed, 14 Feb 2024 10:34:31 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: linux-pwm@vger.kernel.org
 Cc: kernel@pengutronix.de
-Subject: [PATCH v6 083/164] pwm: pca9685: Make use of devm_pwmchip_alloc() function
-Date: Wed, 14 Feb 2024 10:32:10 +0100
-Message-ID:  <4cb65adc92414a901dd3c0b8412de075196a3c54.1707900770.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v6 087/164] pwm: rcar: Make use of pwmchip_parent() accessor
+Date: Wed, 14 Feb 2024 10:32:14 +0100
+Message-ID:  <8b33a106c84517430d90ee4a8dcb878d0fc3bad5.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +44,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2123; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=cQXa2ZxyI6L4pSJu/p9Pzs8FtX8fWzpfSAwzoyRgqHE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIiqBgcXOUYGHlGjCBlRtd3Q2q4UmcExhioV+ hhVaY8y01iJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIqgAKCRCPgPtYfRL+ Tpz7CACLA6SPEXIgX3ZawJPOsXmg6sFL3Ce9UwoXiOxbORsBMZND/XnafHnaZ2nVmaq79JZOAdf LQseRJZcIrMWNgZBhzWjIc56L/FF5g2FeJgn+ZUybslLpbNrQVoLdWxzsEVrHxigDRGiAAexPGJ J6hMF3Jk0d3ZNCQ6449QwCju9b3/V92E5mC7oko+jpfP22BIpjMra1BGgwBA0jnHEE/AoU59i82 oqR7UCMKuxTbrZICfKuO5esINRoofMUcDPjMyKoG/0udlilR6c0hnDHIiRXoY5njVsaaeKY4A3y ROqvKWCSmB3HWmLkwNY4F2ci0V0MaNq4QdDIfLOEWzpV+RfM
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1019; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=/2pXPOuSmi0JOEICtFc+ZUbDiXGwS0BPt9xWNJheEuY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIiv44d8zPN5knwTVQWv11oQ28jtGGyVDdmhF 0KxamMR81qJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIrwAKCRCPgPtYfRL+ Th0NB/40WMaVkVwNmN1gZ3JYpQtJcqXswbpHxcc0UR++nwtTT5Gv7+16PYJXgwOLux1/AB7F1rr G8R56MUlRkwDnjiz/WGdnikCz4O2cGplKvAnAx6B2OF7PT57OiDn2yEx1pMixWkNs7rcTmlYecP hq1DUajqxsgbVmP7g7QqcOqvW/B20X0evldpsNAdBFtxLECEfGXNpAIcuA5oa2xBnmBViKZi2cv 1IeBMWzhlTt0QqgT2zUAYxfuyAzzzmqYVli3WS383Pz3fB/axf1EVAu+gBQqg7MX8EXuPcb7gZV MhL5aBNaoCvW3P7RsmsI8mJljgmS3gbkwTWeWQadeofbjZVL
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,70 +52,34 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-pca9685 driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+struct pwm_chip::dev is about to change. To not have to touch this
+driver in the same commit as struct pwm_chip::dev, use the accessor
+function provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-pca9685.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ drivers/pwm/pwm-rcar.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index e976a5ca1e7b..c5da2a6ed846 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -76,7 +76,6 @@
- #define REG_OFF_L(C)	((C) >= PCA9685_MAXCHAN ? PCA9685_ALL_LED_OFF_L : LED_N_OFF_L((C)))
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 13269f55fccf..4838762137d1 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -132,12 +132,12 @@ static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, int duty_ns,
  
- struct pca9685 {
--	struct pwm_chip chip;
- 	struct regmap *regmap;
- 	struct mutex lock;
- 	DECLARE_BITMAP(pwms_enabled, PCA9685_MAXCHAN + 1);
-@@ -88,7 +87,7 @@ struct pca9685 {
- 
- static inline struct pca9685 *to_pca(struct pwm_chip *chip)
+ static int rcar_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
  {
--	return container_of(chip, struct pca9685, chip);
-+	return pwmchip_get_drvdata(chip);
+-	return pm_runtime_get_sync(chip->dev);
++	return pm_runtime_get_sync(pwmchip_parent(chip));
  }
  
- /* This function is supposed to be called with the lock mutex held */
-@@ -526,9 +525,11 @@ static int pca9685_pwm_probe(struct i2c_client *client)
- 	unsigned int reg;
- 	int ret;
+ static void rcar_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	pm_runtime_put(chip->dev);
++	pm_runtime_put(pwmchip_parent(chip));
+ }
  
--	pca = devm_kzalloc(&client->dev, sizeof(*pca), GFP_KERNEL);
--	if (!pca)
--		return -ENOMEM;
-+	/* Add an extra channel for ALL_LED */
-+	chip = devm_pwmchip_alloc(&client->dev, PCA9685_MAXCHAN + 1, sizeof(*pca));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	pca = to_pca(chip);
- 
- 	pca->regmap = devm_regmap_init_i2c(client, &pca9685_regmap_i2c_config);
- 	if (IS_ERR(pca->regmap)) {
-@@ -537,7 +538,6 @@ static int pca9685_pwm_probe(struct i2c_client *client)
- 			ret);
- 		return ret;
- 	}
--	chip = &pca->chip;
- 
- 	i2c_set_clientdata(client, chip);
- 
-@@ -573,10 +573,6 @@ static int pca9685_pwm_probe(struct i2c_client *client)
- 	pca9685_write_reg(chip, PCA9685_ALL_LED_ON_H, LED_FULL);
- 
- 	chip->ops = &pca9685_pwm_ops;
--	/* Add an extra channel for ALL_LED */
--	chip->npwm = PCA9685_MAXCHAN + 1;
--
--	chip->dev = &client->dev;
- 
- 	ret = pwmchip_add(chip);
- 	if (ret < 0)
+ static int rcar_pwm_enable(struct rcar_pwm_chip *rp)
 -- 
 2.43.0
 
