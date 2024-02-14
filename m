@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 969E61759F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B467C175A9
 	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903266; cv=none; b=kifS+Z63MuNDCadks15UECWTHomvx/J/XPeYQBX9Rotfs2T4w/j7dJ6RBilhi7KBGGehkgS3PnTBzuKsIe4yPlQbM1W6HpbpaDM75BdkoVtEeGm/qBOn8ZZoAAtlSzp2+9hJFCgD/jxsPgItt+t5gVBadw/t/V4jLImRlRGeE2A=
+	t=1707903265; cv=none; b=HlJE2rxPJtxJk2Soo7D5jXMbui3hCtcLvWtOISmlSsdMXaRqV3QYFr2xW4Oi54rpaVP1dEk1S26gFtc4oCDHl4v33QtD9tILowcKIh2HheTv8PgDgNHw3QaJW9QyyABmrNWkrTSqSfk8J+O+4wwjOLtWJYabbOrqm+fW1gtNhzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707903266; c=relaxed/simple;
-	bh=vCty30n2D+ujqHqMSEoZgZof0Q2t6u09nnD39gF61eQ=;
+	s=arc-20240116; t=1707903265; c=relaxed/simple;
+	bh=b9f7H/MsXwBDAk/myztuyL8bNkCQGo4c7QFpYH1j7Ts=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Bp+gzErsSZQQvprvK1OKjLocnecOkezsKEbRPKbSoxkT7WMdO1Sj8lLZZJXY8NuOqOwj+8OOIy95UTsDdL65kI5qinS+1ZyBfSt2m4Xud3zsvwp29dLqB1ikc73ivAHzzQ2N+83mDOK8mt+edhZN1B90SAy4hdJojre+unntXYo=
+	 MIME-Version:Content-Type; b=Vqp6JxT07cknTIu/Uaw723jkPdjnESiDiLORUnXc5Rgo42b3+Bh68I5TCpNfDzWaEYAbj9z+Ac7lui2kiSsgoWKCASGUkOLKvEIMTrK9cK4hgeN+qSFm+0tR5JTIfthWLl9eyWFU9Uf4MGvy8BX++9uBiKWw0xIxpReEKEpZv9g=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,26 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBen-0004Vs-K6; Wed, 14 Feb 2024 10:34:21 +0100
+	id 1raBen-0004VD-Fn; Wed, 14 Feb 2024 10:34:21 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBem-000f8y-VP; Wed, 14 Feb 2024 10:34:20 +0100
+	id 1raBem-000f8l-Lf; Wed, 14 Feb 2024 10:34:20 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBem-004Y0x-2u;
+	id 1raBem-004Y0p-1u;
 	Wed, 14 Feb 2024 10:34:20 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de
-Subject: [PATCH v6 020/164] pwm: berlin: Prepare removing pwm_chip from driver data
-Date: Wed, 14 Feb 2024 10:31:07 +0100
-Message-ID:  <d2a0c5b664ef1bfd4719c645c069717d63fb4e65.1707900770.git.u.kleine-koenig@pengutronix.de>
+To: Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	linux-pwm@vger.kernel.org
+Cc: Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	kernel@pengutronix.de
+Subject: [PATCH v6 018/164] pwm: bcm-kona: Make use of pwmchip_parent() accessor
+Date: Wed, 14 Feb 2024 10:31:05 +0100
+Message-ID:  <f0086ed37f30c4d25bf226e722f5ae52a73974d9.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +48,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2583; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=vCty30n2D+ujqHqMSEoZgZof0Q2t6u09nnD39gF61eQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIhhnrMlbf/5cg+CsKH2YIujzlJhRplClIa3M KJAV7F2bdyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIYQAKCRCPgPtYfRL+ Tq9sB/9qYVAzbPdwWqka25stKAsYyqgogyQLNjtOyv51bY6A4EjxS3fuLj74E/XJ2taLZ1Fst1j Rqd7rnVZW+ApC8rywF5t+nnSNeOXVWrzap43HUiRL0VQAeMTTl7lAelmhgL5pDSTl8f6QEsRE27 A90ubTR1DzgZhxQ7EvIp83vcDNxuE/2cpW9sSJ8H8jQBXx/BhFogfheN9/JFlO3m/acFeKAVq3I 3fzPsQv10onrSCtO5EBC+j2FFSZ5XcBAvcls1oz6oj3bznVnths2eezGpZneMFX+DDXxZiPRLOK nZPYMTw9M8wZeuYdprhUfRujQhhdR3/GyqfGPQuiVbOiiIs1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1168; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=b9f7H/MsXwBDAk/myztuyL8bNkCQGo4c7QFpYH1j7Ts=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIhfxoagEs8DsyBHSI4CzwFV8c03xz1nrpqaj oHrJfwLTYGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIXwAKCRCPgPtYfRL+ TjwwB/wNfrC9pNVda+Evg6b/aCT+bNQxMAoOd6iQiFdhhw+y3vtgdz2IC/yFf7ZT0XAGwReuEQF fokBIxoCONYd4VANALv/6OFHOX+gSXhqMQtwbOd6ceiC94jC3dxOD28jGx5dyyVAK6kzIwWMuOS t47PdnPM/7cWitXuJ+JkGpqyh2NWx9ZKcrApazSMvKHj1Fl1MOf0pm+Rvuy5B8lThboQ2jCL++W WAe/hiaIZvUkCjnQuwvAS28SFTmN/pI/mF7WlLgJbQgEGH43JTAq42KsbjFnuMK2QHF7VDDbNVl q6O5K32oHtRb9tVeYPz5CiZqnzQOGdyXJeZKSZdfPShjqD2b
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,82 +56,37 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the driver for further changes that will drop struct
-pwm_chip chip from struct berlin_pwm_chip. Use the pwm_chip as driver
-data instead of the berlin_pwm_chip to get access to the pwm_chip in
-berlin_pwm_suspend() and berlin_pwm_resume() without using bpc->chip.
+struct pwm_chip::dev is about to change. To not have to touch this
+driver in the same commit as struct pwm_chip::dev, use the accessor
+function provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-berlin.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-bcm-kona.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
-index 442913232dc0..d910017b5feb 100644
---- a/drivers/pwm/pwm-berlin.c
-+++ b/drivers/pwm/pwm-berlin.c
-@@ -198,6 +198,7 @@ MODULE_DEVICE_TABLE(of, berlin_pwm_match);
+diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+index 45046a5c20a5..47acae8d7478 100644
+--- a/drivers/pwm/pwm-bcm-kona.c
++++ b/drivers/pwm/pwm-bcm-kona.c
+@@ -164,7 +164,7 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
  
- static int berlin_pwm_probe(struct platform_device *pdev)
- {
-+	struct pwm_chip *chip;
- 	struct berlin_pwm_chip *bpc;
- 	int ret;
- 
-@@ -213,25 +214,27 @@ static int berlin_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(bpc->clk))
- 		return PTR_ERR(bpc->clk);
- 
--	bpc->chip.dev = &pdev->dev;
--	bpc->chip.ops = &berlin_pwm_ops;
--	bpc->chip.npwm = BERLIN_PWM_NUMPWMS;
-+	chip = &bpc->chip;
-+	chip->dev = &pdev->dev;
-+	chip->ops = &berlin_pwm_ops;
-+	chip->npwm = BERLIN_PWM_NUMPWMS;
- 
--	ret = devm_pwmchip_add(&pdev->dev, &bpc->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "failed to add PWM chip\n");
- 
--	platform_set_drvdata(pdev, bpc);
-+	platform_set_drvdata(pdev, chip);
- 
- 	return 0;
- }
- 
- static int berlin_pwm_suspend(struct device *dev)
- {
--	struct berlin_pwm_chip *bpc = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct berlin_pwm_chip *bpc = to_berlin_pwm_chip(chip);
- 	unsigned int i;
- 
--	for (i = 0; i < bpc->chip.npwm; i++) {
-+	for (i = 0; i < chip->npwm; i++) {
- 		struct berlin_pwm_channel *channel = &bpc->channel[i];
- 
- 		channel->enable = berlin_pwm_readl(bpc, i, BERLIN_PWM_ENABLE);
-@@ -247,7 +250,8 @@ static int berlin_pwm_suspend(struct device *dev)
- 
- static int berlin_pwm_resume(struct device *dev)
- {
--	struct berlin_pwm_chip *bpc = dev_get_drvdata(dev);
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct berlin_pwm_chip *bpc = to_berlin_pwm_chip(chip);
- 	unsigned int i;
- 	int ret;
- 
-@@ -255,7 +259,7 @@ static int berlin_pwm_resume(struct device *dev)
- 	if (ret)
+ 	ret = clk_prepare_enable(kp->clk);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "failed to enable clock: %d\n", ret);
++		dev_err(pwmchip_parent(chip), "failed to enable clock: %d\n", ret);
  		return ret;
+ 	}
  
--	for (i = 0; i < bpc->chip.npwm; i++) {
-+	for (i = 0; i < chip->npwm; i++) {
- 		struct berlin_pwm_channel *channel = &bpc->channel[i];
+@@ -193,7 +193,7 @@ static int kona_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pwm)
  
- 		berlin_pwm_writel(bpc, i, channel->ctrl, BERLIN_PWM_CONTROL);
+ 	ret = clk_prepare_enable(kp->clk);
+ 	if (ret < 0) {
+-		dev_err(chip->dev, "failed to enable clock: %d\n", ret);
++		dev_err(pwmchip_parent(chip), "failed to enable clock: %d\n", ret);
+ 		return ret;
+ 	}
+ 
 -- 
 2.43.0
 
