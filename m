@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CB4D1427F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48FDB18045
 	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903270; cv=none; b=fIr89Ld7M8dDPdGEJ4S3qFD26gF5REcZYgHo/rFXCHYnHtzMkkRlmI7uNzk6SjoKFRL14vs08skId9ZAeqU2WRKUEOQFebRzTl2P6YeEYAGO3d2MOs8LX5eJQGLYJsvv3pd0q9Y/6hXxLSYDAI4Rsw8SI4P7k1zcp9cnUF0+Ft4=
+	t=1707903270; cv=none; b=nahxzNTjcceqsOODti1XJDXAAIZU3HnrIk52wLvlygyCnIZlKjXRb5f0FTCj/vJA9VbP/SkhuDzO4PysDRaEDrWmm234wjq8uFXL8nd2/zeOK/7DFcXftqjc7E73KsdFbh8YRd9nvO/LS98IVOqRN2yk/wLGXadDkaigDDg+wtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903270; c=relaxed/simple;
-	bh=4ZI5XtHa1Kau5D+m1e8jHgMkCmDO+Pq7rNhbnoNObs8=;
+	bh=+LrONjxGFb9I2uGHvT1bKOWS8UxS153xkpBFSv15STU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nBoKBl3SlkPjXFpkUTq2Iq/zx/tiv9WN4CvGvGA2WinrYWWzEz5Le6EzaXzHE8Tisbr6AYdaEGa90ngFI9dZg91geQhYO9bVwZ6tapO86sLA6tgm9q1vAxYrJLGepr5k0pcVqhLp6LWPIjCmT7mUhjav5Bu7kKhM+yeyn3qt9iI=
+	 MIME-Version:Content-Type; b=Gb54B6+pmLRdMwJ0AFqat41wKwiRe9EvD2VCGoVAxznManhjinlqkpuzRUH20f3E5OiP4jAEGiINh0F818U2mwGoi0NQQEGhAo8qcSkT9BGPF4rVroQCxuuSv5hXpJ/9E8JSINhC8SWc4e0quNmvF4uVFhJ0w5sQpAiZ3YnVR2o=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,22 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBep-0004dR-UD; Wed, 14 Feb 2024 10:34:23 +0100
+	id 1raBeq-0004eD-8e; Wed, 14 Feb 2024 10:34:24 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBep-000fAu-BP; Wed, 14 Feb 2024 10:34:23 +0100
+	id 1raBep-000fB2-Kq; Wed, 14 Feb 2024 10:34:23 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBep-004Y25-0u;
+	id 1raBep-004Y2D-1p;
 	Wed, 14 Feb 2024 10:34:23 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: linux-pwm@vger.kernel.org
 Cc: kernel@pengutronix.de
-Subject: [PATCH v6 035/164] pwm: ep93xx: Make use of pwmchip_parent() accessor
-Date: Wed, 14 Feb 2024 10:31:22 +0100
-Message-ID:  <3bf56f20bc7f749e5a353cdcfad11dd1ba573381.1707900770.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v6 037/164] pwm: fsl-ftm: Change prototype of a helper to prepare further changes
+Date: Wed, 14 Feb 2024 10:31:24 +0100
+Message-ID:  <5f0e88afe25d6a218032891a34f963980814b760.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +44,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1160; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=4ZI5XtHa1Kau5D+m1e8jHgMkCmDO+Pq7rNhbnoNObs8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIhy0ax8DzAvTI2d/SqYVM9bAGyBNaZuPImWY wQlaxrvH9iJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIcgAKCRCPgPtYfRL+ Tl/eB/wL6CCliTLtLLHHJV5Di0zlSPYL690M27DzxeoYQMmzSREhk1aiCiIYvxVD0id1Rlsk4MA fyx6qQwwdbQ+WN1fs6LirK3893K1wZZl8RAgLHxlj58m9bvv27xMFYrHI2b+dk9QFRmskDoVbRl zjFgJ/OaDIKOVSMTuM9AL59e0poA3Fo1W7Yt84jCj58dmJfOzL9tsNEnr97wesCQS92PUN8vYIJ WoKLSvYw53NmM06330SoW+Rtpp8djO4mn8PakORRhIJNXCmFS/cp1uRRFH2cG3OWl6raLleXmbN SZyF21aGOKzOJpCqgwm+wKdXxMlXT46SbtGj0eVBNlV9qAHi
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1925; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=+LrONjxGFb9I2uGHvT1bKOWS8UxS153xkpBFSv15STU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIh0/iU9mFQ8uWZa4hyrI8mATDbVT0Y7hIxpJ jrlHaxyXE6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIdAAKCRCPgPtYfRL+ TrqtB/9SyGffjI87/0v8Lh04wN63oXxQrEnVwIcOcfrylJgFwC/Hf/VofRA16Q/EugFqlKagkPj GrKQ+bEGe8YXpQL2blaV+o8sbLSSY9R0Ek8QExtk2Fw+voxRXaF3yn4TzvoBsEfI+8RVoPUSvFD po/bmybAfFC7Cqq/FPBh+BQrs53jo1TRY8NnFTfFbkJif3XeMl2uq8o/gLhaA64wTzEqt9j5CCQ A94W1YjpoWplSBtJLoI6wbvKxT5UCv+jdRW9ebi1nNfmaGrGpwsa5FgK+IlMEWyBHTe5M32ylCV 8/aKMngKYDwi+9gMOkCJQ+DBG5NCBUOlWqL/otSgyBIWS62d
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,36 +52,59 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the accessor
-function provided for exactly this purpose.
+This prepares the driver for further changes that will make it harder to
+determine the pwm_chip from a given fsl_pwm_chip. To just not have to
+do that, rework fsl_pwm_apply_config() to take a pwm_chip.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-ep93xx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-fsl-ftm.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-ep93xx.c b/drivers/pwm/pwm-ep93xx.c
-index 51e072572a87..e4c3546a61c8 100644
---- a/drivers/pwm/pwm-ep93xx.c
-+++ b/drivers/pwm/pwm-ep93xx.c
-@@ -46,14 +46,14 @@ static inline struct ep93xx_pwm *to_ep93xx_pwm(struct pwm_chip *chip)
- 
- static int ep93xx_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
--	struct platform_device *pdev = to_platform_device(chip->dev);
-+	struct platform_device *pdev = to_platform_device(pwmchip_parent(chip));
- 
- 	return ep93xx_pwm_acquire_gpio(pdev);
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index d1b6d1aa4773..5792c6ca449f 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -221,10 +221,11 @@ static bool fsl_pwm_is_other_pwm_enabled(struct fsl_pwm_chip *fpc,
+ 		return false;
  }
  
- static void ep93xx_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+-static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
++static int fsl_pwm_apply_config(struct pwm_chip *chip,
+ 				struct pwm_device *pwm,
+ 				const struct pwm_state *newstate)
  {
--	struct platform_device *pdev = to_platform_device(chip->dev);
-+	struct platform_device *pdev = to_platform_device(pwmchip_parent(chip));
++	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+ 	unsigned int duty;
+ 	u32 reg_polarity;
  
- 	ep93xx_pwm_release_gpio(pdev);
- }
+@@ -232,7 +233,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
+ 	bool do_write_period = false;
+ 
+ 	if (!fsl_pwm_calculate_period(fpc, newstate->period, &periodcfg)) {
+-		dev_err(fpc->chip.dev, "failed to calculate new period\n");
++		dev_err(chip->dev, "failed to calculate new period\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -246,7 +247,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
+ 	 */
+ 	else if (!fsl_pwm_periodcfg_are_equal(&fpc->period, &periodcfg)) {
+ 		if (fsl_pwm_is_other_pwm_enabled(fpc, pwm)) {
+-			dev_err(fpc->chip.dev,
++			dev_err(chip->dev,
+ 				"Cannot change period for PWM %u, disable other PWMs first\n",
+ 				pwm->hwpwm);
+ 			return -EBUSY;
+@@ -322,7 +323,7 @@ static int fsl_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		goto end_mutex;
+ 	}
+ 
+-	ret = fsl_pwm_apply_config(fpc, pwm, newstate);
++	ret = fsl_pwm_apply_config(chip, pwm, newstate);
+ 	if (ret)
+ 		goto end_mutex;
+ 
 -- 
 2.43.0
 
