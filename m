@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 490311804E
-	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A77217565
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903268; cv=none; b=K7kWIB51HvZ5GrWQb0hxvQOFcNXv+qyMlvQfdRPVJhb0b/k9pbpzDA5E0LVRNgOK3rGHMoYLzwEhtYiTZCd9y6T1WZ34jaufFQmjZcJfZ/6ZEBSspR9v5tenxu/oYinRdNcrjDf9ANg9c6cCvswgt48i/WhCOJUqjse78yVCt44=
+	t=1707903268; cv=none; b=IySNKSjVc63g2lYHHp1CrYD6aXFmcXB/Tb8TIiAmSuSO9DQEvGXMidsOrNvFUTdBkrkARG/VSglopUqpx3BCtANUlQ88l9jF2tir/Qp+Vg7SxGmZuO4WV03aZuqG5m2OMw6sUBeplLVP1eotApZmGcPAJtflTHIRE4jVU/uSl5A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903268; c=relaxed/simple;
-	bh=NehzaEo7GXBjrXbSaZlO0VeN1fRFMx13q1Pu6IBoqD8=;
+	bh=jrVyDZvg8gKYkS6j285BImE03F03juDv/ToT5nL9bKU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WfER5ogT8DhUU9IZ64gfKCz309Sos58xFZxawgZV8+OnJWKRTGCxtpwfAjFVbgZDENiIRjYf7MrITlCuNZ8rCkVdalW4T0LFeMqNbDNPSU/5SI617EboAcdP9KwWLEX9boQfupL8wDWS7oy3jOhPGOUmvDA0tkhE7SSciaHivnk=
+	 MIME-Version:Content-Type; b=hOuAkh8BOa3RLhuBjp7s9F5TlrFpRVpdGf9AHUc78eccZX7ND8a1BMgTPcF1fSUo1i3ugJiMemqFeoKgHKDjHd3TF8PiMIxr31x9LQ5THbPHwfC8qws6THz15Qq4Q9uKXouZqZhNIENoEUAafTpRWlztzh4v7VDCH0GIQq1nUFg=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,22 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBeq-0004dt-3P; Wed, 14 Feb 2024 10:34:24 +0100
+	id 1raBep-0004cO-H4; Wed, 14 Feb 2024 10:34:23 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBep-000fAy-Gd; Wed, 14 Feb 2024 10:34:23 +0100
+	id 1raBeo-000fAV-RE; Wed, 14 Feb 2024 10:34:22 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBep-004Y29-1Q;
-	Wed, 14 Feb 2024 10:34:23 +0100
+	id 1raBeo-004Y1j-2T;
+	Wed, 14 Feb 2024 10:34:22 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: linux-pwm@vger.kernel.org
 Cc: kernel@pengutronix.de
-Subject: [PATCH v6 036/164] pwm: ep93xx: Make use of devm_pwmchip_alloc() function
-Date: Wed, 14 Feb 2024 10:31:23 +0100
-Message-ID:  <9420eeca1eb18fada4a15c897f60696b7b22b532.1707900770.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v6 032/164] pwm: dwc: Prepare removing pwm_chip from driver data
+Date: Wed, 14 Feb 2024 10:31:19 +0100
+Message-ID:  <008ce5ab84b8e3baa3e81ab6d36dbb0e4be5c319.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +44,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1955; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=NehzaEo7GXBjrXbSaZlO0VeN1fRFMx13q1Pu6IBoqD8=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtQzHcW8tj4+05m3W1zVCmC3mR9mekO6OGJ6zIvsirnsq 4S4RF93MhqzMDByMciKKbLYN67JtKqSi+xc++8yzCBWJpApDFycAjARxVr2/yWTblvqB0W2TvHL L9iUlnjjedfTQ4/j1ubfNnrYdf7F7PxopW7JsolX5bbL/rT4OynPiq/myMWwLJkfX3yOmwXYfY2 rbn0uV5GwaHXd0hdtk94/UF3b/1dSV+DGzn/ca6JW/NKTkfx/cGkla2fRB36T+VXVt/gy/SrOdo oL1VUfi+1atufS9bMBYaZPsnf8c5u5/3KGCl/LzF+smn8TC+sf5H1PuSiR9cFF7mTFz0fWQfZ1A SsXixV8cbwe4PI+9YJnhOFuX3ENnlfF1hpbTmuFf67b48170Xh98cZ+b08G+Xc+1avXvmN3rNrP /iyk0jRMTGob3/OqmHIRmbjbzW63z91buqLXZgmj8XEDAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3418; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=jrVyDZvg8gKYkS6j285BImE03F03juDv/ToT5nL9bKU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIhvvk3lIFhlItEgQYpEl+hiMrIc8kN0TbnrY jFmh2mQLJ2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIbwAKCRCPgPtYfRL+ Tnp1B/0eCf67zP00Vo66aHx3xIPbN6AWKJiqGyFZlPp7Qor91hpkAqzGQzKy46nlYQBTU6ITiIh AVbOK8wkWn3BvCi9wJd5+dJt8jwoQN4VMUx8bSAet1BbuGxnf1bzxQMHgwNUgPXtOhOjMx9HUeM U4I7rCHvlzuYzrHXDfRNInFlHJSfwcq1vLHTlOP6EGELmnS77j+BL5LyYThvd/ZedTQnGutkfto 1Imca/t3Jwr66DeKaWP+muaJ0o78NgzDfkWXXvANlHw5y9Z/Poeq+8Po1VlNJBn+Lm6nKCiWpXl 9rdqJMW5zEwHuUP4XH+5l+OuRJ/Nh4ZuWn7aBAMbDar6XEeC
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,65 +52,113 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-ep93xx driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+This prepares the driver for further changes that will drop struct
+pwm_chip chip from struct dwc_pwm. Use the pwm_chip as driver
+data and return value of dwc_pwm_alloc() instead of the dwc_pwm to get
+access to the pwm_chip in dwc_pwm_probe() and dwc_pwm_suspend() without
+using dwc->chip.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-ep93xx.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-dwc-core.c | 16 +++++++++-------
+ drivers/pwm/pwm-dwc.c      | 17 ++++++++++-------
+ drivers/pwm/pwm-dwc.h      |  2 +-
+ 3 files changed, 20 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/pwm-ep93xx.c b/drivers/pwm/pwm-ep93xx.c
-index e4c3546a61c8..666f2954133c 100644
---- a/drivers/pwm/pwm-ep93xx.c
-+++ b/drivers/pwm/pwm-ep93xx.c
-@@ -36,12 +36,11 @@
- struct ep93xx_pwm {
- 	void __iomem *base;
- 	struct clk *clk;
--	struct pwm_chip chip;
+diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
+index ea63dd741f5c..ac7a0b2cb8b9 100644
+--- a/drivers/pwm/pwm-dwc-core.c
++++ b/drivers/pwm/pwm-dwc-core.c
+@@ -159,21 +159,23 @@ static const struct pwm_ops dwc_pwm_ops = {
+ 	.get_state = dwc_pwm_get_state,
  };
  
- static inline struct ep93xx_pwm *to_ep93xx_pwm(struct pwm_chip *chip)
- {
--	return container_of(chip, struct ep93xx_pwm, chip);
-+	return pwmchip_get_drvdata(chip);
- }
- 
- static int ep93xx_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
-@@ -163,12 +162,14 @@ static const struct pwm_ops ep93xx_pwm_ops = {
- 
- static int ep93xx_pwm_probe(struct platform_device *pdev)
+-struct dwc_pwm *dwc_pwm_alloc(struct device *dev)
++struct pwm_chip *dwc_pwm_alloc(struct device *dev)
  {
 +	struct pwm_chip *chip;
- 	struct ep93xx_pwm *ep93xx_pwm;
+ 	struct dwc_pwm *dwc;
+ 
+ 	dwc = devm_kzalloc(dev, sizeof(*dwc), GFP_KERNEL);
+ 	if (!dwc)
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
++	chip = &dwc->chip;
+ 
+ 	dwc->clk_ns = 10;
+-	dwc->chip.dev = dev;
+-	dwc->chip.ops = &dwc_pwm_ops;
+-	dwc->chip.npwm = DWC_TIMERS_TOTAL;
++	chip->dev = dev;
++	chip->ops = &dwc_pwm_ops;
++	chip->npwm = DWC_TIMERS_TOTAL;
+ 
+-	dev_set_drvdata(dev, dwc);
+-	return dwc;
++	dev_set_drvdata(dev, chip);
++	return chip;
+ }
+ EXPORT_SYMBOL_GPL(dwc_pwm_alloc);
+ 
+diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
+index 4929354f8cd9..72df11593793 100644
+--- a/drivers/pwm/pwm-dwc.c
++++ b/drivers/pwm/pwm-dwc.c
+@@ -28,12 +28,14 @@
+ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ {
+ 	struct device *dev = &pci->dev;
++	struct pwm_chip *chip;
+ 	struct dwc_pwm *dwc;
  	int ret;
  
--	ep93xx_pwm = devm_kzalloc(&pdev->dev, sizeof(*ep93xx_pwm), GFP_KERNEL);
--	if (!ep93xx_pwm)
+-	dwc = dwc_pwm_alloc(dev);
+-	if (!dwc)
 -		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*ep93xx_pwm));
++	chip = dwc_pwm_alloc(dev);
 +	if (IS_ERR(chip))
 +		return PTR_ERR(chip);
-+	ep93xx_pwm = to_ep93xx_pwm(chip);
++	dwc = to_dwc_pwm(chip);
  
- 	ep93xx_pwm->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(ep93xx_pwm->base))
-@@ -178,11 +179,9 @@ static int ep93xx_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(ep93xx_pwm->clk))
- 		return PTR_ERR(ep93xx_pwm->clk);
+ 	ret = pcim_enable_device(pci);
+ 	if (ret) {
+@@ -55,7 +57,7 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 		return -ENOMEM;
+ 	}
  
--	ep93xx_pwm->chip.dev = &pdev->dev;
--	ep93xx_pwm->chip.ops = &ep93xx_pwm_ops;
--	ep93xx_pwm->chip.npwm = 1;
-+	chip->ops = &ep93xx_pwm_ops;
- 
--	ret = devm_pwmchip_add(&pdev->dev, &ep93xx_pwm->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0)
+-	ret = devm_pwmchip_add(dev, &dwc->chip);
++	ret = devm_pwmchip_add(dev, chip);
+ 	if (ret)
  		return ret;
  
+@@ -74,13 +76,14 @@ static void dwc_pwm_remove(struct pci_dev *pci)
+ static int dwc_pwm_suspend(struct device *dev)
+ {
+ 	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+-	struct dwc_pwm *dwc = pci_get_drvdata(pdev);
++	struct pwm_chip *chip = pci_get_drvdata(pdev);
++	struct dwc_pwm *dwc = to_dwc_pwm(chip);
+ 	int i;
+ 
+ 	for (i = 0; i < DWC_TIMERS_TOTAL; i++) {
+-		if (dwc->chip.pwms[i].state.enabled) {
++		if (chip->pwms[i].state.enabled) {
+ 			dev_err(dev, "PWM %u in use by consumer (%s)\n",
+-				i, dwc->chip.pwms[i].label);
++				i, chip->pwms[i].label);
+ 			return -EBUSY;
+ 		}
+ 		dwc->ctx[i].cnt = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(i));
+diff --git a/drivers/pwm/pwm-dwc.h b/drivers/pwm/pwm-dwc.h
+index 64795247c54c..432a3b4c81fd 100644
+--- a/drivers/pwm/pwm-dwc.h
++++ b/drivers/pwm/pwm-dwc.h
+@@ -57,4 +57,4 @@ static inline void dwc_pwm_writel(struct dwc_pwm *dwc, u32 value, u32 offset)
+ 	writel(value, dwc->base + offset);
+ }
+ 
+-extern struct dwc_pwm *dwc_pwm_alloc(struct device *dev);
++extern struct pwm_chip *dwc_pwm_alloc(struct device *dev);
 -- 
 2.43.0
 
