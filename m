@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31DE21803E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DDEC1798E
 	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903268; cv=none; b=eEhCmPodhceE3Pcz+N/dUJIQYkqbGanbOfuIYJj1Q70RNo9AKRhysEpDAF6yDuri5WpxEo8GSUkC4QSNxtY60Js60X6A3sUyZ6Iq6OJHaE5D/JGh61AhXWL76jkuwOeYeLQt+M5wLuYgMaVaJFvsfTrAknM8W2S0gN20E8J+/PM=
+	t=1707903268; cv=none; b=eVuyWPn4X5i9vAvoqJpov7iRQugLDk6yWU+uNutBrkiuSVEZ/GeeDSz9/CcNYCA55ZzYaWaT7tbd5WoV05hZkTtx0nvosAOTAkedZKV6b632qOIz49edL9OBwTYWOUvdX9kIlMTXNGJZuuOjlZiMCpm8/xbY6UFcOAf7CRjKy04=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903268; c=relaxed/simple;
-	bh=tdUHksxyzRmwZdWcceI7MItuTLn8MGbyCL/aGsWqkjg=;
+	bh=hJgSdC2n9RSk5u06nSDoTge/3JwjiJ/09/04zNqldz0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AuU5+hJvrGAIGzCrF+UttDqiP4UyQ6cDu2vuOGSIG4Svd28GP+hFxUIKxm6QRxK3mh4AlzokuWZSpXNvhRYhJr4hil9oGZQBfDACKv317cL4vX016vvlwbCHGZ59oSzbceiYbT90Dpmet21ZSnrWMDEWq0iiUUwAm/5Hvg+/1/M=
+	 MIME-Version:Content-Type; b=QmqLcKijc/R7xB96DT/A/DudqGh43CmTFVQ43wxIyQ8JNj4xmU3G00g4Ge14yuZ7DZF26ESqjIFWkReu+d2JUgrrNxTwPy/GuHRpGTA3lIhT/vtENtcB3xzbaN+UIgnqBwChT/WM9NhvQSRFU4fdfnE+szKuOCIDVLNpzWKrNVc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,26 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBep-0004ci-KN; Wed, 14 Feb 2024 10:34:23 +0100
+	id 1raBep-0004aG-3p; Wed, 14 Feb 2024 10:34:23 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBep-000fAl-05; Wed, 14 Feb 2024 10:34:23 +0100
+	id 1raBeo-000fA6-Cs; Wed, 14 Feb 2024 10:34:22 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBeo-004Y1n-2z;
+	id 1raBeo-004Y1X-12;
 	Wed, 14 Feb 2024 10:34:22 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de
-Subject: [PATCH v6 033/164] pwm: dwc: Make use of devm_pwmchip_alloc() function
-Date: Wed, 14 Feb 2024 10:31:20 +0100
-Message-ID:  <64e64a9a8644600d51b234ad9bcae951b5748998.1707900770.git.u.kleine-koenig@pengutronix.de>
+To: Benson Leung <bleung@chromium.org>,
+	linux-pwm@vger.kernel.org
+Cc: Guenter Roeck <groeck@chromium.org>,
+	chrome-platform@lists.linux.dev,
+	kernel@pengutronix.de,
+	Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH v6 029/164] pwm: cros-ec: Change prototype of helpers to prepare further changes
+Date: Wed, 14 Feb 2024 10:31:16 +0100
+Message-ID:  <c0cfc75c1cba0f735555e0138387143ec101feb3.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +48,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1842; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=tdUHksxyzRmwZdWcceI7MItuTLn8MGbyCL/aGsWqkjg=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtQzHQVP/+7dEeHG061+3CUwMLLb8txyxXkqm68IvTin+ 6Xs4Y6DnYzGLAyMXAyyYoos9o1rMq2q5CI71/67DDOIlQlkCgMXpwBM5NB+9n8W2+Y+Szhrcbal 7tYHtbl9xss4X0vP3OlhJKP0dR7nktvZde9tDDmbVL5tlli2bC9TjvhJu5fuukL6qgaS3/Vj8/I Pv26fcE50+oalphcqzLPceaMfmf/N/ZpwQFhTTmexkw7f6ps5Fvemxv9QUTaKjMm5t7vC1wyoZe GlK5uK45S333nMkldtsHKe3tG9qw5/usUR9F7GWaYtbXui0P8s0RyRCrPKWRWWorwiBtcmS756+ uOKppXWYjb9zfK8wbX8QQ99Nt0x3vj7s1rttMs1QTOdTvvqb91ika6me7ZVOTd2zvM9H3QTRD8Y SrjvEtAu2Pjv/xbbixFhBWs/6z99H76I/Y7Q0f8rTDrZAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2990; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=hJgSdC2n9RSk5u06nSDoTge/3JwjiJ/09/04zNqldz0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIhrWwzmEaDcMlYzivhBbaXD0xT+/MXrsoxlv nQRy+I8AruJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIawAKCRCPgPtYfRL+ TqoYB/sELjDprZDStg6XRYfu+6Faz7AZRQ5hSD7BOUU0iHhvHBDZbXeYhw/RHufWSRNlrNxFk59 8mB29zysCnmQZKZApy0Kk1TebzUM2YfeK8YBKcGuNYVbWfcxGvWOrPLdkGsnEcOxdK58d4viosK EwBAe4Mtzh8B+F8KK6Zoq2QNgqzwuhpPcTsDCLgHAPzaIL2r9jI3ZvEN0RSkgIf7VtmAO8pQMUt ZI2taG2voffKZ90XylQAIdg5BfJkc2btcN4nmUOanr/bd6xnHp5oJgtLbzCjNwOtOVfWEcfdP7l rJyvFpMm5nkm6ZLIKdZGesNsI3Lm+4kB2pDm5+D3HdLNC/GU
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,65 +56,79 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-dwc driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+pwm_chip allocation and registration is about to change. For that the
+number of PWM devices must be known earlier in cros_ec_pwm_probe(). So
+make cros_ec_pwm_get_duty() and cros_ec_num_pwms() independent of
+struct cros_ec_pwm_device which is only available later.
 
-Also convert the to_dwc_pwm() helper macro to a static inline to get
-some type safety.
-
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-dwc-core.c | 10 ++++------
- drivers/pwm/pwm-dwc.h      |  7 +++++--
- 2 files changed, 9 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-cros-ec.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
-index ac7a0b2cb8b9..de1d2ac3316c 100644
---- a/drivers/pwm/pwm-dwc-core.c
-+++ b/drivers/pwm/pwm-dwc-core.c
-@@ -164,15 +164,13 @@ struct pwm_chip *dwc_pwm_alloc(struct device *dev)
- 	struct pwm_chip *chip;
- 	struct dwc_pwm *dwc;
+diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+index 339cedf3a7b1..e556f6218dd7 100644
+--- a/drivers/pwm/pwm-cros-ec.c
++++ b/drivers/pwm/pwm-cros-ec.c
+@@ -93,9 +93,8 @@ static int cros_ec_pwm_set_duty(struct cros_ec_pwm_device *ec_pwm, u8 index,
+ 	return cros_ec_cmd_xfer_status(ec, msg);
+ }
  
--	dwc = devm_kzalloc(dev, sizeof(*dwc), GFP_KERNEL);
--	if (!dwc)
--		return ERR_PTR(-ENOMEM);
--	chip = &dwc->chip;
-+	chip = devm_pwmchip_alloc(dev, DWC_TIMERS_TOTAL, sizeof(*dwc));
-+	if (IS_ERR(chip))
-+		return chip;
-+	dwc = to_dwc_pwm(chip);
- 
- 	dwc->clk_ns = 10;
--	chip->dev = dev;
- 	chip->ops = &dwc_pwm_ops;
--	chip->npwm = DWC_TIMERS_TOTAL;
- 
- 	dev_set_drvdata(dev, chip);
- 	return chip;
-diff --git a/drivers/pwm/pwm-dwc.h b/drivers/pwm/pwm-dwc.h
-index 432a3b4c81fd..5887371803fd 100644
---- a/drivers/pwm/pwm-dwc.h
-+++ b/drivers/pwm/pwm-dwc.h
-@@ -40,12 +40,15 @@ struct dwc_pwm_ctx {
- };
- 
- struct dwc_pwm {
--	struct pwm_chip chip;
- 	void __iomem *base;
- 	unsigned int clk_ns;
- 	struct dwc_pwm_ctx ctx[DWC_TIMERS_TOTAL];
- };
--#define to_dwc_pwm(p)	(container_of((p), struct dwc_pwm, chip))
-+
-+static inline struct dwc_pwm *to_dwc_pwm(struct pwm_chip *chip)
-+{
-+	return pwmchip_get_drvdata(chip);
-+}
- 
- static inline u32 dwc_pwm_readl(struct dwc_pwm *dwc, u32 offset)
+-static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
++static int cros_ec_pwm_get_duty(struct cros_ec_device *ec, bool use_pwm_type, u8 index)
  {
+-	struct cros_ec_device *ec = ec_pwm->ec;
+ 	struct {
+ 		struct cros_ec_command msg;
+ 		union {
+@@ -115,7 +114,7 @@ static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
+ 	msg->insize = sizeof(*resp);
+ 	msg->outsize = sizeof(*params);
+ 
+-	if (ec_pwm->use_pwm_type) {
++	if (use_pwm_type) {
+ 		ret = cros_ec_dt_type_to_pwm_type(index, &params->pwm_type);
+ 		if (ret) {
+ 			dev_err(ec->dev, "Invalid PWM type index: %d\n", index);
+@@ -171,7 +170,7 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct cros_ec_pwm *channel = &ec_pwm->channel[pwm->hwpwm];
+ 	int ret;
+ 
+-	ret = cros_ec_pwm_get_duty(ec_pwm, pwm->hwpwm);
++	ret = cros_ec_pwm_get_duty(ec_pwm->ec, ec_pwm->use_pwm_type, pwm->hwpwm);
+ 	if (ret < 0) {
+ 		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
+ 		return ret;
+@@ -226,13 +225,17 @@ static const struct pwm_ops cros_ec_pwm_ops = {
+  * of PWMs it supports directly, so we have to read the pwm duty cycle for
+  * subsequent channels until we get an error.
+  */
+-static int cros_ec_num_pwms(struct cros_ec_pwm_device *ec_pwm)
++static int cros_ec_num_pwms(struct cros_ec_device *ec)
+ {
+ 	int i, ret;
+ 
+ 	/* The index field is only 8 bits */
+ 	for (i = 0; i <= U8_MAX; i++) {
+-		ret = cros_ec_pwm_get_duty(ec_pwm, i);
++		/*
++		 * Note that this function is only called when use_pwm_type is
++		 * false. With use_pwm_type == true the number of PWMs is fixed.
++		 */
++		ret = cros_ec_pwm_get_duty(ec, false, i);
+ 		/*
+ 		 * We look for SUCCESS, INVALID_COMMAND, or INVALID_PARAM
+ 		 * responses; everything else is treated as an error.
+@@ -283,7 +286,7 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
+ 	if (ec_pwm->use_pwm_type) {
+ 		chip->npwm = CROS_EC_PWM_DT_COUNT;
+ 	} else {
+-		ret = cros_ec_num_pwms(ec_pwm);
++		ret = cros_ec_num_pwms(ec);
+ 		if (ret < 0)
+ 			return dev_err_probe(dev, ret, "Couldn't find PWMs\n");
+ 		chip->npwm = ret;
 -- 
 2.43.0
 
