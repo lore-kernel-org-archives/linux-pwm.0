@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDC27199BA
-	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B57191A58B
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903288; cv=none; b=MxQfnUGUbgJXTewyY+IpRzHUE168jTGOioUXIvyHtXY6wrSsIxLlPeDQaHSysLNjKEvMDcU8ac96xuQ4CuF/WRLhOpR2xKUIPzC2NyuAb9zkLtDNK9hsmjq2ZlydGMi8D1Cr4MMN2lr6jj7+9O1FU1ksTCd0bxoBoeWkjoaEzyI=
+	t=1707903288; cv=none; b=CI4yuUSMOUM2SoG4mymowp5V2in0tE3JUC1MDoxNul4dBYuHV/9PfdFMNSoLfxcfRMinN/6Z85aaOSO656XHpD9VKMQ3x8FoVP11iMrCLYRztn3dGUDRKA63YcjMitR+/4fVegL4jYWPO2y0BzOwxsuwTesHj2lZp6Kx7RUPWcM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903288; c=relaxed/simple;
-	bh=rVu267O0/lkv571rbv4WrTGGxtDyJpFNtrSoWSBP1Nk=;
+	bh=DbWu18VlLTpi0TLDV4zCUYQI0ftmQeIBVlncJAGjvIc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WUlRmlPzzZGRGea4thAA5/kntvcNxGOYNW5vn+o5bvZB7iums3I4TQ6VS2uIfnDFzsqqlJBhj8FrQg1zFO2fAUGp92mv9nXJ6glToZ2j9CgWhBIxHTQEeW6C9ww9Ifl+HaM5nUw7kHWOsEigKBF5d5ThSVIuRESrPsUIcv2gJAU=
+	 MIME-Version:Content-Type; b=SHowwAD37MP6PWSRcKOlvQoB0h8RAPYqVFzPjd6zKC8L0ovDJGfB2qwt7ETTtVNELaKU51sfcAXcDLk2ijDkBrunNqcWDvWFDAIDhuEOmpwkLSFd9rvGmfvAiLUouAzQZL4JWDgD+Atcwuc1+iTxTRgNWuicN7TO3CcRv9WBUJo=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,25 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf7-00060X-5L; Wed, 14 Feb 2024 10:34:41 +0100
+	id 1raBf6-0005wy-R9; Wed, 14 Feb 2024 10:34:40 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf4-000fGy-9G; Wed, 14 Feb 2024 10:34:38 +0100
+	id 1raBf3-000fGj-Mq; Wed, 14 Feb 2024 10:34:37 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf4-004Y8t-0g;
-	Wed, 14 Feb 2024 10:34:38 +0100
+	id 1raBf3-004Y8T-20;
+	Wed, 14 Feb 2024 10:34:37 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de
-Subject: [PATCH v6 133/164] pwm: tiecap: Change prototype of helpers to prepare further changes
-Date: Wed, 14 Feb 2024 10:33:00 +0100
-Message-ID:  <ed031f201ff52c6b298de2dc81b06aad3a0207f8.1707900770.git.u.kleine-koenig@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	linux-pwm@vger.kernel.org
+Cc: linux-tegra@vger.kernel.org,
+	kernel@pengutronix.de
+Subject: [PATCH v6 129/164] pwm: tegra: Drop duplicated tracking of the parent device
+Date: Wed, 14 Feb 2024 10:32:56 +0100
+Message-ID:  <225f4bfcb15fb69eb818ddb71d623157c447180a.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +47,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3554; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=rVu267O0/lkv571rbv4WrTGGxtDyJpFNtrSoWSBP1Nk=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIjjj4j2yIz9xt55+G9kiAueuIQ07H9UpXR+s fSGTocyohuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyI4wAKCRCPgPtYfRL+ TtL0B/498CG+2FSpmL727bjjmVORfWEhgxmBden9DZQpggPMqfOpzLj+Tm9zqRZYXweoWPrj+eT S6d33XDyMGu4vdXJkZlGVY94/utlKBb6poyPapt61uAR1lrWwm9+jvc4R1W2vDd8ABrPO7ZJI8H x+gCKbG8CkL0O8JOywYYsuihsESfiJ7OJMG4CgAQcICpM6uyU2VY6sIpdvJh11povmNEwJZN/EQ Yut4Wiwl/wQo6JiwtHUv/M5Gs4PBxm4SwxAnaCsW5zkMR696exVOXT9XE+90mwsHkTykg7keZO1 +Jqu2/d9zpfP9QS7EjOjzbnyrlLYEUtmpUqVcQOOVtTDQoet
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2876; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=DbWu18VlLTpi0TLDV4zCUYQI0ftmQeIBVlncJAGjvIc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIjf+bHY9Rh4V/toVOTJkaXKpT/7Mep24Er3n 5lLD9yz+16JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyI3wAKCRCPgPtYfRL+ Tvz6CACw9W3C2IdUWvecr3u+vMws3swoG3qHUb+hKAwJ2nm0iOKF20vO0n0suCe3hxFkh/pghM2 V4s+qRZaD9WlmJTivcex6+t33MIuLWj7Cp4QvwyNmC3FDudXDfeEL/6u3UvhS9ENA9CjJAnb6+S ooAZ4W7axleSW8MmiNNVWUpxG6oHa9+rUdYDruQTu4o8Ac300kIAUHzr9/943NlbEbuOIIjBhzw WdBxGpetIxPzwgxBszFQHF2uHCJ70scr9Wa8l2UywsTTL25kXS15+Je7b4Cqd2xQo7hHUl2hNMR OcXGvnb/4JZiOov49M8fGIkqnuYctBvPnhrXbU515NvPOipi
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,115 +55,89 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the driver for further changes that will make it harder to
-determine the pwm_chip from a given ecap_pwm_chip. To just not have to
-do that, rework ecap_pwm_save_context() and ecap_pwm_restore_context
-take a pwm_chip. Also use the pwm_chip as driver data instead of the
-ecap_pwm_chip.
+The pwmchip stores a pointer to the parent device, so there is no need
+to store another copy in driver private data. Drop struct
+tegra_pwm_chip::dev and use the pwm_chip's parent pointer instead.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-tiecap.c | 36 +++++++++++++++++++++---------------
- 1 file changed, 21 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-tegra.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
-index b93e3be318d5..0d10e8357731 100644
---- a/drivers/pwm/pwm-tiecap.c
-+++ b/drivers/pwm/pwm-tiecap.c
-@@ -218,6 +218,7 @@ static int ecap_pwm_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct ecap_pwm_chip *pc;
-+	struct pwm_chip *chip;
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index 82ee2f0754f9..0d5f57c9ee26 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -66,7 +66,6 @@ struct tegra_pwm_soc {
+ 
+ struct tegra_pwm_chip {
+ 	struct pwm_chip chip;
+-	struct device *dev;
+ 
  	struct clk *clk;
- 	int ret;
+ 	struct reset_control*rst;
+@@ -158,7 +157,7 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			 */
+ 			required_clk_rate *= 2;
  
-@@ -244,21 +245,22 @@ static int ecap_pwm_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
+-		err = dev_pm_opp_set_rate(pc->dev, required_clk_rate);
++		err = dev_pm_opp_set_rate(pwmchip_parent(chip), required_clk_rate);
+ 		if (err < 0)
+ 			return -EINVAL;
  
--	pc->chip.dev = &pdev->dev;
--	pc->chip.ops = &ecap_pwm_ops;
--	pc->chip.npwm = 1;
-+	chip = &pc->chip;
-+	chip->dev = &pdev->dev;
-+	chip->ops = &ecap_pwm_ops;
-+	chip->npwm = 1;
+@@ -194,7 +193,7 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * before writing the register. Otherwise, keep it enabled.
+ 	 */
+ 	if (!pwm_is_enabled(pwm)) {
+-		err = pm_runtime_resume_and_get(pc->dev);
++		err = pm_runtime_resume_and_get(pwmchip_parent(chip));
+ 		if (err)
+ 			return err;
+ 	} else
+@@ -206,7 +205,7 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * If the PWM is not enabled, turn the clock off again to save power.
+ 	 */
+ 	if (!pwm_is_enabled(pwm))
+-		pm_runtime_put(pc->dev);
++		pm_runtime_put(pwmchip_parent(chip));
  
- 	pc->mmio_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pc->mmio_base))
- 		return PTR_ERR(pc->mmio_base);
+ 	return 0;
+ }
+@@ -217,7 +216,7 @@ static int tegra_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	int rc = 0;
+ 	u32 val;
  
--	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+-	rc = pm_runtime_resume_and_get(pc->dev);
++	rc = pm_runtime_resume_and_get(pwmchip_parent(chip));
+ 	if (rc)
+ 		return rc;
+ 
+@@ -237,7 +236,7 @@ static void tegra_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	val &= ~PWM_ENABLE;
+ 	pwm_writel(pc, pwm->hwpwm, val);
+ 
+-	pm_runtime_put_sync(pc->dev);
++	pm_runtime_put_sync(pwmchip_parent(chip));
+ }
+ 
+ static int tegra_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -280,7 +279,6 @@ static int tegra_pwm_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	pc->soc = of_device_get_match_data(&pdev->dev);
+-	pc->dev = &pdev->dev;
+ 
+ 	pc->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pc->regs))
+@@ -302,7 +300,7 @@ static int tegra_pwm_probe(struct platform_device *pdev)
  		return ret;
- 	}
  
--	platform_set_drvdata(pdev, pc);
-+	platform_set_drvdata(pdev, chip);
- 	pm_runtime_enable(&pdev->dev);
- 
- 	return 0;
-@@ -269,17 +271,21 @@ static void ecap_pwm_remove(struct platform_device *pdev)
- 	pm_runtime_disable(&pdev->dev);
- }
- 
--static void ecap_pwm_save_context(struct ecap_pwm_chip *pc)
-+static void ecap_pwm_save_context(struct pwm_chip *chip)
- {
--	pm_runtime_get_sync(pc->chip.dev);
-+	struct ecap_pwm_chip *pc = to_ecap_pwm_chip(chip);
-+
-+	pm_runtime_get_sync(chip->dev);
- 	pc->ctx.ecctl2 = readw(pc->mmio_base + ECCTL2);
- 	pc->ctx.cap4 = readl(pc->mmio_base + CAP4);
- 	pc->ctx.cap3 = readl(pc->mmio_base + CAP3);
--	pm_runtime_put_sync(pc->chip.dev);
-+	pm_runtime_put_sync(chip->dev);
- }
- 
--static void ecap_pwm_restore_context(struct ecap_pwm_chip *pc)
-+static void ecap_pwm_restore_context(struct pwm_chip *chip)
- {
-+	struct ecap_pwm_chip *pc = to_ecap_pwm_chip(chip);
-+
- 	writel(pc->ctx.cap3, pc->mmio_base + CAP3);
- 	writel(pc->ctx.cap4, pc->mmio_base + CAP4);
- 	writew(pc->ctx.ecctl2, pc->mmio_base + ECCTL2);
-@@ -287,10 +293,10 @@ static void ecap_pwm_restore_context(struct ecap_pwm_chip *pc)
- 
- static int ecap_pwm_suspend(struct device *dev)
- {
--	struct ecap_pwm_chip *pc = dev_get_drvdata(dev);
--	struct pwm_device *pwm = pc->chip.pwms;
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct pwm_device *pwm = chip->pwms;
- 
--	ecap_pwm_save_context(pc);
-+	ecap_pwm_save_context(chip);
- 
- 	/* Disable explicitly if PWM is running */
- 	if (pwm_is_enabled(pwm))
-@@ -301,14 +307,14 @@ static int ecap_pwm_suspend(struct device *dev)
- 
- static int ecap_pwm_resume(struct device *dev)
- {
--	struct ecap_pwm_chip *pc = dev_get_drvdata(dev);
--	struct pwm_device *pwm = pc->chip.pwms;
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct pwm_device *pwm = chip->pwms;
- 
- 	/* Enable explicitly if PWM was running */
- 	if (pwm_is_enabled(pwm))
- 		pm_runtime_get_sync(dev);
- 
--	ecap_pwm_restore_context(pc);
-+	ecap_pwm_restore_context(chip);
- 	return 0;
- }
- 
+ 	/* Set maximum frequency of the IP */
+-	ret = dev_pm_opp_set_rate(pc->dev, pc->soc->max_frequency);
++	ret = dev_pm_opp_set_rate(&pdev->dev, pc->soc->max_frequency);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "Failed to set max frequency: %d\n", ret);
+ 		goto put_pm;
 -- 
 2.43.0
 
