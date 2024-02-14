@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F5F1759E
-	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C2EB17C6D
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903278; cv=none; b=kct8xrgd5PqgiNSxhVUp6T53VVyUGiNHWETXMxARWNk+UcyY9gNTWV8Gucv72wNZbJYRc0bk5H9rWMRAEsXYLm7caQaDvsE/t/GKA0aaJQE73TxinepDwrMuklC9IXD30Oae7v9FCrLGBNL6WdSa+4rIk8t3JlPQXQ2UTfIgtt8=
+	t=1707903278; cv=none; b=jnIFTAyJ3OFfwFMfwbJ4jmLwV1ALssdXiJRKkRZU5kNKhlNURjGxB60r8x51a692koCQEJbAG/JKJRsB0KdKzsE2WMHb2cvoau0uuMcPUMP7nBSnO0zveOyLmXRN8wLmd/DLVjhv14ZPu6wOXyHFwOO33F+VmpRRSuc1Ib932Nw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903278; c=relaxed/simple;
-	bh=0c8sbrGBYHHUqmBguqG5s01btYLJBEd8GiQ88NLECrI=;
+	bh=nznIKwEERklBb4k0h0BWwYopUbH9um6rOZd4hcpdvBU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=j5eqT4vwWNrJUCS83Tw9rzGfgxw/6FwmrqMzH5xHTn9yzdz4Fy9ctlYROwaqPF+/eX9CXwq9CL2Ssace3tcECscuiWFGzs0DboMpEUebMWfuDxAObEt4oUe0W3XPqXkXv/CU10H9OEbN0Um2tKSMO+bQQ875Qcv0Lgi5Pky6+oA=
+	 MIME-Version:Content-Type; b=k7HGCyT8SO4ybfAOP4xdvz9WGc3HwKIHjkgKXlyrf0XGU0TLZl39nttsD6wYq61VbtuWUDWA2IgpMO0vs+QOlgQbPJe4FvGrIHleMQ0RhWdBZ0If6t0m68mET8ABusVp0Lhz81n6Ylyl/Wt2CEHUiO8sbrs4g0Tfpqv61kkRZqI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,28 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBev-0004uC-Gz; Wed, 14 Feb 2024 10:34:29 +0100
+	id 1raBew-00055O-EF; Wed, 14 Feb 2024 10:34:30 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBes-000fCP-Ry; Wed, 14 Feb 2024 10:34:26 +0100
+	id 1raBeu-000fD6-Pq; Wed, 14 Feb 2024 10:34:28 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBes-004Y3Z-2Z;
-	Wed, 14 Feb 2024 10:34:26 +0100
+	id 1raBeu-004Y4V-2J;
+	Wed, 14 Feb 2024 10:34:28 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de
-Subject: [PATCH v6 058/164] pwm: keembay: Make use of devm_pwmchip_alloc() function
-Date: Wed, 14 Feb 2024 10:31:45 +0100
-Message-ID:  <f65c27bf0a1f9ba4e5dbb115ff628860163ff8e0.1707900770.git.u.kleine-koenig@pengutronix.de>
+To: Neil Armstrong <neil.armstrong@linaro.org>,
+	Kevin Hilman <khilman@baylibre.com>,
+	linux-pwm@vger.kernel.org
+Cc: Jerome Brunet <jbrunet@baylibre.com>,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-amlogic@lists.infradead.org,
+	kernel@pengutronix.de
+Subject: [PATCH v6 070/164] pwm: meson: Change prototype of a few helpers to prepare further changes
+Date: Wed, 14 Feb 2024 10:31:57 +0100
+Message-ID:  <157084e1dd464da0097edba880240868c1c0b27e.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +50,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2016; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=0c8sbrGBYHHUqmBguqG5s01btYLJBEd8GiQ88NLECrI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIiNCTw/vrO+MBlY2es/lkgasW3uYx4QlynlK Mfm1Wmnh1yJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIjQAKCRCPgPtYfRL+ Tu2tB/wMK5I+R72WGEDBV8RcUeJZLUNxCSuGwryZqJuq/BKRaJHOgJQBLXkxRHvHSso/pw89+53 1tP9Mo7UFEQgwEMgvQBBjhRgeXXVaRavLFaSZGotiLptXJuHm2x1/u/aRK37KaF57McrHorZh/7 F6ah3/5UZEgTlzmUFNcPhEdAySQMGg08m8CzSX3JMmNaLa90gq3fey+SgshXoBqf2ejGzpeFQUt oeYW7frwnhvVgOFWpawAOndj7EkEjjnjh2/evnGCc88rwUd0oq0kECSLoa8bVW1ibiWtf37pOKW iPQGPDRefV/6bApSJQGD8YCVHVwDEXIIE12RnVyaM6t0IyMd
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5267; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=nznIKwEERklBb4k0h0BWwYopUbH9um6rOZd4hcpdvBU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIibWWdmu8Q5kvUUWYhyG+ileLxF6l3vdzMDq u/Wqi6F21GJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyImwAKCRCPgPtYfRL+ TinEB/4xcfRCnc2talpzXOwvLODJTjeujAtEQebuBJzt55qg4FEDblt4tc7gPlSJNJeC3Ym2m7N 8WzwcVRazbk/Jwgn0IxYnKxegjWXQ6FP5wYfT98HJwDf3Gn6F0yX42PQyyES3/yazzWh0/UVP9j qBU9GvzFA9a8HlHj5Dqb7lE8itCsu+4ixOIciZ+PHUJB0GTj0kxuyfM9da0Ygdhk8o6S7JBmjVQ xMhf4yE0LYPC8SbHrNrZAhvkn8YqaszeH5rKCc+mwQMUJbYxLKAmEaxpj2S/XdwTfqH6VJHmoWA ItWZ4qlj0cPhUIR78wDVgjvJ0aGhTzicZm51GoxVap4TP1N2
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,67 +58,148 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-keembay driver to further changes of the pwm core
-outlined in the commit introducing devm_pwmchip_alloc(). There is no
-intended semantical change and the driver should behave as before.
+This prepares the driver for further changes that will make it harder to
+determine the pwm_chip from a given meson_pwm. To just not have to do
+that, rework meson_pwm_calc(), meson_pwm_enable(), meson_pwm_disable()
+and meson_pwm_init_channels() to take a pwm_chip.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-keembay.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-meson.c | 38 +++++++++++++++++++++-----------------
+ 1 file changed, 21 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/pwm/pwm-keembay.c b/drivers/pwm/pwm-keembay.c
-index ac824ecc3f64..35b641f3f6ed 100644
---- a/drivers/pwm/pwm-keembay.c
-+++ b/drivers/pwm/pwm-keembay.c
-@@ -36,7 +36,6 @@
- #define KMB_PWM_HIGHLOW_OFFSET(ch)	(0x20 + 4 * (ch))
- 
- struct keembay_pwm {
--	struct pwm_chip chip;
- 	struct device *dev;
- 	struct clk *clk;
- 	void __iomem *base;
-@@ -44,7 +43,7 @@ struct keembay_pwm {
- 
- static inline struct keembay_pwm *to_keembay_pwm_dev(struct pwm_chip *chip)
- {
--	return container_of(chip, struct keembay_pwm, chip);
-+	return pwmchip_get_drvdata(chip);
+diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+index 2971bbf3b5e7..7ce41811537d 100644
+--- a/drivers/pwm/pwm-meson.c
++++ b/drivers/pwm/pwm-meson.c
+@@ -143,9 +143,10 @@ static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	clk_disable_unprepare(channel->clk);
  }
  
- static void keembay_clk_unprepare(void *data)
-@@ -185,12 +184,14 @@ static const struct pwm_ops keembay_pwm_ops = {
- static int keembay_pwm_probe(struct platform_device *pdev)
+-static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
++static int meson_pwm_calc(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			  const struct pwm_state *state)
  {
- 	struct device *dev = &pdev->dev;
-+	struct pwm_chip *chip;
- 	struct keembay_pwm *priv;
- 	int ret;
++	struct meson_pwm *meson = to_meson_pwm(chip);
+ 	struct meson_pwm_channel *channel = &meson->channels[pwm->hwpwm];
+ 	unsigned int cnt, duty_cnt;
+ 	unsigned long fin_freq;
+@@ -169,19 +170,19 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
  
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(dev, KMB_TOTAL_PWM_CHANNELS, sizeof(*priv));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	priv = to_keembay_pwm_dev(chip);
+ 	fin_freq = clk_round_rate(channel->clk, freq);
+ 	if (fin_freq == 0) {
+-		dev_err(meson->chip.dev, "invalid source clock frequency\n");
++		dev_err(chip->dev, "invalid source clock frequency\n");
+ 		return -EINVAL;
+ 	}
  
- 	priv->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(priv->clk))
-@@ -204,11 +205,9 @@ static int keembay_pwm_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
+-	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
++	dev_dbg(chip->dev, "fin_freq: %lu Hz\n", fin_freq);
  
--	priv->chip.dev = dev;
--	priv->chip.ops = &keembay_pwm_ops;
--	priv->chip.npwm = KMB_TOTAL_PWM_CHANNELS;
-+	chip->ops = &keembay_pwm_ops;
+ 	cnt = div_u64(fin_freq * period, NSEC_PER_SEC);
+ 	if (cnt > 0xffff) {
+-		dev_err(meson->chip.dev, "unable to get period cnt\n");
++		dev_err(chip->dev, "unable to get period cnt\n");
+ 		return -EINVAL;
+ 	}
  
--	ret = devm_pwmchip_add(dev, &priv->chip);
-+	ret = devm_pwmchip_add(dev, chip);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to add PWM chip\n");
+-	dev_dbg(meson->chip.dev, "period=%llu cnt=%u\n", period, cnt);
++	dev_dbg(chip->dev, "period=%llu cnt=%u\n", period, cnt);
+ 
+ 	if (duty == period) {
+ 		channel->hi = cnt;
+@@ -192,7 +193,7 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
+ 	} else {
+ 		duty_cnt = div_u64(fin_freq * duty, NSEC_PER_SEC);
+ 
+-		dev_dbg(meson->chip.dev, "duty=%llu duty_cnt=%u\n", duty, duty_cnt);
++		dev_dbg(chip->dev, "duty=%llu duty_cnt=%u\n", duty, duty_cnt);
+ 
+ 		channel->hi = duty_cnt;
+ 		channel->lo = cnt - duty_cnt;
+@@ -203,8 +204,9 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
+-static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
++static void meson_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
++	struct meson_pwm *meson = to_meson_pwm(chip);
+ 	struct meson_pwm_channel *channel = &meson->channels[pwm->hwpwm];
+ 	struct meson_pwm_channel_data *channel_data;
+ 	unsigned long flags;
+@@ -215,7 +217,7 @@ static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
+ 
+ 	err = clk_set_rate(channel->clk, channel->rate);
+ 	if (err)
+-		dev_err(meson->chip.dev, "setting clock rate failed\n");
++		dev_err(chip->dev, "setting clock rate failed\n");
+ 
+ 	spin_lock_irqsave(&meson->lock, flags);
+ 
+@@ -230,8 +232,9 @@ static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
+ 	spin_unlock_irqrestore(&meson->lock, flags);
+ }
+ 
+-static void meson_pwm_disable(struct meson_pwm *meson, struct pwm_device *pwm)
++static void meson_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
++	struct meson_pwm *meson = to_meson_pwm(chip);
+ 	unsigned long flags;
+ 	u32 value;
+ 
+@@ -269,16 +272,16 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			channel->hi = ~0;
+ 			channel->lo = 0;
+ 
+-			meson_pwm_enable(meson, pwm);
++			meson_pwm_enable(chip, pwm);
+ 		} else {
+-			meson_pwm_disable(meson, pwm);
++			meson_pwm_disable(chip, pwm);
+ 		}
+ 	} else {
+-		err = meson_pwm_calc(meson, pwm, state);
++		err = meson_pwm_calc(chip, pwm, state);
+ 		if (err < 0)
+ 			return err;
+ 
+-		meson_pwm_enable(meson, pwm);
++		meson_pwm_enable(chip, pwm);
+ 	}
+ 
+ 	return 0;
+@@ -432,10 +435,11 @@ static const struct of_device_id meson_pwm_matches[] = {
+ };
+ MODULE_DEVICE_TABLE(of, meson_pwm_matches);
+ 
+-static int meson_pwm_init_channels(struct meson_pwm *meson)
++static int meson_pwm_init_channels(struct pwm_chip *chip)
+ {
++	struct meson_pwm *meson = to_meson_pwm(chip);
+ 	struct clk_parent_data mux_parent_data[MESON_MAX_MUX_PARENTS] = {};
+-	struct device *dev = meson->chip.dev;
++	struct device *dev = chip->dev;
+ 	unsigned int i;
+ 	char name[255];
+ 	int err;
+@@ -445,7 +449,7 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
+ 		mux_parent_data[i].name = meson->data->parent_names[i];
+ 	}
+ 
+-	for (i = 0; i < meson->chip.npwm; i++) {
++	for (i = 0; i < chip->npwm; i++) {
+ 		struct meson_pwm_channel *channel = &meson->channels[i];
+ 		struct clk_parent_data div_parent = {}, gate_parent = {};
+ 		struct clk_init_data init = {};
+@@ -543,7 +547,7 @@ static int meson_pwm_probe(struct platform_device *pdev)
+ 
+ 	meson->data = of_device_get_match_data(&pdev->dev);
+ 
+-	err = meson_pwm_init_channels(meson);
++	err = meson_pwm_init_channels(&meson->chip);
+ 	if (err < 0)
+ 		return err;
  
 -- 
 2.43.0
