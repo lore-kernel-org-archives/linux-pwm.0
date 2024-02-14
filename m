@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3E0613FED
-	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40645134D9
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903293; cv=none; b=JZNxVjycBbubnSRB7xiID+JSUKWO8bg6+Za/y8dx1loOJxg6mS/f2xHhhwr+bNR6/UEcEyEPkE81tugRUtID7/BqH7HHY82vzcIo/HtDcyoJgJaHUpphNfn3CocuDo+Z3MRia7dQPC9JbfItxtxNxZqKtbFdnjPlVV9zfroe6Gs=
+	t=1707903293; cv=none; b=ixwRfPMbtZYvc+yTtlH8YsQcZZvJgVdj8NMwl+f2dHffWXAyzghxuKT2AXX1cGpRZmKTjruoepOrJYXB990e6Ng+DtXLgdQVIbKMVvEFp967F2uwPwvKmPwl+n/w2KhvsTPKrP6ghDHZYt2fNEBImRgVlrJUpbxS0LgHt7TJIeA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903293; c=relaxed/simple;
-	bh=0SYLkEACQ8T9AGYR57XhymGkN9/LFLhJpbaYpX97npw=;
+	bh=z+L8+hqUgmZZu+s65iyKxbmf3RXXx30nrI6+QzhdI1A=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZqFHvL78qhj+ZVf57w++TgOyGQ4ctxYvphwOfGImIYnmuDaPV4jFTFuNzD86pVO5vDkJv2RusNjaLVc7vI614c8vRWtIIQ+FSxROVMzJ/EPnA48m9cm1uA92lNVvjVuCUgV40on9QvMcP9W7jTr78D5biL1hrK3+E5zHFOBbjWk=
+	 MIME-Version:Content-Type; b=YeeLmE9r+zTiraLq96c3CWt6Ta/dBPAhiI+zp9u3ltK9zQ1JfbCq7NWJzE245E92/i32VxTIth+zfX2lZYKQBhG3tdyPq/2F/AWQgtqtmS5zpfTyjcmKmmrSui5W1lQ1ixQKp03XtJgn+FxL2oPYIM4F9zgkbS0nBhm/jnqqgTE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,25 +18,27 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBfB-0006BN-5F; Wed, 14 Feb 2024 10:34:45 +0100
+	id 1raBfB-0006JJ-RJ; Wed, 14 Feb 2024 10:34:45 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf6-000fI3-Ma; Wed, 14 Feb 2024 10:34:40 +0100
+	id 1raBf8-000fIn-Ch; Wed, 14 Feb 2024 10:34:42 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf6-004Y9v-1z;
-	Wed, 14 Feb 2024 10:34:40 +0100
+	id 1raBf8-004YAd-10;
+	Wed, 14 Feb 2024 10:34:42 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Sean Anderson <sean.anderson@seco.com>,
-	Michal Simek <michal.simek@amd.com>,
-	linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org,
+To: linux-pwm@vger.kernel.org,
+	Johan Hovold <johan@kernel.org>,
+	Alex Elder <elder@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: greybus-dev@lists.linaro.org,
+	linux-staging@lists.linux.dev,
 	kernel@pengutronix.de
-Subject: [PATCH v6 149/164] pwm: xilinx: Prepare removing pwm_chip from driver data
-Date: Wed, 14 Feb 2024 10:33:16 +0100
-Message-ID:  <738b9929c1d13bde64050f8bbc4ce8d85f58cc7a.1707900770.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v6 160/164] staging: greybus: pwm: Make use of devm_pwmchip_alloc() function
+Date: Wed, 14 Feb 2024 10:33:27 +0100
+Message-ID:  <3206ab7f49c2c1704ea69446f3b7a7d1e71200fa.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -47,7 +49,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2515; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=0SYLkEACQ8T9AGYR57XhymGkN9/LFLhJpbaYpX97npw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIj2a6DGhXDiU1Z6aUiYCWWWQW9gEgMV3inMX qS/8CiV40CJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyI9gAKCRCPgPtYfRL+ Tn9BB/oCWEPoJqHqeucqUnA/H0dRS9PaYdQkNJvfa8bFh529CNuNG6EmxBMMDxr1vEH4TBW5OHv ae1T6JUTMThxqwufl7aTSCib+f4HO83gp5u23ZxkZGjmv9iuQ6BPFp4yF7MEIc0lrV2kRGt7btt 4kZM/IZF0Jc0+yxyGVsenhKA2zsKzvBxT9xV1yIVzOjMEJ0tSd9wyv/P8NTZiGyltL3fTSiDkn2 BDbG1dB272qKH4MekygiNmgE2jc8IheosgITEV6drW5YQ998xQ/TCmMv+X20iylqISHzP7yO3up 4yiuaFpqWSqbA5w5ql7M6ocKtTxF0W6jMQ3PgfFe2bncQADS
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2534; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=z+L8+hqUgmZZu+s65iyKxbmf3RXXx30nrI6+QzhdI1A=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIkCavGDdXYL8zJhU3P466g+Ze3aOU0hm2VoS Bb55Ag1NpuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyJAgAKCRCPgPtYfRL+ TiHsB/0UOGLm89ANiWtXK0DXgEHs7uQI9oyTPuhdWzei4CgPqEg+fLIUstRMAilDUMeo71tnvm/ uunUafJ6WJox3fKb0NSwmNYfPZ7ZhdyR0f9buo3Mp6KHDVuCdW+V7rm4rH5VvmSHDKy8PN0FAqM 5KnDpvuBThvfAedsiRUkiBzDTux9acbgdyQ4qSfVBv8dSoMAQmarIbAUXy21ftOVPY0aiieyVqs fhQRiIYsxRldQR7dRpAUr9D0dqWpKiB3kw+6+rtZT4M0qkLK3HQWYWpG8nrOyqsvEVxeVH/jTV2 v3Eiug3dR6jafOg2snVa1cIfliuciNsrGyAgsWuz3eofYS5f
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -55,71 +57,94 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the driver for further changes that will drop struct
-pwm_chip chip from struct xilinx_pwm_device. Use the pwm_chip as driver
-data instead of the xilinx_pwm_device to get access to the pwm_chip in
-xilinx_pwm_remove() without using xilinx_pwm->chip.
+This prepares the greybus pwm driver to further changes of the pwm core
+outlined in the commit introducing pwmchip_alloc(). There is no intended
+semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-xilinx.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/staging/greybus/pwm.c | 33 +++++++++++++++------------------
+ 1 file changed, 15 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/pwm/pwm-xilinx.c b/drivers/pwm/pwm-xilinx.c
-index 5f3c2a6fed11..0ca79fe8c105 100644
---- a/drivers/pwm/pwm-xilinx.c
-+++ b/drivers/pwm/pwm-xilinx.c
-@@ -214,6 +214,7 @@ static int xilinx_pwm_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct device_node *np = dev->of_node;
- 	struct xilinx_timer_priv *priv;
-+	struct pwm_chip *chip;
- 	struct xilinx_pwm_device *xilinx_pwm;
- 	u32 pwm_cells, one_timer, width;
- 	void __iomem *regs;
-@@ -228,8 +229,9 @@ static int xilinx_pwm_probe(struct platform_device *pdev)
- 	xilinx_pwm = devm_kzalloc(dev, sizeof(*xilinx_pwm), GFP_KERNEL);
- 	if (!xilinx_pwm)
- 		return -ENOMEM;
--	platform_set_drvdata(pdev, xilinx_pwm);
- 	priv = &xilinx_pwm->priv;
-+	chip = &xilinx_pwm->chip;
-+	platform_set_drvdata(pdev, chip);
+diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
+index 35e98e7c00c1..01883fbcd79b 100644
+--- a/drivers/staging/greybus/pwm.c
++++ b/drivers/staging/greybus/pwm.c
+@@ -249,20 +249,11 @@ static int gb_pwm_probe(struct gbphy_device *gbphy_dev,
+ 	struct pwm_chip *chip;
+ 	int ret, npwm;
  
- 	regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(regs))
-@@ -278,10 +280,10 @@ static int xilinx_pwm_probe(struct platform_device *pdev)
- 		return dev_err_probe(dev, ret, "Clock enable failed\n");
- 	clk_rate_exclusive_get(priv->clk);
+-	pwmc = kzalloc(sizeof(*pwmc), GFP_KERNEL);
+-	if (!pwmc)
+-		return -ENOMEM;
+-
+ 	connection = gb_connection_create(gbphy_dev->bundle,
+ 					  le16_to_cpu(gbphy_dev->cport_desc->id),
+ 					  NULL);
+-	if (IS_ERR(connection)) {
+-		ret = PTR_ERR(connection);
+-		goto exit_pwmc_free;
+-	}
+-
+-	pwmc->connection = connection;
+-	gb_gbphy_set_data(gbphy_dev, chip);
++	if (IS_ERR(connection))
++		return PTR_ERR(connection);
  
--	xilinx_pwm->chip.dev = dev;
--	xilinx_pwm->chip.ops = &xilinx_pwm_ops;
--	xilinx_pwm->chip.npwm = 1;
--	ret = pwmchip_add(&xilinx_pwm->chip);
-+	chip->dev = dev;
-+	chip->ops = &xilinx_pwm_ops;
-+	chip->npwm = 1;
-+	ret = pwmchip_add(chip);
+ 	ret = gb_connection_enable(connection);
+ 	if (ret)
+@@ -274,28 +265,34 @@ static int gb_pwm_probe(struct gbphy_device *gbphy_dev,
+ 		goto exit_connection_disable;
+ 	npwm = ret;
+ 
+-	chip = &pwmc->chip;
++	chip = pwmchip_alloc(&gbphy_dev->dev, npwm, sizeof(*pwmc));
++	if (IS_ERR(chip)) {
++		ret = PTR_ERR(chip);
++		goto exit_connection_disable;
++	}
++	gb_gbphy_set_data(gbphy_dev, chip);
++
++	pwmc = pwm_chip_to_gb_pwm_chip(chip);
++	pwmc->connection = connection;
+ 
+-	chip->dev = &gbphy_dev->dev;
+ 	chip->ops = &gb_pwm_ops;
+-	chip->npwm = npwm;
+ 
+ 	ret = pwmchip_add(chip);
  	if (ret) {
- 		clk_rate_exclusive_put(priv->clk);
- 		clk_disable_unprepare(priv->clk);
-@@ -293,11 +295,12 @@ static int xilinx_pwm_probe(struct platform_device *pdev)
+ 		dev_err(&gbphy_dev->dev,
+ 			"failed to register PWM: %d\n", ret);
+-		goto exit_connection_disable;
++		goto exit_pwmchip_put;
+ 	}
  
- static void xilinx_pwm_remove(struct platform_device *pdev)
- {
--	struct xilinx_pwm_device *xilinx_pwm = platform_get_drvdata(pdev);
-+	struct pwm_chip *chip = platform_get_drvdata(pdev);
-+	struct xilinx_timer_priv *priv = xilinx_pwm_chip_to_priv(chip);
+ 	gbphy_runtime_put_autosuspend(gbphy_dev);
+ 	return 0;
  
--	pwmchip_remove(&xilinx_pwm->chip);
--	clk_rate_exclusive_put(xilinx_pwm->priv.clk);
--	clk_disable_unprepare(xilinx_pwm->priv.clk);
-+	pwmchip_remove(chip);
-+	clk_rate_exclusive_put(priv->clk);
-+	clk_disable_unprepare(priv->clk);
++exit_pwmchip_put:
++	pwmchip_put(chip);
+ exit_connection_disable:
+ 	gb_connection_disable(connection);
+ exit_connection_destroy:
+ 	gb_connection_destroy(connection);
+-exit_pwmc_free:
+-	kfree(pwmc);
+ 	return ret;
  }
  
- static const struct of_device_id xilinx_pwm_of_match[] = {
+@@ -311,9 +308,9 @@ static void gb_pwm_remove(struct gbphy_device *gbphy_dev)
+ 		gbphy_runtime_get_noresume(gbphy_dev);
+ 
+ 	pwmchip_remove(chip);
++	pwmchip_put(chip);
+ 	gb_connection_disable(connection);
+ 	gb_connection_destroy(connection);
+-	kfree(pwmc);
+ }
+ 
+ static const struct gbphy_device_id gb_pwm_id_table[] = {
 -- 
 2.43.0
 
