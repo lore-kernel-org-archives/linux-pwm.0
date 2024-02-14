@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 364ADBE5B
-	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CA51134A3
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903282; cv=none; b=uzl/hMGbV2CIJPv9LzAJwqbQGHjAyFOBC2fahmkCffUxFKOdE6jh8GdUj0v4O4fvno1tMGINrUiVa6Y4ZtC7V48AFUcQaqClDpSJjV5bETMG5AImSu3psaXjH2eLaPLSz6UQjABrIOV7BFJfy7TvDdncA8YL7VpsoYI4fXkpLOI=
+	t=1707903282; cv=none; b=pxyS8GI2Oj4lhUFO9YAfWIsoBmLatRBo+VdPOG3br+dI8Za9tV7vIx3oQf2V3AXwLRqzKuOgZua9jSaEQ+HEdSFmXMo5fCe+lLBAwZnBMtITw2PC+kgZtilrtNofcALUD5CSDNwuFHBYvucBk1NhYI55ht4IvLIwWuYIvW9hvvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903282; c=relaxed/simple;
-	bh=ViTqmKWt5YJyzdBvkVYG+ax97Q2r0ilyHWpgHz56pgA=;
+	bh=7i3UuGU4VhJ8MvjOYeg7N7jtaE9P2g0RopAgsnPVdWM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=d6Sv25I5IVVSMgvW+tiVvKRNDsmlmxsK44y2cTDeUcJz1y6ECN10Kab7idyP97y31NHSVv1ywfj8cjNOck7vGTrRk335sQsgWJG62kxZjIX/UJ5jS6RX74qeYnBSELF9lPS0UHEamnmOg3L9iz7EBsDa9q1yhkDchuOUJgqPgPc=
+	 MIME-Version:Content-Type; b=XHsnywhKj4NrHdWtOlHr+bsODidK8XRZGs0r+R60cDWkCWwUcuBua/XjmnTS4p0VeXPAhYDtZrYAQBMW6tu9s9yr1M9al4Lirdp6vvSGmzWm407lNmzI01XGowDS3KVdZM4xZcs2Vy8B+X1J88+ukBQQ5PRbcKzl2zNgC1wFoo8=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,22 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf0-0005Md-3Z; Wed, 14 Feb 2024 10:34:34 +0100
+	id 1raBf1-0005Ol-6z; Wed, 14 Feb 2024 10:34:35 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBex-000fEI-OI; Wed, 14 Feb 2024 10:34:31 +0100
+	id 1raBey-000fET-4a; Wed, 14 Feb 2024 10:34:32 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBex-004Y5m-2B;
-	Wed, 14 Feb 2024 10:34:31 +0100
+	id 1raBey-004Y5y-0E;
+	Wed, 14 Feb 2024 10:34:32 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: linux-pwm@vger.kernel.org
 Cc: kernel@pengutronix.de
-Subject: [PATCH v6 090/164] pwm: renesas-tpu: Make use of devm_pwmchip_alloc() function
-Date: Wed, 14 Feb 2024 10:32:17 +0100
-Message-ID:  <aac4a9546b0f474d991144aa925c83cfa7abe2c0.1707900770.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v6 093/164] pwm: rz-mtu3: Make use of pwmchip_parent() accessor
+Date: Wed, 14 Feb 2024 10:32:20 +0100
+Message-ID:  <90e6b5d5215425f3a5ff4468ba8aedf3d387f812.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +44,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2359; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=ViTqmKWt5YJyzdBvkVYG+ax97Q2r0ilyHWpgHz56pgA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIiygkwgt829TgdcS7KheuhOA7LECDdMAgYEr u463mYTOfaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIsgAKCRCPgPtYfRL+ TiioB/9MrwDJ6Sfim1BbQSJVZnG9psXDyoUmI9dQ4wu2SBLteQC9Lo3NjsEFvHgxluBMJc9eRwd 2B47c7UELd3D8VgiUEij0POhqUwzZkZa7Se020/iZNAeDqmZBtK3T6dy6NUN8Mjp5aorIqfg3Yn Vlo4P4abg8vkfhx66niBUmo2Tq07iVyR+DcxezmY4TAvuRkqbennII92Dy+GeGSk9sWfRVTci3w +tY/qgHJb87OE68ss/L8CTyx6T32o2qYHj9QkKivdqlPa+n/rhjKK24+ye6cDsasUjsABp411gg /nVhJbIumNL6P/YbfRJ2AHdq6YvDksluXnC3xExOK/i5Q2N2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2739; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=7i3UuGU4VhJ8MvjOYeg7N7jtaE9P2g0RopAgsnPVdWM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIi2Dn6BNTlxJrCY3uIp8KOwCvp/3u/s5B3n8 znB8JOPC2GJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyItgAKCRCPgPtYfRL+ Ti2CB/9+QmzWXMtjH0/6CN09YLnuBfvCDS2a/lMy4TGZAZKSCdNx0TRA8WnOhMxe4PHROXq6+Sr gyjjZmKOrOXyMC3hjNnzjemzxJZJ28bqHTYsF2e03sRwT+tFml7rn9VSaJLvIf10Hjo5F8IOlmp UcHt26s2QytVoO8eXgsxX5v2Jovpu37llSRGF1pc/cwX5HyKxL/bnJS98k94J7z/zfkDXfwl+0w J5WkO8kBnwXJUXaCQMXFNdqAPgANLaBku2XMkM9qA+FtwvpBbZVFWWkNdz3Tji4DKTp+Py0KdoA l5RHB6tEn0N1SyAv5PEBp97UhxqhirdveFtJpPJGaQoMZhYI
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,78 +52,84 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-This prepares the pwm-renesas-tpu driver to further changes of the pwm
-core outlined in the commit introducing devm_pwmchip_alloc(). There is
-no intended semantical change and the driver should behave as before.
-
-Also convert the to_tpu_device() helper macro to a static inline to get
-some type safety.
+struct pwm_chip::dev is about to change. To not have to touch this
+driver in the same commit as struct pwm_chip::dev, use the accessor
+function provided for exactly this purpose.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-renesas-tpu.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-rz-mtu3.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
-index 28265fdfc92a..2196080b4177 100644
---- a/drivers/pwm/pwm-renesas-tpu.c
-+++ b/drivers/pwm/pwm-renesas-tpu.c
-@@ -79,7 +79,6 @@ struct tpu_pwm_device {
+diff --git a/drivers/pwm/pwm-rz-mtu3.c b/drivers/pwm/pwm-rz-mtu3.c
+index bdda315b3bd3..acdc45ff90cf 100644
+--- a/drivers/pwm/pwm-rz-mtu3.c
++++ b/drivers/pwm/pwm-rz-mtu3.c
+@@ -219,7 +219,7 @@ static int rz_mtu3_pwm_enable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
+ 	u8 val;
+ 	int rc;
  
- struct tpu_device {
- 	struct platform_device *pdev;
--	struct pwm_chip chip;
- 	spinlock_t lock;
+-	rc = pm_runtime_resume_and_get(rz_mtu3_pwm->chip.dev);
++	rc = pm_runtime_resume_and_get(pwmchip_parent(&rz_mtu3_pwm->chip));
+ 	if (rc)
+ 		return rc;
  
- 	void __iomem *base;
-@@ -87,7 +86,10 @@ struct tpu_device {
- 	struct tpu_pwm_device tpd[TPU_CHANNEL_MAX];
- };
+@@ -265,7 +265,7 @@ static void rz_mtu3_pwm_disable(struct rz_mtu3_pwm_chip *rz_mtu3_pwm,
  
--#define to_tpu_device(c)	container_of(c, struct tpu_device, chip)
-+static inline struct tpu_device *to_tpu_device(struct pwm_chip *chip)
-+{
-+	return pwmchip_get_drvdata(chip);
-+}
+ 	mutex_unlock(&rz_mtu3_pwm->lock);
  
- static void tpu_pwm_write(struct tpu_pwm_device *tpd, int reg_nr, u16 value)
- {
-@@ -438,12 +440,14 @@ static const struct pwm_ops tpu_pwm_ops = {
+-	pm_runtime_put_sync(rz_mtu3_pwm->chip.dev);
++	pm_runtime_put_sync(pwmchip_parent(&rz_mtu3_pwm->chip));
+ }
  
- static int tpu_probe(struct platform_device *pdev)
- {
-+	struct pwm_chip *chip;
- 	struct tpu_device *tpu;
- 	int ret;
+ static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -274,7 +274,7 @@ static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = to_rz_mtu3_pwm_chip(chip);
+ 	int rc;
  
--	tpu = devm_kzalloc(&pdev->dev, sizeof(*tpu), GFP_KERNEL);
--	if (tpu == NULL)
--		return -ENOMEM;
-+	chip = devm_pwmchip_alloc(&pdev->dev, TPU_CHANNEL_MAX, sizeof(*tpu));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	tpu = to_tpu_device(chip);
+-	rc = pm_runtime_resume_and_get(chip->dev);
++	rc = pm_runtime_resume_and_get(pwmchip_parent(chip));
+ 	if (rc)
+ 		return rc;
  
- 	spin_lock_init(&tpu->lock);
- 	tpu->pdev = pdev;
-@@ -460,15 +464,13 @@ static int tpu_probe(struct platform_device *pdev)
- 	/* Initialize and register the device. */
- 	platform_set_drvdata(pdev, tpu);
+@@ -307,7 +307,7 @@ static int rz_mtu3_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	}
  
--	tpu->chip.dev = &pdev->dev;
--	tpu->chip.ops = &tpu_pwm_ops;
--	tpu->chip.npwm = TPU_CHANNEL_MAX;
-+	chip->ops = &tpu_pwm_ops;
+ 	state->polarity = PWM_POLARITY_NORMAL;
+-	pm_runtime_put(chip->dev);
++	pm_runtime_put(pwmchip_parent(chip));
  
- 	ret = devm_pm_runtime_enable(&pdev->dev);
- 	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "Failed to enable runtime PM\n");
+ 	return 0;
+ }
+@@ -362,7 +362,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (!pwm->state.enabled) {
+ 		int rc;
  
--	ret = devm_pwmchip_add(&pdev->dev, &tpu->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, chip);
- 	if (ret < 0)
- 		return dev_err_probe(&pdev->dev, ret, "Failed to register PWM chip\n");
+-		rc = pm_runtime_resume_and_get(chip->dev);
++		rc = pm_runtime_resume_and_get(pwmchip_parent(chip));
+ 		if (rc)
+ 			return rc;
+ 	}
+@@ -399,7 +399,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
+ 	/* If the PWM is not enabled, turn the clock off again to save power. */
+ 	if (!pwm->state.enabled)
+-		pm_runtime_put(chip->dev);
++		pm_runtime_put(pwmchip_parent(chip));
+ 
+ 	return 0;
+ }
+@@ -465,8 +465,8 @@ static void rz_mtu3_pwm_pm_disable(void *data)
+ 	struct rz_mtu3_pwm_chip *rz_mtu3_pwm = data;
+ 
+ 	clk_rate_exclusive_put(rz_mtu3_pwm->clk);
+-	pm_runtime_disable(rz_mtu3_pwm->chip.dev);
+-	pm_runtime_set_suspended(rz_mtu3_pwm->chip.dev);
++	pm_runtime_disable(pwmchip_parent(&rz_mtu3_pwm->chip));
++	pm_runtime_set_suspended(pwmchip_parent(&rz_mtu3_pwm->chip));
+ }
+ 
+ static int rz_mtu3_pwm_probe(struct platform_device *pdev)
 -- 
 2.43.0
 
