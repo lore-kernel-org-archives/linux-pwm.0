@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA8031B5AA
-	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B72F1B965
+	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903291; cv=none; b=M+oCj4W79IVE76BVh3mkW8QtRGmBahdk7d3v19I2Ta1VSoB1lotQvFhLTeXv+MBTCRK+Baejs5bSam8k0DV/pnGMVILphorgYMUhUYJkX4ODcukzYVkcpbidhvPC1t/mZqvUWnpT6VHjk8bWXj0/sGaieaqDNmE4AgeeJDC7hMU=
+	t=1707903291; cv=none; b=E8+4QrMEjFEkd3F+j/NOD34r1oBOu9rZEL+zCHatPXB//VSfT4gX6/xVYEvHLLNy4XQhm59oC/QaKnI8OO0LIe/PxoBEu+PEQy4y5PJTRh2F7+/PxkOlpSj9MfF23zWGiJmRZQ0loHcbtDDBW0wJqH+M8eISBYV/YOiJLpOgVOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903291; c=relaxed/simple;
-	bh=40Xo9fn01eQdlm2DNVi7Sc8sYzbB/3XoAwQupQBB1ZU=;
+	bh=FmfAEOza9/d2hNbh0tuCn4rmbZNKD9slzf5V5SZ7yKA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YVGe01paBXsftTYJZpM87Tdt7GJkAesK5YFNWbNTMdX5ihSzK3ZmaN5Rx8/M4aY5m573GDZQKqGRM7qn/EkAQiwkSL/XWfBCrv3UySenH1QIm5166O38IA1ll7pfwlH0zB7hqjJ8EqjqRvpELOS73WpjabZHz1vvGQKsUq1/e8Y=
+	 MIME-Version:Content-Type; b=TLUOICSnHqg38PwP7jybkqg8CbsCVcpIvGdHqzEATxzueY/k3b0yNTKS/ABSOkW2k0tSMOXQ0oPAdibKQTec13Dyc5CrQya6j06SRIBDLJ/OfxIUjjti5WK8QoGfUY1OQfnCfu9IC5no/9i+mjsrcKutoALjopC8lHxmBGb/9rI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,22 +18,27 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf8-00066c-G3; Wed, 14 Feb 2024 10:34:42 +0100
+	id 1raBfB-0006Id-O9; Wed, 14 Feb 2024 10:34:45 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf5-000fHY-L9; Wed, 14 Feb 2024 10:34:39 +0100
+	id 1raBf8-000fIi-7n; Wed, 14 Feb 2024 10:34:42 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf5-004Y9T-1s;
-	Wed, 14 Feb 2024 10:34:39 +0100
+	id 1raBf8-004YAZ-0V;
+	Wed, 14 Feb 2024 10:34:42 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de
-Subject: [PATCH v6 142/164] pwm: twl-led: Make use of pwmchip_parent() accessor
-Date: Wed, 14 Feb 2024 10:33:09 +0100
-Message-ID:  <43c35b7116a637501b51ac93ec24c00ea92ee1af.1707900770.git.u.kleine-koenig@pengutronix.de>
+To: linux-pwm@vger.kernel.org,
+	Johan Hovold <johan@kernel.org>,
+	Alex Elder <elder@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: greybus-dev@lists.linaro.org,
+	linux-staging@lists.linux.dev,
+	kernel@pengutronix.de
+Subject: [PATCH v6 159/164] staging: greybus: pwm: Rework how the number of PWM lines is determined
+Date: Wed, 14 Feb 2024 10:33:26 +0100
+Message-ID:  <3efd84ac03e7dc288f20b0de20b142b6404cb1fa.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -44,7 +49,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5771; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=40Xo9fn01eQdlm2DNVi7Sc8sYzbB/3XoAwQupQBB1ZU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIjusuMtqtpjsiu/Eh9GauS5QL7iFwT3cWoRF GAooGXieFmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyI7gAKCRCPgPtYfRL+ TkuAB/oC/C4qcg3egKJyY/EMXdKNE1DVjg+HSlLrO96AuJFPxAe9kUAwBbPk1rRZsdUpBKXAVCD T5kUceasLZ89t1TGi+lLgFBrsot1w5W2ZTgpJbqTlQgNc4kZrOJKygOKf2boSpiYnSds6FMNDq8 3h9c3eags2Mc790TKPjc0PnOwc6Hw+7gCZ1LNEYABluJQxoRJVM8h3pcuOXvZ0RxPYwXVPipqSV qaqooQUuRxlEMu/5IxdHl3a7Yj/AEMkJO3Fl+bgJHI0f8eZNN3bMGDPuGyw+zxAjRvq7EqaYgEn H4tf6DUaAX9lKKPW176IQzudYeWFdh6gxqPfOj8T7w+QYPhA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2418; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=FmfAEOza9/d2hNbh0tuCn4rmbZNKD9slzf5V5SZ7yKA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIkBYfxnpsZDGPR6CM6yYdFj2e0aARUj9TzsI U2MyZHUuwSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyJAQAKCRCPgPtYfRL+ TpHECAC0Dh8Wq/Sy8uBw18G5fGsgw8ytujJBANc7y7TyUUoEmiGH1Jm4NxKDW/BmVwm7CJc9u86 1kh0MZ/Cu9rTQ21uAuK8NF0lg/8s4IDoAkPWyfV9E4mkJ5hWytnH6c7xhtAIM52ZL8nBiyn1IPv gkAQEvnB0PioQhTkTy4N1E6tHoVIpbts3670tq89g0qG8HqPqRJ83L4Hru5UbFJ5p+vOwlyXwVJ hYfUZk8/2xGdDZJYAct76h1CRqh7pF90DxmCVjWN9uj3frn816P0McfT69XKIbAmPVMQYynQW6F Hb3OeKuPq0okk9kDsbTuEhPQKu5EnMli+6uEnf4k53FUJXjw
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,145 +57,84 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-struct pwm_chip::dev is about to change. To not have to touch this
-driver in the same commit as struct pwm_chip::dev, use the accessor
-function provided for exactly this purpose.
+With a later patch it becomes necessary to already now the number of PWM
+lines when pwmc is allocated. So make the function not use pwmc but a
+plain connection and return the number of lines instead of storing it in
+pwmc. This allows to get rid of the pwm_max member.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-twl-led.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/staging/greybus/pwm.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pwm/pwm-twl-led.c b/drivers/pwm/pwm-twl-led.c
-index c670ccb81653..00ef798dae52 100644
---- a/drivers/pwm/pwm-twl-led.c
-+++ b/drivers/pwm/pwm-twl-led.c
-@@ -100,7 +100,7 @@ static int twl4030_pwmled_config(struct pwm_chip *chip, struct pwm_device *pwm,
+diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
+index c7a2e874a62b..35e98e7c00c1 100644
+--- a/drivers/staging/greybus/pwm.c
++++ b/drivers/staging/greybus/pwm.c
+@@ -16,8 +16,6 @@
  
- 	ret = twl_i2c_write(TWL4030_MODULE_LED, pwm_config, base, 2);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to configure PWM\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to configure PWM\n", pwm->label);
+ struct gb_pwm_chip {
+ 	struct gb_connection	*connection;
+-	u8			pwm_max;	/* max pwm number */
+-
+ 	struct pwm_chip		chip;
+ };
  
- 	return ret;
+@@ -26,17 +24,21 @@ static inline struct gb_pwm_chip *pwm_chip_to_gb_pwm_chip(struct pwm_chip *chip)
+ 	return container_of(chip, struct gb_pwm_chip, chip);
  }
-@@ -114,7 +114,7 @@ static int twl4030_pwmled_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	mutex_lock(&twl->mutex);
- 	ret = twl_i2c_read_u8(TWL4030_MODULE_LED, &val, TWL4030_LEDEN_REG);
- 	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to read LEDEN\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to read LEDEN\n", pwm->label);
- 		goto out;
- 	}
  
-@@ -122,7 +122,7 @@ static int twl4030_pwmled_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+-static int gb_pwm_count_operation(struct gb_pwm_chip *pwmc)
++static int gb_pwm_get_npwm(struct gb_connection *connection)
+ {
+ 	struct gb_pwm_count_response response;
+ 	int ret;
  
- 	ret = twl_i2c_write_u8(TWL4030_MODULE_LED, val, TWL4030_LEDEN_REG);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to enable PWM\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to enable PWM\n", pwm->label);
- 
- out:
- 	mutex_unlock(&twl->mutex);
-@@ -139,7 +139,7 @@ static void twl4030_pwmled_disable(struct pwm_chip *chip,
- 	mutex_lock(&twl->mutex);
- 	ret = twl_i2c_read_u8(TWL4030_MODULE_LED, &val, TWL4030_LEDEN_REG);
- 	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to read LEDEN\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to read LEDEN\n", pwm->label);
- 		goto out;
- 	}
- 
-@@ -147,7 +147,7 @@ static void twl4030_pwmled_disable(struct pwm_chip *chip,
- 
- 	ret = twl_i2c_write_u8(TWL4030_MODULE_LED, val, TWL4030_LEDEN_REG);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to disable PWM\n", pwm->label);
- 
- out:
- 	mutex_unlock(&twl->mutex);
-@@ -203,7 +203,7 @@ static int twl6030_pwmled_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, on_time,
- 			       TWL6030_LED_PWM_CTRL1);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to configure PWM\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to configure PWM\n", pwm->label);
- 
- 	return ret;
+-	ret = gb_operation_sync(pwmc->connection, GB_PWM_TYPE_PWM_COUNT,
++	ret = gb_operation_sync(connection, GB_PWM_TYPE_PWM_COUNT,
+ 				NULL, 0, &response, sizeof(response));
+ 	if (ret)
+ 		return ret;
+-	pwmc->pwm_max = response.count;
+-	return 0;
++
++	/*
++	 * The request returns the highest allowed PWM id parameter. So add one
++	 * to get the number of PWMs.
++	 */
++	return response.count + 1;
  }
-@@ -217,7 +217,7 @@ static int twl6030_pwmled_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	mutex_lock(&twl->mutex);
- 	ret = twl_i2c_read_u8(TWL6030_MODULE_ID1, &val, TWL6030_LED_PWM_CTRL2);
- 	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to read PWM_CTRL2\n",
-+		dev_err(pwmchip_parent(chip), "%s: Failed to read PWM_CTRL2\n",
- 			pwm->label);
- 		goto out;
- 	}
-@@ -227,7 +227,7 @@ static int twl6030_pwmled_enable(struct pwm_chip *chip, struct pwm_device *pwm)
  
- 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_LED_PWM_CTRL2);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to enable PWM\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to enable PWM\n", pwm->label);
+ static int gb_pwm_activate_operation(struct pwm_chip *chip, u8 which)
+@@ -245,7 +247,7 @@ static int gb_pwm_probe(struct gbphy_device *gbphy_dev,
+ 	struct gb_connection *connection;
+ 	struct gb_pwm_chip *pwmc;
+ 	struct pwm_chip *chip;
+-	int ret;
++	int ret, npwm;
  
- out:
- 	mutex_unlock(&twl->mutex);
-@@ -244,7 +244,7 @@ static void twl6030_pwmled_disable(struct pwm_chip *chip,
- 	mutex_lock(&twl->mutex);
- 	ret = twl_i2c_read_u8(TWL6030_MODULE_ID1, &val, TWL6030_LED_PWM_CTRL2);
- 	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to read PWM_CTRL2\n",
-+		dev_err(pwmchip_parent(chip), "%s: Failed to read PWM_CTRL2\n",
- 			pwm->label);
- 		goto out;
- 	}
-@@ -254,7 +254,7 @@ static void twl6030_pwmled_disable(struct pwm_chip *chip,
+ 	pwmc = kzalloc(sizeof(*pwmc), GFP_KERNEL);
+ 	if (!pwmc)
+@@ -267,15 +269,16 @@ static int gb_pwm_probe(struct gbphy_device *gbphy_dev,
+ 		goto exit_connection_destroy;
  
- 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_LED_PWM_CTRL2);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to disable PWM\n", pwm->label);
+ 	/* Query number of pwms present */
+-	ret = gb_pwm_count_operation(pwmc);
+-	if (ret)
++	ret = gb_pwm_get_npwm(connection);
++	if (ret < 0)
+ 		goto exit_connection_disable;
++	npwm = ret;
  
- out:
- 	mutex_unlock(&twl->mutex);
-@@ -295,7 +295,7 @@ static int twl6030_pwmled_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 	mutex_lock(&twl->mutex);
- 	ret = twl_i2c_read_u8(TWL6030_MODULE_ID1, &val, TWL6030_LED_PWM_CTRL2);
- 	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to read PWM_CTRL2\n",
-+		dev_err(pwmchip_parent(chip), "%s: Failed to read PWM_CTRL2\n",
- 			pwm->label);
- 		goto out;
- 	}
-@@ -305,7 +305,7 @@ static int twl6030_pwmled_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	chip = &pwmc->chip;
  
- 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_LED_PWM_CTRL2);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to request PWM\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to request PWM\n", pwm->label);
+ 	chip->dev = &gbphy_dev->dev;
+ 	chip->ops = &gb_pwm_ops;
+-	chip->npwm = pwmc->pwm_max + 1;
++	chip->npwm = npwm;
  
- out:
- 	mutex_unlock(&twl->mutex);
-@@ -321,7 +321,7 @@ static void twl6030_pwmled_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 	mutex_lock(&twl->mutex);
- 	ret = twl_i2c_read_u8(TWL6030_MODULE_ID1, &val, TWL6030_LED_PWM_CTRL2);
- 	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to read PWM_CTRL2\n",
-+		dev_err(pwmchip_parent(chip), "%s: Failed to read PWM_CTRL2\n",
- 			pwm->label);
- 		goto out;
- 	}
-@@ -331,7 +331,7 @@ static void twl6030_pwmled_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 
- 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_LED_PWM_CTRL2);
- 	if (ret < 0)
--		dev_err(chip->dev, "%s: Failed to free PWM\n", pwm->label);
-+		dev_err(pwmchip_parent(chip), "%s: Failed to free PWM\n", pwm->label);
- 
- out:
- 	mutex_unlock(&twl->mutex);
+ 	ret = pwmchip_add(chip);
+ 	if (ret) {
 -- 
 2.43.0
 
