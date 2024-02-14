@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D4221A286
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5A991A701
 	for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2024 09:34:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707903289; cv=none; b=t9PBQvbexK8sIwY4GfSm/snH0hg62vh8/Fwfin3cgt+fYbN9kTBBtYTM1U5shFk4zjIU9A/ymwvecLYNIj9B2J5WTyoXiqwn9ZlZQJxntWmomdNaFT0PZU1AZBIAIxYQsMhnhT7c1OytF/KukGjEG7D+Atd5gPGiYN+HLB1BoJw=
+	t=1707903289; cv=none; b=HyawjskA+WmxZmHiGbCHE65ILhxJtOdi6LPUXWr554Db0OfgGIyBzx1nI2j7uNyblrITfDCkqZ+60G4727NkmrZNF2u0PealxbnrhlWWYyi29sI7lnImAeEhXFIN1lUb5GhO+k4geo//bPbOdrvXuZbS5XZAwYgv/EQ2ogbvjYE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707903289; c=relaxed/simple;
-	bh=mRVaVzxOuHc8/iADtJONL+ijTkKUJ56s+MALA1iYH+A=;
+	bh=wTHot0rCpWKiBWRtIdmgUzbIiXlsK2MsHRkggFr4Eu0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=N1ElaIRITrA+/NNJvuxmL8CMjpDx8rT86ZkIzLkgkGBIqM+pRJIuyuixn9RQ2SL4nasqxBxMDqskuSni+QEttRTo8tCh6mC4DndMDqTNBxcu96SMMgpu/HhR2QHUlu3HBsOc5eJ8kOJqCa9G+ppRcbySZEpEPQt2FitMsNAAZHY=
+	 MIME-Version:Content-Type; b=PH+O8Pfh+QFmAEhIA4v/WyL0Kp7BOCEbNfsHF9djB6hRZOnLluKJnejCd4tJcyMXAX2XxsfAQiYBygN1ff0opVfIrK52FrKJKH9pldkSpHOWy1QRVh1hfBxXhX05yrIiK1nftrg0Sw4ZOgkBEGK7Oby5LH8ACnCoYhaAnEVAE+g=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,26 +18,27 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBf3-0005W0-9f; Wed, 14 Feb 2024 10:34:37 +0100
+	id 1raBf5-0005pL-H8; Wed, 14 Feb 2024 10:34:39 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBez-000fEx-7y; Wed, 14 Feb 2024 10:34:33 +0100
+	id 1raBf2-000fGD-FG; Wed, 14 Feb 2024 10:34:36 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1raBez-004Y6R-0Y;
-	Wed, 14 Feb 2024 10:34:33 +0100
+	id 1raBf2-004Y7x-1G;
+	Wed, 14 Feb 2024 10:34:36 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
 	linux-pwm@vger.kernel.org
-Cc: Alim Akhtar <alim.akhtar@samsung.com>,
+Cc: linux-stm32@st-md-mailman.stormreply.com,
 	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
 	kernel@pengutronix.de
-Subject: [PATCH v6 100/164] pwm: samsung: Simplify using dev_err_probe()
-Date: Wed, 14 Feb 2024 10:32:27 +0100
-Message-ID:  <27a55fc05eb13802c9eddc600d0460e279388999.1707900770.git.u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v6 121/164] pwm: stm32-lp: Make use of devm_pwmchip_alloc() function
+Date: Wed, 14 Feb 2024 10:32:48 +0100
+Message-ID:  <04af7b3d00bc932dd025200a3bf74527c29ca47a.1707900770.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
 References: <cover.1707900770.git.u.kleine-koenig@pengutronix.de>
@@ -48,7 +49,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1964; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=mRVaVzxOuHc8/iADtJONL+ijTkKUJ56s+MALA1iYH+A=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIi+D0n05TAovcPWo0WShbw+vCNK1F8jTDUqD VLx1zSxmbiJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyIvgAKCRCPgPtYfRL+ TpCFB/0WucM+81bYSS61dW50ExWjOJcYGSvOPnQh86vjDP2FsfAuR6/MnBbxOuWV1aQgw4UGKTO JhdTTmA3lyMwhIqjQhFy1j9XUmAYP2DA41As7r96QCRauDEZ4ZHvneHWID/YgNIhsYhKC5AiPWW HoxKRcFryR23chuKQ4KvbMx9oQE7KKbd6J97dhEwHn16DdHN+BgZEbNqnxMlxV7JHekTJFZBO0h B8MYZDYDFa86cQX8HkHIERN/2EKeFeF75yXmrEMSOSr5PKDx776N3D654B7j9fg8b2euxdPNMAD CoI/fmjmjjlQPJfX8Hyx5UyIJAJiG5XPqfXh72tvt046zXen
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1583; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=wTHot0rCpWKiBWRtIdmgUzbIiXlsK2MsHRkggFr4Eu0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlzIjWfsROWMer2NPaGM8yPEtjhSeNg1XRlolg8 AWibishgfCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZcyI1gAKCRCPgPtYfRL+ TgWUB/4y5vvEIFNjKDCx+K+e0lnQAquLBXIOyrCvlRTM8vqRsMv7KoBhHJvLFg8qouNbV+kYFf5 1UB3e+nPKQf26XZrNHZxD9C2PliRnTkH8SghTrdTQ6Ch/up7RgLTJBDgYZcFxJkX81Hpg68FpQY uVw981KCUCJUR6ZWuF/Yx2SmpJ/9lm/RL2n6pBYIzJdOh4dtn+7MmHWSP5Y+5WDw170r7feOlYG tLwXdqBrA7ehW28wQN6bGwBpLj3XJXMC2MPMzdqQ9Xm0SAIB++IE8rqaj7gyTtP/auOd764igOR 2Z/68WgrXM9Asoo/a3v7Q6DUTYAmq35xWNRqK54Msj0C0IdS
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -56,59 +57,56 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-dev_err_probe() simplifies and improves the idiom "emit error message +
-return error code". Apply it accordingly.
+This prepares the pwm-stm32-lp driver to further changes of the pwm core
+outlined in the commit introducing devm_pwmchip_alloc(). There is no
+intended semantical change and the driver should behave as before.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-samsung.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-stm32-lp.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index 81a2e66e927e..d3dc9b5b80d6 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -564,10 +564,9 @@ static int pwm_samsung_probe(struct platform_device *pdev)
- 		if (ret)
- 			return ret;
- 	} else {
--		if (!pdev->dev.platform_data) {
--			dev_err(&pdev->dev, "no platform data specified\n");
--			return -EINVAL;
--		}
-+		if (!pdev->dev.platform_data)
-+			return dev_err_probe(&pdev->dev, -EINVAL,
-+					     "no platform data specified\n");
+diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
+index 958043bc5c92..989731256f50 100644
+--- a/drivers/pwm/pwm-stm32-lp.c
++++ b/drivers/pwm/pwm-stm32-lp.c
+@@ -18,14 +18,13 @@
+ #include <linux/pwm.h>
  
- 		memcpy(&our_chip->variant, pdev->dev.platform_data,
- 							sizeof(our_chip->variant));
-@@ -578,10 +577,9 @@ static int pwm_samsung_probe(struct platform_device *pdev)
- 		return PTR_ERR(our_chip->base);
+ struct stm32_pwm_lp {
+-	struct pwm_chip chip;
+ 	struct clk *clk;
+ 	struct regmap *regmap;
+ };
  
- 	our_chip->base_clk = devm_clk_get_enabled(&pdev->dev, "timers");
--	if (IS_ERR(our_chip->base_clk)) {
--		dev_err(dev, "failed to get timer base clk\n");
--		return PTR_ERR(our_chip->base_clk);
--	}
-+	if (IS_ERR(our_chip->base_clk))
-+		return dev_err_probe(dev, PTR_ERR(our_chip->base_clk),
-+				     "failed to get timer base clk\n");
+ static inline struct stm32_pwm_lp *to_stm32_pwm_lp(struct pwm_chip *chip)
+ {
+-	return container_of(chip, struct stm32_pwm_lp, chip);
++	return pwmchip_get_drvdata(chip);
+ }
  
- 	for (chan = 0; chan < SAMSUNG_PWM_NUM; ++chan)
- 		if (our_chip->variant.output_mask & BIT(chan))
-@@ -594,10 +592,8 @@ static int pwm_samsung_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, chip);
+ /* STM32 Low-Power Timer is preceded by a configurable power-of-2 prescaler */
+@@ -200,16 +199,14 @@ static int stm32_pwm_lp_probe(struct platform_device *pdev)
+ 	struct pwm_chip *chip;
+ 	int ret;
+ 
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*priv));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++	priv = to_stm32_pwm_lp(chip);
+ 
+ 	priv->regmap = ddata->regmap;
+ 	priv->clk = ddata->clk;
+-	chip = &priv->chip;
+-	chip->dev = &pdev->dev;
+ 	chip->ops = &stm32_pwm_lp_ops;
+-	chip->npwm = 1;
  
  	ret = devm_pwmchip_add(&pdev->dev, chip);
--	if (ret < 0) {
--		dev_err(dev, "failed to register PWM chip\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to register PWM chip\n");
- 
- 	dev_dbg(dev, "base_clk at %lu, tclk0 at %lu, tclk1 at %lu\n",
- 		clk_get_rate(our_chip->base_clk),
+ 	if (ret < 0)
 -- 
 2.43.0
 
