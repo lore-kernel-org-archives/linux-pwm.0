@@ -1,132 +1,99 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC46E1292E5
-	for <linux-pwm@vger.kernel.org>; Fri, 16 Feb 2024 13:10:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E0D84C75;
+	Mon, 19 Feb 2024 03:38:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708089050; cv=none; b=DkR9wOVRRInemv2aX1zvP2N/4US7oczp95oGQ+wHYn5digoMkFGYRWkqkMJUxJUbi387veC5ddVCYO/0t1Fv3ieOnQCGDBkiLcVoJa6HilSRsiYFMyekKP4dfuNkiyzlzOpQeZcBkeViZlhKNkzl0kFcs4EX+3c0zkjVpjfW2CM=
+	t=1708313936; cv=none; b=Hz1rC99ZdrVvZmyyP/aNQF74erhbiHF08+CHJWHkbzVQZx99rSy8XLlo3c/E3sk60qHBg8QFGLSV/2pkMRBHg1zjiAItwKWzOFSYvHoJlR+gAHcVuI3rJQSLGlURBuN9a0kpY0Ec3iRnM/Hyffgdo5/Y4S5R8Se/dA1i1jQPD3k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708089050; c=relaxed/simple;
-	bh=ietoiFvrkaXyNKDmB6+IOLYeD50+XaeHipYC88lYAHw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eTCKSgIeLiHWDr8HTx1ljAnOKsguvM4UA+kE93yt6DhjLJRCn+t/9sqwL9pVWWmBnM6TLACXpOt1ZxQ0CitrsZnw5kUYGVaHk7HwEjKhh/igVmTmWFOGhj0ml+A1ipZLw4wkj3sXOxFwXU47uNmGb7URyPvUdk0YhWZaHGrJk94=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1raxzA-00013z-Eo; Fri, 16 Feb 2024 14:10:36 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1raxz9-00151g-Rg; Fri, 16 Feb 2024 14:10:35 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1raxz9-005zdK-2T;
-	Fri, 16 Feb 2024 14:10:35 +0100
-Date: Fri, 16 Feb 2024 14:10:35 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>, 
-	Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-mediatek@lists.infradead.org, =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH 1/2] dt-bindings: pwm: mediatek,mt2712: add compatible
- for MT7988
-Message-ID: <45i5wid2fcf3lyucfferraolnxmdwoulz35js7biuhitiy576j@l3pslrkeehvu>
-References: <20240213164633.25447-1-zajec5@gmail.com>
- <onnokyq7ciza7i7jzc74cun2khpst5iocuccks2cm433ux3za3@dou4oacrvuxj>
- <2dac95be-b23a-4c42-ac67-241100c7a51b@linaro.org>
+	s=arc-20240116; t=1708313936; c=relaxed/simple;
+	bh=RIlqr5IIc2NcV+R4QbrZ4SeTtXAfOYhjo+jbzFUSD3o=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Et7QhdS9ubzWRqfEwynEeTRtQJFmRhc60h+RsJB7i8rD+In9YuAtPz9pTac2xxR2PzqwCJSWAsfOu/M8G8KzKFirRJC4/vm34LM0dNKM2+IQ8sVNEjL2S9ktl1VpGF+xsuvmDZo5fFJOJqMhT1om1pfD/HQq+W6jhLLkz9xpmb8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=none smtp.mailfrom=ecsmtp.iind.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aKzljqlJ; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ecsmtp.iind.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aKzljqlJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708313935; x=1739849935;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RIlqr5IIc2NcV+R4QbrZ4SeTtXAfOYhjo+jbzFUSD3o=;
+  b=aKzljqlJeRDBAEmSHE/MnO6HUXmaKvMbpuC128fAQhQaRYP8iEC5iAGv
+   xFSDZ8z9b8eUPthtuvqst7kBtFN5TfnOS8KJEMRHrOWM+27DFlUhQWzVm
+   xhwzLrRO3VvkTkz4t760RAX79lDd+VKehDUVLM+yFjRlT8igSYikjVCrA
+   0dM7ffQP0+vG+m90gmpGQDASKhVzcFC/NqeSKYB8GpaBMpK6IVCfSpIox
+   AhJ6wB2mrmT3fI9KTZfP/AM6bKfNWrh6oFBlXPSM2yMGbGvGxiQ0rG80w
+   SoSmzTgwjo29rSoXKO3CSXwVifC1lpkwnfOoqJLLj61JmgvhbhlrlEr9p
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="24838171"
+X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
+   d="scan'208";a="24838171"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2024 19:38:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
+   d="scan'208";a="4281846"
+Received: from inesxmail01.iind.intel.com ([10.223.57.40])
+  by fmviesa007.fm.intel.com with ESMTP; 18 Feb 2024 19:38:47 -0800
+Received: from inlubt0316.iind.intel.com (inlubt0316.iind.intel.com [10.191.20.213])
+	by inesxmail01.iind.intel.com (Postfix) with ESMTP id C76AA72ADC;
+	Mon, 19 Feb 2024 09:08:45 +0530 (IST)
+Received: by inlubt0316.iind.intel.com (Postfix, from userid 12101951)
+	id C30251600102; Mon, 19 Feb 2024 09:08:45 +0530 (IST)
+From: Raag Jadav <raag.jadav@intel.com>
+To: u.kleine-koenig@pengutronix.de,
+	jarkko.nikula@linux.intel.com,
+	mika.westerberg@linux.intel.com,
+	andriy.shevchenko@linux.intel.com,
+	lakshmi.sowjanya.d@intel.com
+Cc: linux-pwm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Raag Jadav <raag.jadav@intel.com>
+Subject: [PATCH v4 2/4] pwm: dwc: drop redundant error check
+Date: Mon, 19 Feb 2024 09:08:33 +0530
+Message-Id: <20240219033835.11369-3-raag.jadav@intel.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20240219033835.11369-1-raag.jadav@intel.com>
+References: <20240219033835.11369-1-raag.jadav@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="lrlyeofzr3gig4qw"
-Content-Disposition: inline
-In-Reply-To: <2dac95be-b23a-4c42-ac67-241100c7a51b@linaro.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 
+pcim_iomap_table() fails only if pcim_iomap_regions() fails. No need to
+check for failure if the latter is already successful.
 
---lrlyeofzr3gig4qw
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Raag Jadav <raag.jadav@intel.com>
+Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+---
+ drivers/pwm/pwm-dwc.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-On Wed, Feb 14, 2024 at 10:05:47AM +0100, Krzysztof Kozlowski wrote:
-> On 13/02/2024 18:48, Uwe Kleine-K=C3=B6nig wrote:
-> > Hello Rafa=C5=82,
-> >=20
-> > On Tue, Feb 13, 2024 at 05:46:32PM +0100, Rafa=C5=82 Mi=C5=82ecki wrote:
-> >> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-> >>
-> >> MT7988 has on-SoC controller that can control up to 8 PWMs.
-> >>
-> >> Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-> >=20
-> > please make sure that the email address used for sending the patch
-> > matches the Signed-off-by line.
-> >=20
-> > (It depends on the pickyness of the relevant maintainer if that is a
-> > stopper or not.)
->=20
-> Does not have to... It must match From field which is correct here.
+diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
+index c0e586688e57..7dbb72c80ef5 100644
+--- a/drivers/pwm/pwm-dwc.c
++++ b/drivers/pwm/pwm-dwc.c
+@@ -51,11 +51,8 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 		return ret;
+ 	}
+ 
++	/* No need to check for failure, pcim_iomap_regions() does it for us. */
+ 	dwc->base = pcim_iomap_table(pci)[0];
+-	if (!dwc->base) {
+-		dev_err(dev, "Base address missing\n");
+-		return -ENOMEM;
+-	}
+ 
+ 	ret = devm_pwmchip_add(dev, chip);
+ 	if (ret)
+-- 
+2.35.3
 
-Rafa=C5=82's Signed-off matches the author, but not the sender. Together wi=
-th
-"the Signed-off-by: must always be that of the developer submitting the
-patch." (from Documentation/process/submitting-patches.rst) I'd say it's
-reasonable to request that there is a sign-off with the email matching
-the sender. In my understanding the Sign-off line by the author isn't
-really required because the sender can vouch for the author. Of course
-this is a somewhat artificial discussion if the sender is the same
-person as the author and only the email addresses differ. So this about
-the strictness of the applying maintainer.
-
-FTR:
-
-	$  curl -s https://lore.kernel.org/linux-pwm/20240213164633.25447-1-zajec5=
-@gmail.com/raw | grep -E '^(From|Signed-off-by):'
-	From: =3D?UTF-8?q?Rafa=3DC5=3D82=3D20Mi=3DC5=3D82ecki?=3D <zajec5@gmail.co=
-m>
-	From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-	Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-
-the first From: is the sender, the second the author.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
-   |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---lrlyeofzr3gig4qw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmXPXsoACgkQj4D7WH0S
-/k5n6gf/bwjc8ajUTwW3zBdQjV2Uv2vtl5UgwtnUgkacqy/DYxOQytC2hJ59AZ1e
-ZcR/Z00k1RIXoftOmHBcLsH1hOoZ0t6dc9N4MrAH+sL3HbsM9tl0QKvdtqsYA8UB
-qcrGwKx3vkq2PNhARGXmJv8D6KVju2QzrM33wlw75BWXVzw6SN1lDg5r3D5oXoOh
-OkVw5lmiKU98GoG+tC6Kr14ZNV5Ff5HIx62omGYNw4U927UsGIhIXyGsMw2VUa9t
-iTKmrv1+QWMXqgPdchoHsABDnnNCNJjmU+DvjBvx3zAetjt/Tvzl4cLJIc0jZ9WX
-2T+98AdX4mDu2RUmraghTQB+4kegEg==
-=54H0
------END PGP SIGNATURE-----
-
---lrlyeofzr3gig4qw--
