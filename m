@@ -1,55 +1,57 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 829E27FBD9
-	for <linux-pwm@vger.kernel.org>; Wed, 21 Feb 2024 15:12:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4DEC7FBDD
+	for <linux-pwm@vger.kernel.org>; Wed, 21 Feb 2024 15:12:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708528332; cv=none; b=t8L1W1PUPcs8GAn0+w3H7dHDuQf4WMNim+2OAQK2webLFlxYb5wQSnPWqmSFe/h+honu8GvHt+PYpB4azf+bMgT4kXFEI7250cFEz3zLu1nOYoaIqzZg2WDALEBnmwOOqVS555cRcvSPQc07L614DBpTch3jtQpJXvoeo0OaE50=
+	t=1708528332; cv=none; b=DfduORCEJ7qCXga9nQGF8jututCBROpzSNu7sCKwa93t229hED6DSv1Nllz4Vgy6pKzWiSVqVE4GUCY9So+J8xOBFwtnntcv492Spzmbrk/khW1gY5qxk1VEKNd2I48NBgNra435l9BXe+GFkt5QgiAKN/ap++IDePpIfWqO7Lk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1708528332; c=relaxed/simple;
-	bh=8MBWv4daSK/tAPnGOdgukRNPyIGRTHZS1yezb+YHTCM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GQ3mnUYhuUerXliuQit1gx6zXr7tGZ2mcB9qkMRdKxfWMaKCkz6TXWFax3QsmUzrfPatrqiKIjfXh+s2axBDDXuxhm9mzC1Nw49jGgtDIWH/3mHbRoTswTnMGy6jm1OisN1Yv3a7Z999VEuG1lCY4m71byhrSt4qr7uB2zQlHPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=cLxbQz6y; arc=none smtp.client-ip=209.85.128.51
+	bh=H7u4y7uhZ2vjVcQPrDSO8zoTli1LbFPj5CyebiNWcN4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Vpmrszv3ZAz6D0He0hUOQhJQaw2BxLoqNokq2+PTO5qOdPQUv6l3SsGrEC2Xf3zSBieJge1yAPtOKZdF0v3SzS+3PUBaDn5qMRNTz8bNZC1opcB/4d2mGdh8eJF6999COtA4MEY9PBjcMvoC3lMc4LHfdb5J1k0h3Ji+dTho/xY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Aa2qlbtN; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="cLxbQz6y"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-412698cdd77so18329585e9.1
-        for <linux-pwm@vger.kernel.org>; Wed, 21 Feb 2024 07:12:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Aa2qlbtN"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-41275971886so5448515e9.3
+        for <linux-pwm@vger.kernel.org>; Wed, 21 Feb 2024 07:12:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1708528328; x=1709133128; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=3FBkTY4ktEOVpEo6YvXl49m3OViLG+BImsIBijiLHxg=;
-        b=cLxbQz6ymcCXqZoV++mA7iXWCRoo1cVCN0C46/gFOZRVJrYijeeBd+ZjjraP8KKWe1
-         D+78FOPxfFKAK0Vl02L6BYkt9nYWpToJdKw2a0lcY1aaDQmZTtbfqc99gkwGrb/kb1EN
-         pozRg1Q25h5HhBfFyzL+/OGyzGFxUlyLKA1icqyv3+JZWxV+RiKuld/hqPR8Z4FFA7tE
-         PQcb4r9lWDaSSiKXY5T/eW2MDHSZ/ecPJrM2SLMco0p5iW5jW5LwflQH8NLvHxM+Gh9n
-         o6qOoitzP+FKcKpfT+79i8gk0R599CtDD/7jYeU0A8491kpyx/6yBQ4gJRGKRSLmA3bj
-         zaig==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1708528329; x=1709133129; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2dIMaRI4UL/ljzaiGORJNkCrZ9+yfYsQHx0oEU8j6rs=;
+        b=Aa2qlbtNIMn9LdUQwi+3lsDEnztdwLPFbQu7HtB2Z0SDzm1+oDzWJegjxZQzNZXoAx
+         PEvmRmgNfHAXVg4E9Q6VYl1DPeb2Sqb184VlvcNVTMPOAG5JAaLVLWuTGPnC2mFJGEG5
+         AJ1nntou8MsRyIt27/0Z489RbMoy7Tdw6RC1tnhKP45NOo3d69fSTdAWGeNyunUd+RPK
+         slnvAjO7peIJTx6i1keTxSiDA5FDrOm3JmRtd35WD+jBWgyC3bgYIrQ0nx5vKSywJjdt
+         4j80mxNtQfrV2wVX2v9UZmiD8MRYfcKJkxNfnA2RkPWx/GNgE/VBt1r3JulgKPBODUVi
+         j4gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708528328; x=1709133128;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3FBkTY4ktEOVpEo6YvXl49m3OViLG+BImsIBijiLHxg=;
-        b=RsqGz7dC3AGmpxSH5/gVX4mOLCmSfIGETtgFh/fjQIY/F+UMcVYcEkH1sp5tPdjU4/
-         P/VPDv0KYI7D5mdNg4gYIJGfxqQAoBh1f9sbadmxCKxBC7X9MkxjumfHTipd1fgEurfH
-         JT+hwPTxo0+dgNBFYh2Q9kpA3LlMDwEJyvn2DZibHQwuexez8iFljyX821d3fF/b6dYA
-         cv7MJZP5OiF6v5p3qyeqgXs/68AbPgHxgVL15ob/poJlRMT1mp5TH7Vf3Wi/6tKK6Mv9
-         sFcx1ku7vQNi3rYwiibwVDPJoRhuGIdTl96J6Xbqc99CmYfz9LnDgFZ22hFbw8NAGtCD
-         yRUQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWFXboSgUMm6UbpMSoGvrD9IVXaI5aQiEIwrT80rWnRYSDm3Brweh4uRqddDyzfSuVOW4+Ix+qot4xW4P2YIMxwIFtYnMXmBMO0
-X-Gm-Message-State: AOJu0YxjXun7/wfD3OQOOZ4CesPeEbpfWyxUqnLt34TdwsavcZo0YZRu
-	QkPIUcv5GT9R7C+PAundzpydA0YenBcRimJPjdg+r/+p/hULWAn2skDts3WzMHA=
-X-Google-Smtp-Source: AGHT+IEbPlqDTjSdZwcRLe9JlRyRaH1Pf7F4HirGnDZSwaq8u4fW6YZ7whK5ATYjJZ9SOJhon0VagA==
-X-Received: by 2002:a05:600c:458d:b0:412:60f9:3fe3 with SMTP id r13-20020a05600c458d00b0041260f93fe3mr10011548wmo.1.1708528327447;
-        Wed, 21 Feb 2024 07:12:07 -0800 (PST)
+        d=1e100.net; s=20230601; t=1708528329; x=1709133129;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2dIMaRI4UL/ljzaiGORJNkCrZ9+yfYsQHx0oEU8j6rs=;
+        b=jNV/h1b3kUXf71gaUDunUjiKeizQrj5JCeCuguDkmJgasR68k90ZoSakM7B5XhBk0D
+         0WHOalIMJZacs5oDYvijnbBNxAzTdTqJtq299S1nY25vKuDZnfpU7V24J9IIZINGTi5E
+         TTeNcoSh0wHpGmhnFlICNO8KfQOgNtzRPueLLtRiX6NusdHcO0p+m/2kkbcGpRUOI97v
+         BNuXKDnhIMXeF+mmRdd23YVw6zTB1+OMmogL1r9YHz3BUhO8TSLjG+oDYCjUxQ5Ocfmx
+         bulEKzZJDqUGxFzu4EFqWCj3WG1IYqDD/cm6or1QS5cGBnbmUkMXG1hV5puBdL2TMeB2
+         GwYg==
+X-Forwarded-Encrypted: i=1; AJvYcCU7wxmZZbjBuAj/Jv8ZUBhOhuffGKC6lZJtHdIxmhweg63WdOw1M2Zu6yQpBf0j8HFFxP3Sxxq30B6R0aLSnupVSSkvVKgusSWP
+X-Gm-Message-State: AOJu0YzOpT2nfWRSkCsS5ffCTSNnog0Sj0DUR4QoWnBT0I18q154WbQr
+	KehufmsmPvOyhh3NRuaLsViBaxddpxoi2dJ1PZ5iS6mnDtByr2kJKE/OLxBaTSQ=
+X-Google-Smtp-Source: AGHT+IGnB/yDjeQ1zYwsD0gS9+46rlsbMLhYcTvmjGYKfgU3FPt5e+DC9MUyGg4jOgcKx3D6U0nZZA==
+X-Received: by 2002:a05:600c:3515:b0:412:17dd:a227 with SMTP id h21-20020a05600c351500b0041217dda227mr13716851wmq.15.1708528329414;
+        Wed, 21 Feb 2024 07:12:09 -0800 (PST)
 Received: from toaster.lan ([2a01:e0a:3c5:5fb1:1b1a:d907:d735:9f9e])
-        by smtp.googlemail.com with ESMTPSA id bg22-20020a05600c3c9600b0040fc56712e8sm18725342wmb.17.2024.02.21.07.12.06
+        by smtp.googlemail.com with ESMTPSA id bg22-20020a05600c3c9600b0040fc56712e8sm18725342wmb.17.2024.02.21.07.12.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Feb 2024 07:12:07 -0800 (PST)
+        Wed, 21 Feb 2024 07:12:09 -0800 (PST)
 From: Jerome Brunet <jbrunet@baylibre.com>
 To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
 	Neil Armstrong <neil.armstrong@linaro.org>,
@@ -63,10 +65,12 @@ Cc: Jerome Brunet <jbrunet@baylibre.com>,
 	linux-amlogic@lists.infradead.org,
 	linux-pwm@vger.kernel.org,
 	JunYi Zhao <junyi.zhao@amlogic.com>
-Subject: [PATCH v5 0/5] pwm: meson: dt-bindings fixup
-Date: Wed, 21 Feb 2024 16:11:46 +0100
-Message-ID: <20240221151154.26452-1-jbrunet@baylibre.com>
+Subject: [PATCH v5 2/5] dt-bindings: pwm: amlogic: Add a new binding for meson8 pwm types
+Date: Wed, 21 Feb 2024 16:11:48 +0100
+Message-ID: <20240221151154.26452-3-jbrunet@baylibre.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240221151154.26452-1-jbrunet@baylibre.com>
+References: <20240221151154.26452-1-jbrunet@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -76,57 +80,125 @@ MIME-Version: 1.0
 X-Patchwork-Bot: notify
 Content-Transfer-Encoding: 8bit
 
-This patchset aims to:
-* Fix the incorrect bindings for the s4 type of pwm that was introduced
-  while converting the documentation from txt to yaml format.
-* Introduce a new compatible for the existing PWMs to better describe the
-  HW in DT, instead of describing driver settings.
-* Make the introduction of a new pwm variant (s4) slightly easier.
+The binding that is used up to now describe which input the PWM
+channel multiplexer should pick among its possible parents,
+which are hardcoded in the driver. This isn't a good binding in
+the sense that it should describe hardware but not usage.
 
-Changes since v4 [4]:
- * Rebased on Uwe's pwm rework in pwm-next
- * Drop change to carry device data in drvdata
- * Make the length of parent name array fixed
- * Single allocation instead 3 for the internal clock elements
- * meson8-pwm-v2 and meson-pwm-s4 compatibles under an enum instead of
-   2 const
+Add a new binding deprecating the old one that uses clocks in a
+better way and how clocks are usually used today: The list of
+clocks describe the inputs of the PWM block as they are realised
+in hardware.
 
-Changes since v3 [3]:
- * Split first rework patch into 3 changes
- * Use dev_warn_once() to notify use of obsolete bindings
- * Rebased on Uwe dev_err_probe() change.
+So deprecate the old bindings and introduce a compatible per SoC
+family to replace these.
 
-Changes since v2 [2]:
-* Drop DTS changes. These will be re-submitted later on. Possibly after
-  u-boot gets support for the new compatible to minimise conversion
-  problems.
-* Position deprecated property correctly in dt-bindings for the old
-  meson8 type pwm bindings
-* Reword commit description of patch #2 to make more obvious it does not
-  introduce a new HW support but fixes a bad bindings.
-* Dropped Rob's Reviewed-by on patch #2. It seemed appropriate considering
-  the discussion on this change.
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ .../devicetree/bindings/pwm/pwm-amlogic.yaml  | 50 +++++++++++++++++--
+ 1 file changed, 47 insertions(+), 3 deletions(-)
 
-Changes since v1 [1]:
-* Fix typo in the new binding compatible documentation
-* Disallow clock-names for the new compatibles in the schema documenation
-
-[1]: https://lore.kernel.org/linux-amlogic/20231106103259.703417-1-jbrunet@baylibre.com
-[2]: https://lore.kernel.org/linux-amlogic/20231117125919.1696980-1-jbrunet@baylibre.com
-[3]: https://lore.kernel.org/linux-amlogic/20231129134004.3642121-1-jbrunet@baylibre.com
-[4]: https://lore.kernel.org/linux-amlogic/20231222111658.832167-1-jbrunet@baylibre.com
-
-Jerome Brunet (5):
-  dt-bindings: pwm: amlogic: fix s4 bindings
-  dt-bindings: pwm: amlogic: Add a new binding for meson8 pwm types
-  pwm: meson: generalize 4 inputs clock on meson8 pwm type
-  pwm: meson: don't carry internal clock elements around
-  pwm: meson: add generic compatible for meson8 to sm1
-
- .../devicetree/bindings/pwm/pwm-amlogic.yaml  | 115 ++++++-
- drivers/pwm/pwm-meson.c                       | 289 ++++++++++--------
- 2 files changed, 260 insertions(+), 144 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+index a1d382aacb82..1d71d4f8f328 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
++++ b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+@@ -21,23 +21,36 @@ properties:
+           - amlogic,meson-g12a-ee-pwm
+           - amlogic,meson-g12a-ao-pwm-ab
+           - amlogic,meson-g12a-ao-pwm-cd
+-          - amlogic,meson-s4-pwm
++        deprecated: true
+       - items:
+           - const: amlogic,meson-gx-pwm
+           - const: amlogic,meson-gxbb-pwm
++        deprecated: true
+       - items:
+           - const: amlogic,meson-gx-ao-pwm
+           - const: amlogic,meson-gxbb-ao-pwm
++        deprecated: true
+       - items:
+           - const: amlogic,meson8-pwm
+           - const: amlogic,meson8b-pwm
++        deprecated: true
++      - enum:
++          - amlogic,meson8-pwm-v2
++          - amlogic,meson-s4-pwm
++      - items:
++          - enum:
++              - amlogic,meson8b-pwm-v2
++              - amlogic,meson-gxbb-pwm-v2
++              - amlogic,meson-axg-pwm-v2
++              - amlogic,meson-g12-pwm-v2
++          - const: amlogic,meson8-pwm-v2
+ 
+   reg:
+     maxItems: 1
+ 
+   clocks:
+     minItems: 1
+-    maxItems: 2
++    maxItems: 4
+ 
+   clock-names:
+     minItems: 1
+@@ -68,11 +81,14 @@ allOf:
+               - amlogic,meson-g12a-ao-pwm-ab
+               - amlogic,meson-g12a-ao-pwm-cd
+     then:
+-      # Historic bindings tied to the driver implementation
++      # Obsolete historic bindings tied to the driver implementation
+       # The clocks provided here are meant to be matched with the input
+       # known (hard-coded) in the driver and used to select pwm clock
+       # source. Currently, the linux driver ignores this.
++      # This is kept to maintain ABI backward compatibility.
+       properties:
++        clocks:
++          maxItems: 2
+         clock-names:
+           oneOf:
+             - items:
+@@ -81,6 +97,27 @@ allOf:
+                 - const: clkin0
+                 - const: clkin1
+ 
++  # Newer binding where clock describe the actual clock inputs of the pwm
++  # block. These are necessary but some inputs may be grounded.
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - amlogic,meson8-pwm-v2
++    then:
++      properties:
++        clocks:
++          minItems: 1
++          items:
++            - description: input clock 0 of the pwm block
++            - description: input clock 1 of the pwm block
++            - description: input clock 2 of the pwm block
++            - description: input clock 3 of the pwm block
++        clock-names: false
++      required:
++        - clocks
++
+   # Newer IP block take a single input per channel, instead of 4 inputs
+   # for both channels
+   - if:
+@@ -110,6 +147,13 @@ examples:
+       clock-names = "clkin0", "clkin1";
+       #pwm-cells = <3>;
+     };
++  - |
++    pwm@2000 {
++      compatible = "amlogic,meson8-pwm-v2";
++      reg = <0x1000 0x10>;
++      clocks = <&xtal>, <0>, <&fdiv4>, <&fdiv5>;
++      #pwm-cells = <3>;
++    };
+   - |
+     pwm@1000 {
+       compatible = "amlogic,meson-s4-pwm";
 -- 
 2.43.0
 
