@@ -1,15 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D409E17984
-	for <linux-pwm@vger.kernel.org>; Sun, 17 Mar 2024 10:40:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5BED1798A
+	for <linux-pwm@vger.kernel.org>; Sun, 17 Mar 2024 10:40:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710672058; cv=none; b=E8o3eEmxiQwNcL5AMyhh3FezWIhc/bvh8EIoUny4iLTELmqUSZ2YJc10XrgyXJuPsRaOrpt2mQWxwYLHdm+2yG3m0z4DgV4ZkjMnvkrtvGroyBE1YCs+p78wp5MEqZ+mLg4j7Q84WC6BMb0DmwwQisn+CxWPKNIWfIW0/mxZ6F8=
+	t=1710672058; cv=none; b=SbLqTJs9cYlA0c4MzbNZCNioS8t26FLuiDe5TIcdnL1lrKVviVNeMPqpDpV0pz9P/6z9nGQ0Ubssniw/iHmxcP5iBAMjbPVLYGH2RrrQtI1y2nbEEJ7tSoeZD96TqkJSZvTXmIfS+HbRPRHMhaeAiUCWyptEP5DwbSa9Le34jRU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1710672058; c=relaxed/simple;
-	bh=fs59cnUdx6Lj37sKccMDB1aCfsDJsVT37Vt+S8/sLfQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Pg2T5/G8LkOhPB5AA5P1oRblj167s8qnGVAI+dmxBYEPBzcdFQZOfhzXbLgC/YPgur3X7LHNUbtEutFyx15dKItcu+wH6TlVTpMb8Qx/1p2qOdQEJJ5WTkkdGGDS6df4rkv1xOTW1oO5JmhQbA6QUc7I4ZR5vIIHdBvwe9t69MY=
+	bh=AG4jwZ/6gQYisCrxpsL8cWXEFovxSI4ZrMHP/oYXx0A=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=k1Y6NLykz9cGioQaTsZGZ+0dn57a4rBCA0uu7gEMpkblbZLaXrdP9dXMaQZ0trMZZ3H2DKsuyqVVP/8iWH11sKOpgaT7xIND/hAYD3It5mcRCXiq/L6iQeIip0eQDHTldivaQhgH36tgPWvd1J6EUhRmwlYmNItxyxlmDWIHZhI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -17,26 +18,25 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rlnwd-00029Q-HI; Sun, 17 Mar 2024 11:40:47 +0100
+	id 1rlnwe-0002C0-W5; Sun, 17 Mar 2024 11:40:49 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rlnwc-006rff-RP; Sun, 17 Mar 2024 11:40:46 +0100
+	id 1rlnwe-006rg2-JJ; Sun, 17 Mar 2024 11:40:48 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1rlnwc-007aCv-2T;
-	Sun, 17 Mar 2024 11:40:46 +0100
+	id 1rlnwe-007aDJ-1g;
+	Sun, 17 Mar 2024 11:40:48 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To: linux-pwm@vger.kernel.org
-Cc: kernel@pengutronix.de,
-	Kees Cook <keescook@chromium.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	linux-hardening@vger.kernel.org
-Subject: [PATCH 0/8] pwm: Add support for character devices
-Date: Sun, 17 Mar 2024 11:40:31 +0100
-Message-ID: <cover.1710670958.git.u.kleine-koenig@pengutronix.de>
+Cc: kernel@pengutronix.de
+Subject: [PATCH 6/8] pwm: Make pwmchip_[sg]et_drvdata() a wrapper around dev_set_drvdata()
+Date: Sun, 17 Mar 2024 11:40:37 +0100
+Message-ID:  <a5e05bd2d83421a26fdef6a87d69253c0f98becf.1710670958.git.u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1710670958.git.u.kleine-koenig@pengutronix.de>
+References: <cover.1710670958.git.u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -44,7 +44,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2528; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=fs59cnUdx6Lj37sKccMDB1aCfsDJsVT37Vt+S8/sLfQ=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtRvJxYsaufN39XgfXrBvIQF1e6v41KZjC8+TmOfnTX5e 9fxnD/5nYzGLAyMXAyyYoos9o1rMq2q5CI71/67DDOIlQlkCgMXpwBM5FwYB8M28/f5NyNsN0gI cMfs7cq6/9WWXbL4p1vVpVJOuxaz6yc8TEpVk6PPcmyV8bVbYr331V6zxH28DHu5dmiG7Y8O9L2 S0eDOF142LTFn+6nvx3Tk+t9o3a0zlWcvf/gm+JVO9dmPho8u2ey6UuJzWa6ij9XNp65b5nbylp mzFVeHh2YrPatabVtQfqlBLNK0ar05T0x60XUn71VTXdTdGk5pOs+p3S2TaLakK0LuS97WQhOTA pWVjwsu1ga++PktSlCNoXVLeMy9qI3Tg55bru8/9nU50x2LDw8YBRjfZn7ekcQTNcfbXu422/Tz fq65Kwoy5j8Q7pz376uZeEIB6/1n1zJnZc6ua5U46P4UAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1878; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=AG4jwZ/6gQYisCrxpsL8cWXEFovxSI4ZrMHP/oYXx0A=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBl9sinoTzcjgUWbtVuaHO3lUS+n+GX4AducX4ih ArnnSBt0wqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZfbIpwAKCRCPgPtYfRL+ TrJ7B/9b9+z8CxI0WS+EXdc8cJFZ2IJ7LjVij/hkFU/X8UEjLE4qPSsCiJE6be0XVuUWUaN1MZO 4QsymlmZaucMoeu/hav6R1+FtuKv1RN3O8q8oTsc5GWbCW8LSgZOu0Mr5Ip88ADSWoHqC7Edolu DOtQWDoPyF5C+t0v3GXFkjB9ie7aNZBglBL6tfrt6Mt0Kwc4IL3/XrNuSMSPATspIrAm3PK6wR/ 4FgWYCLH1zd+5WDKO0j1NYFCpAppA/V5TY+X1RKN+Iyf576ADo4jCD7l0vG8n1oUJhFTbgfOrnR hf7iYW5b+OgQ9DZPlXX6i/FLlYpc16osZPs1NNsH0deKIsKq
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,72 +52,59 @@ X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-Hello,
+Now that a pwm_chip has a dedicated struct device, pwmchip_set_drvdata()
+and pwmchip_get_drvdata() can be made thin wrappers around
+dev_set_drvdata() and dev_get_drvdata() respectively and the previously
+needed pointer can be dropped from struct pwm_chip.
 
-After the necessary changes to the lowlevel drivers got in for v6.9-rc1
-here come some changes to the core to implement /dev/pwmchipX character
-devices.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ include/linux/pwm.h | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
 
-In my tests on an ARM STM32MP1 programming a PWM using the character
-device is ~4 times faster than just changing duty_cycle via the sysfs
-API. It also has the advantage that (similar to pwm_apply_*) the target
-state is provided to the kernel with a single call, instead of having to
-program the individual settings one after another via sysfs (in the
-right order to not cross states not supported by the driver). 
-
-Note the representation of a PWM waveform is different here compared to
-the in-kernel representation. A PWM waveform is represented using:
-
-	period
-	duty_cycle
-	duty_offset
-
-A disabled PWM is represented by period = 0. For an inversed wave use:
-
-	duty_offset = duty_cycle
-	duty_cycle = period - duty_cycle;
-
-. However there are some difficulties yet that make it hard to provide a
-consistent API to userspace and so for now duty_offset isn't (fully)
-supported yet. That needs some more consideration and can be added
-later.
-
-A userspace lib together with some simple test programs making use of
-this new API can be found at
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/libpwm.git
-
-.
-
-The start of the series is some cleanup and preparation. The lifetime
-and locking patches are needed to not crash the kernel when a character
-device is open while a lowlevel driver goes away.
-
-I look forward to feedback,
-Uwe
-
-Uwe Kleine-König (8):
-  pwm: Ensure that pwm_chips are allocated using pwmchip_alloc()
-  pwm: Give some sysfs related variables and functions better names
-  pwm: Move contents of sysfs.c into core.c
-  pwm: Ensure a struct pwm has the same lifetime as its pwm_chip
-  pwm: Add a struct device to struct pwm_chip
-  pwm: Make pwmchip_[sg]et_drvdata() a wrapper around dev_set_drvdata()
-  pwm: Add more locking
-  pwm: Add support for pwmchip devices for faster and easier userspace
-    access
-
- drivers/pwm/Kconfig      |   4 -
- drivers/pwm/Makefile     |   1 -
- drivers/pwm/core.c       | 988 +++++++++++++++++++++++++++++++++++++--
- drivers/pwm/sysfs.c      | 545 ---------------------
- include/linux/pwm.h      |  51 +-
- include/uapi/linux/pwm.h |  23 +
- 6 files changed, 993 insertions(+), 619 deletions(-)
- delete mode 100644 drivers/pwm/sysfs.c
- create mode 100644 include/uapi/linux/pwm.h
-
-base-commit: dd6c6d57ab61d496f6ff7d6ca38611062af142a1
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 495e23761f34..60b92c2c75ef 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -274,7 +274,6 @@ struct pwm_ops {
+  * @of_xlate: request a PWM device given a device tree PWM specifier
+  * @atomic: can the driver's ->apply() be called in atomic context
+  * @uses_pwmchip_alloc: signals if pwmchip_allow was used to allocate this chip
+- * @driver_data: Private pointer for driver specific info
+  * @pwms: array of PWM devices allocated by the framework
+  */
+ struct pwm_chip {
+@@ -290,7 +289,6 @@ struct pwm_chip {
+ 
+ 	/* only used internally by the PWM framework */
+ 	bool uses_pwmchip_alloc;
+-	void *driver_data;
+ 	struct pwm_device pwms[] __counted_by(npwm);
+ };
+ 
+@@ -301,20 +299,12 @@ static inline struct device *pwmchip_parent(const struct pwm_chip *chip)
+ 
+ static inline void *pwmchip_get_drvdata(struct pwm_chip *chip)
+ {
+-	/*
+-	 * After pwm_chip got a dedicated struct device, this can be replaced by
+-	 * dev_get_drvdata(&chip->dev);
+-	 */
+-	return chip->driver_data;
++	return dev_get_drvdata(&chip->dev);
+ }
+ 
+ static inline void pwmchip_set_drvdata(struct pwm_chip *chip, void *data)
+ {
+-	/*
+-	 * After pwm_chip got a dedicated struct device, this can be replaced by
+-	 * dev_set_drvdata(&chip->dev, data);
+-	 */
+-	chip->driver_data = data;
++	dev_set_drvdata(&chip->dev, data);
+ }
+ 
+ #if IS_ENABLED(CONFIG_PWM)
 -- 
 2.43.0
 
