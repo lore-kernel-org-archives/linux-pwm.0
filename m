@@ -1,61 +1,61 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA46416F834
-	for <linux-pwm@vger.kernel.org>; Thu, 18 Apr 2024 14:17:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBEA216F8F8
+	for <linux-pwm@vger.kernel.org>; Thu, 18 Apr 2024 14:17:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713449856; cv=none; b=hZpt1Z6MzSRC5rPTMV5DnUzWxj2SO2504UT4c4j2ju0VL4QgUL9Ejqf8bpuLTLe2HyJs1sXtUagLpFu9LHMI5guxsjnnebtcUCakJWWRd3exmI0b4jwlXznrne5M2KuGsIDHnoGuKl0+8sqyH+R18sIKViiLRu/EGgFVm8tm46s=
+	t=1713449857; cv=none; b=bUtU7c07Kzer6xYTwW6UGZyJG7ZeVbHgLa5O3NvTaa5Lo7Unjs6cI4Z+HX8pVDSPmcN7WjVQtcXxridVWnWctMtlAcbWxxGrjkB4bnEP45TuUqcy24XLf87gCJTr2PrHWFm7j8MRX4gsHbn/NHfOr6Uj4pzVlGra5UL8Wr3ubHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713449856; c=relaxed/simple;
-	bh=2MnuLxaHZbaJPVARTKFt1rzwpEZuIuXZwcM1ZfvOkrE=;
+	s=arc-20240116; t=1713449857; c=relaxed/simple;
+	bh=woF6NgCy9sWp4jU9xhCym7WDVQPI/tzmO1lBDEzOVXQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=mPY69Hc/fvNv4eTQ8cds8qUvdoGPvUh55p80fTiAay2YOx4Hj/8JKnmL6Li+ibaXWlUzHUd8rfSNsNYCJ4YlzmnVCoemWkGkFCOgrppI46oVsupJOQAlysmy/0XSm//qezaV68X6PGyw5hQHWmoDOOJGFVGhjoioAt7l0BghMNA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=wMVdYQ2B; arc=none smtp.client-ip=209.85.128.49
+	 In-Reply-To:To:Cc; b=DHr7FZyS+7Piucg7AdkR/5MYtClD+vP2Qtsfzbi/Ofv0CTbVYI5TRSfwQhuu2qb/YgzHJsj7h8j+bmXbDzEAe0lmd696A0yFnbbvAVLTGQxCFjJbf51NZFw+ZjvCRYBjf3yBzTT13rbykWWrivjBzhpP7qyKXmygzpLn1BQCRtM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=lqZPH6Zt; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="wMVdYQ2B"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-418effbc5d4so3220095e9.0
-        for <linux-pwm@vger.kernel.org>; Thu, 18 Apr 2024 07:17:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="lqZPH6Zt"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-417f5268b12so10073275e9.1
+        for <linux-pwm@vger.kernel.org>; Thu, 18 Apr 2024 07:17:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1713449851; x=1714054651; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1713449854; x=1714054654; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=hFmw2QUwgoo6nZ5hxL4W4XLY0gvCpX+AxZ6V2ssaQtQ=;
-        b=wMVdYQ2BkdB4DxIdK1YpFDp5lXClN+xfQjtQLVGrHYxAFmNMFDhbzCjvQUUfBPLW1I
-         okABs5PV5cxgHimp2gsLHZLz2m7D3CfU4/ORwfeRK6evTv6+EZHk+jqS9IMQvckUih7e
-         YoL1y6NFOqCStRlLGyebZ67jQJucix/igORPAtFIclPeIesoUxmLWMyjuJzsDWkRZWTH
-         nAjSnissmLvL/qcjwyKrdhaY1QUP2rnXHIo02GJa3GDFvQZuRFmJesmU38ftkwBDjPHK
-         4oOKDWxmg25qRTXYHI1/BoJzFA6u35XICYz+8HlyhXJ34X7koJGA37hbMFZmqdNWsa+e
-         UdYQ==
+        bh=6ngpZb20B2h9Qc9IbX5I/ZiczUNGoVVnils8jWsBLdA=;
+        b=lqZPH6Zt0V7UtpZI96qZ9P+1Ts1ZcrSUa6t06K4Bo6TPDdGfQHnE1Z182f47P2riSm
+         MjnDhs7nkuycOailAu64J1dHiQOhvqKWZS9UAXyCHQ4cmOC+RctW1ek51LMtnbNWNqYS
+         rg7IxKXDBAUWcGr5N33PHV1P9MuPumurbuy8OQOts33dXzF0Do2pVonnDVIJe57eb2F7
+         DvTZ+6tjQGviUlY+9AeiNMkpbwx76Ne6Rj/svkJzKs8T6Y/yzS9hrSlbZytAJZ6Xd/1M
+         DBVPoE/HoFjGUuMc3BLHPT2OouWaaUIN8l5h6zeB5vs5xvT7IuDUwavWG9YwvsblaFol
+         0h9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713449851; x=1714054651;
+        d=1e100.net; s=20230601; t=1713449854; x=1714054654;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=hFmw2QUwgoo6nZ5hxL4W4XLY0gvCpX+AxZ6V2ssaQtQ=;
-        b=cOEaPgTCu+2b6KCv4mb29s2IzIyLHmzi7NRwQ/g61XxJzwtJu0aST8TdvZ33BKqov8
-         Gju6KpPV8GHpheZdQH8Kne09P+6qN/FtlovErTk79iJaJ3IYP1t74IuTO0HBiqtisD8w
-         Rc5p8Sf0XzwMa9btfJwCJcp0vTmz5bO9ite58/uXJ053STU6Ncud7N7mwlUe88V5fZ96
-         lokWT1Q6fsk/dd0mXzMNJHTGePs2ojFG+cwMlwXPQ22thz8Pf60f7blpbdySdXpljuiC
-         193r7I11fiEh5X6x41jPH0w/P9x08Qy36JKsTytyHWd9ESTeT9+bnVApS7UtvXyEUERb
-         sqzA==
-X-Forwarded-Encrypted: i=1; AJvYcCWbq46bwbaxPNwQe39cximiXhSCIwQDTTeuxT0x7oUj30cGdojbyZKg77WdC9l2vZMyW4ZobLqg8EZCfLZXZTyP+YJ5Rz1x60fa
-X-Gm-Message-State: AOJu0YwYDa0iRrMbuBGdJ7d9bk10lpi4ydMTTgQNY+/XIazfJc+dvcM0
-	FrUXMNx3bapc0f2YRgc7mqwaE+RffDG6H8SpTszHWM04yn8GBDN0ow4yoCta8DY=
-X-Google-Smtp-Source: AGHT+IHtNCO0sT/PuF83nF5pCjl0HM21KlAZ3i4WM1ZCheFdqhUBy0/ydJhAL6oh54QPdztAbJgG4Q==
-X-Received: by 2002:a05:600c:45d0:b0:416:902e:51ac with SMTP id s16-20020a05600c45d000b00416902e51acmr2889189wmo.39.1713449851402;
-        Thu, 18 Apr 2024 07:17:31 -0700 (PDT)
+        bh=6ngpZb20B2h9Qc9IbX5I/ZiczUNGoVVnils8jWsBLdA=;
+        b=kYoELpOJt4q5GaE/VrqwhEh+Na69doj9ku+CD4ZOdypJORXQixSJVEcDBN3cjZF7wG
+         X1c4i/Kte2yY8V23ax/EELfrx0ki6nZLKIdcBclYJ+noCGE09aZl6CYKN0Fk2IhJh9bv
+         XSnPIXCMUvmVfbwqmiR0jY7E0JZi//zVL7fMa3wqU3EkBCMH8DX2dHf3odEP0QquRaxx
+         XdWwpLfd13GJsP+wJEH8eS8GjbfA51Pw97N/rlQ39UjxGtQeTmZQ7CujvZYcOgT/63w4
+         Iq4+BfO47YjaPHqx66mjKXwYnXqsY0Llf2Lc/Z1AWutvX7rk1p2xBL7p2cazkzCy7y/a
+         uhig==
+X-Forwarded-Encrypted: i=1; AJvYcCV8dDW8kGPyLm9UevLB+kHrAyWqWQLClrYBAhEqjeA10hKuinemTc87jG/pMtA69xOGaHr1wn3FxASnpo9M9hrc7M8ZrH2fS4IT
+X-Gm-Message-State: AOJu0YyAiExQLTlU5OPbaWrpmUYjYd/q1S4jnMaRN3szaz2qT5rUNppi
+	iDcP3I8u6T10oF5UBkDUwU+2MhAPJmLrjAGMhQA9XvYq1LtHVcIFcgFSI/CzhWk=
+X-Google-Smtp-Source: AGHT+IGNk7+q98Dt50c94htj2Yax4/KnYeuA1Mwztlc7Yw/kKE9BWFSk6X7OkJkTV8uxkSAExv++dg==
+X-Received: by 2002:a05:600c:5254:b0:418:fb6f:5f3d with SMTP id fc20-20020a05600c525400b00418fb6f5f3dmr290856wmb.17.1713449854525;
+        Thu, 18 Apr 2024 07:17:34 -0700 (PDT)
 Received: from [127.0.1.1] ([93.5.22.158])
-        by smtp.googlemail.com with ESMTPSA id i9-20020a05600c354900b004180c6a26b4sm6267510wmq.1.2024.04.18.07.17.29
+        by smtp.googlemail.com with ESMTPSA id i9-20020a05600c354900b004180c6a26b4sm6267510wmq.1.2024.04.18.07.17.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Apr 2024 07:17:30 -0700 (PDT)
+        Thu, 18 Apr 2024 07:17:34 -0700 (PDT)
 From: Alexandre Mergnat <amergnat@baylibre.com>
-Date: Thu, 18 Apr 2024 16:17:01 +0200
-Subject: [PATCH v3 13/17] drm/mediatek: dsi: Improves the DSI lane setup
- robustness
+Date: Thu, 18 Apr 2024 16:17:03 +0200
+Subject: [PATCH v3 15/17] arm64: defconfig: enable display connector
+ support
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -64,7 +64,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231023-display-support-v3-13-53388f3ed34b@baylibre.com>
+Message-Id: <20231023-display-support-v3-15-53388f3ed34b@baylibre.com>
 References: <20231023-display-support-v3-0-53388f3ed34b@baylibre.com>
 In-Reply-To: <20231023-display-support-v3-0-53388f3ed34b@baylibre.com>
 To: Chun-Kuang Hu <chunkuang.hu@kernel.org>, 
@@ -88,53 +88,41 @@ Cc: dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
  linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, 
  linux-clk@vger.kernel.org, Alexandre Mergnat <amergnat@baylibre.com>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1234; i=amergnat@baylibre.com;
- h=from:subject:message-id; bh=2MnuLxaHZbaJPVARTKFt1rzwpEZuIuXZwcM1ZfvOkrE=;
- b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBmIStjyt1Phgb317q5nDWLxlAExPeDpj0mMTjN61F/
- BDu61hiJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCZiErYwAKCRArRkmdfjHURaLPEA
- DD28UlYK6wanAEBb+/8HdIb9cDlvSkVu3mDiWADx1o/swuPpU9jbjySikAfXKlWCxzTgzT6lutDaj4
- vIwXpt9XbpZrbPOG+Tget6ptvQdD56G/OEcCbmm1YcvFVbkzXPdJ3vVQFPqVXskpbigxF5lnTntCAa
- FJQBnbFS30JMcTpBUpIq4SqW3JtxAioMKYcOfbpuv0JJjDgMImsgZ2NqsTPUUgXkgHU9pqUicDNziB
- tACcMWlHs8PPuZS6x2RqA7e0/EfBHs34gTsyTqkpHBRT73N831a+A5oE9kND+dcMxjwlmefeXMOww6
- 4gQ1U2T7DSkeS9yTVYR8AsbEM2cBnbhFXUw2c8v3kCwjdrNxllliUSuR1dZnhNMUbd3rmtslBJPuIn
- PEUcsmJemYKuYCBtvx1P/a46vhGIOLSpJnjVsfnpC7jR7i/JQnirmYHsrdfDs2mG/tXihgWSq+4pMq
- 7dyFGV0egvh21DBo2c4YFPzgoOhrGzEqsqStXbC4VLcRpewhHVww3ZPEqrx+WEby4Cyxl/W/VCSRnU
- rYMfrRhVr8zR2tUwjXad+n2EMdD7qeI/xHaJHhfjOEkhi2VDhj0pA9qUpXhWYd4XxabIlQYtF0gP2+
- 44HrHaDC6UD1n4NL298nlac7LHpz0tj5kGjXtmURjGBcutBuiak9qpaBctZw==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=693; i=amergnat@baylibre.com;
+ h=from:subject:message-id; bh=woF6NgCy9sWp4jU9xhCym7WDVQPI/tzmO1lBDEzOVXQ=;
+ b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBmIStjXZeg5Jh2Is/gAHWoRmg5aIyMiEXbGdEHozO1
+ 0cFGgByJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCZiErYwAKCRArRkmdfjHUReAhD/
+ 9Yax8im2q4PngGvAwi5mmyFvPkrrQweqeFZGttybB7sZdfiirXSiQhiPajWkHJ5qYP3CaLIdpsBbwO
+ Rly04rqoR9UjnSnssubHEZRNV8FDtUpWG2kx2KI8YtrPQXLedyoviZ5yXRMhrIo4YQKztKVAM1anaN
+ +4z/FdycM/OVy+qFYOtxIBm5OZVvmTBFcaobZ7N/b8dnOVarjKVjWcJMqc5DvBg82J9pfb7i5a32+j
+ qkq7SMbQJPWRhsJJ1p+PmDZc34BROzx6SdrqIaQTJnDjE3jg9ejPrn72qGRpeCHd5u+WRMmbRlWe34
+ QjAIUX44315fL/fLIduyc01lfQV48zhoOFVjpUGN219Rl/nbxQdtQizyG9s3C52+sBnHtBtCKGtM5p
+ KeRTXx1RnMx3zK5gkElzJRvnWP3BpiS7jkdcymFux9TZriFYx9saLHrclsMJIMoAgdDwNvi+2YDgbv
+ ZFd1zRXXRB3wFltaeIYmv61ET5XbsgRNVlB3erg09SjegSD5W4C+dUv8X7DTr/JNQYk5xB8c0r5kLA
+ S1ZmTU+T7QLg2br8fX3i9CU7FZDBm4vI+C/FubNpkg75I5aXe2dOy+RetsN0udQ96a/LBJPDmKFksS
+ ZnLWgsJyU/bn4dG+J0ziy4jI04KodR1dokrbqRImv1aZvrEx8euPdeTU6aiQ==
 X-Developer-Key: i=amergnat@baylibre.com; a=openpgp;
  fpr=231B5ED7F3EAAA700E60FE8B2B46499D7E31D445
 
-Currently, mtk_dsi_lane_ready (which setup the DSI lane) is triggered
-before mtk_dsi_poweron. lanes_ready flag toggle to true during
-mtk_dsi_lane_ready function, and the DSI module is set up during
-mtk_dsi_poweron.
-
-Later, during panel driver init, mtk_dsi_lane_ready is triggered but does
-nothing because lanes are considered ready. Unfortunately, when the panel
-driver try to communicate, the DSI returns a timeout.
-
-The solution found here is to put lanes_ready flag to false after the DSI
-module setup into mtk_dsi_poweron to init the DSI lanes after the power /
-setup of the DSI module.
+Enable this feature for the i350-evk HDMI connector support.
 
 Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 9501f4019199..b3f33d4d3d5c 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -642,6 +642,8 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
- 	mtk_dsi_config_vdo_timing(dsi);
- 	mtk_dsi_set_interrupt_enable(dsi);
- 
-+	dsi->lanes_ready = false;
-+
- 	return 0;
- err_disable_engine_clk:
- 	clk_disable_unprepare(dsi->engine_clk);
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index fce98a150014..1df337882835 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -872,6 +872,7 @@ CONFIG_DRM_PANEL_STARTEK_KD070FHFID015=m
+ CONFIG_DRM_PANEL_TRULY_NT35597_WQXGA=m
+ CONFIG_DRM_PANEL_VISIONOX_VTDR6130=m
+ CONFIG_DRM_FSL_LDB=m
++CONFIG_DRM_DISPLAY_CONNECTOR=m
+ CONFIG_DRM_LONTIUM_LT8912B=m
+ CONFIG_DRM_LONTIUM_LT9611=m
+ CONFIG_DRM_LONTIUM_LT9611UXC=m
 
 -- 
 2.25.1
