@@ -1,60 +1,61 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C65216F826
-	for <linux-pwm@vger.kernel.org>; Thu, 18 Apr 2024 14:17:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D96116F848
+	for <linux-pwm@vger.kernel.org>; Thu, 18 Apr 2024 14:17:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713449854; cv=none; b=RhfqXGD5gR1X9xuvMAmI1Gy+Vksv40v+DNl9nVdYYSfa9WOV2Xr62ru/Fruxk5dFA9P7Ui0EN5kudhyifu2nk9lryIqX15Scm93PtbOD/c9h5JGPbVL9h5b6kkywHWYpdXc+PGMu43uMMUF0AaGXR4FpBmD1OBiciGbEU4Hi2/U=
+	t=1713449856; cv=none; b=CZw4kXiu/xE0ocmw33+kqFlI+xfWoFJ53j4pTQJ+gSm6ZVURZGKAXA4pO/ZXUt+febGUCFkMRAqk1TOBYQiq3s7GRkc2hevHY08wLq2ZFwD1De1gaWvcCUa20LsQyVA7xmWTL1xdEjBR8LvjIEzxZXEZUwmF8Z5Evbo+gsG9LOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713449854; c=relaxed/simple;
-	bh=CxkLUlifqvxz1G/Eho8b8T4Is6DgFjTZfGPXl6VYPH4=;
+	s=arc-20240116; t=1713449856; c=relaxed/simple;
+	bh=ojxXgu752EUVlJd1wDMQRlXHtGQrZ5ZPRG8jJVphupw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ldEXVHNHWofzqG3kNXCS2ArE4D4LEviaMNa1af9a97hlv9VMvD4Ws1Lil98eu+CqxBM1ziksTv2QMZIvtqd9R72aK44rzRfP24Weh29NNc0p50uJlmG0XrK5e6XAE0rmzvpDioUk8t6oUamaUBqSzccFzag4SFZECELsu5dS/mI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=iY7UUnCO; arc=none smtp.client-ip=209.85.128.47
+	 In-Reply-To:To:Cc; b=L4CavPkiQ5FIrct2MZvMe9xKAUjIodY5nTRAzYdYIAFrpriI2cPgCBm/rAG7JRDhBfQnorw7NRP7ssfSJzDGtmqBxTAws65nQtthkZ2RZ+u1hpvf0KefmRDaeMJNjS9me3BijEpip5jRoAF0AgEqpjTM3I4ZdCbfUD5l+p03a8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=ZIc618Qj; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="iY7UUnCO"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-41551639550so6571065e9.2
-        for <linux-pwm@vger.kernel.org>; Thu, 18 Apr 2024 07:17:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="ZIc618Qj"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-34a3e0b31e6so70791f8f.1
+        for <linux-pwm@vger.kernel.org>; Thu, 18 Apr 2024 07:17:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1713449849; x=1714054649; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1713449853; x=1714054653; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=h3otSZuiUA0RBdwKSB/5nO1/TIttSyxWSp9sd21V3FQ=;
-        b=iY7UUnCOCDIfuaWkby8F4OSsYQlvwKhUME9P7I90NOrEdYT4W52xM1QGV9Ik7G/975
-         1u7qM+qJy+fw8Ypa0FbfA2HniKV/bwLlbKrzG+vl11htogEzd7Geco3pkfTskR2WgEcw
-         ej05Pnxw9AJCvlZGjbBMiKzFAjyx77Hb1cOA3OvN+neN6o3ZGufO5McrL3pKmeQsGh79
-         qXXgPklJBUTD08xpmv1nWBfyU0ekr2xnUG9G2UdpAaIlu2uflacV8PriiybF8g6Se8IL
-         zfcbv2QDCh2Ft2HY8SZ/wCY1irk5IKlgqGfnl6doqdDpK5tP1QojtfXqAhAc6yx+KwS1
-         EYBA==
+        bh=nGhN4tMDnWFook0es8LuAXt5ZA9TrdmyBXYcCQvtS3Y=;
+        b=ZIc618Qj+9s8OXwOtCbBZc4p1YQUCHZUvL76gAJftzWkQMJ6zJpmYs1cZrmH698A23
+         elqaCeH3GOORcygyYzW9wSkf7F3nSP/vAtcPVM/t4yY6ZmI9tFostCiXDyABPUcv+p+X
+         rZT8AzUNsFRf3Hlb0zguJhLH9MhoYhmM/XffnRbPJTXPy+hhSB+0w84OTU0UwawlkAOF
+         ko1wGN8nLMOHZExD4wL6r5DClc/S4fhrju9SeCd2pikBvKg17f8kQk5gh0aCW8eyqsCz
+         0c5SK4tKR/rT2/5D0WLgSPpIO3z52s8xq/Zck8AItluIc2M7qNnBGo/YPtiMnUOac5JT
+         PEtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713449849; x=1714054649;
+        d=1e100.net; s=20230601; t=1713449853; x=1714054653;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=h3otSZuiUA0RBdwKSB/5nO1/TIttSyxWSp9sd21V3FQ=;
-        b=MGu6OIn7qWNIjP7XRStohm8e0Wz5YDoIS+GqoNpyR7hxtEEj5AP6lrSl6QVX6Aqchc
-         +VpjFirgvOgFvNFRFiw3qVfjU50xKHD5PQQv8WpD54XCCU95zN+FFMljOy/WEDlsCgf8
-         pCEBdlBv4K2WDdiLvfY5kwSYjANbJkg+oQupWKY93jHIev3idkJ35wGbUdMK6gi2ezv/
-         DTDiSvqCApmg2pc1nd6/PIFvFZMPkMp2VH3OU3kL0VDy4YtlHMSxzVBkXSRY1shrhnai
-         kuwZhsutWjAKxn7aqx+6O8l2mymcKxI0tyV/Ol25+rEKzmbGQppxudAVFv3nToY8Lvaj
-         wmjQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUlDlpP2MDAghF/cSXdHNN4CEdvi6znBNfLpr6e6qez9naJCBkbozqsjShzxPJGk6GRJWMmtS0SvDiNUM7yWm7JL8n2UrMC8NAs
-X-Gm-Message-State: AOJu0YyT/1f41ngdm53yUPqrJ2+N4VDAPspk2Ukq5CZUxmf2x3SoKDCz
-	yEFUC3Y6lDu6i77v/W0DtkZeLDmFXdWBR7KRcyvejMWUR2RdcdgIld4t24AatGs=
-X-Google-Smtp-Source: AGHT+IEiQUufXTv7FJcYkp/QB82CY+QyZl0A6G8qICn/+gCfoWDUcq8617KoBHtq/0X/7mU0hAwvqg==
-X-Received: by 2002:a05:600c:4ed1:b0:418:d2c5:5c65 with SMTP id g17-20020a05600c4ed100b00418d2c55c65mr2438790wmq.37.1713449849699;
-        Thu, 18 Apr 2024 07:17:29 -0700 (PDT)
+        bh=nGhN4tMDnWFook0es8LuAXt5ZA9TrdmyBXYcCQvtS3Y=;
+        b=KVkLa5ZmyKSJkPJPuggehev3JLPBWrX5yNXJiFXC7EB/dWNYBLrT4cq2OmDXLVc36G
+         v9u8Jn+Ka2mzXhKUuzwrKBvA91vnKJblWV+ijRBJepCAX1KfsOEsdjC8O2jbtqrPwBm3
+         MlFXXz6zdQ1uuRbOQVni2ZmD+zUodSb4TY6PV18XUmI+LnD1LO0qUvaJNQJ98+6H6FIk
+         MOO88pkE52XH97gImfupNGJ4V/9PcKjCVNn0wIdgVba6HpsWwfAmMxM59gWn+0nA9mbK
+         4xvUWcwgsi30U2FcRg7aJidCwWKbXsl631HLiuprZbSqcQSoYhLoMOFo2zdT0Mg6MDxE
+         Yc2Q==
+X-Forwarded-Encrypted: i=1; AJvYcCW/4ZkEGGv0FS1zd8TCAfJnSbCm2EViYltcv1D1YoLbi9N9ZtdJpenWa5ggAwu112UfbVidIwrUprcqYtBYY9mGtP1kZ9o9z8mS
+X-Gm-Message-State: AOJu0YwsVNSyeX7HHvk0MYUrlUBcmNtQV+KBn8VILzOsHda5wMP/cCeS
+	ucZW7Xnj12kSOMIroEBMUI8cNeMEiQP7ScqLosO3pnqi56gI6IL1aQA8KIy9Z86HJ7Q1G4jOCbL
+	AtIw=
+X-Google-Smtp-Source: AGHT+IF6b8Hyds+Df+n8d6GSZC2InYLslqfLyS56mvk1H/o/i0jSb1a/hK0ROLJ6MHV5vWZ7T6O6RA==
+X-Received: by 2002:a05:6000:bc7:b0:343:d06e:51cc with SMTP id dm7-20020a0560000bc700b00343d06e51ccmr1672638wrb.66.1713449852974;
+        Thu, 18 Apr 2024 07:17:32 -0700 (PDT)
 Received: from [127.0.1.1] ([93.5.22.158])
-        by smtp.googlemail.com with ESMTPSA id i9-20020a05600c354900b004180c6a26b4sm6267510wmq.1.2024.04.18.07.17.28
+        by smtp.googlemail.com with ESMTPSA id i9-20020a05600c354900b004180c6a26b4sm6267510wmq.1.2024.04.18.07.17.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Apr 2024 07:17:29 -0700 (PDT)
-From: Alexandre Mergnat <amergnat@baylibre.com>
-Date: Thu, 18 Apr 2024 16:17:00 +0200
-Subject: [PATCH v3 12/17] clk: mediatek: mt8365-mm: fix DPI0 parent
+        Thu, 18 Apr 2024 07:17:32 -0700 (PDT)
+From: amergnat@baylibre.com
+Date: Thu, 18 Apr 2024 16:17:02 +0200
+Subject: [PATCH v3 14/17] drm/mediatek: add MT8365 SoC support
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -63,7 +64,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231023-display-support-v3-12-53388f3ed34b@baylibre.com>
+Message-Id: <20231023-display-support-v3-14-53388f3ed34b@baylibre.com>
 References: <20231023-display-support-v3-0-53388f3ed34b@baylibre.com>
 In-Reply-To: <20231023-display-support-v3-0-53388f3ed34b@baylibre.com>
 To: Chun-Kuang Hu <chunkuang.hu@kernel.org>, 
@@ -87,58 +88,102 @@ Cc: dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
  linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, 
  linux-clk@vger.kernel.org, Alexandre Mergnat <amergnat@baylibre.com>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1471; i=amergnat@baylibre.com;
- h=from:subject:message-id; bh=CxkLUlifqvxz1G/Eho8b8T4Is6DgFjTZfGPXl6VYPH4=;
- b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBmIStjTlVje5tb59O8ee6DHe2YEYRuzYS3qUOt1aEr
- ArPtZJaJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCZiErYwAKCRArRkmdfjHURQqNEA
- CYVXzwd+84f6xIO7EyRZqTIThqTCaSd0BOLeBN/VzpJk8gHezkxoYZHgiCRin94aHkjaR7VSMB/Quk
- qBq+TiWTMhA1/zaXb41ylAI+Dyew3JUPmpZ2M5T8yDYNnbEjiOAmGrAM9/+9bsp18Y72CDZgcRkkT3
- +VyS01NGZZsojIayz9SpoHYeJfa/MUxZ3tUyle4MMHJYbvkMs9MNQ619sgiQTWiE2+Q41Fv9dY9VoF
- mbVjtEs7R3f79z7ueli540F92j2WQZ4oJZ6LuQ0fGsXezsTGv/qfuoTmBHIVXRVY8p/9ciqrrnl8BP
- LVfYA2WXi8SJBZxYMYEOspJ2EYlIQyIZ03FG/bPJsvB7CYsuC0f4yqlwA8ARd2T6uoG0xHT3VeKS6Q
- sLNan3y/BScJLyDClVjWhMQXRW2CjNcSRVeM32pj6Ja37+B3RfnaAE9k4jf5pfbRkWxvsk7QPDCrCu
- IvPTDwRJhuyrC7BFmfac8T3JAUirPF00v1tjMXILiYfeA3K+Gm2K4SVmd+9EWgjEJcbf6ucCjlQU/p
- Mz7gTttZFPwcSGfcOzz67IGjCR6OlEXErvSLeC7em/u4Sq1gQIleQ5ecPpwKcZ2V5k4TcHwQn1/IyQ
- AREJ37OCcknpY2fMYZGW6FkM6el89Lz6S94SzjFiEJxeyBPQeCxEds2+saJg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2801; i=amergnat@baylibre.com;
+ h=from:subject:message-id; bh=r/rf6DH3u4/RIc/AgVSnOwA+TJLknIEXoBhT9allVNg=;
+ b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBmIStjypxHC1AF4L3x0vY6H1KMKdkKlh+jAMEpcQ+v
+ Z2my7l6JAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCZiErYwAKCRArRkmdfjHURauoEA
+ CNdHASvLccHSGQBaHJPhaHKidU6MEYpyOyYukACG9Xl+CwO9iEmJaksqelQGe6Ma4DNNKYtKkfq5rP
+ EiITw18CFONG9zkfEjO66VywxOu6sqVlLDDINpjOFSwPYfLuMLARTlcuDucts21j5aJTNLkAMGMUpd
+ dy0gI53b6IryirzeYxRt4oMF1hscMI3ndCJoVWOr0Z9vlsyAmwPJHpsUSrlfCyABkhy3qAntmg7U7I
+ Wo70cMcWQdW29iapeE1i2aQ9TGlhXnQnwTl0o8C6T/TrnvRCvNYEymzCwTVk4S6uIcIqklr+Yd9mBF
+ bHAG0f+VCz8hWMjchFasbVlJQUfvHQlEwAVYCHl0Ons5U/hd4knfKY8ygtCzGoIwHKcMR6NcUu4sEA
+ EO53KI+/V4rdp21R+IouIAS/+0h/3vP3CSw9Hsf4XbUJfbC7wdEJDgfQ8JINXJCDyTJx97yaED/Ekm
+ RbY6i6UPy6XJVtO1YfLK+SfoVuGnVAvLXUCn7EeefvcX1M0Z/FSs1peMpBnOv3pTlnv7dmR03KrA77
+ N7Q+bq8PRbbKgIb+SUzq6kIsFDDqSvzrqQ88Jc/O2/LNaLTIjqFYRup6Z2hY2+tITUHXmet/yppM9G
+ ZnVOp4B8GPlaYGX7no69f5+YFPt/zLsiDH9ry0t20It8KZJz0RbfWffcMJjQ==
 X-Developer-Key: i=amergnat@baylibre.com; a=openpgp;
  fpr=231B5ED7F3EAAA700E60FE8B2B46499D7E31D445
 
-To have a working display through DPI, a workaround has been
-implemented downstream to add "mm_dpi0_dpi0" and "dpi0_sel" to
-the DPI node. Shortly, that add an extra clock.
+From: Fabien Parent <fparent@baylibre.com>
 
-It seems consistent to have the "dpi0_sel" as parent.
-Additionnaly, "vpll_dpix" isn't used/managed.
+Add DRM support for MT8365 SoC.
 
-Then, set the "mm_dpi0_dpi0" parent clock to "dpi0_sel".
-
-The new clock tree is:
-
-clk26m
-  lvdspll
-    lvdspll_X (2, 4, 8, 16)
-      dpi0_sel
-        mm_dpi0_dpi0
-
-Fixes: d46adccb7966 ("clk: mediatek: add driver for MT8365 SoC")
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
 ---
- drivers/clk/mediatek/clk-mt8365-mm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/clk/mediatek/clk-mt8365-mm.c b/drivers/clk/mediatek/clk-mt8365-mm.c
-index 01a2ef8f594e..3f62ec750733 100644
---- a/drivers/clk/mediatek/clk-mt8365-mm.c
-+++ b/drivers/clk/mediatek/clk-mt8365-mm.c
-@@ -53,7 +53,7 @@ static const struct mtk_gate mm_clks[] = {
- 	GATE_MM0(CLK_MM_MM_DSI0, "mm_dsi0", "mm_sel", 17),
- 	GATE_MM0(CLK_MM_MM_DISP_RDMA1, "mm_disp_rdma1", "mm_sel", 18),
- 	GATE_MM0(CLK_MM_MM_MDP_RDMA1, "mm_mdp_rdma1", "mm_sel", 19),
--	GATE_MM0(CLK_MM_DPI0_DPI0, "mm_dpi0_dpi0", "vpll_dpix", 20),
-+	GATE_MM0(CLK_MM_DPI0_DPI0, "mm_dpi0_dpi0", "dpi0_sel", 20),
- 	GATE_MM0(CLK_MM_MM_FAKE, "mm_fake", "mm_sel", 21),
- 	GATE_MM0(CLK_MM_MM_SMI_COMMON, "mm_smi_common", "mm_sel", 22),
- 	GATE_MM0(CLK_MM_MM_SMI_LARB0, "mm_smi_larb0", "mm_sel", 23),
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+index 74832c213092..427b601309c4 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+@@ -230,6 +230,22 @@ static const unsigned int mt8195_mtk_ddp_ext[] = {
+ 	DDP_COMPONENT_DP_INTF1,
+ };
+ 
++static const unsigned int mt8365_mtk_ddp_main[] = {
++	DDP_COMPONENT_OVL0,
++	DDP_COMPONENT_RDMA0,
++	DDP_COMPONENT_COLOR0,
++	DDP_COMPONENT_CCORR,
++	DDP_COMPONENT_AAL0,
++	DDP_COMPONENT_GAMMA,
++	DDP_COMPONENT_DITHER0,
++	DDP_COMPONENT_DSI0,
++};
++
++static const unsigned int mt8365_mtk_ddp_ext[] = {
++	DDP_COMPONENT_RDMA1,
++	DDP_COMPONENT_DPI0,
++};
++
+ static const struct mtk_mmsys_driver_data mt2701_mmsys_driver_data = {
+ 	.main_path = mt2701_mtk_ddp_main,
+ 	.main_len = ARRAY_SIZE(mt2701_mtk_ddp_main),
+@@ -317,6 +333,14 @@ static const struct mtk_mmsys_driver_data mt8195_vdosys1_driver_data = {
+ 	.mmsys_dev_num = 2,
+ };
+ 
++static const struct mtk_mmsys_driver_data mt8365_mmsys_driver_data = {
++	.main_path = mt8365_mtk_ddp_main,
++	.main_len = ARRAY_SIZE(mt8365_mtk_ddp_main),
++	.ext_path = mt8365_mtk_ddp_ext,
++	.ext_len = ARRAY_SIZE(mt8365_mtk_ddp_ext),
++	.mmsys_dev_num = 1,
++};
++
+ static const struct of_device_id mtk_drm_of_ids[] = {
+ 	{ .compatible = "mediatek,mt2701-mmsys",
+ 	  .data = &mt2701_mmsys_driver_data},
+@@ -344,6 +368,8 @@ static const struct of_device_id mtk_drm_of_ids[] = {
+ 	  .data = &mt8195_vdosys0_driver_data},
+ 	{ .compatible = "mediatek,mt8195-vdosys1",
+ 	  .data = &mt8195_vdosys1_driver_data},
++	{ .compatible = "mediatek,mt8365-mmsys",
++	  .data = &mt8365_mmsys_driver_data},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, mtk_drm_of_ids);
+@@ -729,6 +755,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+ 	  .data = (void *)MTK_DISP_MUTEX },
+ 	{ .compatible = "mediatek,mt8195-disp-mutex",
+ 	  .data = (void *)MTK_DISP_MUTEX },
++	{ .compatible = "mediatek,mt8365-disp-mutex",
++	  .data = (void *)MTK_DISP_MUTEX },
+ 	{ .compatible = "mediatek,mt8173-disp-od",
+ 	  .data = (void *)MTK_DISP_OD },
+ 	{ .compatible = "mediatek,mt2701-disp-ovl",
+@@ -793,6 +821,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+ 	  .data = (void *)MTK_DSI },
+ 	{ .compatible = "mediatek,mt8188-dsi",
+ 	  .data = (void *)MTK_DSI },
++	{ .compatible = "mediatek,mt8365-dpi",
++	  .data = (void *)MTK_DPI },
+ 	{ }
+ };
+ 
 
 -- 
 2.25.1
