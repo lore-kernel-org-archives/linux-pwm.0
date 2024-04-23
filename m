@@ -1,60 +1,55 @@
 Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D2D113CA98;
-	Tue, 23 Apr 2024 16:10:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8105B13CA9A;
+	Tue, 23 Apr 2024 16:14:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.89.224.132
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713888628; cv=none; b=sipYyqcsD+QhkTUbugjQ2E2iLoZhZFZf2x8h0uhQx3vuWQkFW0HlfQFhPDASu7KpdxqrnrtfV6xVbGRvHqO5Mv9bToMAvngn5FzQ2NYLJjjqTfWr/S90R38fL0ZP/PD63d3tyKti5biK/zIHUxpps7HAlT/Y8B91W+NKRyg6twY=
+	t=1713888848; cv=none; b=RNjuSu3skiq0xqrcQKZEcjRe1UmYuQcTqVxQUluvVnL4JSA2ltkwoJk03R+UdnJgzS/XepO262W0sBnD2mjXVYkL4xcr0ymsbGsR6csg0VNj9IwCF4/ITRJCH6EdS5/8FKZl6rcPyzzD02kEiMkh6wPp3495lYIjd3rcqiUIAug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713888628; c=relaxed/simple;
-	bh=ay3KNslbYsYnV+1QHwm3VJsosHzA/esqmO1+ooE+lUE=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pBUDCwvFRP8DrjN2UdnNIUMdrwV3Pd1rpRml2US/qnnoEzktaWa0c8L92QlhefWGig9AxfoFVskUSyUFJ5akKryauHyC7QURtnvJTyJyDzrvCtP4D38XkxPA+775ZuA1GJIh6OTIAhNMtRXk1jJxr5TOGC/MoTnNi5SCmVFw4YI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com; spf=pass smtp.mailfrom=salutedevices.com; dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b=Crmx2ISf; arc=none smtp.client-ip=45.89.224.132
+	s=arc-20240116; t=1713888848; c=relaxed/simple;
+	bh=1M0zjEi/7fjsN5QHwlX6mde0ElagEfbuxivmVUwHLf0=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ZbzLos7tr0fKAhxZ5gCzf0A2evJduzGMwAxWX+EN2bT7pgJ6cGPKcbbx5WGgFd+vtY3EFI0RyynTovfz2zC5hWy9jQ+8SCJqY693eZPZW8r4CC1WJ/jvcHARz5qljFQJALUhxaKsrOZ4DLtSK6s2ZjJe+aUdtI7rTV0AHKBEgMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com; spf=pass smtp.mailfrom=salutedevices.com; dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b=CzFXzTBn; arc=none smtp.client-ip=45.89.224.132
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=salutedevices.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b="Crmx2ISf"
+	dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b="CzFXzTBn"
 Received: from p-infra-ksmg-sc-msk02 (localhost [127.0.0.1])
-	by mx1.sberdevices.ru (Postfix) with ESMTP id 471ED120010;
-	Tue, 23 Apr 2024 19:10:17 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 471ED120010
+	by mx1.sberdevices.ru (Postfix) with ESMTP id B12D712000D;
+	Tue, 23 Apr 2024 19:14:04 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru B12D712000D
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=salutedevices.com;
-	s=mail; t=1713888617;
-	bh=jcnKO+9qD/W9Hyy6XkIloPCRHxcviiB1D0CedgJxIBo=;
+	s=mail; t=1713888844;
+	bh=ro/U3Qx6b5YUrNBUIBbRznelxtgGj/fcTpCvx0y5DV8=;
 	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:From;
-	b=Crmx2ISfcIDvuS82LLJcAQ1DOJTbYDQfygFKZByh10GSZNZvnZolXEUNENn7sTSaR
-	 hO4mKFrLy+c3wkXvcytHucDVr2LHzt4D+NXV4RpNduBKc9fGseqiGP7C3Elgsa4Xyl
-	 6N8C0xCzFVKw4PNJwtDDDgEDtKFT3d1sTD3/LuKWXHiZxQNSmlEHGai9u9tX/W8eJT
-	 MQ0ddvdZNQSTW7C+2rxezu0qoTTMMUyfusEQz/TfV0iqBaPY6tJ2GAujGSy9KJ/ygA
-	 AluzzOl0uiUjVTIJ1dZFwgbSL4bqIFCohbgm0+3zAMaVNcrxvDKqjmdW4A2VxnbMzV
-	 QZdy2yBJh0N7w==
+	b=CzFXzTBn43Y3lSBFff/H6nT5o5xEj82KuduPqDRT3B4zh8l4bP+P3g8HAeYwxNZvN
+	 8bFwLwUB99SOivaeg2UAWB76cm3T+R/L2c3VIIBdO8i9ggjWPc+FgIAlNYe6PN9BE2
+	 Ww1Zxy+nVwVs5LvSyHZlW3rR5zsH5MkVLILVtpUeRBb0dq8QBLzhi272jc/XOawIOV
+	 3JX9tlhR9JKJVDcnQvM9V9XaHtL2VDgRCxtiQoLT2Fd2G2ohY8tjCL/SRlZmEJYZco
+	 E2MDHxxIYp3Y29liy+L22Y7eB1zh96qbpcu/Kjlm+KvIAWf3Ts1GIPkwPn0KE2737H
+	 DxxLvRBwLJPig==
 Received: from smtp.sberdevices.ru (p-i-exch-sc-m02.sberdevices.ru [172.16.192.103])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
 	by mx1.sberdevices.ru (Postfix) with ESMTPS;
-	Tue, 23 Apr 2024 19:10:17 +0300 (MSK)
+	Tue, 23 Apr 2024 19:14:04 +0300 (MSK)
 Received: from work.sberdevices.ru (100.64.160.123) by
  p-i-exch-sc-m02.sberdevices.ru (172.16.192.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Tue, 23 Apr 2024 19:10:16 +0300
+ 15.2.1118.40; Tue, 23 Apr 2024 19:14:04 +0300
 From: George Stark <gnstark@salutedevices.com>
 To: <u.kleine-koenig@pengutronix.de>, <neil.armstrong@linaro.org>,
 	<khilman@baylibre.com>, <jbrunet@baylibre.com>,
 	<martin.blumenstingl@googlemail.com>, <thierry.reding@gmail.com>,
-	<hkallweit1@gmail.com>, <robh+dt@kernel.org>,
-	<krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>
-CC: <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-amlogic@lists.infradead.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <kernel@salutedevices.com>, George Stark
-	<gnstark@salutedevices.com>, Dmitry Rokosov <ddrokosov@salutedevices.com>
-Subject: [PATCH 1/2] dt-bindings: pwm: amlogic: Add new bindings for meson A1 pwm
-Date: Tue, 23 Apr 2024 19:10:05 +0300
-Message-ID: <20240423161006.2522351-2-gnstark@salutedevices.com>
+	<hkallweit1@gmail.com>
+CC: <linux-pwm@vger.kernel.org>, <linux-amlogic@lists.infradead.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<kernel@salutedevices.com>, George Stark <gnstark@salutedevices.com>
+Subject: [PATCH 0/2] meson pwm small fixes
+Date: Tue, 23 Apr 2024 19:13:54 +0300
+Message-ID: <20240423161356.2522636-1-gnstark@salutedevices.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20240423161006.2522351-1-gnstark@salutedevices.com>
-References: <20240423161006.2522351-1-gnstark@salutedevices.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -63,7 +58,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) To
+X-ClientProxiedBy: p-i-exch-sc-m02.sberdevices.ru (172.16.192.103) To
  p-i-exch-sc-m02.sberdevices.ru (172.16.192.103)
 X-KSMG-Rule-ID: 10
 X-KSMG-Message-Action: clean
@@ -82,34 +77,15 @@ X-KSMG-LinksScanning: Clean
 X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2024/04/23 04:11:00 #24934400
 X-KSMG-AntiVirus-Status: Clean, skipped
 
-The chip has 3 dual channel PWM modules AB, CD, EF.
+Just some small fixes for meson pwm.
 
-Signed-off-by: George Stark <gnstark@salutedevices.com>
-Signed-off-by: Dmitry Rokosov <ddrokosov@salutedevices.com>
----
- Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+George Stark (2):
+  pwm: meson: drop unneeded check in get_state callback
+  pwm: meson: add check for error from clk_round_rate()
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-index 1d71d4f8f328..ef6daf1760ff 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-+++ b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-@@ -37,6 +37,7 @@ properties:
-       - enum:
-           - amlogic,meson8-pwm-v2
-           - amlogic,meson-s4-pwm
-+          - amlogic,meson-a1-pwm
-       - items:
-           - enum:
-               - amlogic,meson8b-pwm-v2
-@@ -126,6 +127,7 @@ allOf:
-           contains:
-             enum:
-               - amlogic,meson-s4-pwm
-+              - amlogic,meson-a1-pwm
-     then:
-       properties:
-         clocks:
--- 
+ drivers/pwm/pwm-meson.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+--
 2.25.1
 
