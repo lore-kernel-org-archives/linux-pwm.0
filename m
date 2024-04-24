@@ -1,214 +1,145 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3266F14F62
-	for <linux-pwm@vger.kernel.org>; Wed, 24 Apr 2024 09:08:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66B7415921D;
+	Wed, 24 Apr 2024 10:28:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713949712; cv=none; b=iGvs6TLWwenNs/dRaQktztXAbyIHG56alJ78DsjtVhGmqjDyy3bvDUV3YeoS/6+wKe6MjRp4hiBFoQDpvFZFlp5LXKQq2cilabeiUwjCHXm8rkpZ0ofUWOShRUWOaNSjyJ3nc5USuqbwpCCpS+FngF0sgqiYDFPMY1A529GxK6s=
+	t=1713954525; cv=none; b=hfM6LR+zGq5z5wM7H9g08Oz/SJOEr2BgoS15/uk02OBLl32RWeh5M4205rPpevpsdGB5tHn03FQd+is+UXo5fPCmdlCvQ0nI3kWB0HrzbCoZti/I/IlRnBeUGAtEEsw+m8H9v7dUwVuE1UlSLZTa1eeSEyyTvQlMBrSZFmhJecU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713949712; c=relaxed/simple;
-	bh=Msw/f+57MQK6afEMuOsBELp1SeA+pbWBBWPgm728e/w=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=oabl4ULTI14WmXd+v+cZAq4XavmavpnNHqf+5yhrDvMFtjOOOGBG20pZTwOelYcC+w8FTX2z4layqw8fGw3Dn6lgdN20h4jRYmRh1LkGWHzq05cADNn+19yk3Mest6X8q7rF6wC0hOnVqwC2O9BvcQSSasdso47PrqWeeyoNBAk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=oiE7Rbnh; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1713954525; c=relaxed/simple;
+	bh=8ajJMJwApKqgCf9f89bVvjuzXAt5v7XkRoPUav8YUV4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=hc2EQfj0Zi9fLzLVvAn1VO4zqwRa5z2YpWVP5LbP9X3eQX2STrnMJ7zngc6+ndBPJIbjBBRKC2yeXrIYZGvbX62t5/SAflkpirxABJ62PsiHHEMK07L1l8NFlujpdHf4SUg2UO5HV9P52/rQV0snyTkGtKriTC31rPiNcTa49+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YMbrlT3q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="oiE7Rbnh"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-418e4cd2196so50407145e9.1
-        for <linux-pwm@vger.kernel.org>; Wed, 24 Apr 2024 02:08:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1713949708; x=1714554508; darn=vger.kernel.org;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=rvbtxxL0KA7+nw2JDrdSITHMot8lmC1r+u81WvHz+K8=;
-        b=oiE7RbnhV18YVH9BixeqGUZG7Mo7pfAHwvHwP0KOjRp2OOqcHvxFUSKtXytKyBHN84
-         vwMWIMGM1yCzP+wlrsjGtkY2WfYtlnqIXgAmb/carwV3IVMHokmara41dAFQISTfC9Z6
-         kziTT+FLknabpZjQ9vLHblcFpFuDyJHDz3mg5N5iCtpQwe9H87RKSWWInGgic1NB3I6N
-         xyE1PSP6fiqM9yMXMMeARWDQWI9SSlsQTfqT8RnRdjV98Wm7MaINY+TpWTfmBCgvmgty
-         OZ88sp1TnckNb4CMmDe0j8FaytMnEbVzlC0PYdrP7TbYopy/0QvhvoAL6iN8ksWElfNG
-         gi7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713949708; x=1714554508;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rvbtxxL0KA7+nw2JDrdSITHMot8lmC1r+u81WvHz+K8=;
-        b=HLl+bEKp5UoJ35YtxxpYuyKJzeFvXCN1aflsz0D8BMpy6LOIY9a1lM6RzQJrfnRLLY
-         upY1tjb1LtY6lw0jqUcg0s3990CATD+22x6k5+15RgNM30+x/O0btCRvrBM3OR4yH3p1
-         BNwUjOKuq5juAYNpPkx2mVR893CA6ZRCZL4A6tKSmvNNbUfHCnfaiJr29BpaH1z/fKfX
-         +JtEHOfKdyHQ0fwLZYYBlhhIavAujQT1OpBLV14OlCT7gd+Cyt0peraxJo6I+AykJbeC
-         oJqKPQ623FuTjyr3Bh01GxHjk+9eE3J1bAPmTWpiv6Txy5XuAOFv9vW4gVwNThSnp2yy
-         4S+g==
-X-Forwarded-Encrypted: i=1; AJvYcCUDr1dszHgcayIMbp9s6aN7EVOHhNoXDZ6WfH0WGXWNJb1T0Xzj8lKwr9nxAulpqF/IXiX7dHcmR4Pp3SVkWs4Tc+HlpzmPGxjg
-X-Gm-Message-State: AOJu0YxBfWuslFte4C2t6f4ekeZb1S/Sm2I8su/IIg8d9YIhMX3O0JiM
-	iGNKLo0ycvFT2iszAUGqH0aJilFNG3BTNZER40cQamIAb6i2KUVxjgoBGKd7zAQ=
-X-Google-Smtp-Source: AGHT+IFezzal7JjWvHMGZYy61bCLzRhsiQD5U7WszFsfXL9gRrzNRJlTMjBSCQ2VYQubwKxlAGjtSw==
-X-Received: by 2002:a05:600c:468d:b0:418:f307:4b82 with SMTP id p13-20020a05600c468d00b00418f3074b82mr1358453wmo.39.1713949708334;
-        Wed, 24 Apr 2024 02:08:28 -0700 (PDT)
-Received: from localhost ([2a01:e0a:3c5:5fb1:ab48:1b7:631c:952a])
-        by smtp.gmail.com with ESMTPSA id p16-20020a05600c1d9000b0041b0d4e1c27sm987467wms.42.2024.04.24.02.08.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Apr 2024 02:08:27 -0700 (PDT)
-References: <20240423161006.2522351-1-gnstark@salutedevices.com>
- <20240423161006.2522351-3-gnstark@salutedevices.com>
- <1jv848ezzo.fsf@starbuckisacylon.baylibre.com>
- <4feb8fe3-af72-4483-87b2-30503328cfe2@salutedevices.com>
-User-agent: mu4e 1.10.8; emacs 29.2
-From: Jerome Brunet <jbrunet@baylibre.com>
-To: George Stark <gnstark@salutedevices.com>
-Cc: Jerome Brunet <jbrunet@baylibre.com>, u.kleine-koenig@pengutronix.de,
- neil.armstrong@linaro.org, khilman@baylibre.com,
- martin.blumenstingl@googlemail.com, thierry.reding@gmail.com,
- hkallweit1@gmail.com, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, kernel@salutedevices.com, George Stark
- <gnstark@sberdevices.ru>, Dmitry Rokosov <ddrokosov@salutedevices.com>,
- Kelvin Zhang <kelvin.zhang@amlogic.com>
-Subject: Re: [PATCH 2/2] pwm: meson: support meson A1 SoC family
-Date: Wed, 24 Apr 2024 11:02:10 +0200
-In-reply-to: <4feb8fe3-af72-4483-87b2-30503328cfe2@salutedevices.com>
-Message-ID: <1jmspjf7qs.fsf@starbuckisacylon.baylibre.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YMbrlT3q"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 10352C32781;
+	Wed, 24 Apr 2024 10:28:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1713954525;
+	bh=8ajJMJwApKqgCf9f89bVvjuzXAt5v7XkRoPUav8YUV4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=YMbrlT3q971srEC/EdzXQzYg9th7O/dE3TBkPX+5C9rd86TwGXVoGLBlzixIqn32q
+	 gqOFkCj/BOHOUaIWbP5Bpb4Wb6Wc9C4iJyztdGYGbigDAqNU63SzWRH/IMdfVcrlcd
+	 p4fdK0b2XnSJEmO5V5Eg9FKu+OLwbhJiFolk3SfNlTlylYcVcsn68USIYn3mqgzRvv
+	 VSotiIsqhReg5aL8SgoZoetk+PRnQWcaYSmaHVr4mjqXssEe6cUuR/A2YeQH3k35F/
+	 jcoHjcduJZlSNl4FAPAYSwpUjJdSqn+u6Tl2BS0B77ZVJlwsO4n7KYujFAQfzf2nx/
+	 VUza5eFYjAORw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DE9C10F15;
+	Wed, 24 Apr 2024 10:28:44 +0000 (UTC)
+From: Kelvin Zhang via B4 Relay <devnull+kelvin.zhang.amlogic.com@kernel.org>
+Date: Wed, 24 Apr 2024 18:28:34 +0800
+Subject: [PATCH v4 1/2] pwm: meson: Add support for Amlogic S4 PWM
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240424-s4-pwm-v4-1-ee22effd40d0@amlogic.com>
+References: <20240424-s4-pwm-v4-0-ee22effd40d0@amlogic.com>
+In-Reply-To: <20240424-s4-pwm-v4-0-ee22effd40d0@amlogic.com>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, 
+ Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, 
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, Kelvin Zhang <kelvin.zhang@amlogic.com>, 
+ Junyi Zhao <junyi.zhao@amlogic.com>
+X-Mailer: b4 0.12.4
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713954523; l=2139;
+ i=kelvin.zhang@amlogic.com; s=20240329; h=from:subject:message-id;
+ bh=gtMEBe84ZprBZCQ2WIxZzSC+jfy6SdQC7eTQHo6OrP0=;
+ b=2QReknnu4j0rhx43sc1H5ezdFAmc2B0Conf7r5ceTUUiA7AhpLj1EGHL8ako++gaojevQyKMp
+ /bUmR33rPpQBpTp6b3G0VADO0q5tb3bJ3U47m/++XxFOOnLyRO0dKc6
+X-Developer-Key: i=kelvin.zhang@amlogic.com; a=ed25519;
+ pk=pgnle7HTNvnNTcOoGejvtTC7BJT30HUNXfMHRRXSylI=
+X-Endpoint-Received: by B4 Relay for kelvin.zhang@amlogic.com/20240329 with
+ auth_id=148
+X-Original-From: Kelvin Zhang <kelvin.zhang@amlogic.com>
+Reply-To: kelvin.zhang@amlogic.com
 
+From: Junyi Zhao <junyi.zhao@amlogic.com>
 
-On Wed 24 Apr 2024 at 02:00, George Stark <gnstark@salutedevices.com> wrote:
+This patch adds support for Amlogic S4 PWM.
 
-> Hello Jerome
->
-> Thanks for the review
->
->
-> On 4/23/24 20:35, Jerome Brunet wrote:
->> On Tue 23 Apr 2024 at 19:10, George Stark <gnstark@salutedevices.com>
->> wrote:
->> 
->>> From: George Stark <gnstark@sberdevices.ru>
->>>
->>> Add a compatible string and configuration for the meson A1 SoC family
->>> PWM. Additionally, provide an external clock initialization helper
->>> specifically designed for these PWM IPs.
->>>
->>> Signed-off-by: George Stark <gnstark@sberdevices.ru>
->>> Signed-off-by: Dmitry Rokosov <ddrokosov@salutedevices.com>
->>> ---
->>>   drivers/pwm/pwm-meson.c | 35 +++++++++++++++++++++++++++++++++++
->>>   1 file changed, 35 insertions(+)
->>>
->>> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
->>> index ea96c5973488..529a541ba7b6 100644
->>> --- a/drivers/pwm/pwm-meson.c
->>> +++ b/drivers/pwm/pwm-meson.c
->>> @@ -462,6 +462,33 @@ static int meson_pwm_init_channels_meson8b_v2(struct pwm_chip *chip)
->>>   	return meson_pwm_init_clocks_meson8b(chip, mux_parent_data);
->>>   }
->>>   +static int meson_pwm_init_channels_ext_clock(struct pwm_chip *chip)
->> That kind on naming (ext) is almost sure to clash with whatever comes
->> next.
->> Just use the name of the first SoC using the method, a1 for instance.
->
-> It's true that pwm core in a1 s4, t7 etc is the same AFAWK.
-> I just want to clarify your proposal:
-> I add a1 compatible to the dt-bindings with s4 as fallback,
-> t7 compatible will be added later in the same way.
+Signed-off-by: Junyi Zhao <junyi.zhao@amlogic.com>
+Signed-off-by: Kelvin Zhang <kelvin.zhang@amlogic.com>
+---
+ drivers/pwm/pwm-meson.c | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-If you know t7 is compatible as well, please add it to.
-
-Other people (including from amlogic) have responded to thread around
-the s4 pwm topic. You should probably Cc them of your future submission.
-
-They may help test and review
-
->
-> Here in the driver I don't mention a1 at all and use s4-centric naming e.g.:
->
-> {
-> 	.compatible = "amlogic,meson-s4-pwm",
-> 	.data = &pwm_meson_s4_data
-> },
-> static const struct meson_pwm_data pwm_meson_s4_data = {
-> 	.channels_init = meson_pwm_init_channels_s4,
-> };
->
-> right?
->
-yes
-
->>> +{
->>> +	struct device *dev = pwmchip_parent(chip);
->>> +	struct meson_pwm *meson = to_meson_pwm(chip);
->>> +	struct meson_pwm_channel *channels = meson->channels;
->>> +	struct clk_bulk_data *clks = NULL;
->>> +	unsigned int i;
->>> +	int res;
->>> +
->>> +	res = devm_clk_bulk_get_all(dev, &clks);
->>> +	if (res < 0) {
->>> +		dev_err(dev, "can't get device clocks\n");
->>> +		return res;
->>> +	}
->> I don't think allocating the 'clk_bulk_data *clks' is necessary or safe.
->> We know exactly how many clocks we expect, there is no need for a get all.
->> 
->>> +
->>> +	if (res != MESON_NUM_PWMS) {
->>> +		dev_err(dev, "clock count must be %d, got %d\n",
->>> +			MESON_NUM_PWMS, res);
->>> +		return -EINVAL;
->>> +	}
->> ... and this only catches the problem after the fact.
->> It is probably convinient but not necessary.
->> 
->>> +
->>> +	for (i = 0; i < MESON_NUM_PWMS; i++)
->>> +		channels[i].clk = clks[i].clk;
->> channels[i].clk could be assigned directly of_clk_get() using clock
->> indexes. No extra allocation needed.
->
-> if we use of_clk_get then we'll have to free the clock objects in the
-> end. Could we use devm_clk_bulk_get instead?
-
-Add the devm variant of of_clk_get() if you must.
-Use devm_add_action_or_reset() otherwise
-
->
->>> +
->>> +	return 0;
->>> +}
->>> +
->>>   static const struct meson_pwm_data pwm_meson8b_data = {
->>>   	.parent_names = { "xtal", NULL, "fclk_div4", "fclk_div3" },
->>>   	.channels_init = meson_pwm_init_channels_meson8b_legacy,
->>> @@ -500,11 +527,19 @@ static const struct meson_pwm_data pwm_meson8_v2_data = {
->>>   	.channels_init = meson_pwm_init_channels_meson8b_v2,
->>>   };
->>>   +static const struct meson_pwm_data pwm_meson_ext_clock_data = {
->>> +	.channels_init = meson_pwm_init_channels_ext_clock,
->>> +};
->>> +
->>>   static const struct of_device_id meson_pwm_matches[] = {
->>>   	{
->>>   		.compatible = "amlogic,meson8-pwm-v2",
->>>   		.data = &pwm_meson8_v2_data
->>>   	},
->>> +	{
->>> +		.compatible = "amlogic,meson-a1-pwm",
->>> +		.data = &pwm_meson_ext_clock_data
->>> +	},
->>>   	/* The following compatibles are obsolete */
->>>   	{
->>>   		.compatible = "amlogic,meson8b-pwm",
->> 
-
+diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+index ea96c5973488..6abc823745e4 100644
+--- a/drivers/pwm/pwm-meson.c
++++ b/drivers/pwm/pwm-meson.c
+@@ -462,6 +462,35 @@ static int meson_pwm_init_channels_meson8b_v2(struct pwm_chip *chip)
+ 	return meson_pwm_init_clocks_meson8b(chip, mux_parent_data);
+ }
+ 
++static int meson_pwm_init_channels_meson_s4(struct pwm_chip *chip)
++{
++	int i, ret;
++	struct device *dev = pwmchip_parent(chip);
++	struct device_node *np = dev->of_node;
++	struct meson_pwm *meson = to_meson_pwm(chip);
++	struct meson_pwm_channel *channel;
++
++	for (i = 0; i < MESON_NUM_PWMS; i++) {
++		channel = &meson->channels[i];
++		channel->clk = of_clk_get(np, i);
++		if (IS_ERR(channel->clk)) {
++			ret = PTR_ERR(channel->clk);
++			dev_err_probe(dev, ret, "Failed to get clk\n");
++			goto err;
++		}
++	}
++
++	return 0;
++
++err:
++	while (--i >= 0) {
++		channel = &meson->channels[i];
++		clk_put(channel->clk);
++	}
++
++	return ret;
++}
++
+ static const struct meson_pwm_data pwm_meson8b_data = {
+ 	.parent_names = { "xtal", NULL, "fclk_div4", "fclk_div3" },
+ 	.channels_init = meson_pwm_init_channels_meson8b_legacy,
+@@ -500,6 +529,10 @@ static const struct meson_pwm_data pwm_meson8_v2_data = {
+ 	.channels_init = meson_pwm_init_channels_meson8b_v2,
+ };
+ 
++static const struct meson_pwm_data pwm_meson_s4_data = {
++	.channels_init = meson_pwm_init_channels_meson_s4,
++};
++
+ static const struct of_device_id meson_pwm_matches[] = {
+ 	{
+ 		.compatible = "amlogic,meson8-pwm-v2",
+@@ -538,6 +571,10 @@ static const struct of_device_id meson_pwm_matches[] = {
+ 		.compatible = "amlogic,meson-g12a-ao-pwm-cd",
+ 		.data = &pwm_g12a_ao_cd_data
+ 	},
++	{
++		.compatible = "amlogic,meson-s4-pwm",
++		.data = &pwm_meson_s4_data
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, meson_pwm_matches);
 
 -- 
-Jerome
+2.37.1
+
+
