@@ -1,116 +1,110 @@
-Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5E414E2F7;
-	Thu, 25 Apr 2024 17:13:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.89.224.132
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA1822F2F
+	for <linux-pwm@vger.kernel.org>; Fri, 26 Apr 2024 06:17:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714065193; cv=none; b=QIREEtsDhfTcRwWAAqGCOLeAocE5qlgrxaEJTVnCrVaXOMVLLnO9PugQ6H5NG5EzoVADBAK0MCWwSCKb4QU2Hv7TkYPYpWBnCX2Ub85uW/m6d54xHuYpwcd0Dgrwexr/XW0D8OMRFfC6RxM9sYsjz7xh7NRPAhG5b2YUag4lekM=
+	t=1714112272; cv=none; b=R2lmMlyLnuRfTRFoG8en9dzkWtKMZ+jNRXFCRzNmCX/esvh77pU+fWo+jvhYI0bTZy2y/AXkVNj57QMUxAEqLbJRk45Atzk7m5EEvBRFYSFgGTCpZfHCd48XSprzvyDiKxU1iB0UwWomStOOuIc/jC1B9hDDV70C7A+OrkxVhxM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714065193; c=relaxed/simple;
-	bh=wyCx0FITpwp4glIQ6MUVGka31eqtr+ov+bKyWJRFq0E=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fiYxdNxi+Emsae7DLhxEE07S66l5OxvuzFlsYbnI1zuoDUaQjGNbqTEJTN+80Q+lRNy+QgSPKszRrcMD67a5A6by7e78VgKx42gg3OeTFLr6YfeFFK7hN0vgA7alFcw4m8af0ZMNjQDCNzqOKPCMDZHpIx7cHcJ0PAb5Wi81feE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com; spf=pass smtp.mailfrom=salutedevices.com; dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b=ORREfMPk; arc=none smtp.client-ip=45.89.224.132
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=salutedevices.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b="ORREfMPk"
-Received: from p-infra-ksmg-sc-msk02 (localhost [127.0.0.1])
-	by mx1.sberdevices.ru (Postfix) with ESMTP id B8DA612000A;
-	Thu, 25 Apr 2024 20:13:00 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru B8DA612000A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=salutedevices.com;
-	s=mail; t=1714065180;
-	bh=wYm8pN+1CoBvKNj1w9JY3v9T8uYFYIB1Dq2+Zmhr2MM=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:From;
-	b=ORREfMPkmA0Wgtmivtkg+frz3yhlTjoi0+atbo1fDIuChe6tjw4LWhe2HMY6luhsO
-	 sfEyNxMNOLg9OA6q/SQu9XOzCHkbBMZ3cumhsCC3Yr6lWOcYWhpcbt4q59WwFKyfIB
-	 RkbyiJcl/ebgGGBDCc7N9MYmh9jQVqsmjxaynT7IDEn3WtUFyshQBOugpuB15r+cjP
-	 y56dpqXo+28Adz+jK3vJVkv5kzYNwDI2my7ERlNF8Q4EAoyDyoz6auLzOKYBGiaaAP
-	 YiVPBfd1VKuxN31noe/VH34JdGF9y7I0PFim5tkavKnubxKT6p5J+MDm7hnR6bEyrj
-	 N2r1laVzFFoag==
-Received: from smtp.sberdevices.ru (p-i-exch-sc-m02.sberdevices.ru [172.16.192.103])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mx1.sberdevices.ru (Postfix) with ESMTPS;
-	Thu, 25 Apr 2024 20:13:00 +0300 (MSK)
-Received: from work.sberdevices.ru (100.64.160.123) by
- p-i-exch-sc-m02.sberdevices.ru (172.16.192.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Thu, 25 Apr 2024 20:13:00 +0300
-From: George Stark <gnstark@salutedevices.com>
-To: <u.kleine-koenig@pengutronix.de>, <neil.armstrong@linaro.org>,
-	<khilman@baylibre.com>, <jbrunet@baylibre.com>,
-	<martin.blumenstingl@googlemail.com>, <thierry.reding@gmail.com>,
-	<hkallweit1@gmail.com>
-CC: <linux-pwm@vger.kernel.org>, <linux-amlogic@lists.infradead.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<kernel@salutedevices.com>, George Stark <gnstark@salutedevices.com>
-Subject: [PATCH v3 0/3] meson pwm small fixes
-Date: Thu, 25 Apr 2024 20:12:50 +0300
-Message-ID: <20240425171253.2752877-1-gnstark@salutedevices.com>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1714112272; c=relaxed/simple;
+	bh=quehoQ6DdK+mQ9RBHc2jh07gWC1RMDRjLQT8IC7XHaU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Q23HS2dwFAQEMv5LnHvZDmkYnXgXWIIV5xDvGTStydHEe9d/fbjPcRDsOMiU01+zYgwUN11nzBVHViBpBH8Arv7zxV4FWzFGaPsfyKqyY3T83iSJb5IPll1JQaymdSM4UE6Mm3J/Nf9yb9qQUSu4N2nyA0pMigMPm/19nIbsjhg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1s0Ety-0001Ls-K8; Fri, 26 Apr 2024 08:17:42 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1s0Ety-00EOe0-4e; Fri, 26 Apr 2024 08:17:42 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1s0Ety-0097PL-0C;
+	Fri, 26 Apr 2024 08:17:42 +0200
+Date: Fri, 26 Apr 2024 08:17:41 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Lee Jones <lee@kernel.org>
+Cc: kernel@pengutronix.de, linux-pwm@vger.kernel.org, 
+	Linux regressions mailing list <regressions@lists.linux.dev>, linux-leds@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] leds: pwm: Disable PWM when going to suspend
+Message-ID: <yitqw57rdkr44ly32sxukxa2m4a6jm74upfxc74dmbklucl6kq@3ni7emsqgzx4>
+References: <20240417144943.GA2399047@google.com>
+ <20240417153846.271751-2-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: p-i-exch-sc-m02.sberdevices.ru (172.16.192.103) To
- p-i-exch-sc-m02.sberdevices.ru (172.16.192.103)
-X-KSMG-Rule-ID: 10
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Lua-Profiles: 184930 [Apr 25 2024]
-X-KSMG-AntiSpam-Version: 6.1.0.4
-X-KSMG-AntiSpam-Envelope-From: gnstark@salutedevices.com
-X-KSMG-AntiSpam-Rate: 0
-X-KSMG-AntiSpam-Status: not_detected
-X-KSMG-AntiSpam-Method: none
-X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Info: LuaCore: 18 0.3.18 b9d6ada76958f07c6a68617a7ac8df800bc4166c, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, lore.kernel.org:7.1.1;100.64.160.123:7.1.2;smtp.sberdevices.ru:7.1.1,5.0.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;salutedevices.com:7.1.1;127.0.0.199:7.1.2, FromAlignment: s, ApMailHostAddress: 100.64.160.123
-X-MS-Exchange-Organization-SCL: -1
-X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiPhishing: Clean, bases: 2024/04/25 14:26:00
-X-KSMG-LinksScanning: Clean, bases: 2024/04/25 09:59:00
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2024/04/25 14:02:00 #24969020
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="difcfriydj6k3jns"
+Content-Disposition: inline
+In-Reply-To: <20240417153846.271751-2-u.kleine-koenig@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 
-Just some small fixes for meson pwm.
 
-Changelog:
-v1->v2:
-  pwm: meson: Drop unneeded check in .get_state()
-    - update commit message
-    - drop Fixes tag. It's not actually a bug
-    previous version: [1]
+--difcfriydj6k3jns
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-  pwm: meson: Add check for error from clk_round_rate()
-    - update commit message
-    - change unsigned long fin_freq; to long fin_freq;
-    previous version: [2]
+Hello Lee,
 
-v2->v3:
-  pwm: meson: Add check for error from clk_round_rate()
-    - change format modifier in dev_dbg() for fin_freq var to %lu
-    previous version: [3]
+On Wed, Apr 17, 2024 at 05:38:47PM +0200, Uwe Kleine-K=F6nig wrote:
+> On stm32mp1xx based machines (and others) a PWM consumer has to disable
+> the PWM because an enabled PWM refuses to suspend. So check the
+> LED_SUSPENDED flag and depending on that set the .enabled property.
+>=20
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D218559
+> Fixes: 76fe464c8e64 ("leds: pwm: Don't disable the PWM when the LED shoul=
+d be off")
+> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> ---
+> Hello,
+>=20
+> On Wed, Apr 17, 2024 at 03:49:43PM +0100, Lee Jones wrote:
+> > On Tue, 16 Apr 2024, Uwe Kleine-K=F6nig wrote:
+> > > If you don't consider that suitable, I can create a patch that is eas=
+ier
+> > > to pick up.
+> >=20
+> > Yes, please submit it properly.
 
-  pwm: meson: Use mul_u64_u64_div_u64() for frequency calculating
-    new patch
+Gentle ping. Even given the regression was introduced in v6.7-rc1
+already, I think this should go into v6.9. If you don't agree that's
+fine, but then getting it onto next to queue it for v6.10-rc1 at least
+would be great.
 
-[1] https://lore.kernel.org/lkml/20240423161356.2522636-2-gnstark@salutedevices.com/T/#m6d1d5cf100dc5b77f85e2a7d01c0b0097b6a04da
-[2] https://lore.kernel.org/lkml/20240423161356.2522636-2-gnstark@salutedevices.com/T/#ma84e2d490bf79bda12f8393773c1af37b48d5473
-[3] https://lore.kernel.org/linux-arm-kernel/20240424132408.2565916-1-gnstark@salutedevices.com/T/#m52b7e5a34c3e8907235d73c2827b92cb13c93dd3
+Thanks
+Uwe
 
-George Stark (3):
-  pwm: meson: Drop unneeded check in .get_state()
-  pwm: meson: Add check for error from clk_round_rate()
-  pwm: meson: Use mul_u64_u64_div_u64() for frequency calculating
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
- drivers/pwm/pwm-meson.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+--difcfriydj6k3jns
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-2.25.1
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmYrRwUACgkQj4D7WH0S
+/k5XXQf+Lk6n3RbWMZZNm8vnkZn09tLkBIs9ubRFmALUCL5rA7j63qNrJ3S3aqwr
+B5N01uxZuj5urnyux+OrIhBzYind99dVKfuudU1u7Db6BZuzeh85oMHSdle/f3ie
+y+amKsoRmr+bSMUmNIQnRVBcW2mz9x5IQE3JbMrIETWRTcxg8sL1M7tF4I6KyBGj
+oyqWtNoxIPlck90C2IS3GG1oxuzAtItCTZRr5iORf6TjUc+LPIgoI71CaxDpHUZo
+RQLpEMgBIa4PnTgZhlbAc/D4fLqP+s8Us44/3Xy0FHXCqttr6EGjJog0qFHrdd0U
+iJ2o47qFORbDqEDYHKFOwfXWyuC1UQ==
+=S8es
+-----END PGP SIGNATURE-----
+
+--difcfriydj6k3jns--
