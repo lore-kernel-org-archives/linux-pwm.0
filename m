@@ -1,23 +1,23 @@
 Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A40E533C0;
-	Tue, 30 Apr 2024 07:32:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 54D1639877;
+	Tue, 30 Apr 2024 07:32:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714462359; cv=none; b=mwAfgh3uU4WbLGMwC2u7I0MAaAxCE/4ZunU3ABppljpLxGmUkrAtH5xZNeORbwzUvoBuTXG5btim48qLi+YdHxRvBzNwpM65oW0wnYqVCaSZBeIYuPsDt3LVLe0eUglyowG3DaBPRfJouUaIt70I1LrSl7rmxCmX6AjHfTctSMs=
+	t=1714462375; cv=none; b=QCxUtNGADhF20hI+JTnBWeTvowYb0e9Q7MlRDhqwCS0vmQ+VXe+nACLwI+x3r93Kbvplwj+1igrpDlLzrFVRbhMEzUK5/khPmMKnB0JZCox/JvxfnO4aL189QkDxf9o+8OeDNVTl7MFBoMhfz3+qvdFZX6s21rP0buDiI5rJ6GU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714462359; c=relaxed/simple;
-	bh=ExZD3NHGI+QSIM2DNSzEme+QbbfsWSjkB0fVzeN4qZc=;
+	s=arc-20240116; t=1714462375; c=relaxed/simple;
+	bh=UZIsALm+gPnE3K9vJVEuvn0eyd7FHjeHc1pbbfBDkaY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gHxx10uflXf5llSTRdG/T1pqKtFJFO12RsxZMtvaPkLbjCyvqnHqs9OA5NB3jSwyiJCA4EFP2UWYaTYTQ5K0gQjBW4ix8K9bQ9SwjqBIwlwlcpfe/1ghmE7wqPFqW8UlmNUsgjBl2VrZsnvwDy2X1/jNEgtvpgI7K+xNFDIEEB4=
+	 MIME-Version; b=QSAPKQ+R+RRtnCxtzezttSCrM9rqb98QEDrMyBDGPmShCAmO6/vJWrL7KGTW7RJMIjsWL9c8XM2yqz7WUYS6DuDVNgvYxrlRbSxIIbvmPeTnl5wHUF+zvnESIFqQ6A+a3pavNxtD/xCuDAAkzuBJdiXal6b+FbbZ8/kDr1V4Xes=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
 Received: from loongson.cn (unknown [112.20.112.218])
-	by gateway (Coremail) with SMTP id _____8Ax6umMnjBmFlEFAA--.5471S3;
-	Tue, 30 Apr 2024 15:32:28 +0800 (CST)
+	by gateway (Coremail) with SMTP id _____8Dxk+qjnjBmKlEFAA--.5321S3;
+	Tue, 30 Apr 2024 15:32:51 +0800 (CST)
 Received: from localhost.localdomain (unknown [112.20.112.218])
-	by localhost.localdomain (Coremail) with SMTP id AQAAf8AxndyHnjBm3e4KAA--.26331S3;
-	Tue, 30 Apr 2024 15:32:26 +0800 (CST)
+	by localhost.localdomain (Coremail) with SMTP id AQAAf8AxhFafnjBm+O4KAA--.9736S2;
+	Tue, 30 Apr 2024 15:32:49 +0800 (CST)
 From: Binbin Zhou <zhoubinbin@loongson.cn>
 To: Binbin Zhou <zhoubb.aaron@gmail.com>,
 	Huacai Chen <chenhuacai@loongson.cn>,
@@ -30,9 +30,9 @@ Cc: Huacai Chen <chenhuacai@kernel.org>,
 	linux-pwm@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	Binbin Zhou <zhoubinbin@loongson.cn>
-Subject: [PATCH v1 1/6] dt-bindings: pwm: bcm2835: Do not require pwm-cells twice
-Date: Tue, 30 Apr 2024 15:32:02 +0800
-Message-ID: <85d7dc606d60a7d0d1557b98ac3a600c660b7421.1714450308.git.zhoubinbin@loongson.cn>
+Subject: [PATCH v1 4/6] dt-bindings: pwm: mediatek,mt2712: Do not require pwm-cells twice
+Date: Tue, 30 Apr 2024 15:32:34 +0800
+Message-ID: <0a0c13d6d716a52540e165e4835c0c406cc5d8ec.1714450308.git.zhoubinbin@loongson.cn>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1714450308.git.zhoubinbin@loongson.cn>
 References: <cover.1714450308.git.zhoubinbin@loongson.cn>
@@ -43,15 +43,15 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:AQAAf8AxndyHnjBm3e4KAA--.26331S3
+X-CM-TRANSID:AQAAf8AxhFafnjBm+O4KAA--.9736S2
 X-CM-SenderInfo: p2kr3uplqex0o6or00hjvr0hdfq/
-X-Coremail-Antispam: 1Uk129KBj9xXoW7Jw17Jry7ZF4DuF1DuF45Arc_yoWxZrg_Xa
-	17uF4DZr4rXrySkws8XayxtF95Xw4Skr1kuw1DJr1Du34aka98tFyvy3y5Ar17CF4ruF45
-	uayxJry7JrnrGosvyTuYvTs0mTUanT9S1TB71UUUUUJqnTZGkaVYY2UrUUUUj1kv1TuYvT
+X-Coremail-Antispam: 1Uk129KBj9xXoW7Jw17Jry7ZF4DuF1DuF45Arc_yoWxKwc_ZF
+	s7ZFsrWFWrJr1Sgws0yr4xtF15XaySkF1kA3Z8Jr1qk34FkF98WF9Yva45Zr17Cws3uryF
+	9a93Ja9rurnrGosvyTuYvTs0mTUanT9S1TB71UUUUUJqnTZGkaVYY2UrUUUUj1kv1TuYvT
 	s0mT0YCTnIWjqI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUI
 	cSsGvfJTRUUUbSxYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I6I8E6xAIw20EY4v20x
 	vaj40_Wr0E3s1l1IIY67AEw4v_Jrv_JF1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
+	w2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
 	W8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v2
 	6r4UJVWxJr1ln4kS14v26r1Y6r17M2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6xkI12
 	xvs2x26I8E6xACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1q
@@ -59,28 +59,28 @@ X-Coremail-Antispam: 1Uk129KBj9xXoW7Jw17Jry7ZF4DuF1DuF45Arc_yoWxZrg_Xa
 	vIr41lc7CjxVAaw2AFwI0_JF0_Jw1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_
 	Jr0_Gr1l4IxYO2xFxVAFwI0_Jrv_JF1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
 	xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0
-	cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8V
-	AvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E
+	cI8IcVAFwI0_Xr0_Ar1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8V
+	AvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E
 	14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUxhiSDUUUU
 
 pwm-cells property is already required by pwm.yaml schema.
 
 Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
 ---
- Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml | 1 -
+ Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml
-index 15e7fd98defc..9dc25f38fb94 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml
-+++ b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.yaml
-@@ -29,7 +29,6 @@ required:
+diff --git a/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml b/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
+index a5c308801619..d515c09e1021 100644
+--- a/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/mediatek,mt2712-pwm.yaml
+@@ -66,7 +66,6 @@ properties:
+ required:
    - compatible
    - reg
-   - clocks
 -  - "#pwm-cells"
- 
- additionalProperties: false
+   - clocks
+   - clock-names
  
 -- 
 2.43.0
