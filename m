@@ -1,177 +1,128 @@
-Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54D8196C8A;
-	Wed,  5 Jun 2024 12:12:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.89.224.132
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F07F019D881;
+	Wed,  5 Jun 2024 13:15:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717589584; cv=none; b=KAEffpeJHubC2Mqn8KEeZikMyfJwbmBwj5f9zGwpJBBVIvL+y1FGwG2ZHgMSw2SsgfLsIeUNda5YuZTILi7xu9ifpalNsgZZr4/pAOtkIyWEeWyCLffS5wqQU9YhBhXeMYNI+HsK9mAYXRI9AU2VlY8KZinhw2MyY9krUewv2ZE=
+	t=1717593361; cv=none; b=X00ppwhq3Xxge/U8t7LB4qzRLh7qM3SxEONjNWlaCx/d7uNZ/ONDIieq+qexgiV5meOmZOFNNZzSkTW96BJCT7ghwGDXAEzZfwlXngbDbZTzsU18zF53AUGFOWrL/5ISoHhdMJiOWxlAlNrm/ywkXJWh6g4ir6YgLnssLiewIFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717589584; c=relaxed/simple;
-	bh=E+8fa5QckyNs0rg+CMmCRno+rSlQBw+/aLFaSLV9R3k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=hFy/4NE0HoIb9qdJnjHHibtDpJp7LpB95TmqFd10RO3mnPvbP7mbfm80u3NrodXYyT0o1slzGVhx97YjkkAlWbkM+LkkMciM+idWangch7Q1C9s37MLbcACSAqX0gzXx8V28K0XI2HLxD7/6DknMnjGc1jUG5VFaEaXJm6h8bv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com; spf=pass smtp.mailfrom=salutedevices.com; dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b=j5HwE2dp; arc=none smtp.client-ip=45.89.224.132
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=salutedevices.com
+	s=arc-20240116; t=1717593361; c=relaxed/simple;
+	bh=g20FrGbDTGnz16POZhJm2IR0qbqxVdd8fkLY18CrcWI=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=TqKvjZXelyo4+B/R1VhfseYyKml9ulNiCtzZTeAGz9mAqNxFBsMubzLIv3zziBuyGYO/Flk0bgz6IA0Ot4dq0gjt7i1OsJUMCzMNmKZLcR0taVUTAxR2p7YFimVrkpm88YnPt1j1U5tkRwghV/rN2DI2FF1g3SWRTjgSy/Zj6E0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=none smtp.mailfrom=ecsmtp.iind.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dxkZGs/5; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ecsmtp.iind.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b="j5HwE2dp"
-Received: from p-infra-ksmg-sc-msk02.sberdevices.ru (localhost [127.0.0.1])
-	by mx1.sberdevices.ru (Postfix) with ESMTP id D8ECE120004;
-	Wed,  5 Jun 2024 15:12:55 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru D8ECE120004
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=salutedevices.com;
-	s=mail; t=1717589575;
-	bh=2z/5jcit4ED6/bQSchswwiQ4yyjb3x0SPW6la7FZmUA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:From;
-	b=j5HwE2dpDC/pSgVsdScU1ekDN807PhqvrNu1REDKtH+TW7clPibaT17Gun/hBAlDs
-	 Ms8njuKLPRJT/oi70O7elwLn5sqGBgRrM4InJY5JddC/1wZf0ZIlLpoNP5poOF+wqU
-	 04GnkPpYkoUp+0PkJgJ9A/vlYqeKgM2pK+qy5nPuZYSsMAghI4JQPU08Uqfgyya34o
-	 +3uyK3HCXaXIQEQEaW0l2cN54GTo/BvDPWEmALJiaDdqDTw23LTOSJwHa2HvH835ac
-	 mqugrFffhEICPsiajuaTuFB2/Ra7KA1xfGfRwYxKQjl0Xvks860w90TxAWXSlquyI9
-	 Bd+snRZaT2IEA==
-Received: from smtp.sberdevices.ru (p-i-exch-sc-m02.sberdevices.ru [172.16.192.103])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mx1.sberdevices.ru (Postfix) with ESMTPS;
-	Wed,  5 Jun 2024 15:12:55 +0300 (MSK)
-Received: from [172.28.65.20] (100.64.160.123) by
- p-i-exch-sc-m02.sberdevices.ru (172.16.192.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Wed, 5 Jun 2024 15:12:55 +0300
-Message-ID: <ce3c2772-8e91-4fd3-b52e-2a35d5759664@salutedevices.com>
-Date: Wed, 5 Jun 2024 15:12:54 +0300
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dxkZGs/5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1717593360; x=1749129360;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=g20FrGbDTGnz16POZhJm2IR0qbqxVdd8fkLY18CrcWI=;
+  b=dxkZGs/5CpCGXyEWtCGbUH9DtWn21aPZ8i+ILdmncfJBY6kSbMf1U+X3
+   70RCjEO7CadLQMwWne7WDTjW3/zJUzlkfGkD15ARSkc1QFcw1ha2UK3en
+   S63tcxd9lu9BMk4xZyf8F/KOdWqrGuMl/qJoN9u7iUNplqdxq/TUDrNFx
+   HznT+9B7zx+rOHxLLzyJEtGX9wmQJ/IszneyO0e/NAgA2dpPchtANVsZw
+   yEp/pO4w6MgznODkTlwOoVV92eY7Y5EUpdxGUAOQa5H3Au6drF34nwdgZ
+   5VucPDbX+TQypzTttwPRVY9ngE9gNx85Tsfyut1nC/RuTLuI+ju6XehQ5
+   w==;
+X-CSE-ConnectionGUID: IqbgSj0fRTiYHWedFRLidw==
+X-CSE-MsgGUID: WgnMd6vBSw2aaTRXfCS/bA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11093"; a="18048159"
+X-IronPort-AV: E=Sophos;i="6.08,216,1712646000"; 
+   d="scan'208";a="18048159"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2024 06:15:51 -0700
+X-CSE-ConnectionGUID: ccaxZxC0QXe0jSnmUw+xpw==
+X-CSE-MsgGUID: tQprvkH7TO6ZBRd9agHn8g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,216,1712646000"; 
+   d="scan'208";a="42549302"
+Received: from inesxmail01.iind.intel.com ([10.223.57.40])
+  by orviesa003.jf.intel.com with ESMTP; 05 Jun 2024 06:15:50 -0700
+Received: from inlubt0316.iind.intel.com (inlubt0316.iind.intel.com [10.191.20.213])
+	by inesxmail01.iind.intel.com (Postfix) with ESMTP id 666CB19B02;
+	Wed,  5 Jun 2024 18:45:48 +0530 (IST)
+Received: by inlubt0316.iind.intel.com (Postfix, from userid 12101951)
+	id 616491600109; Wed,  5 Jun 2024 18:45:48 +0530 (IST)
+From: Raag Jadav <raag.jadav@intel.com>
+To: ukleinek@kernel.org,
+	jarkko.nikula@linux.intel.com,
+	mika.westerberg@linux.intel.com,
+	andriy.shevchenko@linux.intel.com
+Cc: linux-pwm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Raag Jadav <raag.jadav@intel.com>
+Subject: [PATCH v2 2/2] pwm: lpss: drop redundant runtime PM handles
+Date: Wed,  5 Jun 2024 18:45:33 +0530
+Message-Id: <20240605131533.20037-3-raag.jadav@intel.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20240605131533.20037-1-raag.jadav@intel.com>
+References: <20240605131533.20037-1-raag.jadav@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [DMARC error][DKIM error] [PATCH v7 1/2] pwm: meson: Add support
- for Amlogic S4 PWM
-To: <kelvin.zhang@amlogic.com>
-CC: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Jerome Brunet
-	<jbrunet@baylibre.com>, Kevin Hilman <khilman@baylibre.com>, Neil Armstrong
-	<neil.armstrong@linaro.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>, Conor Dooley <conor+dt@kernel.org>,
-	<linux-pwm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, Junyi Zhao <junyi.zhao@amlogic.com>
-References: <20240605-s4-pwm-v7-0-e822b271d7b0@amlogic.com>
- <20240605-s4-pwm-v7-1-e822b271d7b0@amlogic.com>
-Content-Language: en-US
-From: George Stark <gnstark@salutedevices.com>
-In-Reply-To: <20240605-s4-pwm-v7-1-e822b271d7b0@amlogic.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) To
- p-i-exch-sc-m02.sberdevices.ru (172.16.192.103)
-X-KSMG-Rule-ID: 10
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Lua-Profiles: 185739 [Jun 05 2024]
-X-KSMG-AntiSpam-Version: 6.1.0.4
-X-KSMG-AntiSpam-Envelope-From: gnstark@salutedevices.com
-X-KSMG-AntiSpam-Rate: 0
-X-KSMG-AntiSpam-Status: not_detected
-X-KSMG-AntiSpam-Method: none
-X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Info: LuaCore: 20 0.3.20 743589a8af6ec90b529f2124c2bbfc3ce1d2f20f, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;salutedevices.com:7.1.1;smtp.sberdevices.ru:5.0.1,7.1.1;127.0.0.199:7.1.2;100.64.160.123:7.1.2, FromAlignment: s, ApMailHostAddress: 100.64.160.123
-X-MS-Exchange-Organization-SCL: -1
-X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiPhishing: Clean
-X-KSMG-LinksScanning: Clean
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2024/06/05 08:34:00 #25451662
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
 
-Hello Kelvin, Junyi
+We no longer need empty runtime PM handles for PCI devices after
+commits [1] and [2]. Drop them and let PCI core take care of power
+state transitions.
 
-On 6/5/24 05:44, Kelvin Zhang via B4 Relay wrote:
-> From: Junyi Zhao <junyi.zhao@amlogic.com>
-> 
-> Add support for Amlogic S4 PWM.
-> 
-> Signed-off-by: Junyi Zhao <junyi.zhao@amlogic.com>
-> Signed-off-by: Kelvin Zhang <kelvin.zhang@amlogic.com>
-> ---
->   drivers/pwm/pwm-meson.c | 36 ++++++++++++++++++++++++++++++++++++
->   1 file changed, 36 insertions(+)
-> 
-> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index b2f97dfb01bb..4f01847525b2 100644
-> --- a/drivers/pwm/pwm-meson.c
-> +++ b/drivers/pwm/pwm-meson.c
-> @@ -460,6 +460,34 @@ static int meson_pwm_init_channels_meson8b_v2(struct pwm_chip *chip)
->   	return meson_pwm_init_clocks_meson8b(chip, mux_parent_data);
->   }
->   
-> +static void meson_pwm_s4_put_clk(void *data)
-> +{
-> +	struct clk *clk = data;
-> +
-> +	clk_put(clk);
-> +}
-> +
-> +static int meson_pwm_init_channels_s4(struct pwm_chip *chip)
-> +{
-> +	struct device *dev = pwmchip_parent(chip);
-> +	struct device_node *np = dev->of_node;
-> +	struct meson_pwm *meson = to_meson_pwm(chip);
-> +	int i, ret;
-> +
-> +	for (i = 0; i < MESON_NUM_PWMS; i++) {
-> +		meson->channels[i].clk = of_clk_get(np, i);
-> +		if (IS_ERR(meson->channels[i].clk)) {
-> +			ret = PTR_ERR(meson->channels[i].clk);
-> +			dev_err_probe(dev, ret, "Failed to get clk\n");
-> +			return ret;
-> +		}
-> +		devm_add_action_or_reset(dev, meson_pwm_s4_put_clk,
-> +					 meson->channels[i].clk);
+[1] c5eb1190074c ("PCI / PM: Allow runtime PM without callback functions")
+[2] fa885b06ec7e ("PCI/PM: Allow runtime PM with no PM callbacks at all")
 
-devm_add_action_or_reset() result should be checked
+Signed-off-by: Raag Jadav <raag.jadav@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pwm/pwm-lpss-pci.c | 22 ----------------------
+ 1 file changed, 22 deletions(-)
 
-> +	}
-> +
-> +	return 0;
-> +}
-
-You can rewrite it a bit to always have a single allocation for devm node:
-
-static void meson_pwm_s4_put_clk(void *data)
-{
-	struct meson_pwm *meson = data;
-	int i;
-
-	for (i = 0; i < MESON_NUM_PWMS; i++)
-		clk_put(meson->channels[i].clk);
-}
-
-static int meson_pwm_init_channels_s4(struct pwm_chip *chip)
-{
-	struct device *dev = pwmchip_parent(chip);
-	struct device_node *np = dev->of_node;
-	struct meson_pwm *meson = to_meson_pwm(chip);
-	int i, ret;
-
-	ret = devm_add_action(dev, meson_pwm_s4_put_clk, meson);
-	if (ret)
-		return ret;
-
-	for (i = 0; i < MESON_NUM_PWMS; i++) {
-		meson->channels[i].clk = of_clk_get(np, i);
-		if (IS_ERR(meson->channels[i].clk)) {
-			ret = PTR_ERR(meson->channels[i].clk);
-			dev_err_probe(dev, ret, "Failed to get clk\n");
-			return ret;
-		}
-	}
-
-	return 0;
-}
-
-
+diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
+index 25045c229520..f7ece2809e6b 100644
+--- a/drivers/pwm/pwm-lpss-pci.c
++++ b/drivers/pwm/pwm-lpss-pci.c
+@@ -46,25 +46,6 @@ static void pwm_lpss_remove_pci(struct pci_dev *pdev)
+ 	pm_runtime_get_sync(&pdev->dev);
+ }
+ 
+-static int pwm_lpss_runtime_suspend_pci(struct device *dev)
+-{
+-	/*
+-	 * The PCI core will handle transition to D3 automatically. We only
+-	 * need to provide runtime PM hooks for that to happen.
+-	 */
+-	return 0;
+-}
+-
+-static int pwm_lpss_runtime_resume_pci(struct device *dev)
+-{
+-	return 0;
+-}
+-
+-static DEFINE_RUNTIME_DEV_PM_OPS(pwm_lpss_pci_pm,
+-				 pwm_lpss_runtime_suspend_pci,
+-				 pwm_lpss_runtime_resume_pci,
+-				 NULL);
+-
+ static const struct pci_device_id pwm_lpss_pci_ids[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x0ac8), (unsigned long)&pwm_lpss_bxt_info},
+ 	{ PCI_VDEVICE(INTEL, 0x0f08), (unsigned long)&pwm_lpss_byt_info},
+@@ -84,9 +65,6 @@ static struct pci_driver pwm_lpss_driver_pci = {
+ 	.id_table = pwm_lpss_pci_ids,
+ 	.probe = pwm_lpss_probe_pci,
+ 	.remove = pwm_lpss_remove_pci,
+-	.driver = {
+-		.pm = pm_ptr(&pwm_lpss_pci_pm),
+-	},
+ };
+ module_pci_driver(pwm_lpss_driver_pci);
+ 
 -- 
-Best regards
-George
+2.35.3
+
