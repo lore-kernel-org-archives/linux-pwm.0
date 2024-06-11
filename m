@@ -1,116 +1,157 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailrelay4-1.pub.mailoutpod3-cph3.one.com (mailrelay4-1.pub.mailoutpod3-cph3.one.com [46.30.211.243])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39FBE17C7B5;
-	Tue, 11 Jun 2024 12:53:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F9C55C8EF
+	for <linux-pwm@vger.kernel.org>; Tue, 11 Jun 2024 17:56:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.30.211.243
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718110413; cv=none; b=iLjX777swtXzQO6wE9GadwQ5kcqt3Ap6oKBnsYlemjO9668nFT88/ijw/IjsEsIja99UkNEjH8v8kmPBorqrt4IcJFcRIqD4l9ZOYV1nkDE1q1q+VIFdHbDGxYsqEg9JIV87qqvs82COO3eXomkiiD776naM2FOIikhlF0eqxqw=
+	t=1718128617; cv=none; b=mwM5DkOfk2AWoA3WWTkM2rkI5XEuzewLVAn4NmhWH6Knv+5MFztVCbUzqG77HlC2SEkwGPtezDvo7kaF+nyB54t1XdC/C18y1SnfLyINzSt91QkAXU5PGy1enlUDkKxpATomifdTfsjpWGuEMTQ2pY60H828JZYtLk/yPGgyOQQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718110413; c=relaxed/simple;
-	bh=4DCuf+bAHycGTk7N5uCsYAL49McdNd2p4i3N0F0iLi0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=SW6hoEGyEDaPbuRBIWHNvrWsYqpygK6b86Lg4TvU6ZKLQ8Xb70gpDw8Ap1LqXG/Kx0in9OjC0ehyjgWmv8Vf0H1r4wE6EWC0FSPjNdyKcGXK4XUml0aUEOkLW/JjV1WhaIsKuYs8XS4xOWGZBkmNMot3+k+Ez+YVsRyi1OK6K0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 600BC20703;
-	Tue, 11 Jun 2024 12:53:28 +0000 (UTC)
-Authentication-Results: smtp-out2.suse.de;
-	none
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 1A504137DF;
-	Tue, 11 Jun 2024 12:53:28 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 8IxBBchIaGbxMgAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Tue, 11 Jun 2024 12:53:28 +0000
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: lee@kernel.org,
-	daniel.thompson@linaro.org,
-	jingoohan1@gmail.com,
-	deller@gmx.de,
-	linus.walleij@linaro.org,
-	f.suligoi@asem.it,
-	ukleinek@kernel.org
-Cc: dri-devel@lists.freedesktop.org,
-	linux-fbdev@vger.kernel.org,
-	linux-pwm@vger.kernel.org,
-	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 14/17] backlight: pcf50633-backlight: Use backlight power constants
-Date: Tue, 11 Jun 2024 14:42:09 +0200
-Message-ID: <20240611125321.6927-15-tzimmermann@suse.de>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20240611125321.6927-1-tzimmermann@suse.de>
+	s=arc-20240116; t=1718128617; c=relaxed/simple;
+	bh=m4UNf0dPubO+Nhq/aKH7BVJeY8wPAsx8wTcxb5/fl8w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kdqQr9GTfZL4cZHSPiJU2P8z+mRP+CPeP2lC8Ql+QpnuJvmwKhMRjcb8fNAJZSVOXjQ+VcI1RdvtIUyVTpu64fGa5xoiaedDloB6RlzsvyWMH9821wZnIvyArFCG5mzFKJBhe/cXuRqnYV+7vVdh++S75Zrb6nubDDeRSzfA72c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ravnborg.org; spf=none smtp.mailfrom=ravnborg.org; dkim=pass (2048-bit key) header.d=ravnborg.org header.i=@ravnborg.org header.b=MGUJ9Lse; dkim=permerror (0-bit key) header.d=ravnborg.org header.i=@ravnborg.org header.b=gUDBqNT9; arc=none smtp.client-ip=46.30.211.243
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ravnborg.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ravnborg.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ravnborg.org header.i=@ravnborg.org header.b="MGUJ9Lse";
+	dkim=permerror (0-bit key) header.d=ravnborg.org header.i=@ravnborg.org header.b="gUDBqNT9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ravnborg.org; s=rsa1;
+	h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+	 from:date:from;
+	bh=g9WKV73/vX/yRKi/hglFtmBSXNmDuF7jx1LSMWu23v8=;
+	b=MGUJ9LseT3f5lZBW0OKxinuyoP4Ccabuc75xhvpP21vgQEyTqiVTs4Fg1RT9IdF8tTLhJBJKs53DG
+	 aD3n4oKlEvWVRlRYDi10iHhL7J1lFyvbR4vIoTIomca43ATnqv+Z/NCR92hPtsikZKhlO8ItWGgxg1
+	 4YuvdjlA2N/E6Zg3k2emqVqcNu4RNvyBYvCI3W1WOKotRcB1YpG2MWaZ4xvwTtOVOGaN8E/WwfzlwA
+	 gOZOSciUXJNWLRHPt6oxwzcjCfkZShwRyr4YoMkmmM+sC+Yp0OfmoH7PYdlMPo9+qPG06FIdr81BjM
+	 FdbLkkUDCMyp0E5urejZivADmsWGsSQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+	d=ravnborg.org; s=ed1;
+	h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+	 from:date:from;
+	bh=g9WKV73/vX/yRKi/hglFtmBSXNmDuF7jx1LSMWu23v8=;
+	b=gUDBqNT9P/28PpP+1HZVetLC/b5nS0VWr4onj3XTH81Z/oW76YeBdXPCjeM+olZqxVc/T6ZDdKKNy
+	 aYJ+AdoAg==
+X-HalOne-ID: d271771c-281b-11ef-802b-591fce59e039
+Received: from ravnborg.org (2-105-16-150-cable.dk.customer.tdc.net [2.105.16.150])
+	by mailrelay4.pub.mailoutpod3-cph3.one.com (Halon) with ESMTPSA
+	id d271771c-281b-11ef-802b-591fce59e039;
+	Tue, 11 Jun 2024 17:55:45 +0000 (UTC)
+Date: Tue, 11 Jun 2024 19:55:44 +0200
+From: Sam Ravnborg <sam@ravnborg.org>
+To: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: lee@kernel.org, daniel.thompson@linaro.org, jingoohan1@gmail.com,
+	deller@gmx.de, linus.walleij@linaro.org, f.suligoi@asem.it,
+	ukleinek@kernel.org, dri-devel@lists.freedesktop.org,
+	linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 01/17] backlight: Add BL_CORE_ constants for power states
+Message-ID: <20240611175544.GC545417@ravnborg.org>
 References: <20240611125321.6927-1-tzimmermann@suse.de>
+ <20240611125321.6927-2-tzimmermann@suse.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Pre-Result: action=no action;
-	module=replies;
-	Message is reply to one we originated
-X-Spamd-Result: default: False [-4.00 / 50.00];
-	REPLY(-4.00)[]
-X-Rspamd-Pre-Result: action=no action;
-	module=replies;
-	Message is reply to one we originated
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Queue-Id: 600BC20703
-X-Spam-Flag: NO
-X-Spam-Score: -4.00
-X-Spam-Level: 
-X-Rspamd-Action: no action
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240611125321.6927-2-tzimmermann@suse.de>
 
-Replace FB_BLANK_ constants with their counterparts from the
-backlight subsystem. The values are identical, so there's no
-change in functionality.
+Hi Thomas.
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
----
- drivers/video/backlight/pcf50633-backlight.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+On Tue, Jun 11, 2024 at 02:41:56PM +0200, Thomas Zimmermann wrote:
+> Duplicate FB_BLANK_ constants as BL_CORE_ constants in the backlight
+> header file. Allows backlight drivers to avoid including the fbdev
+> header file and removes a compile-time dependency between the two
+> subsystems.
+Good to remove this dependency.
+> 
+> The new BL_CORE constants have the same values as their FB_BLANK_
+> counterparts. Hence UAPI and internal semantics do not change. The
+> backlight drivers can be converted one by one.
+This seems like the right approach.
 
-diff --git a/drivers/video/backlight/pcf50633-backlight.c b/drivers/video/backlight/pcf50633-backlight.c
-index 540dd3380c81d..f75cd5e98f2be 100644
---- a/drivers/video/backlight/pcf50633-backlight.c
-+++ b/drivers/video/backlight/pcf50633-backlight.c
-@@ -10,7 +10,6 @@
- #include <linux/platform_device.h>
- 
- #include <linux/backlight.h>
--#include <linux/fb.h>
- 
- #include <linux/mfd/pcf50633/core.h>
- #include <linux/mfd/pcf50633/backlight.h>
-@@ -53,7 +52,7 @@ static int pcf50633_bl_update_status(struct backlight_device *bl)
- 
- 
- 	if (bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK) ||
--		bl->props.power != FB_BLANK_UNBLANK)
-+		bl->props.power != BL_CORE_UNBLANK)
- 		new_brightness = 0;
- 	else if (bl->props.brightness < pcf_bl->brightness_limit)
- 		new_brightness = bl->props.brightness;
-@@ -106,7 +105,7 @@ static int pcf50633_bl_probe(struct platform_device *pdev)
- 	memset(&bl_props, 0, sizeof(bl_props));
- 	bl_props.type = BACKLIGHT_RAW;
- 	bl_props.max_brightness = 0x3f;
--	bl_props.power = FB_BLANK_UNBLANK;
-+	bl_props.power = BL_CORE_UNBLANK;
- 
- 	if (pdata) {
- 		bl_props.brightness = pdata->default_brightness;
--- 
-2.45.2
+> 
+> Backlight code or drivers do not use FB_BLANK_VSYNC_SUSPEND and
+> FB_BLANK_HSYNC_SUSPEND, so no new constants for these are being
+> added.
+> 
+> The semantics of FB_BLANK_NORMAL appear inconsistent. In fbdev,
+> NORMAL means display off with sync enabled. In backlight code,
+> this translates to turn the backlight off, but some drivers
+> interpret it as backlight on. So we keep the current code as is,
+> but mark BL_CORE_NORMAL as deprecated. Drivers should be fixed
+> and the constant removed. This affects ams369fg06 and a few DRM
+> panel drivers.
+> 
+> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+> ---
+>  Documentation/ABI/stable/sysfs-class-backlight |  7 ++++---
+>  include/linux/backlight.h                      | 16 ++++++++++------
+>  2 files changed, 14 insertions(+), 9 deletions(-)
+> 
+> diff --git a/Documentation/ABI/stable/sysfs-class-backlight b/Documentation/ABI/stable/sysfs-class-backlight
+> index 023fb52645f8b..6102d6bebdf9a 100644
+> --- a/Documentation/ABI/stable/sysfs-class-backlight
+> +++ b/Documentation/ABI/stable/sysfs-class-backlight
+> @@ -3,10 +3,11 @@ Date:		April 2005
+>  KernelVersion:	2.6.12
+>  Contact:	Richard Purdie <rpurdie@rpsys.net>
+>  Description:
+> -		Control BACKLIGHT power, values are FB_BLANK_* from fb.h
+> +		Control BACKLIGHT power, values are compatible with
+> +		FB_BLANK_* from fb.h
+>  
+> -		 - FB_BLANK_UNBLANK (0)   : power on.
+> -		 - FB_BLANK_POWERDOWN (4) : power off
+> +		 - 0 (FB_BLANK_UNBLANK)   : power on.
+> +		 - 4 (FB_BLANK_POWERDOWN) : power off
+>  Users:		HAL
+>  
+>  What:		/sys/class/backlight/<backlight>/brightness
+> diff --git a/include/linux/backlight.h b/include/linux/backlight.h
+> index 19a1c0e22629d..e0cfd89ffadd2 100644
+> --- a/include/linux/backlight.h
+> +++ b/include/linux/backlight.h
+> @@ -210,14 +210,18 @@ struct backlight_properties {
+>  	 * When the power property is updated update_status() is called.
+>  	 *
+>  	 * The possible values are: (0: full on, 1 to 3: power saving
+> -	 * modes; 4: full off), see FB_BLANK_XXX.
+> +	 * modes; 4: full off), see BL_CORE_XXX constants.
+>  	 *
+>  	 * When the backlight device is enabled @power is set
+> -	 * to FB_BLANK_UNBLANK. When the backlight device is disabled
+> -	 * @power is set to FB_BLANK_POWERDOWN.
+> +	 * to BL_CORE_UNBLANK. When the backlight device is disabled
+> +	 * @power is set to BL_CORE_POWERDOWN.
+>  	 */
+>  	int power;
+>  
+> +#define BL_CORE_UNBLANK		(0)
+> +#define BL_CORE_NORMAL		(1) // deprecated; don't use in new code
+> +#define BL_CORE_POWERDOWN	(4)
 
+When introducing backlight specific constants then it would be good to
+get away from the ackward fbdev naming and use something that is more
+obvious.
+
+Something like:
+
+#define BACKLIGHT_POWER_ON	0
+#define BACKLIGHT_POWER_OFF	4
+#define BACKLIGHT_POWER_NORMAL	1	// deprecated; don't use in new code
+
+This will make the code more obvious to read / understand - at least
+IMO.
+
+The proposal did not use the BL_CORE_ naming, lets keep this for
+suspend/resume stuff.
+
+On top of this - many users of the power states could benefit using the
+backlight_enable()/backlight_disable() helpers, but that's another story.
+
+	Sam
