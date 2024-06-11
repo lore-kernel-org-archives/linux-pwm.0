@@ -1,16 +1,16 @@
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D1E01E86F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 596C717C22D;
 	Tue, 11 Jun 2024 12:53:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718110410; cv=none; b=k0wfEr6OAUBTT8Baq+6IW/FuskpZcc48yDT2GzaHfE/OhS+M9zNgwTDZSIVXXpp+Fueail4OpBjDqNbXqYr3v4XKP1lrqshECxbo1KXGG4ooYxSCyGnx+oGq7PMKwZ9pNkuh/e+AIhZ+4AJrKB1RYIHcEC1lp3KNeC5cP6mqBBk=
+	t=1718110410; cv=none; b=OV2urHDtUsl6SyBRKnv94U4QL9R5+BMDL+1soXHxBAv55c2bA3zaeIO1clenME7ILKjLWMaGwPLx39FaOBq2//lkJ5FI9z7NvLdQ37UXmD/ZpiYDftL3Yrn6renIqCqngUUt6DT71I6iCTKRhIMA1jdZC4UmtIrffGa1dDioa98=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1718110410; c=relaxed/simple;
-	bh=sE/s44Pvv2FVAxLRC5+M5i+C8Gdr6Ou4a5uKWjEeq4Q=;
+	bh=6sx3QJG7MSl9Nvpr6xfmCpRt8XKToNsAwas2mrwuBms=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UuTed2x1Z6UO0HAA6zEBlil6jw3bQ8ogYv9sr4+8c8wsDu5Io/9ANJuvWLuiN35eCkFQPh6OQBP7Gd63cQA6tM+QLjOKXBbeT5ofT9LDzmWaBQYFHIAUK9CTVLYwW3rz4mR24Nr7rMM7U3VbhGoaQ43S0B8u+wtSY/rCPyE4KZE=
+	 MIME-Version; b=BK91s+ca7ptKGFxvzR0A593EorVXltw9r61Sab+Njm//h/GF9lv3xMvxK42j6IpxtzX7QDFCq/HQhOYQOFbvIBhskkwN2r+pqV9ssZe/y7pxPSo6lVNX6IFATGGlt4G/36c6FqF8svYT4SZ/erB+zGLOOLo/KQ4K75Rpb39MUt0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
@@ -18,20 +18,20 @@ Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id DFBFC21C5B;
-	Tue, 11 Jun 2024 12:53:25 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 854A121D34;
+	Tue, 11 Jun 2024 12:53:26 +0000 (UTC)
 Authentication-Results: smtp-out1.suse.de;
 	none
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 9A835137DF;
-	Tue, 11 Jun 2024 12:53:25 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3E947137DF;
+	Tue, 11 Jun 2024 12:53:26 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id kMB7JMVIaGbxMgAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Tue, 11 Jun 2024 12:53:25 +0000
+	id 8BUKDsZIaGbxMgAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Tue, 11 Jun 2024 12:53:26 +0000
 From: Thomas Zimmermann <tzimmermann@suse.de>
 To: lee@kernel.org,
 	daniel.thompson@linaro.org,
@@ -44,9 +44,9 @@ Cc: dri-devel@lists.freedesktop.org,
 	linux-fbdev@vger.kernel.org,
 	linux-pwm@vger.kernel.org,
 	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 06/17] backlight: ipaq-micro-backlight: Use backlight power constants
-Date: Tue, 11 Jun 2024 14:42:01 +0200
-Message-ID: <20240611125321.6927-7-tzimmermann@suse.de>
+Subject: [PATCH 08/17] backlight: kb3886-bl: Use backlight power constants
+Date: Tue, 11 Jun 2024 14:42:03 +0200
+Message-ID: <20240611125321.6927-9-tzimmermann@suse.de>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <20240611125321.6927-1-tzimmermann@suse.de>
 References: <20240611125321.6927-1-tzimmermann@suse.de>
@@ -60,17 +60,17 @@ Content-Transfer-Encoding: 8bit
 X-Rspamd-Pre-Result: action=no action;
 	module=replies;
 	Message is reply to one we originated
-X-Rspamd-Action: no action
-X-Spam-Level: 
 X-Spamd-Result: default: False [-4.00 / 50.00];
 	REPLY(-4.00)[]
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Rspamd-Queue-Id: DFBFC21C5B
-X-Spam-Flag: NO
 X-Rspamd-Pre-Result: action=no action;
 	module=replies;
 	Message is reply to one we originated
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Queue-Id: 854A121D34
+X-Spam-Flag: NO
 X-Spam-Score: -4.00
+X-Spam-Level: 
+X-Rspamd-Action: no action
 
 Replace FB_BLANK_ constants with their counterparts from the
 backlight subsystem. The values are identical, so there's no
@@ -78,29 +78,32 @@ change in functionality.
 
 Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 ---
- drivers/video/backlight/ipaq_micro_bl.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/video/backlight/kb3886_bl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/backlight/ipaq_micro_bl.c b/drivers/video/backlight/ipaq_micro_bl.c
-index f595b8c8cbb24..d3be6d2d7493a 100644
---- a/drivers/video/backlight/ipaq_micro_bl.c
-+++ b/drivers/video/backlight/ipaq_micro_bl.c
-@@ -7,7 +7,6 @@
- 
- #include <linux/backlight.h>
- #include <linux/err.h>
--#include <linux/fb.h>
- #include <linux/init.h>
- #include <linux/mfd/ipaq-micro.h>
+diff --git a/drivers/video/backlight/kb3886_bl.c b/drivers/video/backlight/kb3886_bl.c
+index 55794b239cff0..0370f52077d75 100644
+--- a/drivers/video/backlight/kb3886_bl.c
++++ b/drivers/video/backlight/kb3886_bl.c
+@@ -10,9 +10,9 @@
  #include <linux/module.h>
-@@ -42,7 +41,7 @@ static const struct backlight_ops micro_bl_ops = {
- static const struct backlight_properties micro_bl_props = {
- 	.type = BACKLIGHT_RAW,
- 	.max_brightness = 255,
--	.power = FB_BLANK_UNBLANK,
-+	.power = BL_CORE_UNBLANK,
- 	.brightness = 64,
- };
+ #include <linux/kernel.h>
+ #include <linux/init.h>
++#include <linux/io.h>
+ #include <linux/platform_device.h>
+ #include <linux/mutex.h>
+-#include <linux/fb.h>
+ #include <linux/backlight.h>
+ #include <linux/delay.h>
+ #include <linux/dmi.h>
+@@ -151,7 +151,7 @@ static int kb3886bl_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, kb3886_backlight_device);
+ 
+-	kb3886_backlight_device->props.power = FB_BLANK_UNBLANK;
++	kb3886_backlight_device->props.power = BL_CORE_UNBLANK;
+ 	kb3886_backlight_device->props.brightness = machinfo->default_intensity;
+ 	backlight_update_status(kb3886_backlight_device);
  
 -- 
 2.45.2
