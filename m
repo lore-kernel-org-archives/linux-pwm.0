@@ -1,208 +1,86 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F00F194C90;
-	Mon, 17 Jun 2024 09:38:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AABBC19598E;
+	Mon, 17 Jun 2024 10:45:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718617106; cv=none; b=Vgy8q5RbTsIqyVrLfJT8+cORAhMVPM43T73Ag4fo7YUE18WDEVGngMn8wE5kFUFD1FgmcRPx1VTu2LiiqpSoql9YNPsIu0QX1mccORoBCIpqR3PXBJyS2ku5DneuUuIF4RHTNhE+RaLyxHFpGauXg2opfVitd2VUJGoje+iPFqQ=
+	t=1718621144; cv=none; b=qQXKdhZBNs1u08a/EspmuqlzmnyteyDQv0QQHj82JclMMX/sk3NNnlyOT9Q4RCJ6evR6ETFbEpIxcajdG06A7/YN9cwGzEYyFI07uBb2/F+NltJ5WZRyTP+jl87+EwAc3KwxJ9e3YsaSMrOWz9Cc2uHW4M9UUW5wFdxXVzZ5Jnc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718617106; c=relaxed/simple;
-	bh=TLn4iY9WirIpra11C90u3n8gyc+H+7TAKuLu1AUc2WY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=LGL77mG3h1TI4VJm82ldFdL6pocvUQSrWqDsnboRGQGu4tH8Tn7ygNnfTpgLNg7B1URpkdm4j6uLhyxYZkE9rLSXMSh/Weob89DUrCn5FkSsqQIABaDvltG+nzSEUUYVAqgWEOghUm3I/RSFJBEDpdceQscLi0r89yVAaf/En00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CIYpCOyS; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CIYpCOyS"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BE4C2C4DE11;
-	Mon, 17 Jun 2024 09:38:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1718617105;
-	bh=TLn4iY9WirIpra11C90u3n8gyc+H+7TAKuLu1AUc2WY=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=CIYpCOySLGbWhuP7K0T2rHPa8LKD8QphsyI6S1E5cRXz4UAJkVpG9hIfzKduSrIpP
-	 UdZMaIP2yj79tTsM4G2uaC1IqvfhnVsW5COkPhEbrIcLBu2brr5tN2ujODIOpMCFGW
-	 ZZKfQ0SaBb5RhgN7ESC2PiycEMqqGAoScLRBPgIF91Cxd8/oNP7oN0VLbFNywZIKid
-	 RoCpggr0LfCKSX8I8ZUCFCOdJLRtsM/k7tlvh4MFQB3xQw8JBT+2J6BGevzCyzYu5o
-	 SqqDKk/OPui/ZKlqzwXFFygOn6g/mL4N19iXPquxD4EeJHfy6HiTlatzAcZoQP8K3O
-	 8LJ+XKGnzI2Cg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6687C2BA18;
-	Mon, 17 Jun 2024 09:38:25 +0000 (UTC)
-From: Nikita Shubin via B4 Relay <devnull+nikita.shubin.maquefel.me@kernel.org>
-Date: Mon, 17 Jun 2024 12:37:07 +0300
-Subject: [PATCH v10 33/38] pwm: ep93xx: drop legacy pinctrl
+	s=arc-20240116; t=1718621144; c=relaxed/simple;
+	bh=OTuJ3HqmabYe5/7Op+lhMLRJmk9rH/AS810A5fih7Lc=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=DCCM23dTn6iml5d0rJSx0vFkpidmedfJo2N8z1eHCLnJFiNjFarRRmGEG+ARDZ9qJJ9TQoOmUvpG3d3VXGwrqVSGDgrnGpph5XZbQDBqXWVTZ82ivy1Am2/LoD+0OWn6tGhx65Ca5Y3wd1TJGt+Ug7MGfxglPc7GsKuwqPZpDlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=Huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4W2mcp0jbRz6JBCM;
+	Mon, 17 Jun 2024 18:40:42 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
+	by mail.maildlp.com (Postfix) with ESMTPS id 866B7140A1B;
+	Mon, 17 Jun 2024 18:45:34 +0800 (CST)
+Received: from localhost (10.203.174.77) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Mon, 17 Jun
+ 2024 11:45:33 +0100
+Date: Mon, 17 Jun 2024 11:45:32 +0100
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>, "Sascha
+ Hauer" <s.hauer@pengutronix.de>, Pengutronix Kernel Team
+	<kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Abel Vesa
+	<abelvesa@kernel.org>, Peng Fan <peng.fan@nxp.com>, Michael Turquette
+	<mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Linus Walleij
+	<linus.walleij@linaro.org>, Bartosz Golaszewski <brgl@bgdev.pl>, "Dong
+ Aisheng" <aisheng.dong@nxp.com>, Andi Shyti <andi.shyti@kernel.org>, Jonathan
+ Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Srinivas
+ Kandagatla <srinivas.kandagatla@linaro.org>, Uwe
+ =?ISO-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>, Mark Brown
+	<broonie@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Daniel
+ Lezcano" <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz
+ Luba <lukasz.luba@arm.com>, Wim Van Sebroeck <wim@linux-watchdog.org>,
+	Guenter Roeck <linux@roeck-us.net>, Frank Li <Frank.Li@nxp.com>,
+	<devicetree@vger.kernel.org>, <imx@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-clk@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+	<linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-pwm@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+	<linux-pm@vger.kernel.org>, <linux-watchdog@vger.kernel.org>, Wolfram Sang
+	<wsa+renesas@sang-engineering.com>
+Subject: Re: [PATCH v2] dt-bindings: drop stale Anson Huang from maintainers
+Message-ID: <20240617114532.00001b5f@Huawei.com>
+In-Reply-To: <20240617065828.9531-1-krzysztof.kozlowski@linaro.org>
+References: <20240617065828.9531-1-krzysztof.kozlowski@linaro.org>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20240617-ep93xx-v10-33-662e640ed811@maquefel.me>
-References: <20240617-ep93xx-v10-0-662e640ed811@maquefel.me>
-In-Reply-To: <20240617-ep93xx-v10-0-662e640ed811@maquefel.me>
-To: Hartley Sweeten <hsweeten@visionengravers.com>, 
- Alexander Sverdlin <alexander.sverdlin@gmail.com>, 
- Russell King <linux@armlinux.org.uk>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Nikita Shubin <nikita.shubin@maquefel.me>, 
- Linus Walleij <linus.walleij@linaro.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Sergey Shtylyov <s.shtylyov@omp.ru>, 
- Thierry Reding <thierry.reding@gmail.com>
-Cc: Damien Le Moal <dlemoal@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- linux-pwm@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-X-Mailer: b4 0.13-dev-e3e53
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1718617100; l=4449;
- i=nikita.shubin@maquefel.me; s=20230718; h=from:subject:message-id;
- bh=9tWs5wPLeKECQlcQ9rkIh26LRGvwgfxOpMK+JfxreaE=;
- b=vIt9ySvjKsuw8bnZ/AcGDwON6HLgWWY4qE+vPXKiuoYq8c2n4DAzyE+FYmd4KA+r36B9KzSojifW
- wKV/jHcgBI39+bpyuVa25ii2Rx2jATBzLbgroA79ss3Qmbo0FuLA
-X-Developer-Key: i=nikita.shubin@maquefel.me; a=ed25519;
- pk=vqf5YIUJ7BJv3EJFaNNxWZgGuMgDH6rwufTLflwU9ac=
-X-Endpoint-Received: by B4 Relay for nikita.shubin@maquefel.me/20230718
- with auth_id=65
-X-Original-From: Nikita Shubin <nikita.shubin@maquefel.me>
-Reply-To: nikita.shubin@maquefel.me
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
 
-From: Nikita Shubin <nikita.shubin@maquefel.me>
+On Mon, 17 Jun 2024 08:58:28 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-Drop legacy gpio request/free since we are using
-pinctrl for this now.
-
-Signed-off-by: Nikita Shubin <nikita.shubin@maquefel.me>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
----
- arch/arm/mach-ep93xx/core.c       | 42 ---------------------------------------
- drivers/pwm/pwm-ep93xx.c          | 18 -----------------
- include/linux/soc/cirrus/ep93xx.h |  4 ----
- 3 files changed, 64 deletions(-)
-
-diff --git a/arch/arm/mach-ep93xx/core.c b/arch/arm/mach-ep93xx/core.c
-index b99c46d22c4d..4ddf1a4cba33 100644
---- a/arch/arm/mach-ep93xx/core.c
-+++ b/arch/arm/mach-ep93xx/core.c
-@@ -577,48 +577,6 @@ void __init ep93xx_register_pwm(int pwm0, int pwm1)
- 		platform_device_register(&ep93xx_pwm1_device);
- }
- 
--int ep93xx_pwm_acquire_gpio(struct platform_device *pdev)
--{
--	int err;
--
--	if (pdev->id == 0) {
--		err = 0;
--	} else if (pdev->id == 1) {
--		err = gpio_request(EP93XX_GPIO_LINE_EGPIO14,
--				   dev_name(&pdev->dev));
--		if (err)
--			return err;
--		err = gpio_direction_output(EP93XX_GPIO_LINE_EGPIO14, 0);
--		if (err)
--			goto fail;
--
--		/* PWM 1 output on EGPIO[14] */
--		ep93xx_devcfg_set_bits(EP93XX_SYSCON_DEVCFG_PONG);
--	} else {
--		err = -ENODEV;
--	}
--
--	return err;
--
--fail:
--	gpio_free(EP93XX_GPIO_LINE_EGPIO14);
--	return err;
--}
--EXPORT_SYMBOL(ep93xx_pwm_acquire_gpio);
--
--void ep93xx_pwm_release_gpio(struct platform_device *pdev)
--{
--	if (pdev->id == 1) {
--		gpio_direction_input(EP93XX_GPIO_LINE_EGPIO14);
--		gpio_free(EP93XX_GPIO_LINE_EGPIO14);
--
--		/* EGPIO[14] used for GPIO */
--		ep93xx_devcfg_clear_bits(EP93XX_SYSCON_DEVCFG_PONG);
--	}
--}
--EXPORT_SYMBOL(ep93xx_pwm_release_gpio);
--
--
- /*************************************************************************
-  * EP93xx video peripheral handling
-  *************************************************************************/
-diff --git a/drivers/pwm/pwm-ep93xx.c b/drivers/pwm/pwm-ep93xx.c
-index 67c3fdbf7ae3..994f89ac43b4 100644
---- a/drivers/pwm/pwm-ep93xx.c
-+++ b/drivers/pwm/pwm-ep93xx.c
-@@ -27,8 +27,6 @@
- 
- #include <asm/div64.h>
- 
--#include <linux/soc/cirrus/ep93xx.h>	/* for ep93xx_pwm_{acquire,release}_gpio() */
--
- #define EP93XX_PWMx_TERM_COUNT	0x00
- #define EP93XX_PWMx_DUTY_CYCLE	0x04
- #define EP93XX_PWMx_ENABLE	0x08
-@@ -44,20 +42,6 @@ static inline struct ep93xx_pwm *to_ep93xx_pwm(struct pwm_chip *chip)
- 	return pwmchip_get_drvdata(chip);
- }
- 
--static int ep93xx_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct platform_device *pdev = to_platform_device(pwmchip_parent(chip));
--
--	return ep93xx_pwm_acquire_gpio(pdev);
--}
--
--static void ep93xx_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct platform_device *pdev = to_platform_device(pwmchip_parent(chip));
--
--	ep93xx_pwm_release_gpio(pdev);
--}
--
- static int ep93xx_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    const struct pwm_state *state)
- {
-@@ -156,8 +140,6 @@ static int ep93xx_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- }
- 
- static const struct pwm_ops ep93xx_pwm_ops = {
--	.request = ep93xx_pwm_request,
--	.free = ep93xx_pwm_free,
- 	.apply = ep93xx_pwm_apply,
- };
- 
-diff --git a/include/linux/soc/cirrus/ep93xx.h b/include/linux/soc/cirrus/ep93xx.h
-index 8942bfaf1545..f6376edc1b33 100644
---- a/include/linux/soc/cirrus/ep93xx.h
-+++ b/include/linux/soc/cirrus/ep93xx.h
-@@ -37,8 +37,6 @@ struct ep93xx_regmap_adev {
- 	container_of((_adev), struct ep93xx_regmap_adev, adev)
- 
- #ifdef CONFIG_ARCH_EP93XX
--int ep93xx_pwm_acquire_gpio(struct platform_device *pdev);
--void ep93xx_pwm_release_gpio(struct platform_device *pdev);
- int ep93xx_ide_acquire_gpio(struct platform_device *pdev);
- void ep93xx_ide_release_gpio(struct platform_device *pdev);
- int ep93xx_i2s_acquire(void);
-@@ -46,8 +44,6 @@ void ep93xx_i2s_release(void);
- unsigned int ep93xx_chip_revision(void);
- 
- #else
--static inline int ep93xx_pwm_acquire_gpio(struct platform_device *pdev) { return 0; }
--static inline void ep93xx_pwm_release_gpio(struct platform_device *pdev) {}
- static inline int ep93xx_ide_acquire_gpio(struct platform_device *pdev) { return 0; }
- static inline void ep93xx_ide_release_gpio(struct platform_device *pdev) {}
- static inline int ep93xx_i2s_acquire(void) { return 0; }
-
--- 
-2.43.2
-
+> Emails to Anson Huang bounce:
+>=20
+>   Diagnostic-Code: smtp; 550 5.4.1 Recipient address rejected: Access den=
+ied.
+>=20
+> Add IMX platform maintainers for bindings which would become orphaned.
+>=20
+> Acked-by: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
+> Reviewed-by: Fabio Estevam <festevam@gmail.com>
+> Acked-by: Peng Fan <peng.fan@nxp.com>
+> Acked-by: Wolfram Sang <wsa+renesas@sang-engineering.com> # for I2C
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>=20
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # for IIO
 
