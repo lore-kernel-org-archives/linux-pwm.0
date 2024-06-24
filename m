@@ -1,77 +1,68 @@
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1534E13D538;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 152D31DFEA;
 	Mon, 24 Jun 2024 15:28:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719242908; cv=none; b=lmMNgbqErRG8A6PLbcQgMy03bhx74O4vVktNZLmbNcjWYcjRtNAge48x+MR2Cp6BbEbL0ftRAyqFTw/A2uncDEPAyMbfTgXKC/gVDq6H2sj+CHbQAkDoecqbWH9F35+sITQr+CrTcSqHgf/KF1Qj/e8CmjR+p149Wkc2d/JLPpk=
+	t=1719242909; cv=none; b=D2m8uP09dz0zdzD8jauKZkoRnrL0RYr9ZdJyq1ZhVF71TMQE9h2Xvlkf/U8Og7Hf32zPekzFx+fT99jNy4CHgR0CH0bvSr59oYJwcrJKoIDUf70unofNI+zCfW2kezxqOlnEuro84iLLklTLqOCM1KfeEWTc81KZKRQOdjL1lgU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719242908; c=relaxed/simple;
-	bh=QTOnCRTOCXMCLNHSdZI8/pCh9h8Jrr5G08sXG0eKGyc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Nm+cmbBWpBMwZwuytqOKdE5WaUl/gYKvmgWikDjwNPgnnlUgiBm4QXTQdZ+DohNFE04HX6OKkwJ+LUaFGCGNCZXum4iIKFhsx9GTJz9RLcKH6TzPJCU1eQGAUJqMwnmvarxpBsu9LTRtl5mDg/wPlNPCAaz1PIrsyYo38II3Nck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=sZi0uDeC; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=smhwEg7Y; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=sZi0uDeC; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=smhwEg7Y; arc=none smtp.client-ip=195.135.223.130
+	s=arc-20240116; t=1719242909; c=relaxed/simple;
+	bh=vr+RiDJl7SgVHky0afzslQhrgrRyTKEsA9ZGOlXDfiU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=E2gnf0FfPPPI5OVxFdFSn2vnIjIxKBnskUbR5OmYlPjKer1IuUavX5ktwNiiq6ZKTzPN6+3WzDor8W7Mdk4yJ7iT4XG4doMbGICy21sj5YSqvYvU3XjtE+hbEEYlyAUeXRaR0NGfJ2wML0JaQBGJAnETygMRIOHunUWOov9OCUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=ew/D9iZb; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=MNhhN1JB; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=ew/D9iZb; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=MNhhN1JB; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="sZi0uDeC";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="smhwEg7Y";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="sZi0uDeC";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="smhwEg7Y"
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="ew/D9iZb";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="MNhhN1JB";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="ew/D9iZb";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="MNhhN1JB"
 Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 4038021A9D;
-	Mon, 24 Jun 2024 15:20:38 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 87F9921A9A;
+	Mon, 24 Jun 2024 15:20:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1719242438; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mqREaBwcoZ+coU5cHhkCtUFqc6BawunkmVoO2ASgRkY=;
-	b=sZi0uDeCKki6gUkIcChC6U1fsbwal0asXBN/t5mxgdiqTNEiLxG9YkiVyh4GeeOxdfzslg
-	ax6IimIndkUkPMsLbMMZDBDQ9Zcw8SVviNpGIEMhMCKiHJfr4QWwVBaaP4ylU9Dug8ePnz
-	QXpr6vCHJv1gBDWs+69pNh9yTqro9oo=
+	t=1719242437; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=Pvh9Iuhb+qDZ3VUZ19jQr0U88LS2BndpQO41VU2M4Js=;
+	b=ew/D9iZbaWaiWdPTIJuJHdSdr3ctDMYFLxEeAH30qZIXgTobA17bB6V+Y9tD0834e3tdZu
+	1cPxoTqbRpuQYkcOwsK14STVUUJiq4iaDoClkX7HbelBg55cXoE4GAq5Q2CHn9SkkEqv54
+	XQg9ZCpn5+2sts08fKmCy5WO+PytGUc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1719242438;
+	s=susede2_ed25519; t=1719242437;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mqREaBwcoZ+coU5cHhkCtUFqc6BawunkmVoO2ASgRkY=;
-	b=smhwEg7YbHZM5lH6PvltLQKNGRwQUefyE0z+jkC17oIcneusfTmHDjLmglJlaQuqwUW8+B
-	xqGdw2/Nr7ryiMCw==
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=Pvh9Iuhb+qDZ3VUZ19jQr0U88LS2BndpQO41VU2M4Js=;
+	b=MNhhN1JBhiH3BpPcm0HNX5JaWgFnWhBVQjfGLqGFnZxf9XQ6ETzEa0rdGxw/86GcOlGJ8l
+	iFeGIHyYA7A5M8Dw==
 Authentication-Results: smtp-out1.suse.de;
 	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1719242438; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mqREaBwcoZ+coU5cHhkCtUFqc6BawunkmVoO2ASgRkY=;
-	b=sZi0uDeCKki6gUkIcChC6U1fsbwal0asXBN/t5mxgdiqTNEiLxG9YkiVyh4GeeOxdfzslg
-	ax6IimIndkUkPMsLbMMZDBDQ9Zcw8SVviNpGIEMhMCKiHJfr4QWwVBaaP4ylU9Dug8ePnz
-	QXpr6vCHJv1gBDWs+69pNh9yTqro9oo=
+	t=1719242437; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=Pvh9Iuhb+qDZ3VUZ19jQr0U88LS2BndpQO41VU2M4Js=;
+	b=ew/D9iZbaWaiWdPTIJuJHdSdr3ctDMYFLxEeAH30qZIXgTobA17bB6V+Y9tD0834e3tdZu
+	1cPxoTqbRpuQYkcOwsK14STVUUJiq4iaDoClkX7HbelBg55cXoE4GAq5Q2CHn9SkkEqv54
+	XQg9ZCpn5+2sts08fKmCy5WO+PytGUc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1719242438;
+	s=susede2_ed25519; t=1719242437;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mqREaBwcoZ+coU5cHhkCtUFqc6BawunkmVoO2ASgRkY=;
-	b=smhwEg7YbHZM5lH6PvltLQKNGRwQUefyE0z+jkC17oIcneusfTmHDjLmglJlaQuqwUW8+B
-	xqGdw2/Nr7ryiMCw==
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=Pvh9Iuhb+qDZ3VUZ19jQr0U88LS2BndpQO41VU2M4Js=;
+	b=MNhhN1JBhiH3BpPcm0HNX5JaWgFnWhBVQjfGLqGFnZxf9XQ6ETzEa0rdGxw/86GcOlGJ8l
+	iFeGIHyYA7A5M8Dw==
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id E68D513AA4;
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3695613AA4;
 	Mon, 24 Jun 2024 15:20:37 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id wIP9NsWOeWbqGgAAD6G6ig
+	id hT/9C8WOeWbqGgAAD6G6ig
 	(envelope-from <tzimmermann@suse.de>); Mon, 24 Jun 2024 15:20:37 +0000
 From: Thomas Zimmermann <tzimmermann@suse.de>
 To: lee@kernel.org,
@@ -86,12 +77,10 @@ Cc: dri-devel@lists.freedesktop.org,
 	linux-fbdev@vger.kernel.org,
 	linux-pwm@vger.kernel.org,
 	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH v2 02/17] backlight: aat2870-backlight: Use blacklight power constants
-Date: Mon, 24 Jun 2024 17:19:57 +0200
-Message-ID: <20240624152033.25016-3-tzimmermann@suse.de>
+Subject: [PATCH v2 00/17] backlight: Introduce power-state constants
+Date: Mon, 24 Jun 2024 17:19:55 +0200
+Message-ID: <20240624152033.25016-1-tzimmermann@suse.de>
 X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20240624152033.25016-1-tzimmermann@suse.de>
-References: <20240624152033.25016-1-tzimmermann@suse.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -99,64 +88,97 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Score: -6.80
+X-Spam-Score: -2.80
 X-Spam-Level: 
 X-Spam-Flag: NO
-X-Spamd-Result: default: False [-6.80 / 50.00];
-	REPLY(-4.00)[];
+X-Spamd-Result: default: False [-2.80 / 50.00];
 	BAYES_HAM(-3.00)[100.00%];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
 	MID_CONTAINS_FROM(1.00)[];
 	R_MISSING_CHARSET(0.50)[];
 	NEURAL_HAM_SHORT(-0.20)[-1.000];
 	MIME_GOOD(-0.10)[text/plain];
-	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
 	ARC_NA(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	FROM_HAS_DN(0.00)[];
 	RCPT_COUNT_TWELVE(0.00)[12];
 	MIME_TRACE(0.00)[0:+];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo];
 	FREEMAIL_TO(0.00)[kernel.org,linaro.org,ravnborg.org,gmail.com,gmx.de,asem.it];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:email];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
 	TO_DN_SOME(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	FREEMAIL_ENVRCPT(0.00)[gmail.com,gmx.de]
 
-Replace FB_BLANK_ constants with their counterparts from the
-backlight subsystem. The values are identical, so there's no
-change in functionality.
+The backlight code currently uses fbdev's FB_BLANK_ constants to
+represent power states UNBLANK and POWERDOWN. Introduce dedicated
+backlight constants to remove this dependency on fbdev.
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
----
- drivers/video/backlight/aat2870_bl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Patch 1 introduces BACKLIGHT_POWER_ON and BACKLIGHT_POWER_OFF, which
+replace constants from fbdev. There's also BACKLIGHT_POWER_REDUCED,
+which is required by a few drivers that appear to use incorrect or
+uncommon blanking semantics.
 
-diff --git a/drivers/video/backlight/aat2870_bl.c b/drivers/video/backlight/aat2870_bl.c
-index b4c3354a1a8a..68d327ee4b2e 100644
---- a/drivers/video/backlight/aat2870_bl.c
-+++ b/drivers/video/backlight/aat2870_bl.c
-@@ -156,7 +156,7 @@ static int aat2870_bl_probe(struct platform_device *pdev)
- 		bd->props.max_brightness = 255;
- 
- 	aat2870_bl->brightness = 0;
--	bd->props.power = FB_BLANK_UNBLANK;
-+	bd->props.power = BACKLIGHT_POWER_ON;
- 	bd->props.brightness = bd->props.max_brightness;
- 
- 	ret = aat2870_bl_update_status(bd);
-@@ -176,7 +176,7 @@ static void aat2870_bl_remove(struct platform_device *pdev)
- 	struct aat2870_bl_driver_data *aat2870_bl = platform_get_drvdata(pdev);
- 	struct backlight_device *bd = aat2870_bl->bd;
- 
--	bd->props.power = FB_BLANK_POWERDOWN;
-+	bd->props.power = BACKLIGHT_POWER_OFF;
- 	bd->props.brightness = 0;
- 	backlight_update_status(bd);
- }
+The rest of the patchset converts backlight drivers. The new
+constants' values are identical to the old ones, so the driver
+conversion can be done one-by-one.
+
+There are many more backlight drivers in other subsystems. These
+can later be converted when the new constants have been merged.
+Once merged, several include statements for <linux/fb.h> can be
+removed (specifically under drivers/platform/x86/).
+
+This patchset is part of a larger effort to implement the backlight
+code without depending on fbdev and ultimatively remove fbdev
+dependencies from the kernel.
+
+v2:
+- rename BL_CORE_ power constants to BACKLIGHT_POWER_ (Sam)
+- fix documentation
+
+Thomas Zimmermann (17):
+  backlight: Add BACKLIGHT_POWER_ constants for power states
+  backlight: aat2870-backlight: Use blacklight power constants
+  backlight: ams369fb06: Use backlight power constants
+  backlight: corgi-lcd: Use backlight power constants
+  backlight: gpio-backlight: Use backlight power constants
+  backlight: ipaq-micro-backlight: Use backlight power constants
+  backlight: journada_bl: Use backlight power constants
+  backlight: kb3886-bl: Use backlight power constants
+  backlight: ktd253-backlight: Use backlight power constants
+  backlight: led-backlight: Use backlight power constants
+  backlight: lm3533-backlight: Use backlight power constants
+  backlight: mp3309c: Use backlight power constants
+  backlight: pandora-backlight: Use backlight power constants
+  backlight: pcf50633-backlight: Use backlight power constants
+  backlight: pwm-backlight: Use backlight power constants
+  backlight: rave-sp-backlight: Use backlight power constants
+  backlight: sky81452-backlight: Use backlight power constants
+
+ .../ABI/stable/sysfs-class-backlight          |  7 +++---
+ drivers/video/backlight/aat2870_bl.c          |  4 ++--
+ drivers/video/backlight/ams369fg06.c          | 23 +++++++++----------
+ drivers/video/backlight/corgi_lcd.c           |  4 ++--
+ drivers/video/backlight/gpio_backlight.c      |  9 ++++----
+ drivers/video/backlight/ipaq_micro_bl.c       |  3 +--
+ drivers/video/backlight/jornada720_bl.c       |  3 +--
+ drivers/video/backlight/kb3886_bl.c           |  4 ++--
+ drivers/video/backlight/ktd253-backlight.c    |  5 ++--
+ drivers/video/backlight/led_bl.c              |  4 ++--
+ drivers/video/backlight/lm3533_bl.c           |  3 +--
+ drivers/video/backlight/mp3309c.c             |  4 ++--
+ drivers/video/backlight/pandora_bl.c          |  3 +--
+ drivers/video/backlight/pcf50633-backlight.c  |  5 ++--
+ drivers/video/backlight/pwm_bl.c              |  4 ++--
+ drivers/video/backlight/rave-sp-backlight.c   |  2 +-
+ drivers/video/backlight/sky81452-backlight.c  |  2 +-
+ include/linux/backlight.h                     | 20 +++++++++-------
+ 18 files changed, 53 insertions(+), 56 deletions(-)
+
 -- 
 2.45.2
 
