@@ -1,152 +1,172 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A5519D087
-	for <linux-pwm@vger.kernel.org>; Tue,  9 Jul 2024 15:22:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F07428C1E;
+	Wed, 10 Jul 2024 02:04:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720538533; cv=none; b=PhUruqO1dSOsxxUy4XdscmIqBGZn8FGAv5KH3pAy4yx0YaLXf3idkPNo6dWrSBwtm1sN1UNsIANsVhtzqZaXC6rHjVilabKQiCmDrU2qghqIk5fhwz/Yu5F6BuWdBamta+zKlw08op63aL2JWEynVufB/XsUE7MavrNfTWiADAI=
+	t=1720577073; cv=none; b=NXqPQa6QxUuZXEVDoyofO8f85BFgwBTFjXczBuU2QZ5ZUW6B7SMs8nsi+/++qUYoNM4JP11BTGetyg3g+AwBKEMvxKSWMYwel/ancF3EYNzUF+QuXPU7AJv88rsFduqhrbLR3vSCe61Z09aEu8Mo+TYHr0tIJYiPghsREavhRYo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720538533; c=relaxed/simple;
-	bh=JWAQLFqZkuWOfZpZyTRyc8jygVtPln2o1M5TZCpyi7E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZNyzH0IPcpKY66M1MiJ53rsNCAzsLjtZx6rGcb+eco1hHIbcJ+iOKZAiIEoxRkhb5PWEBd8OG98TNIjElRFc75cQbSfEMBWnmyz5tyggOfFYrrGZTt4AIqhY0N7yy+0ousuhmdWD7O54XuSjyU8Do30mZiOUYX/1hAS3Ym8yy5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=EkV/fz5J; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="EkV/fz5J"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-42122ac2f38so32368735e9.1
-        for <linux-pwm@vger.kernel.org>; Tue, 09 Jul 2024 08:22:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1720538529; x=1721143329; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jfUB9ZJ69EL9GipUtbkxGBaJaIV82ecNhY+j5SzQ2gM=;
-        b=EkV/fz5JvvHmnnNHgq4YBGewGglZkbZNa2fXIL2HdY63vneGnl6IzcUIQrksC9fkk/
-         6v3opD75UBPoSNI/KtCHYFOEnw7OgYVBWRREW/oIUtl7vaXPOkkMmG9HZrakDH/E3/wT
-         AAv5y0kbebSyBPwOHK3auUFmOBjVElMRxmQ91soA6aOy2DUPXRqvytsQX5MU+1TW6s1D
-         ee+F6JjwCPNJlKf4yhsjIkNAGD3mQRc9B/V3TXOGssh95SVNZ1cDJ3rn+/xui/u2Y0kz
-         9RD6hXVj8Y3GfLtcRuwI/NQRz+mArYfTC2pAnm41DrP7QwtFEOb6h1OlYfXR4LF6/q50
-         TgEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720538529; x=1721143329;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jfUB9ZJ69EL9GipUtbkxGBaJaIV82ecNhY+j5SzQ2gM=;
-        b=Z/n13BwSi2BVnDX9FELCziWIzlK5YjOKDnpZIMot+TV0DpM1myV9A9qDWRerywrqFX
-         Qd1N8s0b+oUlbjekF4FH05C6qN/p553ne0SQWLTIyeWbtcoAFSiyaFiPzt6xAV6FstbS
-         bSF/Ur6XmvtpjWbofvg0PHYqfiQ4U7aqx1TNxi2oVWItdKEa3pjIw4wonRDOYc4QLALr
-         SuliQUE7hh16+rtKtokaL6QJZFOXcb2J4hqo8lORaLg8zbfAPwumZh4qqFSv+PyC20nG
-         Afh22DzSCS+ScFxiKMEdd3zFe/Rt+cUN4DDsQNR5whcOYlhBC9N52cm73AmFh24p3xU1
-         D8Tw==
-X-Forwarded-Encrypted: i=1; AJvYcCWdLifN6O8DOB9jWqV27bARsP+plZTeyi02JBBICYVXw7R7BlV/cN9P7T8PxEh7mb/AWHcrBtEEQ9stzXXS51KaOd/vDn/DfRUz
-X-Gm-Message-State: AOJu0YwiX1fklj40630X/n4/h91ToyhD/R4OD/u7oW965HK0CKZygkv+
-	n2Dnf3MTT/jdcOwiCKvIpQDZH2zRrsvHntfDzL2HQ4RBn5QeDsU5zTqR8QAe7JI=
-X-Google-Smtp-Source: AGHT+IFKyuCi8F65Rnjy2ONu9WDc7c8zSBudZGwZQkQFlY9b9EBnNysV/fwsOhCmIH3gVuNNKX3o0A==
-X-Received: by 2002:a05:600c:4ba4:b0:424:aa83:ef27 with SMTP id 5b1f17b1804b1-426722c11a1mr22876765e9.1.1720538528867;
-        Tue, 09 Jul 2024 08:22:08 -0700 (PDT)
-Received: from localhost (p50915e7b.dip0.t-ipconnect.de. [80.145.94.123])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4266f6f5f51sm46910255e9.25.2024.07.09.08.22.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jul 2024 08:22:08 -0700 (PDT)
-Date: Tue, 9 Jul 2024 17:22:07 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Nikita Shubin <nikita.shubin@maquefel.me>, 
-	Andy Shevchenko <andy.shevchenko@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Stephen Boyd <sboyd@kernel.org>, 
-	Hartley Sweeten <hsweeten@visionengravers.com>, Alexander Sverdlin <alexander.sverdlin@gmail.com>, 
-	Russell King <linux@armlinux.org.uk>, Lukasz Majewski <lukma@denx.de>, 
-	Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <brgl@bgdev.pl>, 
-	Andy Shevchenko <andy@kernel.org>, Michael Turquette <mturquette@baylibre.com>, 
-	Sebastian Reichel <sre@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
-	Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, 
-	Mark Brown <broonie@kernel.org>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Miquel Raynal <miquel.raynal@bootlin.com>, 
-	Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>, 
-	Damien Le Moal <dlemoal@kernel.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, 
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, 
-	Ralf Baechle <ralf@linux-mips.org>, "Wu, Aaron" <Aaron.Wu@analog.com>, Lee Jones <lee@kernel.org>, 
-	Olof Johansson <olof@lixom.net>, Niklas Cassel <cassel@kernel.org>, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org, devicetree@vger.kernel.org, 
-	dmaengine@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-spi@vger.kernel.org, netdev@vger.kernel.org, linux-mtd@lists.infradead.org, 
-	linux-ide@vger.kernel.org, linux-input@vger.kernel.org, linux-sound@vger.kernel.org, 
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Vinod Koul <vkoul@kernel.org>
-Subject: Re: [PATCH v10 00/38] ep93xx device tree conversion
-Message-ID: <fjbvn3p7nqtvllcohtmcwlyv45blulb47t62gz3xey37wrbie5@ke6xcrfq2ztq>
-References: <20240617-ep93xx-v10-0-662e640ed811@maquefel.me>
- <CAHp75VfSC9gAD9ipeWRPdQOxUp4FXqYYei-cJTs38nbz0cHpkg@mail.gmail.com>
- <48c242838c77034485a9e667dc0e867207c5beed.camel@maquefel.me>
- <241a4cf9830b0118f01e8fcf2853c62527636049.camel@maquefel.me>
- <jyvlqfvqn5bp3jmvxvwyrcqmihjohuq3o757mfph7x37kbwvtq@gtgyh4fca4fq>
- <CAL_Jsq+9Jk90HovH8bwzgCHwwh9j4mBm_Aaiq+EOj1HT3R17_Q@mail.gmail.com>
+	s=arc-20240116; t=1720577073; c=relaxed/simple;
+	bh=gyWe0xFTECVzNF3rJj5io7qNIzFZRX6UAQlXPMPC5gg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=genAn+TGeAkMezb0UMuETSR1BgoWupX/7d7DgykkrJM0WluD+ws9pQglcMMNxzQ6MBwh52zE9iUFM2f71h9kIHwOOfW6PeYkwl0qJcARioKWUzcD5UjD8dgi6FsPKc1KnqMthT3qD4AW4lOTI5b9zSWWObSIZmhpN/TzSLPW82k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
+Received: from loongson.cn (unknown [223.64.68.130])
+	by gateway (Coremail) with SMTP id _____8DxjPAn7I1mRawCAA--.8609S3;
+	Wed, 10 Jul 2024 10:04:23 +0800 (CST)
+Received: from localhost.localdomain (unknown [223.64.68.130])
+	by localhost.localdomain (Coremail) with SMTP id AQAAf8Cxbccj7I1m3OFBAA--.20688S3;
+	Wed, 10 Jul 2024 10:04:22 +0800 (CST)
+From: Binbin Zhou <zhoubinbin@loongson.cn>
+To: Binbin Zhou <zhoubb.aaron@gmail.com>,
+	Huacai Chen <chenhuacai@loongson.cn>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Juxin Gao <gaojuxin@loongson.cn>
+Cc: Huacai Chen <chenhuacai@kernel.org>,
+	linux-pwm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Xuerui Wang <kernel@xen0n.name>,
+	loongarch@lists.linux.dev,
+	Binbin Zhou <zhoubinbin@loongson.cn>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v5 1/2] dt-bindings: pwm: Add Loongson PWM controller
+Date: Wed, 10 Jul 2024 10:04:06 +0800
+Message-ID: <28e74b9f25265d7ac743d46c65a2181001eb5817.1720516327.git.zhoubinbin@loongson.cn>
+X-Mailer: git-send-email 2.43.5
+In-Reply-To: <cover.1720516327.git.zhoubinbin@loongson.cn>
+References: <cover.1720516327.git.zhoubinbin@loongson.cn>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="piveefpjjxp5n6ob"
-Content-Disposition: inline
-In-Reply-To: <CAL_Jsq+9Jk90HovH8bwzgCHwwh9j4mBm_Aaiq+EOj1HT3R17_Q@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:AQAAf8Cxbccj7I1m3OFBAA--.20688S3
+X-CM-SenderInfo: p2kr3uplqex0o6or00hjvr0hdfq/
+X-Coremail-Antispam: 1Uk129KBj93XoWxArW8Aw1fAw4fWr1kWryDArc_yoW5ArWfpF
+	sxC3s2kr10qF17u390ga48Cr1fZ3s5A3ZrKFW7Aw1DKF9xG3WYqw13KF1UZay3ur1UXFWU
+	ZF9akr47KayUCrcCm3ZEXasCq-sJn29KB7ZKAUJUUUUr529EdanIXcx71UUUUU7KY7ZEXa
+	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
+	0xBIdaVrnRJUUUBFb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
+	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1Y6r17M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
+	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
+	0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv6xkF7I0E14v2
+	6r4j6r4UJwAaw2AFwI0_Jrv_JF1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2xF0c
+	Ia020Ex4CE44I27wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jw0_
+	WrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+	xGrwCY1x0262kKe7AKxVWUAVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWU
+	JVW8JwCFI7km07C267AKxVWUXVWUAwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+	vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
+	x2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26c
+	xKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAF
+	wI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07j2MKZUUUUU=
 
+Add Loongson PWM controller binding with DT schema format using
+json-schema.
 
---piveefpjjxp5n6ob
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ .../bindings/pwm/loongson,ls7a-pwm.yaml       | 66 +++++++++++++++++++
+ MAINTAINERS                                   |  6 ++
+ 2 files changed, 72 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml
 
-Hello Rob,
+diff --git a/Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml b/Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml
+new file mode 100644
+index 000000000000..46814773e0cc
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml
+@@ -0,0 +1,66 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/loongson,ls7a-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Loongson PWM Controller
++
++maintainers:
++  - Binbin Zhou <zhoubinbin@loongson.cn>
++
++description:
++  The Loongson PWM has one pulse width output signal and one pulse input
++  signal to be measured.
++  It can be found on Loongson-2K series cpus and Loongson LS7A bridge chips.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - const: loongson,ls7a-pwm
++      - items:
++          - enum:
++              - loongson,ls2k0500-pwm
++              - loongson,ls2k1000-pwm
++              - loongson,ls2k2000-pwm
++          - const: loongson,ls7a-pwm
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  '#pwm-cells':
++    description:
++      The first cell must have a value of 0, which specifies the PWM output signal;
++      The second cell is the period in nanoseconds;
++      The third cell flag supported by this binding is PWM_POLARITY_INVERTED.
++    const: 3
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/clock/loongson,ls2k-clk.h>
++    pwm@1fe22000 {
++        compatible = "loongson,ls2k1000-pwm", "loongson,ls7a-pwm";
++        reg = <0x1fe22000 0x10>;
++        interrupt-parent = <&liointc0>;
++        interrupts = <24 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&clk LOONGSON2_APB_CLK>;
++        #pwm-cells = <3>;
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index efa9e7b653a6..973d60113105 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12989,6 +12989,12 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/i2c/loongson,ls2x-i2c.yaml
+ F:	drivers/i2c/busses/i2c-ls2x.c
+ 
++LOONGSON PWM DRIVER
++M:	Binbin Zhou <zhoubinbin@loongson.cn>
++L:	linux-pwm@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml
++
+ LOONGSON-2 SOC SERIES CLOCK DRIVER
+ M:	Yinbo Zhu <zhuyinbo@loongson.cn>
+ L:	linux-clk@vger.kernel.org
+-- 
+2.43.5
 
-On Tue, Jul 09, 2024 at 07:58:42AM -0600, Rob Herring wrote:
-> On Fri, Jul 5, 2024 at 3:21=E2=80=AFAM Uwe Kleine-K=C3=B6nig
-> <u.kleine-koenig@baylibre.com> wrote:
-> > As we're approaching the merge window and this is still unclear, I
-> > applied the pwm bits (i.e. patches 12, 13). If I understand correctly,
-> > patch 33 isn't suitable for application yet as it has a dependency on
-> > pinctrl changes in that series.
->=20
-> Now causing an error in linux-next:
->=20
-> Documentation/devicetree/bindings/pwm/cirrus,ep9301-pwm.example.dts:18:18:
-> fatal error: dt-bindings/clock/cirrus,ep9301-syscon.h: No such file or
-> directory
->    18 |         #include <dt-bindings/clock/cirrus,ep9301-syscon.h>
->       |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
-> make[2]: *** [scripts/Makefile.lib:442:
-> Documentation/devicetree/bindings/pwm/cirrus,ep9301-pwm.example.dtb]
-> Error 1
-
-Oh, I thought I had tested that, but obviously I didn't. I'll drop them
-again.
-
-Thanks for letting me know.
-
-Best regards
-Uwe
-
---piveefpjjxp5n6ob
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmaNVZwACgkQj4D7WH0S
-/k4myggAuVPCnTKtBso6CgCuYoUSZB8cGFx1+fM36OQ0B75EHfb+T+oujbdiO1op
-Q/3NTb3vIUE2+lHn6n/WxHLdeKE1vhmOgiaHW3UabNSZZyT360OZNjin7rLPlQEy
-r1DW1w3QOUIS4g8P/v7skKSis2rOiAkICHLcRdDbW5K5dHLInEshegSKVLo+4McU
-8SqKoYP4acYJFTxAC+gPkDS663k7UCsJbnbHDLstfUnuxPbtKpbDx2z8zB9IXh89
-DMwNeZq7tszOWVZ3i0QEX9fZ/DBoFWY+lSL62ZKsQgh3fJucnwXkwqCdLWahNY0k
-Wth32xU/Xhmh//FAw+1Q2VDgLI37Kw==
-=z8zY
------END PGP SIGNATURE-----
-
---piveefpjjxp5n6ob--
