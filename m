@@ -1,369 +1,113 @@
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF92416A957;
-	Sun, 21 Jul 2024 16:01:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.167.242.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DF276FDC
+	for <linux-pwm@vger.kernel.org>; Mon, 22 Jul 2024 01:08:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.36.163.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721577677; cv=none; b=NeetTky/JjiyFxPccQa/95qt+JkOFrhUenTUtgv+4PiW9a6WZKunDVXy+ZdEJOip/rm6nKh8vdI1+sA/DB1XgSmAHiCW4kS0yKFJajAIZHQKjb7kzkz9pBZef9XjGqb7jwGK3IsfDgLT0IcNE0JjfTVCfe4UT1TvbGKYqeGE7uQ=
+	t=1721610519; cv=none; b=iK1bqtDcjgUMeXSwRrLgrApi2j/QUDT611QhQvihOdh3kDUvU6Tou5fpq/OKrClJK3QYKm4FwYKwR+zY7rDze/j7P2x/5k/gttn7qylepY+3dVpwBmckk0vKHURbrHvN2669eA/YqeWWMwLE2v5FJaD8eG8RVoXhqYUs0aXLprM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721577677; c=relaxed/simple;
-	bh=iDhOO4X9y3eSBO9TaT9Yo0NX3EpU4bC0T1x93SfbK9Q=;
+	s=arc-20240116; t=1721610519; c=relaxed/simple;
+	bh=A6UbHtt51ryxjEQ56nmE97SbAYAIhVAvX6o9Y8W6vR4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RyWJZ9k2lpV3bYRUK9K5/dLDqX9BntH8lg5qSpo8owJ4TO6dymGx1K8lTMyWeZmnp4Iw+eE2BR2mUiYFW49Jo4/bRsmyCdBr13L+iNJFnauooZDqvDRUfPCDTmKGJaUnopOfkSVHs8I9nqaCzGWGbBlY2jwcY/p1aoidX/mhk5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com; spf=pass smtp.mailfrom=ideasonboard.com; dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b=KHAxgd0N; arc=none smtp.client-ip=213.167.242.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
+	 MIME-Version; b=jDOhm9YIzw/MM0jQm68o2ALZ1k95bMKhC/HUhEst9z8SGmilxYPKxzpRzRLdnDEy2RLTmio/tWBy2ruaX8Zkrfi1P6LR5WdXO2EH1YcGi+Jb5TZe62K5bTp971XTL2buOUEcwA7lUHomDPsFM1aYex5AejkUh8O1xj0l+UNopRI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=alliedtelesis.co.nz; spf=pass smtp.mailfrom=alliedtelesis.co.nz; dkim=pass (2048-bit key) header.d=alliedtelesis.co.nz header.i=@alliedtelesis.co.nz header.b=bzz4opar; arc=none smtp.client-ip=202.36.163.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=alliedtelesis.co.nz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alliedtelesis.co.nz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b="KHAxgd0N"
-Received: from pendragon.ideasonboard.com (81-175-209-231.bb.dnainternet.fi [81.175.209.231])
-	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 4EFC4226;
-	Sun, 21 Jul 2024 18:00:32 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-	s=mail; t=1721577632;
-	bh=iDhOO4X9y3eSBO9TaT9Yo0NX3EpU4bC0T1x93SfbK9Q=;
+	dkim=pass (2048-bit key) header.d=alliedtelesis.co.nz header.i=@alliedtelesis.co.nz header.b="bzz4opar"
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 8C4272C0E2F;
+	Mon, 22 Jul 2024 12:58:41 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+	s=mail181024; t=1721609921;
+	bh=Mv6CJIE83p5kF2aun4rUSQtQtj6Pahz/PyoQynZs19Y=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KHAxgd0NP1y0k+NeYh2JioElolTu+whiKixc5cltWRVPWgzNLRQAIUuyXMCJAym66
-	 DbG6lPYD8KHsK41yGa3whB+Gbra3M2J1jYK7lZYhR1JMlwAU0Ej0ze9qgqo+m5ryX0
-	 NQHtdu5lURnL38n79aEK8Eek+PZl87FP8zqRr8yo=
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To: linux-kernel@vger.kernel.org,
+	b=bzz4opar1WGUlIAT098yDYdBzrtdj/lTF9LSEoRQJ7084Xf6hzRxygQnjo/BnbYgc
+	 dyD/MWksfJ0KRxo+RKiWXHMuZ1pdQEVZ69y29cPCwF6/XiLlMTUrzIODQVab+qR6dR
+	 GMTWCEzsSb+MQGItXFesGfRddavtz1ETpdAJUP9i+lJM7+vRPrI1HTldGYk/IvhIYy
+	 /Cb8Z4Sh55XZLrSCTBqdKTryUNfTcPEjQi3Wu3L/SX9BW/6Y36f/aNEFa8Ims/QTx+
+	 QtL/k28t9hFc60AJZoByD2AhRQ+n7HId/7QT2u1SiKy2ODnjX73LrrIJy95Y8Lsi9d
+	 /wQvSMGEAzfwg==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+	id <B669daec10002>; Mon, 22 Jul 2024 12:58:41 +1200
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+	by pat.atlnz.lc (Postfix) with ESMTP id 3E4DC13ED2A;
+	Mon, 22 Jul 2024 12:58:41 +1200 (NZST)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+	id 3AC3E2808D5; Mon, 22 Jul 2024 12:58:41 +1200 (NZST)
+From: Chris Packham <chris.packham@alliedtelesis.co.nz>
+To: jdelvare@suse.com,
+	linux@roeck-us.net,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	ukleinek@kernel.org
+Cc: linux-hwmon@vger.kernel.org,
 	devicetree@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	linux-pwm@vger.kernel.org
-Cc: Bartosz Golaszewski <brgl@bgdev.pl>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Lee Jones <lee@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Rob Herring <robh@kernel.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Haibo Chen <haibo.chen@nxp.com>,
-	Clark Wang <xiaoning.wang@nxp.com>,
-	Frank Li <Frank.li@nxp.com>
-Subject: [PATCH v6 4/4] pwm: adp5585: Add Analog Devices ADP5585 support
-Date: Sun, 21 Jul 2024 19:00:49 +0300
-Message-ID: <20240721160049.20470-5-laurent.pinchart@ideasonboard.com>
-X-Mailer: git-send-email 2.44.2
-In-Reply-To: <20240721160049.20470-1-laurent.pinchart@ideasonboard.com>
-References: <20240721160049.20470-1-laurent.pinchart@ideasonboard.com>
+	linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org,
+	Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v6 2/3] dt-bindings: hwmon: adt7475: Deprecate adi,pwm-active-state
+Date: Mon, 22 Jul 2024 12:58:24 +1200
+Message-ID: <20240722005825.1800403-3-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240722005825.1800403-1-chris.packham@alliedtelesis.co.nz>
+References: <20240722005825.1800403-1-chris.packham@alliedtelesis.co.nz>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.4 cv=Gqbh+V1C c=1 sm=1 tr=0 ts=669daec1 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=4kmOji7k6h8A:10 a=VwQbUJbxAAAA:8 a=A1YWOaG1RMH6ymt1ZYoA:9 a=3ZKOabzyN94A:10 a=TmF2cBh53Nm6oE2QjmZc:22 a=AjGcO6oz07-iQ99wixmX:22
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 
-From: Clark Wang <xiaoning.wang@nxp.com>
+Now that we have fan child nodes that can specify flags for the PWM
+outputs we no longer need the adi,pwm-active-state property.
 
-The ADP5585 is a 10/11 input/output port expander with a built in keypad
-matrix decoder, programmable logic, reset generator, and PWM generator.
-This driver supports the PWM function using the platform device
-registered by the core MFD driver.
-
-The driver is derived from an initial implementation from NXP, available
-in commit 113113742208 ("MLK-25922-1 pwm: adp5585: add adp5585 PWM
-support") in their BSP kernel tree. It has been extensively rewritten.
-
-Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
-Reviewed-by: Frank Li <Frank.Li@nxp.com>
-Co-developed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 ---
-Changes since v5:
 
-- Use regmap_clear_bits() and regmap_set_bits()
-- Move ADP5585_OSC_EN bit handling to .apply()
-- Drop comma after sentinel
+Notes:
+    Changes in v5:
+    - Add ack from Rob
+    Changes in v4:
+    - None
+    Changes in v3:
+    - New
 
-Changes since v4:
+ Documentation/devicetree/bindings/hwmon/adt7475.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- Use the regmap bulk API
-
-Changes since v2:
-
-- Add missing headers
-- Sort headers
-
-Changes since v1:
-
-- Drop mutex
-- Restore R3 pinconfig to known value
-- Simplify error check in pwm_adp5585_request()
-- Don't fake PWM_POLARITY_INVERSED
-- Fix rounding of period and duty cycle
-- Drop OF match table
-- Drop empty .remove() handler
-- Allocate pwm_chip dynamically
-- Document limitations
-- Add platform ID table
-- Set struct device of_node manually
-- Merge child DT node into parent node
-
-Changes compared to the NXP original version
-
-- Add MAINTAINERS entry
-- Drop pwm_ops.owner
-- Fix compilation
-- Add prefix to compatible string
-- Switch to regmap
-- Use devm_pwmchip_add()
-- Cleanup header includes
-- White space fixes
-- Drop ADP5585_REG_MASK
-- Fix register field names
-- Use mutex scope guards
-- Clear OSC_EN when freeing PWM
-- Reorder functions
-- Clear PWM_IN_AND and PWM_MODE bits
-- Support inverted polarity
-- Clean up on/off computations
-- Fix duty cycle computation in .get_state()
-- Destroy mutex on remove
-- Update copyright
-- Update license to GPL-2.0-only
----
- MAINTAINERS               |   1 +
- drivers/pwm/Kconfig       |   7 ++
- drivers/pwm/Makefile      |   1 +
- drivers/pwm/pwm-adp5585.c | 183 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 192 insertions(+)
- create mode 100644 drivers/pwm/pwm-adp5585.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b748af2acf9f..a2087f6647e8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -534,6 +534,7 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/*/adi,adp5585*.yaml
- F:	drivers/gpio/gpio-adp5585.c
- F:	drivers/mfd/adp5585.c
-+F:	drivers/pwm/pwm-adp5585.c
- F:	include/linux/mfd/adp5585.h
- 
- ADP5588 QWERTY KEYPAD AND IO EXPANDER DRIVER (ADP5588/ADP5587)
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 1dd7921194f5..b778ecee3e9b 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -47,6 +47,13 @@ config PWM_AB8500
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-ab8500.
- 
-+config PWM_ADP5585
-+	tristate "ADP5585 PWM support"
-+	depends on MFD_ADP5585
-+	help
-+	  This option enables support for the PWM function found in the Analog
-+	  Devices ADP5585.
-+
- config PWM_APPLE
- 	tristate "Apple SoC PWM support"
- 	depends on ARCH_APPLE || COMPILE_TEST
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 90913519f11a..f24d518d20f2 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_PWM)		+= core.o
- obj-$(CONFIG_PWM_AB8500)	+= pwm-ab8500.o
-+obj-$(CONFIG_PWM_ADP5585)	+= pwm-adp5585.o
- obj-$(CONFIG_PWM_APPLE)		+= pwm-apple.o
- obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
- obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
-diff --git a/drivers/pwm/pwm-adp5585.c b/drivers/pwm/pwm-adp5585.c
-new file mode 100644
-index 000000000000..c2d2b65cd807
---- /dev/null
-+++ b/drivers/pwm/pwm-adp5585.c
-@@ -0,0 +1,183 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Analog Devices ADP5585 PWM driver
-+ *
-+ * Copyright 2022 NXP
-+ * Copyright 2024 Ideas on Board Oy
-+ *
-+ * Limitations:
-+ * - The .apply() operation executes atomically, but may not wait for the
-+ *   period to complete (this is not documented and would need to be tested).
-+ * - Disabling the PWM drives the output pin to a low level immediately.
-+ * - The hardware can only generate normal polarity output.
-+ */
-+
-+#include <asm/byteorder.h>
-+
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/math64.h>
-+#include <linux/mfd/adp5585.h>
-+#include <linux/minmax.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <linux/regmap.h>
-+#include <linux/time.h>
-+#include <linux/types.h>
-+
-+#define ADP5585_PWM_CHAN_NUM		1
-+
-+#define ADP5585_PWM_OSC_FREQ_HZ		1000000U
-+#define ADP5585_PWM_MIN_PERIOD_NS	(2ULL * NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ)
-+#define ADP5585_PWM_MAX_PERIOD_NS	(2ULL * 0xffff * NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ)
-+
-+static int pwm_adp5585_request(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct regmap *regmap = pwmchip_get_drvdata(chip);
-+
-+	return regmap_update_bits(regmap, ADP5585_PIN_CONFIG_C,
-+				  ADP5585_R3_EXTEND_CFG_MASK,
-+				  ADP5585_R3_EXTEND_CFG_PWM_OUT);
-+}
-+
-+static void pwm_adp5585_free(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct regmap *regmap = pwmchip_get_drvdata(chip);
-+
-+	regmap_update_bits(regmap, ADP5585_PIN_CONFIG_C,
-+			   ADP5585_R3_EXTEND_CFG_MASK,
-+			   ADP5585_R3_EXTEND_CFG_GPIO4);
-+}
-+
-+static int pwm_adp5585_apply(struct pwm_chip *chip,
-+			     struct pwm_device *pwm,
-+			     const struct pwm_state *state)
-+{
-+	struct regmap *regmap = pwmchip_get_drvdata(chip);
-+	u64 period, duty_cycle;
-+	u32 on, off;
-+	__le16 val;
-+	int ret;
-+
-+	if (!state->enabled) {
-+		regmap_clear_bits(regmap, ADP5585_GENERAL_CFG, ADP5585_OSC_EN);
-+		regmap_clear_bits(regmap, ADP5585_PWM_CFG, ADP5585_PWM_EN);
-+		return 0;
-+	}
-+
-+	if (state->polarity != PWM_POLARITY_NORMAL)
-+		return -EINVAL;
-+
-+	if (state->period < ADP5585_PWM_MIN_PERIOD_NS)
-+		return -EINVAL;
-+
-+	period = min(state->period, ADP5585_PWM_MAX_PERIOD_NS);
-+	duty_cycle = min(state->duty_cycle, period);
-+
-+	/*
-+	 * Compute the on and off time. As the internal oscillator frequency is
-+	 * 1MHz, the calculation can be simplified without loss of precision.
-+	 */
-+	on = div_u64(duty_cycle, NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ);
-+	off = div_u64(period, NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ) - on;
-+
-+	val = cpu_to_le16(off);
-+	ret = regmap_bulk_write(regmap, ADP5585_PWM_OFFT_LOW, &val, 2);
-+	if (ret)
-+		return ret;
-+
-+	val = cpu_to_le16(on);
-+	ret = regmap_bulk_write(regmap, ADP5585_PWM_ONT_LOW, &val, 2);
-+	if (ret)
-+		return ret;
-+
-+	/* Enable PWM in continuous mode and no external AND'ing. */
-+	ret = regmap_update_bits(regmap, ADP5585_PWM_CFG,
-+				 ADP5585_PWM_IN_AND | ADP5585_PWM_MODE |
-+				 ADP5585_PWM_EN, ADP5585_PWM_EN);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_set_bits(regmap, ADP5585_PWM_CFG, ADP5585_PWM_EN);
-+}
-+
-+static int pwm_adp5585_get_state(struct pwm_chip *chip,
-+				 struct pwm_device *pwm,
-+				 struct pwm_state *state)
-+{
-+	struct regmap *regmap = pwmchip_get_drvdata(chip);
-+	unsigned int on, off;
-+	unsigned int val;
-+	__le16 on_off;
-+	int ret;
-+
-+	ret = regmap_bulk_read(regmap, ADP5585_PWM_OFFT_LOW, &on_off, 2);
-+	if (ret)
-+		return ret;
-+	off = le16_to_cpu(on_off);
-+
-+	ret = regmap_bulk_read(regmap, ADP5585_PWM_ONT_LOW, &on_off, 2);
-+	if (ret)
-+		return ret;
-+	on = le16_to_cpu(on_off);
-+
-+	state->duty_cycle = on * (NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ);
-+	state->period = (on + off) * (NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ);
-+
-+	state->polarity = PWM_POLARITY_NORMAL;
-+
-+	regmap_read(regmap, ADP5585_PWM_CFG, &val);
-+	state->enabled = !!(val & ADP5585_PWM_EN);
-+
-+	return 0;
-+}
-+
-+static const struct pwm_ops adp5585_pwm_ops = {
-+	.request = pwm_adp5585_request,
-+	.free = pwm_adp5585_free,
-+	.apply = pwm_adp5585_apply,
-+	.get_state = pwm_adp5585_get_state,
-+};
-+
-+static int adp5585_pwm_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct adp5585_dev *adp5585 = dev_get_drvdata(dev->parent);
-+	struct pwm_chip *chip;
-+	int ret;
-+
-+	chip = devm_pwmchip_alloc(dev, ADP5585_PWM_CHAN_NUM, 0);
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+
-+	device_set_of_node_from_dev(dev, dev->parent);
-+
-+	pwmchip_set_drvdata(chip, adp5585->regmap);
-+	chip->ops = &adp5585_pwm_ops;
-+
-+	ret = devm_pwmchip_add(dev, chip);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to add PWM chip\n");
-+
-+	return 0;
-+}
-+
-+static const struct platform_device_id adp5585_pwm_id_table[] = {
-+	{ "adp5585-pwm" },
-+	{ /* Sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(platform, adp5585_pwm_id_table);
-+
-+static struct platform_driver adp5585_pwm_driver = {
-+	.driver	= {
-+		.name = "adp5585-pwm",
-+	},
-+	.probe = adp5585_pwm_probe,
-+	.id_table = adp5585_pwm_id_table,
-+};
-+module_platform_driver(adp5585_pwm_driver);
-+
-+MODULE_AUTHOR("Xiaoning Wang <xiaoning.wang@nxp.com>");
-+MODULE_DESCRIPTION("ADP5585 PWM Driver");
-+MODULE_LICENSE("GPL");
--- 
-Regards,
-
-Laurent Pinchart
+diff --git a/Documentation/devicetree/bindings/hwmon/adt7475.yaml b/Docum=
+entation/devicetree/bindings/hwmon/adt7475.yaml
+index df2b5b889e4d..79e8d62fa3b3 100644
+--- a/Documentation/devicetree/bindings/hwmon/adt7475.yaml
++++ b/Documentation/devicetree/bindings/hwmon/adt7475.yaml
+@@ -45,6 +45,7 @@ properties:
+       the pwm uses a logic low output for 100% duty cycle. If set to 1 t=
+he pwm
+       uses a logic high output for 100% duty cycle.
+     $ref: /schemas/types.yaml#/definitions/uint32-array
++    deprecated: true
+     minItems: 3
+     maxItems: 3
+     items:
+@@ -121,7 +122,6 @@ examples:
+         reg =3D <0x2e>;
+         adi,bypass-attenuator-in0 =3D <1>;
+         adi,bypass-attenuator-in1 =3D <0>;
+-        adi,pwm-active-state =3D <1 0 1>;
+         adi,pin10-function =3D "smbalert#";
+         adi,pin14-function =3D "tach4";
+         #pwm-cells =3D <4>;
+--=20
+2.45.2
 
