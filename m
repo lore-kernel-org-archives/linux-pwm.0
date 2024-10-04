@@ -1,60 +1,60 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B72E1D5AD1
-	for <linux-pwm@vger.kernel.org>; Fri,  4 Oct 2024 21:48:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 255811D8DF8
+	for <linux-pwm@vger.kernel.org>; Fri,  4 Oct 2024 21:48:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728078536; cv=none; b=T7nwhK571fe71NxD5El2sT6hrm7UOf11BVWAIqleSV9S5l7Ex8qTNGTDYC0R2tGLUEC4nW33F68brtLSS8p/frngoVz8f1YuuBuc0ZVJ1l7wYW+0Q+RPKuR8hbaDEsdtNJ+TPRJRHtKzdEZaM+5OMOKAUGBzLWeG9x2n4hrLcf0=
+	t=1728078539; cv=none; b=pleTXLlvFqzw3EDi2+OLP6Qj4omdOVQcg27ob18Y3+HScIMt5BdxZBvR4P4RK5id7KMYSRwgOal1raBTvHxOTj9Q09vIDSTAcE+2omqhznTMUd8oo4ago+4tUpUl+GT4Y7ybQs3jTTaxHLdFoThOw4uhQCzqlSITzn6uBbZ/n04=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728078536; c=relaxed/simple;
-	bh=jVSeA1GybXKEqinyGc0o/mVBc+cGPLYZuh+OWslR0Lg=;
+	s=arc-20240116; t=1728078539; c=relaxed/simple;
+	bh=MPX+gxSXSRVkD6yBFhZnDYs0/lqv0mAf/wM0wEpSIqo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=UkTON4Vn2PHD1+beXLBASPZ5e47ZMolC8SDK2amZxT0AOZqR0gCgyMRQgfak80oU2oGEwSliwA50N9e/WmF5ii6ANBskXMhSLU1L9WxMqe6lm90/s9wVdGAtFS6n+ebnwuQ+cV5EA6WdW4R6rqAjncg/EiZjjgdWS41LHAWppg0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=nXCKFoPh; arc=none smtp.client-ip=209.85.128.51
+	 In-Reply-To:To:Cc; b=f29lK3aSn9HBViuytebeem2YKTUQXq2I/AvjtJ4VLBxDl08ytBtTxhEfSTOmV2JobU4CCUqtnGamqy5iUs+E7yHNC5bVnkZvQMWTQGdEwkgzngGgCd1BGNsLD+xKR1fmbWU25Bzr2Erl2jeZ68vCwqSX2AkfQDQKBtAQ7H/bCf8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=TgKMp65B; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="nXCKFoPh"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-42cbbb1727eso25972395e9.2
-        for <linux-pwm@vger.kernel.org>; Fri, 04 Oct 2024 14:48:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="TgKMp65B"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-42e748f78d6so23402755e9.0
+        for <linux-pwm@vger.kernel.org>; Fri, 04 Oct 2024 14:48:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728078531; x=1728683331; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728078534; x=1728683334; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Ws6OvwIpBgzbrhXwN/bI0GwmZw37Oa3ub3+JwbGz+M4=;
-        b=nXCKFoPh+Zk0Y08lyb2vuk4nDlt1ReSas6f2gHvyz9JN3lDiQ7JJRXx+l+za0FPjFb
-         jrJdcWxrHl7SIf553HuN5NSQs/QzmVSGA7diN+RKuU6u0dAuPZqWLI1ITOBhyNoqIQjQ
-         HYXXt0QjffTXelSfUNKtalD0d2rGLSdR+Y3maVxHoQLw+oanE05xpR/2ZZYo2r6dLoB7
-         Z8NCFX9dhiXpZWy1YkGc+384e7PucbPsrjljYyU7VmC2m6cAmmCv+5q3NpYG2atC+C94
-         i+yWHXsYlYdjwRTehnwzPgwXld3pBZ8G4MIoLE7EFTThXN8qbBJLYRFTAnuJfmk4Px5M
-         fWYQ==
+        bh=96IaB7ZOrC1D6CinpPMwTazn0uYiER61veLcA10WMPk=;
+        b=TgKMp65BWBgaiZe4MOI9jjIHWh19LGaq7O7dK2viVnZrlW1phP6qeXdVQBXowvooyU
+         +uPOPsWmUU+LwYLUkS4ovV/6nQL8XwWxpkcS/tI158KdrTLz5q0xh7xo2gDix7nGTXVl
+         VjbWXb/kBb3VNtrz126ki2QVKhghamfl5n0XwTM2ph9zo0PZr/RW2TnH8yxLr5wI6uof
+         vVCVVBhtKlYXxH3aXzkTqCoRj9/7jJ65PM/inZnZlkG8uH7SJUVgM1kuGZx1cTKhGpf7
+         mUlGQKW9NF/QxQLG/qz0sQWvqpqX/vipqjlw8Yj3DqbXyv/5I5sdHQyhX7YQpcPAJunI
+         bgvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728078531; x=1728683331;
+        d=1e100.net; s=20230601; t=1728078534; x=1728683334;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Ws6OvwIpBgzbrhXwN/bI0GwmZw37Oa3ub3+JwbGz+M4=;
-        b=dfzE8scmFl9dMd8CNVT5rWfd+KbGC+593ns09+N0lsn9l1SEwjIbRYvwjUNQjLU+dD
-         +DxO8YIdIvKjzHSgwXsILj6TQaxtaR9/ea0yNqjrTNcG6sfGSQb4ahf1gtp5PJH0WYKS
-         RkEcpC8/qHUBgzlqxcEzgs4XKJoN12yUGIRFtPuJzqDuQvbk3XT5Hb/SL2Dfwyuee45f
-         uDcj46sRaUpkVBjvpdAgFVCPDXzjPOwSLMkC7oz6no/QtOumL9YlwZfyGwxgBpCo03gd
-         QPxQa5lM/2GX1whb13N99fV+/oynqK1xsaWC+zwWb/9ZKSmLRbgfd6KAr+OMMb1BuxYK
-         UL6Q==
-X-Gm-Message-State: AOJu0YwYV6XHht7+pyngjJ5op34Fk2/4tmiQYYcF+dEl18sMKIPAjNLw
-	fIDzVsiJgP+D6l2NjC0YCvhuROgyICuCYNqfgrQQqzx3+EIU+t/LObduJy+59DjTY7etClruaPk
-	I
-X-Google-Smtp-Source: AGHT+IEp8lVDApG6/0v+gqntIFP0H2r8NnVYzaeUF9YEnuWGMOZ09DXkJeh3ASsOFaRjuQwShIJQWQ==
-X-Received: by 2002:a05:600c:4e89:b0:42c:b750:19d8 with SMTP id 5b1f17b1804b1-42f85a700ecmr30381585e9.4.1728078531059;
-        Fri, 04 Oct 2024 14:48:51 -0700 (PDT)
+        bh=96IaB7ZOrC1D6CinpPMwTazn0uYiER61veLcA10WMPk=;
+        b=OFI6CiEZOpuyQwhZKtchLQ2qwz88W75DSs+toFhNU3Qbszfn3GQWrNSR2nGueGtkaL
+         3SVjzf9ZrkZqXGpTYVhf7d9HbQ/teyOTQvZN6Vr2FndD1YDdz9kmyu0T0/nnJKq56Jrh
+         4W2ck/b7u9h/56PxDMw4lzAZFAak9LuM2kPPN9JCLhv9mkmtuUC7ZAmSZuTS++NaF1e2
+         B9+2pQW/zGlBVKRNP8WMNEgm0on3qjtiVDbBXEcs7XENUCyGTAhPI1eA+O8LeW/VrIlx
+         67U3cTIGHJWQoQoqX8Wexs4j8SVeT3pFtBWUkTkbJKHUvR8M5PDXVF6IXp45CLkmT7v4
+         F05g==
+X-Gm-Message-State: AOJu0YzdX5kPosB8k8rdH/Ww8Bet74hYQYThTwBdWnC7ob3lrG+/xLuk
+	AReBV4+2gy3CdAkASLwSxHSCs/JriTX1KdvcPVT7eLgekI8WBydaTOYAVrxW/mc=
+X-Google-Smtp-Source: AGHT+IHFFnL/fyuYp/t9j06RFOtG2IGJ5n8dGdwUIEZ3jSTxTbhe/WFN270jW/R88z4lbqNHbwhd3w==
+X-Received: by 2002:a05:600c:4514:b0:42f:7e87:3438 with SMTP id 5b1f17b1804b1-42f859b1931mr31524045e9.0.1728078534077;
+        Fri, 04 Oct 2024 14:48:54 -0700 (PDT)
 Received: from [127.0.1.1] (frhb82016ds.ikexpress.com. [185.246.87.17])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f86b4ab63sm24680375e9.40.2024.10.04.14.48.49
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f86b4ab63sm24680375e9.40.2024.10.04.14.48.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2024 14:48:50 -0700 (PDT)
+        Fri, 04 Oct 2024 14:48:52 -0700 (PDT)
 From: Guillaume Stols <gstols@baylibre.com>
-Date: Fri, 04 Oct 2024 21:48:38 +0000
-Subject: [PATCH v3 04/10] Documentation: iio: Document ad7606 driver
+Date: Fri, 04 Oct 2024 21:48:40 +0000
+Subject: [PATCH v3 06/10] iio: adc: ad7606: Add PWM support for conversion
+ trigger
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -62,8 +62,8 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241004-ad7606_add_iio_backend_support-v3-4-38757012ce82@baylibre.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20241004-ad7606_add_iio_backend_support-v3-6-38757012ce82@baylibre.com>
 References: <20241004-ad7606_add_iio_backend_support-v3-0-38757012ce82@baylibre.com>
 In-Reply-To: <20241004-ad7606_add_iio_backend_support-v3-0-38757012ce82@baylibre.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
@@ -82,201 +82,312 @@ Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
  Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
  Guillaume Stols <gstols@baylibre.com>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1728078523; l=6859;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1728078523; l=9431;
  i=gstols@baylibre.com; s=20240417; h=from:subject:message-id;
- bh=jVSeA1GybXKEqinyGc0o/mVBc+cGPLYZuh+OWslR0Lg=;
- b=GaY3nxCWEFM2NgxV+4xbSLb9wBvMIgJLyCLCMlhKHcOFI1tfKQUpHa2pswAJP8b6Kwp3hWoSV
- OSyZmLuSxlvCFOk2/W62joq0HB/6y8CTGWodgDZ+b5XgM4NR8ZrngxU
+ bh=MPX+gxSXSRVkD6yBFhZnDYs0/lqv0mAf/wM0wEpSIqo=;
+ b=4lyU/0RkOrYql/6qWrpQY+utIuSAhkyIj/LBny7Fc0wc5mR+tU/W2e0ZmJmp+wg5rwM4YAdJL
+ p/E9i2QG639Dn0R+45EH3vyCDdrYXUcS7wt5hVV19v9/JF0e7rKqumL
 X-Developer-Key: i=gstols@baylibre.com; a=ed25519;
  pk=XvMm5WHuV67sGYOJZqIYzXndbaJOlNd8Q6li6vnb4Cs=
 
-The Analog Devices Inc. AD7606 (and similar chips) are complex ADCs that
-will benefit from a detailed driver documentation.
+Until now, the conversion were triggered by setting high the GPIO
+connected to the convst pin. This commit gives the possibility to
+connect the convst pin to a PWM.
+Connecting a PWM allows to have a better control on the samplerate,
+but it must be handled with care, as it is completely decorrelated of
+the driver's busy pin handling.
+Hence it is not recommended to be used "as is" but must be exploited
+in conjunction with IIO backend, and for now only a mock functionality
+is enabled, i.e PWM never swings, but is used as a GPIO, i.e duty_cycle
+== period equals high state, duty_cycle == 0 equals low state.
 
-This documents the current features supported by the driver.
+This mock functionality will be disabled after the IIO backend usecase
+is introduced.
 
 Signed-off-by: Guillaume Stols <gstols@baylibre.com>
 ---
- Documentation/iio/ad7606.rst | 145 +++++++++++++++++++++++++++++++++++++++++++
- Documentation/iio/index.rst  |   1 +
- MAINTAINERS                  |   1 +
- 3 files changed, 147 insertions(+)
+ drivers/iio/adc/ad7606.c | 164 ++++++++++++++++++++++++++++++++++++++++-------
+ drivers/iio/adc/ad7606.h |   2 +
+ 2 files changed, 144 insertions(+), 22 deletions(-)
 
-diff --git a/Documentation/iio/ad7606.rst b/Documentation/iio/ad7606.rst
-new file mode 100644
-index 000000000000..a1173708b489
---- /dev/null
-+++ b/Documentation/iio/ad7606.rst
-@@ -0,0 +1,145 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
+diff --git a/drivers/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
+index d1aec53e0bcf..224ffaf3dbff 100644
+--- a/drivers/iio/adc/ad7606.c
++++ b/drivers/iio/adc/ad7606.c
+@@ -13,10 +13,12 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/property.h>
++#include <linux/pwm.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
++#include <linux/units.h>
+ #include <linux/util_macros.h>
+ 
+ #include <linux/iio/buffer.h>
+@@ -299,6 +301,82 @@ static int ad7606_reg_access(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static int ad7606_pwm_set_high(struct ad7606_state *st)
++{
++	struct pwm_state cnvst_pwm_state;
++	int ret;
 +
-+=============
-+AD7606 driver
-+=============
++	if (!st->cnvst_pwm)
++		return -EINVAL;
 +
-+ADC driver for Analog Devices Inc. AD7606 and similar devices. The module name
-+is ``ad7606``.
++	pwm_get_state(st->cnvst_pwm, &cnvst_pwm_state);
++	cnvst_pwm_state.enabled = true;
++	cnvst_pwm_state.duty_cycle = cnvst_pwm_state.period;
 +
-+Supported devices
-+=================
++	ret = pwm_apply_might_sleep(st->cnvst_pwm, &cnvst_pwm_state);
++	/* sleep 2 µS to let finish the current pulse */
++	fleep(2)
 +
-+The following chips are supported by this driver:
++	return ret;
++}
 +
-+* `AD7605 <https://www.analog.com/en/products/ad7605.html>`_
-+* `AD7606 <https://www.analog.com/en/products/ad7606.html>`_
-+* `AD7606B <https://www.analog.com/en/products/ad7606b.html>`_
-+* `AD7616 <https://www.analog.com/en/products/ad7616.html>`_
++static int ad7606_pwm_set_low(struct ad7606_state *st)
++{
++	struct pwm_state cnvst_pwm_state;
++	int ret;
 +
-+Supported features
-+==================
++	if (!st->cnvst_pwm)
++		return -EINVAL;
 +
-+SPI wiring modes
-+----------------
++	pwm_get_state(st->cnvst_pwm, &cnvst_pwm_state);
++	cnvst_pwm_state.enabled = true;
++	cnvst_pwm_state.duty_cycle = 0;
 +
-+These ADCs can output data on several SDO lines (1/2/4/8). The driver
-+currently supports only 1 SDO line.
++	ret = pwm_apply_might_sleep(st->cnvst_pwm, &cnvst_pwm_state);
++	/* sleep 2 µS to let finish the current pulse */
++	fleep(2)
 +
-+Parallel wiring mode
-+--------------------
++	return ret;
++}
 +
-+There is also a parallel interface, with 16 lines (that can be reduced to 8 in
-+byte mode). The parallel interface is selected by declaring the device as
-+platform in the device tree (with no io-backends node defined, see below).
++static bool ad7606_pwm_is_swinging(struct ad7606_state *st)
++{
++	struct pwm_state cnvst_pwm_state;
 +
-+IIO-backend mode
-+----------------
++	if (!st->cnvst_pwm)
++		return false;
 +
-+This mode allows to reach the best sample rates, but it requires an external
-+hardware (eg HDL or APU) to handle the low level communication.
-+The backend mode is enabled when through the definition of the "io-backends"
-+property in the device tree.
++	pwm_get_state(st->cnvst_pwm, &cnvst_pwm_state);
 +
-+The reference configuration for the current implementation of IIO-backend mode
-+is the HDL reference provided by ADI:
-+https://wiki.analog.com/resources/eval/user-guides/ad7606x-fmc/hdl
++	return cnvst_pwm_state.duty_cycle != cnvst_pwm_state.period &&
++	       cnvst_pwm_state.duty_cycle != 0;
++}
 +
-+This implementation embeds an IIO-backend compatible IP (adi-axi-adc) and a PWM
-+connected to the conversion trigger pin.
++static int ad7606_set_sampling_freq(struct ad7606_state *st, unsigned long freq)
++{
++	struct pwm_state cnvst_pwm_state;
++	bool is_swinging = ad7606_pwm_is_swinging(st);
++	bool is_high;
 +
-+.. code-block::
++	if (freq == 0)
++		return -EINVAL;
 +
-+    +---+                                       +----------------------------
-+    |   |               +-------+               |AD76xx
-+    | A |  controls     |       |               |
-+    | D |-------------->|  PWM  |-------------->| cnvst
-+    | 7 |               |       |               |
-+    | 6 |               +-------+               |
-+    | 0 | controls  +-----------+-----------+   |
-+    | 6 |---------->|           |           |<--| frstdata
-+    |   |           | Backend   |  Backend  |<--| busy
-+    | D |           | Driver    |           |   |
-+    | R |           |           |           |-->| clk
-+    | I |  requests |+---------+| DMA       |   |
-+    | V |----------->|  Buffer ||<----      |<=>| DATA
-+    | E |           |+---------+|           |   |
-+    | R |           +-----------+-----------+   |
-+    |   |-------------------------------------->| reset/configuration gpios
-+    +---+                                       +-----------------------------
++	/* Retrieve the previous state. */
++	pwm_get_state(st->cnvst_pwm, &cnvst_pwm_state);
++	is_high = cnvst_pwm_state.duty_cycle == cnvst_pwm_state.period;
 +
++	cnvst_pwm_state.period = DIV_ROUND_UP_ULL(NSEC_PER_SEC, freq);
++	cnvst_pwm_state.polarity = PWM_POLARITY_NORMAL;
++	if (is_high)
++		cnvst_pwm_state.duty_cycle = cnvst_pwm_state.period;
++	else if (is_swinging)
++		cnvst_pwm_state.duty_cycle = cnvst_pwm_state.period / 2;
++	else
++		cnvst_pwm_state.duty_cycle = 0;
 +
-+Software and hardware modes
-+---------------------------
++	return pwm_apply_might_sleep(st->cnvst_pwm, &cnvst_pwm_state);
++}
 +
-+While all the AD7606/AD7616 series parts can be configured using GPIOs, some of
-+them can be configured using register.
+ static int ad7606_read_samples(struct ad7606_state *st)
+ {
+ 	unsigned int num = st->chip_info->num_channels - 1;
+@@ -325,6 +403,7 @@ static irqreturn_t ad7606_trigger_handler(int irq, void *p)
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	/* The rising edge of the CONVST signal starts a new conversion. */
+ 	gpiod_set_value(st->gpio_convst, 1);
++	ad7606_pwm_set_high(st);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -337,7 +416,13 @@ static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch,
+ 	const struct iio_chan_spec *chan;
+ 	int ret;
+ 
+-	gpiod_set_value(st->gpio_convst, 1);
++	if (st->gpio_convst) {
++		gpiod_set_value(st->gpio_convst, 1);
++	} else {
++		ret = ad7606_pwm_set_high(st);
++		if (ret < 0)
++			return ret;
++	}
+ 	ret = wait_for_completion_timeout(&st->completion,
+ 					  msecs_to_jiffies(1000));
+ 	if (!ret) {
+@@ -364,6 +449,11 @@ static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch,
+ 	}
+ 
+ error_ret:
++	if (!st->gpio_convst) {
++		ret = ad7606_pwm_set_low(st);
++		if (ret < 0)
++			return ret;
++	}
+ 	gpiod_set_value(st->gpio_convst, 0);
+ 
+ 	return ret;
+@@ -663,8 +753,9 @@ static int ad7606_request_gpios(struct ad7606_state *st)
+ {
+ 	struct device *dev = st->dev;
+ 
+-	st->gpio_convst = devm_gpiod_get(dev, "adi,conversion-start",
+-					 GPIOD_OUT_LOW);
++	st->gpio_convst = devm_gpiod_get_optional(dev, "adi,conversion-start",
++						  GPIOD_OUT_LOW);
 +
-+The chips that support software mode have more values available for configuring
-+the device, as well as more settings, and allow to control the range and
-+calibration per channel.
+ 	if (IS_ERR(st->gpio_convst))
+ 		return PTR_ERR(st->gpio_convst);
+ 
+@@ -709,6 +800,7 @@ static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
+ 
+ 	if (iio_buffer_enabled(indio_dev)) {
+ 		gpiod_set_value(st->gpio_convst, 0);
++		ad7606_pwm_set_low(st);
+ 		iio_trigger_poll_nested(st->trig);
+ 	} else {
+ 		complete(&st->completion);
+@@ -733,6 +825,7 @@ static int ad7606_buffer_postenable(struct iio_dev *indio_dev)
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+ 	gpiod_set_value(st->gpio_convst, 1);
++	ad7606_pwm_set_high(st);
+ 
+ 	return 0;
+ }
+@@ -742,6 +835,7 @@ static int ad7606_buffer_predisable(struct iio_dev *indio_dev)
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+ 	gpiod_set_value(st->gpio_convst, 0);
++	ad7606_pwm_set_low(st);
+ 
+ 	return 0;
+ }
+@@ -875,6 +969,11 @@ static int ad7606_chan_scales_setup(struct iio_dev *indio_dev)
+ 	return 0;
+ }
+ 
++static void ad7606_pwm_disable(void *data)
++{
++	pwm_disable(data);
++}
 +
-+The following settings are available per channel in software mode:
-+ - Scale
-+
-+Also, there is a broader choice of oversampling ratios in software mode.
-+
-+Conversion triggering
-+---------------------
-+
-+The conversion can be triggered by two distinct ways:
-+
-+ - A GPIO is connected to the conversion trigger pin, and this GPIO is controlled
-+   by the driver directly.  In this configuration, the driver sets back the
-+   conversion trigger pin to high as soon as it has read all the conversions.
-+
-+ - An external source is connected to the conversion trigger pin. In the
-+   current implementation, it must be a PWM. In this configuration, the driver
-+   does not control directly the conversion trigger pin. Instead, it can
-+   control the PWM's frequency. This trigger is enabled only for iio-backend.
-+
-+Reference voltage
-+-----------------
-+
-+2 possible reference voltage sources are supported:
-+
-+ - Internal reference (2.5V)
-+ - External reference (2.5V)
-+
-+The source is determined by the device tree. If ``refin-supply`` is present,
-+then the external reference is used, otherwise the internal reference is used.
-+
-+Oversampling
-+------------
-+
-+This family supports oversampling to improve SNR.
-+In software mode, the following ratios are available:
-+1 (oversampling disabled)/2/4/8/16/32/64/128/256.
-+
-+Unimplemented features
-+----------------------
-+
-+- 2/4/8 SDO lines
-+- CRC indication
-+- Calibration
-+
-+Device buffers
-+==============
-+
-+IIO triggered buffer
-+--------------------
-+
-+This driver supports IIO triggered buffers, with a "built in" trigger, i.e the
-+trigger is allocated and linked by the driver, and a new conversion is triggered
-+as soon as the samples are transferred, and a timestamp channel is added to make
-+up for the potential jitter induced by the delays in the interrupt handling.
-+
-+IIO backend buffer
-+------------------
-+
-+When IIO backend is used, the trigger is not needed, and the sample rate is
-+considered as stable. There is no timestamp channel. The communication is
-+delegated to an external logic, called a backend, and the backend's driver
-+handles the buffer. When this mode is enabled, the driver cannot control the
-+conversion pin, because the busy pin is bound to the backend.
-+
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-index dfcf9618568a..88bc36326b74 100644
---- a/Documentation/iio/index.rst
-+++ b/Documentation/iio/index.rst
-@@ -21,6 +21,7 @@ Industrial I/O Kernel Drivers
-    ad4000
-    ad4695
-    ad7380
-+   ad7606
-    ad7944
-    adis16475
-    adis16480
-diff --git a/MAINTAINERS b/MAINTAINERS
-index bcdf43f37660..45c33d1a4403 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1561,6 +1561,7 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
- F:	Documentation/devicetree/bindings/iio/*/adi,*
- F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml
- F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-+F:	Documentation/iio/ad7606.rst
- F:	drivers/iio/*/ad*
- F:	drivers/iio/adc/ltc249*
- F:	drivers/iio/amplifiers/hmc425a.c
+ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 		 const char *name, unsigned int id,
+ 		 const struct ad7606_bus_ops *bops)
+@@ -951,20 +1050,48 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 	if (ret)
+ 		return ret;
+ 
+-	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
+-					  indio_dev->name,
+-					  iio_device_id(indio_dev));
+-	if (!st->trig)
+-		return -ENOMEM;
+-
+-	st->trig->ops = &ad7606_trigger_ops;
+-	iio_trigger_set_drvdata(st->trig, indio_dev);
+-	ret = devm_iio_trigger_register(dev, st->trig);
+-	if (ret)
+-		return ret;
++	/* If convst pin is not defined, setup PWM. */
++	if (!st->gpio_convst) {
++		st->cnvst_pwm = devm_pwm_get(dev, NULL);
++		if (IS_ERR(st->cnvst_pwm))
++			return PTR_ERR(st->cnvst_pwm);
++		/* The PWM is initialized at 1MHz to have a fast enough GPIO emulation. */
++		ret = ad7606_set_sampling_freq(st, 1 * MEGA);
++		if (ret)
++			return ret;
+ 
+-	indio_dev->trig = iio_trigger_get(st->trig);
++		ret = ad7606_pwm_set_low(st);
++		if (ret)
++			return ret;
+ 
++		/*
++		 * PWM is not disabled when sampling stops, but instead its duty cycle is set
++		 * to 0% to be sure we have a "low" state. After we unload the driver, let's
++		 * disable the PWM.
++		 */
++		ret = devm_add_action_or_reset(dev, ad7606_pwm_disable,
++					       st->cnvst_pwm);
++		if (ret)
++			return ret;
++	} else {
++		st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
++						  indio_dev->name,
++						  iio_device_id(indio_dev));
++		if (!st->trig)
++			return -ENOMEM;
++		st->trig->ops = &ad7606_trigger_ops;
++		iio_trigger_set_drvdata(st->trig, indio_dev);
++		ret = devm_iio_trigger_register(dev, st->trig);
++		if (ret)
++			return ret;
++		indio_dev->trig = iio_trigger_get(st->trig);
++		ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++						      &iio_pollfunc_store_time,
++						      &ad7606_trigger_handler,
++						      &ad7606_buffer_ops);
++		if (ret)
++			return ret;
++	}
+ 	ret = devm_request_threaded_irq(dev, irq,
+ 					NULL,
+ 					&ad7606_interrupt,
+@@ -973,13 +1100,6 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+-					      &iio_pollfunc_store_time,
+-					      &ad7606_trigger_handler,
+-					      &ad7606_buffer_ops);
+-	if (ret)
+-		return ret;
+-
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL_NS_GPL(ad7606_probe, IIO_AD7606);
+diff --git a/drivers/iio/adc/ad7606.h b/drivers/iio/adc/ad7606.h
+index fc05a4afa3b8..760cf5e2ecb6 100644
+--- a/drivers/iio/adc/ad7606.h
++++ b/drivers/iio/adc/ad7606.h
+@@ -115,6 +115,7 @@ struct ad7606_chan_scale {
+  * @bops		bus operations (SPI or parallel)
+  * @chan_scales		scale configuration for channels
+  * @oversampling	oversampling selection
++ * @cnvst_pwm		pointer to the PWM device connected to the cnvst pin
+  * @base_address	address from where to read data in parallel operation
+  * @sw_mode_en		software mode enabled
+  * @oversampling_avail	pointer to the array which stores the available
+@@ -142,6 +143,7 @@ struct ad7606_state {
+ 	const struct ad7606_bus_ops	*bops;
+ 	struct ad7606_chan_scale	chan_scales[AD760X_MAX_CHANNELS];
+ 	unsigned int			oversampling;
++	struct pwm_device		*cnvst_pwm;
+ 	void __iomem			*base_address;
+ 	bool				sw_mode_en;
+ 	const unsigned int		*oversampling_avail;
 
 -- 
 2.34.1
