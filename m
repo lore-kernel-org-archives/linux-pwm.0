@@ -1,60 +1,60 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA0011B4F0A
-	for <linux-pwm@vger.kernel.org>; Fri,  4 Oct 2024 21:48:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D44B91D89E8
+	for <linux-pwm@vger.kernel.org>; Fri,  4 Oct 2024 21:48:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728078534; cv=none; b=DtSDU3pEylxb3OcskXUoOC6e+edQUJCohFfuUyx7h8klYjxkmk1mM/q04Fa6vT8RP4hdA9azjDaT1M6SIGAKJoz4HqjHzhNNAdxSabWp31R7VqbKeYGclXzxCKw5kc5qvWKezxnHZqizmkaqNydMpWkTHOxRVNA4CZpTvuP9sds=
+	t=1728078536; cv=none; b=V9+TC5F5GVKmo428wTDXWDlpVQ7k+o0LtL5mqBRqRr1WOuqFFFiFDdOznQLav9rgSoUoQ6kjjdvq5iAyJqtu4Bz0UypC79qc7BGM5/dl6u9nurrU3mxX+o25tfACAij1spBpgWyMTB4plAvUpVZGHqPVU8sr+GUzcWVBBkMcSPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728078534; c=relaxed/simple;
-	bh=dW6NuJWAL0tnqJGgsGPu8j1VoVP4zCeNUzqvDunBNqs=;
+	s=arc-20240116; t=1728078536; c=relaxed/simple;
+	bh=5Ycpog1y0e3qZRjWPMcOyX7VO13ZytSC6dJsgRajg3E=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=XhbHKPLzhXCX68pttPLH/JTgO9NzdxYyj1A+nEgRciZN0OU4DkzMvYT4pK5M+o3pHemHi+Z+Y3sRxzyEOLu9INw42y0GgFZuH5KMT7Vhyu6YWuLkP9IeQNS8jEkI75OEyGPX4/vf13fZAVgbOC+YAkNGpiQXuMCC0UwIJHi8XuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=KHbKMBzO; arc=none smtp.client-ip=209.85.167.42
+	 In-Reply-To:To:Cc; b=l8U7PMirUlXYoq4cgNYwz73xPyzk1rjVA3jSw0PAg27FsaMokXOkdjcdHwA4ZSvnZhEnEQ4qYNKq0zKPRy/GdLkQL+P+LSTR/dYOCIttIsTbtV71VWN74gUQQlmJEJnsUv4w/kUzoVVajvHu0qrZDFj/VNmUJ85VVBJHVutQmNk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Jzbd2nIU; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="KHbKMBzO"
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5398e4ae9efso3034151e87.1
-        for <linux-pwm@vger.kernel.org>; Fri, 04 Oct 2024 14:48:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Jzbd2nIU"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-42cb0f28bfbso22589025e9.1
+        for <linux-pwm@vger.kernel.org>; Fri, 04 Oct 2024 14:48:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728078529; x=1728683329; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728078532; x=1728683332; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Zi1jIhrpiRkiS4x4FePba+v93fkZAzTXFTnvV0Q7SJI=;
-        b=KHbKMBzOUkxinDQspNRqlLP9ZOOyfi6oFUC0tlAEzXGYDRRq9n2lJ3pAfBu6DymGB1
-         2fJmYNG21/XX3Whkxuf1dPcmVe925V4lEjK5oOht8EIc5v5HFqhhbSITVVR8co/cdPZB
-         nfeeSQhgaC4OZDQSgNVaZclcAwfZj/9U8Jh2TXw6zJKjOGI0yezjV2s1bdp9ZhqP3NXo
-         aGlc7KsarJFeJQBlFoB7LlsBjTcrekddx5p2Hh88YZrKlaKjIn1xg/rKCO1hI+8waQ5C
-         cpZWAY71bFDxtjCwCG42HEJ46s9wJW9l0xokQkG/q4shKIpFb2bMQosgnwtk+dYS20Sn
-         p49Q==
+        bh=okScCkfMzGgedKYFN2GyI9KcfEQ5eNPKFeZu3bGaiC0=;
+        b=Jzbd2nIUne4lFi9dSUxNJS0oZFjhni8Bb8BJsEdTLRFRKPYrr05O0b5Vp7X2U/nHu6
+         bx/Lo6d4VmUOB2LfEaCTFQe7hlmH02hRhAogBsQQSTfZ7nbjlSMe4q9Pwrzot1iPzvX7
+         3XBAIJatpGpgOhxJM75JZbSFhPKFVC2tU92qLg1xCoNXHItXvOk5CCk47HHIXgci/2Eh
+         QjcAsScj4EWabOMnl2vfFGwsMJtp2EMGP3VrER0IFidZUTMJ0r+OtV/LFlcvvcODk1+z
+         vId40RegUaNO6wjl+VZU2cqOH/3r9SZExMXtbWOvICXJSDo5JCfUEwUBojpEqgsk7bff
+         9b4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728078529; x=1728683329;
+        d=1e100.net; s=20230601; t=1728078532; x=1728683332;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Zi1jIhrpiRkiS4x4FePba+v93fkZAzTXFTnvV0Q7SJI=;
-        b=M15KfnzooPY/RpJZfrWNSFDBgEfsVRZdiGW0N/n8o+P7PEFPKaO68YslWHpZ8/JUul
-         sQEgg4EUk2EHamCgF3aPZg49+xknY95Nv9K1MuVK3PB6HzNF+oiKe6CcyQ/TnH/lyAzC
-         07+QqSbb9lmdfsfgAd0KO6BpdLboiZuLSXZkxZUYFyfA90ZO5a/SMVB6g+ERXqQQRZKk
-         8EY+aQqy3421FbfA311n0FLRFgiIsS7AfomSmDHVPuzy3/GmdtZEutp3y/Q9YFA79rhG
-         PS0+iBcnVAC6TWVYVzy8meTnIbfRdU+VJK/yp0vfeUrbEy3EOzMl4/A1jCGOSVIFhm4F
-         2J/g==
-X-Gm-Message-State: AOJu0Yx2hboLBh6k1CHIiDQezRPybFgyencwnJw6YNFr6IR5pfVJkJDr
-	2yRykWvncPbx7w0GU7NlbRNU7dnYqEZUBqZiN0CuF1C/9/egSu88GE3+II4qPuQ=
-X-Google-Smtp-Source: AGHT+IG9vKnlCyYpJNJyXVcqaNvjMhM227pXj314Ws0xBmbWWcURKzDXKJu6hWgq+z1B4KbbgtI7zg==
-X-Received: by 2002:a05:6512:3090:b0:52c:e1cd:39b7 with SMTP id 2adb3069b0e04-539ab85be3fmr2837875e87.5.1728078528670;
-        Fri, 04 Oct 2024 14:48:48 -0700 (PDT)
+        bh=okScCkfMzGgedKYFN2GyI9KcfEQ5eNPKFeZu3bGaiC0=;
+        b=DaixeSVPSHPrjr/L0Hqg9koTpy1CF4iYzNmL8/ShMGfljQCeuYbTmMD0/6VkQqTs/Q
+         qKZfFy/ca5kb3mVY9Wkj/NPU8AYsa/pefQLAJHZcfrunpLBPERZf4SONvnqsQwlYyTZv
+         JQR+pcgHwRPHeZxRoqIILt0baHYs39x+mNzzSYekR4rXNZrCR0bUx7QTR1VJ/DrfZ45k
+         90tevRwlZuwvRA7q0Rtznf05/iJEXWLIwE0y3DLB+n4FXLo+9YX4743RcgEGS8oxJnpr
+         wMbuCf0svwp/L1fHzrWZ/fr9GDGbiR1Q4V4M84qg3Dij24Y4/+OLbwb7G9Il8KXN71J0
+         Ef2Q==
+X-Gm-Message-State: AOJu0YzcjJDSipMztJOVKWlciRP5nxOPFDAaN4EcXxbL92NV67x6pK+8
+	UDUFestfhuzqALSjwD6MxNZTZuU5qiDOxSLIWcEWLUT9b2hQz6PC1hIjhzS4VbY=
+X-Google-Smtp-Source: AGHT+IH/aDnr0Lb84keonMSILnv9Q4qkD3NNA7237N3xWpGCLK+u5jL/aJvh6q1g7ZpNSr4f4/nDqA==
+X-Received: by 2002:a05:600c:5123:b0:42c:bd5a:945b with SMTP id 5b1f17b1804b1-42f85ac909fmr31454125e9.21.1728078531845;
+        Fri, 04 Oct 2024 14:48:51 -0700 (PDT)
 Received: from [127.0.1.1] (frhb82016ds.ikexpress.com. [185.246.87.17])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f86b4ab63sm24680375e9.40.2024.10.04.14.48.47
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f86b4ab63sm24680375e9.40.2024.10.04.14.48.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2024 14:48:47 -0700 (PDT)
+        Fri, 04 Oct 2024 14:48:51 -0700 (PDT)
 From: Guillaume Stols <gstols@baylibre.com>
-Date: Fri, 04 Oct 2024 21:48:36 +0000
-Subject: [PATCH v3 02/10] dt-bindings: iio: adc: ad7606: Remove spi-cpha
- from required
+Date: Fri, 04 Oct 2024 21:48:39 +0000
+Subject: [PATCH v3 05/10] iio: adc: ad7606: Sort includes in alphabetical
+ order
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -63,7 +63,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241004-ad7606_add_iio_backend_support-v3-2-38757012ce82@baylibre.com>
+Message-Id: <20241004-ad7606_add_iio_backend_support-v3-5-38757012ce82@baylibre.com>
 References: <20241004-ad7606_add_iio_backend_support-v3-0-38757012ce82@baylibre.com>
 In-Reply-To: <20241004-ad7606_add_iio_backend_support-v3-0-38757012ce82@baylibre.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
@@ -82,68 +82,75 @@ Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
  Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
  Guillaume Stols <gstols@baylibre.com>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1728078523; l=2037;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1728078523; l=1822;
  i=gstols@baylibre.com; s=20240417; h=from:subject:message-id;
- bh=dW6NuJWAL0tnqJGgsGPu8j1VoVP4zCeNUzqvDunBNqs=;
- b=1JBVnXogi8Y6VmRN4ENJTNsSU2nRs5+Y+Xu9FQStSslUOMfRP19G/XBoT+HQFyDiYJCMz/qD8
- NFHk3dWGBGUD1Y8O56KBx8G/wlK2ECH14DN83u6ihheoy5zIGdM+Ejb
+ bh=5Ycpog1y0e3qZRjWPMcOyX7VO13ZytSC6dJsgRajg3E=;
+ b=iyd18HM5iYsjPSUVsDwv80YQI2sNtNIKcU6HziJHtPsbJ9TUXE6mspgK0fmvolO8PKyGQN1a1
+ M9OmZJyhEtdDgFpGOlwcMR6/P95etqcdNDci9LQWHvTTO50azPkbb2i
 X-Developer-Key: i=gstols@baylibre.com; a=ed25519;
  pk=XvMm5WHuV67sGYOJZqIYzXndbaJOlNd8Q6li6vnb4Cs=
 
-The documentation is erroneously stating that spi-cpha is required, and
-the example is erroneously setting both spi-cpol and spi-cpha. According
-to the datasheet, only cpol should be set.
+Some of the includes were not in alphabetical order, this commit fixes
+it.
 
-On zedboard for instance, setting the devicetree as in the example will
-simply not work.
-
-Fixes: 416f882c3b40 ("dt-bindings: iio: adc: Migrate AD7606 documentation to yaml")
-Fixes: 6e33a125df66 ("dt-bindings: iio: adc: Add docs for AD7606 ADC")
 Signed-off-by: Guillaume Stols <gstols@baylibre.com>
 ---
- Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ad7606.c     | 2 +-
+ drivers/iio/adc/ad7606_par.c | 6 +++---
+ drivers/iio/adc/ad7606_spi.c | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-index bec7cfba52a7..47081c79a1cf 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
-@@ -39,6 +39,11 @@ properties:
-   "#size-cells":
-     const: 0
+diff --git a/drivers/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
+index ffa551a4e41d..d1aec53e0bcf 100644
+--- a/drivers/iio/adc/ad7606.c
++++ b/drivers/iio/adc/ad7606.c
+@@ -19,8 +19,8 @@
+ #include <linux/sysfs.h>
+ #include <linux/util_macros.h>
  
-+  # According to the datasheet, "Data is clocked in from SDI on the falling
-+  # edge of SCLK, while data is clocked out on DOUTA on the rising edge of
-+  # SCLK".  Also, even if not stated textually in the datasheet, it is made
-+  # clear on the diagrams that sclk idles at high.  Subsequently, in case SPI
-+  # interface is used, the correct way is to only set spi-cpol.
-   spi-cpha: true
+-#include <linux/iio/iio.h>
+ #include <linux/iio/buffer.h>
++#include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/triggered_buffer.h>
+diff --git a/drivers/iio/adc/ad7606_par.c b/drivers/iio/adc/ad7606_par.c
+index 02d8c309304e..d651639c45eb 100644
+--- a/drivers/iio/adc/ad7606_par.c
++++ b/drivers/iio/adc/ad7606_par.c
+@@ -5,13 +5,13 @@
+  * Copyright 2011 Analog Devices Inc.
+  */
  
-   spi-cpol: true
-@@ -168,7 +173,6 @@ patternProperties:
- required:
-   - compatible
-   - reg
--  - spi-cpha
-   - avcc-supply
-   - vdrive-supply
-   - interrupts
-@@ -255,7 +259,6 @@ examples:
-             reg = <0>;
-             spi-max-frequency = <1000000>;
-             spi-cpol;
--            spi-cpha;
++#include <linux/err.h>
++#include <linux/gpio/consumer.h>
++#include <linux/io.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+-#include <linux/gpio/consumer.h>
+ #include <linux/platform_device.h>
+ #include <linux/types.h>
+-#include <linux/err.h>
+-#include <linux/io.h>
  
-             avcc-supply = <&adc_vref>;
-             vdrive-supply = <&vdd_supply>;
-@@ -288,7 +291,6 @@ examples:
+ #include <linux/iio/iio.h>
+ #include "ad7606.h"
+diff --git a/drivers/iio/adc/ad7606_spi.c b/drivers/iio/adc/ad7606_spi.c
+index 143440e73aab..d12e55123888 100644
+--- a/drivers/iio/adc/ad7606_spi.c
++++ b/drivers/iio/adc/ad7606_spi.c
+@@ -5,10 +5,10 @@
+  * Copyright 2011 Analog Devices Inc.
+  */
  
-             spi-max-frequency = <1000000>;
-             spi-cpol;
--            spi-cpha;
++#include <linux/err.h>
+ #include <linux/module.h>
+ #include <linux/spi/spi.h>
+ #include <linux/types.h>
+-#include <linux/err.h>
  
-             avcc-supply = <&adc_vref>;
-             vdrive-supply = <&vdd_supply>;
+ #include <linux/iio/iio.h>
+ #include "ad7606.h"
 
 -- 
 2.34.1
