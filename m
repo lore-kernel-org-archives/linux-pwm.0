@@ -1,40 +1,40 @@
 Received: from mx1.sberdevices.ru (mx1.sberdevices.ru [37.18.73.165])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68F4B1CBE98;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68E8F14E2E2;
 	Tue, 19 Nov 2024 12:53:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.18.73.165
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732020810; cv=none; b=gJsthVtcHVfgUgFNcW61GF2qbCccnn15PQNK2lv9Us4lqzIUHajflCNvIdm3Otao21Ej90zZMFLaA0ANTJZ/j43nizvrXUJOogsW0rQ6tGkizyOE/XhxZq4Jf4BpKevIs+I+aL+v1QDsUFKv0FeFZZ3MLuUSjHjeTPu6ixe30rc=
+	t=1732020810; cv=none; b=DpNkb3TVwCdE9XfRarRP0ZN6Fv0VPW3W97MPx9uCymFbziu7dXWYc1h+O8RaR1G/cJQi5V1A+2Snw/61dsEzDb39ZhOb5at8v/Ew22RVOL5JiBc2mj5MpRWVxDR1TaCEV9KtoaydiPaSN9dJGcfPqBvp1sf9afvk8wJvMIDi0vY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1732020810; c=relaxed/simple;
-	bh=Q1ilrJjWDJ4+Ex+VxLNUTo9k+NBDo1LseJpkC1syAZc=;
+	bh=9pwhsAOdX77X/LilUWMR1xrvHAySdz8MW6g7a0vVS1M=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MqFNyhlMX2izgKZ20a4YxaKWdVHoBoE0UqOpz2GPSENq9bv3MIjzpwrr5aK+vghBKfLJFle8PJPZGaQbx89Ra4Bten0e8nkQrRFmn9uDhwn82wyYydWM5fjbT5N9p655pVlk8zZSUM7vvoMml7nSGTnKmhg+gdAh8y+1VVONwps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com; spf=pass smtp.mailfrom=salutedevices.com; dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b=J2QL3Mac; arc=none smtp.client-ip=37.18.73.165
+	 MIME-Version:Content-Type; b=fGSGU8+NYCdexuJQo10Pt8SJF13xvIa5nIQ+qdlENvumcc9otqdPTlGUjQf0LKDV+YJ/omZb4cQX4LhPiZnwK3laeOG+Sclyc0Ztsi69geuDbU4PjFEhJD4sA/vBOK8g53B0dYvFbatDBJkR7iGGZmVi0Gdx68IzKYL8/QG/vs0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com; spf=pass smtp.mailfrom=salutedevices.com; dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b=keb1McVj; arc=none smtp.client-ip=37.18.73.165
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=salutedevices.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b="J2QL3Mac"
+	dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b="keb1McVj"
 Received: from p-infra-ksmg-sc-msk01.sberdevices.ru (localhost [127.0.0.1])
-	by mx1.sberdevices.ru (Postfix) with ESMTP id CA5DF10000D;
+	by mx1.sberdevices.ru (Postfix) with ESMTP id 2FB1A10000A;
 	Tue, 19 Nov 2024 15:53:26 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru CA5DF10000D
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 2FB1A10000A
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=salutedevices.com;
 	s=mail; t=1732020806;
-	bh=059kkIYqpn0ehFSmAg/GBS0dpyJTqN0Io9RSk7P5TWk=;
+	bh=e4s53L2k5iK23hNWZ8+0hrRU9tNwL4Gmep/nSlXigqI=;
 	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:From;
-	b=J2QL3MacK0LO38lqp+Mn2nOqlMhnD3C5Jy3wWygH3YzHN+LdkY4ng5B6CcFHdTW8K
-	 83SlWByFK9r9t2i/V/mDjXSlvMlApCd25GkRsM56zvM5lNaQACeKUYUExAF8k2E+xV
-	 1kUuX6C6/mmNcI7F4lJnShg7tiVhpfhMtoOn6dmTWbDOQOTw8jYJ3CvBomCTwko48G
-	 PN5t1KtnArh+fYjgrAxqPUehQmSpy8I1+/bmRF6c4BoZXQ81osIg6zuUvsB5Ak2+Yg
-	 quWYJ3owHbkOpxpTC0X+cqh4UQQn7ApruiosqAJ5hMhAvtXO+wEfOXy4JpiZQ28InJ
-	 AFetk3gw5NdGg==
+	b=keb1McVjYq5jn6y4fP69ixHEzgWpB64wdCFPO3w/uJR0IDd3zGhOeipCTFbyUfn5n
+	 LEJBSuvL3+RwdS2GcFRVeDYlKp9GhoU2PXWAXuh31Pkb3SeoOJL3Bh+nP9trcc5xJ7
+	 AVgkCKq21OdWRcu1urBJls2YHLy9OAgn28krh+1mXlX4JWaM90NbUAlQ2fxi/m/uME
+	 VuY375fMYTUjiEG8NTE/Gn1GotqRRPCbWAV3n5Afqw5eIkN3EctaQfQkFmplMlqDla
+	 TECyk6ylQTeEmO2+7ixX8pXuWunyi9Q1O6Qm6qSnlQ2aWdqYzfIZcYXC0EyNNb28sV
+	 SNS/MaIGBqG+w==
 Received: from smtp.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
 	by mx1.sberdevices.ru (Postfix) with ESMTPS;
-	Tue, 19 Nov 2024 15:53:26 +0300 (MSK)
+	Tue, 19 Nov 2024 15:53:25 +0300 (MSK)
 From: George Stark <gnstark@salutedevices.com>
 To: <ukleinek@kernel.org>, <neil.armstrong@linaro.org>,
 	<khilman@baylibre.com>, <jbrunet@baylibre.com>,
@@ -42,9 +42,9 @@ To: <ukleinek@kernel.org>, <neil.armstrong@linaro.org>,
 CC: <linux-pwm@vger.kernel.org>, <linux-amlogic@lists.infradead.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
 	<kernel@salutedevices.com>, George Stark <gnstark@salutedevices.com>
-Subject: [PATCH v3 3/4] pwm: meson: Use separate device id data for axg and g12
-Date: Tue, 19 Nov 2024 15:53:17 +0300
-Message-ID: <20241119125318.3492261-4-gnstark@salutedevices.com>
+Subject: [PATCH v3 1/4] pwm: meson: Simplify get_state() callback
+Date: Tue, 19 Nov 2024 15:53:15 +0300
+Message-ID: <20241119125318.3492261-2-gnstark@salutedevices.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20241119125318.3492261-1-gnstark@salutedevices.com>
 References: <20241119125318.3492261-1-gnstark@salutedevices.com>
@@ -75,67 +75,46 @@ X-KSMG-LinksScanning: Clean
 X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2024/11/19 08:41:00 #26886618
 X-KSMG-AntiVirus-Status: Clean, skipped
 
-Add separate devce id data for compatibles: amlogic,meson-g12a-ee-pwm,
-amlogic,meson-axg-pwm-v2, amlogic,meson-g12-pwm-v2 due to those PWM
-modules have different set of features than meson8.
+In .get_state() callback meson_pwm_channel struct are used to store
+lo and hi reg values but they are never reused after that so
+for clearness use local variable instead.
 
 Signed-off-by: George Stark <gnstark@salutedevices.com>
-Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
 ---
- drivers/pwm/pwm-meson.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-meson.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index d7335efa3db7..3cc48c3dde5e 100644
+index 98e6c1533312..c4ee019ce577 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -561,6 +561,11 @@ static const struct meson_pwm_data pwm_axg_ao_data = {
- 	.channels_init = meson_pwm_init_channels_meson8b_legacy,
- };
+@@ -309,21 +309,20 @@ static int meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ {
+ 	struct meson_pwm *meson = to_meson_pwm(chip);
+ 	struct meson_pwm_channel_data *channel_data;
+-	struct meson_pwm_channel *channel;
++	unsigned int hi, lo;
+ 	u32 value;
  
-+static const struct meson_pwm_data pwm_g12a_ee_data = {
-+	.parent_names = { "xtal", NULL, "fclk_div4", "fclk_div3" },
-+	.channels_init = meson_pwm_init_channels_meson8b_legacy,
-+};
-+
- static const struct meson_pwm_data pwm_g12a_ao_ab_data = {
- 	.parent_names = { "xtal", "g12a_ao_clk81", "fclk_div4", "fclk_div5" },
- 	.channels_init = meson_pwm_init_channels_meson8b_legacy,
-@@ -575,6 +580,10 @@ static const struct meson_pwm_data pwm_meson8_v2_data = {
- 	.channels_init = meson_pwm_init_channels_meson8b_v2,
- };
+-	channel = &meson->channels[pwm->hwpwm];
+ 	channel_data = &meson_pwm_per_channel_data[pwm->hwpwm];
  
-+static const struct meson_pwm_data pwm_meson_axg_v2_data = {
-+	.channels_init = meson_pwm_init_channels_meson8b_v2,
-+};
-+
- static const struct meson_pwm_data pwm_s4_data = {
- 	.channels_init = meson_pwm_init_channels_s4,
- };
-@@ -584,6 +593,14 @@ static const struct of_device_id meson_pwm_matches[] = {
- 		.compatible = "amlogic,meson8-pwm-v2",
- 		.data = &pwm_meson8_v2_data
- 	},
-+	{
-+		.compatible = "amlogic,meson-axg-pwm-v2",
-+		.data = &pwm_meson_axg_v2_data
-+	},
-+	{
-+		.compatible = "amlogic,meson-g12-pwm-v2",
-+		.data = &pwm_meson_axg_v2_data
-+	},
- 	/* The following compatibles are obsolete */
- 	{
- 		.compatible = "amlogic,meson8b-pwm",
-@@ -607,7 +624,7 @@ static const struct of_device_id meson_pwm_matches[] = {
- 	},
- 	{
- 		.compatible = "amlogic,meson-g12a-ee-pwm",
--		.data = &pwm_meson8b_data
-+		.data = &pwm_g12a_ee_data
- 	},
- 	{
- 		.compatible = "amlogic,meson-g12a-ao-pwm-ab",
+ 	value = readl(meson->base + REG_MISC_AB);
+ 	state->enabled = value & channel_data->pwm_en_mask;
+ 
+ 	value = readl(meson->base + channel_data->reg_offset);
+-	channel->lo = FIELD_GET(PWM_LOW_MASK, value);
+-	channel->hi = FIELD_GET(PWM_HIGH_MASK, value);
++	lo = FIELD_GET(PWM_LOW_MASK, value);
++	hi = FIELD_GET(PWM_HIGH_MASK, value);
+ 
+-	state->period = meson_pwm_cnt_to_ns(chip, pwm, channel->lo + channel->hi);
+-	state->duty_cycle = meson_pwm_cnt_to_ns(chip, pwm, channel->hi);
++	state->period = meson_pwm_cnt_to_ns(chip, pwm, lo + hi);
++	state->duty_cycle = meson_pwm_cnt_to_ns(chip, pwm, hi);
+ 
+ 	state->polarity = PWM_POLARITY_NORMAL;
+ 
 -- 
 2.25.1
 
