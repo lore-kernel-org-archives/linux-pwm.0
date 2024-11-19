@@ -1,116 +1,167 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx1.sberdevices.ru (mx1.sberdevices.ru [37.18.73.165])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93C6C197531
-	for <linux-pwm@vger.kernel.org>; Mon, 18 Nov 2024 17:40:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DB551CC150;
+	Tue, 19 Nov 2024 12:51:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.18.73.165
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731951626; cv=none; b=mxBnO4dCMujQ/I2OMwgAXo3oUYTdIMq7PgVVp56Ip/Q0tvPXZuCE6tc7u7FP+VLDVpPGyoPdH0Gw7E2l7uh3BeoC1YdGlS6NtVaUDIEFu+WQrYNcmVR+gR5dzAPTNT/Bg9ZaE3uZV4Bfhpb4//Em5PXr0flS/VvWXK4T8DbwE/I=
+	t=1732020699; cv=none; b=pIObqm6C897AgFxVhNn5f4Ydg05yCuBTkYLwLQsLSHqN3Ikp8IQdNN0gjiqMgPMumfoIVg9RJy/AJLiBuBlqMtlEUw3IOTGswigBGZhLOVfaQZd4HtLvfZxeCml/BoIpw0cW06CPAcANNlKvQYfqBHwAgj4Arz6FWUNQ9Njg9b0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731951626; c=relaxed/simple;
-	bh=1tIib4eNH4Bj55ytCO2SrDsnedFwF9aGSQvLrHzbjSk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a993BroolMhZ0mU2E/YjV/fhix+505EBrTfovobrjH9ISt6Nqw7PhGtKK2XNATu2Fy0bqhCglVo3za56+tVJ96PLW7xNwCfwxuMCja7XIwJ6vSOEK9Tiwhe9OvKb40T0H9YaM0P/zgt1qxnuaDINezlk2RufM5/OZqsM10YA+Q4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2r1ToH7D; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1732020699; c=relaxed/simple;
+	bh=GuXTE2rLvrhvhbljrbM9nOqOwVkBoc7a9KbSflU9Nrg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=IN1FN6V7pHNoO1EeS5pLagOSekDwZ5ojgox3KUQ30RRMvi856F6kTcJGHvqbhzZAkvoRGcwfWjxcqYvn/Pnn9fyv930g8kwtjggtJ8PUj4A4OOzQjhvgrdAx6Y2fxC3lm4I1Jxc+4Yw8DkrQ7YVZhTSU6qpdfmhioieQVyz13AY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com; spf=pass smtp.mailfrom=salutedevices.com; dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b=V3a3QIqc; arc=none smtp.client-ip=37.18.73.165
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=salutedevices.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=salutedevices.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2r1ToH7D"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4315df7b43fso39343175e9.0
-        for <linux-pwm@vger.kernel.org>; Mon, 18 Nov 2024 09:40:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1731951623; x=1732556423; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1tIib4eNH4Bj55ytCO2SrDsnedFwF9aGSQvLrHzbjSk=;
-        b=2r1ToH7DkB1PODZpX6WrAs85twuB0dCTANxEEJrHLssz33/hPC5z5a9Y8fb4I0bqzv
-         mz6NHGrJu2eQAEbHgdIb9EeYCDtIFVbzuwGmQA78YqAY8oU70ThJhRtFh7eOhOZwCgiv
-         cP3rJiorQqn95L2yJR5bC92qIqW67oY99AFbiRnksqW505+4GDw5dZM/vXZCYf6lR93m
-         4Ny87OD11zNydu2pToF8PmxVrLTbkIc/pgNOE8ZdtSKw4hus4KdB6oQnmjl2xPYMdZJG
-         KcdV4Wja6/dbzXSx0j/A6hc+yqRhAw0dLZcbk2JngY7UrzLB5tI4lF5oK7gNfzEix5NG
-         c4dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731951623; x=1732556423;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1tIib4eNH4Bj55ytCO2SrDsnedFwF9aGSQvLrHzbjSk=;
-        b=akRCH5Qg/kjsHi+uYFcG4RFqlgI9ch4KVRynre/ysdPwWyUB1wdEk8qZs+6YPIawfz
-         q3Jj7jieq152urT1doQmexfMdC+GsE1HUVkUKyyL4kKaWf6Jq0erU7KFmeAqc54JZCFm
-         XAeBQN1XCeKbSfarc6QQldRs26czwOGbO8huzDRjnkCvEpUxM6fvTY2brtmIZqmPOxP0
-         Cma1qHPjGxKoAhMT7ZbjhXNo3VFTr0eI9V4tBUwhwC/8lYoA3t7Ah0OPqqICR7e0CvFT
-         b4Ant4df7R8TO3FDtIZN0sV/ZZFHCWNaBx8zH9AjCabgmvYdozVL7MQDGtzQ1MeYI8w9
-         aFDw==
-X-Forwarded-Encrypted: i=1; AJvYcCVEvWqmeOeyxvyKauM1N2xpdXRFocQWeCBgtkbUNLh13y/XsoAmJoHeAqqqTj+GA4wX+1BUGDtmYew=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy7LPYmkTWUwl5zYLFD9HBYE6TR/EZ84l7keJ0od9EayZnrZZ3y
-	/plvAtxrYAXjj1Qq0x6JYBSfrfBmcUwIVZsik/tvH2V+5VbzbUhR9IHbSLtM2YY=
-X-Google-Smtp-Source: AGHT+IF3nj2yHydrx7Ks+n+zytE68ZdQxoMq1sSNeM0Nynyzk3P/uHdIYwyssSFKYkQ+6vZqXuvURA==
-X-Received: by 2002:a05:600c:198c:b0:431:55bf:fe4 with SMTP id 5b1f17b1804b1-432df78a99emr105241745e9.24.1731951622735;
-        Mon, 18 Nov 2024 09:40:22 -0800 (PST)
-Received: from localhost (p509159f1.dip0.t-ipconnect.de. [80.145.89.241])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432da298760sm166249345e9.37.2024.11.18.09.40.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2024 09:40:22 -0800 (PST)
-Date: Mon, 18 Nov 2024 18:40:21 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Christian Marangi <ansuelsmth@gmail.com>
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Sean Wang <sean.wang@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Lee Jones <lee@kernel.org>, linux-mediatek@lists.infradead.org, 
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	upstream@airoha.com, benjamin.larsson@genexis.eu, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v10] pwm: airoha: Add support for EN7581 SoC
-Message-ID: <kpbylpee46nmxxvzxfbylscfafrlkpzjt37lkfdt4vtoq3qvfc@5v7khvwwohty>
-References: <20241103-en7581-pinctrl-v10-1-1990fb6996a0@kernel.org>
- <673b47ae.df0a0220.2187ad.bc2a@mx.google.com>
+	dkim=pass (2048-bit key) header.d=salutedevices.com header.i=@salutedevices.com header.b="V3a3QIqc"
+Received: from p-infra-ksmg-sc-msk01.sberdevices.ru (localhost [127.0.0.1])
+	by mx1.sberdevices.ru (Postfix) with ESMTP id 754AF10000A;
+	Tue, 19 Nov 2024 15:51:35 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 754AF10000A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=salutedevices.com;
+	s=mail; t=1732020695;
+	bh=Ii7nhdIGuTiZ2Cjp6gNaEeAPJj6qad8DWD7J3M9rl2U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:From;
+	b=V3a3QIqc1iepwiiqH1aWfprboJYKy+tnR6chs74FjkRi9un1lzCESgB2sigYqsgfJ
+	 W74e9xhXtC17Po3WC5U7pu2oWMcB3pOftWJxDnFwBh/t/4/5Dwm34DRHuRtIZJjZBl
+	 4HChdB9wOoMRWyYOgAmiOD76xPXdtxX5YpTGO0t4eyauoHqkhpsxgZg/sB4i6ElURn
+	 i+hOPRKiHjVIpvRq8tQHijglvNu3uzltqa1zfUSiyrv1gSBMBz1xihOSnZDRF3JqBQ
+	 dt3YccXGJ+XJrvZOE0E+IxLUt01Z4H34BenH3wd+QuMGSlP6I8hYPCNjxADh1NYGq4
+	 XgKUi+NpIqMQQ==
+Received: from smtp.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mx1.sberdevices.ru (Postfix) with ESMTPS;
+	Tue, 19 Nov 2024 15:51:35 +0300 (MSK)
+Message-ID: <ed5cdef1-aaa7-4ff3-a427-87eae4c90f18@salutedevices.com>
+Date: Tue, 19 Nov 2024 15:51:34 +0300
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="5bt3c2qqssojeolk"
-Content-Disposition: inline
-In-Reply-To: <673b47ae.df0a0220.2187ad.bc2a@mx.google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/4] pwm: meson: Support constant and polarity bits
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+CC: <neil.armstrong@linaro.org>, <khilman@baylibre.com>,
+	<jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
+	<linux-pwm@vger.kernel.org>, <linux-amlogic@lists.infradead.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<kernel@salutedevices.com>
+References: <20241016152553.2321992-1-gnstark@salutedevices.com>
+ <20241016152553.2321992-3-gnstark@salutedevices.com>
+ <w3igi2jmva6mfa7anlieyp3iiwfzhsvi3t37wwcqqtzdy42fqn@btmdsfsmpw7r>
+ <f08513c8-56d6-4551-8ac6-84641c134552@salutedevices.com>
+ <l5xvdndysdvtil472it6ylthcfam5jp7lh3son45mezq7dh2yk@3yj557k2o5k5>
+Content-Language: en-US
+From: George Stark <gnstark@salutedevices.com>
+In-Reply-To: <l5xvdndysdvtil472it6ylthcfam5jp7lh3son45mezq7dh2yk@3yj557k2o5k5>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: p-i-exch-a-m1.sberdevices.ru (172.24.196.116) To
+ p-i-exch-sc-m01.sberdevices.ru (172.16.192.107)
+X-KSMG-Rule-ID: 10
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Lua-Profiles: 189267 [Nov 19 2024]
+X-KSMG-AntiSpam-Version: 6.1.1.7
+X-KSMG-AntiSpam-Envelope-From: gnstark@salutedevices.com
+X-KSMG-AntiSpam-Rate: 0
+X-KSMG-AntiSpam-Status: not_detected
+X-KSMG-AntiSpam-Method: none
+X-KSMG-AntiSpam-Auth: dkim=none
+X-KSMG-AntiSpam-Info: LuaCore: 41 0.3.41 623e98d5198769c015c72f45fabbb9f77bdb702b, {Tracking_from_domain_doesnt_match_to}, 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;salutedevices.com:7.1.1;smtp.sberdevices.ru:5.0.1,7.1.1, FromAlignment: s
+X-MS-Exchange-Organization-SCL: -1
+X-KSMG-AntiSpam-Interceptor-Info: scan successful
+X-KSMG-AntiPhishing: Clean
+X-KSMG-LinksScanning: Clean
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2024/11/19 08:41:00 #26886618
+X-KSMG-AntiVirus-Status: Clean, skipped
 
+Hello Uwe
 
---5bt3c2qqssojeolk
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH v10] pwm: airoha: Add support for EN7581 SoC
-MIME-Version: 1.0
+On 11/7/24 11:41, Uwe Kleine-König wrote:
+> On Wed, Nov 06, 2024 at 04:54:41PM +0300, George Stark wrote:
+>> On 11/4/24 12:32, Uwe Kleine-König wrote:
+>>>> @@ -68,6 +72,8 @@ static struct meson_pwm_channel_data {
+>>>>    	u8		clk_div_shift;
+>>>>    	u8		clk_en_shift;
+>>>>    	u32		pwm_en_mask;
+>>>> +	u32		const_en_mask;
+>>>> +	u32		inv_en_mask;
+>>>>    } meson_pwm_per_channel_data[MESON_NUM_PWMS] = {
+>>>>    	{
+>>>>    		.reg_offset	= REG_PWM_A,
+>>>> @@ -75,6 +81,8 @@ static struct meson_pwm_channel_data {
+>>>>    		.clk_div_shift	= MISC_A_CLK_DIV_SHIFT,
+>>>>    		.clk_en_shift	= MISC_A_CLK_EN_SHIFT,
+>>>>    		.pwm_en_mask	= MISC_A_EN,
+>>>> +		.const_en_mask	= MISC_A_CONSTANT_EN,
+>>>> +		.inv_en_mask	= MISC_A_INVERT_EN,
+>>>>    	},
+>>>>    	{
+>>>>    		.reg_offset	= REG_PWM_B,
+>>>> @@ -82,6 +90,8 @@ static struct meson_pwm_channel_data {
+>>>>    		.clk_div_shift	= MISC_B_CLK_DIV_SHIFT,
+>>>>    		.clk_en_shift	= MISC_B_CLK_EN_SHIFT,
+>>>>    		.pwm_en_mask	= MISC_B_EN,
+>>>> +		.const_en_mask	= MISC_B_CONSTANT_EN,
+>>>> +		.inv_en_mask	= MISC_B_INVERT_EN,
+>>>>    	}
+>>>>    };
 
-Hello,
+...
 
-On Mon, Nov 18, 2024 at 02:56:58PM +0100, Christian Marangi wrote:
-> since you gave revision for v9, any news with this? Is everything good
-> now? It's sad if this last piece doesn't get through after all this
-> efforts with the previous series :(
+>>> Personally I'd prefer:
+>>>
+>>> 	value &= ~MESON_PWM_REG_MISC_CONST_EN(pwm->hwpwm);
+>>> 	if (meson->data->has_constant && channel->constant)
+>>> 		value |= MESON_PWM_REG_MISC_CONST_EN(pwm->hwpwm);
+>>>
+>>> even though your variant only mentions the mask once. While it has this
+>>> repetition, it's clear what happens without having to know what
+>>> meson_pwm_assign_bit() does. Maybe that's subjective?
+>>
+>> Actually I also don't like meson_pwm_assign_bit() too match and I'm
+>> surprised there's no something like this in the kernel already.
+>> I again objdumped versions meson_pwm_assign_bit() vs double mask repetition.
+>> Unconditional bit clearing takes only a single instruction:
+>>
+>> // value &= ~channel_data->const_en_mask;
+>> 9ac:	0a250040 	bic	w0, w2, w5
+>>
+>> So in the current series I could drop meson_pwm_assign_bit() and use:
+>>
+>> value &= ~channel_data->const_en_mask;
+>> if (meson->data->has_constant && channel->constant)
+>> 	value |= channel_data->const_en_mask;
+>>
+>> If it's decided now or later to drop meson_pwm_channel_data then
+>> w\o meson_pwm_assign_bit() future patch will be line-to-line change.
+>>
+>> What you think?
+> 
+> Sounds sensible.
 
-I'm sorry. I still have your patch on my radar, my todo list is just too
-long to give feedback on a short-term basis. See
-https://patchwork.ozlabs.org/project/linux-pwm/list/ for parts of my
-queue.
+While changing the patch to drop meson_pwm_assign_bit() one thing
+concerned me on the approach:
 
+value &= ~channel_data->const_en_mask;
+if (meson->data->has_constant && channel->constant)
+	value |= channel_data->const_en_mask;
+
+that we reset bit in the value var even if that bit is not supported on
+the current SoC. I checked several datasheets for old SoCs and those 
+bits are marked as unused (not even reserved) and I've never seen those
+bits set. Still I'd offer to use precise condition for changing those 
+bit. I'll send v3 let's discuss it again if you think I bother too much.
+
+> 
+> Best regards
+> Uwe
+
+-- 
 Best regards
-Uwe
-
---5bt3c2qqssojeolk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmc7fAIACgkQj4D7WH0S
-/k6GNAf/Uv0TP2XG1eM5gVUAzPsO8nIbVqSQu0qVstgU2m0w4fwe4Sf5ikqykVsD
-jeYs+uIgK1r055ifeUSf32mcXOb5nW1GPob8stTVfViOL0diAuv4d88kPzGnDi/D
-vn+BwCd2pOi6dGopB+ZqtajsRasx7NNFvTf8ZRcq5V0/kpElLAcLQLjAJZGigjbt
-a9d1Y1lnBUk+GeCg1rLvNDo5MPkL1t0xcRZgxr6qp+VVGBuO2SsL2IpW/eZz9HU+
-M+evGLlT8hwlrNoBgZQ5vGvfZtda51JmcHTiF9b28iZC3pOnws8QiXpmznPlVhDN
-5Jp1+kkmy5YbonA6ZlI/SncX7LzzKw==
-=eBCO
------END PGP SIGNATURE-----
-
---5bt3c2qqssojeolk--
+George
