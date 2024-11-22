@@ -1,110 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FC1133998;
-	Wed, 20 Nov 2024 22:03:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B02110A3E;
+	Fri, 22 Nov 2024 11:33:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732140233; cv=none; b=Lk5FfV6Hfr4YJhJoNfVm99KQ5KUxDDxThBg15GkeZZ4uQMokCCNMdZfRHJPYG2ruL0JomfkALVU/sZL8d+Wcg8bH6iYZJt9tiX8fB8i3CO227aSCDRwDYVoTGt8V5MHBKmFVrbCRtEu80o9NSLQBTSVLtoaZzvK6uv1YIkAxCUg=
+	t=1732275189; cv=none; b=ATR9TPpblQgZ0mv4Wz9TR0PBw0UJmeWXnC07T0BDTEutXLhU2ApARxDNLcFhviUZxFKt/5vAidWFozLV77x4gHyqZsXfxuOv3fnNJJu2AcY8lxQ7bzXH2CUvjqZyWVGN4MkaZCvCGCKTlqFgvx3K/Me0F+dZW/4SujRJ9uWgW/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732140233; c=relaxed/simple;
-	bh=DSdUX9EORg9aeW0O99F832Xf3e4PIsf8UeoN8YOJeXs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nRDc27qV9ohSn6cQM3bHLj2cEWqUTy47GBGzPy3WJRAM8+6jQNYlwOVUj8F9HcgzCZ778H293QgRpLetKbH2bb2neZwNdsW9bvBXmmXtGEL8j4c1OuEUB8vlVYgoar4M6kWPc8BGim4s1qh+jyZft8IR/JpTjfstBl7k+dy6Tjo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nA62W2hk; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1732275189; c=relaxed/simple;
+	bh=5+fSa8A8qCcFrjh+ml+7X18cLR161OGeZHL6oHQGkCo=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QNn1u6tQajypJUa4k0ElNKBvpFdidyyYFJZo/7S7DnEicIZ2nYsixyhLCBnLL3FuSsTWMgDm4Skl5wmqR0lrsJ4Vq8H9fs311YGrQ6F3wvlrXN1ut7g0QYWG+ivdsPI9rYRxdftpFib929/1fi+vexxbDkCM3pyn09tfFb6rxYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=qIHKOly+; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nA62W2hk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77844C4CECD;
-	Wed, 20 Nov 2024 22:03:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732140233;
-	bh=DSdUX9EORg9aeW0O99F832Xf3e4PIsf8UeoN8YOJeXs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nA62W2hkW3OBbLCKQH8pXTrIPp7xLX0CZJY5vDAvPhBwLpPzvPlJ2kUxWmYu39VKG
-	 bXL21YHJVqk0RB+TCbzBL9ogC5LI92fovZHVte+cTIKd/oBvpgU2i64QHfsSeDjAMr
-	 2SuTi+FYhbGpfATj49YdPNiTTGcnfSOgcKPDy4l7aMzLPiKQ1ELNIichpoyci4zlMj
-	 oBUzauu7o/MgmrsT1PZWLvRHvBiT9V8jc+AMoiotLrWMaQaubg/rO0mQPZJbdOcgm3
-	 0v9sfw2G2gSusv5SntcAUCSEkaZ0uk8n4+R9fokeX+iyInNmOog+msO8TLRa48heSw
-	 xCdPQXLQkZHYg==
-Date: Wed, 20 Nov 2024 23:03:49 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Trevor Gamblin <tgamblin@baylibre.com>, 
-	Chi-Wen Weng <cwweng.linux@gmail.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
-	ychuang3@nuvoton.com, schung@nuvoton.com, cwweng@nuvoton.com
-Subject: Re: [PATCH RESEND v2 2/2] pwm: Add Nuvoton MA35D1 PWM controller
- support
-Message-ID: <fllw3dv6juj2vepsnrb4lajh2j7b42jl6rzncmvt57gfaalgiv@sypw55h54oag>
-References: <20241024104309.169510-1-cwweng.linux@gmail.com>
- <20241024104309.169510-3-cwweng.linux@gmail.com>
- <5a6ad0dc-f777-4129-962f-e10a0f7d6ee1@baylibre.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="qIHKOly+"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4AM7XIu1016463;
+	Fri, 22 Nov 2024 06:32:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=cjgm1
+	YWWHcKG7zB/59DmBjIGwBuw/9gSJ4mRUI6bPTc=; b=qIHKOly+9CMbfhbtMh580
+	6vdXZSB5DSgXdTuHdUmroVK1+oipwYH3d4xpY+F19DKA/4/jNFUXQ+bn0vxgnNlk
+	pOdxzU4BHNUHuB54PuD49pfQbuNs1inwfR3Wl/hl8vYX08Jwd4CmeDbd3HA//WgT
+	eQ5lXBpidigbVBgYSBkpKdd8O+E8WWJwO3+3HReI528Tb6n+P9qetesGLTw3DBVH
+	BR6UTtQ6Vtuxja2mNdMQGm9N72v+vW3/u3y5j2oGNlNEAiULO3fzzOqBAFVN47VF
+	KLD5yXAZxMTVMfDmw9yKRizmevczvshKCdnamlxr04J/gSIMcbXg7hj6O3MKPoxO
+	w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 432h1kj673-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 22 Nov 2024 06:32:53 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 4AMBWqj1044209
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 22 Nov 2024 06:32:52 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 22 Nov
+ 2024 06:32:51 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 22 Nov 2024 06:32:51 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.168])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 4AMBWhjI011707;
+	Fri, 22 Nov 2024 06:32:48 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH 2/2] iio: frequency: adf4371: add ref doubler and div2
+Date: Fri, 22 Nov 2024 13:32:14 +0200
+Message-ID: <20241122113226.49346-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.47.0
+In-Reply-To: <20241122113226.49346-1-antoniu.miclaus@analog.com>
+References: <20241122113226.49346-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="p4knel4pwzvp7g3m"
-Content-Disposition: inline
-In-Reply-To: <5a6ad0dc-f777-4129-962f-e10a0f7d6ee1@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: HeTr84pVKyRpMuzmIc7ZHKwNy-0ul_SA
+X-Proofpoint-ORIG-GUID: HeTr84pVKyRpMuzmIc7ZHKwNy-0ul_SA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
+ bulkscore=0 spamscore=0 phishscore=0 mlxlogscore=999 adultscore=0
+ clxscore=1015 malwarescore=0 lowpriorityscore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2411220098
 
+Add support for the reference doubler and the reference divide by 2
+clock.
 
---p4knel4pwzvp7g3m
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH RESEND v2 2/2] pwm: Add Nuvoton MA35D1 PWM controller
- support
-MIME-Version: 1.0
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+ drivers/iio/frequency/adf4371.c | 37 +++++++++++++++++++++++++++++++--
+ 1 file changed, 35 insertions(+), 2 deletions(-)
 
-hello,
+diff --git a/drivers/iio/frequency/adf4371.c b/drivers/iio/frequency/adf4371.c
+index b27088464826..02d42652dfdd 100644
+--- a/drivers/iio/frequency/adf4371.c
++++ b/drivers/iio/frequency/adf4371.c
+@@ -41,6 +41,12 @@
+ #define ADF4371_MOD2WORD_MSK		GENMASK(5, 0)
+ #define ADF4371_MOD2WORD(x)		FIELD_PREP(ADF4371_MOD2WORD_MSK, x)
+ 
++/* ADF4371_REG22 */
++#define ADF4371_REF_DOUB_MASK		BIT(5)
++#define ADF4371_REF_DOUB(x)		FIELD_PREP(ADF4371_REF_DOUB_MASK, x)
++#define ADF4371_RDIV2_MASK		BIT(4)
++#define ADF4371_RDIV2(x)		FIELD_PREP(ADF4371_RDIV2_MASK, x)
++
+ /* ADF4371_REG24 */
+ #define ADF4371_RF_DIV_SEL_MSK		GENMASK(6, 4)
+ #define ADF4371_RF_DIV_SEL(x)		FIELD_PREP(ADF4371_RF_DIV_SEL_MSK, x)
+@@ -70,6 +76,9 @@
+ #define ADF4371_MAX_FREQ_PFD		250000000UL /* Hz */
+ #define ADF4371_MAX_FREQ_REFIN		600000000UL /* Hz */
+ 
++#define ADF4371_MIN_CLKIN_DOUB_FREQ	10000000ULL /* Hz */
++#define ADF4371_MAX_CLKIN_DOUB_FREQ	125000000ULL /* Hz */
++
+ /* MOD1 is a 24-bit primary modulus with fixed value of 2^25 */
+ #define ADF4371_MODULUS1		33554432ULL
+ /* MOD2 is the programmable, 14-bit auxiliary fractional modulus */
+@@ -175,6 +184,8 @@ struct adf4371_state {
+ 	unsigned int mod2;
+ 	unsigned int rf_div_sel;
+ 	unsigned int ref_div_factor;
++	bool ref_doubler_en;
++	bool ref_div2_en;
+ 	u8 buf[10] __aligned(IIO_DMA_MINALIGN);
+ };
+ 
+@@ -497,22 +508,44 @@ static int adf4371_setup(struct adf4371_state *st)
+ 			return ret;
+ 	}
+ 
++	if (device_property_read_bool(&st->spi->dev,
++				      "adi,reference-doubler-enable"))
++		st->ref_doubler_en = true;
++
++	if (device_property_read_bool(&st->spi->dev,
++				      "adi,reference-div2-enable"))
++		st->ref_div2_en = true;
++
+ 	/* Set address in ascending order, so the bulk_write() will work */
+ 	ret = regmap_update_bits(st->regmap, ADF4371_REG(0x0),
+ 				 ADF4371_ADDR_ASC_MSK | ADF4371_ADDR_ASC_R_MSK,
+ 				 ADF4371_ADDR_ASC(1) | ADF4371_ADDR_ASC_R(1));
+ 	if (ret < 0)
+ 		return ret;
++
++	if (st->ref_doubler_en &&
++	    (st->clkin_freq > ADF4371_MAX_CLKIN_DOUB_FREQ ||
++	     st->clkin_freq < ADF4371_MIN_CLKIN_DOUB_FREQ))
++		st->ref_doubler_en = false;
++
++	ret = regmap_update_bits(st->regmap,  ADF4371_REG(0x22),
++				 ADF4371_REF_DOUB_MASK |
++				 ADF4371_RDIV2_MASK,
++				 ADF4371_REF_DOUB(st->ref_doubler_en) |
++				 ADF4371_RDIV2(st->ref_div2_en));
++	if (ret < 0)
++		return ret;
++
+ 	/*
+ 	 * Calculate and maximize PFD frequency
+ 	 * fPFD = REFIN × ((1 + D)/(R × (1 + T)))
+ 	 * Where D is the REFIN doubler bit, T is the reference divide by 2,
+ 	 * R is the reference division factor
+-	 * TODO: it is assumed D and T equal 0.
+ 	 */
+ 	do {
+ 		st->ref_div_factor++;
+-		st->fpfd = st->clkin_freq / st->ref_div_factor;
++		st->fpfd = (st->clkin_freq * (st->ref_doubler_en ? 2 : 1)) /
++			   (st->ref_div_factor * (st->ref_div2_en ? 2 : 1));
+ 	} while (st->fpfd > ADF4371_MAX_FREQ_PFD);
+ 
+ 	/* Calculate Timeouts */
+-- 
+2.47.0
 
-On Wed, Nov 20, 2024 at 11:49:48AM -0500, Trevor Gamblin wrote:
-> On 2024-10-24 06:43, Chi-Wen Weng wrote:
-> > +#include <linux/mod_devicetable.h>
-> > +#include <linux/module.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/pwm.h>
-> > +#include <linux/io.h>
-> > +#include <linux/clk.h>
-> > +#include <linux/math64.h>
-> These should be organized alphabetically.
-> > +
-> > +/* The following are registers for PWM controller */
-> > +#define REG_PWM_CTL0            (0x00)
-> > +#define REG_PWM_CNTEN           (0x20)
-> > +#define REG_PWM_PERIOD0         (0x30)
-> > +#define REG_PWM_CMPDAT0         (0x50)
-> > +#define REG_PWM_WGCTL0          (0xB0)
-> > +#define REG_PWM_POLCTL          (0xD4)
-> > +#define REG_PWM_POEN            (0xD8)
->=20
-> These too, I think - it will make it more readable for others.
-
-Keeping the registers in address order is the usual thing to do, so
-please keep the order of these.
-
-Otherwise I agree to Trevor's comments. Thanks for taking the time to
-look at this patch.
-
-Best regards
-Uwe
-
---p4knel4pwzvp7g3m
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmc+XMMACgkQj4D7WH0S
-/k7IhAf/bg94AU7SgCoY0jUgTHhpOnTtuYX7RFUtU5+7GSv/aIpG50Lf93bcVjGC
-CnmWIYI35Yl3Uqdr2zlpaxPsTJ8JrOtBpxpbhITrdYJKtJ2fWn08X6DIdcXnAwFw
-qnJER3Ys5dNus+jacOcQqmAM91o+Xa8Gu+BQ37OAe5o7iPr5eBPFcVcIR/0bMmbO
-S5e7pZ9FDagQXUX4JQ2IcWPDUW3/p0PNHhUC30V3AdkKv4OJrZd661iLTKe+ianl
-fayeMW1fwIzQQ2Ikxi7R/INg6naPnc4vfU3X3t2YLgYhsHKHe4Jg3X5Knp251b0F
-D7FcFyuB6hyhr4LDeYKtt3L0h2n0/A==
-=FNhz
------END PGP SIGNATURE-----
-
---p4knel4pwzvp7g3m--
