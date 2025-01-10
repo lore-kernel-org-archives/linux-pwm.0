@@ -1,651 +1,88 @@
-Received: from mx08-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+Received: from mail-m49221.qiye.163.com (mail-m49221.qiye.163.com [45.254.49.221])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9955D2101A0;
-	Fri, 10 Jan 2025 09:22:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 759D620E004;
+	Fri, 10 Jan 2025 10:09:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.221
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736500947; cv=none; b=ayEH+QgAHaR3KQ1/HS+KoTzW3R59aJMxb8W7BFuSwaL/7TnmVC6qh/rzaE8TGnuhp/FuvdMOYg3mBtyq2Z813i5mkujHS67+nm+idauol13/wEvE37xD4Wc1DgLmsjQ522NWSoeOUXemm7Jun6eqTq/O/lWyT8SN2vdliflQ1Gc=
+	t=1736503780; cv=none; b=eVRp++WMyyqHi9olRTZ1lPN98J9PlcnHMaNOPPcDHpW6Q8vF2gbffHo9NTwsfCTjZt6Vj433oX7+nDSOXA9WAlNm4nI9lmQ0D7m15t/Jwdi9f7pKsBfcxKSvjcB0vQxs8jbuwIaOPq/gW4HpAxFRo0T0BYRpCU+LNrizHlOJ0rA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736500947; c=relaxed/simple;
-	bh=WezfflLED2Of8XPWwxpZAd0T7zFSgMc8vNQIDUVuikM=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sODZZOMAlbGLC0U3mE0ccihDxN+vcpo9bM/3fzn1QOXWHq2HCB5qSYuvir70uOCUYyb8GWpggExv0+4JTxXW2wNaODSQZMmB5W956v2natGqXtCdurdpjFOVsuoLQrs2Zp+1omwmWXzkzPtnjioNCojGXJBMxdLAkGmohfBDRnE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=4TusN0TF; arc=none smtp.client-ip=91.207.212.93
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+	s=arc-20240116; t=1736503780; c=relaxed/simple;
+	bh=SnFH98ibQzsvQhtTYNyPTVrfsL5nJpMT8T+fexoCZ8A=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=njDTNkw6eAilb78zFWT2mxsYeKNiwwkys9y2msNiYAdOtLLT23JgQR/QyEuApQNi0IQaP28OL4BONzsztHGelN/deoHMjIvuT/qs6HRtrxWRiq+SM46Vpymt9wcXvJymgwa4EG7Du/w5RrRymczpVzXXx7/bcwqSBIo9E5Wg3J4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=CgI98iJr; arc=none smtp.client-ip=45.254.49.221
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="4TusN0TF"
-Received: from pps.filterd (m0369457.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50A48Abs006343;
-	Fri, 10 Jan 2025 10:22:14 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	4B2L1h8/Ga92df8AG9HXGme/BlFA+G//Iy0I6fG3Wps=; b=4TusN0TFKFxZVSzx
-	bnMV9k0sV0GK2Iu5YYMwghnplI42VceTYplQOtOek16scy/PGMiNf/dhJ4GPcvBV
-	qHrx8OPHjCou6vsyqbmJVXWd0Wbe8eraMVIiNX4vxXA5aZ7NlvuLRkzA7rMJ9GWb
-	Bq/8QK3vLodYZLlxUHVgrGY0b+RphvEAI2PaVumPwYe/jzXVfqkh9AMjc9BwEJfa
-	2MU4qmye1evFAhqpVAiIkBTQs2MWrg2vDCD7JNyqRTjbQd9Iff71aEx/otm04gfz
-	jRqlgpTi8dCztDE7I3C5hqPN6yjX+IlL1UvNX+SP5ZOsoCWB7bX9cCciaYmlLRwM
-	qEnI6Q==
-Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 442hnxay4s-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Jan 2025 10:22:13 +0100 (CET)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 52A3640061;
-	Fri, 10 Jan 2025 10:21:06 +0100 (CET)
-Received: from Webmail-eu.st.com (eqndag1node5.st.com [10.75.129.134])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 91C05289F18;
-	Fri, 10 Jan 2025 10:20:04 +0100 (CET)
-Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE5.st.com
- (10.75.129.134) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Fri, 10 Jan
- 2025 10:20:04 +0100
-Received: from localhost (10.252.28.64) by SAFDAG1NODE1.st.com (10.75.90.17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Fri, 10 Jan
- 2025 10:20:04 +0100
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To: <lee@kernel.org>, <ukleinek@kernel.org>, <alexandre.torgue@foss.st.com>
-CC: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-        <wbg@kernel.org>, <jic23@kernel.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v3 6/8] arm64: dts: st: add timer nodes on stm32mp251
-Date: Fri, 10 Jan 2025 10:19:20 +0100
-Message-ID: <20250110091922.980627-7-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250110091922.980627-1-fabrice.gasnier@foss.st.com>
-References: <20250110091922.980627-1-fabrice.gasnier@foss.st.com>
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="CgI98iJr"
+Received: from [192.168.60.65] (unknown [103.29.142.67])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 85663352;
+	Fri, 10 Jan 2025 18:09:25 +0800 (GMT+08:00)
+Message-ID: <46372c17-d317-4477-9635-36564c73cc6a@rock-chips.com>
+Date: Fri, 10 Jan 2025 18:09:24 +0800
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: Kever Yang <kever.yang@rock-chips.com>
+Subject: Re: [PATCH v2 11/17] dt-bindings: pwm: rockchip: Add
+ rockchip,rk3562-pwm
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: heiko@sntech.de, linux-rockchip@lists.infradead.org,
+ linux-pwm@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
+ Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+References: <20241224094920.3821861-1-kever.yang@rock-chips.com>
+ <20241224094920.3821861-12-kever.yang@rock-chips.com>
+ <qvr7x4anlxxtpxjywrqjihxyxejw4i73wrh2ibl3hasayew4s2@obyuxce4ez4g>
+Content-Language: en-US
+In-Reply-To: <qvr7x4anlxxtpxjywrqjihxyxejw4i73wrh2ibl3hasayew4s2@obyuxce4ez4g>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SAFDAG1NODE1.st.com
- (10.75.90.17)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlDQxpDVh1CQkIfSRhJThpLSlYVFAkWGhdVEwETFh
+	oSFyQUDg9ZV1kYEgtZQVlKS0hVSUJVSk9JVU1MWVdZFhoPEhUdFFlBWU9LSFVKS0lPT09IVUpLS1
+	VKQktLWQY+
+X-HM-Tid: 0a944fb0ac4c03afkunm85663352
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PRw6NRw*EjIJOQ4wEUpNIjw#
+	M0gaCwFVSlVKTEhNTktITE1DSUtKVTMWGhIXVRAeDR4JVQIaFRw7CRQYEFYYExILCFUYFBZFWVdZ
+	EgtZQVlKS0hVSUJVSk9JVU1MWVdZCAFZQUpLQkM3Bg++
+DKIM-Signature:a=rsa-sha256;
+	b=CgI98iJrbeouOxI5b3pc4yw7d68VlP0GdydTJiwcX10/5mN0FWV7zhLTXRanZv0ZTZD/hnL1SHzCg3YBgWbnO/UGPiuoYcbjTq2OeVjvfuU6Ow+ExujrV0lg1V6Sd5ZCOgZAQPX/6enhwZ/j/Ecn/1WeiNZWAdMyXOh5dKijOPw=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
+	bh=SnFH98ibQzsvQhtTYNyPTVrfsL5nJpMT8T+fexoCZ8A=;
+	h=date:mime-version:subject:message-id:from;
 
-Add timers support on STM32MP25 SoC. Use dedicated compatible to handle
-new features and instances introduced with this SoC. STM32MP25 SoC has
-various timer flavours, each group has its own specific feature list:
-- Advanced-control timers (TIM1/TIM8/TIM20)
-- General-purpose timers (TIM2/TIM3/TIM4/TIM5)
-- Basic timers (TIM6/TIM7)
-- General-purpose timers (TIM10/TIM11/TIM12/TIM13/TIM14)
-- General purpose timers (TIM15/TIM16/TIM17)
+Hi Uwe,
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
- arch/arm64/boot/dts/st/stm32mp251.dtsi | 524 +++++++++++++++++++++++++
- 1 file changed, 524 insertions(+)
+     Thanks very much for your review.
 
-diff --git a/arch/arm64/boot/dts/st/stm32mp251.dtsi b/arch/arm64/boot/dts/st/stm32mp251.dtsi
-index 6fe12e3bd7dd..220fb1a3da71 100644
---- a/arch/arm64/boot/dts/st/stm32mp251.dtsi
-+++ b/arch/arm64/boot/dts/st/stm32mp251.dtsi
-@@ -237,6 +237,273 @@ rifsc: bus@42080000 {
- 			#access-controller-cells = <1>;
- 			ranges;
- 
-+			timers2: timer@40000000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40000000 0x400>;
-+				interrupts = <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM2>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 1>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@1 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <1>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers3: timer@40010000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40010000 0x400>;
-+				interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM3>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 2>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@2 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <2>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers4: timer@40020000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40020000 0x400>;
-+				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM4>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 3>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@3 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <3>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers5: timer@40030000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40030000 0x400>;
-+				interrupts = <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM5>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 4>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@4 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <4>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers6: timer@40040000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40040000 0x400>;
-+				interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM6>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 5>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				timer@5 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <5>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers7: timer@40050000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40050000 0x400>;
-+				interrupts = <GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM7>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 6>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				timer@6 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <6>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers12: timer@40060000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40060000 0x400>;
-+				interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM12>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 10>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@11 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <11>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers13: timer@40070000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40070000 0x400>;
-+				interrupts = <GIC_SPI 203 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM13>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 11>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@12 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <12>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers14: timer@40080000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40080000 0x400>;
-+				interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM14>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 12>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@13 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <13>;
-+					status = "disabled";
-+				};
-+			};
-+
- 			spi2: spi@400b0000 {
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-@@ -427,6 +694,136 @@ i2c7: i2c@40180000 {
- 				status = "disabled";
- 			};
- 
-+			timers10: timer@401c0000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x401c0000 0x400>;
-+				interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM10>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 8>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@9 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <9>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers11: timer@401d0000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x401d0000 0x400>;
-+				interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM11>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 9>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@10 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <10>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers1: timer@40200000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40200000 0x400>;
-+				interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "brk", "up", "trg-com", "cc";
-+				clocks = <&rcc CK_KER_TIM1>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 0>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@0 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <0>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers8: timer@40210000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40210000 0x400>;
-+				interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "brk", "up", "trg-com", "cc";
-+				clocks = <&rcc CK_KER_TIM8>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 7>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@7 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <7>;
-+					status = "disabled";
-+				};
-+			};
-+
- 			usart6: serial@40220000 {
- 				compatible = "st,stm32h7-uart";
- 				reg = <0x40220000 0x400>;
-@@ -469,6 +866,99 @@ spi4: spi@40240000 {
- 				status = "disabled";
- 			};
- 
-+			timers15: timer@40250000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40250000 0x400>;
-+				interrupts = <GIC_SPI 193 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM15>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 13>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@14 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <14>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers16: timer@40260000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40260000 0x400>;
-+				interrupts = <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM16>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 14>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@15 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <15>;
-+					status = "disabled";
-+				};
-+			};
-+
-+			timers17: timer@40270000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40270000 0x400>;
-+				interrupts = <GIC_SPI 195 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "global";
-+				clocks = <&rcc CK_KER_TIM17>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 15>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@16 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <16>;
-+					status = "disabled";
-+				};
-+			};
-+
- 			spi5: spi@40280000 {
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-@@ -496,6 +986,40 @@ uart9: serial@402c0000 {
- 				status = "disabled";
- 			};
- 
-+			timers20: timer@40320000 {
-+				compatible = "st,stm32mp25-timers";
-+				reg = <0x40320000 0x400>;
-+				interrupts = <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
-+					     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-names = "brk", "up", "trg-com", "cc";
-+				clocks = <&rcc CK_KER_TIM20>;
-+				clock-names = "int";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				access-controllers = <&rifsc 16>;
-+				power-domains = <&CLUSTER_PD>;
-+				status = "disabled";
-+
-+				counter {
-+					compatible = "st,stm32mp25-timer-counter";
-+					status = "disabled";
-+				};
-+
-+				pwm {
-+					compatible = "st,stm32mp25-pwm";
-+					#pwm-cells = <3>;
-+					status = "disabled";
-+				};
-+
-+				timer@19 {
-+					compatible = "st,stm32mp25-timer-trigger";
-+					reg = <19>;
-+					status = "disabled";
-+				};
-+			};
-+
- 			usart1: serial@40330000 {
- 				compatible = "st,stm32h7-uart";
- 				reg = <0x40330000 0x400>;
--- 
-2.25.1
+On 2024/12/27 15:24, Uwe Kleine-König wrote:
+> On Tue, Dec 24, 2024 at 05:49:14PM +0800, Kever Yang wrote:
+>> Add rockchip,rk3562-pwm compatible string.
+>>
+>> Signed-off-by: Kever Yang<kever.yang@rock-chips.com>
+> What is your merge plan here? From my POV merging the pwm update via my
+> pwm tree would be the easiest. But if you want to let it go via (say)
+> arm-soc to have it all in a single tree soon and then base new
+> development on top of that, that would be fine for me, too.
+I send this in a patch set for a new soc and board because there is
+no driver change needed, and I think it would be more clear for the new soc
+support. It will be great if maintainers like you can pick the patches
+for the module which I guess is preferred way in the kernel maintain rule?
+Or else I have to follow the comments fromKrzysztof to send patches one
+by one separately.
 
+Thanks,
+- Kever
+> In the former case, please tell me. In the latter case:
+>
+> Acked-by: Uwe Kleine-König<ukleinek@kernel.org>
+>
+> Best regards
+> Uwe
