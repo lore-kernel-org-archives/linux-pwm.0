@@ -1,66 +1,65 @@
-Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8CB81F9ABE
-	for <linux-pwm@vger.kernel.org>; Mon, 13 Jan 2025 21:01:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03B551F942D
+	for <linux-pwm@vger.kernel.org>; Mon, 13 Jan 2025 21:01:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736802068; cv=none; b=pS71LvbC/0Xv0OOJfe8DdyEKbqanwWlHo+KTcDx2Z5iXoixPmrn/2qTOMskJvYLvhXFtW9v810+sm+yZ/f4ZOiipy+Xlks69WuAVOrunFOoljc9tvVYEAokbSCl7hDPHJ47GjMMsdBIdAfEBQXK8TcXfyOIXQ88rN9FbQtpKVBk=
+	t=1736802071; cv=none; b=e7U/bRM/0iklzhSUhiU+PpN7R+XplGWfkjzKvjtKaAOglhAnQhM6M5GnE8jC5+jXESKh/0NcT80qVjal9cfEhgqSXPU+FWmT+J7wkaWc3/uCvVhgUV8mQY024H8LMPUaEmjqySAxsxd1UPuQaHmzUvw+lJ6Gf3lK8TynBH0vmlY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736802068; c=relaxed/simple;
-	bh=5/ZCGTFk8qr5Qpjjmv0qoJEV9Q10DfHDZbzjSTo2suU=;
+	s=arc-20240116; t=1736802071; c=relaxed/simple;
+	bh=jRlTs2hPxFTMWzXud2pwyf/gDJQZpce7x7Xes5PCDq0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=jMMyrDtMYLRAEhraX8yA1/0xomtQcYsGxPIy3OBaHeizm6mqI2HkAje0l9eYpqVOPkd6uJbDKWgCV5JIaku+jtVUAXGULL7HgGRIXPZPvKf3Ul5KZRitDt74Dtj1kYUJLfs3UArZ2168ezwobNR2VYrzk35BHQmvGrPWsWvTYLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=115tGH5+; arc=none smtp.client-ip=209.85.161.49
+	 In-Reply-To:To:Cc; b=p5zf6pkf+1GizoX8kwAbVsZT9ZRcNWBQANF/xnhOm/2dcyF9teX2hv6ZucOAhLAtsZe70KtqTqHlm5BE9/IDjgteb5lmghcyT3UVQDWD9Wcpa+g77jMUv1xFZwM2eKvpC4VagLAEI6yvlpeLe9QUedtofoYxl+ovvp0yhzGb0r8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=FTab2Gif; arc=none smtp.client-ip=209.85.210.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="115tGH5+"
-Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-5f321876499so2338803eaf.1
-        for <linux-pwm@vger.kernel.org>; Mon, 13 Jan 2025 13:01:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="FTab2Gif"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-71e1d7130a5so2189330a34.0
+        for <linux-pwm@vger.kernel.org>; Mon, 13 Jan 2025 13:01:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1736802065; x=1737406865; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1736802067; x=1737406867; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=qltVAB3O9f/S/slNVDINiHvuxo8d2MRRS1EWEiDjZ8w=;
-        b=115tGH5+97QxbVS2Av5dE5Y3+hryXgxB8uhGRcmjV62ogwYJaO9wwiD2ddduxF1qqH
-         UBouc4J4H6z8HyWUtY/gvNrAnpgHiVGReYCYaBpXt3a19fv8Po48wqvN54xBT5H5/hrK
-         2jBgi3COoG2RL4syTvmuVgDuhJybUlMTVTGrWitib4Wz3LSvcSozkfkhnrI6TBu4PDJD
-         l5SRjRVh1/ZrLs3AYPCvvnnpFTMSeqQLAFvmp9x/MNOFERXs56oIC59B7jrjk7PEVFIp
-         bHOpxTcMYWZVvLO3yVIj0FExxdJ4x6AMImE2ovyAMGUCIygpK7qat7CoDW3yk1JK8EdN
-         Z47Q==
+        bh=m4qOy1E2SWXTRLQzjAjoUUpkXvVJq7HeawRi11wv1CQ=;
+        b=FTab2GifrSjdz1W7bjvBYjUilGHiDoz4r6Q9cZxQUjZT6/S4jKM/5e64KBeK6s6BiR
+         JGeJ2PmIrk/0HUD3u6T5LKtUvO5/uuSCWJwHmP9gIzfNN/oum6nl+C1wf2mVnS+JdP3s
+         T9esDyBsdsPFpYjWYkW4W9NrubDlJbbyKHOgxhF8sLo7bu4IN/tgVl/jh+Ns0XE+VlAC
+         R6uw0cWjFPvco6Q0TJPA8UX97BVESQ9tU3lRqyO7C92sEP7uuIv7H231xIbO9jXwKjT5
+         1NH994K0aig/V0rXPYPTPJMgGTnUCbpsLUVAfBokesH7Vhf6yb8jd2tj2xZTw4H0rbU5
+         IzZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736802065; x=1737406865;
+        d=1e100.net; s=20230601; t=1736802067; x=1737406867;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=qltVAB3O9f/S/slNVDINiHvuxo8d2MRRS1EWEiDjZ8w=;
-        b=CDtsYkNqXTusfZ/86FtWt4KKKfsBHPEtryZTBXfAJBp00hSqYnPgk+ORcV3EDE1o/T
-         qQRndgBVWYzWaLSNQ13NTPhEPY3VhJque/xbOZv7jBN4hdX5OtGDPsvD4qcKrnwFa03/
-         zjxr18hSwwJwUrLn00fhTkxGEN6KhJNE1Mg4T3nzaNYWglcXV3AMgLfzOePmoSfT1kls
-         ZhB98VL80vyn9B69RwlJqS9Hi6mJqSQEgCirSdpr2GgB4VJYBqMfR/rwUUbYBHyqx4gX
-         nKFZ97aWy3w63TTKpMObHfVlIMZ1PztK9ItrDrX0ksLNMjN26bHKwtCEfWVqJhJjdk1m
-         NJgw==
-X-Forwarded-Encrypted: i=1; AJvYcCXd7BJ7PBDifLqCHYXUAUgA1Z2vIOehjTSV5GLmVPpgUGpbB8cDhW+axBNRgfkDRH6PBqMNUA2ivo8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzePGcmK5yX8R1cuS8uq/ZMviL357O4t6vdCMLynN9ns4+FNG8F
-	hhpS7W5S0qe9vRu76+oQSYCnUj4ZSqIxCvVFpqEm74lMwe7WV9L1u6z1ATwkldc=
-X-Gm-Gg: ASbGncvKJlKVMvLCo+MxyVHW00PxVpuatQgdz1YwXgIt7Xu7g5OWlqoYzuEtauDMyq0
-	Jr/ts2lE5KbrLLQ80/jLmhNsTBcWLmZ4OgoBybwbEuUtXvILvCN1W753OPh8/c0wo2+fCE/X9k5
-	HNH4rC2lnVDEUT0PV8GFeXZGsDpGhq0X4I3Ue09wLIrKb4Rqqz1ZW6ZnZUKkvE0HG9YIEy1JsuV
-	IPAv531i7cJ4wpwQE/5HxxHnmfKKBHO4kJenOSda4EAv6TK5AUGtRgipuu68P26YtDGDk/IJv6g
-	SKetGjOC0t1E
-X-Google-Smtp-Source: AGHT+IGKEOrKOpleEXbdHbH0XU6aKKIS//my+aEaBNHoAOVZdjaOG9dHKxx4rSOz0PeVIQRTTjMGzQ==
-X-Received: by 2002:a4a:bf14:0:b0:5f2:c0df:7ed5 with SMTP id 006d021491bc7-5f880e0eceemr10029055eaf.3.1736802064766;
-        Mon, 13 Jan 2025 13:01:04 -0800 (PST)
+        bh=m4qOy1E2SWXTRLQzjAjoUUpkXvVJq7HeawRi11wv1CQ=;
+        b=ggtRP2ZxBdajv1bMsPEHDPOPYa81XngoMA+MXN+E0zckPTaMaCqsQRvMLuF4zkyDJQ
+         MFHzCuOHNX176f5D5WsDbCUH+p/9GYya469s1cph18Y47VsxWfmHLoDWKy+e614n/L4J
+         mDF62Kl27Pv8qD96mI6BVWl0z1KxfbxmSlCKB3LMCkwzcsDsNl63fXtl6xVnrbxkK6qK
+         jOaMnBDPs4Rqp96YILaX7WS0X3Z8GjEXXYuTTRI4XuS8eu+Q7Ob/aHrDxLpcQWB5lfvb
+         Fhau9VwMbi0/lKBFTfUtsahlGqwxJltFvKP/lUwRxR33Xj8VzccKp/yGcKXFLuRPcciv
+         Zcfg==
+X-Forwarded-Encrypted: i=1; AJvYcCWgLQfKjU5RXuErRvoTLqRSGA67v6xb4y3sGC8qdkp71mn7B10apfPb66oVbhsgtZ4ebF0/wM8Ob5g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxIGU3cb8Qom+/zXFtvR0uYDlQL6C/6AjncXkfgXUWR5K6za9dz
+	qHFxbMUIbSmd2SIf9J1tQ93GhALTqlnTCMKPwtt6bA4JKhNjkO4etD9WxfgWR8s=
+X-Gm-Gg: ASbGncvSg7cr7GjjX/A0RInskLV37JOaCP91bYiD1asLUqbw9jzCb0CN/x5A57FByat
+	6CJummB6bXPGlV0Tn5JplYKUOMNosfCaFhF1QWTS8OjsDb5YFHgbZyVrcWTAB/UMhdyxCIvOtxV
+	MiArtIUHN8iIY2e3f0jGRR4G7ZmH/FX4DF3niniiioQR6HKpCe2Zn017AZX+PcFccEr27V4YrzU
+	Kyvk1fwNVU63ZL1pVpRFAR0xPQhpxxsTo0HZ+qlLweJW4CfQgVnSCBWaen2Ql09k0/WiwlsUV5N
+	J9qpvZLlWAxE
+X-Google-Smtp-Source: AGHT+IEhD0Vp5JdEuew98KxE05jR40/4fw1aRh9ZIYPvM+djmKr8mac14kyQAxtYZsi3oBGb27A3Bw==
+X-Received: by 2002:a05:6830:3495:b0:71d:5236:9295 with SMTP id 46e09a7af769-721e2eff802mr13309103a34.24.1736802066783;
+        Mon, 13 Jan 2025 13:01:06 -0800 (PST)
 Received: from [127.0.1.1] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7231855effasm3927744a34.33.2025.01.13.13.01.03
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7231855effasm3927744a34.33.2025.01.13.13.01.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2025 13:01:04 -0800 (PST)
+        Mon, 13 Jan 2025 13:01:06 -0800 (PST)
 From: David Lechner <dlechner@baylibre.com>
-Date: Mon, 13 Jan 2025 15:00:15 -0600
-Subject: [PATCH v7 10/17] iio: adc: ad7944: don't use storagebits for
- sizing
+Date: Mon, 13 Jan 2025 15:00:17 -0600
+Subject: [PATCH v7 12/17] doc: iio: ad7944: describe offload support
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -69,7 +68,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250113-dlech-mainline-spi-engine-offload-2-v7-10-e0860c81caae@baylibre.com>
+Message-Id: <20250113-dlech-mainline-spi-engine-offload-2-v7-12-e0860c81caae@baylibre.com>
 References: <20250113-dlech-mainline-spi-engine-offload-2-v7-0-e0860c81caae@baylibre.com>
 In-Reply-To: <20250113-dlech-mainline-spi-engine-offload-2-v7-0-e0860c81caae@baylibre.com>
 To: Mark Brown <broonie@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
@@ -86,99 +85,71 @@ Cc: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
  David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.14.2
 
-Replace use of storagebits with realbits for determining the number of
-bytes needed for SPI transfers.
-
-When adding SPI offload support, storagebits will always be 32 rather
-than 16 for 16-bit 16-bit chips so we can no longer rely on storagebits
-being the correct size expected by the SPI framework (it always uses
-4 bytes for > 16-bit xfers and 2 bytes for > 8-bit xfers). Instead,
-derive the correct size from realbits since it will always be correct
-even when SPI offloading is used.
+Add a section to the ad7944 documentation describing how to use the
+driver with SPI offloading.
 
 Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-vy: Nuno Sa <nuno.sa@analog.com>
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
 
-v7 changes:
-* Make commit message more specific about numbers.
+v7 changes: none
 
 v6 changes: none
 
-v5 changes: none
-
-v4 changes: new patch in v4
+v5 changes: new patch in v5
 ---
- drivers/iio/adc/ad7944.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ Documentation/iio/ad7944.rst | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad7944.c b/drivers/iio/adc/ad7944.c
-index 0ec9cda10f5f8f61727581b152fb921f2e0b4bff..abfababcea10152fe1faa8afc2ec1ea2dc40ae52 100644
---- a/drivers/iio/adc/ad7944.c
-+++ b/drivers/iio/adc/ad7944.c
-@@ -98,6 +98,9 @@ struct ad7944_chip_info {
- 	const struct iio_chan_spec channels[2];
- };
+diff --git a/Documentation/iio/ad7944.rst b/Documentation/iio/ad7944.rst
+index 0d26e56aba8862a8d2ff541012bb4681d05c7bb5..e6dbe4d7f58cffd9f700f931ad2641d336526129 100644
+--- a/Documentation/iio/ad7944.rst
++++ b/Documentation/iio/ad7944.rst
+@@ -46,6 +46,8 @@ CS mode, 3-wire, without busy indicator
+ To select this mode in the device tree, set the ``adi,spi-mode`` property to
+ ``"single"`` and omit the ``cnv-gpios`` property.
  
-+/* get number of bytes for SPI xfer */
-+#define AD7944_SPI_BYTES(scan_type) ((scan_type).realbits > 16 ? 4 : 2)
++This is the only wiring configuration supported when using `SPI offload support`_.
 +
- /*
-  * AD7944_DEFINE_CHIP_INFO - Define a chip info structure for a specific chip
-  * @_name: The name of the chip
-@@ -164,7 +167,7 @@ static int ad7944_3wire_cs_mode_init_msg(struct device *dev, struct ad7944_adc *
+ CS mode, 4-wire, without busy indicator
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
- 	/* Then we can read the data during the acquisition phase */
- 	xfers[2].rx_buf = &adc->sample.raw;
--	xfers[2].len = BITS_TO_BYTES(chan->scan_type.storagebits);
-+	xfers[2].len = AD7944_SPI_BYTES(chan->scan_type);
- 	xfers[2].bits_per_word = chan->scan_type.realbits;
+@@ -106,7 +108,6 @@ Unimplemented features
+ ----------------------
  
- 	spi_message_init_with_transfers(&adc->msg, xfers, 3);
-@@ -193,7 +196,7 @@ static int ad7944_4wire_mode_init_msg(struct device *dev, struct ad7944_adc *adc
- 	xfers[0].delay.unit = SPI_DELAY_UNIT_NSECS;
+ - ``BUSY`` indication
+-- ``TURBO`` mode
  
- 	xfers[1].rx_buf = &adc->sample.raw;
--	xfers[1].len = BITS_TO_BYTES(chan->scan_type.storagebits);
-+	xfers[1].len = AD7944_SPI_BYTES(chan->scan_type);
- 	xfers[1].bits_per_word = chan->scan_type.realbits;
  
- 	spi_message_init_with_transfers(&adc->msg, xfers, 2);
-@@ -228,7 +231,7 @@ static int ad7944_chain_mode_init_msg(struct device *dev, struct ad7944_adc *adc
- 	xfers[0].delay.unit = SPI_DELAY_UNIT_NSECS;
+ Device attributes
+@@ -147,6 +148,27 @@ AD7986 is a fully-differential ADC and has the following attributes:
+ In "chain" mode, additional chips will appear as additional voltage input
+ channels, e.g. ``in_voltage2-voltage3_raw``.
  
- 	xfers[1].rx_buf = adc->chain_mode_buf;
--	xfers[1].len = BITS_TO_BYTES(chan->scan_type.storagebits) * n_chain_dev;
-+	xfers[1].len = AD7944_SPI_BYTES(chan->scan_type) * n_chain_dev;
- 	xfers[1].bits_per_word = chan->scan_type.realbits;
++SPI offload support
++===================
++
++To be able to achieve the maximum sample rate, the driver can be used with the
++`AXI SPI Engine`_ to provide SPI offload support.
++
++.. _AXI SPI Engine: http://analogdevicesinc.github.io/hdl/projects/pulsar_adc/index.html
++
++When SPI offload is being used, some attributes will be different.
++
++* ``trigger`` directory is removed.
++* ``in_voltage0_sampling_frequency`` attribute is added for setting the sample
++  rate.
++* ``in_voltage0_sampling_frequency_available`` attribute is added for querying
++  the max sample rate.
++* ``timestamp`` channel is removed.
++* Buffer data format may be different compared to when offload is not used,
++  e.g. the ``in_voltage0_type`` attribute.
++
++If the ``turbo-gpios`` property is present in the device tree, the driver will
++turn on TURBO during buffered reads and turn it off otherwise.
  
- 	spi_message_init_with_transfers(&adc->msg, xfers, 2);
-@@ -274,12 +277,12 @@ static int ad7944_single_conversion(struct ad7944_adc *adc,
- 		return ret;
- 
- 	if (adc->spi_mode == AD7944_SPI_MODE_CHAIN) {
--		if (chan->scan_type.storagebits > 16)
-+		if (chan->scan_type.realbits > 16)
- 			*val = ((u32 *)adc->chain_mode_buf)[chan->scan_index];
- 		else
- 			*val = ((u16 *)adc->chain_mode_buf)[chan->scan_index];
- 	} else {
--		if (chan->scan_type.storagebits > 16)
-+		if (chan->scan_type.realbits > 16)
- 			*val = adc->sample.raw.u32;
- 		else
- 			*val = adc->sample.raw.u16;
-@@ -409,8 +412,7 @@ static int ad7944_chain_mode_alloc(struct device *dev,
- 	/* 1 word for each voltage channel + aligned u64 for timestamp */
- 
- 	chain_mode_buf_size = ALIGN(n_chain_dev *
--		BITS_TO_BYTES(chan[0].scan_type.storagebits), sizeof(u64))
--		+ sizeof(u64);
-+		AD7944_SPI_BYTES(chan[0].scan_type), sizeof(u64)) + sizeof(u64);
- 	buf = devm_kzalloc(dev, chain_mode_buf_size, GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
+ Device buffers
+ ==============
 
 -- 
 2.43.0
