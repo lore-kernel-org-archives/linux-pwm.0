@@ -1,194 +1,184 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CDF3192D77
-	for <linux-pwm@vger.kernel.org>; Fri, 17 Jan 2025 15:48:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28EDF13CA81;
+	Fri, 17 Jan 2025 16:08:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737128934; cv=none; b=lKknbz/w/klncKuaX6q3BR0MMx9IB+pTiSryGp77bTCvJpEHboJlzK6vHzJPnNK9o++76GflUdN0k/2nGPFr3ztydgIE7WaISy2T87RX/wsMlZbI4WicHt57uG0PHO8syRDKyQSVKwZJw6xLldBUpaYqYc2Av3vgdJwI0Muszwo=
+	t=1737130136; cv=none; b=UXELyu6JFAj3UCQYbeBS6iOofr09dx57JgaGAzoH6/9SeZd1ACyvyNuLokgRSWm0X0G5eTWuSG+H9PSjPKNxK7THTUMMy7P77lZlNziW+SzkmwOlQzJ9Hui35suExFblr+h2EUhJt+mXZd+IAkLL0HG1I466kHhrHJpy6PYKZSw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737128934; c=relaxed/simple;
-	bh=T/09PAn0K9MknUR73hMHLd+8kcIwW0SWgv9GknFSW74=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tembcYmBXv1WDb1M/vKZzqzP4eVp9pTQXo3Qh9YmwuScVaRsnZlk6siHbYAHVifyUeSpi8tOK91yQ/cDdqI5qNElmHb0TdFKv9wKEFYPnFbsPuJ6AVWBeo6ucWzjtEBGaTW4qy9Gd6rGrU1Iw22GKk+uxOoHhC33edug/oLxb5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=utrhUUkS; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1737130136; c=relaxed/simple;
+	bh=iYXOI8LCTEd9k99Q7G9VnYpY0LsfofNyX43iB8U11c8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=IEt/yX2hG/K/jdhmNdvkg+gD4W5J0LTCMEEIxoTAeVMNl5ubrDHxe3kPVPGqIAMvCnDClPy9KO+GT3jeTDESB4zAC+pm4T5eP/YCdgDNcdKdpz3h7zYWMdcpDhpedY1EbSM6H55RwJybW0lcVZdNejNV00g4Ayvfol4QIsyxdrs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MAFidhgg; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="utrhUUkS"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4361b0ec57aso22126285e9.0
-        for <linux-pwm@vger.kernel.org>; Fri, 17 Jan 2025 07:48:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MAFidhgg"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-43618283dedso22143985e9.3;
+        Fri, 17 Jan 2025 08:08:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1737128929; x=1737733729; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wp5lDYQ/FVQNKqP77PtuRYPa4kZQpA/61vS4WS8uPJM=;
-        b=utrhUUkSFOqlzWV4Llpd7d8mldG61LZ9ibnlmd71duOHj2yEpeWNffBBoNom2/r5Sc
-         W9JdQMSd7J/59LehHJlP2hWpE4XuzqtZGzhYYSg/PfWhECtPZynwFRpQ4+gC7ZMC9Fzx
-         obIQ1a8TeusDnMcDUUW9iqdM2n/YLuX0gM7JyCJBqdPFAHLREDVbBw49sA0E67SXzg1E
-         ehonmWHJuIJ11ZYJ3HkVSDTdue07GtxdApSR3UcRwa/XUBvLx/bAmiNS5flK2SGwMbJS
-         HogdvTR0HGYPyCYB51skhLp5gU49sZW0yLfaEVlPgP8zgqXtBhmCATahUAxLlLcuo/JP
-         AXYw==
+        d=gmail.com; s=20230601; t=1737130129; x=1737734929; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=suWVJuvyC59xxmWqpljFSKf02Mcdyv9U3eolhIWM1pM=;
+        b=MAFidhggAeYNUNoNjFSFSpjMVts71QCezM8KHM7103zYprv2mrbG3M3VE2an9H8TU7
+         96vC3NhJE+TxZivdtq95HQLrkK3cXdzbtKWj9Ro4vuxK/aVNNHh80KxSdabBiQrLV5tg
+         6toHbbAD3C0s1YFlREXB7RfOVYVGhRt+5LjMuU6hMKRUxMOfiwgap/qwB9D45IpB0IoW
+         mcvRw1JlQMcJ5MBWtk5069sAzztGLTq5mliVO5EajZyXh+WW54FS2gvSpg6bez5BpI7s
+         VfHnHeAn0zBSpN0O4kOsrIPPiTF7LWWBDVYZTWPBx/UDDPzlf6xjSlbNu4VxLaPyxMvj
+         Sr6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737128929; x=1737733729;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wp5lDYQ/FVQNKqP77PtuRYPa4kZQpA/61vS4WS8uPJM=;
-        b=m2VtLJQmAOflnWwdU4Xo3WyhQXiMxTAHshoHe/jlVVVPn5nFruHMQQVbDeXFglkFjK
-         kj/4Rjmrev41EX7dHlE78r1dvtY97gslVW8e7sIox0alMvMVsPEF6crcY+3nemeL1IH2
-         3cpNKYnz/qGngWkJhfS25M+GvM9Ooaj/JgET2bXM7lIdMRn0RNHMoCWs6CfLR3SHa48p
-         SFocxvxpDjpDynhmexSgv56UxD7jGZvZcemakqlYkEygB5rkIY79/oGVr+g+2MgmF/tp
-         XTtTNiWHa4sXc8hni3FWlhKiojENw07UO/XG763pUK0yWHMPMr+vXf+zxxgje1jFFKCI
-         yWtw==
-X-Forwarded-Encrypted: i=1; AJvYcCWzk9aiJGwUOEjyjhRvypYbJ/ibY5qYOwPvwh4ntC35kWbBxvj/gBKjDQZ4SpSdIsbobhbSZIR4v7s=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwUYxFHmEV/AL+xaIWPB/QsLGpZNiqNEytQCxuYMdlLiff4K1PM
-	+ovCNJ1zqZFOdMSNS2IuZKHDfGdmy7ajHNgnN206DQKpgjE2aBMuwrhESEjCW4w=
-X-Gm-Gg: ASbGncvSfIuveRCDOI3aJ3q+wzMqIf9yAjtpBxzvRwkalusoGXOezuxBwqDXB4GkyOA
-	boei8xRTEXJc74zvb3W3x2Opmo0ctBsFT3Urb/P5+5MFTezEVWXYoIrfD9WEIgJupATygYaocgM
-	V/9Rij3yFghSDnj4l3057q9dx6mpha1AP6u++kenp4/NvAiezyE6rgXgY3+PytjSS1hNbkVrc8o
-	7ivnbHK2uv8TTdhvEozor3ItqTkjsKnQHxLkLFViK+zlu3BoWXPLk1Bmj6Xqc9lzdDyEvu8fujH
-	08vg339uT7X88y1KCZKnWNtEJg==
-X-Google-Smtp-Source: AGHT+IEUwldAZQq+9u44Cgxr20RCrrtNFuCZgAttsz2mk4lnSLbnQasV79BguyJKWinaPHhq+x/qVQ==
-X-Received: by 2002:a05:6000:1a8c:b0:38b:ed6f:f00f with SMTP id ffacd0b85a97d-38bf56635a1mr2730865f8f.17.1737128929108;
-        Fri, 17 Jan 2025 07:48:49 -0800 (PST)
-Received: from dfj (host-95-245-235-245.retail.telecomitalia.it. [95.245.235.245])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38bf322a506sm2775979f8f.41.2025.01.17.07.48.47
+        d=1e100.net; s=20230601; t=1737130129; x=1737734929;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=suWVJuvyC59xxmWqpljFSKf02Mcdyv9U3eolhIWM1pM=;
+        b=M8nawXomTP1M1t/grSlFHCZrO174eQRzybMOCPLRJv/j4DZqqjEZ/50L391LE4CfSA
+         Cf7Hq7AOhCtbv2x7Pc+9/TR795jsgpKBnfnWqB7NLIr2zmeRyogA4lCWi2lnHu9UekSc
+         XGZiZp+l+gbYvpznMmU+u6MHTiVmU1uanSFPV76/+/a3cqRErBtQdHbhHRa5nFPN0ppx
+         x2lcHi5N8vthK5W5cYFwTWVSQttV+vMbFrK0tpHGURubsDspqL27cFfzeW1qKjqhBJet
+         j5WsgCwTsfti8eTAeBqFtQE6VbLedUnOXmxbDzNzpYiPG7WKSHNO1fFJIj0RmNi7Ao3Q
+         n81A==
+X-Forwarded-Encrypted: i=1; AJvYcCUw0zxMJWFiJF5pxVtUGLjdLk1yriFfAEn6XXx0XxvpqagRf+MRvesd/TKn/bv3eOTXYNWB+G2draPw@vger.kernel.org, AJvYcCVTgfhQzutU1lhDILBkrn80ZuSYSmD/WEn4OW9lLWY5uqeIVAhoEroFCUjGSANrWI777Yg1RT8K9m4w@vger.kernel.org, AJvYcCVdj3dRch+TsFGlvgpFkWcSuJUq0LpkB9F1VkfUYTIgvLzM5rV7oQ5evyngRCTzOIz+K3k7VbgvUTub@vger.kernel.org, AJvYcCVoqZMezkpSarVISrQoWTF4E9rR2wJpk9VM9b9yKKHfGLtA8Qr6bcK8ejSSY+6FPGJmHQKAv4ZvKmRLkmra@vger.kernel.org
+X-Gm-Message-State: AOJu0YzBWCBLt+XXNFgliNJoT9W+5550kUVyXod0XSi1x5ZSWivz+/cY
+	p9Pd6CHGPZfVQ0Xub4fP0wxegPF9ybuam3M5jCg8BnJkGhTu1K3r
+X-Gm-Gg: ASbGncvoOvtQuyVOY+SgOKeWcj2EXenU7OcH7vnMIpXIuO01RVlFRGTPbyY5OOKoYUM
+	U1th16RI4+YAJuqujzEf/tCe2cuMck1It9Yyi5/xHYoUt+G9G0+oP60xuBttCtLwb/dx5w0X8wZ
+	qOQiTPdGWq6+wYuL7o7Ya7PmsGjFQp5oxdseVnP97P9CcBFu7YO0ENIKNRLTf1DwoTPewgGVF7u
+	X15ecemG1CSZALdulg06JtmNe2A59+43Jx76zc/iJ2taQh7B0WAgW7uEgCk7QHgixcch0Yfc4Lc
+	DZydQtQAM/B1W5Qj4CriLOEgx9ZH
+X-Google-Smtp-Source: AGHT+IH+lU0c3o9sWYufaj0SCswN83+YEHr96aAl0WIL54XimNvkU9ohDDavWF+TcrWgbKoIN5ax+g==
+X-Received: by 2002:a05:600c:1e18:b0:436:8a6f:b6db with SMTP id 5b1f17b1804b1-4389141c12emr30990685e9.22.1737130129135;
+        Fri, 17 Jan 2025 08:08:49 -0800 (PST)
+Received: from ?IPv6:2001:818:ea8e:7f00:2575:914:eedd:620e? ([2001:818:ea8e:7f00:2575:914:eedd:620e])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38bf3275995sm2864100f8f.74.2025.01.17.08.08.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jan 2025 07:48:48 -0800 (PST)
-Date: Fri, 17 Jan 2025 16:47:18 +0100
-From: Angelo Dureghello <adureghello@baylibre.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Mark Brown <broonie@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Lars-Peter Clausen <lars@metafoo.de>, David Jander <david@protonic.nl>, 
-	Martin Sperl <kernel@martin.sperl.org>, linux-spi@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v7 14/17] iio: adc: ad4695: Add support for SPI offload
-Message-ID: <ls32gl5a7nsihmmpfabxhm6ilg7idyxdhyrhbkay6e2fiokoah@o5ujfxlsq3s3>
-References: <20250113-dlech-mainline-spi-engine-offload-2-v7-0-e0860c81caae@baylibre.com>
- <20250113-dlech-mainline-spi-engine-offload-2-v7-14-e0860c81caae@baylibre.com>
+        Fri, 17 Jan 2025 08:08:48 -0800 (PST)
+Message-ID: <0d917148509217f3fab95b4cf2e7f14b4c3c0dd1.camel@gmail.com>
+Subject: Re: [PATCH v10 1/8] iio: backend: add API for interface get
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>, jic23@kernel.org, 
+	robh@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-pwm@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>
+Date: Fri, 17 Jan 2025 16:08:49 +0000
+In-Reply-To: <20250117130702.22588-2-antoniu.miclaus@analog.com>
+References: <20250117130702.22588-1-antoniu.miclaus@analog.com>
+	 <20250117130702.22588-2-antoniu.miclaus@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250113-dlech-mainline-spi-engine-offload-2-v7-14-e0860c81caae@baylibre.com>
 
-Hi,
-
-noticed just one possible issue here, see below.
-
-On 13.01.2025 15:00, David Lechner wrote:
-> Add support for SPI offload to the ad4695 driver. SPI offload allows
-> sampling data at the max sample rate (500kSPS or 1MSPS).
-> 
-> This is developed and tested against the ADI example FPGA design for
-> this family of ADCs [1].
-> 
-> [1]: http://analogdevicesinc.github.io/hdl/projects/ad469x_fmc/index.html
-> 
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Reviewed-by: Nuno Sa <nuno.sa@analog.com>
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
+On Fri, 2025-01-17 at 15:06 +0200, Antoniu Miclaus wrote:
+> Add backend support for obtaining the interface type used.
+>=20
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 > ---
-> 
-> v7 changes: none
-> 
-> v6 changes:
-> * Fixed use of c++ style comments
-> * Moved static const struct definition out of probe function
-> * Changes bits_per_word to always be 19 for future oversampling
->   compatibility (Trevor is working on implementing oversampling support
->   on top of this patch, so we have high confidence this is the correct
->   thing to do)
-> * Fixed wrong xfer->len
-> 
-> v5 changes:
-> * Register SCLK speed handling has been split out into a separate series.
-> * Add sampling_frequency_available attribute.
-> * Limit max allowed sampling frequency based on chip info.
-> * Expand explanations of offload enable/disable ordering requirements.
-> * Finish TODO to use macros for phandle arg values.
-> * Don't use dev_info() when falling back to non-offload operation.
-> * Update to accommodate changes in other patches in this series.
-> 
-> v4 changes: new patch in v4
-> ---
->  drivers/iio/adc/Kconfig  |   1 +
->  drivers/iio/adc/ad4695.c | 445 +++++++++++++++++++++++++++++++++++++++++++++--
->  2 files changed, 429 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 995b9cacbaa964d26424346120c139858f93cdcd..ec60b64c46e187e2be18ab1f8ca9e6f4f03299f9 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -52,6 +52,7 @@ config AD4695
->  	tristate "Analog Device AD4695 ADC Driver"
->  	depends on SPI
->  	select IIO_BUFFER
-> +	select IIO_BUFFER_DMAENGINE
->  	select IIO_TRIGGERED_BUFFER
->  	select REGMAP
->  	help
-> diff --git a/drivers/iio/adc/ad4695.c b/drivers/iio/adc/ad4695.c
-> index 13cf01d35301be40369571e7dd2aeac1a8148d15..c8cd73d19e869f11999608f61df5724d329b4427 100644
-> --- a/drivers/iio/adc/ad4695.c
-> +++ b/drivers/iio/adc/ad4695.c
-> @@ -19,14 +19,19 @@
->  #include <linux/device.h>
->  #include <linux/err.h>
->  #include <linux/gpio/consumer.h>
-> +#include <linux/iio/buffer-dmaengine.h>
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/triggered_buffer.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/minmax.h>
-> +#include <linux/mutex.h>
->  #include <linux/property.h>
-> +#include <linux/pwm.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/spi/offload/consumer.h>
-> +#include <linux/spi/offload/provider.h>
->  #include <linux/spi/spi.h>
->  #include <linux/units.h>
 
-...
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
 
-> +static int ad4695_offload_trigger_request(struct spi_offload_trigger *trigger,
-> +					  enum spi_offload_trigger_type type,
-> +					  u64 *args, u32 nargs)
+> no changes in v10.
+> =C2=A0drivers/iio/industrialio-backend.c | 24 ++++++++++++++++++++++++
+> =C2=A0include/linux/iio/backend.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 | 11 +++++++++++
+> =C2=A02 files changed, 35 insertions(+)
+>=20
+> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industriali=
+o-
+> backend.c
+> index 363281272035..8bf3d570da1b 100644
+> --- a/drivers/iio/industrialio-backend.c
+> +++ b/drivers/iio/industrialio-backend.c
+> @@ -636,6 +636,30 @@ ssize_t iio_backend_ext_info_set(struct iio_dev
+> *indio_dev, uintptr_t private,
+> =C2=A0}
+> =C2=A0EXPORT_SYMBOL_NS_GPL(iio_backend_ext_info_set, "IIO_BACKEND");
+> =C2=A0
+> +/**
+> + * iio_backend_interface_type_get - get the interface type used.
+> + * @back: Backend device
+> + * @type: Interface type
+> + *
+> + * RETURNS:
+> + * 0 on success, negative error number on failure.
+> + */
+> +int iio_backend_interface_type_get(struct iio_backend *back,
+> +				=C2=A0=C2=A0 enum iio_backend_interface_type *type)
 > +{
-> +	struct ad4695_state *st = spi_offload_trigger_get_priv(trigger);
+> +	int ret;
 > +
-> +	/* Should already be validated by match, but just in case. */
-> +	if (nargs != 2)
+> +	ret =3D iio_backend_op_call(back, interface_type_get, type);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (*type >=3D IIO_BACKEND_INTERFACE_MAX)
 > +		return -EINVAL;
 > +
-> +	/* DT tells us if BUSY event uses GP0 or GP3. */
-> +	if (args[1] == AD4695_TRIGGER_PIN_GP3)
-> +		return regmap_set_bits(st->regmap, AD4695_REG_GP_MODE,
-> +				       AD4695_REG_GP_MODE_BUSY_GP_SEL);
-> +
-> +	return regmap_clear_bits(st->regmap, AD4695_REG_GPIO_CTRL,
-> +				 AD4695_REG_GP_MODE_BUSY_GP_SEL);
-
-This should probably be:
-         
-        return regmap_clear_bits(st->regmap, AD4695_REG_GPIO_MODE,
-                                 AD4695_REG_GP_MODE_BUSY_GP_SEL);
-
+> +	return 0;
 > +}
+> +EXPORT_SYMBOL_NS_GPL(iio_backend_interface_type_get, "IIO_BACKEND");
 > +
-
-Regards,
-angelo
+> =C2=A0/**
+> =C2=A0 * iio_backend_extend_chan_spec - Extend an IIO channel
+> =C2=A0 * @back: Backend device
+> diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+> index 10be00f3b120..a0ea6c29d7ba 100644
+> --- a/include/linux/iio/backend.h
+> +++ b/include/linux/iio/backend.h
+> @@ -70,6 +70,12 @@ enum iio_backend_sample_trigger {
+> =C2=A0	IIO_BACKEND_SAMPLE_TRIGGER_MAX
+> =C2=A0};
+> =C2=A0
+> +enum iio_backend_interface_type {
+> +	IIO_BACKEND_INTERFACE_SERIAL_LVDS,
+> +	IIO_BACKEND_INTERFACE_SERIAL_CMOS,
+> +	IIO_BACKEND_INTERFACE_MAX
+> +};
+> +
+> =C2=A0/**
+> =C2=A0 * struct iio_backend_ops - operations structure for an iio_backend
+> =C2=A0 * @enable: Enable backend.
+> @@ -88,6 +94,7 @@ enum iio_backend_sample_trigger {
+> =C2=A0 * @extend_chan_spec: Extend an IIO channel.
+> =C2=A0 * @ext_info_set: Extended info setter.
+> =C2=A0 * @ext_info_get: Extended info getter.
+> + * @interface_type_get: Interface type.
+> =C2=A0 * @read_raw: Read a channel attribute from a backend device
+> =C2=A0 * @debugfs_print_chan_status: Print channel status into a buffer.
+> =C2=A0 * @debugfs_reg_access: Read or write register value of backend.
+> @@ -128,6 +135,8 @@ struct iio_backend_ops {
+> =C2=A0			=C2=A0=C2=A0=C2=A0 const char *buf, size_t len);
+> =C2=A0	int (*ext_info_get)(struct iio_backend *back, uintptr_t private,
+> =C2=A0			=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan, char *buf);
+> +	int (*interface_type_get)(struct iio_backend *back,
+> +				=C2=A0 enum iio_backend_interface_type *type);
+> =C2=A0	int (*read_raw)(struct iio_backend *back,
+> =C2=A0			struct iio_chan_spec const *chan, int *val, int
+> *val2,
+> =C2=A0			long mask);
+> @@ -186,6 +195,8 @@ ssize_t iio_backend_ext_info_set(struct iio_dev
+> *indio_dev, uintptr_t private,
+> =C2=A0				 const char *buf, size_t len);
+> =C2=A0ssize_t iio_backend_ext_info_get(struct iio_dev *indio_dev, uintptr=
+_t
+> private,
+> =C2=A0				 const struct iio_chan_spec *chan, char
+> *buf);
+> +int iio_backend_interface_type_get(struct iio_backend *back,
+> +				=C2=A0=C2=A0 enum iio_backend_interface_type *type);
+> =C2=A0int iio_backend_read_raw(struct iio_backend *back,
+> =C2=A0			 struct iio_chan_spec const *chan, int *val, int
+> *val2,
+> =C2=A0			 long mask);
 
