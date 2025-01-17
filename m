@@ -1,151 +1,125 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE0C91422A8;
-	Fri, 17 Jan 2025 15:43:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E15FF33062;
+	Fri, 17 Jan 2025 15:47:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737128603; cv=none; b=IfT1hGLRMv3C+kCSE6MDv/c1vCojV8kSfy14BlCU8kBkjwNpij85sUjrvvjQNhCccQ4qD1uvsDn8kXenIvR6jF2V+fOOluFCYZKbaRFOiXb9DKJJBgoLlkz5L+bOImYAtKp9xbP+5whQSfGSah8joeZtRQ3lCjEL+zHaoeUJEqo=
+	t=1737128877; cv=none; b=c2mtGVeCw55hK7PzoT9WSQ/7zOLkDq5eP8zc6OqrhxIE9wa6SLDHFIKZ1WDwUsV5W1eb4ZZga0HeFJZNs1FPupx6rva/gTjnixtlbG5kzIjtI0aICQXXhH+E0EBTyTXcyeUZmiMljBf4z8A8MZgd5zoPzV8wp5c8XtU/YZOaOCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737128603; c=relaxed/simple;
-	bh=Fu33ef61hPSSqgux2gyLm9fZc9PqlU2iN9Ow1HQJRc8=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=c+c9SMpalT/6yc6PLpTUFdzalWUlR8Rr0vXTD5EHpXANL3aoMNnWnI0hG52KFjn9Jb0XLZoCFWxXh1/wVMOuOnWS9GQd3YC1sUHhbjdFHah1+b34qbaMdsddDnEJBvCIp5CJkbNlWRd4vbb/GMrlt7icq61f9k/bBOpJD8vBRRI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.231])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4YZPC15YSzz6K9Ct;
-	Fri, 17 Jan 2025 23:43:09 +0800 (CST)
-Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
-	by mail.maildlp.com (Postfix) with ESMTPS id A02891402CB;
-	Fri, 17 Jan 2025 23:43:11 +0800 (CST)
-Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
- (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Fri, 17 Jan
- 2025 16:43:11 +0100
-Date: Fri, 17 Jan 2025 15:43:09 +0000
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>, <jic23@kernel.org>,
-	<robh@kernel.org>, <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH v9 8/8] iio: adc: ad4851: add ad485x driver
-Message-ID: <20250117154309.000003e1@huawei.com>
-In-Reply-To: <d4ur7trhknm7jtjvsyms4aewypl75uuvgtccgwc7dfycheh4qo@jqmpv5t3lip6>
-References: <20241220120134.42760-1-antoniu.miclaus@analog.com>
-	<20241220120134.42760-8-antoniu.miclaus@analog.com>
-	<d4ur7trhknm7jtjvsyms4aewypl75uuvgtccgwc7dfycheh4qo@jqmpv5t3lip6>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1737128877; c=relaxed/simple;
+	bh=Qj10ZHIZvLsm79+pV9p3pc1UU7z132gm/dpFPIHy5BQ=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
+	 References:In-Reply-To; b=tLTvfSMQvLDhQpbu7mA+jcihFoZrQQo3J/QzNhH9ScI2NmNph/W2keSfwu04tlk52mWBuGEi8yrm5mVOkeit/dSjjoOlxCOyMgI7BET8xVqoX6w+q3IYa/MdV4+DiM+GiMx5meW4g6npwWvAzdV0hXyWgvRUnDDhczOa7Iu5tlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=pj7UM1Qu; arc=none smtp.client-ip=217.70.183.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="pj7UM1Qu"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id A357440008;
+	Fri, 17 Jan 2025 15:47:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1737128866;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=gUbim1SaJlo0edxSD2KaiF57Zvw18iMPt4AJUuoV9w8=;
+	b=pj7UM1Qutxasd+MYyXB0JIGh9axUAiFYcUVfzust2lf1Wwe84jYQPLfgHSRRwK1dT8PJTT
+	y8d2q5vIai1jYvCQxqJntKigYbK0UZ+4ZdhfN2c8HaCgI34XV7S8T3735Q8FMa4b9fGN86
+	lmgf6HVea6YD2lQg2nHnAJ3lZAPY/F2eVPo+p2Ui7ucm9XxP739da8D0kExZ8Rsnz1zzly
+	ScmxO/R/tBDGdjMcGjRHcn267g0cxMjvoCKLy2unfBjfQdVPQys1QskdfdaWdJMoiieQ63
+	o7h0ysOxPW04oyJF5bT2pOWH77M0jKvvCKaOyREPFnSa3F98m1CEC5myZXqVDw==
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: lhrpeml500004.china.huawei.com (7.191.163.9) To
- frapeml500008.china.huawei.com (7.182.85.71)
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 17 Jan 2025 16:47:45 +0100
+Message-Id: <D74GSFVY17UV.GMN119MAVAK0@bootlin.com>
+Subject: Re: [PATCH v3 3/7] pwm: max7360: Add MAX7360 PWM support
+Cc: "Lee Jones" <lee@kernel.org>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, "Kamel Bouhara" <kamel.bouhara@bootlin.com>, "Linus
+ Walleij" <linus.walleij@linaro.org>, "Bartosz Golaszewski" <brgl@bgdev.pl>,
+ "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-gpio@vger.kernel.org>, <linux-input@vger.kernel.org>,
+ <linux-pwm@vger.kernel.org>, =?utf-8?q?Gr=C3=A9gory_Clement?=
+ <gregory.clement@bootlin.com>, "Thomas Petazzoni"
+ <thomas.petazzoni@bootlin.com>
+From: "Mathieu Dubois-Briand" <mathieu.dubois-briand@bootlin.com>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+X-Mailer: aerc 0.18.2-0-ge037c095a049
+References: <20250113-mdb-max7360-support-v3-0-9519b4acb0b1@bootlin.com>
+ <20250113-mdb-max7360-support-v3-3-9519b4acb0b1@bootlin.com>
+ <f22l3uqgt65utxehv2zmozqixjkktp4trpr42xr5arvp6o5zcf@g5iriaeskqa5>
+ <D74EQQNADWDP.FQ5XFK8TB5XH@bootlin.com>
+ <v4bf6bharih6zgz52ya5twfyf47wh3fu56ovic5gjxak2jhufy@q3eudujjwrhm>
+In-Reply-To: <v4bf6bharih6zgz52ya5twfyf47wh3fu56ovic5gjxak2jhufy@q3eudujjwrhm>
+X-GND-Sasl: mathieu.dubois-briand@bootlin.com
 
-On Fri, 17 Jan 2025 10:59:04 +0100
-Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com> wrote:
+On Fri Jan 17, 2025 at 3:40 PM CET, Uwe Kleine-K=C3=B6nig wrote:
+> On Fri, Jan 17, 2025 at 03:11:29PM +0100, Mathieu Dubois-Briand wrote:
+> > On Fri Jan 17, 2025 at 10:33 AM CET, Uwe Kleine-K=C3=B6nig wrote:
+> > > Hello Mathieu,
+> > >
+> > > On Mon, Jan 13, 2025 at 01:42:27PM +0100, mathieu.dubois-briand@bootl=
+in.com wrote:
+> > > > From: Kamel Bouhara <kamel.bouhara@bootlin.com>
+> > ...
+> > > > +static int max7360_pwm_apply(struct pwm_chip *chip, struct pwm_dev=
+ice *pwm,
+> > > > +			     const struct pwm_state *state)
+> > > > +{
+> > > > +	struct max7360_pwm *max7360_pwm;
+> > > > +	u64 duty_steps;
+> > > > +	int ret;
+> > > > +
+> > > > +	if (state->polarity !=3D PWM_POLARITY_NORMAL)
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	if (state->period !=3D MAX7360_PWM_PERIOD_NS) {
+> > > > +		dev_warn(&chip->dev,
+> > > > +			 "unsupported pwm period: %llu, should be %u\n",
+> > > > +			 state->period, MAX7360_PWM_PERIOD_NS);
+> > > > +		return -EINVAL;
+> > >
+> > > Please don't emit error messages in .apply(). Also a driver is suppos=
+ed
+> > > to round down .period, so any value >=3D MAX7360_PWM_PERIOD_NS should=
+ be
+> > > accepted.
+> > >
+> > > Also note that you might want to implement the waveform callbacks
+> > > instead of .apply() and .get_state() for the more modern abstraction
+> > > (with slightly different rounding rules).
+> > >
+> >=20
+> > Sure, I just switched to the waveform callbacks, it was quite
+> > straightforward.
+>
+> sounds great. Note that the detail in rounding that is different for
+> waveforms is that a value that cannot be round down to a valid value
+> (because it's too small) is round up. This is a bit ugly in the drivers
+> but simplifies usage considerably. So you never return -EINVAL because
+> the values don't fit.
+>
 
-> Hello,
->=20
-> On Fri, Dec 20, 2024 at 02:01:34PM +0200, Antoniu Miclaus wrote:
-> > +static const int ad4851_oversampling_ratios[] =3D {
-> > +	1, 2, 4, 8, 16,	32, 64, 128,
-> > +	256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
-> > +	65536,
-> > +};
-> > +
-> > +static int ad4851_osr_to_regval(unsigned int ratio)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i =3D 1; i < ARRAY_SIZE(ad4851_oversampling_ratios); i++)
-> > +		if (ratio =3D=3D ad4851_oversampling_ratios[i])
-> > +			return i - 1;
-> > +
-> > +	return -EINVAL;
-> > +} =20
->=20
-> This can be simplified (I guess) using something like:
->=20
-> 	if (ratio >=3D 2 && ratio <=3D 65536 && is_power_of_2(ratio))
-> 		return ilog2(ratio) - 1;
->=20
-> 	return -EINVAL;
-Hi Uwe,
+Sorry, I'm not sure I got it right. Does this affect the three members
+of pwm_waveform (period_length_ns, duty_offset_ns, duty_length_ns) ? So
+on this device where the period is fixed and I cannot define an offset,
+does that mean I will silently accept any value for period_length_ns and
+duty_offset_ns ?
 
-Only at the cost of providing custom handling to compute the above
-array in order to provide it to userspace via the read_avail() callback.
+Best regards,
+Mathieu
 
-We could do what you have here and provide the array but that would
-be less clear than just looking it up.
-
->=20
-> > +static void __ad4851_get_scale(struct iio_dev *indio_dev, int scale_tb=
-l,
-> > +			       unsigned int *val, unsigned int *val2)
-> > +{
-> > [...]
-> > +}
-> > +
-> > +static int ad4851_scale_fill(struct iio_dev *indio_dev)
-> > +{
-> > [...]
-> > +}
-> > +
-> > +static int ad4851_set_oversampling_ratio(struct iio_dev *indio_dev,
-> > +					 const struct iio_chan_spec *chan,
-> > +					 unsigned int osr)
-> > +{
-> > [...]
-> > +}
-> > +
-> > +static int ad4851_get_oversampling_ratio(struct ad4851_state *st, unsi=
-gned int *val)
-> > +{
-> > +	unsigned int osr;
-> > +	int ret;
-> > +
-> > +	guard(mutex)(&st->lock);
-> > +
-> > +	ret =3D regmap_read(st->regmap, AD4851_REG_OVERSAMPLE, &osr);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	if (!FIELD_GET(AD4851_OS_EN_MSK, osr))
-> > +		*val =3D 1;
-> > +	else
-> > +		*val =3D ad4851_oversampling_ratios[FIELD_GET(AD4851_OS_RATIO_MSK, o=
-sr) + 1]; =20
->=20
-> With the suggestion above this gets:
->=20
-> 	*val =3D 2 << FIELD_GET(AD4851_OS_RATIO_MSK, osr);
->=20
-> (or=20
-> 	*val =3D 1 << (FIELD_GET(AD4851_OS_RATIO_MSK, osr) + 1);
->=20
-> ). Then you can drop ad4851_oversampling_ratios[].
-You missed the usage in as4851_read_avail() which is the reason it exists.
-These others are just convenient given that it already exists.
-
-Jonathan
-
-
->=20
-> > +
-> > +	st->osr =3D *val;
-> > +
-> > +	return IIO_VAL_INT;
-> > +} =20
->=20
-> Best regards
-> Uwe
->=20
+--=20
+Mathieu Dubois-Briand, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
