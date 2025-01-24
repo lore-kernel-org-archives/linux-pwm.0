@@ -1,137 +1,125 @@
-Received: from Atcsqr.andestech.com (60-248-80-70.hinet-ip.hinet.net [60.248.80.70])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A86031CD1FD;
-	Thu, 23 Jan 2025 20:11:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.248.80.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 990DE1DAC9F;
+	Fri, 24 Jan 2025 07:27:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737663101; cv=none; b=I+QrPEaKb5TJ2xdNFdQSv8D6nl5RVRQQevcH5BcWMHqPQlnJtfx7+CWDO73e1dplIKnPuOgpHkDirP7tSq9Fv8Vs+uaOu6hLqWXr2jT+8iY51XNvY+st149PJlD8mbf1XI75RCPlgpzAYACIhPTf119ck5YHgUjOaKaGOPpEtIQ=
+	t=1737703663; cv=none; b=MjL1w/vsLFd5pjBm1mp1FRGlvlEdalLQx7MDfP1GmBsGFvn2Zqm/h+9+3XHdfAAckK5b917j2OWXkjJeOiCWu9YobPiBZ3KdAfffifc1SQUnc3a2/rVRfoWHMpilU+FzSZ6Jti+DGQ/mwM9uOK85jGf6koEAp9VzY/n3MbMUSZU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737663101; c=relaxed/simple;
-	bh=XEwKrIdM476QsRZ9Xc/3begZm2U0inEUFVVUjNEN5Wo=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=I9uE1ebMo/oRg5+VRrd2K+YeVMlWOwDCKecGZtJx5qjAkrxDrHW0I5wTpqJejNiu6BgXBC7n0rfzUW3TBT3YA8dwgK2jm1Cr/KnWVkdm7zVUDg4MB0Auh5igSL3XpxJn+MrOjSEEM180NURtoWpCCHnVXUy3QMGAp/9WY7tJC/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=andestech.com; spf=pass smtp.mailfrom=andestech.com; arc=none smtp.client-ip=60.248.80.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=andestech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=andestech.com
-Received: from Atcsqr.andestech.com (localhost [127.0.0.2] (may be forged))
-	by Atcsqr.andestech.com with ESMTP id 50NJa4S2005040;
-	Fri, 24 Jan 2025 03:36:04 +0800 (+08)
-	(envelope-from ben717@andestech.com)
-Received: from mail.andestech.com (ATCPCS31.andestech.com [10.0.1.89])
-	by Atcsqr.andestech.com with ESMTPS id 50NJZduh004780
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 24 Jan 2025 03:35:39 +0800 (+08)
-	(envelope-from ben717@andestech.com)
-Received: from swlinux02.andestech.com (10.0.15.183) by ATCPCS31.andestech.com
- (10.0.1.89) with Microsoft SMTP Server id 14.3.498.0; Fri, 24 Jan 2025
- 03:35:39 +0800
-From: Ben Zong-You Xie <ben717@andestech.com>
-To: <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: <ukleinek@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, Ben Zong-You Xie <ben717@andestech.com>
-Subject: [v3 1/2] dt-bindings: pwm: add atcpit100
-Date: Fri, 24 Jan 2025 03:35:33 +0800
-Message-ID: <20250123193534.874256-2-ben717@andestech.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250123193534.874256-1-ben717@andestech.com>
-References: <20250123193534.874256-1-ben717@andestech.com>
+	s=arc-20240116; t=1737703663; c=relaxed/simple;
+	bh=vDEKVnGexuCQ2UVa20CI2XsfZW4SjtI+9mBluQYnXH8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NovfpcjrtfBN2quuCkkNOXAb0PqUBXPqXKDhn68cm6ugtqtY3vGyZIdCt2yrVIh5zElYi501+MkPI+H50VejY+M2szytImz7S01GBor/yybQLBTf5WFa32lT9cpx6OZ/Df4QClCkPkAl5LPptyvfWYWkJrile4de/OYcQHUSXpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m1bejKcR; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m1bejKcR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6355C4CED2;
+	Fri, 24 Jan 2025 07:27:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1737703663;
+	bh=vDEKVnGexuCQ2UVa20CI2XsfZW4SjtI+9mBluQYnXH8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=m1bejKcRoKZ/IoxwzMpGgDVAVgQG02SJKohMTqgYiQ1U5JWbdZ834jF1sdWS/8znK
+	 It8HCvX18tqYhChWKZH/5aWx+zyfkHTJW/ejzPy9u6Z9e6v2mkQDZZ1k/4bEd55LmM
+	 88PyfEmel3nBy+SACPii+eeFPRSKcX0IQ8QhGEl1de+NlPieYmSaXR0kq01n2Xlnbl
+	 C8LGI2FIDGhxfMvT6nXKWeBNKB3Z0b7FP9HkssHy11k4ktKrz9tiLDXEZWtONyAJyj
+	 kG+sdx8Naj/MidGBW5/42BrOB3RqkY3FxBORYYxazYP43f42HRkeonbH57w8Z0XDPj
+	 vzPlBpqhPVqyg==
+Message-ID: <3cdf85b6-1989-4176-a2c6-76dcbfa47e0b@kernel.org>
+Date: Fri, 24 Jan 2025 08:27:37 +0100
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-DKIM-Results: atcpcs31.andestech.com; dkim=none;
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:Atcsqr.andestech.com 50NJa4S2005040
+User-Agent: Mozilla Thunderbird
+Subject: Re: [v3 1/2] dt-bindings: pwm: add atcpit100
+To: Ben Zong-You Xie <ben717@andestech.com>, linux-pwm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org
+References: <20250123193534.874256-1-ben717@andestech.com>
+ <20250123193534.874256-2-ben717@andestech.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <20250123193534.874256-2-ben717@andestech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Document devicetree bindings for Andes PWM controller.
+On 23/01/2025 20:35, Ben Zong-You Xie wrote:
+> Document devicetree bindings for Andes PWM controller.
 
-Signed-off-by: Ben Zong-You Xie <ben717@andestech.com>
----
- .../bindings/pwm/andestech,atcpit100-pwm.yaml | 51 +++++++++++++++++++
- MAINTAINERS                                   |  5 ++
- 2 files changed, 56 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml
 
-diff --git a/Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml b/Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml
-new file mode 100644
-index 000000000000..20d099c1503f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/andestech,atcpit100-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Andes PWM controller
-+
-+maintainers:
-+  - Ben Zong-You Xie <ben717@andestech.com>
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: andestech,atcpit100
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: ext
-+      - const: apb
-+
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#pwm-cells"
-+  - clocks
-+  - clock-names
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    pwm@f0400000 {
-+      compatible = "andestech,atcpit100";
-+      reg = <0xf0400000 0x1000>;
-+      #pwm-cells = <3>;
-+      clocks = <&smu 1>, <&smu 7>;
-+      clock-names = "ext", "apb";
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1e930c7a58b1..bc54216d1835 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3588,6 +3588,11 @@ F:	drivers/power/reset/atc260x-poweroff.c
- F:	drivers/regulator/atc260x-regulator.c
- F:	include/linux/mfd/atc260x/*
- 
-+ATCPIT100 PWM DRIVER
-+M:	Ben Zong-You Xie <ben717@andestech.com>
-+S:	Supported
-+F:	Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml
-+
- ATHEROS 71XX/9XXX GPIO DRIVER
- M:	Alban Bedel <albeu@free.fr>
- S:	Maintained
--- 
-2.34.1
+Please use standard email subjects, so with the PATCH keyword in the
+title. `git format-patch -vX` helps here to create proper versioned
+patches. Another useful tool is b4. Skipping the PATCH keyword makes
+filtering of emails more difficult thus making the review process less
+convenient.
 
+> 
+> Signed-off-by: Ben Zong-You Xie <ben717@andestech.com>
+> ---
+>  .../bindings/pwm/andestech,atcpit100-pwm.yaml | 51 +++++++++++++++++++
+>  MAINTAINERS                                   |  5 ++
+>  2 files changed, 56 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml b/Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml
+> new file mode 100644
+> index 000000000000..20d099c1503f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/andestech,atcpit100-pwm.yaml
+
+Filename: andestech,atcpit100.yaml
+
+> @@ -0,0 +1,51 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+
+Best regards,
+Krzysztof
