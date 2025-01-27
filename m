@@ -1,162 +1,114 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 960A21FE45A;
-	Mon, 27 Jan 2025 10:10:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 814561D540
+	for <linux-pwm@vger.kernel.org>; Mon, 27 Jan 2025 10:50:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737972659; cv=none; b=h4oUFjk8d7mZpkjH0VfbspPoaaBJkWXQHdczzzpn2bsjbzTv12I6ycZ4+3oy2jmyq54suMX1R4EwssK+RqiHYHJKrieRPThtJNH3mGhnMXVVRxkiyRp5zpri27BGFyWyulbTxlsSsRKm0IV7piJOCStMGKSr4F3QmPcvvf+NOHA=
+	t=1737975019; cv=none; b=Jeri8pdGYf/DdaPXVrLU31hbNhnVQGPds08WoMsaGd1n79ybFsNqJXOeZ/qcB1z/Np459esS77M4k/VLwyeAOT4Ywf1qInAdnnwCjauphZedXjIb+nFANmI6QAGiZ9ZYqXcb2jYem3WA75C8cDrZIWRBhwlSSCUgCu0YUbpZOPM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737972659; c=relaxed/simple;
-	bh=VEbjChGMkQlzoTh4rtP4vO3TispppwR1ZIzCMteI2sM=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oa15lKiL7Xoha+Z85IeFhbGkQZyzAj2JiKxnkO2JTxJjPgzs19HkkEbYUhjNTzs9p8NOTUBY1p8Og56Qm0pcZVAavTPupcuugscdxBcTA+TOpOoTMsPvUtjKPctlBXGCWv9R5nsFvkLj5aMk865wYMbxbCoMR3PhOUTOYLH7Jk0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=dUbTdb2E; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1737975019; c=relaxed/simple;
+	bh=91Ysoi0XSMFKk2q6OR5ur+zCw8xY07DINvs++TomGyI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Y1QRRFR0RCQSyTnln4ks8VMtX3m27ZPd5TmGV2V8Ew6MNDbssKW0lG1supBQZXbL1qo93r3bHIG/mSSFoKHOF6wATKAkaiRe6itC0M2ZYA1SY0CQJG16yMo86tJffa5oNdSu5/SVg4ry3r0rGu6+96ycrvkf11CwxkJ8//6rPk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=aqy3O5Sj; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="dUbTdb2E"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50R9bkQh005532;
-	Mon, 27 Jan 2025 05:10:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=EvjEl
-	YnXyCQraXu3x2dnYWL+uJFTddGblvjs15Vhg6Y=; b=dUbTdb2E875TY9VuLjPNK
-	3g7YRn526r66ZISrnuVQxqpSBoqDH52BwIl/VTDvRuCoh0KpJ/2P81dpIbvv1RX8
-	wYtHhhL4sowjCnS7xrHDtYImEbfweHSI+eZqKas0wiNHpfFr4ir+v7dnd8C0DmeH
-	rCiKB7ovWVNl9nbF84I1a1kePRsS4neXaae2+DmhSpbf7mV8mEyOQBgERQ7tLU6U
-	84QfxbeBFIpMCe7JtFSmhLKa/zyZ+DHjazQX981sAd+CPcqUuPj0EHwil88nSdMr
-	93tNfL4bbyzBCndzKjmcVn6/03ojHO8yt9Hw4pOP1hrVg0SXYBZVZebGc0dPUadf
-	Q==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 44e2n116qu-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 27 Jan 2025 05:10:42 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 50RAAfo0013638
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 27 Jan 2025 05:10:41 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 27 Jan
- 2025 05:10:40 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 27 Jan 2025 05:10:40 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.165])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 50RAATiE016396;
-	Mon, 27 Jan 2025 05:10:36 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>, Nuno Sa <nuno.sa@analog.com>
-Subject: [PATCH v6 2/3] iio: frequency: adf4371: add refin mode
-Date: Mon, 27 Jan 2025 12:10:22 +0200
-Message-ID: <20250127101026.5320-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20250127101026.5320-1-antoniu.miclaus@analog.com>
-References: <20250127101026.5320-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="aqy3O5Sj"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4361f65ca01so45408915e9.1
+        for <linux-pwm@vger.kernel.org>; Mon, 27 Jan 2025 02:50:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1737975013; x=1738579813; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fuVOZHrwuABxNs35BacCC496I5JiKTElWByt9dcR7l0=;
+        b=aqy3O5Sj3T5mAKqZrfeUn59Vq8jERzEGga5jJ6FpJb5yIxum5JM3NwJuJDyZuAUJAn
+         oI/wQO/VXyqCCX7UEJPoTYHxmyT+Ee1eC16JBfGWhEEXZC8t0kMERJUF+MxFmGFNUBfv
+         0sn8zniOYABkcjXJfY2haeXySJ275tPnx6NqG3tiQMiK7dHo5IFyo9IHz1G89tpeuaMq
+         0JNADRt99gSr8WibqVRA6qMxvUqevJFFJUS2/S6NsZ4vwKU9Tp4cMGoChNF/2Mlbq2DV
+         JZMeXbjNfbnMGegMlKbNnD0PVHPi1SUxYufTGFi0fEPr1SgX5VMhx5fJ/DJ7xYIUIS1I
+         14/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737975013; x=1738579813;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fuVOZHrwuABxNs35BacCC496I5JiKTElWByt9dcR7l0=;
+        b=lY5ZMpVK7bjMEMPQwsorVq5XoxjLIyXH4oVXJ2ApgvZEwpi1ErHlJ5uSfS2KueU6h7
+         aREN+oTkmY9OpVHJ77SYUElnHevw7L3GPZgFR43lmac8py54EEIgmFHtSyQXQGRRKFMR
+         3UUHFLm81Qc5TM2GQWpfhRZQxGgzJ46c94H26OgLrHhVH7DozgUYWP3HjxKuHL1g3OOF
+         gvWI7ksd9nHGPlyFO43QHAfYhnNo2NRAd0k1BugfzpQrNGuyhbOYrClqibFLCwtO9clE
+         cBeGQGOMh11shjGtCl6GkKh9Pnlj+f44fKmdqQQzagx9svNrNjqnYzZNG8lwwJLdFTNw
+         LNzg==
+X-Gm-Message-State: AOJu0Yy0xqBO4svu8IbHeV9uaS0qGlaanFH7/LPvnvzFYrvrTsXeHjLU
+	QlM9MSD+S6HnKua/K6w5XjyyjaivAoyz1eA7r4c7memrGVUqbbEt53pw+iYFLu0=
+X-Gm-Gg: ASbGncvjBoxVRa4rwB/ThHclYDw5HDGxFMBFF0Fl+hZ2Kw11ztUEYvCXMHq7AbwPfMY
+	K/jkEfBbb0P2dAEVJMotCmZUwerkvK0JDReWjJL60vcY8dnIudLHI+XQLIBFJeLfrUQPM+H20xU
+	qN2tPJqTpZWYuIcxdw6aAk+jZlE1R3MWCkDr1prqVU4YxbWDJD+Gn+X0mJ3ZCqOOxjQWpzc1rfd
+	nWdFoibZhxy5nE93Pt14AcmynqI/2Ku14Cdkr7cbbOOm1z+C0cpEDdECvThti7Xs1oQxbm53HXB
+	3EBpJzYhOw==
+X-Google-Smtp-Source: AGHT+IF8zXvRud3bxzKoETBM+MMw8ZUW8atexFFnZXnmo/DFoE45mb4c3Y2gv8eCVHkD9pzzKhfOaQ==
+X-Received: by 2002:a5d:64e4:0:b0:385:e35e:9da8 with SMTP id ffacd0b85a97d-38bf56635bemr38024984f8f.18.1737975013606;
+        Mon, 27 Jan 2025 02:50:13 -0800 (PST)
+Received: from localhost ([2a02:8071:b783:6940:36f3:9aff:fec2:7e46])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38c2a17640csm11104610f8f.18.2025.01.27.02.50.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jan 2025 02:50:13 -0800 (PST)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Paul Walmsley <paul.walmsley@sifive.com>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Cc: linux-pwm@vger.kernel.org,
+	linux-riscv@lists.infradead.org
+Subject: [PATCH] pwm: Strengthen dependency for PWM_SIFIVE
+Date: Mon, 27 Jan 2025 11:50:01 +0100
+Message-ID: <20250127105001.587610-2-u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1190; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=91Ysoi0XSMFKk2q6OR5ur+zCw8xY07DINvs++TomGyI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBnl2TaSzHKHgQt9mbyPx216MqJ/tGg/ldJNcXOf b71p9w9WQ+JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZ5dk2gAKCRCPgPtYfRL+ TqfJB/9GL+EBEuPmLlcmnUYzKCnqf8cQz+4aS7SYxfMOaIme+UedPpSJx7fguUIMM0VW2rDOq3n al1kAMVFDnMYUllGsC2CeJa2w/WfH2mF/6Kd6dcr0C4sNaN61m8Nn+jrftyPArId8mJOYXdIeGm keHKok25CDntHSM2jONUNlBpoEcxtyo1bJk1QNGU/qlA2iRvs6oRfSuB08HGgkCDB4KqA2YD8be +TqBukzlpYpRYyhqplSDVPHDuG46klk+BD/KGeHaf7uiW3Gr1AFWxGPbQ6rHijmZ9Af1aKYJJrR BKRsRSPYLWcDRc7/UvlqzAcCI+nBUclPhTxb1N46Hc4nrT+m
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: ClQjilNDDdVfiBs88A9Ep9vkdA9Xmwht
-X-Proofpoint-ORIG-GUID: ClQjilNDDdVfiBs88A9Ep9vkdA9Xmwht
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-01-27_04,2025-01-27_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 impostorscore=0 lowpriorityscore=0 spamscore=0
- bulkscore=0 suspectscore=0 mlxscore=0 clxscore=1015 mlxlogscore=999
- phishscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2501270081
 
-Add support for single-ended/differential reference input mode.
+Back when the sifive pwm driver was added there was no symbol for sifive
+SoCs yet. Today there is ARCH_SIFIVE however. Let PWM_SIFIVE depend on
+that to ensure the driver is only build for platforms where there is a
+chance that the hardware is available.
 
-Reviewed-by: Nuno Sa <nuno.sa@analog.com>
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
 ---
-no changes in v6.
- drivers/iio/frequency/adf4371.c | 31 +++++++++++++++++++++++++++----
- 1 file changed, 27 insertions(+), 4 deletions(-)
+Hello,
 
-diff --git a/drivers/iio/frequency/adf4371.c b/drivers/iio/frequency/adf4371.c
-index d752507e0c98..205dfd341489 100644
---- a/drivers/iio/frequency/adf4371.c
-+++ b/drivers/iio/frequency/adf4371.c
-@@ -42,6 +42,10 @@
- #define ADF4371_MOD2WORD_MSK		GENMASK(5, 0)
- #define ADF4371_MOD2WORD(x)		FIELD_PREP(ADF4371_MOD2WORD_MSK, x)
- 
-+/* ADF4371_REG22 */
-+#define ADF4371_REFIN_MODE_MASK		BIT(6)
-+#define ADF4371_REFIN_MODE(x)		FIELD_PREP(ADF4371_REFIN_MODE_MASK, x)
-+
- /* ADF4371_REG24 */
- #define ADF4371_RF_DIV_SEL_MSK		GENMASK(6, 4)
- #define ADF4371_RF_DIV_SEL(x)		FIELD_PREP(ADF4371_RF_DIV_SEL_MSK, x)
-@@ -70,6 +74,7 @@
- 
- #define ADF4371_MAX_FREQ_PFD		250000000UL /* Hz */
- #define ADF4371_MAX_FREQ_REFIN		600000000UL /* Hz */
-+#define ADF4371_MAX_FREQ_REFIN_SE	500000000UL /* Hz */
- 
- /* MOD1 is a 24-bit primary modulus with fixed value of 2^25 */
- #define ADF4371_MODULUS1		33554432ULL
-@@ -176,6 +181,7 @@ struct adf4371_state {
- 	unsigned int mod2;
- 	unsigned int rf_div_sel;
- 	unsigned int ref_div_factor;
-+	bool ref_diff_en;
- 	u8 buf[10] __aligned(IIO_DMA_MINALIGN);
- };
- 
-@@ -505,6 +511,17 @@ static int adf4371_setup(struct adf4371_state *st)
- 				 ADF4371_ADDR_ASC(1) | ADF4371_ADDR_ASC_R(1));
- 	if (ret < 0)
- 		return ret;
-+
-+	if ((st->ref_diff_en && st->clkin_freq > ADF4371_MAX_FREQ_REFIN) ||
-+	    (!st->ref_diff_en && st->clkin_freq > ADF4371_MAX_FREQ_REFIN_SE))
-+		return -EINVAL;
-+
-+	ret = regmap_update_bits(st->regmap,  ADF4371_REG(0x22),
-+				 ADF4371_REFIN_MODE_MASK,
-+				 ADF4371_REFIN_MODE(st->ref_diff_en));
-+	if (ret < 0)
-+		return ret;
-+
- 	/*
- 	 * Calculate and maximize PFD frequency
- 	 * fPFD = REFIN × ((1 + D)/(R × (1 + T)))
-@@ -574,10 +591,16 @@ static int adf4371_probe(struct spi_device *spi)
- 	indio_dev->channels = st->chip_info->channels;
- 	indio_dev->num_channels = st->chip_info->num_channels;
- 
--	clkin = devm_clk_get_enabled(&spi->dev, "clkin");
--	if (IS_ERR(clkin))
--		return dev_err_probe(&spi->dev, PTR_ERR(clkin),
--				     "Failed to get clkin\n");
-+	st->ref_diff_en = false;
-+
-+	st->clkin = devm_clk_get_enabled(&spi->dev, "clkin");
-+	if (IS_ERR(st->clkin)) {
-+		st->clkin = devm_clk_get_enabled(&spi->dev, "clkin-diff");
-+		if (IS_ERR(st->clkin))
-+			return dev_err_probe(&spi->dev, PTR_ERR(clkin),
-+				     "Failed to get clkin/clkin-diff\n");
-+		st->ref_diff_en = true;
-+	}
- 
- 	st->clkin_freq = clk_get_rate(clkin);
+a quick grep suggests that the driver is only used on machines that include
+arch/riscv/boot/dts/sifive/fu540-c000.dtsi or
+arch/riscv/boot/dts/sifive/fu740-c000.dtsi and for these ARCH_SIFIVE is
+enabled. So I'd guess this patch is fine. Still an ack from someone who
+knows this arch better would be very welcome.
+
+Best regards
+Uwe
+
+ drivers/pwm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 0915c1e7df16..be0db73003e4 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -567,7 +567,7 @@ config PWM_SIFIVE
+ 	tristate "SiFive PWM support"
+ 	depends on OF
+ 	depends on COMMON_CLK && HAS_IOMEM
+-	depends on RISCV || COMPILE_TEST
++	depends on ARCH_SIFIVE || COMPILE_TEST
+ 	help
+ 	  Generic PWM framework driver for SiFive SoCs.
  
 -- 
-2.48.1
+2.47.1
 
