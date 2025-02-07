@@ -1,325 +1,181 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 000F11DE2C5;
-	Fri,  7 Feb 2025 11:53:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5471DE898;
+	Fri,  7 Feb 2025 14:10:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738929205; cv=none; b=RD7yAN4HOnWZMfEBLTT3PV67ZxtR4LN0LxkceONC5O4NiENStdrK/0zfVZr3j/MuOzU7D+VD1SE1K+RNIL74dvw3vITLvDqyjIjlaS5lZ6KwT04mt1TY69o1c9s2Jp2GFQreGQlhQlQi3aWgFYvFRh86rWsP9QYX/uqGhRUWW8M=
+	t=1738937403; cv=none; b=NnjM1qQKWixXqrIgJjz7f7kLJHrljUHb6wrmuZHvlNTYU60CF8jd4AI5GNvqIEDldQXj9sJEo1nRZQ5JeJduy4zD/dURODF/sBpq6NDGOicCtUtoT+AB1vtxE18P+YNDofVeQbCvL1T03s1gV7xBe/Y7EcN6qQVRINOBvSti7NI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738929205; c=relaxed/simple;
-	bh=IuMV62I00q/ewVta9Tr3R2fDYIVWuaOUCNt/jxDCXG0=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=GED9AcS5IwoYKd/XjPXPxw0ujxMwLprc3+wFDptT37+08+aKpW+9okPQtPh4dZZD01xPV+XLap0v0xghBnvIK/qRO0K7JzzSIhG9cmAiWswDMd0iMQ+lU8OBF5vpsAcz8XJL+41jP6wrsbQQBAZbMQ3zGNmc5AfBx9mzrD4OKRI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nK0JlBry; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1738937403; c=relaxed/simple;
+	bh=vzpJtHILmRiqEVkAwhNl6nkahlqa9s7JfG0PdZFe7o4=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UMt2PEce4hkP5RSFbKNrImOiU9UwXIZ5aCxwVkYCqOIjM1x8DRCjnyDq0FGHJrfg1v0zTAOJIGMx5qDiwtF+K5drOTWqu71i9qJDQI+NZLgJAnG+uDYUnV7HcawyYB7oorbupPSdt4Jxx+1T9KI/4kGPSlQqFsgrM8EOsVxOPSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=O6ZRwwiP; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nK0JlBry"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1738929204; x=1770465204;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=IuMV62I00q/ewVta9Tr3R2fDYIVWuaOUCNt/jxDCXG0=;
-  b=nK0JlBryukN+BmGkkbmJNgdzBbYJOTkze2eWFV8QCl0a/uJqyG0/ji3e
-   ggw83YUzPa1iKDOFuaxVk3531Pp5+37QQw94NBWh5ZriYZMc3ZTn1Hy1g
-   bonupKYkCT3HUwnohyA1gnsuyYNKgPCNqRiKIeMmWJD/VsY3np9yJ2SqW
-   pu9uazgW9dkcpL8R3Zl4tsD8NY4gIs4s2I9yygnXJfEcMhmrGm2k+1FtI
-   9AdfKOQGALRrVXY9TPHrvI2uSQ5uyR1sFCA9tN+bBKRk5vBoiDAMRg4We
-   L9z4VF6dWQ7+u0HfdSWoI9iDi6gyuPh4wTtYmt1l3pS/Ah8ITE/bpHK47
-   Q==;
-X-CSE-ConnectionGUID: r55/OU8XRNeV5b0ldCaAeg==
-X-CSE-MsgGUID: GDBL6ihEQCW6h+c05lwIHg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11336"; a="39260638"
-X-IronPort-AV: E=Sophos;i="6.13,267,1732608000"; 
-   d="scan'208";a="39260638"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2025 03:53:23 -0800
-X-CSE-ConnectionGUID: ola92a+JTlmI4zNzwLshaw==
-X-CSE-MsgGUID: xTo9sHQPTbiL8aqOzyp6Ng==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="148722349"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2025 03:53:20 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Fri, 7 Feb 2025 13:53:16 +0200 (EET)
-To: Werner Sembach <wse@tuxedocomputers.com>
-cc: Hans de Goede <hdegoede@redhat.com>, ukleinek@kernel.org, 
-    jdelvare@suse.com, linux@roeck-us.net, LKML <linux-kernel@vger.kernel.org>, 
-    platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org, 
-    linux-hwmon@vger.kernel.org
-Subject: Re: [RFC PATCH 1/1] platform/x86/tuxedo: Implement TUXEDO TUXI ACPI
- TFAN via hwmon
-In-Reply-To: <358c235f-14e4-43ef-bc82-9ad5d54f0976@tuxedocomputers.com>
-Message-ID: <d99bb466-f9e6-9e86-8a0c-55f51655fb6f@linux.intel.com>
-References: <20250205162109.222619-1-wse@tuxedocomputers.com> <20250205162109.222619-2-wse@tuxedocomputers.com> <dde736d4-6343-30e3-2bab-6eebbf4515e9@linux.intel.com> <358c235f-14e4-43ef-bc82-9ad5d54f0976@tuxedocomputers.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="O6ZRwwiP"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5179KeHE022323;
+	Fri, 7 Feb 2025 09:09:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=erHQV
+	DqCMF/ysWwKwCdYnuV0H4hC2eAl5TwPN8PKKWs=; b=O6ZRwwiP9ywmBGcWnL/gb
+	HEcc82qmn6cRDY5D3OlJzXQJCgqV827j2Q6vaGDeFnxzIdNbPjZVIHBsNuvhfdQS
+	icuDcPG0HUx3jjsn4LdUlYstjrB7O1/4u9VU6za5PE5DfQ0hbVVR8/bGPltKqzS/
+	jlNEccz3KQ2aERsFmgHMpxIoQqcaOXwtdlI5wL3GshMm7h+fdTulT3bwLNHlzwBU
+	Fz7YnhrV0C77DBf3y/bVhEhFQXcRHWJowKduzIhtAb9hN1efmU2SJfWKjdDTO8j8
+	ALo7KCkvTsRG4ag+NL40mkVuMSVD/JFixtYYgHPaCYuDzQx+akoy0iUjW9ZQTNNg
+	Q==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 44nff9912q-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 07 Feb 2025 09:09:51 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 517E9oOM056726
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 7 Feb 2025 09:09:50 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 7 Feb 2025 09:09:50 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Fri, 7 Feb 2025 09:09:49 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 7 Feb 2025 09:09:49 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.147])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 517E9a4n015095;
+	Fri, 7 Feb 2025 09:09:42 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Nuno Sa
+	<nuno.sa@analog.com>, David Lechner <dlechner@baylibre.com>
+Subject: [PATCH v12 1/9] iio: backend: add API for interface get
+Date: Fri, 7 Feb 2025 16:09:10 +0200
+Message-ID: <20250207140918.7814-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.48.1
+In-Reply-To: <20250207140918.7814-1-antoniu.miclaus@analog.com>
+References: <20250207140918.7814-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1481543863-1738929196=:938"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: JOs4HyVdWIDaqdq5dlS50_LD90x5sSfA
+X-Proofpoint-ORIG-GUID: JOs4HyVdWIDaqdq5dlS50_LD90x5sSfA
+X-Authority-Analysis: v=2.4 cv=Pt9pbxM3 c=1 sm=1 tr=0 ts=67a6142f cx=c_pps a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17 a=T2h4t0Lz3GQA:10 a=gAnH3GRIAAAA:8 a=IpJZQVW2AAAA:8 a=tuWBB0tbXFTZP7NtKowA:9 a=oVHKYsEdi7-vN-J5QA_j:22
+ a=IawgGOuG5U0WyFbmm1f5:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-02-07_06,2025-02-07_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ malwarescore=0 suspectscore=0 bulkscore=0 impostorscore=0
+ lowpriorityscore=0 spamscore=0 clxscore=1015 mlxlogscore=999 phishscore=0
+ adultscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.19.0-2501170000
+ definitions=main-2502070108
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Add backend support for obtaining the interface type used.
 
---8323328-1481543863-1738929196=:938
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Reviewed-by: Nuno Sa <nuno.sa@analog.com>
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+no changes in v12.
+ drivers/iio/industrialio-backend.c | 24 ++++++++++++++++++++++++
+ include/linux/iio/backend.h        | 11 +++++++++++
+ 2 files changed, 35 insertions(+)
 
-On Thu, 6 Feb 2025, Werner Sembach wrote:
-> Am 06.02.25 um 10:51 schrieb Ilpo J=C3=A4rvinen:
-> > On Wed, 5 Feb 2025, Werner Sembach wrote:
-> >=20
-> > > The TUXEDO Sirius 16 Gen1 & Gen2 have the custom TUXEDO Interface (TU=
-XI)
-> > > ACPI interface which currently consists of the TFAN device. This has =
-ACPI
-> > > functions to control the built in fans and monitor fan speeds and CPU=
- and
-> > > GPU temprature.
-> > >=20
-> > > This driver implements this TFAN device via the hwmon subsystem with =
-an
-> > > added temprature check that ensure a minimum fanspeed at certain
-> > > tempratures. This allows userspace controlled, but hardware safe, cus=
-tom
-> > temperatures
-> thx for spotting
-> >=20
-> > > fan curves.
-> > >=20
-> > > Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index 363281272035..8bf3d570da1b 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -636,6 +636,30 @@ ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
+ }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_ext_info_set, "IIO_BACKEND");
+ 
++/**
++ * iio_backend_interface_type_get - get the interface type used.
++ * @back: Backend device
++ * @type: Interface type
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_interface_type_get(struct iio_backend *back,
++				   enum iio_backend_interface_type *type)
++{
++	int ret;
++
++	ret = iio_backend_op_call(back, interface_type_get, type);
++	if (ret)
++		return ret;
++
++	if (*type >= IIO_BACKEND_INTERFACE_MAX)
++		return -EINVAL;
++
++	return 0;
++}
++EXPORT_SYMBOL_NS_GPL(iio_backend_interface_type_get, "IIO_BACKEND");
++
+ /**
+  * iio_backend_extend_chan_spec - Extend an IIO channel
+  * @back: Backend device
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index 10be00f3b120..a0ea6c29d7ba 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -70,6 +70,12 @@ enum iio_backend_sample_trigger {
+ 	IIO_BACKEND_SAMPLE_TRIGGER_MAX
+ };
+ 
++enum iio_backend_interface_type {
++	IIO_BACKEND_INTERFACE_SERIAL_LVDS,
++	IIO_BACKEND_INTERFACE_SERIAL_CMOS,
++	IIO_BACKEND_INTERFACE_MAX
++};
++
+ /**
+  * struct iio_backend_ops - operations structure for an iio_backend
+  * @enable: Enable backend.
+@@ -88,6 +94,7 @@ enum iio_backend_sample_trigger {
+  * @extend_chan_spec: Extend an IIO channel.
+  * @ext_info_set: Extended info setter.
+  * @ext_info_get: Extended info getter.
++ * @interface_type_get: Interface type.
+  * @read_raw: Read a channel attribute from a backend device
+  * @debugfs_print_chan_status: Print channel status into a buffer.
+  * @debugfs_reg_access: Read or write register value of backend.
+@@ -128,6 +135,8 @@ struct iio_backend_ops {
+ 			    const char *buf, size_t len);
+ 	int (*ext_info_get)(struct iio_backend *back, uintptr_t private,
+ 			    const struct iio_chan_spec *chan, char *buf);
++	int (*interface_type_get)(struct iio_backend *back,
++				  enum iio_backend_interface_type *type);
+ 	int (*read_raw)(struct iio_backend *back,
+ 			struct iio_chan_spec const *chan, int *val, int *val2,
+ 			long mask);
+@@ -186,6 +195,8 @@ ssize_t iio_backend_ext_info_set(struct iio_dev *indio_dev, uintptr_t private,
+ 				 const char *buf, size_t len);
+ ssize_t iio_backend_ext_info_get(struct iio_dev *indio_dev, uintptr_t private,
+ 				 const struct iio_chan_spec *chan, char *buf);
++int iio_backend_interface_type_get(struct iio_backend *back,
++				   enum iio_backend_interface_type *type);
+ int iio_backend_read_raw(struct iio_backend *back,
+ 			 struct iio_chan_spec const *chan, int *val, int *val2,
+ 			 long mask);
+-- 
+2.48.1
 
-
-> > > +=09for (i =3D 0; i < driver_data->fan_count; ++i) {
-> > > +=09=09params[0] =3D i;
-> > > +=09=09tuxi_tfan_method(pdev, TUXI_TFAN_METHOD_GET_FAN_TEMPERATURE,
-> > > +=09=09=09=09 params, 1, &retval);
-> > > +=09=09temp =3D retval * 100 - 272000;
-> > > +
-> > > +=09=09for (j =3D 0; temp_levels[j].temp; ++j) {
-> > > +=09=09=09temp_low =3D j =3D=3D 0 ? -272000 : temp_levels[j-1].temp;
-> > Please add a define for 272000 magic, or do you actually want to use on=
-e
-> > of the _kelvin conversion functions in linux/units.h ?
->=20
-> I just realized that it should be 273000.
->=20
-> Using the conversion functions would make it more complicated because the=
- ec
-> pretends to return to a 10th degree precision but actually only return to=
- a
-> full degree precission.
->=20
-> So i would need to cut of the last digit, convert and then readd it. When=
- i do
-> it directly in the code i can just use 273000 instead of 273150 and just
-> ignore the last digits.
-
-Fine, but add a local define for it then with a comment about the=20
-precision compared with the generic define/conversion functions.
-
-> > Missing spaces around - operator.
-> >=20
-> > > +=09=09=09temp_high =3D temp_levels[j].temp;
-> > > +=09=09=09if (driver_data->temp_level[i] > j)
-> > > +=09=09=09=09temp_high -=3D 2000; // hysteresis
-> > 2 * MILLIDEGREE_PER_DEGREE ?
-> >=20
-> > Use define for it so you can place HYSTERESIS into its name and forgo t=
-he
-> > comment.
-> kk
-> >=20
-> > > +
-> > > +=09=09=09if (temp >=3D temp_low && temp < temp_high)
-> > > +=09=09=09=09driver_data->temp_level[i] =3D j;
-> > > +=09=09}
-> > > +=09=09if (temp >=3D temp_high)
-> > > +=09=09=09driver_data->temp_level[i] =3D j;
-> > This loop should be in a helper I think. Naming it reasonably would als=
-o
-> > make it easier to understand what the loop does.
-> only place i use it, i could just add a comment, but i can also do it in =
-a
-> separate function.
-
-I know it's the only user but what the loop does is relatively complex,=20
-and requires a few variables, etc. Is relatively self-contained=20
-algorithmically.
-
-Splitting into two functions, both functions could be more focused and=20
-clear on their intent. Cleverly naming the helper function such that it=20
-explain what happens in it, can often help to avoid the need to add any=20
-comments (comments may be needed at times, but when we can avoid one=20
-there's one place less to get out-of-sync with the code, which tends to=20
-happen with comments :-)).
-
-But I see Guenther was against some parts of this so please don't take my=
-=20
-style related comments as overruling his objections.
-
-
-> > > diff --git a/drivers/platform/x86/tuxedo/nbxx/acpi_tuxi_util.c
-> > > b/drivers/platform/x86/tuxedo/nbxx/acpi_tuxi_util.c
-> > > new file mode 100644
-> > > index 0000000000000..292b739a161e7
-> > > --- /dev/null
-> > > +++ b/drivers/platform/x86/tuxedo/nbxx/acpi_tuxi_util.c
-> > > @@ -0,0 +1,58 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > > +/*
-> > > + * Copyright (C) 2024-2025 Werner Sembach wse@tuxedocomputers.com
-> > > + */
-> > > +
-> > > +#include <linux/acpi.h>
-
-Btw just noticed, #include at least for kcalloc/kfree is missing.
-
-> > > +
-> > > +#include "acpi_tuxi_init.h"
-> > > +
-> > Remove empty line but see first what I note below.
-> kk
-> >=20
-> > > +#include "acpi_tuxi_util.h"
-> > > +
-> > > +static int __acpi_eval_intarray_in_int_out(acpi_handle handle,
-> > > +=09=09=09=09=09   acpi_string pathname,
-> > > +=09=09=09=09=09   unsigned long long *params,
-> > > +=09=09=09=09=09   u32 pcount,
-> > > +=09=09=09=09=09   unsigned long long *retval)
-> > There's only single caller of this function, so I question the need for
-> > using an utility function.
->=20
-> It's in preparation for if the TUXI device get another subdevice besides =
-TFAN.
->=20
-> Currently nothing is planed but i though this doesn't hurt.
->=20
-> >=20
-> > > +{
-> > > +=09struct acpi_object_list arguments;
-> > > +=09unsigned long long data;
-> > > +=09acpi_status status;
-> > > +
-> > > +=09if (pcount > 0) {
-> > > +=09=09pr_debug("Params:\n");
-> > > +
-> > > +=09=09arguments.count =3D pcount;
-> > > +=09=09arguments.pointer =3D kcalloc(pcount,
-> > > sizeof(*arguments.pointer),
-> > > +=09=09=09=09=09    GFP_KERNEL);
-> > > +=09=09for (int i =3D 0; i < pcount; ++i) {
-> > unsigned int
-> kk
-> >=20
-> > > +=09=09=09pr_debug("%llu\n", params[i]);
-> > > +
-> > > +=09=09=09arguments.pointer[i].type =3D ACPI_TYPE_INTEGER;
-> > > +=09=09=09arguments.pointer[i].integer.value =3D params[i];
-> > > +=09=09}
-> > > +=09=09status =3D acpi_evaluate_integer(handle, pathname, &arguments,
-> > > +=09=09=09=09=09       &data);
-> > > +=09=09kfree(arguments.pointer);
-> > You can use cleanup.h to handle freeing.
-> will look into it
->
-> > > +=09} else {
-> > > +=09=09status =3D acpi_evaluate_integer(handle, pathname, NULL, &data=
-);
-> > This call should be on the main level. You can use ?: operator for the
-> > only parameter you're changing for it between the currently diverging
-> > code paths.
->=20
-> then the kcalloc call happens every time even if it is not required.
-
-No it won't, you'd allocate only if pcount > 0 (in a similar block as=20
-now):
-
-#include <linux/cleanup.h>
-#include <linux/slab.h>
-=2E..
-
-=09union acpi_object __free(kfree) *obj =3D NULL;
-
-=09if (pcount > 0)
-=09=09obj =3D kcalloc(...);
-
-=09=09arguments.count =3D ...;
-=09=09arguments.pointer =3D obj;
-=09=09...
-=09}
-
-=09status =3D acpi_evaluate_integer(handle, pathname,
-=09=09=09=09       pcount ? arguments : NULL, &data);
-=09if (ACPI_FAILURE(status))
-=09=09...
-
-__free() will handle kfree(obj) for you, you don't call kfree() manually.
-
-> also i don't know if ?-operator in a function call is good to read.
-
-It is much better than duplicating almost the same call, by using ?: it=20
-is obvious that only single parameter is being altered, whereas on split=20
-calls, the code reader has to do the compare.
-
-
-> > > + * Arg0: Fan index
-> > > + * Returns: Speed sensor value in revolutions per minute
-> > > + */
-> > > +#define TUXI_TFAN_METHOD_GET_FAN_RPM=09=09"GRPM"
-> > > +
-> > > +int tuxi_tfan_method(struct acpi_device *device, acpi_string method,
-> > > +=09=09     unsigned long long *params, u32 pcount,
-> > > +=09=09     unsigned long long *retval);
-> > > +
-> > > +#endif // __PLATFORM_X86_TUXEDO_NBXX_ACPI_TUXI_UTIL_H__
-> > >=20
-> > What is the reason for splitting this into so many files? Are there goi=
-ng
-> > to be other users of the code that is split into separate files? For th=
-e
-> > init/deinit code, surely not.
-> >=20
-> > It will be considerably harder to track call chains, etc. when the
-> > function cannot be found in the same file so you better provide a reall=
-y
-> > good reason for going so extreme with the split.
->=20
-> Same as above: in preparation for the future if there is another TUXI
-> subdevice other then TFAN.
->=20
-> Also to section of the hwmon logic as I might want to reuse it for other =
-odms
-> in the future albeit it would then need to get passed the acpi-write func=
-tion
-> in a dynamic way.
->=20
-> And imho it not harder to follow over different files, there is a lot of
-> external function references anyway, so having something setup to
-> automatically jump to a function definition in a different file is alread=
-y
-> required to quickly parse the code.
-
-For library type APIs, one usually doesn't read those functions. I'm=20
-talking about functions within the driver. For well-structured and=20
-well-named code, jumping all over the place not a requirement at all=20
-because the interfaces that cross file boundaries are well architected and=
-=20
-rest is self-contained and self-explanatory. I see you started to defend=20
-the suboptimal split with everybody does that argument ;-).
-
-Your references to "future" sound quite vague, if there are no immediate=20
-plans for such drivers to exist, I'd just do such rearranging of code when=
-=20
-the supposed other drivers actually happens (which often is never).
-
---=20
- i.
-
---8323328-1481543863-1738929196=:938--
