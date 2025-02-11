@@ -1,65 +1,67 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 643AB1FDA94
-	for <linux-pwm@vger.kernel.org>; Tue, 11 Feb 2025 12:10:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 362E61FDE35
+	for <linux-pwm@vger.kernel.org>; Tue, 11 Feb 2025 12:10:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739275808; cv=none; b=CitLm0XknaTGKGYNSkAwjnsew7iWIdVnNYHq6rOdTITB0xivuv2nrmSiQ8CsyU0vPD6iOrMzd98x4Q/D2N+r1qAQMiR1urTufz50gvZQAASabraDlzalhswkpdw3sCgG/Pbpp9gkegltdEpoI0hEuDNYBwvizApnamuMaFMf9WU=
+	t=1739275809; cv=none; b=VFS5f+HQQi4nwf5lO/e+SmQm2R9fhhMC1udEfPZ0RgzX1kU6ReCAPoc2aSw0xz1kdtgcQv35inlV/eQqoua6qnxUdR36gK203+wSnvNxw41WyC0Aq0Y42Ec989ptoLhYV81lo1GP2PIMjL+BTic4uCOIJLfQcBK4MoO1hO6WC9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739275808; c=relaxed/simple;
-	bh=B8vjA07aGlepGS0i+Pd6WcAWx2f5Mn3tNczFpPj4Lw4=;
+	s=arc-20240116; t=1739275809; c=relaxed/simple;
+	bh=caKhfxtRFMp/EYZR8ylZh3Qlurb7Wy9UqMcdz0OG2as=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gfSk4sv7/xzyb0lf3zzGiHGcNtTFeGpYGlXbH/ULH9Y5IKtCP69o3r1k5xiEbp9dFnUohJsSoJHrGg6S1wu1SFMvLjPy6ztMmm5M1T1Jt3O1AZ/ylGy/60U4Jdo2Z1MeRAG9hAjn4zaf1/AJBAclry4+ZabS0RyyRk8ld5WPBhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=Rkr0OOAl; arc=none smtp.client-ip=209.85.128.52
+	 In-Reply-To:To:Cc; b=lzeZQGJPv2vvalQ3imMmGWx2dCiCQTPbNCofQvckIAP20wnXY0gcQmCr7JoTZiBnKokepAn/qMRcu9c3eUYeJyIY4VcfhiAmWqQbCrT1KO1T/icrpFw4QUOjKTUp4csFKsOaCy7pIoQMmpMfWHP4/OX6LYZZF0HWIOXxapgb8z8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=09VUB9Gq; arc=none smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="Rkr0OOAl"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4394820123dso11587295e9.2
-        for <linux-pwm@vger.kernel.org>; Tue, 11 Feb 2025 04:10:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="09VUB9Gq"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-38dc6d9b292so2298885f8f.2
+        for <linux-pwm@vger.kernel.org>; Tue, 11 Feb 2025 04:10:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1739275804; x=1739880604; darn=vger.kernel.org;
+        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1739275805; x=1739880605; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=d+BbFMd7n+K+mqNfr4cyQYVRFXSPQTKkfNEUIIhkMJo=;
-        b=Rkr0OOAlrX//Ewa3iGjLIrG0U+ckTg3SHYJhYv9l16dKIO0E2UoIRoFBBSQjPMiVJ5
-         esWGLEhowL4igZr9n0UgxwLvfJ9G11iQHDuyQbzN3KAsc6+KTkIthRG0lc+nH8sI3YB1
-         oC0gbqspQLn6ncCvMSj4jBybrwd8Lah3Mb4NQVglOq8nj7TqwIl7cbLs9E9h7cYiOEaE
-         7XvS3+z5exDjsFX3HctwaymjB5WdmcraJ5DHE0CjmArTzs60y4+zqh9kNiBrfeGOdaHF
-         MwBa/iHedpfCuHVXza+NdlV5wOK1wmtBK4K/DfXt+pzp4CQvyLKogOl2UvWHH2lSUvjW
-         prNA==
+        bh=YB5pK+oicJDwPB8Q0nFLhIRVf54jMTA5bcMsE6iZ+04=;
+        b=09VUB9GqdzNkKIr2xORY+cZ+vFaigKWdkg2V+alYu0mFG0rViMoheV6DX7TE/0UxCR
+         hLyPoaAp5gO8Yi3PwjRMBW+5OuvI6ujfNGx0yyaYxYGRaamIdZbRHYNiUE0ybE1Tm8+Y
+         l/ngD6YHIGa6ciMSA73voMmRK0AOL9XOEBc9Jj2i3lnODlhUin7NtyOtvr3I8jz1gxzU
+         3k6w5114GB021WP5qziSgf+N1iGjMW2AOl5KPj2O+sJjNhIDPwSeCR3qBv4sc+mLXVCV
+         M6a+vwaFOCbV87KehRyFTUkGeKaQ3QiRdVpEFIFHIIn+xy5DYJGdjHU4qVgPf8qYW9sg
+         YGiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739275804; x=1739880604;
+        d=1e100.net; s=20230601; t=1739275805; x=1739880605;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=d+BbFMd7n+K+mqNfr4cyQYVRFXSPQTKkfNEUIIhkMJo=;
-        b=xRMcM4ZUjQFOqKTQgiTjK/z9+CjPbiCsXKFaTWDfCPxiXolFNUowRmAqd7FMFn4laf
-         3cU3WdM+w/pl+gxpsWg9TE0+OCY194TATlZqVwgFFEuG0XWus7cuDhv7YMlbJsEM97Op
-         F99GRQpTvTtDYYX0tXh9RZcmHxeUg4PUSC6qWbnNeIbL1XrbVvdbDMQv9O3a74z74yhT
-         hmMm+zTvP5GmR9ixazqBXArP4GaI9YCyzLcmD/A5DYUdM3wkjwyYhFfXxtts4NEuvfOU
-         fANekh7wFj+DhDCGv/d5CWDFItr7plMpV5C4CvNODkMPIdjl0JCzkIF8LPi1bFPkN4RA
-         5shw==
-X-Forwarded-Encrypted: i=1; AJvYcCUGPL9W8HDbpSMD5bqNoKNmk8/fwR9jzNbLEko+gWewtyeMtDvfs4AIet5rcgc4aR6w9lusDj+PvwU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxBvfSENPoW+IeO2j5nKxIEhHjY7j2DDElGSb2EHOJ68xQOVtL1
-	aNbpe3CUS9vVGcLNmfsFIkvts8+yvuIy8Gb61CHMddc19k9crpfcWz+tZbvHtpU=
-X-Gm-Gg: ASbGncv4z6pyo5TxmAf/m/lwrGqrfIbN3+wNmGf8gqFK+qD/uzFXRrvTK1xLw2g570N
-	L8Q8OYZPN+dtezYL1pzEmXLkcSWyzl9zsFs8os4sr4j2hqR8KQBBgE2civ+IqPSEsdZXwAsgRMG
-	Go6rWsOS0fD/QlknvpN8HQpkY5IW9grFd4cAE0iYDxhRBwDJJoyBvIU98WY8E0Hp7zCHmpKbZTI
-	/dxsxTOv8Qft1u9cdUFwMhvyQAyV9ZRMECGPINtlQFe8zG3kI2VisXimHFWV0NdIFfxIE0uKseo
-	tR3GTNI=
-X-Google-Smtp-Source: AGHT+IEMOSwVAR4KDth9NgRCckPxsc14pAzy1Ly+pQWy5/SYHWyjS0Tny1smiur+oksg1bAgl4QksA==
-X-Received: by 2002:a05:600c:4754:b0:434:9e46:5bc with SMTP id 5b1f17b1804b1-4392498ac55mr159173485e9.10.1739275803591;
-        Tue, 11 Feb 2025 04:10:03 -0800 (PST)
+        bh=YB5pK+oicJDwPB8Q0nFLhIRVf54jMTA5bcMsE6iZ+04=;
+        b=Qza3HqXWrbod5r2qANj45RWnfb3hQNhjYrJvKlWT2Y9lBBYvlRCzobTqwaI0wfAc0O
+         ivZLlb3iEqmAxqNmBacgG8HR+SOlUcuriqk4lcweipYiP7rkvmNxK347ug3ngx3GGZx3
+         VxxhEndbSJwunc8adkwSNOGlj2xcLXG3vaj/GIOai1E4szZlxkUZy8RzdxynT4O+qj3r
+         /luzFdt9Pgb12l4uy8kiiC/rqlenfeEypOobAZdQgIRn/XIO1ZD6gvxDvoSNP3HYYHAQ
+         E5SDA2CswCX/HLql6Ughnqr4fJMhtfx/Xk0Oi8J1+HZ0qK5auhPnTMOUpvc8C/fb6nNI
+         Qf6A==
+X-Forwarded-Encrypted: i=1; AJvYcCVeyQoH/+V5PoBl/qe5W7UYYxq/+P8xfxv0ZrhR71D8Nx5XRIK1IHeWXeiMmiq6B0lZ1vlXN00rFxc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy1R0vrhjMPGkklH+8TIBEVR3LmOrHrqS5ATdqYUGcH/Y9p6kbe
+	nriEAEy2M6tboZffkMYqkK0ebvD8rL2VpN8Va+rrFs5B3W8JNO1zwqOUDsXmdlCUAcDLUtq10ha
+	3c7I=
+X-Gm-Gg: ASbGncv71kwq0d3ZdDKaf6Gr/NZ7NFws3/mpqTqwrlHyi1a+93n90kWnYAjMqGJCFZb
+	UkFppN+PjYLsJk12Kan4U10Vz9eG3c73QHP/7QhDvTDwilAK2njf/zFda+I0t/Tfe8XzXZ7UoQ6
+	sQ8Q7ISW7GogQILY8Rq9SQO3mc7b5nzTywHSt2KzeUt3OEtUAv9ZOSbDDbN0u1z01CL/2zgz+/g
+	gb38nXCEHBdr+bYmVGJ70y1H0xgMvjC5Qr19ETRksa1m+jqw9ej9ndql7wiJcYthwPN3Z/wTzXf
+	audsn2I=
+X-Google-Smtp-Source: AGHT+IHYHO39FYN9fqzxuulSr07JHo1uzefPIt87F1jvA2dDEDL04bAJrSOp1VwnvFvuELyXPcAF8g==
+X-Received: by 2002:a5d:5887:0:b0:385:e429:e59e with SMTP id ffacd0b85a97d-38de41c608bmr2481781f8f.52.1739275805525;
+        Tue, 11 Feb 2025 04:10:05 -0800 (PST)
 Received: from [127.0.1.1] ([2a01:cb1d:dc:7e00:561:8978:1d41:636a])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38dd4342502sm9152327f8f.26.2025.02.11.04.10.02
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38dd4342502sm9152327f8f.26.2025.02.11.04.10.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Feb 2025 04:10:03 -0800 (PST)
+        Tue, 11 Feb 2025 04:10:05 -0800 (PST)
 From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Tue, 11 Feb 2025 13:09:36 +0100
-Subject: [PATCH 02/14] gpiolib: wrap gpio_chip::set()
+Date: Tue, 11 Feb 2025 13:09:38 +0100
+Subject: [PATCH 04/14] gpiolib: introduce gpio_chip setters that return
+ values
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -68,7 +70,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250211-gpio-set-retval-v1-2-52d3d613d7d3@linaro.org>
+Message-Id: <20250211-gpio-set-retval-v1-4-52d3d613d7d3@linaro.org>
 References: <20250211-gpio-set-retval-v1-0-52d3d613d7d3@linaro.org>
 In-Reply-To: <20250211-gpio-set-retval-v1-0-52d3d613d7d3@linaro.org>
 To: Linus Walleij <linus.walleij@linaro.org>, 
@@ -80,89 +82,130 @@ Cc: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-pwm@vger.kernel.org, 
  Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2093;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3651;
  i=bartosz.golaszewski@linaro.org; h=from:subject:message-id;
- bh=mUYillua396qTpKVAHzLY6KYpt0/yytGd3oRzjdo/zU=;
- b=owEBbQKS/ZANAwAKARGnLqAUcddyAcsmYgBnqz4VVFl+RrrC3Le01DvDprJsAWF06daXfViIm
- 8D6OIwU+HmJAjMEAAEKAB0WIQQWnetsC8PEYBPSx58Rpy6gFHHXcgUCZ6s+FQAKCRARpy6gFHHX
- co2lD/9YmNWa2vCgSb+a5q1W7hneYy5sCN/lxxqxi9h6PHVGFNkgM+O01EX0x5ugFpujDda8g5B
- 1MHXxUYpOlOxh/Fecy9M1audvEcJrtoJJJvzKngGAPV4abSAt7wTiExk73+bhFfFiwrE2tNZNsE
- FXI38XZU/VGuQqO/xWVmkPeO9LuUrgsil/Lt3HhpsYFsw56JeZfzzpm/OOvzBhzmP2SQihaoTvm
- bCRG5ObmxcLS1us6hmr2LDvwTciWp87gKfRT0MOmtSwn2purP54d/rghqEkTcaeu1QaOdAu89bP
- AL/FfbXZgdE5bEZdbL4JFSuD5NJcb14qBq2SJ/y004ZE01lP4tZ+yyQydkgYl2iuegCGGBQwqOw
- vrXlPqrHEoBWLFQOq6sNvHl464BcxGM+kRufiIfuzAB5niHC04Lk9kvzyltpl9G+GNh7zO6E2CX
- PFVbfoFPHfRPDXrdmwLjNly/7wdS6yLa2X41DLbdSExxPXWF//+TDOzqwaC2Fe3SwAWJdalo/fv
- dIZdw84jaweMHTbCqqgCHL6VfeYnQANCDgvzi3m7tpaySMgt/2BVZIw/YqbSADEkxa/vuWL8Os8
- EgkztChReNSK9YZ1co43MzazR22QSa5dlX5g2hwJ+YCbzUiXrbJ0GIyHhsC66Lw5F1WKwWh7Ez2
- tAu296INMZ+5VuA==
+ bh=PqwP4DdGtYYvgPMEjhHMWkD10+jKqk8KGLWSnN3SmPc=;
+ b=owEBbQKS/ZANAwAKARGnLqAUcddyAcsmYgBnqz4W3+44nQ16vPqyxAePOsKaJyxohjnqd0KpT
+ NuNoYQsnFOJAjMEAAEKAB0WIQQWnetsC8PEYBPSx58Rpy6gFHHXcgUCZ6s+FgAKCRARpy6gFHHX
+ chgfEACzRCcnf+4m5DpSw182YLXuZErPrxL0A62O8H7l8svfDNzjQJiWI995glAAgJDKRyX9YFZ
+ wC67eV1f25gGJbelW8EsQDfnTRQ9xF+MeQ9KuwyiTzFKynPPG+0ADusMK99YZgX3LiWZptryiNY
+ J4qmtw4Yw2Q7EGIJoDxW1RvyO0QsV2YU/+YeUuTwfMA0ax/rl/7skgYhnatYv1oUFjmhMFTMDaY
+ ohiUWQHczNS6Di8c7JdxqiZpE1FjgKGXgLNYLw1aSuAEQzEn4tErp8+snpfQ4IflYHkjF3PcDa0
+ 43IzeuTvqAW16p/TV41sMQMLK9EJCdlUYRMIcDWVBD5SYHenZkgQNguX/h+XewNbClO/15nqZgR
+ v+JyOxCaXi44Vzpx3g9jU27XtaVNtF/RJG6UC9LM3YsYA9QJiChYhTZ2a93xmLWIg4fN/b8kqaP
+ TAKroL0sQgaD7OCISNstYXxUL9OFZtwJ5I7z3lHFNT28Lxyd3iP1+4kXgTYb1dIjlKJPn3S/p7n
+ UrDNEsm2Svti0jVMoX/sGpX7n97oFT1Sp2U83iN2MHHRFWisttHXm9n7ow4I9OEWXQZjVw9DPdf
+ LXEoQ7ULJtSZS4+2aci/n4zgVqfNLF7E003IooHaW/yZSrReVTfz5Q4++15HttkhesFpI2HofOQ
+ Li1fGOyaUEQBWYw==
 X-Developer-Key: i=bartosz.golaszewski@linaro.org; a=openpgp;
  fpr=169DEB6C0BC3C46013D2C79F11A72EA01471D772
 
 From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-We have three places where we dereference the gpio_chip::set() callback.
-In order to make it easier to incorporate the upcoming new variant of
-this callback (one returning an integer value), wrap it in a helper so
-that the dereferencing only happens once.
+Add new variants of the set() and set_multiple() callbacks that have
+integer return values allowing to indicate failures to users of the GPIO
+consumer API. Until we convert all GPIO providers treewide to using
+them, they will live in parallel to the existing ones.
+
+Make sure that providers cannot define both. Prefer the new ones and
+only use the old ones as fallback.
 
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 ---
- drivers/gpio/gpiolib.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ drivers/gpio/gpiolib.c      | 28 ++++++++++++++++++++++++++--
+ include/linux/gpio/driver.h | 10 ++++++++++
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index f31c1ed905c0..7826bfb72104 100644
+index 1f078a20ce3d..5f3a8f1b7757 100644
 --- a/drivers/gpio/gpiolib.c
 +++ b/drivers/gpio/gpiolib.c
-@@ -2747,6 +2747,17 @@ int gpiod_direction_input_nonotify(struct gpio_desc *desc)
- 	return ret;
- }
+@@ -926,6 +926,11 @@ int gpiochip_add_data_with_key(struct gpio_chip *gc, void *data,
+ 	int base = 0;
+ 	int ret = 0;
  
-+static int gpiochip_set(struct gpio_chip *gc, unsigned int offset, int value)
-+{
-+	lockdep_assert_held(&gc->gpiodev->srcu);
++	/* Only allow one set() and one set_multiple(). */
++	if ((gc->set && gc->set_rv) ||
++	    (gc->set_multiple && gc->set_multiple_rv))
++		return -EINVAL;
 +
-+	if (WARN_ON(unlikely(!gc->set)))
-+		return -EOPNOTSUPP;
-+
-+	gc->set(gc, offset, value);
-+	return 0;
-+}
-+
- static int gpiod_direction_output_raw_commit(struct gpio_desc *desc, int value)
+ 	/*
+ 	 * First: allocate and populate the internal stat container, and
+ 	 * set up the struct device.
+@@ -2749,11 +2754,21 @@ int gpiod_direction_input_nonotify(struct gpio_desc *desc)
+ 
+ static int gpiochip_set(struct gpio_chip *gc, unsigned int offset, int value)
  {
- 	int val = !!value, ret = 0;
-@@ -2783,7 +2794,9 @@ static int gpiod_direction_output_raw_commit(struct gpio_desc *desc, int value)
- 		 * If we can't actively set the direction, we are some
- 		 * output-only chip, so just drive the output as desired.
- 		 */
--		guard.gc->set(guard.gc, gpio_chip_hwgpio(desc), val);
-+		ret = gpiochip_set(guard.gc, gpio_chip_hwgpio(desc), val);
-+		if (ret)
-+			return ret;
- 	}
++	int ret;
++
+ 	lockdep_assert_held(&gc->gpiodev->srcu);
  
- 	if (!ret)
-@@ -3443,9 +3456,7 @@ static int gpiod_set_raw_value_commit(struct gpio_desc *desc, bool value)
- 		return -ENODEV;
+-	if (WARN_ON(unlikely(!gc->set)))
++	if (WARN_ON(unlikely(!gc->set && !gc->set_rv)))
+ 		return -EOPNOTSUPP;
  
- 	trace_gpio_value(desc_to_gpio(desc), 0, value);
--	guard.gc->set(guard.gc, gpio_chip_hwgpio(desc), value);
--
--	return 0;
-+	return gpiochip_set(guard.gc, gpio_chip_hwgpio(desc), value);
++	if (gc->set_rv) {
++		ret = gc->set_rv(gc, offset, value);
++		if (ret > 0)
++			ret = -EBADE;
++
++		return ret;
++	}
++
+ 	gc->set(gc, offset, value);
+ 	return 0;
  }
+@@ -3475,12 +3490,21 @@ static int gpiochip_set_multiple(struct gpio_chip *gc,
+ 				 unsigned long *mask, unsigned long *bits)
+ {
+ 	unsigned int i;
++	int ret;
  
- /*
-@@ -3468,7 +3479,7 @@ static void gpio_chip_set_multiple(struct gpio_chip *gc,
+ 	lockdep_assert_held(&gc->gpiodev->srcu);
  
- 		/* set outputs if the corresponding mask bit is set */
- 		for_each_set_bit(i, mask, gc->ngpio)
--			gc->set(gc, i, test_bit(i, bits));
-+			gpiochip_set(gc, i, test_bit(i, bits));
- 	}
- }
+-	if (WARN_ON(unlikely(!gc->set_multiple && !gc->set)))
++	if (WARN_ON(unlikely(!gc->set_multiple && !gc->set_multiple_rv)))
+ 		return -EOPNOTSUPP;
  
++	if (gc->set_multiple_rv) {
++		ret = gc->set_multiple_rv(gc, mask, bits);
++		if (ret > 0)
++			ret = -EBADE;
++
++		return ret;
++	}
++
+ 	if (gc->set_multiple) {
+ 		gc->set_multiple(gc, mask, bits);
+ 		return 0;
+diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+index 2dd7cb9cc270..ac42f0164d5f 100644
+--- a/include/linux/gpio/driver.h
++++ b/include/linux/gpio/driver.h
+@@ -346,6 +346,10 @@ struct gpio_irq_chip {
+  *	stores them in "bits", returns 0 on success or negative error
+  * @set: assigns output value for signal "offset"
+  * @set_multiple: assigns output values for multiple signals defined by "mask"
++ * @set_rv: assigns output value for signal "offset", returns 0 on success or
++ *          negative error value
++ * @set_multiple_rv: assigns output values for multiple signals defined by
++ *                   "mask", returns 0 on success or negative error value
+  * @set_config: optional hook for all kinds of settings. Uses the same
+  *	packed config format as generic pinconf.
+  * @to_irq: optional hook supporting non-static gpiod_to_irq() mappings;
+@@ -441,6 +445,12 @@ struct gpio_chip {
+ 	void			(*set_multiple)(struct gpio_chip *gc,
+ 						unsigned long *mask,
+ 						unsigned long *bits);
++	int			(*set_rv)(struct gpio_chip *gc,
++					  unsigned int offset,
++					  int value);
++	int			(*set_multiple_rv)(struct gpio_chip *gc,
++						   unsigned long *mask,
++						   unsigned long *bits);
+ 	int			(*set_config)(struct gpio_chip *gc,
+ 					      unsigned int offset,
+ 					      unsigned long config);
 
 -- 
 2.45.2
