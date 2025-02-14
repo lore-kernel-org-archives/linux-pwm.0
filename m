@@ -1,125 +1,266 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC86D266568;
-	Fri, 14 Feb 2025 13:20:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5728E26659A;
+	Fri, 14 Feb 2025 15:10:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739539230; cv=none; b=lUJHPvfF73EQ1G8U7DFywEuBE3in9heqkYUImShvB+6YVcT2YLqE6UvPWB390ASTs4jW4/e8tMwYKTue3adxeNRfe+o24Ivh6iHH+3PN1bBgyfTwYo1/297kcpKpL+OOWWy3D7qZwTCbpxTmklnD6whvQK9VZ70L8gtWcLVF4IM=
+	t=1739545825; cv=none; b=EPiEs52aQLJQwBPETT+lmLb92TlH5Mgiy2mwXw8LCvTZFjyecofaZBNxIui+IkdrWRJZUu/SNL5ZgfqS2UUhs4xks+F3iIsPoOckMtTKRLglyXM0/Ffr67CAueze5LoNo1VtUbP4ZyhcauCO7U9P+HKNDVHxnPoS9vtG/iIqJEA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739539230; c=relaxed/simple;
-	bh=So9Q1FlejRdM4gbAqhZQLc5a7c6cMmNLLlL5noONk48=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ShzF97zPxy8sR5Nxe0nO42liGfYSYuSIw+bP4zC40DSioLNsNP2YFMUmjlhG8zSfwBxqaCCvjaY4/IPFquDB3Vr7VoSlaHfkKqaf7t5zFDLClwQox2ncVstlsZhBZ566EdzBYUbQolWsPJc7asiRlYGUM5WRF+ZjgKRo3Zz2SVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=0kBq+DhE; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1739545825; c=relaxed/simple;
+	bh=D+uHq0k343FqJFRy9KVkDXZiYD6MshK/nRMVZIrXXp0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z8QQtBAd2uZpaR3wuVq7Mp7CSQBpkUyY5iWt+WX9AFak3tnICskAHFlAfPGexhebtse0AxJMVqj54RyP1aR8a1J1A6mJ6weZbd29DBe9DEJpHRA+/pSWpl/opH4FcU7Vv0hI4F7Qm8eyIkGWArk/gyoXDGBv9aSWzdrCxwv6iWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Eq4KpSyL; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="0kBq+DhE"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 51EA9u9q020768;
-	Fri, 14 Feb 2025 08:20:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=Vy+qW
-	HG9mUD/9kR6+Bn2cd9l0Cg5hXKEe56CVBDxRX0=; b=0kBq+DhEBeEs409iDjb3q
-	80FSRDvDKKzB6dIgj8gZ3RSSSX6R45k+oJfwSrxfFAb5FYj5HBLxCNSlaBaIa2ll
-	08dsahYQMgFD6ng3CMU6S8iD5KNgatEt+UAGhhUTwZ14jY0gDktOZXwTkLW/HZy6
-	xyRmztKxm8voSx6kaW3LHm3LBDRjaSeGtGNHnyxH6byh3QcINUc2ATTr8iWdmkdt
-	FwtCmwmRIN1Rj3sowTwQxLo8rsRmqZj6OxnTH5IqMKX3tUsfyYq/TqncLORFX2JV
-	ycU/0SexR0EQPItqsyzUaojF6kFx/Jlj+ApcIG25MgsLpMu8+y2+0/AqPUG0qyi/
-	Q==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 44t3uc8n1d-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 14 Feb 2025 08:20:16 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 51EDKFFa018376
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 14 Feb 2025 08:20:15 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 14 Feb 2025 08:20:15 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 14 Feb 2025 08:20:14 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 14 Feb 2025 08:20:14 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.172])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 51EDJuUV020604;
-	Fri, 14 Feb 2025 08:20:09 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v13 5/9] dt-bindings: iio: adc: add ad485x axi variant
-Date: Fri, 14 Feb 2025 15:19:51 +0200
-Message-ID: <20250214131955.31973-6-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20250214131955.31973-1-antoniu.miclaus@analog.com>
-References: <20250214131955.31973-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Eq4KpSyL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739545824; x=1771081824;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=D+uHq0k343FqJFRy9KVkDXZiYD6MshK/nRMVZIrXXp0=;
+  b=Eq4KpSyLTmr6CDKFavQHb0blNVwY316Z8T1WMBKnNUg5Ty2jn8La6/k1
+   LCoJe4mS/gyX+g+KkzD7cZFLw1FoG3vrS+iEn3auHmFQluxaEnM7ayzEv
+   X+OHHAY5Y91p1skPpP5PI2OVpsWZRer8QARorgmjZKx03nzvgZjGCZ7Re
+   TyPy/+VXPaM9P23M8ZQ/MhrofpAYu/yhWWimchziUTVdW7nE/NZVnVpbi
+   ugZ6NPpapoBEGrS5LsBLAOfKY8hCUIWspoKosO5PCEutWy2bfi7X5JmPq
+   V9gsw8Isx73vaZtCXJYprL954AlRz6AIYV9I/SFWPdNFblVgGC/AIFJ7g
+   A==;
+X-CSE-ConnectionGUID: 9BgsUX/dRXOoaCI7slF53Q==
+X-CSE-MsgGUID: KsHhVcguSSWuGoDzCp5rOQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11345"; a="50510459"
+X-IronPort-AV: E=Sophos;i="6.13,286,1732608000"; 
+   d="scan'208";a="50510459"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2025 07:10:23 -0800
+X-CSE-ConnectionGUID: 2wKz+ewVQo66/w6hC1ftIw==
+X-CSE-MsgGUID: K+awIMD6TmCr9xRtkbSDsA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="118410858"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2025 07:10:16 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1tixKW-0000000BWep-3HVY;
+	Fri, 14 Feb 2025 17:10:12 +0200
+Date: Fri, 14 Feb 2025 17:10:12 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: mathieu.dubois-briand@bootlin.com
+Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Kamel Bouhara <kamel.bouhara@bootlin.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Michael Walle <mwalle@kernel.org>, Mark Brown <broonie@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-pwm@vger.kernel.org,
+	=?iso-8859-1?Q?Gr=E9gory?= Clement <gregory.clement@bootlin.com>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v4 03/10] pwm: max7360: Add MAX7360 PWM support
+Message-ID: <Z69c1BQHmlbmwUYf@smile.fi.intel.com>
+References: <20250214-mdb-max7360-support-v4-0-8a35c6dbb966@bootlin.com>
+ <20250214-mdb-max7360-support-v4-3-8a35c6dbb966@bootlin.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=PZcFhjhd c=1 sm=1 tr=0 ts=67af4310 cx=c_pps a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17 a=T2h4t0Lz3GQA:10 a=gAnH3GRIAAAA:8 a=wI1k2SEZAAAA:8 a=KzTIvUCHwj9sjodXf8EA:9 a=oVHKYsEdi7-vN-J5QA_j:22
- a=6HWbV-4b7c7AdzY24d_u:22
-X-Proofpoint-GUID: Ojfu9BTMlAvV5pBpTrmcVirW2ZLyScCu
-X-Proofpoint-ORIG-GUID: Ojfu9BTMlAvV5pBpTrmcVirW2ZLyScCu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-02-14_05,2025-02-13_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
- spamscore=0 suspectscore=0 impostorscore=0 clxscore=1015 mlxscore=0
- bulkscore=0 priorityscore=1501 lowpriorityscore=0 malwarescore=0
- adultscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.19.0-2501170000
- definitions=main-2502140097
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250214-mdb-max7360-support-v4-3-8a35c6dbb966@bootlin.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Add a new compatible and related bindigns for the fpga-based
-AD485x AXI IP core, a variant of the generic AXI ADC IP.
+On Fri, Feb 14, 2025 at 12:49:53PM +0100, mathieu.dubois-briand@bootlin.com wrote:
+> From: Kamel Bouhara <kamel.bouhara@bootlin.com>
+> 
+> Add driver for Maxim Integrated MAX7360 PWM controller, supporting up to
+> 8 independent PWM outputs.
 
-The AXI AD485x IP is a very similar HDL (fpga) variant of the
-generic AXI ADC IP, intended to control ad485x familiy.
+...
 
-Although this is not preffered, the wildcard naming is used to
-match the published firmware under the same name.
++ bits.h
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-changes in v13:
- - adjust commit body and add comment on wildcard matching the published
-   firmware.
- Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml | 2 ++
- 1 file changed, 2 insertions(+)
++ dev_printk.h
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-index e1f450b80db2..f1b470f74069 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-@@ -19,11 +19,13 @@ description: |
-   memory via DMA.
- 
-   https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
-+  https://analogdevicesinc.github.io/hdl/library/axi_ad485x/index.html
- 
- properties:
-   compatible:
-     enum:
-       - adi,axi-adc-10.0.a
-+      - adi,axi-ad485x
- 
-   reg:
-     maxItems: 1
+> +#include <linux/err.h>
+
+
+> +#include <linux/math.h>
+
+Other way around, id est you need math64.h (see below).
+
+> +#include <linux/mfd/max7360.h>
+
++ minmax.h
+
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+
+> +#include <linux/of.h>
+
+Is this used? Cargo cult?
+
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/regmap.h>
+
++ types.h
+
+...
+
+> +#define MAX7360_PWM_PERIOD_NS			2000000 /* 500 Hz */
+
+Comment is superfluous, if you need HZ units, define the respective one.
+Also you can use something like (2 * NSEC_PER_MSEC) which will immediately
+gives a hint of how long this is and reduces potential 0:s miscalculations.
+This will need time.h
+
+...
+
+> +#define MAX7360_PWM_CTRL_ENABLE(n)		BIT(n)
+> +#define MAX7360_PWM_PORT(n)			BIT(n)
+
+Personally I find these macros overkill. The value of them much shorter and
+equally readable.
+
+...
+
+> +struct max7360_pwm {
+
+> +	struct device *parent;
+
+Is it not the same as you can derive from regmap?
+
+> +	struct regmap *regmap;
+
+Btw, have you checked the code generation if you place regmap the first in the
+structure? It might affect it.
+
+> +};
+
+...
+
+> +	/*
+> +	 * Ignore user provided values for period_length_ns and duty_offset_ns:
+> +	 * we only support fixed period of MAX7360_PWM_PERIOD_NS and offset of
+
+> +	 * 0.
+
+Easy to read with 0 be on previous line.
+
+> +	 */
+
+> +
+
+No need for this blank line.
+
+> +	duty_steps = mul_u64_u64_div_u64(wf->duty_length_ns, MAX7360_PWM_MAX_RES,
+> +					 MAX7360_PWM_PERIOD_NS);
+
+This comes from math64.h
+
+> +
+> +	wfhw->duty_steps = min(MAX7360_PWM_MAX_RES, duty_steps);
+
+...
+
+> +static int max7360_pwm_write_waveform(struct pwm_chip *chip,
+> +				      struct pwm_device *pwm,
+> +				      const void *_wfhw)
+> +{
+> +	const struct max7360_pwm_waveform *wfhw = _wfhw;
+> +	struct max7360_pwm *max7360_pwm;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	max7360_pwm = max7360_pwm_from_chip(chip);
+> +
+> +	val = (wfhw->duty_steps == 0) ? 0 : MAX7360_PWM_CTRL_ENABLE(pwm->hwpwm);
+> +	ret = regmap_write_bits(max7360_pwm->regmap, MAX7360_REG_GPIOCTRL,
+> +				MAX7360_PWM_CTRL_ENABLE(pwm->hwpwm), val);
+
+> +
+> +	if (!ret && wfhw->duty_steps != 0) {
+> +		ret = regmap_write(max7360_pwm->regmap, MAX7360_REG_PWM(pwm->hwpwm),
+> +				   wfhw->duty_steps);
+> +	}
+> +
+> +	return ret;
+
+Please, improve readability by rewriting like this:
+
+	ret = regmap_write_bits(max7360_pwm->regmap, MAX7360_REG_GPIOCTRL,
+				MAX7360_PWM_CTRL_ENABLE(pwm->hwpwm), val);
+	if (ret)
+		return ret;
+
+	if (wfhw->duty_steps)
+		return regmap_write(max7360_pwm->regmap, MAX7360_REG_PWM(pwm->hwpwm),
+				    wfhw->duty_steps);
+
+	return 0;
+
+> +}
+
+...
+
+> +static int max7360_pwm_probe(struct platform_device *pdev)
+> +{
+
+With
+
+	struct device *dev = &pdev->dev;
+
+all below will look shorter and nicer.
+
+> +	struct max7360_pwm *max7360_pwm;
+> +	struct pwm_chip *chip;
+> +	int ret;
+> +
+> +	if (!pdev->dev.parent)
+> +		return dev_err_probe(&pdev->dev, -ENODEV, "no parent device\n");
+> +
+> +	chip = devm_pwmchip_alloc(pdev->dev.parent, MAX7360_NUM_PWMS,
+> +				  sizeof(*max7360_pwm));
+> +	if (IS_ERR(chip))
+> +		return PTR_ERR(chip);
+> +	chip->ops = &max7360_pwm_ops;
+> +
+> +	max7360_pwm = max7360_pwm_from_chip(chip);
+> +	max7360_pwm->parent = pdev->dev.parent;
+> +
+> +	max7360_pwm->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+> +	if (!max7360_pwm->regmap)
+> +		return dev_err_probe(&pdev->dev, -ENODEV,
+> +				     "could not get parent regmap\n");
+
+Will become one line (with the above suggestion).
+
+> +	ret = devm_pwmchip_add(&pdev->dev, chip);
+
+> +	if (ret != 0)
+
+Please, be consistent with the style, and moreover this style is unusual.
+
+> +		return dev_err_probe(&pdev->dev, ret,
+> +				     "failed to add PWM chip\n");
+> +
+> +	return 0;
+> +}
+
 -- 
-2.48.1
+With Best Regards,
+Andy Shevchenko
+
 
