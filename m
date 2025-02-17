@@ -1,172 +1,110 @@
-Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0F3F2153D8;
-	Mon, 17 Feb 2025 09:30:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DF2818DB1C
+	for <linux-pwm@vger.kernel.org>; Mon, 17 Feb 2025 10:25:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739784650; cv=none; b=W+fgzeqXj/N9HleT3eES4GSkobGbbJ2THbW+SH5Z+etAZcCthNdcTG/Kt+11ZXo9GI23hUHSTIS2Dkpwtwy7ldDJsKZVSBmrR4Hj6Z/VFRHCNgE4IbeL8TUsJF52ezujGx458/avTNyNksIy72P7wfL9gGHAXFT7zwB/Cs6oIrg=
+	t=1739787919; cv=none; b=QhBCgMk4TngnsUx6dJZULP2lmfQCykbsmoKU3BZZVkw4OSTdab0Z/g8tleVp2Gd1Ds7uyy1tm+6aM0eQmAGFuEPa8drB1jt1e84vuztMW6SSBtuld/INSfCwt1USZO0co775O3TDj2NFe+utO/RqoNgh5v8w0ftCHdFjJb7WEFs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739784650; c=relaxed/simple;
-	bh=aD3vY1slnPKPfhpqd2dAsUosRPb/99diiY0WwJCvQBc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Yf4zI4H9JHb9TU7Z3ckCy39byLd12kCWKhCqdJAVgznuRzrLNv/efqg+D4RsQxB1peYbH0TQHLIG+tHYq7/VoIPCXdk+R/vcRpMZqBkEcckIJaXQygeVgWXsnwzJA3noZ39gJC15LlLSwJrREiKSC5+5D+Z+OcHlJY8uJNUlxqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
-Received: from loongson.cn (unknown [223.64.68.156])
-	by gateway (Coremail) with SMTP id _____8CxLGu_AbNn_pZ4AA--.11606S3;
-	Mon, 17 Feb 2025 17:30:39 +0800 (CST)
-Received: from localhost.localdomain (unknown [223.64.68.156])
-	by front1 (Coremail) with SMTP id qMiowMBxLse7AbNnvO4XAA--.26537S3;
-	Mon, 17 Feb 2025 17:30:38 +0800 (CST)
-From: Binbin Zhou <zhoubinbin@loongson.cn>
-To: Binbin Zhou <zhoubb.aaron@gmail.com>,
-	Huacai Chen <chenhuacai@loongson.cn>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Juxin Gao <gaojuxin@loongson.cn>
-Cc: Huacai Chen <chenhuacai@kernel.org>,
-	Xuerui Wang <kernel@xen0n.name>,
-	loongarch@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-pwm@vger.kernel.org,
-	Binbin Zhou <zhoubinbin@loongson.cn>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v9 1/2] dt-bindings: pwm: Add Loongson PWM controller
-Date: Mon, 17 Feb 2025 17:30:24 +0800
-Message-ID: <d6be5236ab4ff5b5fde78004c38d8bced42f2ba2.1739784071.git.zhoubinbin@loongson.cn>
+	s=arc-20240116; t=1739787919; c=relaxed/simple;
+	bh=pkV3QDLau5yOCLVjOUftd/XupwhlBueSvQ/So/2Crew=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CRfMZc5fSEBxoIc5tNLKsqCrCiRjcp0LrKgPLVUbjWYylfiLDxdKEmIIbFgzfHBGDEMsuxI5AsHuUAkhLhwLITWlcF810Fhy2kh9sKGKg19RjETGg+cnr+jnrjniG7vzY4ls/cYU+tYgZCjX5IQb6fZE+fVfeTpVzY2R8mEHmh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=CFBNJ1RG; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="CFBNJ1RG"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-43984e9cc90so3808815e9.1
+        for <linux-pwm@vger.kernel.org>; Mon, 17 Feb 2025 02:25:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1739787914; x=1740392714; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=FokGnFYa1P4z5L9nqT3eXO4+eNPgSU0f89vdK4WReX8=;
+        b=CFBNJ1RGwmoIBPTpxjGUk/H8NMGkuMU5UcqTTC/0zf+YHxqCCkKS2ctbBuUDzEPVcz
+         XUQOIO4AJ1zoOqp8+rV1Jn7wMJGxE/++xby4ZftPP57CT1j+M6B/yq8bcm9f280hsVTE
+         JPARC4m1UNws89AR1NixDh5EZxrQ9IO2U4DxLI+/1zt2azUTG1vvfLUWo11iYdwzc5eq
+         WrdIUJT/T+9XBHsA3o20zL0Ebn4B3oJunm8f+40sxNwtAJ6RLbIfRkDrmWROcE41IVka
+         V8OyPL+8L454NSxbPUwy6MApZGW1wS/tCqSlq0fZgWLaSi03CvtSN/9aJRaO7AK946Ka
+         Ac5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739787914; x=1740392714;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FokGnFYa1P4z5L9nqT3eXO4+eNPgSU0f89vdK4WReX8=;
+        b=ZbA/6q/uuk7WnDXnH6uXxaE1mAKt15Qvq8Wnuj/2HI4DNs07HyEXW6bMQSPqc9iIaU
+         fL4iIwOekt7VbDdJrqkUXC3m9ltklrvbRDr2fnIyW4+qU294g9tnp9DNu+hl9+FB5tU+
+         wf0ZJyPDnrJPpcJpTB02QABikAisKrJEXOYcextWyoky6Ix1gA5I+u0Ce2FECfkYdZPk
+         4emHSYEW95b0RJuzUcyHMFsUBOV8+WPRFlu/VPHYKuXAFcDpDLESl9ZEw9xl/eQ0jyCn
+         1wMfET+XUFii67dGqgyK6uzKY/o2soo/pbJdfNUW7XLhgMTWMNb8VTonomgceI9X8DRI
+         yQAw==
+X-Gm-Message-State: AOJu0YxBF6usaPoUbXK5lyhqNk2HWcIJTEdAVcnbnJSlyQVRqcvKo6Gz
+	/EbExReW4VQiYR6+b8FFwKyL8+cbYKvR8Nn3mrsirZwSr7909pqxZ+X27lmbm4m4IenlmYyJ7Cq
+	F1tY=
+X-Gm-Gg: ASbGncsZ/n/xZyl27T2wK5FTlvjmbmFCaFqMKwmR+SFLgSTMvlpfiCupGHD9Kc4yzBl
+	mpcfkHxQXmu+tGqCIvR2WonqE8oUzGMuyf709nmRUHlNBIZ2hOW97EqV9/R+Qc7Cz1LA7U7QPUg
+	IyCutQ4szI4WveuiWlxWYWZk4EvA9HRRRZl64TgQ7nIDGfEPEldFGcIO8XcT5CIImGnNu/Ag+KR
+	bI5PCodSedcq/HN8vw4C4Xr9o0BZxzhCfN7F3qhCKJFBTG9K+0WPeEBP7K0b4VH6hN07wBzAvUr
+	8vl6oWgS67z/UHkr8FaJKWRYRiUQhQw1XYS/THcVxkqdpxZErixVWFpxaQ==
+X-Google-Smtp-Source: AGHT+IFbgwfFaINBoUR6Lxo6tueZODOf8RLyitK08qsHQ0MTRwrlA34mrSJU44XNJNxG3ZxRlFwwIQ==
+X-Received: by 2002:a05:600c:12d1:b0:439:81e3:43ee with SMTP id 5b1f17b1804b1-43981e3454dmr27581175e9.6.1739787914562;
+        Mon, 17 Feb 2025 02:25:14 -0800 (PST)
+Received: from localhost (p200300f65f083b0400000000000001b9.dip0.t-ipconnect.de. [2003:f6:5f08:3b04::1b9])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4395a06d20bsm149128265e9.20.2025.02.17.02.25.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Feb 2025 02:25:14 -0800 (PST)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: linux-pwm@vger.kernel.org
+Subject: [PATCH] pwm: Check for CONFIG_PWM using IS_REACHABLE() in main header
+Date: Mon, 17 Feb 2025 11:25:02 +0100
+Message-ID: <20250217102504.687916-2-u.kleine-koenig@baylibre.com>
 X-Mailer: git-send-email 2.47.1
-In-Reply-To: <cover.1739784071.git.zhoubinbin@loongson.cn>
-References: <cover.1739784071.git.zhoubinbin@loongson.cn>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1257; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=pkV3QDLau5yOCLVjOUftd/XupwhlBueSvQ/So/2Crew=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBnsw6AxnKJlmU8kH0dk8ygB1joD2NdnBaj0Gr8m s8pGCumgASJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZ7MOgAAKCRCPgPtYfRL+ TroYB/9qgGs7q9ogXoDRds9jSid5/mCc5Z36FetlADFR5ro8VvjtFlfWBwmrO+MCeLsE2vOfIqJ nal59/E6sxCr1poRDkbjnK5Hcy3PjlzDD2pnSLRcD/F6CDwn60MVNqe63YL4aucWdsTjdDMH9gb fDl780kbYn0COpOsF3GIDFuqb2fUikwGeEJo97svDhPSW+VUBTgF09wcyrin17Eyyklw+mdFILm 6JLG+TGpAA+2mrW3tUMayQGEbNGqGIJkr2kHhpK3rcAYddKXLH8P4jRU4Mb5pyAMAYe0UjwgDm7 WdGLlihjCLrfteYpYoNConujB3/yU8khsnaCq8u2a8zMEAEZ
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qMiowMBxLse7AbNnvO4XAA--.26537S3
-X-CM-SenderInfo: p2kr3uplqex0o6or00hjvr0hdfq/
-X-Coremail-Antispam: 1Uk129KBj93XoWxArW8Aw1fAw4fWr1kWryDArc_yoW5ArWfpF
-	sxC3s2kr10qF17u398Wa48Cr1fZ3s5A3W7KFW7Aw1DKF9xJ3WYqw13KF15Z3y3ur1UXFWU
-	ZF9akr4UKa4UCrcCm3ZEXasCq-sJn29KB7ZKAUJUUUUr529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUUBFb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r126r13M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v2
-	6F4UJVW0owAaw2AFwI0_Jrv_JF1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2xF0c
-	Ia020Ex4CE44I27wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jw0_
-	WrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-	xGrwCY1x0262kKe7AKxVWUAVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWU
-	JVW8JwCFI7km07C267AKxVWUXVWUAwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
-	vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
-	x2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26c
-	xKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAF
-	wI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jzc_-UUUUU=
 
-Add Loongson PWM controller binding with DT schema format using
-json-schema.
+Preparing CONFIG_PWM becoming tristate the right magic to check for the
+availability of the pwm functions is using IS_REACHABLE() and not
+IS_ENABLED(). The latter gives the wrong result for built-in code with
+CONFIG_PWM=m.
 
-Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
 ---
- .../bindings/pwm/loongson,ls7a-pwm.yaml       | 66 +++++++++++++++++++
- MAINTAINERS                                   |  6 ++
- 2 files changed, 72 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml
+ include/linux/pwm.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml b/Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml
-new file mode 100644
-index 000000000000..46814773e0cc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/loongson,ls7a-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Loongson PWM Controller
-+
-+maintainers:
-+  - Binbin Zhou <zhoubinbin@loongson.cn>
-+
-+description:
-+  The Loongson PWM has one pulse width output signal and one pulse input
-+  signal to be measured.
-+  It can be found on Loongson-2K series cpus and Loongson LS7A bridge chips.
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: loongson,ls7a-pwm
-+      - items:
-+          - enum:
-+              - loongson,ls2k0500-pwm
-+              - loongson,ls2k1000-pwm
-+              - loongson,ls2k2000-pwm
-+          - const: loongson,ls7a-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  '#pwm-cells':
-+    description:
-+      The first cell must have a value of 0, which specifies the PWM output signal;
-+      The second cell is the period in nanoseconds;
-+      The third cell flag supported by this binding is PWM_POLARITY_INVERTED.
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/clock/loongson,ls2k-clk.h>
-+    pwm@1fe22000 {
-+        compatible = "loongson,ls2k1000-pwm", "loongson,ls7a-pwm";
-+        reg = <0x1fe22000 0x10>;
-+        interrupt-parent = <&liointc0>;
-+        interrupts = <24 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clk LOONGSON2_APB_CLK>;
-+        #pwm-cells = <3>;
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 896a307fa065..9fcde52aec4b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13616,6 +13616,12 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/i2c/loongson,ls2x-i2c.yaml
- F:	drivers/i2c/busses/i2c-ls2x.c
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index a2df509056ac..9ece4e5d3815 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -379,7 +379,7 @@ static inline void pwmchip_set_drvdata(struct pwm_chip *chip, void *data)
+ 	dev_set_drvdata(&chip->dev, data);
+ }
  
-+LOONGSON PWM DRIVER
-+M:	Binbin Zhou <zhoubinbin@loongson.cn>
-+L:	linux-pwm@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/pwm/loongson,ls7a-pwm.yaml
-+
- LOONGSON-2 SOC SERIES CLOCK DRIVER
- M:	Yinbo Zhu <zhuyinbo@loongson.cn>
- L:	linux-clk@vger.kernel.org
+-#if IS_ENABLED(CONFIG_PWM)
++#if IS_REACHABLE(CONFIG_PWM)
+ 
+ /* PWM consumer APIs */
+ int pwm_round_waveform_might_sleep(struct pwm_device *pwm, struct pwm_waveform *wf);
+@@ -661,7 +661,7 @@ struct pwm_lookup {
+ 	PWM_LOOKUP_WITH_MODULE(_provider, _index, _dev_id, _con_id, _period, \
+ 			       _polarity, NULL)
+ 
+-#if IS_ENABLED(CONFIG_PWM)
++#if IS_REACHABLE(CONFIG_PWM)
+ void pwm_add_table(struct pwm_lookup *table, size_t num);
+ void pwm_remove_table(struct pwm_lookup *table, size_t num);
+ #else
+
+base-commit: e8af7c083520a7b9b027b2bb282464013a96047d
 -- 
 2.47.1
 
