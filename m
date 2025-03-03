@@ -1,50 +1,33 @@
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD0A42101B3;
-	Mon,  3 Mar 2025 13:51:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.152.168
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D57D13BAF1;
+	Mon,  3 Mar 2025 14:18:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741009894; cv=none; b=n5oeRv8t8YvWcmycuwu66QrnhA2VOkKrmMNjUnmNwON8wEem3kRVuRFhr4Ln+9HYBFfI7a1r9qqkuebMKSaXfdKsOgT16DKTY0oU+6ZepL80cO4rXavIGA6wtR8DmWGwNN3N5YV25MqBkoOfRrM1R0pWhp9tPD6M20ZPrX1oYak=
+	t=1741011528; cv=none; b=gzE0vgoaH0oF/NOeUs88XzGQFq1UNLk6BrGIgNQkvM9X28qs8qivFcun9jsfFIXFy/COLgpHW+KJxXr/NVVgZ1P0vr93FfXOajmuT3SjSEgS+lYVHlbNo81kJHCrZp/gBErgg6i83jkIudSKIRkLg/hYQJKFYWqtxuGFuXXHKkI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741009894; c=relaxed/simple;
-	bh=p4DhxoHd3mXOHoZ4y5+57jK7IJPUhj8owFfMXypcf4I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=qXUTT1wOALP7LRFsUG1SNOEhjXy+LodUvfLPM/YhoaO+pitqwkY3YUyVIFUZwzIZ7LKfjnISEXRfnhlPp2pTKkLha7/tOSENfsN4+cA272PH57fMGLU8eEvfL/p6TtO/UBxRlKoMMP931tzCSwJDJsr8/xJWIfvcrviP2Orv6r4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensource.cirrus.com; spf=pass smtp.mailfrom=opensource.cirrus.com; dkim=pass (2048-bit key) header.d=cirrus.com header.i=@cirrus.com header.b=F6wdiybK; arc=none smtp.client-ip=67.231.152.168
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensource.cirrus.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=opensource.cirrus.com
+	s=arc-20240116; t=1741011528; c=relaxed/simple;
+	bh=lqjp7LIjDhQxWqewy5mV5ckok6buZoX+dvARhvXCRko=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=obnB6j1bvY6MEIvdpRKKo5EPnz2LYIkl5EPy6EVSLncLTLmrYcjkPZdwzqlcd6VGQIkksz6jn/rpA4fetO1RkToGZ03s7E1Mljo6sdPtKsA+42pOgKHA3Jg58wzWeNtYbaIQ2Du7sHCsTarbQ72885YhltqqvLeYCp5+EYqIbGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PuEyftF6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cirrus.com header.i=@cirrus.com header.b="F6wdiybK"
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-	by mx0b-001ae601.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5236w7Hs006077;
-	Mon, 3 Mar 2025 07:33:11 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	PODMain02222019; bh=ofmnRVwI5AT62ptxh8zklk/N01TYJ0oFg8f5/KIUZRw=; b=
-	F6wdiybK2ED4uAxZOAJ/RRTtc+TbrgGGRp7AsLBjfNmeL1wxKEJe1gpttdgFAZQQ
-	aygpqZQDL0He9/cn7WEOggadA7TgBV94vVupVnreLa1ZfKSWLnpeNovjZ0o9eyC/
-	BDOwxgQ9w5V98ZV5k7y2uCBojEfbl6eO8A9BVEphTGXn+nG98/KF+LmSaCxm5QxL
-	gwZnIK/MUTFJNIPctafUXvydaEtKH/23TqUrELy/xlvQCOc7TIdT+iOC9LnuDmW3
-	q+w2QcBUh3Vxi31LaC6G+AMvTrlFW3vech1ZZUmPbzC0V4UbwTPa7El2/5x0XEV8
-	jDLmZRWhEvTMuB7mDkGsEg==
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-	by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 453yhmcw74-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 03 Mar 2025 07:33:11 -0600 (CST)
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 3 Mar
- 2025 13:33:10 +0000
-Received: from ediswmail9.ad.cirrus.com (198.61.86.93) by
- anon-ediex01.ad.cirrus.com (198.61.84.80) with Microsoft SMTP Server id
- 15.2.1544.14 via Frontend Transport; Mon, 3 Mar 2025 13:33:10 +0000
-Received: from [198.90.208.18] (ediswws06.ad.cirrus.com [198.90.208.18])
-	by ediswmail9.ad.cirrus.com (Postfix) with ESMTP id E67B2820248;
-	Mon,  3 Mar 2025 13:33:09 +0000 (UTC)
-Message-ID: <84b7c543-7e81-4a20-9f58-7ddf6b2001e5@opensource.cirrus.com>
-Date: Mon, 3 Mar 2025 13:33:09 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PuEyftF6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DCA2C4CED6;
+	Mon,  3 Mar 2025 14:18:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741011528;
+	bh=lqjp7LIjDhQxWqewy5mV5ckok6buZoX+dvARhvXCRko=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=PuEyftF6/98P2YSoT/4dx5CwnIWkCdDWHwsSHGPpVCQdI7A/Qz4YSX+WX/Kc/luQU
+	 rCpXhhOGWAizvCQE+iTUEyI/y1ZTX00Oyj2kGjCxNawQwjg2Cr5Eq+BMG9JV29dwsn
+	 N4EvxuaxfaVRYdC5lQUFhX4TAs/cVp1tXbWpRrkSw+SJUb9IftzGhb4jgtP/XKoX4Y
+	 acPXTU8ONuYyS6hUZBbqxcXtj26VxkXj+rUttuRoPG5mzo4JWh8/hhEhUzQaDAq9oM
+	 i46OI85zxt/voI71Jw6MiSdGgiFvM0Ad4BhfJVkQNf0hPimHMme+Q3kbvisBOLMsz/
+	 2L8vFxvrgC9Tw==
+Message-ID: <c9dc351b-0b81-44c6-a89d-4644f600a41c@kernel.org>
+Date: Mon, 3 Mar 2025 15:18:40 +0100
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -52,79 +35,138 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/15] gpio: arizona: use new line value setter callbacks
-To: Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij
-	<linus.walleij@linaro.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mun Yew Tham
-	<mun.yew.tham@intel.com>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery
-	<andrew@codeconstruct.com.au>
-CC: <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-References: <20250303-gpiochip-set-conversion-v1-0-1d5cceeebf8b@linaro.org>
- <20250303-gpiochip-set-conversion-v1-11-1d5cceeebf8b@linaro.org>
-Content-Language: en-GB
-From: Richard Fitzgerald <rf@opensource.cirrus.com>
-In-Reply-To: <20250303-gpiochip-set-conversion-v1-11-1d5cceeebf8b@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Subject: Re: [RFC PATCH 7/7] dt-bindings: motion: Add motion-simple-pwm
+ bindings
+To: David Jander <david@protonic.nl>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+ linux-doc@vger.kernel.org, Nuno Sa <nuno.sa@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Oleksij Rempel
+ <o.rempel@pengutronix.de>, linux-pwm@vger.kernel.org
+References: <20250227162823.3585810-1-david@protonic.nl>
+ <20250227162823.3585810-8-david@protonic.nl>
+ <20250228-wonderful-python-of-resistance-d5b662@krzk-bin>
+ <20250228102201.590b4be6@erd003.prtnl>
+ <9a1d75a2-66c0-46b6-91a1-4922b892dfb1@kernel.org>
+ <20250228110931.7bdae7fd@erd003.prtnl>
+ <tm57fsmijq4t4y4dpmtss63ekzpm5oefir5tz4aioxq5dx4or6@lgoqjpxc3axh>
+ <20250303124034.726ba698@erd003.prtnl>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <20250303124034.726ba698@erd003.prtnl>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: CRfd2hqIDBqS4F2QrofR-T9cJdEBrOGR
-X-Authority-Analysis: v=2.4 cv=UeirSLSN c=1 sm=1 tr=0 ts=67c5af97 cx=c_pps a=uGhh+3tQvKmCLpEUO+DX4w==:117 a=uGhh+3tQvKmCLpEUO+DX4w==:17 a=IkcTkHD0fZMA:10 a=Vs1iUdzkB0EA:10 a=KKAkSRfTAAAA:8 a=w1d2syhTAAAA:8 a=IHiEukr3ZQpEQQ-4GLUA:9 a=QEXdDO2ut3YA:10
- a=cvBusfyB2V15izCimMoJ:22 a=YXXWInSmI4Sqt1AkVdoW:22
-X-Proofpoint-GUID: CRfd2hqIDBqS4F2QrofR-T9cJdEBrOGR
-X-Proofpoint-Spam-Reason: safe
 
-On 03/03/2025 1:18 pm, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+On 03/03/2025 12:40, David Jander wrote:
+>>
+>> Some hardwares cannot support PWM_POLARITY_INVERTED. Affected drivers
+>> include:
+>>
+>> 	pwm-adp5585
+>> 	pwm-ntxec
+>> 	pwm-raspberrypi-poe
+>> 	pwm-rz-mtu3 (software limitation only)
+>> 	pwm-sunplus
+>> 	pwm-twl-led (not completely sure, that one is strange)
+>>
+>> . ISTR that there is a driver that does only support inverted polarity,
+>> but I don't find it. For an overview I recommend reading through the
+>> output of:
+>>
+>> 	for f in drivers/pwm/pwm-*; do
+>> 		echo $f;
+>> 		sed -rn '/Limitations:/,/\*\/?$/p' $f;
+>> 		echo;
+>> 	done | less
+>>
+>> . (Note not all drivers have commentary in the right format to unveil
+>> their limitations.)
+>>
+>> For most use-cases you can just do
+>>
+>> 	.duty_cycle = .period - .duty_cycle
 > 
-> struct gpio_chip now has callbacks for setting line values that return
-> an integer, allowing to indicate failures. Convert the driver to using
-> them.
+> Yes, that is exactly what the relevant code in motion/simple-pwm.c does when
+> the "pwm-inverted" flag is present in the DT node.
 > 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> ---
->   drivers/gpio/gpio-arizona.c | 9 +++++----
->   1 file changed, 5 insertions(+), 4 deletions(-)
+>> instead of inverting polarity, but there is no abstraction in the PWM
+>> bindings for that and also no helpers in the PWM framework. The problem
+>> is more or less ignored, so if you have a device with
+>>
+>> 	pwms = <&pwm0 0 PWM_POLARITY_INVERTED>;
+>>
+>> and the PWM chip in question doesn't support that, the pwm API functions
+>> will fail. So the system designer better makes sure that the PWM
+>> hardware can cope with the needed polarity.
 > 
-> diff --git a/drivers/gpio/gpio-arizona.c b/drivers/gpio/gpio-arizona.c
-> index c15fda99120a..e530c94dcce8 100644
-> --- a/drivers/gpio/gpio-arizona.c
-> +++ b/drivers/gpio/gpio-arizona.c
-> @@ -121,7 +121,8 @@ static int arizona_gpio_direction_out(struct gpio_chip *chip,
->   				  ARIZONA_GPN_DIR | ARIZONA_GPN_LVL, value);
->   }
->   
-> -static void arizona_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
-> +static int arizona_gpio_set(struct gpio_chip *chip, unsigned int offset,
-> +			    int value)
->   {
->   	struct arizona_gpio *arizona_gpio = gpiochip_get_data(chip);
->   	struct arizona *arizona = arizona_gpio->arizona;
-> @@ -129,8 +130,8 @@ static void arizona_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
->   	if (value)
->   		value = ARIZONA_GPN_LVL;
->   
-> -	regmap_update_bits(arizona->regmap, ARIZONA_GPIO1_CTRL + offset,
-> -			   ARIZONA_GPN_LVL, value);
-> +	return regmap_update_bits(arizona->regmap, ARIZONA_GPIO1_CTRL + offset,
-> +				  ARIZONA_GPN_LVL, value);
->   }
->   
->   static const struct gpio_chip template_chip = {
-> @@ -139,7 +140,7 @@ static const struct gpio_chip template_chip = {
->   	.direction_input	= arizona_gpio_direction_in,
->   	.get			= arizona_gpio_get,
->   	.direction_output	= arizona_gpio_direction_out,
-> -	.set			= arizona_gpio_set,
-> +	.set_rv			= arizona_gpio_set,
->   	.can_sleep		= true,
->   };
->   
+> Thanks for clarifying this!
 > 
-Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+> @Krzysztof, do you think that given this situation it is acceptable to include
+> the "pwm-inverted" flag in the dt-schema of the simple PWM motor driver?
+
+No, because that flag is already supported via PWM_POLARITY_INVERTED.
+
+Do not tie bindings to specific implementation. If PWM core is changed
+to always handle PWM_POLARITY_INVERTED even if controller does not
+support it, would the binding became outdated?
+
+> 
+> The need for an inverted PWM signal is something very common in the case of
+> H-bridge motor drivers, where the PWM signal represents the actual logical
+> output level of each of the two halves of the bridge. Often the high-side
+> switches are used as the free-wheel position, so that 100% duty-cycle on both
+> channels is actually standstill, while 0% duty-cycle on one channel is full
+> speed in either direction. This isn't always the case though, hence the
+> importance for this to be able to be selected.
+
+Sure and use existing bindings for that. If implementation has problems,
+fix implementation.
+
+Best regards,
+Krzysztof
