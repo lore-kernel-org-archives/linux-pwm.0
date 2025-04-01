@@ -1,108 +1,104 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941604685;
-	Tue,  1 Apr 2025 05:26:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4D1C1E0E0B
+	for <linux-pwm@vger.kernel.org>; Tue,  1 Apr 2025 10:29:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743485163; cv=none; b=XYNU2C70PC1K9mdWlGYMxvXczJAvhdRr5RLL8MhfOfYxk3sQpt+oxfgyrfPfriGuCkCcz+LQtGGHKqDgcGai8/8kgT6hw/fK3C2hSEZmrYDtf1dPCaP53XS3Wr7kpNuMCenTd1704WjUwvSzsEDnFFVYucDziaUlQ7t3SfJm0Ww=
+	t=1743503364; cv=none; b=YaxonPILpm/5Yci7TFKs+bhC0f+2uLGdsL+GISdNCD9bimQWBfbACO8hHVBbsHFp5xQyfLhXFiwBcaI4+bykM3hT0EbCASk9Nr4MMQm8eNpFSKdh7Om36qTo1rZ6gCeoNDTJfTgw6BXSvCrjGHiQyisIqOeYYuJo+Uo46Maqc1U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743485163; c=relaxed/simple;
-	bh=WPMKUmMlk/0erHuslXvW1bTGXVxmsUG+iyQ6kSaAjUk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bEG0X4atBh+HSAfBXjH17kjdFwXNxHCwIOh5fNw41in8kMOhHvRanZ92122hunHkYT13XqqdaIuP7SV68F5WI/Vv+bw0LGpXSLkfyLWASPWZm1K6EuStDg6OKP7QxowFgxyv2MI8r+j5yTv1HbHe7zv8zTe+ydruBAFkFTza+5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b9H7O+hF; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b9H7O+hF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B72FC4CEE8;
-	Tue,  1 Apr 2025 05:26:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743485163;
-	bh=WPMKUmMlk/0erHuslXvW1bTGXVxmsUG+iyQ6kSaAjUk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=b9H7O+hFdZHQHJxg8+1uA+JF+wv+cbYyeJHNhSJAAyiEHr3kYpX4DDm7Ka28nCEU4
-	 l5Yy6p6W/sXGwdn0ka3cMi8G1/EH+Kp7zn0SHmumdnYYLeToC3TGZ7CU06rJYD+6EM
-	 RsG6KoLWBXzIwVbkHUcGNwTi142TEE6WL3uZBz9G3C4Uyy8XgbUfGdIh2p6jiMuREH
-	 SNV1PpEV2SO5OsY4TKGAnXW5Y1NQZRqmntbdnhLNMsnrjb9ZIb5+jgSqOOigZjpaE1
-	 Csm6XXoCaZhnjA+iz0KHvKQ77pWtmyVyJEpg6xLPBq2n3OHu0yXtau0QPyNTd+ibEt
-	 eZ+TN6YMdZ3sg==
-Date: Tue, 1 Apr 2025 07:25:59 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Huacai Chen <chenhuacai@kernel.org>
-Cc: Binbin Zhou <zhoubinbin@loongson.cn>, 
-	Binbin Zhou <zhoubb.aaron@gmail.com>, Huacai Chen <chenhuacai@loongson.cn>, 
-	Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Juxin Gao <gaojuxin@loongson.cn>, 
-	Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v10 0/2] pwm: Introduce pwm driver for the Loongson
- family chips
-Message-ID: <klmvpb4j3gxerivskg5eo2err4zrrs5tn4nxlwj2ngedg3vf2r@mgl22dvudeyy>
-References: <cover.1743403075.git.zhoubinbin@loongson.cn>
- <zfdhcdy27q5dhaezc22bmx3dnmn2avazsfbpsd4k5lyjikmxnd@dsdbbokjjjag>
- <CAAhV-H5Ter6jYObtffAU_ixUy97UQyU13YRwKcE__hZAPZG5vQ@mail.gmail.com>
+	s=arc-20240116; t=1743503364; c=relaxed/simple;
+	bh=/t6obRtFVamo8daBzkjO6dUfMjQD34FAwAw7iHsB5p8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=EGDIgkLeHkd0EybikPAYejJfxR6/o+sv9yRqlTIGs9eUUjeaVEpXb+Q8pxHujcdnHmFuUm0f4L8QCbjtBXUhk6yaneRy/tnfrmFP+rnyVLcNFaq10mJJW5kBacec2QReRmMensATqU9+UsvWdf/0wQ5QRC8v9adSRpXQLzxVMYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 098EAC4CEE8;
+	Tue,  1 Apr 2025 10:29:23 +0000 (UTC)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	John Crispin <john@phrozen.org>,
+	Thierry Reding <thierry.reding@gmail.com>
+Cc: Ingo Molnar <mingo@kernel.org>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	linux-pwm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 1/3] pwm: mediatek: Prevent divide-by-zero in pwm_mediatek_config()
+Date: Tue,  1 Apr 2025 12:28:59 +0200
+Message-ID:  <9e78a0796acba3435553ed7db1c7965dcffa6215.1743501688.git.u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.2
+In-Reply-To: <cover.1743501688.git.u.kleine-koenig@baylibre.com>
+References: <cover.1743501688.git.u.kleine-koenig@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="6kwa3kyw2w77eklm"
-Content-Disposition: inline
-In-Reply-To: <CAAhV-H5Ter6jYObtffAU_ixUy97UQyU13YRwKcE__hZAPZG5vQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2160; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=JMgQzUTJoig5ETPeVtsMb4NN/zcNu8J+hWAXWzGaoAA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBn67/tJsvKleO7aIXPu4rFG6eq/4n71gXwAUEjo noLJES5ToOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZ+u/7QAKCRCPgPtYfRL+ TpKSCACl4E2BSZGgDXNnVYRUVexNWf/pzLfzsOsHEsC6on4hlKTQcylbLwpqPnfagMeus5mvR3D jJqX3V7Ym2fUjlKwQljG+jNHCz+rjvn771hutv6tLm/GQgUAxaRE/YXoZMfKKHSdgkg/sWpY1IS BrCVIpH9WgCqIgVTafaibYdINF1feP6c5yRyn+sW1Xgcy4RruZN3AI0qV7ntHeQZy7HKSeDvKOV ATdmR5KvK86+17wBwWU/L1lYGmeXDo1y0OM4j8pgqSWKig5i1P1NUn6N7p0F8rqz6lVvl9tBaJX ldQuwb+cQeog9gUWuKSYpyYCk1bdI+o/hG6bZkybkXbc9nN0
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
---6kwa3kyw2w77eklm
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v10 0/2] pwm: Introduce pwm driver for the Loongson
- family chips
-MIME-Version: 1.0
+With CONFIG_COMPILE_TEST && !CONFIG_HAVE_CLK, pwm_mediatek_config() has a
+divide-by-zero in the following line:
 
-Hello,
+	do_div(resolution, clk_get_rate(pc->clk_pwms[pwm->hwpwm]));
 
-On Tue, Apr 01, 2025 at 09:28:25AM +0800, Huacai Chen wrote:
-> On Mon, Mar 31, 2025 at 10:52=E2=80=AFPM Uwe Kleine-K=C3=B6nig <ukleinek@=
-kernel.org> wrote:
-> > On Mon, Mar 31, 2025 at 02:53:48PM +0800, Binbin Zhou wrote:
-> > > This patchset introduce a generic PWM framework driver for Loongson f=
-amily.
-> > > Each PWM has one pulse width output signal and one pulse input signal=
- to be measured.
-> > >
-> > > It can be found on Loongson-2K series cpus and Loongson LS7A bridge c=
-hips.
-> > >
-> > > Thanks.
-> >
-> > applied as v5.16-rc1 material to
-> >
-> >         https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.=
-git pwm/for-nexxt
->=20
-> For v5.16-rc1? Maybe v6.15-rc1 or v6.16-rc1?
+due to the fact that the !CONFIG_HAVE_CLK version of clk_get_rate()
+returns zero.
 
-Huh, I meant v6.16-rc1. For the current merge window it's already too
-late (and for v5.16-rc1, too :-).
+This is presumably just a theoretical problem: COMPILE_TEST overrides
+the dependency on RALINK which would select COMMON_CLK.  Regardless it's
+a good idea to check for the error explicitly to avoid divide-by-zero.
 
-Best regards
-Uwe
+Fixes the following warning:
 
---6kwa3kyw2w77eklm
-Content-Type: application/pgp-signature; name="signature.asc"
+  drivers/pwm/pwm-mediatek.o: warning: objtool: .text: unexpected end of section
 
------BEGIN PGP SIGNATURE-----
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Link: https://lore.kernel.org/r/fb56444939325cc173e752ba199abd7aeae3bf12.1742852847.git.jpoimboe@kernel.org
+[ukleinek: s/CONFIG_CLK/CONFIG_HAVE_CLK/]
+Fixes: caf065f8fd58 ("pwm: Add MediaTek PWM support")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
+---
+ drivers/pwm/pwm-mediatek.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmfreMcACgkQj4D7WH0S
-/k4hoggAq8l6Fjt4vphYSQD3C0V5rGYO1/FqSbgnPsMpNAGyzqc2xJFu/p941qLN
-7DuGq7y0L9mAraVGUiQ5jzY3pNJu3eAKxNdBti7CDB8P78nqt+yturSjumWuNY8/
-jayQe3r2zQfLUaUBt7Kx7Ue1jxhB3JBeYh3PVdPNMlKm1apLQTzVJwTnoQqnfPuU
-m+EeVS8Qo+I0OxjL9lJJxe58d9/5qfQ2bOMERr6lB7K7Ub3wwtiMm8wCcqxtLRdK
-jc8e9XddtK7ZFfkhw9g2ftwfSulgr4vypNfQFikWdCETjUVYemqvT5RIMpASg+1h
-TiovqLfFJY0WjNXqTHdNmPuElLLKPQ==
-=sogg
------END PGP SIGNATURE-----
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index 01dfa0fab80a..7eaab5831499 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -121,21 +121,25 @@ static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct pwm_mediatek_chip *pc = to_pwm_mediatek_chip(chip);
+ 	u32 clkdiv = 0, cnt_period, cnt_duty, reg_width = PWMDWIDTH,
+ 	    reg_thres = PWMTHRES;
++	unsigned long clk_rate;
+ 	u64 resolution;
+ 	int ret;
+ 
+ 	ret = pwm_mediatek_clk_enable(chip, pwm);
+-
+ 	if (ret < 0)
+ 		return ret;
+ 
++	clk_rate = clk_get_rate(pc->clk_pwms[pwm->hwpwm]);
++	if (!clk_rate)
++		return -EINVAL;
++
+ 	/* Make sure we use the bus clock and not the 26MHz clock */
+ 	if (pc->soc->has_ck_26m_sel)
+ 		writel(0, pc->regs + PWM_CK_26M_SEL);
+ 
+ 	/* Using resolution in picosecond gets accuracy higher */
+ 	resolution = (u64)NSEC_PER_SEC * 1000;
+-	do_div(resolution, clk_get_rate(pc->clk_pwms[pwm->hwpwm]));
++	do_div(resolution, clk_rate);
+ 
+ 	cnt_period = DIV_ROUND_CLOSEST_ULL((u64)period_ns * 1000, resolution);
+ 	while (cnt_period > 8191) {
+-- 
+2.47.2
 
---6kwa3kyw2w77eklm--
