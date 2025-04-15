@@ -1,134 +1,101 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3B4929292A;
-	Tue, 15 Apr 2025 12:28:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B53701B0434;
+	Tue, 15 Apr 2025 14:49:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744720095; cv=none; b=RLRNTaqt1ho/PUnvpbwBXxnjqfeGD3JLI/P6KEabGZf8KM9zFIkDbMZyy1LK85IWLQVugw5hEybSjPMYiDwxexhBU3pX6GnZZkjFcnrrjY74T9hzDPvtrgELR4b1Eqdj1WUqJidscq2jtJtDyQ/g/CNXMMvEIdqtHo36uyYp3VI=
+	t=1744728559; cv=none; b=siZzUVw5rFIj6XBoB9Sep8tbzSEOo8MruypfsFjf8Z5gI+RML0zySrtn1UbExwd789UiD/vhAEZt1zKEa+xjGr213Oy5xMmuwhJME1Xe9LSZ1FIzuI97sXtR85IS0AQfCYX2QPZ8X/jR+qUVs/MmVseVMDKGAUDd4rJXEqrtqQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744720095; c=relaxed/simple;
-	bh=w2RPxSYRBEwwRENpvePKl+T3B+SWPu7DrBRdUIOspv4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B6x8voBu6Lge2KrITfVWcWaGOCDw/jOTfYdY6gslJXUythf/mJDkCbMYZAJEu2wZAIhzL3RzigQSD64AdQz6PzW0XABfW6bs3MFbbqpHGDVdpOBsXqcuYszwj3HGrJi+pabmuefYyClCcCmfbaws2vUL5tNX1LuLS9+yKk3I7vA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Received: from localhost (unknown [116.232.27.72])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: dlan)
-	by smtp.gentoo.org (Postfix) with ESMTPSA id B8113335DE9;
-	Tue, 15 Apr 2025 12:28:11 +0000 (UTC)
-Date: Tue, 15 Apr 2025 12:28:07 +0000
-From: Yixun Lan <dlan@gentoo.org>
-To: Alex Elder <elder@riscstar.com>
-Cc: Guodong Xu <guodong@riscstar.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Conor Dooley <conor@kernel.org>, ukleinek@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-	alex@ghiti.fr, drew@pdp7.com, inochiama@gmail.com,
-	geert+renesas@glider.be, heylenay@4d2.org, tglx@linutronix.de,
-	hal.feng@starfivetech.com, unicorn_wang@outlook.com,
-	duje.mihanovic@skole.hr, linux-pwm@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, spacemit@lists.linux.dev
-Subject: Re: [PATCH 1/9] dt-bindings: pwm: marvell,pxa: add optional property
- resets
-Message-ID: <20250415122807-GYA30943@gentoo>
-References: <20250411131423.3802611-1-guodong@riscstar.com>
- <20250411131423.3802611-2-guodong@riscstar.com>
- <20250411-confider-spinster-35f23040d188@spud>
- <89b6142bacecd4a7742341b88dc1e28c4454527a.camel@pengutronix.de>
- <CAH1PCMZnJDcYKJR35WirQT95hte0NWvGBe4fjDuyZEgagvunAA@mail.gmail.com>
- <20250415101249-GYA30674@gentoo>
- <0bbd2842-72bc-47a7-832a-fc8833163e32@riscstar.com>
+	s=arc-20240116; t=1744728559; c=relaxed/simple;
+	bh=t+MFC0OOW7FL9P3NBvk9YJB1PRIqCHoW3sBDq9L3ph4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=N9xUp8EZSheFCqeHbyptTx+GyHl9I+/O7UBVzWXrm54mat6+YaNhMOMEkZbNBa2neHjc7d4RhrBrPZODjL94J/hc8JtsxXWNphyLQcwN+r9iroMgFEX1AcVdBrpwJvwfysNWjGgTLKZkXfs82sRUJcDrWm6JgOiyVUAm8FjHFPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XGBxZ9z3; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XGBxZ9z3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 340E5C4CEED;
+	Tue, 15 Apr 2025 14:49:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744728559;
+	bh=t+MFC0OOW7FL9P3NBvk9YJB1PRIqCHoW3sBDq9L3ph4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=XGBxZ9z3xXNwqTeXiO339vy9J3qyhWE+lqTVjKpfzQYUzY03RiVoMvRPOaMjr7c0d
+	 6TX2+req5MKJFoa11WDATCp/hBEndaMg/x/k2qFY34VVK8hrtlwbHC+WDrfSsUAYz5
+	 qBsKVxcPupcMvPUd+gAJWFATi2cmpN/iCYZAWi9K/cSr5JIoCIs1Hgs+WU9fs2Eqja
+	 vBv8x8QImvGDOq3JkC2Q5G8DEppHwzzC62pTylEOF4COEDISYAW2AKryK/dNd7undZ
+	 ELfSI+h2j0ZOzKKxLwtvWwPUUtKUbqrruoWZzTdA6pIZn9o+3lRntYW5aNq4C2Mlh9
+	 rBmqDqy+aVDSQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 262F0C369B8;
+	Tue, 15 Apr 2025 14:49:19 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Tue, 15 Apr 2025 15:49:17 +0100
+Subject: [PATCH v2 01/17] dt-bindings: mfd: adp5585: ease on the required
+ properties
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <0bbd2842-72bc-47a7-832a-fc8833163e32@riscstar.com>
+Message-Id: <20250415-dev-adp5589-fw-v2-1-3a799c3ed812@analog.com>
+References: <20250415-dev-adp5589-fw-v2-0-3a799c3ed812@analog.com>
+In-Reply-To: <20250415-dev-adp5589-fw-v2-0-3a799c3ed812@analog.com>
+To: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-input@vger.kernel.org
+Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
+ Liu Ying <victor.liu@nxp.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1744728559; l=940;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=/k0WMsS4BWsTpP8Xx6eyHKSypU/ajvWKXfPISoK6ADU=;
+ b=5rQS/8anAWBkFi99wDH783dhTAdGT/yvGR5RdywD0rSufCQ56NKmImnw1uPKEvZerGW4IcSak
+ sZfqwfNZ+ggDVi+TAxCexIrMjM4GIm68YotXCsQqD5WU44zd+9/nNJP
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-Hi Alex,
+From: Nuno Sá <nuno.sa@analog.com>
 
-On 07:11 Tue 15 Apr     , Alex Elder wrote:
-> On 4/15/25 5:12 AM, Yixun Lan wrote:
-> > Hi Philipp,
-> > 
-> > On 17:54 Tue 15 Apr     , Guodong Xu wrote:
-> >> On Tue, Apr 15, 2025 at 4:53 PM Philipp Zabel <p.zabel@pengutronix.de> wrote:
-> >>>
-> >>> On Fr, 2025-04-11 at 17:44 +0100, Conor Dooley wrote:
-> >>>> On Fri, Apr 11, 2025 at 09:14:15PM +0800, Guodong Xu wrote:
-> >>>>> Add an optional resets property for the Marvell PWM PXA binding.
-> >>>>>
-> >>>>> Signed-off-by: Guodong Xu <guodong@riscstar.com>
-> >>>>> ---
-> >>>>>   Documentation/devicetree/bindings/pwm/marvell,pxa-pwm.yaml | 3 +++
-> >>>>>   1 file changed, 3 insertions(+)
-> >>>>>
-> >>>>> diff --git a/Documentation/devicetree/bindings/pwm/marvell,pxa-pwm.yaml b/Documentation/devicetree/bindings/pwm/marvell,pxa-pwm.yaml
-> >>>>> index 9ee1946dc2e1..9640d4b627c2 100644
-> >>>>> --- a/Documentation/devicetree/bindings/pwm/marvell,pxa-pwm.yaml
-> >>>>> +++ b/Documentation/devicetree/bindings/pwm/marvell,pxa-pwm.yaml
-> >>>>> @@ -31,6 +31,9 @@ properties:
-> >>>>>     clocks:
-> >>>>>       maxItems: 1
-> >>>>>
-> >>>>> +  resets:
-> >>>>> +    maxItems: 1
-> >>>>
-> >>>> Do any of the currently supported devices use a reset? If not, then add
-> >>>> this in tandem with the new compatible and only allow it there please.
-> >>>
-> >>> Also, if spacemit,k1-pwm can not work without the reset being
-> >>> deasserted, mark it as required.
-> > 
-> > If I inerpret correctly, only reset requires explicitly being de-asserted,
-> > need to mark as required? that's being said, if reset comes out as de-asserted
-> >   by default after power reset, then not necessary?
-> > (in other cases, some device block is in asserted state by default)
-> 
-> We can often benefit from the state that the boot loader has left
-> things in, but I think it's better not to assume it if possible.
-right, I agree mostly
+It is not mandatory to use all the capabilities of the device. One can
+very well only use it as a gpio controller without the PWM support. This
+will be even more evident when support for the matrix keymap is added.
+Hence drop the requirements for PWM and GPIO.
 
-> I suppose it might not be required though.
-> 
-> Anyway, the reset line is available to use; why not require it?
-> 
-maybe there are cases that users don't want to issue a reset..
-so, want to make it optional.. I can think one example that,
-display controller is up and working from bootloader to linux,
-reset it will got a flicker picture..
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ Documentation/devicetree/bindings/mfd/adi,adp5585.yaml | 3 ---
+ 1 file changed, 3 deletions(-)
 
-anyway, my question was trying to understand the policy of
-writting DTS hehind..
-
-> 
-> > thanks
-> >>>
-> >>
-> >> Thank you Philipp. spacemit,k1-pwm can not work without the reset.
-> >> I will add that in the next version.
-> >>
-> >> -Guodong
-> >>
-> >>> The driver can still use reset_control_get_optional.
-> >>>
-> >>> regards
-> >>> Philipp
-> > 
-> 
+diff --git a/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml b/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
+index ee2272f754a339569c793102928ddd13249f8fee..e30e22f964f78519b2ec207e9415e4897db5c702 100644
+--- a/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
++++ b/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
+@@ -52,9 +52,6 @@ patternProperties:
+ required:
+   - compatible
+   - reg
+-  - gpio-controller
+-  - "#gpio-cells"
+-  - "#pwm-cells"
+ 
+ allOf:
+   - if:
 
 -- 
-Yixun Lan (dlan)
-Gentoo Linux Developer
-GPG Key ID AABEFD55
+2.49.0
+
+
