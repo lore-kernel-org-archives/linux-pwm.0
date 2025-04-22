@@ -1,183 +1,144 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5118B19D8B7;
-	Tue, 22 Apr 2025 09:01:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 187DE27CB01;
+	Tue, 22 Apr 2025 11:35:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745312508; cv=none; b=L2OOGawpefzP0Qm0GynVdAp4r7OE57GdCJHTGJ1xcz9VSvWbuRrBmcC7OOfFXZpU1k/Usv69eLL8fbbzx2I3Mki5x9puxtYHaSJbFM8Oouc6CHbi4pbR6gHY2RSoCO+rihPDGJd9wYyDavajxoQgNbMA4h0UnbjTsfli/3Bpzv4=
+	t=1745321738; cv=none; b=G9Hvd2+eP1m+y5QWGbblsqR5F0bFGE5urZW0TZASehSJrZQPhsSrY1EJam3+jLIQqtuDADkc7DT9RsAnW/EYh4/q2JgpLOXK7xOPhA6FiVm7msBUfPlB+c+1oWKK1qYLbSv2m2reCETXKf3QvacAJHHJC9iPYoon13/6j+U3OnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745312508; c=relaxed/simple;
-	bh=xwAiim+BzPpGaX7BSuXBzGYxP0hQVbNoyy/nha9lMnc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Z+NqTKpPAzkpvI30tkVd27xA/IZAcQSvTlRdV2TPRw3Z8DBgBJqFCgovPhqEIok7XsYz0kAuhKISvTvSWSnTuX4xpcFXHQjt+mapB/K+ldnkZk1rjpJSkgjesj53u2oQFMhvLP3XAMWik9sjm8avtMt0Kps0SnjEgs7vDuJgsiA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X3y1EiME; arc=none smtp.client-ip=209.85.222.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1745321738; c=relaxed/simple;
+	bh=TPF6Yw0kE744Z7BBYS2QEDueGGJOuHShE1E+wwdptnY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=c8zy716eZ6Iqg8UyQ9hAKEkznu85EaIyOceDuST5xiog8Pl+UK8hiCTdsDKsQc9klhCu/dWN0AqJKBA+U0LVvZ8qZrazDTrQ1TCsx6B5xfLZLLLSeyrFUqrxgqU40wZS+O/IRTK8K7sIlsXb7C0mubwkaHum7fXTliew2bkK8Wc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=06pw2mYZ; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X3y1EiME"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7c5675dec99so458005385a.0;
-        Tue, 22 Apr 2025 02:01:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745312506; x=1745917306; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bI4tM5u6hlOmKAY3jmb6sm9muPDkxLfs7d3SJ5djx70=;
-        b=X3y1EiMEt9UYslUa1kg5GJxLXlxZpahsIz669QuQ2XdeSS4dNRHLZQ83L1nWko8U7o
-         7JI/5YdkZimREjEp6iqnAANmGoo0BAcviaA7NpTwrLkc7BOgyqE6K3VZdzQNw6gc+Q4m
-         G3uAV4aVaQd3fV6oM6CjaJGiv44Tzx4mOxjwcAHJ8mkZ7X9lraJC2+BasBmMOw42nw8R
-         LWnhLhssrJg1bcRBepDEASf4jKVpWacjs6Bv0IH0S4irfRNjf4Y1u951Y3QKMwwZuQsT
-         /v7KpGYu51cNBk7d5dvhWVKFFYGYVqdAeQGOsmkdcoajri/4Leul3Ejmpk7d0keANkzZ
-         rkMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745312506; x=1745917306;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bI4tM5u6hlOmKAY3jmb6sm9muPDkxLfs7d3SJ5djx70=;
-        b=jQ+ZNiIYr1YmNIwXmZFyYnTRmNEd+huOCV6uf3L7Jwh0x722upnRmu2LR2cFlKusvJ
-         nulnu+LUh1/J8bi5Kki2isQXzgFEIPAeaTaF6deQYq3bvwqtYwoRHw84NZKqFj+A4dy5
-         imYMlRmI7dOqDqsS5ck9Mb3SGej0eedvec2lH5sz5y4RPeL9IwCBCPhElXcVDp3Xqkjo
-         YGJww1+oJMnGpxZ9wfD1hnAZUdhBjoTpJbGk+CdTjO1W9rsvLoqIK3AAMBB4wD390Tw+
-         S17AD4gUr5mv5HeQLeZ8tGKS/51OZtEuuIqVLJQngsXG4XpEr/U61YCoQkh1Vu3AkQZ7
-         zDAg==
-X-Forwarded-Encrypted: i=1; AJvYcCUUZfib64LKeYo/8C4gL9cBWF/i0zTtBI6GNaE6IE1CVb/9+qPDmoufvrnt6WC2EaE1b7PALO1x/B+N@vger.kernel.org, AJvYcCVIXf463i0d5xm5KvwvTnNA5RtvWDY3+XE+Xg8kSJ8zBXigDHJ1vsZMJVYXYpR2ETpeG83gpl8axfjJ@vger.kernel.org, AJvYcCW7pQJagTqNh3mjmn7isvA9qTTdoLiUTuMHlXFayuBQIe2O9t6cqn39SXi6SD7I6NO3cl/khslYxtek@vger.kernel.org, AJvYcCWgwa0UCnn1RTNUVeNhyW27K57DCJRX5ilpKAnOJdNgeovCNsHZWcsydck+RPdep5Fapm7GUt7W@vger.kernel.org, AJvYcCX5Suh7zeF+y3iMoq4xKPoyw5PWa1R2/HpsCxiWfxeqCLU5QdyQe0VDVzhezkzVGw2tIN500TQ2KqAJ@vger.kernel.org, AJvYcCXV/I+cAC3ybTHHn4h5rr7lzLIjVchDg6/i3jjOhX7pHfpRKoLj2MFu/nNEuQ23RNjFiCbu26TRXfmjPP5m@vger.kernel.org
-X-Gm-Message-State: AOJu0YyeGm7eVLm6XUyFg2Zc3Wsi+kFcg2caP9nEkmiB3KaTOxmSx0Hr
-	zZI0n4WtO192hoR8JteG+16veYHKSo4uhmbW7wcaRY+D+qn/t+np7duE0Po9CyDCOUVy6Dn9+TQ
-	geZw4U4rnB8XaDD2TyBW7OxU83vM=
-X-Gm-Gg: ASbGncs0ARJqzrwVxfQVOA4fhvoo2W/pR1t5LgWpkKq+8bMgPBD+OdIIylN8QxAgS6K
-	1r20SvH1DZp36BDFbjyH5MPEchB2PmxX0IumiNEKrXwdI4Q2W0plpbVK9GWrZ2Eioyc9bM6/HvI
-	LUMDFNTo2PMzTfRGpArVCytCOaV32bO2lX+I1f7LvhbiCdzsAijZ82rQ==
-X-Google-Smtp-Source: AGHT+IHPgdQcr6+EJ2c2GBm62vKYoe1rNLruGx6vpyIyteGjKou1apc6OLDwP+NZ9T6S5hjDnfeJTmR8mETK+wK+bzs=
-X-Received: by 2002:a05:620a:2684:b0:7c5:5909:18e5 with SMTP id
- af79cd13be357-7c927f6f84fmr1960081385a.3.1745312506200; Tue, 22 Apr 2025
- 02:01:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="06pw2mYZ"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53MAHnTa021966;
+	Tue, 22 Apr 2025 07:35:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=xCYWF
+	yld7moiL86cRB/FqLC/2Ow1Lj7odmKSjlXGeow=; b=06pw2mYZQWofbKGV6AU2H
+	2Q2uemP3wjrkY1RkhFE5eXeD5I53wUgDNr0Gwah0THn7736NIJzC0LcR1oC1lqAL
+	+gK05/BCkJ3ey9Ffh+iXkVrm9axIwU6mVvqCnuSPJRocxpZ5mUQxH+6I/S3J7hto
+	/wWFdQbA88dZ7BzzCUpFKhc1IKoM7NX3VV03qsLbj8ZHTVvZTtcwbK9pH6mfnMJc
+	+Hpg0+cnPqmstpdO/+zsuyNyp2l9YXMW2r4lWKdJbI1qn8xUHtAL9Oc9NEWPY2dv
+	mvj7AMUajY+xmf8niDbXDKQ3jS4vpDMdG9d+CPHn4hza5njlFIMOfS49eFKwPIh5
+	Q==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4645p7q8rq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 22 Apr 2025 07:35:22 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 53MBZLoC057912
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 22 Apr 2025 07:35:21 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 22 Apr
+ 2025 07:35:21 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 22 Apr 2025 07:35:21 -0400
+Received: from HYB-DlYm71t3hSl.ad.analog.com (HYB-DlYm71t3hSl.ad.analog.com [10.44.3.55])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 53MBZ4Qp024350;
+	Tue, 22 Apr 2025 07:35:14 -0400
+From: Jorge Marques <jorge.marques@analog.com>
+Date: Tue, 22 Apr 2025 13:34:47 +0200
+Subject: [PATCH v2 2/5] iio: code: mark iio_dev as const in
+ iio_buffer_enabled
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250416-wmt-updates-v1-0-f9af689cdfc2@gmail.com>
- <20250416-wmt-updates-v1-3-f9af689cdfc2@gmail.com> <20250416201407.GC3811555-robh@kernel.org>
- <CABjd4YyTKquLcYC+DVg_koi3p7AhqwBNiazCiC713DQKjCaBSA@mail.gmail.com>
- <CABjd4Yxi4SLqsAk_fb9C=1BW6XjnZ8LQ_JKYu6KZ3TtMS0fnhg@mail.gmail.com> <14de236b-e2a7-4bde-986d-1e5ffddd01b4@kernel.org>
-In-Reply-To: <14de236b-e2a7-4bde-986d-1e5ffddd01b4@kernel.org>
-From: Alexey Charkov <alchark@gmail.com>
-Date: Tue, 22 Apr 2025 13:01:44 +0400
-X-Gm-Features: ATxdqUGmp6GiWAgqNWbO-0WSin1O6yJxUf9gHQTl5ZTyEce7EbX-dkQTVJBozo4
-Message-ID: <CABjd4YwpKYr3q06E7H3upFxyUT6uGg-Jzt2_FiyfS8R=j0ye8w@mail.gmail.com>
-Subject: Re: [PATCH 03/13] dt-bindings: mmc: vt8500-sdmmc: Convert to YAML
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, 
-	Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, linux-arm-kernel@lists.infradead.org, 
-	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-pwm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20250422-iio-driver-ad4052-v2-2-638af47e9eb3@analog.com>
+References: <20250422-iio-driver-ad4052-v2-0-638af47e9eb3@analog.com>
+In-Reply-To: <20250422-iio-driver-ad4052-v2-0-638af47e9eb3@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        David Lechner
+	<dlechner@baylibre.com>,
+        =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        Andy
+ Shevchenko <andy@kernel.org>,
+        =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+	<ukleinek@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, Jorge Marques <jorge.marques@analog.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1745321704; l=1550;
+ i=jorge.marques@analog.com; s=20250303; h=from:subject:message-id;
+ bh=TPF6Yw0kE744Z7BBYS2QEDueGGJOuHShE1E+wwdptnY=;
+ b=SHB/YIAswwLn6uqAO1+GKmRhhkFuy4bRiKdJGIArBOnTzWKr43CUWt1Mp62RHJBFMp8DMrsmT
+ Uw9hAFNUmN8AEi3qraBY/iTerNC+spMmRcVnoY/bCiDCvmffD1cvJeX
+X-Developer-Key: i=jorge.marques@analog.com; a=ed25519;
+ pk=NUR1IZZMH0Da3QbJ2tBSznSPVfRpuoWdhBzKGSpAdbg=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=D4VHKuRj c=1 sm=1 tr=0 ts=68077efa cx=c_pps a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=gAnH3GRIAAAA:8 a=5tS4fjQXojCEwv7GM0AA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: nymIAMSUyUu96HZzJV-UL5mSho6dDLZT
+X-Proofpoint-ORIG-GUID: nymIAMSUyUu96HZzJV-UL5mSho6dDLZT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-22_05,2025-04-21_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ impostorscore=0 suspectscore=0 spamscore=0 clxscore=1011
+ priorityscore=1501 adultscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504220087
 
-On Tue, Apr 22, 2025 at 12:08=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.o=
-rg> wrote:
->
-> On 18/04/2025 14:38, Alexey Charkov wrote:
-> >>
-> >>>> +
-> >>>> +  reg:
-> >>>> +    maxItems: 1
-> >>>> +
-> >>>> +  clocks:
-> >>>> +    maxItems: 1
-> >>>> +
-> >>>> +  interrupts:
-> >>>> +    items:
-> >>>> +      - description: SDMMC controller interrupt
-> >>>> +      - description: SDMMC controller DMA interrupt
-> >>>> +
-> >>>> +  sdon-inverted:
-> >>>> +    type: boolean
-> >>>> +    description: SD_ON bit is inverted on the controller
-> >>>
-> >>> This implies I know what the non-inverted state is. If you know, plea=
-se
-> >>> state that here.
-> >>
-> >> This is a tricky one. The only answer I have is "it's inverted in
-> >> later versions vs. the first version I saw in the wild, and I'm not
-> >> sure if it's board related or IP version related - nor if the original
-> >> was active low or high". No docs, no schematics, no vendor left around
-> >> to chase for answers.
-> >>
-> >> Will dig around some more and update the description if I succeed in
-> >> uncovering any further clues :)
-> >
-> > I've found some extra clues and would like to consult on the best way f=
-orward.
-> >
-> > It turns out (if my understanding of the decompiled binary-only WM8505
-> > vendor driver is correct) that all chips before (not including) WM8505
-> > rev. A2 treated their "clock stop" bit (register offset 0x08 a.k.a.
-> > SDMMC_BUSMODE, bit 0x10 a.k.a. BM_CST in vendor sources, BM_SD_OFF in
-> > mainline) as "set 1 to disable SD clock", while all the later versions
-> > treated it as "set 0 to disable SD clock". Which means that there are
-> > WM8505 based systems that rely on either of those behaviours, while
-> > any later chips need "set 0 to disable". This is not a board related
-> > quirk but an on-chip SDMMC controller revision related quirk.
-> >
-> > I'd love to switch to a compatible-based logic and drop the
-> > "sdon-inverted" flag altogether from the binding I'm writing, but here
-> > are my doubts where I'd love to consult.
-> >
-> > * Looks like WM8505 rev. A2 needs a separate compatible string vs.
-> > prior WM8505. Can we have something like "wm,wm8505a2-sdhc" and
-> > "wm,wm8505-sdhc" respectively? WM8505a2 not being an actual chip name,
-> > but something discoverable by reading its hardware ID from a system
-> > configuration register at runtime
->
-> Then maybe it can be fully detected runtime? E.g. via soc_id driver (see
-> drivers/soc/)?
+The iio_dev struct is never modified inside the method, mark it as
+const.
+This allows to be called from get_current_scan_type, and is useful
+when the scan_type depends on the buffer state.
 
-Thanks for pointing this out! Yes, it should work. A separate
-mini-driver to identify the SoC based on the system configuration
-register readings and a match table on soc_device_attribute inside the
-wmt-sdmmc driver to differentiate between different controller
-versions which are all identified as "wm,wm8505-sdhc" in current
-device trees.
+Signed-off-by: Jorge Marques <jorge.marques@analog.com>
+---
+ drivers/iio/industrialio-core.c | 2 +-
+ include/linux/iio/iio.h         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> > * If I introduce new compatible strings for "wm,wm8650-sdhc",
-> > "wm,wm8750-sdhc", "wm,wm8850-sdhc" and "wm,wm8880-sdhc" in bindings,
-> > DTS and driver code, then the new driver and new DTB should work fine,
-> > and the DTS should pass schema checks. New driver code won't work with
-> > older DTB unless I keep the logic to parse "sdon-inverted" which
-> > wouldn't be part of the binding. Old driver code would not work with
-> > newer DTB except for pre-A2 versions of WM8505. Is that acceptable?
-> > * Existing DTS doesn't differentiate between pre-A2 vs. post-A2
-> > revisions of WM8505 and is bound to fail on the latter
->
-> That's an old platform, so we should not break the ABI, thus drivers
-> must fully support old DTBs.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 178e99b111debc59a247fcc3a6037e429db3bebf..bc6a2ac6415eccf201e148ea98c0b5982787eb6d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -212,7 +212,7 @@ EXPORT_SYMBOL_GPL(iio_device_id);
+  *
+  * Returns: True, if the buffer is enabled.
+  */
+-bool iio_buffer_enabled(struct iio_dev *indio_dev)
++bool iio_buffer_enabled(const struct iio_dev *indio_dev)
+ {
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 638cf2420fbd85cf2924d09d061df601d1d4bb2a..88569e1a888bde4d2bfb5b9f030096af1c15d68d 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -629,7 +629,7 @@ struct iio_dev {
+ 
+ int iio_device_id(struct iio_dev *indio_dev);
+ int iio_device_get_current_mode(struct iio_dev *indio_dev);
+-bool iio_buffer_enabled(struct iio_dev *indio_dev);
++bool iio_buffer_enabled(const struct iio_dev *indio_dev);
+ 
+ const struct iio_chan_spec
+ *iio_find_channel_from_si(struct iio_dev *indio_dev, int si);
 
-Noted, thanks.
+-- 
+2.49.0
 
-> > I realize that breaking backward/forward compatibility is undesirable,
-> > but frankly these systems seem to have few mainline users, and those
-> > people who do run mainline on them ought to be compiling the kernel
-> > and its DTB at the same time, because the firmware doesn't know
->
-> There might be other users of DTS and anyway what would be exactly the
-> benefit? This hardware aspect is already documented via sdon-inverted
-> property.
-
-The benefit is rather cosmetic (to properly describe different
-versions of this controller using SoC-specific compatible strings, and
-to avoid defining bindings for random vendor-specific properties such
-as sdon-inverted).
-
-Best regards,
-Alexey
