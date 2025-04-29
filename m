@@ -1,196 +1,155 @@
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDCDB2C3768;
-	Tue, 29 Apr 2025 12:55:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCBC130A54;
+	Tue, 29 Apr 2025 13:47:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745931302; cv=none; b=SJBzhfudPlW+EIrbxbR/dTj1SEejQc40+jxUEalhIi8R8z6U4z6YnvpFBaRO+hjv4AHSpbd6aIpud8flUBdl2G96s84SShNxjqiozgj4nqIqlbhbFVEX4doBgepcTLkiMxIlaTRgg6PgMhbadpQ5swofwla3BZXw/JvD0+UlLBo=
+	t=1745934432; cv=none; b=K6e4ykV681kfi4v4CF2Y7PPiGnKVTm/WeWRkXNDK8P9T/4ISeny7Km4m+5qefzFyc4i/z5bFJEJyW33p38rlRkNHcOolBD3ow9RLOKnru0nmtau14yTDgCYwQSTsvllX+CwHVWrxd21SaPXDNEzVJP9Ba8jt9l4Cvl5MEVMEsug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745931302; c=relaxed/simple;
-	bh=Jo1F+SpndTahZzn2NeV6YMgPnUybfbIKse3Y/YgP+5c=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EW8zmylpw2HEprwzYydCYO/OyzXwwgTjePfJvc9TZoH2BNZ746gaLQFtmP9/lZktTwvAMQxyh5nqaxDvbLma8TOBX2fmY7eHihYe60K/0FwgmX1Yf+CwLQTKOmQFq5p/J45yCH5+Ro/RFhjWGvtej2oq2evA+ob6v+yvtCwDlSI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=tkI3gnXl; arc=none smtp.client-ip=185.132.182.106
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+	s=arc-20240116; t=1745934432; c=relaxed/simple;
+	bh=b9HRJbXHVqg9fyqM/LuA/aGw1XEM/SvavfXDmB/s9qg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BWGCGwfOYRlJH2QjpBJP8COj0jni4dmc9evxdv3N5D87L20Lke/SbTcXHeaGnURGVo5TPdEazRDkzm3W2II8N/OsR+8161/GN67WFlRST5ZQ9ieucw2IEMqfvF5cgSRWKrBYVT5bpzkZ8S62HZDrYcWdh3x3jUnTohoKlsX1/7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l3rOBk7p; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="tkI3gnXl"
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53TBAPBl006984;
-	Tue, 29 Apr 2025 14:54:49 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=selector1; bh=
-	NeK5d7dLB9+0vrbA7blChOQTxW3J9mnj7OUQ3K6i/f4=; b=tkI3gnXlF3mNSEWS
-	0cLrnrLi0rEDfTH3ajf3lZWAF82i24BV6MxjTmezcZr3tkyUNyn3SoT3FE2gEdiK
-	c/qYZqxAmE6mponvGx6g9PVTDXqK59o9PVM1SyphXhipvYrQE3Fv1KKiJa2pg5pK
-	L//ikgdW2GWxp0UkvFSqvwuS6pIvMw0hKswUyUDALsyEnXAZ4X522FQtre9xv1ST
-	+Q9FlVO+GvgJ5sRFio4zAxZ/H2S4nItEcA/RziqSErGQ+sXi2AOOjB8quoaeKuTw
-	Ujl93+8oav6qZH3Pb+19eZLAfQoUin29CaLVe4aho+PCJl5fm8p8xQXouo/uZF5H
-	baViJg==
-Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 468pu7kd1y-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 29 Apr 2025 14:54:49 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 2C8DA40080;
-	Tue, 29 Apr 2025 14:53:45 +0200 (CEST)
-Received: from Webmail-eu.st.com (eqndag1node4.st.com [10.75.129.133])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C57E0ABE2FB;
-	Tue, 29 Apr 2025 14:51:46 +0200 (CEST)
-Received: from SAFDAG1NODE1.st.com (10.75.90.17) by EQNDAG1NODE4.st.com
- (10.75.129.133) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 29 Apr
- 2025 14:51:46 +0200
-Received: from localhost (10.252.5.160) by SAFDAG1NODE1.st.com (10.75.90.17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 29 Apr
- 2025 14:51:46 +0200
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To: <daniel.lezcano@linaro.org>, <lee@kernel.org>,
-        <alexandre.torgue@foss.st.com>, <tglx@linutronix.de>
-CC: <ukleinek@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-        <jic23@kernel.org>, <robh@kernel.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <devicetree@vger.kernel.org>, <wbg@kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <olivier.moysan@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v6 1/7] dt-bindings: mfd: stm32-lptimer: add support for stm32mp25
-Date: Tue, 29 Apr 2025 14:51:27 +0200
-Message-ID: <20250429125133.1574167-2-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250429125133.1574167-1-fabrice.gasnier@foss.st.com>
-References: <20250429125133.1574167-1-fabrice.gasnier@foss.st.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l3rOBk7p"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-acae7e7587dso889085466b.2;
+        Tue, 29 Apr 2025 06:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1745934429; x=1746539229; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rCJ2y+IzV97uI1iWhvjpnjuLzl5mRMft1CF8GMaXK5I=;
+        b=l3rOBk7pXgn/v713yeQ54mhy4HGMHv9hrZa0JWIUSQKaedtnvFzCFdPBgPgpdbF3SM
+         Yu9VXJ4jXXG1aF8FNq/P69FyrHwtC438qqnisWfGy76Bxs6F8tsRr7I8DlIqSp+6Btem
+         9FJTzbcvGl7uVMp4iWzflow094Trx4EzaHg7ofD6p9OGSgu94veIOthODDzYIixCRyu7
+         ryggqVsoOp55NBimqo/cXvEUzH48xdQRizHTjp4l5fMHopR+5fQLMYSccYjaz7DJ9jjq
+         Ndn7oNZIQorJyiKmqxWgE5mlvinTFdI63SH0WepcSRTCZjR0m9XOi+XHuQTSE6z4Y/b3
+         taoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745934429; x=1746539229;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rCJ2y+IzV97uI1iWhvjpnjuLzl5mRMft1CF8GMaXK5I=;
+        b=iI8giSB8RP9clhf1IEKIA5pJggNPXlPDYdqDMP5tJc/Zjc/sIVzDy4j/+6zdUgJVnI
+         Pi825ABrtapWogj2A/6GtVB7syXFBlWkkTV0ANMa5a60tBfKsuGQYJoxjVQHciGte6zn
+         e93O6RjWZZLXA2YqWruvIvDfi0/ECF5wDoULgYtRPHZj12FosYY/YMISgP60CHaeK/e1
+         wBIBN2MORImLGgsfmAlpPF1QsM55+ubApBYl9aIz9Kv/nGzqoy7gAPE/SdwNjpDmbLRS
+         7mCdrAv80iyJYh9eKl5vpHy66DXrVfU1fmdhmnAiDoePZbVei2CDV7ARINPv6Crc9JfI
+         nLNQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVI5dn6sN+3JaXSuTWS8xOZq7HsI5imPi4YJvCAcSkcTV0gdyMXd0oWvfMDTC7KC4DKhLcQ3kxIvP4D@vger.kernel.org, AJvYcCVntQpQXtiLKE++67Htnwy8sKH1LtphJb1TJaT+BB8Gaa4QxYiw5HESYcDiYEji6QY3VTJX1wdBrMSy@vger.kernel.org, AJvYcCW8luXyRUgMhmMfB74+1NzqDsU6g+j/B9cm+DpxD8BAe9kAtrCw67Sy+H8ZtcvJswlRaTgCoaer4HfOutpH@vger.kernel.org, AJvYcCX2H2ZIM8BSlUQGLDGI7GBU7HHH3pXl+OQMI5d+8jTxXF0BuwIuru1za7c9YyMiAQ3tYz+FUZiQKXka@vger.kernel.org, AJvYcCXJ0Ldxlyaih+74PmKZQDFGBdVPGLQZSEv/Vw/gF0Hz2azHFD3uhecgq3QDMYCeE5kHUGdsWbpHmq76@vger.kernel.org
+X-Gm-Message-State: AOJu0YyldgoX+oOv6gD6laJcyQpaVkxDpfcC1a6hTwWnuzXvD/U4lS/0
+	AAmb3BVQCEEET+IBE6H7FiJsylzmjBva3OBPshC6r1R5Q3o4gBMY
+X-Gm-Gg: ASbGncu8JrL2JGXFFLHxZy8B05T3s+57k7BJ5jFWELrZx0BDq4eLdiOb+B4+e/sB9Ws
+	TGJuSXrs5DBcGG1GAAfd8m82x8LEZrThTr18FSYddjY1B6psCR/FcowBQbE2/TRsKkqfOyVk5eb
+	NiWgnK+4tOClIXwOvo0mesM6oAmYVcnCAUMIrlg2FC0QnRNAGb+X12wDAV6cFWzh+n+53Z6kR/8
+	205KMbRYh/Hfdddb8bFRn7RMlJTG/VhbDQoNGg9+5iAlVz3/AhkxftY7wymY/7cqRVetSJx3mJ+
+	X4/FeykuqmllgEb+fbrEIr+W+6xLH7yaCrhIEYOPoCDTMktE9Dc7A3+pngx49JEDVDs=
+X-Google-Smtp-Source: AGHT+IHw4QwSUbJu5FO5FlEpnmeGm++bjQVOauZeSS/SbI2JGiaYCiVzqACbtNyNlRVSpQYsOLnm/g==
+X-Received: by 2002:a17:907:6e8a:b0:aca:b45a:7c86 with SMTP id a640c23a62f3a-acec4b41481mr360717866b.1.1745934429100;
+        Tue, 29 Apr 2025 06:47:09 -0700 (PDT)
+Received: from HYB-DlYm71t3hSl.ad.analog.com ([2a02:3033:26c:ba50:9d5c:4d3e:be76:7564])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ace6ed64fc5sm779707666b.129.2025.04.29.06.47.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Apr 2025 06:47:08 -0700 (PDT)
+Date: Tue, 29 Apr 2025 15:47:05 +0200
+From: Jorge Marques <gastmaier@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>
+Cc: Jorge Marques <jorge.marques@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] Documentation: ABI: add oversampling frequency in
+ sysfs-bus-iio
+Message-ID: <c3i7g273lgvx7rpihzq6r7exxxnglbwrqwfryyz6ciqo52tszf@cvi7pz4bmkvq>
+References: <20250422-iio-driver-ad4052-v2-0-638af47e9eb3@analog.com>
+ <20250422-iio-driver-ad4052-v2-1-638af47e9eb3@analog.com>
+ <aAe6u6NhAsgjaL5_@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To SAFDAG1NODE1.st.com
- (10.75.90.17)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-04-29_04,2025-04-24_02,2025-02-21_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aAe6u6NhAsgjaL5_@smile.fi.intel.com>
 
-Add a new stm32mp25 compatible to stm32-lptimer dt-bindings, to support
-STM32MP25 SoC. Some features has been updated or added to the low-power
-timer:
-- new capture compare channels
-- up to two PWM channels
-- PWM input capture
-- peripheral interconnect in stm32mp25 has been updated (new triggers).
-- registers/bits has been added or revisited (IER access).
-So introduce a new compatible to handle this diversity.
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
-Changes in V4:
-- Add Rob's Reviewed-by tag
-Changes in V3:
-- Fix yaml indentation issue found by Rob's bot
-Changes in V2:
-- Use fallback compatibles, along with stm32mp25 specific compatible
-- trigger identifier can be up to 4 (e.g. from LPTIM1..5)
----
- .../bindings/mfd/st,stm32-lptimer.yaml        | 40 ++++++++++++++++---
- 1 file changed, 34 insertions(+), 6 deletions(-)
+Hi Andy,
 
-diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
-index d41308856408..4eabafb8079d 100644
---- a/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
-+++ b/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
-@@ -21,7 +21,12 @@ maintainers:
- 
- properties:
-   compatible:
--    const: st,stm32-lptimer
-+    oneOf:
-+      - items:
-+          - const: st,stm32mp25-lptimer
-+          - const: st,stm32-lptimer
-+      - items:
-+          - const: st,stm32-lptimer
- 
-   reg:
-     maxItems: 1
-@@ -48,13 +53,21 @@ properties:
-     minItems: 1
-     maxItems: 2
- 
-+  power-domains:
-+    maxItems: 1
-+
-   pwm:
-     type: object
-     additionalProperties: false
- 
-     properties:
-       compatible:
--        const: st,stm32-pwm-lp
-+        oneOf:
-+          - items:
-+              - const: st,stm32mp25-pwm-lp
-+              - const: st,stm32-pwm-lp
-+          - items:
-+              - const: st,stm32-pwm-lp
- 
-       "#pwm-cells":
-         const: 3
-@@ -69,7 +82,12 @@ properties:
- 
-     properties:
-       compatible:
--        const: st,stm32-lptimer-counter
-+        oneOf:
-+          - items:
-+              - const: st,stm32mp25-lptimer-counter
-+              - const: st,stm32-lptimer-counter
-+          - items:
-+              - const: st,stm32-lptimer-counter
- 
-     required:
-       - compatible
-@@ -80,7 +98,12 @@ properties:
- 
-     properties:
-       compatible:
--        const: st,stm32-lptimer-timer
-+        oneOf:
-+          - items:
-+              - const: st,stm32mp25-lptimer-timer
-+              - const: st,stm32-lptimer-timer
-+          - items:
-+              - const: st,stm32-lptimer-timer
- 
-     required:
-       - compatible
-@@ -92,13 +115,18 @@ patternProperties:
- 
-     properties:
-       compatible:
--        const: st,stm32-lptimer-trigger
-+        oneOf:
-+          - items:
-+              - const: st,stm32mp25-lptimer-trigger
-+              - const: st,stm32-lptimer-trigger
-+          - items:
-+              - const: st,stm32-lptimer-trigger
- 
-       reg:
-         description: Identify trigger hardware block.
-         items:
-           minimum: 0
--          maximum: 2
-+          maximum: 4
- 
-     required:
-       - compatible
--- 
-2.25.1
+I agree with your suggestion, and in this case the appropriate kernel
+version is 3.10.
 
+On Tue, Apr 22, 2025 at 06:50:19PM +0300, Andy Shevchenko wrote:
+> On Tue, Apr 22, 2025 at 01:34:46PM +0200, Jorge Marques wrote:
+> > Some devices have an internal clock used to space out the conversion
+> > trigger for the oversampling filter,
+> > Consider an ADC with conversion and data ready pins topology:
+> > 
+> >   Sampling trigger |       |       |       |       |
+> >   ADC conversion   ++++    ++++    ++++    ++++    ++++
+> >   ADC data ready      *       *       *       *       *
+> > 
+> > With the oversampling frequency, conversions are spaced:
+> > 
+> >   Sampling trigger |       |       |       |       |
+> >   ADC conversion   + + + + + + + + + + + + + + + + + + + +
+> >   ADC data ready         *       *       *       *       *
+> > 
+> > In some devices and ranges, this internal clock can be used to evenly
+> > space the conversions between the sampling edge.
+> > In other devices the oversampling frequency is fixed or is computed
+> > based on the sampling frequency parameter, and the parameter is
+> > read only.
+> > 
+> > Devices with this feature are max1363, ad7606, ad799x, and ad4052.
+> > The max1363 driver included the events/sampling_frequency in
+> > commit 168c9d95a940 ("iio:adc:max1363 move from staging.")
+> > and ad799x in
+> > commit ba1d79613df3 ("staging:iio:ad799x: Use event spec for threshold
+> > hysteresis")
+> > but went undocumented so far.
+> 
+> So, it was no documentation for the nodes this change describes, right?
+> 
+> ...
+> 
+> > +What:		/sys/bus/iio/devices/iio:deviceX/oversampling_frequency
+> > +KernelVersion:	6.15
+> 
+> Then why don't you put the real version of the first release that has it?
+> 
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Some devices have internal clocks for oversampling.
+> > +		Sets the resulting frequency in Hz to trigger a conversion used by
+> > +		the oversampling filter.
+> > +		If the device has a fixed internal clock or is computed based on
+> > +		the sampling frequency parameter, the parameter is read only.
+> > +
+> > +What:		/sys/bus/iio/devices/iio:deviceX/oversampling_frequency_available
+> > +KernelVersion:	6.15
+> 
+> Ditto.
+> 
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Hardware dependent values supported by the oversampling
+> > +		frequency.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+
+Best regards,
+Jorge
