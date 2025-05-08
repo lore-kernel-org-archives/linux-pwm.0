@@ -1,396 +1,163 @@
-Received: from mail-m3282.qiye.163.com (mail-m3282.qiye.163.com [220.197.32.82])
+Received: from TY3P286CU002.outbound.protection.outlook.com (mail-japaneastazon11010037.outbound.protection.outlook.com [52.101.229.37])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFC7B221294;
-	Thu,  8 May 2025 09:35:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.32.82
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746696941; cv=none; b=CxgGp30SyBGA/jMBMCZJWDS9QJFzAScXRlTdkTO+PmpqesbUOGG6VXCCdgySmraIVa4TrLOCGoPweNujrsCFBo8dWYYhf5VEH5t3C4ybyMbhQZ0wcYkWpue4I+BNBplaNbUzgJRfmr3JKCWCuGPhIehTtRB58bnXpxzF0WoTcJM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746696941; c=relaxed/simple;
-	bh=4eEACbyRyrL3GIa+V+Q42J3HTovhVzHNTNkS737EI5c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EIXt/oWk2iBxPenwaGrGcLCh+5emPTaeScwP0viKa9DqwrqqynS7KGBMY34+siEQL6MZZOtZNjXpflt9Lf5fW+CspVSLj4LoyxIBfM5AxBYIl0shw1AhLG85pyoyzPwsCV3cGEcRoXuYzQ/0UvREf/GLMWbN5N0Rtq/KCsZ1Re4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=YMzoFk1Q; arc=none smtp.client-ip=220.197.32.82
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADBB72153ED
+	for <linux-pwm@vger.kernel.org>; Thu,  8 May 2025 23:36:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.229.37
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746747382; cv=fail; b=WyacQOmIwkIyhzCleAXm3+tLU8afRj2WOwfW7nvriS107eG9CMPLcW4QmpdA/O3sS9UNfyr4kr0CLu0OkgTE41J66PPLbTfh+rVtl45h955gPCNDvd8ZTXMgYJA1qwsPfVJLRGHXVa7YbuLtJJ9Lw8J8CIASKQZfyVIZZARgaj4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746747382; c=relaxed/simple;
+	bh=Ta9HoBrY8NVv9sbp7eKFY/TXT7qRM+jBuumFteSTxw0=;
+	h=Message-ID:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 Date:MIME-Version; b=ofKhyII5UufOWqdLSue4LxrJFR6ShX+/EWvVpJNXGVjTxM3EAJGfUQHXlnGuzrhOQZcSYfl8qLfDDTtc49eW4h1d1wrb8SiT+7Hbl3mSH0+3zXwn65urrr4vR4z1LpuBQ0MED5T9l6Pu6Az2PGxtPKvAGtK662/j7wOO9xufTPA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=dnNswn6J; arc=fail smtp.client-ip=52.101.229.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="YMzoFk1Q"
-Received: from [172.16.12.26] (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 145a410e0;
-	Thu, 8 May 2025 15:13:01 +0800 (GMT+08:00)
-Message-ID: <c4296af2-e7f1-4f5c-9f33-a6b5b2ddb244@rock-chips.com>
-Date: Thu, 8 May 2025 15:13:01 +0800
+	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="dnNswn6J"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Rvn+JkLtPnBrYt+qo+XCm9YM3PnNz5azWwsQaarOZLTCBbsWbsYyO048qTbbi66X4zLNS1Rivi7VVQzuH3IEkQbwGTHNqfG/Ol3M+kccI6UaPbSC/d1rUMkIZWjmYAbZKHNIJMhTTM+UPQJ+cqqLXW0LfqqhE+psp5xc3DkDyh8P6BzwlEVeMI6wJwJHIh1wFxrdIldHNB7ZegXlAfPHpX7NYc3YmZ0/SEr3k9b97rhsbMXHAZIhp11nXJWlm9WxoXSihvZR0wetOt8w4W2drCI++3ni7xsH3zC9/b56XbNARgAiVmyx038KZu3I/AiDfDEfShntQQ8IC0NrSag10w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OPA1Ct6hmAmJnTAy11hc1aBS77a4XFoz+vneplZWWQo=;
+ b=bySls7cag6VkmiLW7EovEj2Uw0AJ2wvOOA/DT1wNVinUoUkOqfbBZf+tc0TelQDVnMfa7/xKtQOZgTPC3O7Q3+pqClvdh780iRi8i4XH/xnSFRuk5iDNy2lYJRsvMio57fYOcro+XWuIbmCjBGbXvwAhbXOn6B2ZxZ+q5eZiAtxqvp+ZXI54l1ZL/mL7oBRKxfzfW/7MBvjONaBDUuZ6Q9YRoU/LWZIWwVrMo+XvZfBcgkVUiugTrTIedKdMTOmYMnuJNV/rMCxI+s7Z3mbCo+8h+Bg86R5E7x6/NN1n7C0I4yZjKP7Mx1FCft44sQ3tXtvnpUBZpTNZJkYlwK/sCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OPA1Ct6hmAmJnTAy11hc1aBS77a4XFoz+vneplZWWQo=;
+ b=dnNswn6JGh7kLwIdKMarKuQOj1i8bDW7Pd58ySIz6yiCaMgcWqxsaAGGPDVIxTiw9RAP9GgjFXXq1rJGdfE5G0B44iUTIfJiTbD6sQvtE/pwZOgtoSx6wCJJejTKCgEhXGVBX8ojNgcCmvhtMpeMQHyqgqAEP/YNp09D+ISYkpA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+Received: from TY3PR01MB10906.jpnprd01.prod.outlook.com
+ (2603:1096:400:3af::14) by OS7PR01MB11424.jpnprd01.prod.outlook.com
+ (2603:1096:604:246::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8722.25; Thu, 8 May
+ 2025 23:36:15 +0000
+Received: from TY3PR01MB10906.jpnprd01.prod.outlook.com
+ ([fe80::592:9b7b:ef57:2dd8]) by TY3PR01MB10906.jpnprd01.prod.outlook.com
+ ([fe80::592:9b7b:ef57:2dd8%2]) with mapi id 15.20.8722.018; Thu, 8 May 2025
+ 23:36:15 +0000
+Message-ID: <87seleptea.wl-kuninori.morimoto.gx@renesas.com>
+From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+To: =?ISO-8859-1?Q?=22Uwe_Kleine-K=F6nig=22?= <ukleinek@kernel.org>
+Cc: linux-pwm@vger.kernel.org
+Subject: Re: [PATCH] pwm: tidyup PWM menu for Renesas
+In-Reply-To: <odkmm5vr5sav2e2bithwpwjlscw3annav5ccbtbnllyyfjialj@yfhbuac54xcb>
+References: <874ixv3nqz.wl-kuninori.morimoto.gx@renesas.com>
+	<odkmm5vr5sav2e2bithwpwjlscw3annav5ccbtbnllyyfjialj@yfhbuac54xcb>
+User-Agent: Wanderlust/2.15.9 Emacs/29.3 Mule/6.0
+Content-Type: text/plain; charset=US-ASCII
+Date: Thu, 8 May 2025 23:36:15 +0000
+X-ClientProxiedBy: TYCP286CA0256.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:455::14) To TY3PR01MB10906.jpnprd01.prod.outlook.com
+ (2603:1096:400:3af::14)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/7] soc: rockchip: add mfpwm driver
-To: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>,
- Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, William Breathitt Gray <wbg@kernel.org>,
- Sebastian Reichel <sebastian.reichel@collabora.com>,
- Kever Yang <kever.yang@rock-chips.com>, =?UTF-8?Q?Heiko_St=C3=BCbner?=
- <heiko@sntech.de>
-Cc: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-iio@vger.kernel.org, kernel@collabora.com,
- Jonas Karlman <jonas@kwiboo.se>,
- Detlev Casanova <detlev.casanova@collabora.com>
-References: <20250408-rk3576-pwm-v1-0-a49286c2ca8e@collabora.com>
- <20250408-rk3576-pwm-v1-4-a49286c2ca8e@collabora.com>
- <5559308.Sb9uPGUboI@diego> <3362145.mvXUDI8C0e@workhorse>
-Content-Language: en-US
-From: Damon Ding <damon.ding@rock-chips.com>
-In-Reply-To: <3362145.mvXUDI8C0e@workhorse>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGhlJQ1ZDGkgZT0tMS0hDHxpWFRQJFh
-	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
-	hVSktLVUpCS0tZBg++
-X-HM-Tid: 0a96aebd927d03a3kunm145a410e0
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MSo6Ljo5CDJDSg8*N0kzTSk9
-	OFEwCxRVSlVKTE9NTUNDSENISENJVTMWGhIXVR8aFhQVVR8SFRw7CRQYEFYYExILCFUYFBZFWVdZ
-	EgtZQVlOQ1VJSVVMVUpKT1lXWQgBWUFKSEhDTzcG
-DKIM-Signature:a=rsa-sha256;
-	b=YMzoFk1Qp1pR1/JUCHh5psK6u8ofTJw+CyC3fAnpP1pldZKl7dePcu9En22Oddc2WFqgguFF3qHj9O32KbNKBUP6apGGDMECgBy1ZYSuhtwDhfAZ8FhY+EYfVU9jKdm5r0cvYe82BjbqHXFdn/4y4WzXzJVTTXzIPvQ4dhX0X58=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
-	bh=q1j4CdOQSMAZG/JE09mATkCWC/+UCfMM4ry4j1wAOeo=;
-	h=date:mime-version:subject:message-id:from;
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: TY3PR01MB10906:EE_|OS7PR01MB11424:EE_
+X-MS-Office365-Filtering-Correlation-Id: d9b42d77-4082-4646-72e8-08dd8e891fd7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|52116014|376014|1800799024|366016|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?dNqpg+uR7RKSwAVL+asY/5aLfLmajaBkOXKHWYlpT3BXftf7lfpShWSWqcLd?=
+ =?us-ascii?Q?xF7CGxYCwFLOqbcFNCSFhV3H+BGw3iQcYHDm6ZnitGQUDXJGKj10iTlqIEor?=
+ =?us-ascii?Q?wHD+3zFySY6/i3QFvadWGkpPB53r0josIOgq+cpJJlHtkaiLtCcFx2XWWn8j?=
+ =?us-ascii?Q?yqkMDlSYSNqHDjjB/Q1iEawSGsgQiRp2sBxafV8SQsKzJkxOoGJivSDjHe9J?=
+ =?us-ascii?Q?LczoeZRv68pc9IkcFg0YoQOinc2PkYuXXkBniJ+w51KHKnbbdBURr7xt3qW0?=
+ =?us-ascii?Q?4KYOvUCcMItOZWfy3WGNncRNxjhmljxe/U8uT1eWRRY3JmCdE3s0BgRGRc47?=
+ =?us-ascii?Q?f9vYo4w4XBFsbuThiccaKdWT3z+VVIKNYOyztxyJeBLqLCsW5PSWKn0SytSR?=
+ =?us-ascii?Q?855dHviyo8RxZRjg96r0WWbP5HCckoJ1QaJYyoyJ6dhY9xvlfUqx/uvN1aCU?=
+ =?us-ascii?Q?jzObdIUplhalbV4pywT+A85pNFpgF03ReTVUAspjZWKa1OdzMtfO79z1wWYr?=
+ =?us-ascii?Q?XQI3KEUEWXyGZlgqEoPEdK7p3r3PoepjkwiWSmAe0mu43wbC1sp4sbv4zTm7?=
+ =?us-ascii?Q?QEvGsUd54CG5zINTwSQT7Z7HDtSaFBnFgVrTSIREGLJnHitWq1lFTOZiN0yl?=
+ =?us-ascii?Q?GItmgmndCObFHgWBCH80I5k4mfnjY3tVzjISXCIMcAadmKYkMXOnh167lCrd?=
+ =?us-ascii?Q?e2ROooPosjDEYYphhYI+Krgu9YKz+znHlHjo+IN7oUWmpd0KK+W469gecvxD?=
+ =?us-ascii?Q?uRUF+M18ixp+zZvz89Q3FxjvmzIGAJJBbQiE1044Z0Gx6sngrUVwzvxdy3Ux?=
+ =?us-ascii?Q?LNOqh+2exfyvKA5NRq2IvHwhVAkoZE1CaXCeqz9fjsdmt4sPGbRZIb8ZAdFv?=
+ =?us-ascii?Q?vlQfVa0HgBvpgU4N1eNmEvoDGsSEDIXQSQ5zhIUmvgtHS/4baPryHnPZcv51?=
+ =?us-ascii?Q?GU+gIV4AXE/JxYbGDzAJzsLSS1LcgguytHV+Eo4vXUxO8mf/6udU+J6Ly455?=
+ =?us-ascii?Q?50YP9SSQN2igPyUQAN1gPZntM5aWFHvboeiE7RQ2EcRS9AudABg97VH3i65O?=
+ =?us-ascii?Q?TQmM1dbfXUGRozSzHVJxflsw20VeBGw/PPGmqdvw+q+8X9Chch+ory65RbzX?=
+ =?us-ascii?Q?W8yb877FvzwUiU04Q4bBffeI/q6+FeVGYT/sx6dkQGWVNAukkHJK0mKq0LU9?=
+ =?us-ascii?Q?fL4/y8WBoGBAsTx79jO+i+qq2Moiwm9bZcEcJfAJwCinRr55kWt9vn97QDRo?=
+ =?us-ascii?Q?O6qJkL82+HlXYIyOFZ/e2qLzuGKMUj0UrFpMW/+UWoJRTRw/HkIOYYXdRK8l?=
+ =?us-ascii?Q?J0L5enmmNfW3oo7dBkbrFC3kWIqg6InZDEOWyzEJuhdqL3O0DdfKiHQO0jUk?=
+ =?us-ascii?Q?cSW0Wf7deMquSMMkd2wd4Xn/3KExT2+m46FWkMN7M9p5nzGTInG81yUkxeal?=
+ =?us-ascii?Q?Drpx+dcwOd0+kHp2gmDWfNIkboW5hHLdQP6MLaQ77K5P2TvMgp9XvA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY3PR01MB10906.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(376014)(1800799024)(366016)(38350700014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ZBzAUpCe9F+sCpFxNAjF5r7HgC9Vy0qVVTyZBC1TkpxY+cm25y9yIng+6ktO?=
+ =?us-ascii?Q?tzjf/C6ef198TBLocG72jM3Bsu+bYuxZOGd9qdxW7hRP0Cv/QXzyrUPKWNaV?=
+ =?us-ascii?Q?qYQtEC4TmjNlBIMXoMMdKcCHA4nkDxurFI1y68ZHC3lST8uWAC0WP3cB55wB?=
+ =?us-ascii?Q?Igs7bw8cRRRRBRISysQvpyLnNoh6fI8uBIBkxQUyV3TgEfuoZzpSGxzuzKGW?=
+ =?us-ascii?Q?w3IMiXxKOOFwFIC3gvwrDVrYdQ8ga7+RIaMX20ZKBkOlaL8wP0dTuA8kCEWb?=
+ =?us-ascii?Q?fYGu7/gmHbRf0J1v3ltcPqqHQM/AtGzaXKDt3ctxrYnLtFZV6wXew/eUUf9Y?=
+ =?us-ascii?Q?R8Ega1oWYglhBND612eifRCFz48DeokYZmsLKdMG/7q7jR5EMxzuanhiIIxj?=
+ =?us-ascii?Q?tT+C5+1B3RDl1jLIDt2Ckkj5xqm/nWFtEtzU6iu8hnSd0vOy/4GHr4+mIEYP?=
+ =?us-ascii?Q?WQW1x1MvvnoeMKv6MuMJQYwvTARi/Sa0tx3ZNKi7lqiWRgg9hwR9TqIREuTy?=
+ =?us-ascii?Q?tiDpcN2FVeOwtf9G1pybKwmcJDMzzikGvxDpzyfGW38CHxR7716bcag0Osip?=
+ =?us-ascii?Q?hcFheIU0TX3+WZqopGkkGWpN1enV0WoimEW7NGiySzk0APhSsMEAG1mRNGxA?=
+ =?us-ascii?Q?UM9e2aNdVFNRGCuhlo7ZV2Oc0ZTDcE3nToHaT/PJgUSbZVJ2SazZ2+VD+p7F?=
+ =?us-ascii?Q?Vt2Ol/0ZJVuq8pSgoJSkiI7xCIviDMd4CDtHYvI9Z1E6aRweuGzILe/gq/MM?=
+ =?us-ascii?Q?3ssGX7SaMlp1Y6mN2h3NpEXkI4TQOEmIyq3bvAWcGQKrQCx4cKd7AFponzwK?=
+ =?us-ascii?Q?ATWpAEdCZY1SPlSUA0g2UGoEMiSRPeIi8neh4E1MecJzM+omhp8qwW8LBi+n?=
+ =?us-ascii?Q?Vu1o61M0hSF+ppFC7Gyh0p7Izh1l7FOXgDk6L46Ty2GgyqZPhmImWAzPWGz1?=
+ =?us-ascii?Q?0fJ4tG2k3VGvTgEpeFC67MgoiEe1Z7ls/E/XXRogTtPTffNestr2i7W1z8wb?=
+ =?us-ascii?Q?gJvsUOp25kl5B3tj2nSSwXBv/NUi2HBjRgkaLzlwe5rBZCA12WdkllU8MkKe?=
+ =?us-ascii?Q?p1cBOPoFFEpKaQt5BPtx0X2OnA6LohDt2e0HaHE88Ej8EUjc25VpaPuh121U?=
+ =?us-ascii?Q?dlr4FVo6vf1pqytYEMZu8wLfUPYG0FXOS1NgutYm/av1n2jWXj9dn12mZMVY?=
+ =?us-ascii?Q?iFigbtNflq8wYF2AKYSoMknH1wYB2FOdUCx/raWBVWe42r2gZ5qO+Pnrr/iv?=
+ =?us-ascii?Q?b8x4+XwzYdoIYf1ob8uU1WH0Kl7WrxTM6BiHtn1JoeUHbtYCztiGneMSvY0u?=
+ =?us-ascii?Q?BRo3gHZM9R0DUsqqGoOA9wcbZXx2HTRUIWBtcsve78xE4PBakWH91LboDI77?=
+ =?us-ascii?Q?xV2njptw3m1ntZRuxdAV6Wt4vILLXi7KfqtjK4xOI5QkqmHBmanWeYbocq2b?=
+ =?us-ascii?Q?CQa5/QZALhYsOuctEN9nExl1QuQCYlHW+5otndKamYuxYVhrB6spQGaU7j6M?=
+ =?us-ascii?Q?bfPA+fc7QbC0XtGDUc7MST+zlEa3mfNyeIlwNFm9Pdh9qLSLglVCgvqura2Z?=
+ =?us-ascii?Q?9SX9j2GtKR8YdWoCJVGrLY6STsBxO0WCcFXF09wPs2XOIZ1iHtXpt6jYqXrw?=
+ =?us-ascii?Q?SA=3D=3D?=
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9b42d77-4082-4646-72e8-08dd8e891fd7
+X-MS-Exchange-CrossTenant-AuthSource: TY3PR01MB10906.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2025 23:36:15.3607
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: svtvCr76+GwI54P19W/yjj3R+4rX9/cW1NgQPMGm60ZNWp2wBtCkKs2A0cu+nWJMjN6+Tx5JMwSOCPT0OIfbx+HwJNGtAMJIY4WVJF2CeAOiG+fzeHqdqvEida5+r3/P
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS7PR01MB11424
 
-Hi Nicolas:
 
-On 2025/4/9 21:01, Nicolas Frattaroli wrote:
-> On Tuesday, 8 April 2025 22:03:01 Central European Summer Time Heiko Stübner wrote:
->> Hi,
->>
->> not a full review, just me making a first pass.
->>
->>> +unsigned long mfpwm_clk_get_rate(struct rockchip_mfpwm *mfpwm)
->>> +{
->>> +	if (!mfpwm || !mfpwm->chosen_clk)
->>> +		return 0;
->>> +
->>> +	return clk_get_rate(mfpwm->chosen_clk);
->>> +}
->>> +EXPORT_SYMBOL_NS_GPL(mfpwm_clk_get_rate, "ROCKCHIP_MFPWM");
->>
->> aren't you just re-implemeting a clk-mux with the whole chosen-clk
->> mechanism? See drivers/clk/clk-mux.c, so in theory you should be
->> able to just do a clk_register_mux(...) similar to for example
->> sound/soc/samsung/i2s.c .
-> 
-> Probably yes. I didn't know clk-mux was a thing. If I do decide to keep the
-> clock switching at all (more on that below), then I'll rewrite it around
-> clk-mux.
-> 
->>> +
->>> +__attribute__((nonnull))
->>> +static int mfpwm_do_acquire(struct rockchip_mfpwm_func *pwmf)
->>> +{
->>> +	struct rockchip_mfpwm *mfpwm = pwmf->parent;
->>> +	unsigned int cnt;
->>> +
->>> +	if (mfpwm->active_func && pwmf->id != mfpwm->active_func->id)
->>> +		return -EBUSY;
->>> +
->>> +	if (!mfpwm->active_func)
->>> +		mfpwm->active_func = pwmf;
->>> +
->>> +	if (!check_add_overflow(mfpwm->acquire_cnt, 1, &cnt)) {
->>> +		mfpwm->acquire_cnt = cnt;
->>> +	} else {
->>> +		WARN(1, "prevented acquire counter overflow in %s\n", __func__);
->>
->> dev_warn, as you have the mfpwm pointing to a pdev?
-> 
-> Will do.
-> 
->>> +		return -EOVERFLOW;
->>> +	}
->>> +
->>> +	dev_dbg(&mfpwm->pdev->dev, "%d acquired mfpwm, acquires now at %u\n",
->>> +		pwmf->id, mfpwm->acquire_cnt);
->>> +
->>> +	return clk_enable(mfpwm->pclk);
->>> +}
->>
->>> +/**
->>> + * mfpwm_get_clk_src - read the currently selected clock source
->>> + * @mfpwm: pointer to the driver's private &struct rockchip_mfpwm instance
->>> + *
->>> + * Read the device register to extract the currently selected clock source,
->>> + * and return it.
->>> + *
->>> + * Returns:
->>> + * * the numeric clock source ID on success, 0 <= id <= 2
->>> + * * negative errno on error
->>> + */
->>> +static int mfpwm_get_clk_src(struct rockchip_mfpwm *mfpwm)
->>> +{
->>> +	u32 val;
->>> +
->>> +	clk_enable(mfpwm->pclk);
->>> +	val = mfpwm_reg_read(mfpwm->base, PWMV4_REG_CLK_CTRL);
->>> +	clk_disable(mfpwm->pclk);
->>> +
->>> +	return (val & PWMV4_CLK_SRC_MASK) >> PWMV4_CLK_SRC_SHIFT;
->>> +}
->>> +
->>> +static int mfpwm_choose_clk(struct rockchip_mfpwm *mfpwm)
->>> +{
->>> +	int ret;
->>> +
->>> +	ret = mfpwm_get_clk_src(mfpwm);
->>> +	if (ret < 0) {
->>> +		dev_err(&mfpwm->pdev->dev, "couldn't get current clock source: %pe\n",
->>> +			ERR_PTR(ret));
->>> +		return ret;
->>> +	}
->>> +	if (ret == PWMV4_CLK_SRC_CRYSTAL) {
->>> +		if (mfpwm->osc_clk) {
->>> +			mfpwm->chosen_clk = mfpwm->osc_clk;
->>> +		} else {
->>> +			dev_warn(&mfpwm->pdev->dev, "initial state wanted 'osc' as clock source, but it's unavailable. Defaulting to 'pwm'.\n");
->>> +			mfpwm->chosen_clk = mfpwm->pwm_clk;
->>> +		}
->>> +	} else {
->>> +		mfpwm->chosen_clk = mfpwm->pwm_clk;
->>> +	}
->>> +
->>> +	return clk_rate_exclusive_get(mfpwm->chosen_clk);
->>> +}
->>>
->>> +/**
->>> + * mfpwm_switch_clk_src - switch between PWM clock sources
->>> + * @mfpwm: pointer to &struct rockchip_mfpwm driver data
->>> + * @clk_src: one of either %PWMV4_CLK_SRC_CRYSTAL or %PWMV4_CLK_SRC_PLL
->>> + *
->>> + * Switch between clock sources, ``_exclusive_put``ing the old rate,
->>> + * ``clk_rate_exclusive_get``ing the new one, writing the registers and
->>> + * swapping out the &struct_rockchip_mfpwm->chosen_clk.
->>> + *
->>> + * Returns:
->>> + * * %0        - Success
->>> + * * %-EINVAL  - A wrong @clk_src was given or it is unavailable
->>> + * * %-EBUSY   - Device is currently in use, try again later
->>> + */
->>> +__attribute__((nonnull))
->>> +static int mfpwm_switch_clk_src(struct rockchip_mfpwm *mfpwm,
->>> +					  unsigned int clk_src)
->>> +{
->>> +	struct clk *prev;
->>> +	int ret = 0;
->>> +
->>> +	scoped_cond_guard(spinlock_try, return -EBUSY, &mfpwm->state_lock) {
->>> +		/* Don't fiddle with any of this stuff if the PWM is on */
->>> +		if (mfpwm->active_func)
->>> +			return -EBUSY;
->>> +
->>> +		prev = mfpwm->chosen_clk;
->>> +		ret = mfpwm_get_clk_src(mfpwm);
->>> +		if (ret < 0)
->>> +			return ret;
->>> +		if (ret == clk_src)
->>> +			return 0;
->>> +
->>> +		switch (clk_src) {
->>> +		case PWMV4_CLK_SRC_PLL:
->>> +			mfpwm->chosen_clk = mfpwm->pwm_clk;
->>> +			break;
->>> +		case PWMV4_CLK_SRC_CRYSTAL:
->>> +			if (!mfpwm->osc_clk)
->>> +				return -EINVAL;
->>> +			mfpwm->chosen_clk = mfpwm->osc_clk;
->>> +			break;
->>> +		default:
->>> +			return -EINVAL;
->>> +		}
->>> +
->>> +		clk_enable(mfpwm->pclk);
->>> +
->>> +		mfpwm_reg_write(mfpwm->base, PWMV4_REG_CLK_CTRL,
->>> +				PWMV4_CLK_SRC(clk_src));
->>> +		clk_rate_exclusive_get(mfpwm->chosen_clk);
->>> +		if (prev)
->>> +			clk_rate_exclusive_put(prev);
->>> +
->>> +		clk_disable(mfpwm->pclk);
->>> +	}
->>> +
->>> +	return ret;
->>> +}
->>
+Hi Uwe
 
-First of all, I'm truly delighted to see your nice PWM v4 driver codes. 
-I was once intensely struggling with porting the v4 PWM implementation 
-into the Linux 6.1 ​​PWM framework. ;-)
+> > =>	[ ]   Renesas R-Car PWM support
+> > =>	[ ]   Renesas TPU PWM support
+> > 	[ ]   Rockchip PWM support
+> > =>	[ ]   Renesas RZ/G2L MTU3a PWM Timer support
+(snip)
+> Hmm, that file is supposed to be ordered by the Kconfig symbol name.
+(snip)
+> Maybe rename PWM_RZ_MTU3 and PWM_RZG2L_GPT to start with PWM_RENESAS and
+> then have the sort order of symbol names match the sort order of
+> prompts?
 
->> ok, the relevant part might be the
->> 	/* Don't fiddle with any of this stuff if the PWM is on */
->> thing, which will require special set_rate operation, but in general I
->> think, if it ticks like a clock, it probably should be a real clock ;-) .
-> 
-> I agree; we can guarantee it doesn't get changed after all by just marking it
-> as exclusive instead of marking either pwm_clk or osc_clk as exclusive.
-> 
->>> +static ssize_t chosen_clock_show(struct device *dev,
->>> +				 struct device_attribute *attr, char *buf)
->>> +{
->>> +	struct rockchip_mfpwm *mfpwm = dev_get_drvdata(dev);
->>> +	unsigned long clk_src = 0;
->>> +
->>> +	/*
->>> +	 * Why the weird indirection here? I have the suspicion that if we
->>> +	 * emitted to sysfs with the lock still held, then a nefarious program
->>> +	 * could hog the lock by somehow forcing a full buffer condition and
->>> +	 * then refusing to read from it. Don't know whether that's feasible
->>> +	 * to achieve in reality, but I don't want to find out the hard way
->>> +	 * either.
->>> +	 */
->>> +	scoped_guard(spinlock, &mfpwm->state_lock) {
->>> +		if (mfpwm->chosen_clk == mfpwm->pwm_clk)
->>> +			clk_src = PWMV4_CLK_SRC_PLL;
->>> +		else if (mfpwm->osc_clk && mfpwm->chosen_clk == mfpwm->osc_clk)
->>> +			clk_src = PWMV4_CLK_SRC_CRYSTAL;
->>> +		else
->>> +			return -ENODEV;
->>> +	}
->>> +
->>> +	if (clk_src == PWMV4_CLK_SRC_PLL)
->>> +		return sysfs_emit(buf, "pll\n");
->>> +	else if (clk_src == PWMV4_CLK_SRC_CRYSTAL)
->>> +		return sysfs_emit(buf, "crystal\n");
->>> +
->>> +	return -ENODEV;
->>> +}
->>
->> which brings me to my main point of contention. Why does userspace
->> need to select a clock source for the driver via sysfs.
-> 
-> It doesn't need to. Basically, this is a weird hardware feature. Downstream did
-> not bother implementing it at all, and I found out through the TRM's register
-> listing and thought "that's weird, I wonder if it even works", and lo and behold
-> it does. At that point, like two rewrites ago, I was committed to ensuring that
-> the driver can handle this edge case of the PWM clock being changed. As I lacked
-> the imagination as to why someone would change it and the knowledge as to which
-> kernel interfaces exist to change it, sysfs offered itself as a natural dumping
-> ground for switches that probably shouldn't exist.
-> 
->> Neither the commit message nor the code does seem to explain that,
->> or I'm just blind - which is also a real possibility.
->>
->> In general I really think, userspace should not need to care about if
->> a PLL or directly the oscillator is used a clock input.
->> I assume which is needed results from some runtime factor, so the
->> driver should be able to select the correct one?
->>
->> A mux-clock could ust use clk_mux_determine_rate_flags() to select
->> the best parent depending on a requested rate instead.
-> 
-> Yeah, the only use-case I can come up with is that we really want to use an
-> either 100 MHz or 50 MHz clock on one chip, but have a channel hit a precise
-> timing with the 24 MHz clock on the same chip. If the fixed crystal oscillator
-> were 25 MHz instead of 24 MHz, this would be entirely pointless, as they're all
-> multiples of it.
-> 
+Ah, OK, it has symbol sort rules !
+Will post v2 patch
 
-The 24MHz OSC clock source is mainly for the use of the IR input, which 
-is also called the power key capture mode. When the system enters 
-suspend state, it relies on the OSC to ensure the PWM remains 
-operational and can serve as a system wake-up source.
+Thank you for your help !!
 
-In addition, the PWM v4 also supports the 400KHz RC clock source for the 
-wave generator mode, and it can be used for the deeper sleep state.
-
-> Thanks for the hint about clk_mux_determine_rate_flags, it doesn't appear to be
-> documented (classic) but it looks to do at least half of what a proper solution
-> would need to do. The other half is figuring out what ideal target rate we
-> actually want to optimise for for a given e.g. waveform consisting of period
-> and duty cycle in nanoseconds. There's some logic to think about regarding where
-> rounding errors are acceptable, e.g. a long period with a low duty cycle is
-> probably better off using the 100-50-24 mux with 100 MHz as the rate. I'm not
-> sure if 50 MHz is ever a sensible option since it is a dividend of 100 MHz, and
-> I'm not about to reason about imagined power draw of the PWM hardware without
-> laboratory grade test equipment.
-> 
-> For what it's worth, this is a niche enough hardware feature that if it causes
-> too much friction getting it supported in a driver, I'll just drop it entirely
-> instead. I tried to preemptively combat technical debt by supporting this in
-> some way, but instead managed to introduce scope creep.
-> 
-> One option is to always just choose the PLL muxed clock and then always set it
-> to 100 MHz, because it's probably the best option unless there are specific
-> PWM-based applications that make heavy use of 24-derived timings (maybe the IR
-> stuff?)
-> 
->>
->>> +static ssize_t chosen_clock_store(struct device *dev,
->>> +				  struct device_attribute *attr,
->>> +				  const char *buf, size_t count)
->>> +{
->>> +	struct rockchip_mfpwm *mfpwm = dev_get_drvdata(dev);
->>> +	int ret;
->>> +
->>> +	if (sysfs_streq(buf, "pll")) {
->>> +		ret = mfpwm_switch_clk_src(mfpwm, PWMV4_CLK_SRC_PLL);
->>> +		if (ret)
->>> +			return ret;
->>> +		return count;
->>> +	} else if (sysfs_streq(buf, "crystal")) {
->>> +		ret = mfpwm_switch_clk_src(mfpwm, PWMV4_CLK_SRC_CRYSTAL);
->>> +		if (ret)
->>> +			return ret;
->>> +		return count;
->>> +	} else {
->>> +		return -EINVAL;
->>> +	}
->>> +}
->>> +
->>> +static DEVICE_ATTR_RW(chosen_clock);
->>> +
->>> +static ssize_t available_clocks_show(struct device *dev,
->>> +				     struct device_attribute *attr, char *buf)
->>> +{
->>> +	struct rockchip_mfpwm *mfpwm = dev_get_drvdata(dev);
->>> +	ssize_t size = 0;
->>> +
->>> +	size += sysfs_emit_at(buf, size, "pll\n");
->>> +	if (mfpwm->osc_clk)
->>> +		size += sysfs_emit_at(buf, size, "crystal\n");
->>> +
->>> +	return size;
->>> +}
->>> +
->>> +static DEVICE_ATTR_RO(available_clocks);
->>> +
->>> +static struct attribute *mfpwm_attrs[] = {
->>> +	&dev_attr_available_clocks.attr,
->>> +	&dev_attr_chosen_clock.attr,
->>> +	NULL,
->>> +};
->>
->> Not understanding the need for the sysfs stuff was my main point this
->> evening :-)
->>
->> Heiko
->>
-> 
-> Thank you for your quick preliminary review! This already gives me some good
-> points to look into for a v2.
-> 
-
-I'm eagerly looking forward to your v2 patch submission, and I will 
-thoroughly validate the proper functioning of the PWM 
-backlight/regulator based on your code changes.
-
-Best regards,
-Damon
-
+Best regards
+---
+Kuninori Morimoto
