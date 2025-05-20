@@ -1,175 +1,119 @@
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FD381BD9F0;
-	Tue, 20 May 2025 18:33:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5ED922D78D
+	for <linux-pwm@vger.kernel.org>; Tue, 20 May 2025 21:01:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747766040; cv=none; b=m5gRwyKwnLunejdUamviTVahxJg4qzF2C+pmUmUnCQi+X8stIcAaPX+vZadmOL/pd7bKcvP6Ld1zHCBnrVfQzwdox5FEw2smq5+QNxl/V9ezHETP/9++VUdxXOz/viaxmWsjgQ+XFUVMahBhEs534pfk9eWYTq3rCEy9ujdKAb0=
+	t=1747774882; cv=none; b=MxcDTNZ+bxZDGQchxIBFuRXy8n3DtHuTxenreSMLLyrHzCCOCNuJKwPUCBo2lECg0aTMeixhrSkqYpIXUu1K8HkYfwQFpeRNXhuP8UzXyX0Hxls7hpteqRWjb6nCACgHbqeug5seCTJkQYIFIeVcr8Q9k0avlY5GaW7nKIC4FJk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747766040; c=relaxed/simple;
-	bh=lWVC38L8uqB00AbYWjtpZKYvJmwx1+KZHM9F+v/8Boo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ESVy2D6p0LISZkVAAcn8BduCaLgZrkB9MiOy6tiQDjNJWReVsLaTIdh5BQFjWH09c+dFvuoP+nciZZbGR5Dh5zoKMEscrBexTYsXqSmJd5I3mUKyr6aOrkO5WEZcAlSVPXG4ReNsGQESgHkCY/x/DvLsl7uZPK4F+zH2V1IxRDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HiVGH5dM; arc=none smtp.client-ip=209.85.216.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1747774882; c=relaxed/simple;
+	bh=Afxwdef0Jf2HSBiCXGtNVmL7wJWM8CS0UaEkxk3+CTk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ZkT+FqJVWY2tVjSzQBSf9FcA2YEytwxQ0PUEL3PodqG9QdtRXtkvu2tg93SKePGspb67Ait6Qr7+FOm9W+px7QDj/M+5s9PyJOYHZkCfxZhb6VkhK1enSDLMyZySu4cpenTC4vrQFXWMyOn8gecmjDzpd8O6/JIUX0WVkc4J0Ag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=uEzqWk6h; arc=none smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HiVGH5dM"
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-30e5430ed0bso5877832a91.3;
-        Tue, 20 May 2025 11:33:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="uEzqWk6h"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-72c14138668so1951484a34.2
+        for <linux-pwm@vger.kernel.org>; Tue, 20 May 2025 14:01:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1747766038; x=1748370838; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=GnYX8VZ84uwroHmlgsQbS7s/JHKMgvRRy4+aknrxe4M=;
-        b=HiVGH5dMkVT6ycy3Sjvn3ThOFZaY1wza09wqLCZmZJhw9Lud1zvNXupJU1oKNXOYwl
-         qifEvHtRSdFigvWtixZwm1K5HP+DJHXL5sVk60BuVfw+NmnLe6xTKQO6gUB8G2lcfMBn
-         kPQxENGjjqtYv5HQcxiLdKU9aGXPDRgREmnMqc0gk8YjtUGpbrTsk4HToZB+SmkUufR+
-         SPtxSoHAg/fVLFI6P4QxTSLaKMN2/fS7eHWF8wn2HtGS8GLP5x7snVHy0KjWio5iXPcE
-         MQEVTz1Z8ovZ40axt18GW1w8Irqkr5WWGYa1O9ArZ1eyVauTo7t2wPB32ULuBQ7zZIb7
-         UE+w==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1747774878; x=1748379678; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fp00wL1Y5X4So9ecfuqEeP+KnSz3366qtgJ3q9p0wb0=;
+        b=uEzqWk6hLoYOG1/xsTIxSHbE6ApHxSubjdnzOVIGG7wG/ZAWxO4zLvY6Qkn8bpWxdx
+         0ysPPIyfgXHNIjT8SAdDPzDAjZWEGjtH11nJBUJ8f0gAghREC3WWmPUGMkvZwiAYHxyz
+         rBET8CwJW+4fx1pBt+cvFWlSblh/48eovAOJfvPARDeMyhW/fogTysDpvHs/WjDOAQlX
+         R19pG1zqfLu6FAohpMb1VmvahtM2P+Y7rGEyfuZLWjXs2gepFE9+4ANS/yuuz2uj1eD9
+         2z8fsBVSAIuczSmfCFHlTaOxftjIfLHmcgEidw3vAjf/oowIImXccxbA/uIf0eJZMLVz
+         Zv3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747766038; x=1748370838;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GnYX8VZ84uwroHmlgsQbS7s/JHKMgvRRy4+aknrxe4M=;
-        b=oDLAC4mAnM1cd36v8CzjLXyVC6jOovXjw2UF8qvxmkCCq/DecsqfHk291Sckz9dAKd
-         r1gClajRRbtQpgdBY8w4ulyFoLzOrtijlBaDy/oGN/wXkXUFmy7qBVsrjSIt7r4B59p0
-         pHcHhiuXoTgPfwvx2mVYPSxq86/cWj5MFygcZQAQl/mYqSNIdJnvTYPCwPGTyG35ikyN
-         q7c8QnRRJRAIJ+q089HSYfRAQFruHwx9UzYemPaH0VEWTKkUxDUNxc4CpuaKrVPEuKUH
-         FA2ycw74eWC55qTaZuty6xa1bhs9t+q7Qh+VorR34ehL+jRyD4TygilcA9UYK/87Bzy0
-         4AJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUD4WWEU+zgtOdIlPmWPjVx/6dia9E0yuXL722x5bPfScDT3WhWEohayqHAQ63kJao7MPexLEAjBninY+Y=@vger.kernel.org, AJvYcCVAhmyJ6xmsvRGeNr0UrHyrurRGWLi/BhyIEdC+lq/wmggpcyYf1qY9zDg6jsE3EiS8YHImPoriewj2@vger.kernel.org, AJvYcCVAjwuA3Yhh3EFq79HPsDSz/xshBTme8CLBqtAnWpxP56gUC9rOESvZWJji6mrRWZYX69RQB026kVn9Kg==@vger.kernel.org, AJvYcCWwk4Djrhx1Ind7qurYzqUpN8asQtFJPwGpltSnwF3kSR4UbdS0tBKNzlIBKk1TBkoWzfy0kE7WQcbw@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx6bOjBINXM/fHwYa/TeTmJfYVVCTlNOzLgmSmWezoEKIPTbt4n
-	OKfPqR8Sh8qUmoxOXzaPGPU4NFrp1B0QJoGwcjCb6aYbKPaT1YumZSlk
-X-Gm-Gg: ASbGncu1DXX9fql67xTIPEiIxvXf5weu849WQbnRvSwa5rqJ23rkFpSuIZpzcHNxpvO
-	uo2mvJ/Lv+BnansaK+2VHIFPxYgFU+M+lCCk8hTaRlR9j/NHrGbDGZPhTIBCTa6e0Q9bZmDiyV1
-	Cqgmxux/SRoO/tEFC7Uu8cz1Gb48ddHqjFSedMrKIYdwAVB9uUMCepaowppPWKd0fpUvYAtB4J4
-	UthyJjQbjbm/XJSS4k3Bm9AoAJV/1O5eANpH8H6lCV9A81nFCszbbxUnwBdt7+h9tOKxUVUsoh0
-	Po2WGp8rpLiilKYTFoNBu0+6qnwr7j6wXSUAoGMamXnizJMSik8ChUfeqN/0B1E=
-X-Google-Smtp-Source: AGHT+IFoYlmtpsWdgvMPxvGs7eJfyjWqsqw9gnGUp40hjYN1Kr5Ldm4oK/sCXthGMZ1ofVfV6QaO1g==
-X-Received: by 2002:a17:90b:2b45:b0:2ff:52e1:c49f with SMTP id 98e67ed59e1d1-30e8322595fmr23855447a91.26.1747766038141;
-        Tue, 20 May 2025 11:33:58 -0700 (PDT)
-Received: from google.com ([2620:15c:9d:2:533f:75df:b89f:cab5])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-30f364907dfsm2051710a91.23.2025.05.20.11.33.57
+        d=1e100.net; s=20230601; t=1747774878; x=1748379678;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fp00wL1Y5X4So9ecfuqEeP+KnSz3366qtgJ3q9p0wb0=;
+        b=sN6GXSAI8jYH2oDgPTb1szSK010keqHQl39jRSFq6hjDSovn7+pohBf41hDlVZoVuW
+         VTQzuBkSgj9+biH6cnJM4rS7ukZI5UWqkfkh1fIqADNOvfnwDR6aMqxEKGRQfofnHC+5
+         K2VvU2adGOkovX9PYZ1THiwLVMR3cdOGN8XX4uJ2uztMF41qzW7clmjRVEZhxGUzyi3G
+         /bGzWTCu/hpEE0XNeLEvMUlZn1FmgAQXoj4I3mACichC5RsnpZScKNo7vnSeh1Esqu6P
+         7Y8lraX2J4LJe2lSPXebQLfYK7E/mN5g90E6Nk0RXbuPsL85y2vABuiR2RLivvSHv9OH
+         9IDQ==
+X-Gm-Message-State: AOJu0YwkT2jvM/awmLnQ2khD6GJ9DZw6HWDXSIG1AisU2pZO9TX8Bh81
+	5aR8YNrxnQuV03bEMRFWbDbBGb+V86bZDISrWPKKz5HBMza20L6iYThRRtFzFIWMcwQ=
+X-Gm-Gg: ASbGncsVgdVM37RdCQDRkQlyAiAgXPN+Shjj0MUiLhSHeOqUdVjAXZg1jAExwd/LezM
+	4BrYLJfLzskUIkzalJaXpFF1i7VhOjfAFbqxhR5GnPz8LCzZD9TBNWgx1xd3cwKomPk3EAvFg/+
+	8m+OmOp7smP3VS/cg1tilGX2ToWQUTTZVrp9IZKDnZwuQyXf5XvDhBn7EJze6V3NjHZYxMSM+ax
+	fSylHFS7322MZ67ez5lo0KDu16cpbKgW+L2K7l8NFOhX0re5QsadtJ2JvAqzsySaKXbSdRFU2+R
+	PGdaBK4MX98uyRM3i5kGUiEIrFr56IbwrvKjbcm3q3MoUBX80T/N02/W
+X-Google-Smtp-Source: AGHT+IGSTahwpAX7LljmxRMHFEq8h6BDIh7NR6hXlQMHRupeFNvQ3f4OkyspW4HnfY3R6YHMmE2VdQ==
+X-Received: by 2002:a05:6870:9f0b:b0:2d5:c61f:c2db with SMTP id 586e51a60fabf-2e3c856789dmr10978508fac.34.1747774877841;
+        Tue, 20 May 2025 14:01:17 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:1d00:d77b:6acc:2ad1:8ff])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-2e3c0b2e1a7sm2348470fac.48.2025.05.20.14.01.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 May 2025 11:33:57 -0700 (PDT)
-Date: Tue, 20 May 2025 11:33:55 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-Cc: nuno.sa@analog.com, linux-gpio@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-input@vger.kernel.org, 
-	Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
-	Liu Ying <victor.liu@nxp.com>
-Subject: Re: [PATCH v3 17/22] Input: adp5585: Add Analog Devices ADP5585/89
- support
-Message-ID: <j2zueeyfq2mkr56b5pauektzqwfmo4ob32fcb7r5oavwdunsab@6knd5a6raaef>
-References: <20250512-dev-adp5589-fw-v3-0-092b14b79a88@analog.com>
- <20250512-dev-adp5589-fw-v3-17-092b14b79a88@analog.com>
- <gdhn57zkmt5fyq33qsvdbpq3k7ofzycm24ligd3hw2cwdqkn5y@z4sk2arp6ssn>
- <0b17ac3e9de55715fe1cd5f836a87664ae6161dd.camel@gmail.com>
+        Tue, 20 May 2025 14:01:17 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+Date: Tue, 20 May 2025 16:00:44 -0500
+Subject: [PATCH 1/3] dt-bindings: pwm: adi,axi-pwmgen: update documentation
+ link
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0b17ac3e9de55715fe1cd5f836a87664ae6161dd.camel@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250520-pwm-axi-pwmgen-add-external-clock-v1-1-6cd63cc001c8@baylibre.com>
+References: <20250520-pwm-axi-pwmgen-add-external-clock-v1-0-6cd63cc001c8@baylibre.com>
+In-Reply-To: <20250520-pwm-axi-pwmgen-add-external-clock-v1-0-6cd63cc001c8@baylibre.com>
+To: Michael Hennerich <michael.hennerich@analog.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Trevor Gamblin <tgamblin@baylibre.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=958; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=Afxwdef0Jf2HSBiCXGtNVmL7wJWM8CS0UaEkxk3+CTk=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBoLO2IrLVVgQ3h8rSSHUUEyxF54KwLtl/rLRTCT
+ OAEf9luY5KJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaCztiAAKCRDCzCAB/wGP
+ wE6EB/94O78sxYgWzSctw9RteUH86F2DfXA1xiszLyiQGRtJk7SeXtAjGkqO+26/tXVytEcCz6i
+ GHvXeDef+Mbe7TT5SAzSnQJtNQO/LuPK7SUW+fbuZ0IDn0q0/0nxhiq980u7kywwCgrkifV6F07
+ GeecSV69FuPrW/oBynvN8VCo9OLvJZ+tGoUEcHr/kNC9UU2BqMibSrI0sORevRZeUnaCr7hs2xK
+ V9eJSNjoVt4wCGXwmO+7H8mPahMUy1gYJ4lhWihhyBJjienA41y6eIO9rcBOSGaF/vD2Hbd3mD9
+ zaI3VD1PmSaDClwS+T8yZYeMEcnDlKtIUJdR3OPVgyxU1guU
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-On Tue, May 20, 2025 at 09:32:53AM +0100, Nuno Sá wrote:
-> On Mon, 2025-05-19 at 15:29 -0700, Dmitry Torokhov wrote:
-> > Hi Nuno,
-> > 
-> > On Mon, May 12, 2025 at 01:39:09PM +0100, Nuno Sá via B4 Relay wrote:
-> > > +
-> > > +	for (pin = 0; pin < n_pins; pin++) {
-> > > +		if (keypad_pins[pin] >= adp5585->info->n_pins) {
-> > > +			error = dev_err_probe(dev, -EINVAL,
-> > > +					      "Invalid keypad pin(%u)
-> > > defined\n",
-> > > +					      keypad_pins[pin]);
-> > > +			goto out_free_map;
-> > > +		}
-> > > +
-> > > +		if (test_and_set_bit(keypad_pins[pin], adp5585->pin_usage))
-> > > {
-> > > +			error = dev_err_probe(dev, -EBUSY,
-> > > +					      "Keypad pin(%u) already
-> > > used\n",
-> > > +					      keypad_pins[pin]);
-> > > +			goto out_free_map;
-> > 
-> > This jump looked confusing, together with devm, etc. I wonder, can you
-> > move call to devm_add_action_or_reset() before the loop? It looks like
-> > it should handle completely unpopulated pin map just fine... 
-> 
-> Seemed the logical way but I agree that what you suggest makes it more simpler.
-> 
-> > 
-> > > +		}
-> > > +
-> > > +		__set_bit(keypad_pins[pin], &kpad->keypad);
-> > > +	}
-> > > +
-> > > +	error = devm_add_action_or_reset(dev, adp5585_keys_pins_free,
-> > > kpad);
-> > > +	if (error)
-> > > +		return error;
-> > > +
-> > > +	/*
-> > > +	 * Note that given that we get a mask (and the HW allows it), we
-> > > +	 * can have holes in our keypad (eg: row0, row1 and row7 enabled).
-> > > +	 * However, for the matrix parsing functions we need to pass the
-> > > +	 * number of rows/cols as the maximum row/col used plus 1. This
-> > > +	 * pretty much means we will also have holes in our SW keypad.
-> > > +	 */
-> > > +
-> > > +	rows = find_last_bit(&kpad->keypad, kpad->info->max_rows) + 1;
-> > > +	if (rows == kpad->info->max_rows + 1)
-> > > +		return dev_err_probe(dev, -EINVAL,
-> > > +				     "Now rows defined in the keypad!\n");
-> > > +
-> > > +	cols = find_last_bit(&kpad->keypad, kpad->info->max_cols + kpad-
-> > > >info->max_rows);
-> > > +	if (cols < kpad->info->max_rows)
-> > > +		return dev_err_probe(dev, -EINVAL,
-> > > +				     "No columns defined in the
-> > > keypad!\n");
-> > > +
-> > > +	cols = cols + 1 - kpad->info->max_rows;
-> > > +
-> > > +	error = matrix_keypad_build_keymap(NULL, NULL, rows, cols,
-> > > +					   kpad->keycode, kpad->input);
-> > > +	if (error)
-> > > +		return error;
-> > > +
-> > > +	kpad->row_shift = get_count_order(cols);
-> > > +
-> > > +	if (device_property_read_bool(kpad->dev, "autorepeat"))
-> > > +		__set_bit(EV_REP, kpad->input->evbit);
-> > > +
-> > > +	return adp5585_keys_check_special_events(adp5585, kpad);
-> > 
-> > 	error = adp5585_keys_check_special_events(...);
-> > 	if (error)
-> > 		return error;
-> 
-> Curious, any special reason for the above? Or is just personal preference?
+Change the documentation link to point to the location with the most
+up-to-date information.
 
-More of a personal preference, however there is some logic to it ;) - 
-in a function with multiple failure/return points such form allows for
-easy addition and/or movement of the code.
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+ Documentation/devicetree/bindings/pwm/adi,axi-pwmgen.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks.
+diff --git a/Documentation/devicetree/bindings/pwm/adi,axi-pwmgen.yaml b/Documentation/devicetree/bindings/pwm/adi,axi-pwmgen.yaml
+index 45e112d0efb4663bc7fbb3a25a12d66aa8b7492d..bc44381692054f647a160a6573dae4cff2ee3f31 100644
+--- a/Documentation/devicetree/bindings/pwm/adi,axi-pwmgen.yaml
++++ b/Documentation/devicetree/bindings/pwm/adi,axi-pwmgen.yaml
+@@ -14,7 +14,7 @@ description:
+   The Analog Devices AXI PWM generator can generate PWM signals
+   with variable pulse width and period.
+ 
+-  https://wiki.analog.com/resources/fpga/docs/axi_pwm_gen
++  https://analogdevicesinc.github.io/hdl/library/axi_pwm_gen/index.html
+ 
+ allOf:
+   - $ref: pwm.yaml#
 
 -- 
-Dmitry
+2.43.0
+
