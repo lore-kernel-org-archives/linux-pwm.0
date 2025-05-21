@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 279C2270566;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A39270567;
 	Wed, 21 May 2025 13:03:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747832589; cv=none; b=j6irgX9Sz3SstO0Tn1DFghLh7X77xYT6m89fG/ukNxFOYE3wfHaukpYNmkd4zpX+t/EH0bo6JNqZndijBcRjEe5zdlaICMP/rxwSvNBj7Ek8KrJpioU59gaMwhce7/PpEatJg89Qrhj/yAW1gPqbrUxtSI1LiNdYb082/LTnNCI=
+	t=1747832589; cv=none; b=RpZtd1/uAUc2G6KASLX07mPINCjdsSyLX2QIp98s8abQATpefwSuhKIi4n+OJBxvvLDnul7JWk14i+0IXggkVigfziqQotZMu+hU0JZYZiajU+How3kJl8S074kfazAdt4JKVnm6YksMYy6S/4gyRdoVMJn0JFkznnGrK7mc/os=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1747832589; c=relaxed/simple;
-	bh=7GJsFxwXbe0I4lrDIfW2oxpFyBlRdOaSc8elfyPwkkk=;
+	bh=crZN97wJcEkOw2Xc30SmINCPJxpGjvBBDUXBiGv6mKQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hUYvEzsQj1Pa5Q91ZVq2D0Rq7SGFumO4pe5BIKGDT0hEtZp8PW+FNplHFO3lqMb/599KLt3cjvHqsYy+TlW9+B95sHUrfxfor8ZOFIEKMRVpJgnkt/nNtMT/bMbOLalpYcGrEFopEmgILKZJNNXUxhCpwyaq/UTxoILnWciD4io=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tw8e/dzO; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=epNsLXYjKo4F7nB1uMQBxMqSTLW5v8o+dZO1t/QTF31zqABnTxgwqDeMYLwQ9Ceb7bA7Gpfb2NU5ulsdqAEZwIIk5rpc1YwvJVhN6J5km/gOsFiH4zgK3HBPlPBEWR1574W6G72fh2fI/94v1/IWj4W9iBHbtzy87lyUG5u5i+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oBu+oYXh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tw8e/dzO"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A1CC4C116D0;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oBu+oYXh"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 689C1C4CEF1;
 	Wed, 21 May 2025 13:03:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1747832588;
-	bh=7GJsFxwXbe0I4lrDIfW2oxpFyBlRdOaSc8elfyPwkkk=;
+	bh=crZN97wJcEkOw2Xc30SmINCPJxpGjvBBDUXBiGv6mKQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=tw8e/dzOQ4wKQnRFz2WwrmtuLjXlEQrVTlIQbNhUbyFvfiZwonDGBbGkb6PetA/Wt
-	 yScQsxSf7MFm6WLlPk6lew93yVji26KtaHOORMjFUd70E3dLl5z+xa1ED7pWepbhjz
-	 5amZiOsLsQVXkkH75nsZW9Gvj3MnMeXdDURixp2F/t9bPNpbI6CWhPLAGSAA2rqrTR
-	 9J9gUx+GumkbgbnDh9rXUq2Df0pQu646uvsEbztfGXOdX2RvBXCamPDSt1HfpwI5ig
-	 AIoCQNi4WFh3d5JlrP5tpRhfFV8/dpzRkWNZBj2Y2RsnAKnQs5+NLgKfuxwJhUCswT
-	 QosN5yFe1l/Dw==
+	b=oBu+oYXhFFO5qdQrGbPu/9ePsixEAW6mMjQmbbd4imQdUWur20aTqfxowpNHTRGWz
+	 NYYWxPGg8mvPn9hHhQP4hLf3sBBBAKLQiP/SpqXSPyBNdG8Hwtu3GLFr7n8pA5I1bH
+	 qnh/PejNIXTOrXbSvQ00SLTDc5ydAG0g2NXaXP0GX7tD0wKynpoixDRMsRkqbjn935
+	 qKc5MNr5pA5HTIcx+E4LpPBuwKlJsoQcf8gWyugOQVVVZg+C7id/IlMw3Wff9ZhfSE
+	 JxpgrHgjGm0l1tMyTRELL65/wZdzIcwMC/QCituwpFAnWLmO9cRiOUO3WWPNFtWSWl
+	 Ym+ct7Z0Newtg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE54C54E71;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 654EDC54E92;
 	Wed, 21 May 2025 13:03:08 +0000 (UTC)
 From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Wed, 21 May 2025 14:03:00 +0100
-Subject: [PATCH v4 10/20] pwm: adp5585: add support for adp5589
+Date: Wed, 21 May 2025 14:02:56 +0100
+Subject: [PATCH v4 06/20] mfd: adp5585: refactor how regmap defaults are
+ handled
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250521-dev-adp5589-fw-v4-10-f2c988d7a7a0@analog.com>
+Message-Id: <20250521-dev-adp5589-fw-v4-6-f2c988d7a7a0@analog.com>
 References: <20250521-dev-adp5589-fw-v4-0-f2c988d7a7a0@analog.com>
 In-Reply-To: <20250521-dev-adp5589-fw-v4-0-f2c988d7a7a0@analog.com>
 To: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
@@ -55,11 +56,11 @@ Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>,
  Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
  Liu Ying <victor.liu@nxp.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1747832589; l=7015;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1747832589; l=5705;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=KgSsmJVmv9mJYq/+nbwCvOenSctqzE/dlk6wmuWT7C8=;
- b=/af0efxoyAJixdUXKJxmXQkrCJyl9QN7KBBXbZywMuiPUkGVxJrpwaiz/ssBEpS+MznBbVZU8
- 5r66gu8tlUUCDJbL1aYQAwKPIpmwUIZ3rVv3OosngtsK2JbofpEUy4J
+ bh=+bKRPRHDlB5UcRH6Y+ry0EWgZpgBRDClxWSUnGqJZE0=;
+ b=gYczCTw9p7/GoJPHSI1pXb4smrf7B0zW1ynsJnAYuc/G6infEBGx6L5dv1HGYJRsyfkhI7BzC
+ cmQxfRizV3ECoQLmiZy7CXRp8LxSd1/Pz2htX344JMnwozk6tdazF6w
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -69,205 +70,167 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sá <nuno.sa@analog.com>
 
-Add support for the adp5589 I/O expander. From a PWM point of view it is
-pretty similar to adp5585. Main difference is the address
-of registers meaningful for configuring the PWM.
+The only thing changing between variants is the regmap default
+registers. Hence, instead of having a regmap condig for every variant
+(duplicating lots of fields), add a chip info type of structure with a
+regmap id to identify which defaults to use and populate regmap_config
+at runtime given a template plus the id. Also note that between
+variants, the defaults can be the same which means the chip info
+structure can be used in more than one compatible.
+
+This will also make it simpler adding new chips with more variants.
+
+Also note that the chip info structures are deliberately not const as
+they will also contain lots of members that are the same between the
+different devices variants and so we will fill those at runtime.
 
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/pwm/pwm-adp5585.c   | 73 ++++++++++++++++++++++++++++++++++-----------
- include/linux/mfd/adp5585.h |  3 ++
- 2 files changed, 59 insertions(+), 17 deletions(-)
+ drivers/mfd/adp5585.c       | 74 +++++++++++++++++++++------------------------
+ include/linux/mfd/adp5585.h | 10 ++++++
+ 2 files changed, 44 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/pwm/pwm-adp5585.c b/drivers/pwm/pwm-adp5585.c
-index c8821035b7c1412a55a642e6e8a46b66e693a5af..58f83f16134c0bb66f5a20c041622bf4e3905668 100644
---- a/drivers/pwm/pwm-adp5585.c
-+++ b/drivers/pwm/pwm-adp5585.c
-@@ -32,21 +32,33 @@
- #define ADP5585_PWM_MIN_PERIOD_NS	(2ULL * NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ)
- #define ADP5585_PWM_MAX_PERIOD_NS	(2ULL * 0xffff * NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ)
+diff --git a/drivers/mfd/adp5585.c b/drivers/mfd/adp5585.c
+index 179dc284833ae8f39eefc6787dd2c7158dfd3ad7..672f3468bda5be6af85a5982c3626053b4cb59bf 100644
+--- a/drivers/mfd/adp5585.c
++++ b/drivers/mfd/adp5585.c
+@@ -81,42 +81,31 @@ static const u8 adp5585_regmap_defaults_04[ADP5585_MAX_REG + 1] = {
+ 	/* 0x38 */ 0x00, 0x00, 0x00, 0x00, 0x00,
+ };
  
-+struct adp5585_pwm_chip {
-+	unsigned int pwm_cfg;
-+	unsigned int pwm_offt_low;
-+	unsigned int pwm_ont_low;
-+};
+-enum adp5585_regmap_type {
+-	ADP5585_REGMAP_00,
+-	ADP5585_REGMAP_02,
+-	ADP5585_REGMAP_04,
++/* -1 since the enum starts at 1 for error checking in i2c_get_match_data()*/
++static const u8 *adp5585_regmap_defaults[ADP5585_MAX - 1] = {
++	[ADP5585_00 - 1] = adp5585_regmap_defaults_00,
++	[ADP5585_01 - 1] = adp5585_regmap_defaults_00,
++	[ADP5585_02 - 1] = adp5585_regmap_defaults_02,
++	[ADP5585_03 - 1] = adp5585_regmap_defaults_00,
++	[ADP5585_04 - 1] = adp5585_regmap_defaults_04,
+ };
+ 
+-static const struct regmap_config adp5585_regmap_configs[] = {
+-	[ADP5585_REGMAP_00] = {
+-		.reg_bits = 8,
+-		.val_bits = 8,
+-		.max_register = ADP5585_MAX_REG,
+-		.volatile_table = &adp5585_volatile_regs,
+-		.cache_type = REGCACHE_MAPLE,
+-		.reg_defaults_raw = adp5585_regmap_defaults_00,
+-		.num_reg_defaults_raw = sizeof(adp5585_regmap_defaults_00),
+-	},
+-	[ADP5585_REGMAP_02] = {
+-		.reg_bits = 8,
+-		.val_bits = 8,
+-		.max_register = ADP5585_MAX_REG,
+-		.volatile_table = &adp5585_volatile_regs,
+-		.cache_type = REGCACHE_MAPLE,
+-		.reg_defaults_raw = adp5585_regmap_defaults_02,
+-		.num_reg_defaults_raw = sizeof(adp5585_regmap_defaults_02),
+-	},
+-	[ADP5585_REGMAP_04] = {
+-		.reg_bits = 8,
+-		.val_bits = 8,
+-		.max_register = ADP5585_MAX_REG,
+-		.volatile_table = &adp5585_volatile_regs,
+-		.cache_type = REGCACHE_MAPLE,
+-		.reg_defaults_raw = adp5585_regmap_defaults_04,
+-		.num_reg_defaults_raw = sizeof(adp5585_regmap_defaults_04),
+-	},
++static const struct regmap_config adp5585_regmap_config_template = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = ADP5585_MAX_REG,
++	.volatile_table = &adp5585_volatile_regs,
++	.cache_type = REGCACHE_MAPLE,
++	.num_reg_defaults_raw = ADP5585_MAX_REG + 1,
+ };
+ 
++static void adp5585_fill_regmap_config(const struct adp5585_dev *adp5585,
++				       struct regmap_config *regmap_config)
++{
++	*regmap_config = adp5585_regmap_config_template;
++	regmap_config->reg_defaults_raw = adp5585_regmap_defaults[adp5585->variant - 1];
++}
 +
-+struct adp5585_pwm {
-+	const struct adp5585_pwm_chip *info;
-+	struct regmap *regmap;
-+	unsigned int ext_cfg;
-+};
-+
- static int pwm_adp5585_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ static void adp5585_remove_devices(void *dev)
  {
--	struct regmap *regmap = pwmchip_get_drvdata(chip);
-+	struct adp5585_pwm *adp5585_pwm = pwmchip_get_drvdata(chip);
+ 	mfd_remove_devices(dev);
+@@ -157,7 +146,7 @@ static void adp5585_osc_disable(void *data)
  
- 	/* Configure the R3 pin as PWM output. */
--	return regmap_update_bits(regmap, ADP5585_PIN_CONFIG_C,
-+	return regmap_update_bits(adp5585_pwm->regmap, adp5585_pwm->ext_cfg,
- 				  ADP5585_R3_EXTEND_CFG_MASK,
- 				  ADP5585_R3_EXTEND_CFG_PWM_OUT);
- }
- 
- static void pwm_adp5585_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ static int adp5585_i2c_probe(struct i2c_client *i2c)
  {
--	struct regmap *regmap = pwmchip_get_drvdata(chip);
-+	struct adp5585_pwm *adp5585_pwm = pwmchip_get_drvdata(chip);
- 
--	regmap_update_bits(regmap, ADP5585_PIN_CONFIG_C,
-+	regmap_update_bits(adp5585_pwm->regmap, adp5585_pwm->ext_cfg,
- 			   ADP5585_R3_EXTEND_CFG_MASK,
- 			   ADP5585_R3_EXTEND_CFG_GPIO4);
- }
-@@ -55,14 +67,16 @@ static int pwm_adp5585_apply(struct pwm_chip *chip,
- 			     struct pwm_device *pwm,
- 			     const struct pwm_state *state)
- {
--	struct regmap *regmap = pwmchip_get_drvdata(chip);
-+	struct adp5585_pwm *adp5585_pwm = pwmchip_get_drvdata(chip);
-+	const struct adp5585_pwm_chip *info = adp5585_pwm->info;
-+	struct regmap *regmap = adp5585_pwm->regmap;
- 	u64 period, duty_cycle;
- 	u32 on, off;
- 	__le16 val;
+-	const struct regmap_config *regmap_config;
++	struct regmap_config regmap_config;
+ 	struct adp5585_dev *adp5585;
+ 	unsigned int id;
  	int ret;
+@@ -168,8 +157,13 @@ static int adp5585_i2c_probe(struct i2c_client *i2c)
  
- 	if (!state->enabled) {
--		regmap_clear_bits(regmap, ADP5585_PWM_CFG, ADP5585_PWM_EN);
-+		regmap_clear_bits(regmap, info->pwm_cfg, ADP5585_PWM_EN);
- 		return 0;
- 	}
+ 	i2c_set_clientdata(i2c, adp5585);
  
-@@ -83,41 +97,43 @@ static int pwm_adp5585_apply(struct pwm_chip *chip,
- 	off = div_u64(period, NSEC_PER_SEC / ADP5585_PWM_OSC_FREQ_HZ) - on;
- 
- 	val = cpu_to_le16(off);
--	ret = regmap_bulk_write(regmap, ADP5585_PWM_OFFT_LOW, &val, 2);
-+	ret = regmap_bulk_write(regmap, info->pwm_offt_low, &val, 2);
- 	if (ret)
- 		return ret;
- 
- 	val = cpu_to_le16(on);
--	ret = regmap_bulk_write(regmap, ADP5585_PWM_ONT_LOW, &val, 2);
-+	ret = regmap_bulk_write(regmap, info->pwm_ont_low, &val, 2);
- 	if (ret)
- 		return ret;
- 
- 	/* Enable PWM in continuous mode and no external AND'ing. */
--	ret = regmap_update_bits(regmap, ADP5585_PWM_CFG,
-+	ret = regmap_update_bits(regmap, info->pwm_cfg,
- 				 ADP5585_PWM_IN_AND | ADP5585_PWM_MODE |
- 				 ADP5585_PWM_EN, ADP5585_PWM_EN);
- 	if (ret)
- 		return ret;
- 
--	return regmap_set_bits(regmap, ADP5585_PWM_CFG, ADP5585_PWM_EN);
-+	return regmap_set_bits(regmap, info->pwm_cfg, ADP5585_PWM_EN);
- }
- 
- static int pwm_adp5585_get_state(struct pwm_chip *chip,
- 				 struct pwm_device *pwm,
- 				 struct pwm_state *state)
- {
--	struct regmap *regmap = pwmchip_get_drvdata(chip);
-+	struct adp5585_pwm *adp5585_pwm = pwmchip_get_drvdata(chip);
-+	const struct adp5585_pwm_chip *info = adp5585_pwm->info;
-+	struct regmap *regmap = adp5585_pwm->regmap;
- 	unsigned int on, off;
- 	unsigned int val;
- 	__le16 on_off;
- 	int ret;
- 
--	ret = regmap_bulk_read(regmap, ADP5585_PWM_OFFT_LOW, &on_off, 2);
-+	ret = regmap_bulk_read(regmap, info->pwm_offt_low, &on_off, 2);
- 	if (ret)
- 		return ret;
- 	off = le16_to_cpu(on_off);
- 
--	ret = regmap_bulk_read(regmap, ADP5585_PWM_ONT_LOW, &on_off, 2);
-+	ret = regmap_bulk_read(regmap, info->pwm_ont_low, &on_off, 2);
- 	if (ret)
- 		return ret;
- 	on = le16_to_cpu(on_off);
-@@ -127,7 +143,7 @@ static int pwm_adp5585_get_state(struct pwm_chip *chip,
- 
- 	state->polarity = PWM_POLARITY_NORMAL;
- 
--	regmap_read(regmap, ADP5585_PWM_CFG, &val);
-+	regmap_read(regmap, info->pwm_cfg, &val);
- 	state->enabled = !!(val & ADP5585_PWM_EN);
- 
- 	return 0;
-@@ -142,18 +158,28 @@ static const struct pwm_ops adp5585_pwm_ops = {
- 
- static int adp5585_pwm_probe(struct platform_device *pdev)
- {
-+	const struct platform_device_id *id = platform_get_device_id(pdev);
- 	struct device *dev = &pdev->dev;
- 	struct adp5585_dev *adp5585 = dev_get_drvdata(dev->parent);
-+	struct adp5585_pwm *adp5585_pwm;
- 	struct pwm_chip *chip;
- 	int ret;
- 
--	chip = devm_pwmchip_alloc(dev, ADP5585_PWM_CHAN_NUM, 0);
-+	chip = devm_pwmchip_alloc(dev, ADP5585_PWM_CHAN_NUM,
-+				  sizeof(*adp5585_pwm));
- 	if (IS_ERR(chip))
- 		return PTR_ERR(chip);
- 
-+	adp5585_pwm = pwmchip_get_drvdata(chip);
-+	adp5585_pwm->regmap = adp5585->regmap;
-+	adp5585_pwm->ext_cfg = adp5585->regs->ext_cfg;
-+
-+	adp5585_pwm->info = (const struct adp5585_pwm_chip *)id->driver_data;
-+	if (!adp5585_pwm->info)
+-	regmap_config = i2c_get_match_data(i2c);
+-	adp5585->regmap = devm_regmap_init_i2c(i2c, regmap_config);
++	adp5585->variant = (enum adp5585_variant)(uintptr_t)i2c_get_match_data(i2c);
++	if (!adp5585->variant)
 +		return -ENODEV;
 +
- 	device_set_of_node_from_dev(dev, dev->parent);
- 
--	pwmchip_set_drvdata(chip, adp5585->regmap);
- 	chip->ops = &adp5585_pwm_ops;
- 
- 	ret = devm_pwmchip_add(dev, chip);
-@@ -163,8 +189,21 @@ static int adp5585_pwm_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static const struct adp5585_pwm_chip adp5589_pwm_chip_info = {
-+	.pwm_cfg = ADP5585_PWM_CFG,
-+	.pwm_offt_low = ADP5585_PWM_OFFT_LOW,
-+	.pwm_ont_low = ADP5585_PWM_ONT_LOW,
-+};
++	adp5585_fill_regmap_config(adp5585, &regmap_config);
 +
-+static const struct adp5585_pwm_chip adp5585_pwm_chip_info = {
-+	.pwm_cfg = ADP5589_PWM_CFG,
-+	.pwm_offt_low = ADP5589_PWM_OFFT_LOW,
-+	.pwm_ont_low = ADP5589_PWM_ONT_LOW,
-+};
-+
- static const struct platform_device_id adp5585_pwm_id_table[] = {
--	{ "adp5585-pwm" },
-+	{ "adp5585-pwm", (kernel_ulong_t)&adp5585_pwm_chip_info },
-+	{ "adp5589-pwm", (kernel_ulong_t)&adp5589_pwm_chip_info },
- 	{ /* Sentinel */ }
++	adp5585->regmap = devm_regmap_init_i2c(i2c, &regmap_config);
+ 	if (IS_ERR(adp5585->regmap))
+ 		return dev_err_probe(&i2c->dev, PTR_ERR(adp5585->regmap),
+ 				     "Failed to initialize register map\n");
+@@ -226,19 +220,19 @@ static DEFINE_SIMPLE_DEV_PM_OPS(adp5585_pm, adp5585_suspend, adp5585_resume);
+ static const struct of_device_id adp5585_of_match[] = {
+ 	{
+ 		.compatible = "adi,adp5585-00",
+-		.data = &adp5585_regmap_configs[ADP5585_REGMAP_00],
++		.data = (void *)ADP5585_00,
+ 	}, {
+ 		.compatible = "adi,adp5585-01",
+-		.data = &adp5585_regmap_configs[ADP5585_REGMAP_00],
++		.data = (void *)ADP5585_01,
+ 	}, {
+ 		.compatible = "adi,adp5585-02",
+-		.data = &adp5585_regmap_configs[ADP5585_REGMAP_02],
++		.data = (void *)ADP5585_02,
+ 	}, {
+ 		.compatible = "adi,adp5585-03",
+-		.data = &adp5585_regmap_configs[ADP5585_REGMAP_00],
++		.data = (void *)ADP5585_03,
+ 	}, {
+ 		.compatible = "adi,adp5585-04",
+-		.data = &adp5585_regmap_configs[ADP5585_REGMAP_04],
++		.data = (void *)ADP5585_04,
+ 	},
+ 	{ /* sentinel */ }
  };
- MODULE_DEVICE_TABLE(platform, adp5585_pwm_id_table);
 diff --git a/include/linux/mfd/adp5585.h b/include/linux/mfd/adp5585.h
-index df352e39bfd62a17c39b52b0291b18ac4d047d69..2a2bccccaa6ca5cba8ff5716c0d3b82d9541432c 100644
+index 016033cd68e46757aca86d21dd37025fd354b801..2813b20e638b6e73ef198e43af07ef29ff25f273 100644
 --- a/include/linux/mfd/adp5585.h
 +++ b/include/linux/mfd/adp5585.h
-@@ -118,6 +118,9 @@
- #define ADP5589_GPO_DATA_OUT_A		0x2a
- #define ADP5589_GPO_OUT_MODE_A		0x2d
- #define		ADP5589_GPIO_DIRECTION_A	0x30
-+#define ADP5589_PWM_OFFT_LOW		0x3e
-+#define ADP5589_PWM_ONT_LOW		0x40
-+#define ADP5589_PWM_CFG			0x42
- #define ADP5589_PIN_CONFIG_D		0x4C
- #define ADP5589_INT_EN			0x4e
- #define ADP5589_MAX_REG			ADP5589_INT_EN
+@@ -119,8 +119,18 @@
+ 
+ struct regmap;
+ 
++enum adp5585_variant {
++	ADP5585_00 = 1,
++	ADP5585_01,
++	ADP5585_02,
++	ADP5585_03,
++	ADP5585_04,
++	ADP5585_MAX
++};
++
+ struct adp5585_dev {
+ 	struct regmap *regmap;
++	enum adp5585_variant variant;
+ };
+ 
+ #endif
 
 -- 
 2.49.0
