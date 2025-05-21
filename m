@@ -1,96 +1,107 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B0F253946;
-	Wed, 21 May 2025 10:10:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3A202AE90;
+	Wed, 21 May 2025 13:03:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747822211; cv=none; b=o8clj6uzxY6qhYc48vZgUG3CIjO1xUwfhNHpAYieyU/xVfRjSfRuXPx+kqSBE0bBFxs4AHpvyxg2P6cs+hLyQ1UyhIdnUa085xL0N8TajPb/AzVYjKZVgHIFnyKQTYmKZIEOTFjO4Rnpyh7tY5FJwAKtg3NtyPfjxaf3as4jSh8=
+	t=1747832588; cv=none; b=RfNXbpQ6cNoL5w5o+z9d9rosNSdKQhMFOrqNIZiVOTokYAfKhX3B7uHBDJoZ7AUd1DnFRc2+nj5fttzib++KyGOL2A90+BQG+Fh41TKAulj1+Jt8zdbm28cnkgkZGzO5QiInFNgIbMkaqutD1R0mn5G/TeNuYBfb3bvRIjqqYws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747822211; c=relaxed/simple;
-	bh=swnBOTBW5kgGvMn+NskR73AMAOrDSaeB0gWqSlNKv0o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CYuo19cDegWeJ97MHaZcdd8U1VulaTuXCv8MuPBdPrxTj7zu2yDOvAmv/UDmIx+phHERmIUM1REzrLm8Ea59DuNdxzo76CDAy/Wx7XxKjhsvM+zzV66RPZqjMQtncI/OQZyH5CInBay8b0cDmGnPO5Xrr0Q7QzXO0Zf5bmbRopM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oTMREkfT; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1747832588; c=relaxed/simple;
+	bh=GBi36R9hW0zw2IkpPUS+VIpfCR1bDRxMW6EOkIPpIRE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=dPcIq4EOEml3FseG9d4LJ2Zm4JhBLkx2DIaBZe4wPmGW43CnlG0RmfIHfs//Gg1D+QE9iV5hKU5YDv+A/0w0h/3X+GrRkD6K2y5EPqmbSdx8l+5Iu1JohofUY/KozVWLi616/mOGxT7Pxnat2A7XcIfWWlyWoemuwgrOcgHWGr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VK+iVQ+B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oTMREkfT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA2DEC4CEE4;
-	Wed, 21 May 2025 10:10:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VK+iVQ+B"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 533ACC4CEF4;
+	Wed, 21 May 2025 13:03:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747822209;
-	bh=swnBOTBW5kgGvMn+NskR73AMAOrDSaeB0gWqSlNKv0o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oTMREkfTQOsHFui2XykL0jzMk1dCllCjt/RVy22+sSQT3JQy9St3jU5oWBXDWXmvC
-	 XTiXHEB9BlWcOyYQalfHFRZ/CT2jeyBzQYpND4N/cNRQIqt4qEm8qgHp5mWjMMdi36
-	 pjMuWxItudzD1L+qa9GAW9MutGmC/36SsrA0UrnknSTvVSHaMp28YZ4E7zQ/Q0as1c
-	 BbC+VspzpcXCNP8ZjUBV4/vKDV8Ga69SNb/uN0AJXWDtg6fyLVJFd8BIRQvbdEPiT8
-	 LMUufE1mYxwfmsx6cEkXN3lF2E2KojpMMPen9Rw0DaRH9ZNE+mD1s7NWUh5kL6hn14
-	 But+2YoQkXUyA==
-Date: Wed, 21 May 2025 12:10:06 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Trevor Gamblin <tgamblin@baylibre.com>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-pwm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] pwm: axi-pwmgen: add support for external clock
-Message-ID: <20250521-nostalgic-pretty-hedgehog-d08a77@kuoka>
-References: <20250520-pwm-axi-pwmgen-add-external-clock-v1-0-6cd63cc001c8@baylibre.com>
- <20250520-pwm-axi-pwmgen-add-external-clock-v1-3-6cd63cc001c8@baylibre.com>
+	s=k20201202; t=1747832588;
+	bh=GBi36R9hW0zw2IkpPUS+VIpfCR1bDRxMW6EOkIPpIRE=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=VK+iVQ+BARGs4fUC6x5sAVWfYKaStqU6IU5+KQD1DuNt3t6KIdx7qqSBby7kmW0Rc
+	 hu2ncNDqiNlqFl3LLrCc/i0ZuCiptVaZUH8wkM/4njydq02cMMtBEFyr8KVXuRs2xQ
+	 dTdyYvRBgGJVdSATiJtvgbcsFJBInRWCvKFz/MRhBT2HqQhfUlvnGNWutqeDACzeYj
+	 fOWPiAev8uEVvB5JaM7vH8wQ7BKRC6Fn+AGxyuemBjZdrbS7Ht/dn5eBy1gJu2bNXV
+	 Hay6SIWyKAXaLZ27s8mcRRpD0PYBubedfcwWo7thxkzSennDHtLwG+TlYXkKx8JexD
+	 Y4FwtV5xlIJvQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7CBC3ABC9;
+	Wed, 21 May 2025 13:03:08 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Wed, 21 May 2025 14:02:54 +0100
+Subject: [PATCH v4 04/20] mfd: adp5585: make use of MFD_CELL_NAME()
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20250520-pwm-axi-pwmgen-add-external-clock-v1-3-6cd63cc001c8@baylibre.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250521-dev-adp5589-fw-v4-4-f2c988d7a7a0@analog.com>
+References: <20250521-dev-adp5589-fw-v4-0-f2c988d7a7a0@analog.com>
+In-Reply-To: <20250521-dev-adp5589-fw-v4-0-f2c988d7a7a0@analog.com>
+To: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-input@vger.kernel.org
+Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
+ Liu Ying <victor.liu@nxp.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1747832588; l=959;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=lWJD4WSbbbXIDQFlsGUw2j1/tWcmQ+L/pW1P3Qzf3s8=;
+ b=tqGyHpFbEEb9Uo/27+9LFnSapZV5D01DxD02izZ0O4nhV/HenPk3GHL8uiSotuzWyWNqCTQhH
+ XzCBGm/25K4CZwMfrr37amYMxIEuxvXvXuUE+g8rLR3NAJqCdxpWr15
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On Tue, May 20, 2025 at 04:00:46PM GMT, David Lechner wrote:
-> Add support for external clock to the AXI PWM generator driver.
-> 
-> In most cases, there is a separate external clock that drives the PWM
-> output separate from the peripheral clock. This allows enabling both
-> clocks.
-> 
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-> ---
->  drivers/pwm/pwm-axi-pwmgen.c | 23 ++++++++++++++++++++---
->  1 file changed, 20 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-axi-pwmgen.c b/drivers/pwm/pwm-axi-pwmgen.c
-> index 4337c8f5acf055fc87dc134f2a70b99b0cb5ede6..67992a7561ec0440b1c1fa327f844a0602872771 100644
-> --- a/drivers/pwm/pwm-axi-pwmgen.c
-> +++ b/drivers/pwm/pwm-axi-pwmgen.c
-> @@ -280,9 +280,26 @@ static int axi_pwmgen_probe(struct platform_device *pdev)
->  	ddata = pwmchip_get_drvdata(chip);
->  	ddata->regmap = regmap;
->  
-> -	clk = devm_clk_get_enabled(dev, NULL);
-> -	if (IS_ERR(clk))
-> -		return dev_err_probe(dev, PTR_ERR(clk), "failed to get clock\n");
-> +	/* When clock-names is present, there is a separate ext clock. */
-> +	if (device_property_present(dev, "clock-names")) {
+From: Nuno Sá <nuno.sa@analog.com>
 
-No. List is ordered, you do not need such dance at all.
+Use the helper macro. No functional change intended...
 
-> +		struct clk *axi_clk;
-> +
-> +		axi_clk = devm_clk_get_enabled(dev, "axi");
-> +		if (IS_ERR(axi_clk))
-> +			return dev_err_probe(dev, PTR_ERR(axi_clk),
-> +					     "failed to get axi clock\n");
-> +
-> +		clk = devm_clk_get_enabled(dev, "ext");
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/mfd/adp5585.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-So that's messing the order, which confirms my question from the
-binding.
+diff --git a/drivers/mfd/adp5585.c b/drivers/mfd/adp5585.c
+index f3b74f7d6040413d066eb6dbaecfa3d5e6ee06bd..179dc284833ae8f39eefc6787dd2c7158dfd3ad7 100644
+--- a/drivers/mfd/adp5585.c
++++ b/drivers/mfd/adp5585.c
+@@ -4,6 +4,7 @@
+  *
+  * Copyright 2022 NXP
+  * Copyright 2024 Ideas on Board Oy
++ * Copyright 2025 Analog Devices Inc.
+  */
+ 
+ #include <linux/array_size.h>
+@@ -24,8 +25,8 @@ enum {
+ };
+ 
+ static const struct mfd_cell adp5585_devs[ADP5585_DEV_MAX] = {
+-	{ .name = "adp5585-gpio", },
+-	{ .name = "adp5585-pwm", },
++	MFD_CELL_NAME("adp5585-gpio"),
++	MFD_CELL_NAME("adp5585-pwm"),
+ };
+ 
+ static const struct regmap_range adp5585_volatile_ranges[] = {
 
-No. List has a strict order, you cannot change it just because you want
-to add optional clock.
+-- 
+2.49.0
 
-Best regards,
-Krzysztof
 
