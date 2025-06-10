@@ -1,227 +1,226 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F66F224896
-	for <linux-pwm@vger.kernel.org>; Mon,  9 Jun 2025 22:09:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CF1027F72E;
+	Tue, 10 Jun 2025 07:35:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749506991; cv=none; b=hqxmVMhkfsj7GdxzYgPkxi9aG5XIZFBmTUVNlkHjwbbEn4zsSij2eoguiJ2ObmOUXMC9ZT9S5fLASUWr5VIE7KVSXDQYYQFXk1vV0qw2jFfwqxvNlY0dK41/RwvPJDSGJtNO0xuvHQW9KtzIChOFpgSs5uJ5mcLTzPnOsyMLo9M=
+	t=1749540930; cv=none; b=ZTCgyzyRQDyvLMixAcXlU+3KY5Jt1TcjxlXG3zgt6ytxK/nRboWHzyE7m+f19VRjA9YlEiVSqdc0u2BQxT8YJ3siiIa0oJMAd+VScpNuOlI/MHPCaLEmnt17N5xwNduKpNyt5w1I8BSoiV/SbrYUYv2ZUsdzZ7S/xAE59qEgN9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749506991; c=relaxed/simple;
-	bh=FNpQEWBDwyXEagWhUdVdgd4CDdreeQKyCibBUA0RLwg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j8QVYq+bFmJUDdGN1XfP8AKHagUCmfjxArBIgGAaJyunj88CmOZ/jIFpRiXRh6cajHdZZcy5Dz+iUfe/PsJCwwFdMw6JWxQfG++QqjE862BKSv1NHyha+JI00Mqzbd4YppbvPpf4TU3JBnB9DRvVj/CfyWgreKKM3tLICYfdvFU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pdp7.com; spf=none smtp.mailfrom=pdp7.com; dkim=pass (2048-bit key) header.d=pdp7-com.20230601.gappssmtp.com header.i=@pdp7-com.20230601.gappssmtp.com header.b=Vln5kUvI; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pdp7.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=pdp7.com
+	s=arc-20240116; t=1749540930; c=relaxed/simple;
+	bh=sdFAjldeGCQJJ20ICafL2xOY+VAsXnig4eCBQzH8MzQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=MAQyS6aSLVmvr+7ICybvzpNDtYzsdfUwgegpL1vFOXT8tScyoQCg602wFapeCqJiF5XAcaImJ1Q9QHdmcwIqfdmaloGMaG+QBp1Rz/ZePaFpS11ebZgzDGnVVlDgmF8sDHTAVCLLU3PKLimoS2a7gUp5AAHN4NSiVpDFBPtHxAU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Y3s0gkXc; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=pdp7-com.20230601.gappssmtp.com header.i=@pdp7-com.20230601.gappssmtp.com header.b="Vln5kUvI"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-235a3dd4f0dso33159675ad.0
-        for <linux-pwm@vger.kernel.org>; Mon, 09 Jun 2025 15:09:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pdp7-com.20230601.gappssmtp.com; s=20230601; t=1749506987; x=1750111787; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=aXUrxDWDE1rz5GW1/FGYZyrQqnRIMW5wSQ+qWnYbv8k=;
-        b=Vln5kUvIPrZdzjaks/7fN/NQHnZl41fDDD0sqlbHFHdhLx8kpfxnY7F2rTCuK/3JeZ
-         eNdKwuuTgauR5Tgm7hFB2B0RecEXSyvBKNcd8irZkt9oC4XLNLawVUvjaQo66ZuOf8a9
-         oI4Ks0n1gLfAuhGTtTWcjEkFH//4w1F8CbtzfByrbY5uZGd7RbgA6ew2Jl/u7RGq2saE
-         ukfx5vtvGZjn6CJPlm6ncJG0nYFdpMudjSV/0dNPQWPkpw3mf6XZU7ht0cCK0x1GrYUX
-         dBV4x1NvT3n9jC6VPG0Jguoj30KDM2JwzgK0EgfVmv1NnQfb/maWg9jrCQbrMYj1H2St
-         6fYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749506987; x=1750111787;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=aXUrxDWDE1rz5GW1/FGYZyrQqnRIMW5wSQ+qWnYbv8k=;
-        b=lg705ZiaMH7OTGskb7nKm0N92107vlSBFnqYaFk4ZYddc9k0IjyrATyhYn9d8C9rge
-         TyGsGsJ/jnhDpEhBJPMDMyrvzNCf7ZuC1HvEcL7bVsedEzZFge7vv7vJW3AeE1EFYQSm
-         dgF3WGpmXRSOsHnDJ7fLr6+nezrZX3qoWcOO5zuI+Onrt2xfxlYLB0byn9WzxA8og+Lh
-         907Q55J45FIjnK+jdVm0+dXZ9CpVu5P5yz53d9kVdJ24/W/dbQZBB4TmepBP/KaLh8WG
-         buQfZAr+96NxaMhki27krgkNLen7odoRcwUm7uxjgki/h0Vqveyq2Cz51tD7TPju0t4a
-         /esw==
-X-Forwarded-Encrypted: i=1; AJvYcCXPSjxdC/IhQALD3TchoSaWgS+KNTRGLDDOq7ODJhmcwVarDn00WlaZKv8tPtN1V3WhihYueCXRoTg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyCiULmDRI3769VFP9D3BbIbzhsBXsn3SmTRR8YVeWFJ55eJUO3
-	sH6HFt1ovkU/qqdmTwX90pfjO8/iCIKylV9P3y4FmcGlsGOLjU3HA1P39WuFMT6W2nQ=
-X-Gm-Gg: ASbGncuRVV9gzDttIi+gHi++WFDjH2qncMfjWkadoem9dmxphIbLOw2PzMnLrMijSYY
-	Whbrc+KNvINYv958Q0XkNZjfJd6pfoDDSVggEVZba1Ked7aym4OqreNZ1svU3dz3H4CPErHJB+N
-	eCAcfR/Q9dgg1xEFzGaI8vAUlEPEAmj/Nr3VX6Oj07CCqm6xOOrxsONLt0soy3ij1h94d08QyIA
-	JWiY2XPUBaV/HEgQgOYcT7ybe3sN0WELZ8ZjiXX6VYNfevzNB/nXL4s4gIyHFkuSluk8yd3vHQ8
-	N9EuDSQEEFHlSIYzXO5/dWYroZ0SyXfOC8db60C7lPm8ATQOUbPmNe0Yxlt1da6l+iSWMyg5rw=
-	=
-X-Google-Smtp-Source: AGHT+IEmC2cH56sY2Qaxupk/vYIkWpD0/7VSc7N28TaMH7rVO1PkIEtaUHkk3Y4nHUVSyRzLwMzWGg==
-X-Received: by 2002:a17:902:e888:b0:234:8a4a:ada5 with SMTP id d9443c01a7336-23638390915mr2466705ad.37.1749506987465;
-        Mon, 09 Jun 2025 15:09:47 -0700 (PDT)
-Received: from x1 (97-120-245-201.ptld.qwest.net. [97.120.245.201])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3134b13ba47sm6079708a91.40.2025.06.09.15.09.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Jun 2025 15:09:46 -0700 (PDT)
-Date: Mon, 9 Jun 2025 15:09:45 -0700
-From: Drew Fustini <drew@pdp7.com>
-To: Michal Wilczynski <m.wilczynski@samsung.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>, Guo Ren <guoren@kernel.org>,
-	Fu Wei <wefu@redhat.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	rust-for-linux@vger.kernel.org, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH RFC 5/6] riscv: dts: thead: Add PVT node
-Message-ID: <aEdbqSjpHyHx54UF@x1>
-References: <20250524-rust-next-pwm-working-fan-for-sending-v1-0-bdd2d5094ff7@samsung.com>
- <CGME20250524211525eucas1p244963b69e0531c95a9052e4a7a1d1e01@eucas1p2.samsung.com>
- <20250524-rust-next-pwm-working-fan-for-sending-v1-5-bdd2d5094ff7@samsung.com>
- <aDVxDJi0KkWXiPCK@x1>
- <61eecafb-8ad1-4306-88cb-a032eefb2e48@samsung.com>
- <aDyOyg6eqDEFg2ua@x1>
- <9e8a12db-236d-474c-b110-b3be96edf057@samsung.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Y3s0gkXc"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55A6g8Bp023177;
+	Tue, 10 Jun 2025 03:35:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=d5ryt
+	0pI/G+b2LsAq1xg2LHy7S0hE2LV6WmwFRL/qQU=; b=Y3s0gkXcOZsYIfIHascyf
+	TZ4RQ09U8fFOvvTtxJ+2SjBiwYOgTe8Ek4r7XiH9dAns0qn+JlOscAQzNDEkSyAg
+	1cVA0R75MVRA3bhaPnDFj9bJCOZc8RP/7uEd6a+p/+2ZsZVXg0yMNKom2e7cIzFo
+	KEkxshqwiNoLo6CUAPnbhQXuQImtJ0R4hgINzKVD36+37yAlc0ooFrzfzYEXF3hJ
+	Ce+BNAjHDkciqWgngOm5aLXrReHpw/BnyixzJdxrq+ZJsuiolalt6PqdsgdR8gxd
+	YtNw7jdqVqjww8khFIDErqPAi8HLC8nNJO/WaVYb7+8CofDs0fKKSgVmX+6Kh7gE
+	g==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 476fc30bk3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Jun 2025 03:35:07 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 55A7Z5sN013927
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 10 Jun 2025 03:35:05 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.10; Tue, 10 Jun
+ 2025 03:35:05 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
+ Transport; Tue, 10 Jun 2025 03:35:05 -0400
+Received: from HYB-DlYm71t3hSl.ad.analog.com (HYB-DlYm71t3hSl.ad.analog.com [10.44.3.51])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 55A7YkMh002608;
+	Tue, 10 Jun 2025 03:34:59 -0400
+From: Jorge Marques <jorge.marques@analog.com>
+Date: Tue, 10 Jun 2025 09:34:36 +0200
+Subject: [PATCH v3 3/8] docs: iio: New docs for ad4052 driver
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9e8a12db-236d-474c-b110-b3be96edf057@samsung.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20250610-iio-driver-ad4052-v3-3-cf1e44c516d4@analog.com>
+References: <20250610-iio-driver-ad4052-v3-0-cf1e44c516d4@analog.com>
+In-Reply-To: <20250610-iio-driver-ad4052-v3-0-cf1e44c516d4@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        David Lechner
+	<dlechner@baylibre.com>,
+        =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        Andy
+ Shevchenko <andy@kernel.org>,
+        =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+	<ukleinek@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, Jorge Marques <jorge.marques@analog.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1749540886; l=3632;
+ i=jorge.marques@analog.com; s=20250303; h=from:subject:message-id;
+ bh=sdFAjldeGCQJJ20ICafL2xOY+VAsXnig4eCBQzH8MzQ=;
+ b=TwD251L7wL7SF8OIpJ2r64y34FTdwapbKPHi2dCGNrDcghYCYRc/fG0RwaeIkkiT8bgyDWryr
+ 0N85bXruQTMA8TWp77mZ1z5Z8lu8LFP9SMWNxLs1uxPWTSzFF8l0WTJ
+X-Developer-Key: i=jorge.marques@analog.com; a=ed25519;
+ pk=NUR1IZZMH0Da3QbJ2tBSznSPVfRpuoWdhBzKGSpAdbg=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: j07RvrN39XEziBFan2LZDy1lGuy3Ms2U
+X-Proofpoint-ORIG-GUID: j07RvrN39XEziBFan2LZDy1lGuy3Ms2U
+X-Authority-Analysis: v=2.4 cv=LtaSymdc c=1 sm=1 tr=0 ts=6847e02b cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=gAnH3GRIAAAA:8 a=qLcM2r4-lCJhFG8HUqIA:9
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjEwMDA1NiBTYWx0ZWRfXzpVQ4queZZZy
+ xUGdoSjjhvzWMbfMg34/3+5PNi3TDLkMA3b0cznv/pITyQAuKRPW5iEuD7IsHLMJafUEQ7MVZ5T
+ SKUDqNLXc+Ina0xDs0aHW5y+Xce6K4+9gmdQWN55lk3G7sUcfINjPZk90PnXETSU5eL978nNLmE
+ JxDBSrXJxndNv6vN3m7OiZ5nX4l6EM2ga+mDb6omfDK1RpLrEYgLku1BYQKTiJp3mzpjc6JZVun
+ EKZtDsKImNJZxSTi/FN6Jl/ZAjDZsuCj8O1efZpn9CLLIukBBBc1/oubnJM3HdE8oOIZ7kZkXnw
+ xwSsW0iTmjPKwLXbKpPS3rU5aMl+MfZrZew9iR5LVij+C09RRzrcg62PAY78IsF7uf22Q34yR5R
+ m2wr/AN3euASO0c3AKfHUIg2XceTJow/YBtC5e0E0o5C5AnSsxou4lnUi+65PU8Bsry020Ou
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-06-10_02,2025-06-09_02,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 malwarescore=0 priorityscore=1501 phishscore=0
+ lowpriorityscore=0 mlxlogscore=999 impostorscore=0 mlxscore=0 spamscore=0
+ clxscore=1015 suspectscore=0 bulkscore=0 classifier=spam authscore=0
+ authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2506100056
 
-On Mon, Jun 09, 2025 at 08:49:57PM +0200, Michal Wilczynski wrote:
-> 
-> 
-> On 6/1/25 19:32, Drew Fustini wrote:
-> > On Sun, Jun 01, 2025 at 09:50:52AM +0200, Michal Wilczynski wrote:
-> >>
-> >>
-> >> On 5/27/25 10:00, Drew Fustini wrote:
-> >>> On Sat, May 24, 2025 at 11:14:59PM +0200, Michal Wilczynski wrote:
-> >>>> Add PVT DT node for thermal sensor.
-> >>>>
-> >>>> Signed-off-by: Michal Wilczynski <m.wilczynski@samsung.com>
-> >>>> ---
-> >>>>  arch/riscv/boot/dts/thead/th1520.dtsi | 11 +++++++++++
-> >>>>  1 file changed, 11 insertions(+)
-> >>>>
-> >>>> diff --git a/arch/riscv/boot/dts/thead/th1520.dtsi b/arch/riscv/boot/dts/thead/th1520.dtsi
-> >>>> index f24e12d7259fabcfbdc2dfa966d759db06684ab4..faf5c3aaf209b24cd99ddc377a88e08a8cce24fe 100644
-> >>>> --- a/arch/riscv/boot/dts/thead/th1520.dtsi
-> >>>> +++ b/arch/riscv/boot/dts/thead/th1520.dtsi
-> >>>> @@ -648,6 +648,17 @@ padctrl_aosys: pinctrl@fffff4a000 {
-> >>>>  			thead,pad-group = <1>;
-> >>>>  		};
-> >>>>  
-> >>>> +		pvt: pvt@fffff4e000 {
-> >>>> +			compatible = "moortec,mr75203";
-> >>>> +			reg = <0xff 0xfff4e000 0x0 0x80>,
-> >>>> +			      <0xff 0xfff4e080 0x0 0x100>,
-> >>>> +			      <0xff 0xfff4e180 0x0 0x680>,
-> >>>> +			      <0xff 0xfff4e800 0x0 0x600>;
-> >>>> +			reg-names = "common", "ts", "pd", "vm";
-> >>>> +			clocks = <&aonsys_clk>;
-> >>>> +			#thermal-sensor-cells = <1>;
-> >>>> +		};
-> >>>> +
-> >>>>  		gpio@fffff52000 {
-> >>>>  			compatible = "snps,dw-apb-gpio";
-> >>>>  			reg = <0xff 0xfff52000 0x0 0x1000>;
-> >>>>
-> >>>> -- 
-> >>>> 2.34.1
-> >>>>
-> >>>
-> >>> I found that on my lpi4a that boot while hang after applying this patch.
-> >>> I think that it is related to clocks as boot finished okay when using
-> >>> clk_ignore_unused on the kernel cmdline. Do you happen have that in your
-> >>> kernel cmdline?
-> >>>
-> >>> I need to investigate further to understand which clocks are causing the
-> >>> problem.
-> >>>
-> >>> Thanks,
-> >>> Drew
-> >>>
-> >>
-> >> Thanks for your earlier message. I've investigated, and you were right
-> >> about the clocks – the specific one causing the hang is CLK_CPU2AON_X2H.
-> > 
-> > Thanks for tracking down the clk causing the hang. I can confirm that
-> > this fixes the boot hang:
-> > 
-> > diff --git a/drivers/clk/thead/clk-th1520-ap.c b/drivers/clk/thead/clk-th1520-ap.c
-> > index ebfb1d59401d..4d0179b8c17c 100644
-> > --- a/drivers/clk/thead/clk-th1520-ap.c
-> > +++ b/drivers/clk/thead/clk-th1520-ap.c
-> > @@ -792,7 +792,7 @@ static CCU_GATE(CLK_AON2CPU_A2X, aon2cpu_a2x_clk, "aon2cpu-a2x", axi4_cpusys2_ac
-> >                 0x134, BIT(8), 0);
-> >  static CCU_GATE(CLK_X2X_CPUSYS, x2x_cpusys_clk, "x2x-cpusys", axi4_cpusys2_aclk_pd,
-> >                 0x134, BIT(7), 0);
-> > -static CCU_GATE(CLK_CPU2AON_X2H, cpu2aon_x2h_clk, "cpu2aon-x2h", axi_aclk_pd, 0x138, BIT(8), 0);
-> > +static CCU_GATE(CLK_CPU2AON_X2H, cpu2aon_x2h_clk, "cpu2aon-x2h", axi_aclk_pd, 0x138, BIT(8), CLK_IGNORE_UNUSED);
-> >  static CCU_GATE(CLK_CPU2PERI_X2H, cpu2peri_x2h_clk, "cpu2peri-x2h", axi4_cpusys2_aclk_pd,
-> >                 0x140, BIT(9), CLK_IGNORE_UNUSED);
-> >  static CCU_GATE(CLK_PERISYS_APB1_HCLK, perisys_apb1_hclk, "perisys-apb1-hclk", perisys_ahb_hclk_pd,
-> > 
-> >>
-> >> This appears to be an AHB bus clock required for CPU access to the AON
-> >> domain. My proposed solution is to make the pvt node a child of a new
-> >> parent bus node in the Device Tree. This new "AON bus" node would then
-> >> explicitly request and manage CLK_CPU2AON_X2H, ensuring it's enabled
-> >> when its children are accessed.
-> >>
-> >> What are your thoughts on this approach?
-> > 
-> > I think that is a good approach. The alternative would be to just add
-> > CLK_IGNORE_UNUSED like above. I've done it before but it is a bit of a
-> > hack.
-> 
-> I've followed up on the idea of creating a parent bus node. My attempt
-> using simple-pm-bus ran into a couple of significant issues that suggest
-> it's not the correct path.
-> 
-> First, the TRM doesn't seem to specify an address range for this bus.
-> The range I used in my test was only for the PVT controller itself,
-> which would be an incorrect abstraction in the device tree.
-> 
-> Second, simple-pm-bus requires its child nodes to use the PM runtime API
-> (pm_runtime_resume_and_get, etc.). Forcing this on consumer drivers like
-> the PVT sensor seems like an inappropriate dependency.
-> 
-> Additionally, I discovered that the PWM driver has a similar problem,
-> silently failing because another clock, CLK_PERISYS_APB1_HCLK, is not
-> enabled.
-> 
-> The most correct solution likely involves refactoring the clock parent
-> relationships in clk-th1520-ap.c. However, as a more immediate and less
-> invasive fix, I propose we apply the CLK_IGNORE_UNUSED flag for both
-> CLK_CPU2AON_X2H and CLK_PERISYS_APB1_HCLK in the v2 patch. This will fix
-> the boot hang and the PWM issue while we consider the larger clock
-> driver changes separately.
-> 
-> Does that sound like a reasonable plan for the v2 series?
+This adds a new page to document how to use the ad4052 ADC driver.
 
-Yes, I think that sounds like a good plan. I am okay with adding
-CLK_IGNORE_UNUSED for CLK_CPU2AON_X2H and CLK_PERISYS_APB1_HCLK until a
-better solution is found.
+Signed-off-by: Jorge Marques <jorge.marques@analog.com>
+---
+ Documentation/iio/ad4052.rst | 71 ++++++++++++++++++++++++++++++++++++++++++++
+ Documentation/iio/index.rst  |  1 +
+ MAINTAINERS                  |  1 +
+ 3 files changed, 73 insertions(+)
 
-I like the idea of revisting the parent relationships in the driver. I
-added CLK_IGNORE_UNUSED to several clocks in order to fix boot hangs
-when I removed clk_ignore_unused from the kernel cmdline. However, I
-don't think that I addressed the root cause.
+diff --git a/Documentation/iio/ad4052.rst b/Documentation/iio/ad4052.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..25e55eb72e167bd2b2195ba789b45ce402869b0f
+--- /dev/null
++++ b/Documentation/iio/ad4052.rst
+@@ -0,0 +1,71 @@
++.. SPDX-License-Identifier: GPL-2.0-only
++
++=============
++AD4052 driver
++=============
++
++ADC driver for Analog Devices Inc. AD4052 and similar devices. The module name
++is ``ad4052``.
++
++Supported devices
++=================
++
++The following chips are supported by this driver:
++
++* `AD4050 <https://www.analog.com/AD4050>`_
++* `AD4052 <https://www.analog.com/AD4052>`_
++* `AD4056 <https://www.analog.com/AD4056>`_
++* `AD4058 <https://www.analog.com/AD4058>`_
++
++Wiring modes
++============
++
++The ADC uses SPI 4-wire mode, and contain two programmable GPIOs and a CNV pin.
++
++The CNV pin is exposed as the ``cnv-gpios`` and triggers an ADC conversion. GP1
++is ADC conversion ready signal and GP0 Threshold event interrupt, both exposed
++as interrupts.
++
++Omit ``cnv-gpios`` and tie CNV and CS together to use the rising edge of the CS
++as the CNV signal.
++
++Device attributes
++=================
++
++The ADC contains only one channel with following attributes:
++
++.. list-table:: Channel attributes
++   :header-rows: 1
++
++   * - Attribute
++     - Description
++   * - ``in_voltage_calibscale``
++     - Scale factor to multiply the raw value.
++   * - ``in_voltage_raw``
++     - Raw ADC voltage value
++   * - ``in_voltage_oversampling_ratio``
++     - Enable the device's burst averaging mode to over sample using the
++       internal sample rate.
++   * - ``in_voltage_oversampling_ratio_available``
++     - List of available oversampling values. Value 1 disable the burst
++       averaging mode.
++
++Also contain the following device attributes:
++
++.. list-table:: Device attributes
++   :header-rows: 1
++
++   * - Attribute
++     - Description
++   * - ``oversamling_frequency``
++     - Frequency used in the burst averaging mode, sets the device internal
++       sample rate when the mode is activated.
++   * - ``oversampling_frequency_available``
++     - List of available sample rates.
++
++Low-power mode
++==============
++
++The device enters low-power mode on idle to save power. Enabling an event puts
++the device out of the low-power since the ADC autonomously samples to assert
++the event condition.
+diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+index 2d6afc5a8ed54a90cd8d5723f0dc5212b8593d16..ef03022b8a6374c14d7b1b2e51e5c487e1d37df9 100644
+--- a/Documentation/iio/index.rst
++++ b/Documentation/iio/index.rst
+@@ -22,6 +22,7 @@ Industrial I/O Kernel Drivers
+    ad3552r
+    ad4000
+    ad4030
++   ad4052
+    ad4695
+    ad7191
+    ad7380
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d000c7de7ff9eba390f87593bc2b1847f966f48b..32afd568b68e45616c291d689a35ab905d421cd1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1342,6 +1342,7 @@ M:	Jorge Marques <jorge.marques@analog.com>
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad4052.yaml
++F:	Documentation/iio/ad4052.rst
+ 
+ ANALOG DEVICES INC AD4080 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
 
-Thanks,
-Drew
-.
+-- 
+2.49.0
+
