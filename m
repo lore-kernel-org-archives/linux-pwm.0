@@ -1,153 +1,226 @@
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 919B5230BD0;
-	Sat, 21 Jun 2025 17:21:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA2908F7D;
+	Sun, 22 Jun 2025 14:28:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750526495; cv=none; b=t+pzOkNWahJpyJrpr+HglH8sPjZMy0SivgRhkL+Zii3+AzA/Jgd6HEdLY7Hj/PpJFkbmvL/BNDcVMJPLpecAnrpSQUi06NMLPp4xikzOAFhRjrcVS9x+oxDHqfw1LgyEymwHmZX5lyB881zLlBK7jJ4kl7Jzv80+qQvO8l4i8TI=
+	t=1750602511; cv=none; b=j1KxvtTx6XQERDbPKYg0SS19lhlEQzsVT1559e/MXqzcazjeIQuneAHESXFl8vy5v36nLSQDFkvjlFTO5n3bvh171YlEXI05YCNKfmE+zbzSffrZf1VUk0zkG67HFKCKgfkDYXDGj4qIOk1lW41bK7KvqLZUt1GD8a5qynG82pY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750526495; c=relaxed/simple;
-	bh=z3jk5cgOJrrfERdNtJgPjyi/kDzSGuReHKlJyTwiFBU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HMQRscDUdrJlUYmIgiOTD643GfRw/I1wZJJasRBAab3zs9mj63Be5faAkycUSSieEM2aGJtom4F24EIWzVz9v6EMA4zSPLhoXHMV82F3Tyzv4TLOqXsgAq8kBE6fyXzxHJkIQLIA0e9knpJ9BaUJclKhvq7vVfNqa6sHpqvoHGg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=f+rzv4kK; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=TdnOdTuE; arc=none smtp.client-ip=80.241.56.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1750602511; c=relaxed/simple;
+	bh=SaJ+23WO+7OYLKZg2pBhG5ynSdOJOwyYxgfo0mfMTAU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FnQhU1/mJNhZGPL4RnGnx+e8zmyJYmGVry9yBjv2R7GnmGJwf1rarmilb3Tr1BJ0m0dFwwASe1x3jMuUxJEUldmhryUoawg6jJP7rR6qsoL1WYPNygPr+rxEIxlwP12aj2ghVWCx01YIbrYf8psn9/7y6H4v3nogJMyxaM/uVUI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D10j0628; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="f+rzv4kK";
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="TdnOdTuE"
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:b231:465::2])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4bPh2s509yz9sdS;
-	Sat, 21 Jun 2025 19:21:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1750526485;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=V7qck9y7mYjLxwnPq+4JOmurFxi8yE/QamrmDP0kVuE=;
-	b=f+rzv4kKgwAP6tHHx/+lLgdyStsacGJ61yyrFmV3n8fW8iJpkyx9NW74Tol8bdcUnW76MZ
-	lUX+FxqVliy4rw/sxGr7L4znCvt+Eyo4f9daBTAN0uG0WxL+x1nGWYx7UjMFJMZw2aig9G
-	VJ8UjwFtanTOxLy8VcGEIUszmg+dsIBZC1OcMnS4YpY339oWSYu/X5zm4doI3EQdJdekBE
-	/5BY1vCIcl0GT6ky7k2AWmlvrsaIkC0fMQ58XNTnZDrlvTCSMz2x0YnwMGAbB9b5BaCD6q
-	cw+kxINUzE+GiGs9CXprCsdpdF4adFnViqqZTOS4K9UxkIzlSPQwaM6YqiBbgw==
-From: Marek Vasut <marek.vasut+renesas@mailbox.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1750526483;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=V7qck9y7mYjLxwnPq+4JOmurFxi8yE/QamrmDP0kVuE=;
-	b=TdnOdTuEYlAIATfxEAKCnTsNtnKdyPfYLpaFcVGZ6J+52jCedDA22ZLT8HKEKHKvd8WKPk
-	V4cykQpSBi32nKV9Y7glUNEXoikmXIuLSyQf00BLyztFKe45MoJz8Nlxll2glU9JowbZPW
-	/qDauSWaZUFlil7SDDe6CnLc8ZjNOdCkra07wFpfQSM4dRnzuc+p1N3pWrMpDa/oz5n+bk
-	g9zw+AiE2W/AxPZ0jsqaisXasQCRJGLFa1NRAPEall8CAwooCXa0oivIcOF6f7L8wSu4pl
-	bLruFd2/oYm5qxaOjdgJWiJldvSZzZS4iJzJNy2q2xQ6BIZxjwaSMsF8EDi2Uw==
-To: linux-pwm@vger.kernel.org
-Cc: Marek Vasut <marek.vasut+renesas@mailbox.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v4 2/3] dt-bindings: pwm: argon40,fan-hat: Document Argon40 Fan HAT
-Date: Sat, 21 Jun 2025 19:19:55 +0200
-Message-ID: <20250621172056.160855-2-marek.vasut+renesas@mailbox.org>
-In-Reply-To: <20250621172056.160855-1-marek.vasut+renesas@mailbox.org>
-References: <20250621172056.160855-1-marek.vasut+renesas@mailbox.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D10j0628"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1274BC4CEE3;
+	Sun, 22 Jun 2025 14:28:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750602511;
+	bh=SaJ+23WO+7OYLKZg2pBhG5ynSdOJOwyYxgfo0mfMTAU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=D10j0628NEW6t1Yz28rXWveZauB0RAPAaYdmBWO16drJYElLVgXh/dwbAYTk+Eh+a
+	 SUCmKfuvh4hPvKHw5TOXs5BX+W9nGHuCguz+8dOnEk6JHCKkWj36PdV8Blx4Inr6dm
+	 4vVuXkyh2IG7blnaUj+bQ5grtdhiDgKomD7BfHuOPNX+Rr6Uwpdtprjk95X2EaIi23
+	 rCRhMmu2UnWT6pOVcpNH/TUIKHdIbyBsZkPM0yMnc2ydczdlFrOziMMak212iIzGvg
+	 uGbjC9KXvHmbl9TeCAjifUoGl38x+RXdmedo9HQyE+RmTvSJlmviYBLQ1rBILhPziv
+	 iW+rtFFvJ7lBw==
+Date: Sun, 22 Jun 2025 15:28:20 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jorge Marques <jorge.marques@analog.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3 4/8] iio: adc: Add support for ad4052
+Message-ID: <20250622152820.7333c88e@jic23-huawei>
+In-Reply-To: <0e8bd9ff-ae2e-486b-8beb-c14d7909cb7c@baylibre.com>
+References: <20250610-iio-driver-ad4052-v3-0-cf1e44c516d4@analog.com>
+	<20250610-iio-driver-ad4052-v3-4-cf1e44c516d4@analog.com>
+	<20250614110812.39af2c41@jic23-huawei>
+	<c89f4b2f-0892-4f63-b9b4-5ae55b477c01@baylibre.com>
+	<20250621170824.249c6b0c@jic23-huawei>
+	<0e8bd9ff-ae2e-486b-8beb-c14d7909cb7c@baylibre.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.48; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-MBO-RS-META: yxepinm3qcgo7qsu9zqjhnyoy6jd3scf
-X-MBO-RS-ID: 25d5be38f4f20944991
-X-Rspamd-Queue-Id: 4bPh2s509yz9sdS
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Document trivial PWM on Argon40 Fan HAT, which is a RaspberryPi
-blower fan hat which can be controlled over I2C.
+On Sat, 21 Jun 2025 11:13:58 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-Signed-off-by: Marek Vasut <marek.vasut+renesas@mailbox.org>
----
-Cc: "Uwe Kleine-König" <ukleinek@kernel.org>
-Cc: Conor Dooley <conor+dt@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc: Rob Herring <robh@kernel.org>
-Cc: devicetree@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org
----
-V2: Implement dedicated binding document
-V3: Update the description and pwm-cells
-V4: Drop | from description and fix up pwm-cells = <2> in example
----
- .../bindings/pwm/argon40,fan-hat.yaml         | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/argon40,fan-hat.yaml
+> On 6/21/25 11:08 AM, Jonathan Cameron wrote:
+> > On Mon, 16 Jun 2025 09:54:52 -0500
+> > David Lechner <dlechner@baylibre.com> wrote:
+> >   
+> >> On 6/14/25 5:08 AM, Jonathan Cameron wrote:  
+> >>> On Tue, 10 Jun 2025 09:34:37 +0200
+> >>> Jorge Marques <jorge.marques@analog.com> wrote:
+> >>>     
+> >>>> The AD4052/AD4058/AD4050/AD4056 are versatile, 16-bit/12-bit, successive
+> >>>> approximation register (SAR) analog-to-digital converter (ADC) that
+> >>>> enables low-power, high-density data acquisition solutions without
+> >>>> sacrificing precision. This ADC offers a unique balance of performance
+> >>>> and power efficiency, plus innovative features for seamlessly switching
+> >>>> between high-resolution and low-power modes tailored to the immediate
+> >>>> needs of the system. The AD4052/AD4058/AD4050/AD4056 are ideal for
+> >>>> battery-powered, compact data acquisition and edge sensing applications.
+> >>>>    
+> >>
+> >> ...
+> >>  
+> >>>> +static int ad4052_update_xfer_raw(struct iio_dev *indio_dev,
+> >>>> +				   struct iio_chan_spec const *chan)
+> >>>> +{
+> >>>> +	struct ad4052_state *st = iio_priv(indio_dev);
+> >>>> +	const struct iio_scan_type *scan_type;
+> >>>> +	struct spi_transfer *xfer = &st->xfer;
+> >>>> +
+> >>>> +	scan_type = iio_get_current_scan_type(indio_dev, chan);
+> >>>> +	if (IS_ERR(scan_type))
+> >>>> +		return PTR_ERR(scan_type);
+> >>>> +
+> >>>> +	xfer->rx_buf = st->raw;
+> >>>> +	xfer->bits_per_word = scan_type->realbits;
+> >>>> +	xfer->len = scan_type->realbits == 24 ? 4 : 2;    
+> >>>
+> >>> This is a little odd. I'm not sure what happens with len not dividing
+> >>> into a whole number of bits per word chunks.
+> >>> Maybe a comment?    
+> >>
+> >> Even better, there is now spi_bpw_to_bytes() for this.
+> >>  
+> >>>     
+> >>>> +	xfer->speed_hz = AD4052_SPI_MAX_ADC_XFER_SPEED(st->vio_uv);
+> >>>> +
+> >>>> +	return 0;
+> >>>> +}    
+> >>>
+> >>>     
+> >>
+> >> ...
+> >>  
+> >>>     
+> >>>> +static int __ad4052_read_chan_raw(struct ad4052_state *st, int *val)
+> >>>> +{
+> >>>> +	struct spi_device *spi = st->spi;
+> >>>> +	struct spi_transfer t_cnv = {};
+> >>>> +	int ret;
+> >>>> +
+> >>>> +	reinit_completion(&st->completion);
+> >>>> +
+> >>>> +	if (st->cnv_gp) {
+> >>>> +		gpiod_set_value_cansleep(st->cnv_gp, 1);
+> >>>> +		gpiod_set_value_cansleep(st->cnv_gp, 0);
+> >>>> +	} else {
+> >>>> +		ret = spi_sync_transfer(spi, &t_cnv, 1);    
+> >>>
+> >>> Add a comment for this.   I can't immediately spot documentation on what
+> >>> a content free transfer actually does.  I assume pulses the chip select?
+> >>> is that true for all SPI controllers?    
+> >>
+> >> Should be. Setting .delay in the xfer would also make it more
+> >> clear that this is doing.
+> >>  
+> >>>     
+> >>>> +		if (ret)
+> >>>> +			return ret;
+> >>>> +	}
+> >>>> +	/*
+> >>>> +	 * Single sample read should be used only for oversampling and
+> >>>> +	 * sampling frequency pairs that take less than 1 sec.
+> >>>> +	 */
+> >>>> +	if (st->gp1_irq) {
+> >>>> +		ret = wait_for_completion_timeout(&st->completion,
+> >>>> +						  msecs_to_jiffies(1000));
+> >>>> +		if (!ret)
+> >>>> +			return -ETIMEDOUT;
+> >>>> +	}
+> >>>> +
+> >>>> +	ret = spi_sync_transfer(spi, &st->xfer, 1);
+> >>>> +	if (ret)
+> >>>> +		return ret;
+> >>>> +
+> >>>> +	if (st->xfer.len == 2)
+> >>>> +		*val = sign_extend32(*(u16 *)(st->raw), 15);
+> >>>> +	else
+> >>>> +		*val = sign_extend32(*(u32 *)(st->raw), 23);
+> >>>> +
+> >>>> +	return ret;
+> >>>> +}    
+> >>>     
+> >>
+> >> ...
+> >>  
+> >>>> +
+> >>>> +static int ad4052_debugfs_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+> >>>> +				     unsigned int writeval, unsigned int *readval)
+> >>>> +{
+> >>>> +	struct ad4052_state *st = iio_priv(indio_dev);
+> >>>> +	int ret;
+> >>>> +
+> >>>> +	if (!iio_device_claim_direct(indio_dev))    
+> >>>
+> >>> For these guards in the debugfs callback, please add a comment on why they
+> >>> are needed.   We've had a lot of questions about these recently and I'd
+> >>> like it to be clear to people when they should cut and paste these and when
+> >>> not.    
+> >>
+> >> The reason I started doing this is that running the iio_info command attemps
+> >> to read register 0x00 via the debug attribute of every single iio device. So
+> >> if you run iio_info during a buffered read, and 0x00 is a valid register, it
+> >> would break things without this check.
+> >>
+> >> Ideally, general purpose commands wouldn't be poking debug registers, but
+> >> that isn't the case. But I suppose we could "fix" iio_info instead.
+> >>  
+> > 
+> > Please do fix iio_info.  It absolutely should not be poking the debug interfaces
+> > except on specific debug calls.  The user has to know they may be shooting themselves
+> > in the foot.
+> > 
+> > I'm not sure why a read of that register would break buffered capture though.
+> > Is it a volatile register or is there a sequencing problem with multiple
+> > accesses in this driver?  If it is multiple accesses then that should be
+> > prevented via a local lock, not whether we are in buffer mode or not.  
+> 
+> IIRC, this was particularly a problem on chips that have a separate data
+> capture mode and reading a register exits data capture mode.
 
-diff --git a/Documentation/devicetree/bindings/pwm/argon40,fan-hat.yaml b/Documentation/devicetree/bindings/pwm/argon40,fan-hat.yaml
-new file mode 100644
-index 000000000000..7dbc7c2cd802
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/argon40,fan-hat.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/argon40,fan-hat.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Argon40 Fan HAT PWM controller
-+
-+maintainers:
-+  - Marek Vasut <marek.vasut+renesas@mailbox.org>
-+
-+description:
-+  The trivial PWM on Argon40 Fan HAT, which is a RaspberryPi blower fan
-+  hat which can be controlled over I2C, generates a fixed 30 kHz period
-+  PWM signal with configurable 0..100% duty cycle to control the fan
-+  speed.
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: argon40,fan-hat
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      pwm@1a {
-+        compatible = "argon40,fan-hat";
-+        reg = <0x1a>;
-+        #pwm-cells = <3>;
-+      };
-+    };
--- 
-2.47.2
+Those ones I'm fine with just having a comment that hopefully means it
+doesn't get cut and paste somewhere inappropriate!
+
+Jonathan
+
+> 
+> > 
+> > So I'm fine with this defense where it is necessary for all register
+> > accesses, but I would like to see comments on why it is necessary.
+> > 
+> > Jonathan
+> >   
+> >>>     
+> >>>> +		return -EBUSY;
+> >>>> +
+> >>>> +	if (readval)
+> >>>> +		ret = regmap_read(st->regmap, reg, readval);
+> >>>> +	else
+> >>>> +		ret = regmap_write(st->regmap, reg, writeval);
+> >>>> +	iio_device_release_direct(indio_dev);
+> >>>> +	return ret;
+> >>>> +}    
+> >>>     
+> >   
+> 
 
