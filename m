@@ -1,131 +1,102 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E35EA2BEFE5;
-	Fri, 27 Jun 2025 12:12:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24AB22D662C;
+	Fri, 27 Jun 2025 14:59:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751026375; cv=none; b=LOj454kiVEOpNa1HN4GQcosU8vpqeOEOhhyitMYUt6jas0VXL4RX12ywoA0IkoZZWw1ZzDIlPoTYqvggs8WHD4Hn2XtJr7kX3MNTZJdnn7DjEr2QFUP77ZPBxVW7rwNnLmGnrRV09hosAV37TuBxsSBhCQwiUSuhD1rBo3ULvls=
+	t=1751036355; cv=none; b=BUn+mQMr8ioCAOOPi+xgC6IQtfP4UaxI0M0UdHFq5tlSbLz3AQrb7umECotBJMyucVlLf6l5Fxl3gguq9d6SfRpJGwgAPft7jZtBu/lkpO1xufkMsxEApUon06t3N1HHpGe6pT9xMXU8vhsiCKhVqzTNnkURutiksLtHX4cqVpE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751026375; c=relaxed/simple;
-	bh=C6oegAaJ6Q9XOuL86FjJu5fzYxEuJUZ71dKO2pzkkNI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ccng3ONfYUGqizahC/sQ5w3j5bzM+S4GkwoM4IYI1JdFkACaZFR1IqAz5ZOiZEOcxx+a2QtbjCbuyRy6Zy+UYj276UvUOSYPeF/tgIlZG29DuKu/jpouaOhDTCaMflfLpVPvYTMDDChqI7TdlWASRHbQEQs1GXiRzrPWC9y5T7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sftZOycl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1751036355; c=relaxed/simple;
+	bh=tYiLJujWc+iv8z7OkMU3wg41iVItPHvcvfpeKX54doE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=asreawR+3PPEzUhx92Jc4PxoAhvQ9MDo4UyM1iiQTUrW3EbLsQ78uwUyB14W7OvQWywSMKebezw9NPcW8hk9QgXKiQUepjJKvILMzTdzQxm/WcpN5pjmJWptjnkxxa9bB5W7IIGCrOsliyDifyaXxQ4YLxJYCoLR0dETU/f/BQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QLowtbml; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sftZOycl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6153C4CEE3;
-	Fri, 27 Jun 2025 12:12:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QLowtbml"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BA8D6C4CEF5;
+	Fri, 27 Jun 2025 14:59:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751026374;
-	bh=C6oegAaJ6Q9XOuL86FjJu5fzYxEuJUZ71dKO2pzkkNI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sftZOyclg0UnjLvH59IBt3TWlpu4GVOW4KuMn8IEDuNrH2vgoHXZSa2IWzQCGGp+F
-	 0iUvAhRQ8QbFdRyHnK3kbDHevMUO6/pDQ7eHfiAtXrWH9DIYuA/NwwCHmddErxrQvd
-	 EhxQxR03CgCIJuprGt35iCoWpUVCp+i+9GYzHYmqCMamk57ZxzoAcZV10yeMpZGRgH
-	 WbHRJ/tm6DnZBbQf0qPzqtq98A+E+4qpYoFnp9m+E+HUrLW2WRyDh3QCP2VZJ/mOph
-	 ss/bWH7nlFaFJ5IAA3BwX3vWRvHMEvx3OjT+YMWHWPmbhgU0blePaRiruCixQxauZ7
-	 sDQ1YZKaxcHNA==
-Date: Fri, 27 Jun 2025 14:12:46 +0200
-From: Danilo Krummrich <dakr@kernel.org>
-To: Michal Wilczynski <m.wilczynski@samsung.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Drew Fustini <drew@pdp7.com>, Guo Ren <guoren@kernel.org>,
-	Fu Wei <wefu@redhat.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org,
-	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-clk@vger.kernel.org
-Subject: Re: [PATCH v5 2/9] rust: pwm: Add core 'Device' and 'Chip' object
- wrappers
-Message-ID: <aF6Kvrk3UTC1Jj5Q@pollux>
-References: <20250623-rust-next-pwm-working-fan-for-sending-v5-0-0ca23747c23e@samsung.com>
- <CGME20250623180859eucas1p10ebb40f33046d52618ba738ebbbaa664@eucas1p1.samsung.com>
- <20250623-rust-next-pwm-working-fan-for-sending-v5-2-0ca23747c23e@samsung.com>
+	s=k20201202; t=1751036354;
+	bh=tYiLJujWc+iv8z7OkMU3wg41iVItPHvcvfpeKX54doE=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=QLowtbmlA13dsfEoH/r/fdvTymmQz6l01Spbk0Z+HrR44PrXr/wi06PEFXmsQKSp4
+	 1GaI540/fCzWNiE1SdWpCv2wndS80RDhlRMBF6AEH9svvg9wiOTnyPMOq2EehI2GNj
+	 XnJjbZQfyt/xqHvOe+b7qDAs3fw43cTyxg0ieCVk+wdTM0xA05Sqt72+dNPTO1xllI
+	 fFcEqjufhE1sHJXGIoSo3wLcpSXW2YihOR0gb6n/JteVdVwnaQUCYMETaN4yJY5IJn
+	 TCw283sVO2XwGRPe2/5QPzNY7vwUhGW8gpx2TnnIixWqY0QfbZT6KsJTvA+1Fq5dkR
+	 W+52D7vrouCgA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A62A8C77B7F;
+	Fri, 27 Jun 2025 14:59:14 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Fri, 27 Jun 2025 15:59:11 +0100
+Subject: [PATCH RESEND v7 2/7] clk: clk-axi-clkgen: make sure to include
+ mod_devicetable.h
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250623-rust-next-pwm-working-fan-for-sending-v5-2-0ca23747c23e@samsung.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250627-dev-axi-clkgen-limits-v7-2-e4f3b1f76189@analog.com>
+References: <20250627-dev-axi-clkgen-limits-v7-0-e4f3b1f76189@analog.com>
+In-Reply-To: <20250627-dev-axi-clkgen-limits-v7-0-e4f3b1f76189@analog.com>
+To: linux-clk@vger.kernel.org, linux-fpga@vger.kernel.org, 
+ dmaengine@vger.kernel.org, linux-hwmon@vger.kernel.org, 
+ linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ linux-spi@vger.kernel.org
+Cc: Stephen Boyd <sboyd@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>, 
+ Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>, 
+ Vinod Koul <vkoul@kernel.org>, Jean Delvare <jdelvare@suse.com>, 
+ Guenter Roeck <linux@roeck-us.net>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, Trevor Gamblin <tgamblin@baylibre.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Mark Brown <broonie@kernel.org>, 
+ Mike Turquette <mturquette@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1751036364; l=711;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=MyQa116l4E9wDyCm1ZTrQoq6qju7oKOtUMHCY6i0bL8=;
+ b=2tz7oTZMPTpdwccq3C4mYynkH8wyt/mU8mG8vfXZ7twDrZ5eUmC35jV6dn9UsBNjjpYAJPddt
+ p3QC9opyrKCAWBUN6nIpLPGp6B8DVFEdO+wvsbebS81sVuXMBUmiNt6
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On Mon, Jun 23, 2025 at 08:08:50PM +0200, Michal Wilczynski wrote:
-> +    /// Gets the *typed* driver-specific data associated with this chip's embedded device.
-> +    pub fn drvdata<T: 'static>(&self) -> &T {
-> +        // SAFETY: `self.as_raw()` gives a valid pwm_chip pointer.
-> +        // `bindings::pwmchip_get_drvdata` is the C function to retrieve driver data.
-> +        let ptr = unsafe { bindings::pwmchip_get_drvdata(self.as_raw()) };
-> +
-> +        // SAFETY: The only way to create a chip is through Chip::new, which initializes
-> +        // this pointer.
-> +        unsafe { &*ptr.cast::<T>() }
-> +    }
-> +
-> +    /// Sets the *typed* driver-specific data associated with this chip's embedded device.
-> +    pub fn set_drvdata<T: 'static + ForeignOwnable>(&self, data: T) {
-> +        // SAFETY: `self.as_raw()` gives a valid pwm_chip pointer.
-> +        // `bindings::pwmchip_set_drvdata` is the C function to set driver data.
-> +        // `data.into_foreign()` provides a valid `*mut c_void`.
-> +        unsafe { bindings::pwmchip_set_drvdata(self.as_raw(), data.into_foreign().cast()) }
-> +    }
+From: Nuno Sá <nuno.sa@analog.com>
 
-I think this is unsound, e.g. what happens if someone calls set_drvdata() twice?
-Then you leak the ForeignOwnable from the first call.
+The mod_devicetable header is the one to be used for struct
+of_device_id.
 
-Anyways, this does not need to be public, you should just call
-bindings::pwmchip_set_drvdata() once in Self::new().
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/clk/clk-axi-clkgen.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Please also see [1], where I introduce generic accessors for drvdata for Device.
+diff --git a/drivers/clk/clk-axi-clkgen.c b/drivers/clk/clk-axi-clkgen.c
+index 00bf799964c61a3efc042b0f3a9ec3bc8625c9da..2a95f9b220234a1245024a821c50e1eb9c104ac9 100644
+--- a/drivers/clk/clk-axi-clkgen.c
++++ b/drivers/clk/clk-axi-clkgen.c
+@@ -13,6 +13,7 @@
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/module.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/err.h>
+ 
+ #define AXI_CLKGEN_V2_REG_RESET		0x40
 
-[1] https://lore.kernel.org/lkml/20250621195118.124245-3-dakr@kernel.org/
+-- 
+2.49.0
 
-> +    /// Allocates and wraps a PWM chip using `bindings::pwmchip_alloc`.
-> +    ///
-> +    /// Returns an [`ARef<Chip>`] managing the chip's lifetime via refcounting
-> +    /// on its embedded `struct device`.
-> +    pub fn new<T: 'static + ForeignOwnable>(
-> +        parent_dev: &device::Device,
-> +        npwm: u32,
-> +        sizeof_priv: usize,
-> +	drvdata: T,
-> +    ) -> Result<ARef<Self>> {
-> +        // SAFETY: `parent_device_for_dev_field.as_raw()` is valid.
-> +        // `bindings::pwmchip_alloc` returns a valid `*mut bindings::pwm_chip` (refcount 1)
-> +        // or an ERR_PTR.
-> +        let c_chip_ptr_raw =
-> +            unsafe { bindings::pwmchip_alloc(parent_dev.as_raw(), npwm, sizeof_priv) };
-> +
-> +        let c_chip_ptr: *mut bindings::pwm_chip = error::from_err_ptr(c_chip_ptr_raw)?;
-> +
-> +        // Cast the `*mut bindings::pwm_chip` to `*mut Chip`. This is valid because
-> +        // `Chip` is `repr(transparent)` over `Opaque<bindings::pwm_chip>`, and
-> +        // `Opaque<T>` is `repr(transparent)` over `T`.
-> +        let chip_ptr_as_self = c_chip_ptr.cast::<Self>();
-> +
-> +	// SAFETY: The pointer is valid, so we can create a temporary ref to set data.
-> +        let chip_ref = unsafe { &*chip_ptr_as_self };
-> +        chip_ref.set_drvdata(drvdata);
-> +
-> +        // SAFETY: `chip_ptr_as_self` points to a valid `Chip` (layout-compatible with
-> +        // `bindings::pwm_chip`) whose embedded device has refcount 1.
-> +        // `ARef::from_raw` takes this pointer and manages it via `AlwaysRefCounted`.
-> +        Ok(unsafe { ARef::from_raw(NonNull::new_unchecked(chip_ptr_as_self)) })
-> +    }
-> +}
+
