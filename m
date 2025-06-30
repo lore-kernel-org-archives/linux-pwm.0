@@ -1,154 +1,98 @@
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80CED1DD0EF;
-	Sun, 29 Jun 2025 22:08:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0150C20E6;
+	Mon, 30 Jun 2025 05:30:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751234905; cv=none; b=K2jMTbxl2WAmwG4uNF513GZdliV+H+Pwn8SfxYF8Lgf4ahmAM32JbBx/TBdfnvJi6YLGrpaVoIDqfeGU8qa3OVnSTvLN+MLVMfIOOJzkBgJt35OltuoVdbNo0h0VvCzNhkOj0NtnRbkSQwKbHo+2NfmrwCT8YdDWWf8he4h5AaY=
+	t=1751261452; cv=none; b=hx8UuzR4kU2byjdrTOIGRezAuxMUk0W3ptMzt0yznYWouVF3SZHFmTeY+xA1WbEyGi7YkhIxHj4w6DDtjTbyB4rR7n4Z5B6VH+Fjbd9DR9jZDGDQAaT8JbfIyaOHwvBJXOPhdMgv5DL+P4ubrx+2CRvPjGAUhIfvTXfAZ/14ALc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751234905; c=relaxed/simple;
-	bh=pWKKtMJoC4ym6LjvnfUZUhWU3lNfdAw7ekqyS7Ao5aU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jjm2YPaKpwGzL1d9TUfe0VwBhZaWBxC1pbNPsAIXmcFLzbKekIxcMdhFIc7B3ENbJqxYoivFl1Whu6vnvyNt7WMxpF3sRt7SG0ANt/9Pw1S4pDcTjY2AlU3XivOp1i342EKMQTEoDfGvm72Ix7OsPzyhnV/nFmRw5S+eia87fXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=uYMTbo40; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=RI4qMhNd; arc=none smtp.client-ip=80.241.56.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1751261452; c=relaxed/simple;
+	bh=guuqdFCuq72EhMQ656ZcTL0O2E7hyfymeCKX+rDBKNM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qSQdW2AwYfv5WnVLi73yqwljRRHhrn/uvb4Tzd0Ib9rcSbvtX/BaicjWgbwPlafVSSciGqvwMDt8/MDvEr9dk4GiCjrx/ml1L/PmFj7XBrmFz+KK7rMbkGJ54WmMx/YTh9rGmnVuXnVBQUnOF2p4IHIcLuMqHnarPTcSJoDPODg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=No7wJ/7s; arc=none smtp.client-ip=209.85.210.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="uYMTbo40";
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="RI4qMhNd"
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [10.196.197.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4bVk275LVtz9scD;
-	Mon, 30 Jun 2025 00:08:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1751234895;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bMYpr1RoDIqxuxAABoByp2vpsUtIB12jb9I91/KMh3w=;
-	b=uYMTbo4038kw1qq5dAH3mjKQTqtmQ9L0fHcHDFgOxlqbaYQbF508r/2lJ7wGncK6/6OAY/
-	TlZr+TiiojdGQaEQVhHEz38UUEF69TFZfMjqpwheenoh17oTxyVhBDHw6rCWfTCa21lTKs
-	386xI8xe71gvicWnLFwSNJRr7sqbxoN5DfPPHarKeoJwX8dvmIK5vfmHKLtahvSZpOHyS/
-	BqKRx/q/RhSaE0YBucuOn199x+sy4jpvOSTXus7136pTX/WOqlzYhjjziuGH9+/mLzeuFw
-	15RuM83Ob0wPqNQmVt/Dpnaz1pkR2PQVJkzz/u7FfQ4JT5oX0L4ysfVoH34PxQ==
-From: Marek Vasut <marek.vasut+renesas@mailbox.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1751234893;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bMYpr1RoDIqxuxAABoByp2vpsUtIB12jb9I91/KMh3w=;
-	b=RI4qMhNderomo14CT2I2D7NpJcLgVrvlfBF9lecsKDoWelgnO1mUlHVNY0OPNxNgYfNNkr
-	8R/KYQQMsLfQLjd/ZmcXCX3qux5tpSN3qOzsB9FMHSVrqvbUxPFFsf5TG3IlPXsVYDqk60
-	UC/J96ZEoS61c0Ln6VwxivpyPXKLpk8iHCPJa7+qQUJUaLISzjUv1fbkzbKx81yrGE0wZM
-	EHXvRUiBJd07TvDOrg5WfgsPtavZUTF9IwH+IUcvCMm0a7HFGteHs42Fh16hjuW3dqlwoq
-	9p0aymQy4v0W3oItPXnhrp8dd8n6E38t0BEaYobYnW2m0GRZr6VD2RdJZEG4Aw==
-To: linux-pwm@vger.kernel.org
-Cc: Marek Vasut <marek.vasut+renesas@mailbox.org>,
-	"Rob Herring (Arm)" <robh@kernel.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v5 2/3] dt-bindings: pwm: argon40,fan-hat: Document Argon40 Fan HAT
-Date: Mon, 30 Jun 2025 00:07:19 +0200
-Message-ID: <20250629220757.936212-2-marek.vasut+renesas@mailbox.org>
-In-Reply-To: <20250629220757.936212-1-marek.vasut+renesas@mailbox.org>
-References: <20250629220757.936212-1-marek.vasut+renesas@mailbox.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="No7wJ/7s"
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-73c17c770a7so2255858b3a.2;
+        Sun, 29 Jun 2025 22:30:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1751261450; x=1751866250; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=YkbfJVH8Et0sYABpBPIhVucDte8hR68TivaYURJ1BDU=;
+        b=No7wJ/7s0UZupBKYcm7H75z6/EEprrSlPTgm9V0sSmn43GjcJeCUyUcE9jKS0CKU8Q
+         s4WBX5k+ZU336wrTjebFGeZT0pMstpdOBP/XLn80DcQ6pVv+17C/us2ZrhwyXIER0OXC
+         agUAKB/BSZFj5/0rCRiU2OhReK3P7TvygPKhxBpSFtnIgnJw6fn2vCfR+Oeew3PI8urj
+         zwi67MQ/vciulERZ8o/TKqNPqgnUdwPY3x7Ho5Euq/ukn+CVHBEzifo+jNdjSidQpT3x
+         y2lsXSUjBHedD8p0db6TCRMpMJgfNbikNBmXFHptqQRzBM6DT3wqnDmIU3QQRpk6rU+y
+         mD3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751261450; x=1751866250;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YkbfJVH8Et0sYABpBPIhVucDte8hR68TivaYURJ1BDU=;
+        b=hMNoHsE7HubNXDck70P3we+9K1SsbZtBlTBh1kWdkBvRZAxDYVyzXKKOsdRB7Fpxpl
+         nVgO4prGK8A3aTZZy3StNFfTbzfmADW8787fttGjpGyf4gTrjolLZ/doVhWVEO4oj0z2
+         C6JWHmWPJ51IDIE2L3FNzaQlBuue7hAjqwQ2+lJ/F76/3NNNc6fAbJVi190qTwCs1+Gk
+         LQrE4thW5M4hB2cwyqfM3OKUs6pHR+qQCq36IBD9spKmC5Lq3CWNfZ+ph59U/+70b2Ty
+         0oABSxrcoN/hccw+Us+GGPHd7E4Y30D2uQGRp5gPtgoeNOrQQTPW8+iOEcgt5FUz1/WB
+         arTw==
+X-Forwarded-Encrypted: i=1; AJvYcCWZXJhPCmIIOwHcgZU/X60YlnRc21lTLynbyiQS+GVUuHmkwahuQ3viOOSMISJNqBqGV/HLDaqzdVmXig==@vger.kernel.org, AJvYcCXQN5uaUiSv3xl3nFumfDO+tPZTfOXV5Fyec/mCVSCHCTKk8Gw6SzNH1u6/uoHWv4X8Me+lrNWEXZNp@vger.kernel.org
+X-Gm-Message-State: AOJu0YwnJc18XaueNT3j6j2q7nWuxGNxjuX9a0GfWyBGzzhoJ3S74iK7
+	wNqvgBZTyebEqbXCsOZbPnuRaX/ZKBODzOW2yQjqRmI4QDuEX0ysDIYB/FcZcA==
+X-Gm-Gg: ASbGnctebg68GE5g5j4uMTQ+SBb674ZMSImrjTDbLafC+M66N+jrTrgLjirbpmMmOus
+	xuE0pM5RNMRf6FP6WZlqxo1OszrH0EGgPwEsZWabjoNdtcrO+re1eum+uTKUjGmMR07MuyDaEJw
+	1FzmvgzclZ+agtp2Jeuv/mWH8Jzv7G6CvKF5MnznQWQ5WE5SSb3BiaE/OxEXAdrDw4Cv5k6MyUo
+	9BhnQOX3n8Ks8Hx19jOAzMgJIxgw4RRKxzAbo2zKJGbH5iFaNLPrwckZYatCJmFBmGKQNtE9JqT
+	CLDXZdQXBhqyhgEp0ta84sGDzQXBJ52IFJV9rvmLyxssJvF67vTcE7sec7gxlA==
+X-Google-Smtp-Source: AGHT+IFU0WLw43HCU+hfz+CAohz0fR5iGVMff7h8lDipW3wVZQUGqRJpjpaeaTnfB8G/qIs5x7W8kg==
+X-Received: by 2002:a05:6a20:748f:b0:220:7e77:f4f7 with SMTP id adf61e73a8af0-220a15902e5mr19259603637.25.1751261450151;
+        Sun, 29 Jun 2025 22:30:50 -0700 (PDT)
+Received: from google.com ([2620:15c:9d:2:c92b:c666:1f8:990e])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b34e3022e55sm6342954a12.24.2025.06.29.22.30.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Jun 2025 22:30:49 -0700 (PDT)
+Date: Sun, 29 Jun 2025 22:30:47 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
+	linux-input@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH] Input: max8997_haptic - Optimize PWM configuration
+Message-ID: <aaq3c6aljqt63ilx3v5555ususxcrg4kgnezicsesdbmio6zqh@2xrok7qlbjrp>
+References: <20250623112742.1372312-2-u.kleine-koenig@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-MBO-RS-ID: cfcdac191f9fb2db54b
-X-MBO-RS-META: zmpi3dzbk87f4fa3wa7hbz84kzzxui6f
+In-Reply-To: <20250623112742.1372312-2-u.kleine-koenig@baylibre.com>
 
-Document trivial PWM on Argon40 Fan HAT, which is a RaspberryPi
-blower fan hat which can be controlled over I2C.
+Hi Uwe,
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
-Signed-off-by: Marek Vasut <marek.vasut+renesas@mailbox.org>
----
-Cc: "Uwe Kleine-KÃ¶nig" <ukleinek@kernel.org>
-Cc: Conor Dooley <conor+dt@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc: Rob Herring <robh@kernel.org>
-Cc: devicetree@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org
----
-V2: Implement dedicated binding document
-V3: Update the description and pwm-cells
-V4: Drop | from description and fix up pwm-cells = <2> in example
-V5: Add RB from Rob
----
- .../bindings/pwm/argon40,fan-hat.yaml         | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/argon40,fan-hat.yaml
+On Mon, Jun 23, 2025 at 01:27:42PM +0200, Uwe Kleine-König wrote:
+> Both pwm_config() and pwm_enable() are wrappers around
+> pwm_apply_might_sleep(). Instead of calling this function twice only
+> call it once without an intermediate step.
+> 
+> max8997_haptic_enable() is the only user of
+> max8997_haptic_set_duty_cycle(), so it's known in the latter that the
+> PWM should be enabled.
 
-diff --git a/Documentation/devicetree/bindings/pwm/argon40,fan-hat.yaml b/Documentation/devicetree/bindings/pwm/argon40,fan-hat.yaml
-new file mode 100644
-index 000000000000..7dbc7c2cd802
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/argon40,fan-hat.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/argon40,fan-hat.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Argon40 Fan HAT PWM controller
-+
-+maintainers:
-+  - Marek Vasut <marek.vasut+renesas@mailbox.org>
-+
-+description:
-+  The trivial PWM on Argon40 Fan HAT, which is a RaspberryPi blower fan
-+  hat which can be controlled over I2C, generates a fixed 30 kHz period
-+  PWM signal with configurable 0..100% duty cycle to control the fan
-+  speed.
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: argon40,fan-hat
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      pwm@1a {
-+        compatible = "argon40,fan-hat";
-+        reg = <0x1a>;
-+        #pwm-cells = <3>;
-+      };
-+    };
+Right, but the question is: is it OK for the PWM to be enabled before we
+enable the regulator/power up the motor?
+
+I'm afraid we need to use 2 distinct steps...
+
+Thanks.
+
 -- 
-2.47.2
-
+Dmitry
