@@ -1,123 +1,103 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C408A1E7C12;
-	Tue,  1 Jul 2025 13:47:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A3492C859;
+	Tue,  1 Jul 2025 14:31:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751377674; cv=none; b=pu1Tc2xDMctv99bVNQdTgOCknAMYrwyjiAImPBOxzbEpix5LZ2ks15bRijQa2OdMkIPYouAaemT1vW18iAwdg+5GDVP004/Xyu8Dc9yCYX5EzeEMSwrTlL+J9qb+7C4nlXuUEh0UF4UgMp0H80QlzA/JzJoBk/jtaOQTsT9+Dbg=
+	t=1751380311; cv=none; b=XgycVY7heS0lrftrH4Pd1F5+jhjVjZ5ZBhWrx6gm2XgxqCUDYOnJAcb3NbBNUpcHbCeT+xAN9iSaJIC7jqjCdC9Am88f+ZDnDFCoZq0tw5XaG/2mz5JYvWRfCDmsx0TMbdxML0vzRvhQEP8UoecznCefefnw2NDEyriu1/rBuUE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751377674; c=relaxed/simple;
-	bh=BJoRfhtEL+X1bH/jHqhnpouOMrtPwiiWI2DW54qSaAg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qBBwxc+Nmub/7++/Fg6jwAuXaZ47404HQkrLQYL5o01tjOgebKY1IV+zRwzEgryZ4VEDzqvjpv8wkLH7KVO+5u6D6DIu9E3MBIlHdXpCO3uR+gu9xW4SuoY/kSyBuuuyMLke26tzFD8eH4OP6fzZoB0Rp72QNkfhd2tecmSSvuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oKP8WDWF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1751380311; c=relaxed/simple;
+	bh=xE9LEXnv+f+pNg2IH3v72SIq7f78Vz1orUlvYd/H3bA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=qFJFR7b9gXM/oOAXzvI3pCpDxuUFuHx0v5FlNm7LIL1XPPuKYzVpinvbNjfkQBBr4+4QpqLt/bHrrmZaiuyvyuHaC9gDGTjGa7SciLHe2WIQ+S3Kz367MxdJAnXeGDySg2WPEzVhgD1r8LkFU39OiXCxl9mLawqavvDvO9Q+bsU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QJQ0GJBR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oKP8WDWF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA291C4CEEB;
-	Tue,  1 Jul 2025 13:47:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QJQ0GJBR"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9B999C4CEEF;
+	Tue,  1 Jul 2025 14:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751377674;
-	bh=BJoRfhtEL+X1bH/jHqhnpouOMrtPwiiWI2DW54qSaAg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oKP8WDWFQdAxIkofySD3R0UNvP/6lJYjlUArVy1GUBHMQ2n59LMtoTmERDI7fHBcR
-	 tDGFl4wmyZj07pPEA4II5Kpy0C+EF0wyENGWgdZ5nFpE/gvEfVUuwNsUPvpw91kcSt
-	 mKDgTEpdxdUrmhQ97sNkYt9BgbwFNXkFN/RSmxvV3P1XZUQApED6Z06R6YqYIahV+4
-	 D0NqogZd6jr629Km1IGner83srqGMqXnUCsG8cS69bDb/3cK4E6Aq10p689ifbLolL
-	 j3MFZwVNnyHJ0/xTS+e8qCkDvoH2d84I5arsh8ookOXd+8vRWqgKxOJ6zRBUbqgi5w
-	 TdLOM7wRWjSOw==
-Date: Tue, 1 Jul 2025 15:47:51 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Michal Wilczynski <m.wilczynski@samsung.com>
-Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
-	Danilo Krummrich <dakr@kernel.org>, Drew Fustini <drew@pdp7.com>, Guo Ren <guoren@kernel.org>, 
-	Fu Wei <wefu@redhat.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Benno Lossin <lossin@kernel.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	devicetree@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: Re: [PATCH v5 1/9] rust: pwm: Add Kconfig and basic data structures
-Message-ID: <wee6qrsgqojb36pb2ykle5dzlt3x3vscjx6nedy3xlrtdgy3wm@sgduuiflto2p>
-References: <20250623-rust-next-pwm-working-fan-for-sending-v5-0-0ca23747c23e@samsung.com>
- <CGME20250623180858eucas1p1815f6d6815b1c715baad94810cefacd5@eucas1p1.samsung.com>
- <20250623-rust-next-pwm-working-fan-for-sending-v5-1-0ca23747c23e@samsung.com>
- <q7sz7uci5vnyc24laqzs56vgt4i2jamb3ifyxkqom6qcml5kkv@642prvwxjkxc>
- <c127e368-8c1f-4299-b222-a105940ac34e@samsung.com>
- <1450a457-4bd3-4e9c-a74f-3be15c9ec84f@samsung.com>
- <n5zfbzu3hn7kqdf3xc7orpeovvdprc2xlf7w3f62uoohkxdk5c@cc24urt5xf36>
- <ca58f110-7f9a-427d-b018-e514cf34adaf@samsung.com>
+	s=k20201202; t=1751380310;
+	bh=xE9LEXnv+f+pNg2IH3v72SIq7f78Vz1orUlvYd/H3bA=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=QJQ0GJBR0U1kfetG2uyVBjfZ5W63Nt/V8c+/Jg5zaAXzkVQsQ+qR2O1liw9Li2i4e
+	 yMnkO0y8/jl6T1Xbt4lbiP7Jr7npTSwLl39Z+HdxXuBF1GWR5rWMksBz/ZwreuwZoZ
+	 aWPU3KVmaibp0jXxmXope55o5kMaVDxL4fgkwpbnpKagHwg3MZth7zxp4vav8XjBmw
+	 nW7E5bQ8NaX99hB7VZV0wm3b6lAidBfGrSc7lMtEWrapjxY4oSoUWHU8C46pG+980A
+	 XTUN5PspxnQgLvpkCED2CLBiIHELcltTsmsrbH/7gc14oh7UTzpg5Ad+80f6C/VPDl
+	 kdAuqQYCKbNiQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CCC7C83038;
+	Tue,  1 Jul 2025 14:31:50 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Tue, 01 Jul 2025 15:31:56 +0100
+Subject: [PATCH v7 01/20] dt-bindings: mfd: adp5585: ease on the required
+ properties
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="a3yx2qm3x3iy6jfn"
-Content-Disposition: inline
-In-Reply-To: <ca58f110-7f9a-427d-b018-e514cf34adaf@samsung.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250701-dev-adp5589-fw-v7-1-b1fcfe9e9826@analog.com>
+References: <20250701-dev-adp5589-fw-v7-0-b1fcfe9e9826@analog.com>
+In-Reply-To: <20250701-dev-adp5589-fw-v7-0-b1fcfe9e9826@analog.com>
+To: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-input@vger.kernel.org
+Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
+ Liu Ying <victor.liu@nxp.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1751380320; l=1054;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=fiqzA9oHr6utDnbinR+jWc5MyikFuofO+NDW02/Pf/k=;
+ b=o+PSJdFr5dWxcowKAMvAiCrBfmIS7LrYCenIVhDwPOLdRXkuzaLIFxe6Gk11SEaNAqZAJoKF0
+ y7o6uiCuJnzA3F7maZodeomTE27ihBABdg9gEkTH8zM2CWbgfA+HSHJ
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
+
+From: Nuno Sá <nuno.sa@analog.com>
+
+It is not mandatory to use all the capabilities of the device. One can
+very well only use it as a gpio controller without the PWM support. This
+will be even more evident when support for the matrix keymap is added.
+Hence drop the requirements for PWM and GPIO.
+
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ Documentation/devicetree/bindings/mfd/adi,adp5585.yaml | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml b/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
+index ee2272f754a339569c793102928ddd13249f8fee..e30e22f964f78519b2ec207e9415e4897db5c702 100644
+--- a/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
++++ b/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
+@@ -52,9 +52,6 @@ patternProperties:
+ required:
+   - compatible
+   - reg
+-  - gpio-controller
+-  - "#gpio-cells"
+-  - "#pwm-cells"
+ 
+ allOf:
+   - if:
+
+-- 
+2.50.0
 
 
---a3yx2qm3x3iy6jfn
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v5 1/9] rust: pwm: Add Kconfig and basic data structures
-MIME-Version: 1.0
-
-Hello Michal,
-
-On Tue, Jul 01, 2025 at 10:24:54AM +0200, Michal Wilczynski wrote:
-> On 6/29/25 12:29, Uwe Kleine-K=F6nig wrote:
-> > On Sat, Jun 28, 2025 at 09:47:19PM +0200, Michal Wilczynski wrote:
->=20
-> >>>>> +    /// Sets the polarity of the PWM signal.
-> >>>>> +    pub fn set_polarity(&mut self, polarity: Polarity) {
-> >>>>> +        self.0.polarity =3D polarity.into();
-> >>>>> +    }
-> >>>>
-> >>>> Please don't expose these non-atomic callbacks. pwm_disable() would =
-be
-> >>>> fine.
-> >>
-> >> Hmm, I've just realized that without those setters it would most likely
-> >> impossible to correctly implement the get_state callback.
-> >=20
-> > You shouldn't implement the get_state callback for a waveform driver.
->=20
-> You're right that a new driver using the waveform API shouldn't
-> implement .get_state.
->=20
-> My goal for the abstraction layer, however, is to be flexible enough to
-> support writing both modern waveform drivers and legacy style drivers
-> that use the .apply and .get_state callbacks.
-
-No, please don't. New C drivers should implement the waveform API. The
-same holds true for Rust drivers. So don't create a door that isn't
-supposed to be used.
-
-Best regards
-Uwe
-
---a3yx2qm3x3iy6jfn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmhj5wQACgkQj4D7WH0S
-/k57mggAjV/gPHEZEhCbpbGaA0U7iyTFgEmMeVkkJxzImAE2AmC1ed9voHg64BLd
-TLDis9YSPhntR2Km1fd4c5x1ina+fVZITIPTm8z9XUaQJk99UfsSuZPX0mTsyo4o
-O4jBd2cpo/MPcv/FodAIhNfILnnArRfMkOJTTSl+L8H5g7IUXOcGVtF+3EkgP3gh
-pClTe7NYPLD5I4MDBV+eK0JopHWbTfQJ608ob/vcPZdycjfyYE45fhXrYFEFjvnB
-12jFYYENaO3/HTGs92o4NvjVdYgPLOj3TsiUU4c+UPrxRpLlsJS4J6Pu1TRxt+Jl
-q9K1u2WtSUbHvMEl7Y61fbNlEOwgPg==
-=Q8/O
------END PGP SIGNATURE-----
-
---a3yx2qm3x3iy6jfn--
