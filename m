@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 736CB277C80;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FEE4277CA9;
 	Tue,  1 Jul 2025 14:31:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751380311; cv=none; b=upk+HdPkIvK0U+tEr/GwTjN8+WOcGtaxVSDoiABIxPEBdhEi4AhXvliSKxGtAQ+FJACPl8OwR+qVeUkVIRZMuyRJBHL/ldInzKiRx60jsUFKAqM56xcsYE6bTCwYcwUO9s2mNcyUoG/LZlIivqn7aOQa14v/Nr4tXFMBJrOeTbA=
+	t=1751380311; cv=none; b=mf6xzLNt0yuCb0s5UKNDtBeLkDNvjVvR+b26U+xjqym95kcNn+wiSzSeKcfY70LU2wXiOBN9Y1Yz+4ZdGvh6RWBm3z5H4fOyTfH6SHEVy4d7zwUUBCf+d+iFlBS/rU8QPi+ZeEl84boRF/hsFk92t6baD/X/1DI+uN47QLoepyk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1751380311; c=relaxed/simple;
-	bh=xJmYXfLjTZ0XEShM95EouF6l0PiMI4sYQUrfkpVPlVY=;
+	bh=FB/+Jwyeg9c6SqzBV1qspx/0rP/63bu1i+qu5v/pgTQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gKF3WK0s/ASvEnmqV8Z72XGYj4b56evsALk44O8WlP1YCswuGWv0mLjEDIGxPnnvsL5J67P5oQAi+gCKro4Yer2b39tqu94/gxNRwwCcy/g9uoYS6l7/OXyBVPJEXSUdCXTtP46fHpKVjxFg8TTKB9Tp3c5TUZ2LqVPYqd7r2qI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SkCwLFf2; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=HgucnoZbd80NyAYHI03GbX/gHkAgZC3sqQg9FVp8saYupSE/gTQ+poDTID70+OF9xBJ6O7WYigt+un4x0XkBQJrgM/VOz7Mjw1x8q1W/EaYYKhlIyW60bW1Wc49ehXO5DQFABGnkIySXbUmO8mTCnVCQ3L+jW/Jch64KKx+XO7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SRtQnq0H; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SkCwLFf2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 35068C4CEEB;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SRtQnq0H"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 08977C19424;
 	Tue,  1 Jul 2025 14:31:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1751380311;
-	bh=xJmYXfLjTZ0XEShM95EouF6l0PiMI4sYQUrfkpVPlVY=;
+	bh=FB/+Jwyeg9c6SqzBV1qspx/0rP/63bu1i+qu5v/pgTQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=SkCwLFf2dfWnFfbaP+XqEIKInjZPUXnDpcftJviTlNdHxsNbTl+KZBfwO0PjW18GV
-	 eofy8hL51nGCorsbY0tXfK0KFjOk36DmLt66bU2VuFoY9O66XArPOCBmRmRBI9hkad
-	 lVicdNZJyILJVUwImTh6se15B09KBRAQE7o+5IgRCoSbyjnhT7f8v3+izxyBzSVCOB
-	 pr7NLlNqkoqJ/D4fjHevlxfuxTJAVoQwPtTfj6bBp/cC9ccD6ia5Azzn5TDc+v6HC7
-	 sTSCgPqrSURNPTesTfs+Er8HiKarDKOhB2j5k8MrLbtUCTAe7xFF7h0sCxqMelDmd8
-	 ln5YnObMt7dkg==
+	b=SRtQnq0HV74W4scZHmC++ClV/a2as32+A2ZFWmP+J99g3lCVpZZ2nyAbCAE629cPV
+	 h8oQmnzEBI4y5WYGI00GUyVnyNgVZLaXuvODRNnup+mAZMZqu5Zq6EzUXVFACzIra8
+	 7pq/9CBWc3qwckx7Dh4wL6KGB6SCQneh1EQiGFw7cCvmeXz1bJ7IJJrGqfV0p4CWJF
+	 zBKOJKXOHx+zyXN3nRqYhyP5XD9tFyU6IytJxuwKUU1Sl0xvlp0VdhwBwk0q3Me7ib
+	 H3exiMndDk1ipmOrbNkdwgWxmByJ6h2KAmmnrDZSCpC1RoMJyO5GuYPE5qNS2P7mqM
+	 BrSeSL79bnjUg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A223C8303A;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 006F2C8303D;
 	Tue,  1 Jul 2025 14:31:51 +0000 (UTC)
 From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 01 Jul 2025 15:32:06 +0100
-Subject: [PATCH v7 11/20] dt-bindings: mfd: adp5585: add properties for
- input events
+Date: Tue, 01 Jul 2025 15:32:03 +0100
+Subject: [PATCH v7 08/20] mfd: adp5585: Add a per chip reg struture
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250701-dev-adp5589-fw-v7-11-b1fcfe9e9826@analog.com>
+Message-Id: <20250701-dev-adp5589-fw-v7-8-b1fcfe9e9826@analog.com>
 References: <20250701-dev-adp5589-fw-v7-0-b1fcfe9e9826@analog.com>
 In-Reply-To: <20250701-dev-adp5589-fw-v7-0-b1fcfe9e9826@analog.com>
 To: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
@@ -56,11 +55,11 @@ Cc: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>,
  Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
  Liu Ying <victor.liu@nxp.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1751380320; l=7657;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1751380320; l=2942;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=aWgkHuT+CF8SFhpAvbppgyy6Qsgw4XXfZhxNvOapk6I=;
- b=VT2dlPU14FcbGoqACWh2Ju47GRgKhUwbB+DnP3UCkP1bpgaK0kMDz8YUdkcp5yPFbzehGzIs5
- 0ur0YXEuzAVCBMR1+aSMLNtBavT8DGhvCf+VdjYHViIxYPsdr2V7C8h
+ bh=JIBUmnMl1mN7KNjDMWXdwdkyiw75v+fDjUWNAjKvsFg=;
+ b=lP4pthSJs8z8pDrwKwBF1Ta9u6D/G0NLn+0tXQ6m2cbcQTQNqSZ4I0ch+kOaCwAG4Ch/Hc23h
+ rwyI0RSE1xmC4tTpZ5btuaqkQ+Z2OakF/jEhSVuCWacgoBeBYqbSaYQ
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -70,266 +69,86 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sá <nuno.sa@analog.com>
 
-Add properties related to input events. These devices can act as
-keyboards and can support events either via a keymap Matrix or through
-GPIs. Note that the device needs to be an interrupt controller for GPIs
-based events.
+There are some differences in the register map between the devices.
+Hence, add a register structure per device. This will be needed in
+following patches.
 
-We specifically need a property specifying the pins used by the keymap
-matrix since these devices have no requirement for rows and columns to be
-contiguous without holes which is enforced by the standard input
-properties.
+On top of that adp5585_fill_regmap_config() is renamed and reworked so
+that the current struct adp5585_info act as template (they indeed
+contain all the different data between variants) which can then be
+complemented depending on the device (as identified by the id register).
+This is done like this since a lot of the data is pretty much the same
+between variants of the same device.
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+Reviewed-by: Lee Jones <lee@kernel.org>
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- .../devicetree/bindings/mfd/adi,adp5585.yaml       | 188 ++++++++++++++++++++-
- 1 file changed, 186 insertions(+), 2 deletions(-)
+ drivers/mfd/adp5585.c       | 10 ++++++++++
+ include/linux/mfd/adp5585.h |  6 ++++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml b/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
-index 9471af28419d820424745315ffb2129f7dd37581..b3bf2ed586104303fd078bd06683e4f0d3383575 100644
---- a/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
-+++ b/Documentation/devicetree/bindings/mfd/adi,adp5585.yaml
-@@ -49,6 +49,84 @@ properties:
-   "#pwm-cells":
-     const: 3
+diff --git a/drivers/mfd/adp5585.c b/drivers/mfd/adp5585.c
+index 00996571ef900bece2d634cd9d05394fa04d550a..ae12372bdde9141034b28731e22758948438cb31 100644
+--- a/drivers/mfd/adp5585.c
++++ b/drivers/mfd/adp5585.c
+@@ -163,6 +163,14 @@ static const struct regmap_config adp5589_regmap_config_template = {
+ 	.num_reg_defaults_raw = ADP5589_MAX_REG + 1,
+ };
  
-+  interrupt-controller: true
++static const struct adp5585_regs adp5585_regs = {
++	.ext_cfg = ADP5585_PIN_CONFIG_C,
++};
 +
-+  '#interrupt-cells':
-+    const: 2
++static const struct adp5585_regs adp5589_regs = {
++	.ext_cfg = ADP5589_PIN_CONFIG_D,
++};
 +
-+  poll-interval:
-+    enum: [10, 20, 30, 40]
-+    default: 10
-+
-+  adi,keypad-pins:
-+    description: Specifies the pins used for the keypad matrix.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+
-+  adi,unlock-events:
-+    description:
-+      Specifies a maximum of 2 events that can be used to unlock the keypad.
-+      If this property is set, the keyboard will be locked and only unlocked
-+      after these keys/gpis are pressed. The value 127 serves as a wildcard which
-+      means any key can be used for unlocking.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 1
-+    maxItems: 2
-+    items:
-+      anyOf:
-+        - minimum: 1
-+          maximum: 88
-+        - minimum: 97
-+          maximum: 115
-+        - const: 127
-+
-+  adi,unlock-trigger-sec:
-+    description:
-+      Defines the time in which the second unlock event must occur after the
-+      first unlock event has occurred.
-+    maximum: 7
-+    default: 0
-+
-+  adi,reset1-events:
-+    description:
-+      Defines the trigger events (key/gpi presses) that can generate reset
-+      conditions one the reset1 block.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 1
-+    maxItems: 3
-+
-+  adi,reset2-events:
-+    description:
-+      Defines the trigger events (key/gpi presses) that can generate reset
-+      conditions one the reset2 block.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 1
-+    maxItems: 2
-+
-+  adi,reset1-active-high:
-+    description: Sets the reset1 signal as active high.
-+    type: boolean
-+
-+  adi,reset2-active-high:
-+    description: Sets the reset2 signal as active high.
-+    type: boolean
-+
-+  adi,rst-passthrough-enable:
-+    description: Allows the RST pin to override (OR with) the reset1 signal.
-+    type: boolean
-+
-+  adi,reset-trigger-ms:
-+    description:
-+      Defines the length of time that the reset events must be active before a
-+      reset signal is generated. All events must be active at the same time for
-+      the same duration.
-+    enum: [0, 1000, 1500, 2000, 2500, 3000, 3500, 4000]
-+    default: 0
-+
-+  adi,reset-pulse-width-us:
-+    description: Defines the pulse width of the reset signals.
-+    enum: [500, 1000, 2000, 10000]
-+    default: 500
-+
- patternProperties:
-   "-hog(-[0-9]+)?$":
-     type: object
-@@ -56,11 +134,28 @@ patternProperties:
-     required:
-       - gpio-hog
+ static struct regmap_config *adp5585_fill_variant_config(struct adp5585_dev *adp5585)
+ {
+ 	struct regmap_config *regmap_config;
+@@ -174,6 +182,7 @@ static struct regmap_config *adp5585_fill_variant_config(struct adp5585_dev *adp
+ 	case ADP5585_03:
+ 	case ADP5585_04:
+ 		adp5585->id = ADP5585_MAN_ID_VALUE;
++		adp5585->regs = &adp5585_regs;
+ 		regmap_config = devm_kmemdup(adp5585->dev, &adp5585_regmap_config_template,
+ 					     sizeof(*regmap_config), GFP_KERNEL);
+ 		break;
+@@ -181,6 +190,7 @@ static struct regmap_config *adp5585_fill_variant_config(struct adp5585_dev *adp
+ 	case ADP5589_01:
+ 	case ADP5589_02:
+ 		adp5585->id = ADP5589_MAN_ID_VALUE;
++		adp5585->regs = &adp5589_regs;
+ 		regmap_config = devm_kmemdup(adp5585->dev, &adp5589_regmap_config_template,
+ 					     sizeof(*regmap_config), GFP_KERNEL);
+ 		break;
+diff --git a/include/linux/mfd/adp5585.h b/include/linux/mfd/adp5585.h
+index 70e58122a36a7321dc95d095b806f06fa57c97c9..6ecb90a6276c0f8f2c983c62c7268505d74b6583 100644
+--- a/include/linux/mfd/adp5585.h
++++ b/include/linux/mfd/adp5585.h
+@@ -120,6 +120,7 @@
+ /* ADP5589 */
+ #define		ADP5589_MAN_ID_VALUE		0x10
+ #define ADP5589_GPI_STATUS_C		0x18
++#define ADP5589_PIN_CONFIG_D		0x4C
+ #define ADP5589_INT_EN			0x4e
+ #define ADP5589_MAX_REG			ADP5589_INT_EN
  
-+dependencies:
-+  linux,keymap:
-+    - adi,keypad-pins
-+    - interrupts
-+  interrupt-controller:
-+    - interrupts
-+  adi,unlock-trigger-sec:
-+    - adi,unlock-events
-+  adi,reset1-active-high:
-+    - adi,reset1-events
-+  adi,rst-passtrough-enable:
-+    - adi,reset1-events
-+  adi,reset2-active-high:
-+    - adi,reset2-events
-+
- required:
-   - compatible
-   - reg
+@@ -137,9 +138,14 @@ enum adp5585_variant {
+ 	ADP5585_MAX
+ };
  
- allOf:
-+  - $ref: /schemas/input/matrix-keymap.yaml#
-+  - $ref: /schemas/input/input.yaml#
-   - if:
-       properties:
-         compatible:
-@@ -68,8 +163,29 @@ allOf:
-             const: adi,adp5585-01
-     then:
-       properties:
-+        adi,unlock-events: false
-+        adi,unlock-trigger-sec: false
-         gpio-reserved-ranges: false
--
-+        adi,keypad-pins:
-+          minItems: 2
-+          maxItems: 11
-+          items:
-+            minimum: 0
-+            maximum: 10
-+        adi,reset1-events:
-+          items:
-+            anyOf:
-+              - minimum: 1
-+                maximum: 30
-+              - minimum: 37
-+                maximum: 47
-+        adi,reset2-events:
-+          items:
-+            anyOf:
-+              - minimum: 1
-+                maximum: 30
-+              - minimum: 37
-+                maximum: 47
-   - if:
-       properties:
-         compatible:
-@@ -81,6 +197,25 @@ allOf:
-               - adi,adp5585-04
-     then:
-       properties:
-+        adi,unlock-events: false
-+        adi,unlock-trigger-sec: false
-+        adi,keypad-pins:
-+          minItems: 2
-+          maxItems: 10
-+          items:
-+            enum: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10]
-+        adi,reset1-events:
-+          items:
-+            anyOf:
-+              - minimum: 1
-+                maximum: 25
-+              - enum: [37, 38, 39, 40, 41, 43, 44, 45, 46, 47]
-+        adi,reset2-events:
-+          items:
-+            anyOf:
-+              - minimum: 1
-+                maximum: 25
-+              - enum: [37, 38, 39, 40, 41, 43, 44, 45, 46, 47]
-         gpio-reserved-ranges:
-           maxItems: 1
-           items:
-@@ -99,11 +234,33 @@ allOf:
-     then:
-       properties:
-         gpio-reserved-ranges: false
-+        adi,keypad-pins:
-+          minItems: 2
-+          maxItems: 19
-+          items:
-+            minimum: 0
-+            maximum: 18
-+        adi,reset1-events:
-+          items:
-+            anyOf:
-+              - minimum: 1
-+                maximum: 88
-+              - minimum: 97
-+                maximum: 115
-+        adi,reset2-events:
-+          items:
-+            anyOf:
-+              - minimum: 1
-+                maximum: 88
-+              - minimum: 97
-+                maximum: 115
- 
--additionalProperties: false
-+unevaluatedProperties: false
- 
- examples:
-   - |
-+    #include <dt-bindings/input/input.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-     i2c {
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -119,6 +276,33 @@ examples:
-             gpio-reserved-ranges = <5 1>;
- 
-             #pwm-cells = <3>;
++struct adp5585_regs {
++	unsigned int ext_cfg;
++};
 +
-+            interrupts = <16 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-parent = <&gpio>;
-+
-+            adi,reset1-events = <1 43>;
-+            adi,reset2-events = <2 3>;
-+            adi,reset-trigger-ms = <2000>;
-+
-+            /*
-+             * col0, col1, col2
-+             * row0, row1, row2
-+             */
-+            adi,keypad-pins = <0 1 2 6 7 8>;
-+
-+            linux,keymap = <
-+                MATRIX_KEY(0x00, 0x00, KEY_1)
-+                MATRIX_KEY(0x00, 0x01, KEY_2)
-+                MATRIX_KEY(0x00, 0x02, KEY_3)
-+
-+                MATRIX_KEY(0x01, 0x00, KEY_A)
-+                MATRIX_KEY(0x01, 0x01, KEY_B)
-+                MATRIX_KEY(0x01, 0x02, KEY_C)
-+
-+                MATRIX_KEY(0x02, 0x00, BTN_1)
-+                MATRIX_KEY(0x02, 0x01, BTN_2)
-+                MATRIX_KEY(0x02, 0x02, BTN_3)
-+            >;
-         };
-     };
- 
+ struct adp5585_dev {
+ 	struct device *dev;
+ 	struct regmap *regmap;
++	const struct adp5585_regs *regs;
+ 	enum adp5585_variant variant;
+ 	unsigned int id;
+ };
 
 -- 
 2.50.0
