@@ -1,117 +1,202 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63ABE285419;
-	Wed,  2 Jul 2025 13:36:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75F8E27C854
+	for <linux-pwm@vger.kernel.org>; Wed,  2 Jul 2025 13:49:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751463376; cv=none; b=q6slvwH0QOXF89oJsuz3Tik8JAXRt8GtCHzSdg+iMizX13TZn7Es1ZN5mZKufsml9/TEbw4A07WMqse6YmZnVrQYP/Mf4swq8J+nJ2tiUwre8lLFICVX8EBXZkCsEmhz/2SH0dmhI2iVS2IEHjeoXM4zmnVO3nJxRgdmPLJ7kMI=
+	t=1751464199; cv=none; b=eqd+/0KrJHs8ZywpPymdsgHNSFJ+A0ce36KGT6CbgyWGruOG0YvMBdYagqj9OuFyAVa0rM4q43S18xI4st5/3LNO8nN8Kt0hYBBxxWUPtcSo+TH/qSirP5dhXBj8XC9q59YDBLSXbGXrqUqupLsxgzav9sVidfqcF0oo7fqV+ho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751463376; c=relaxed/simple;
-	bh=uGa43jc2Cw+4x9AMXsf5PdOX9TokrUCZweehn6ucM+s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Bz7fr7gdOUXrfMAoznpWbE7ZuwHkMS/KBavfgfnRWPefVeypZGpywEjz6cEmVQkMAyzDj/cszmV4Db5Um3LIj8CRkpcSurghwfPcpJ21zJnCMr18Lbuz1VINFDvOjerYEpd8776pYRpk4vliOOcdE3PsjqwQ+718Udtb+5EosZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r4txNhWG; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1751464199; c=relaxed/simple;
+	bh=yNpjB9RCPYu8yuSQ1YGzgp3ZJQQOJydTGLTUmWj3om8=;
+	h=From:Date:Subject:MIME-Version:Message-Id:In-Reply-To:To:Cc:
+	 Content-Type:References; b=WNc8kPX9JTyUC5eYtO2NLHNNCYN3uoxsamVSCHAY0Y8/0u8n9wqbwTXuswylIbqzfuwLE4kloxqTjeYNhLjJ3PSgbhqSSPkz/p/msZkkVks+qLaOoTQg4riN3QugjLG7DrcE3NPpTZ3C/OB4eiluDSBs3YyIFcvnT4Usfz+7i4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=knHNssPC; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r4txNhWG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEDACC4CEEF;
-	Wed,  2 Jul 2025 13:36:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751463375;
-	bh=uGa43jc2Cw+4x9AMXsf5PdOX9TokrUCZweehn6ucM+s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=r4txNhWGJvKd7MU6iu0wLQlijrtUNUKE8RoyYSSe3x4erxW9ja4H4l/Zlv9Kf2KQb
-	 YezXsf9i8R2vmgYrPLXF/yGQF0sE89hXqwjMlF29G/uP2fiPPPCbK3kwnyJbCy0KkX
-	 bbtnyMuvmMxXWSZnDnqZGYIpfMh86rJSOQo5UqjWH/HzcYRamtswvlbDBUPBheDl9p
-	 LT03Ufirkb3SvCGMuHABZeBn9wOVeGlvK6Rz9UrrerZX3i/ubryCzH2c0ncXotxfj0
-	 f5qbPEFGoF7+2KvKxQuleVFxTdsymAgIbg2yQoakjQJAlm/bBCgAGk8/XB9FtAmBtj
-	 CBt248lNYl4bA==
-Date: Wed, 2 Jul 2025 14:36:09 +0100
-From: Lee Jones <lee@kernel.org>
-To: nuno.sa@analog.com
-Cc: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-input@vger.kernel.org,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	Liu Ying <victor.liu@nxp.com>,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [GIT PULL] Immutable branch between MFD, GPIO, Input and PWM due for
- the v6.17 merge window
-Message-ID: <20250702133609.GQ10134@google.com>
-References: <20250701-dev-adp5589-fw-v7-0-b1fcfe9e9826@analog.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="knHNssPC"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250702134955euoutp0156415d841de9c564842bb6f192595de4~Oc2gK-uCy0515805158euoutp01r
+	for <linux-pwm@vger.kernel.org>; Wed,  2 Jul 2025 13:49:55 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250702134955euoutp0156415d841de9c564842bb6f192595de4~Oc2gK-uCy0515805158euoutp01r
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1751464195;
+	bh=9Vo2d35sEyLP44uYKj+D2S0nhQkzl0XSExM9Iiwegts=;
+	h=From:Date:Subject:In-Reply-To:To:Cc:References:From;
+	b=knHNssPC/jAO3og3ag6EnZtO5+CTbWwrdFHyR3DxgbsFF5hA3bq4d4r87IXxicTGT
+	 Hcn+HddVOtQzDBmBaqX5lZbfj/pDZwDh1S++Cyk8xpQus4nJgZychHwRWnPd6ft1p0
+	 fD24YhrxqwEJY6oBttL2I0f4tG97ttBSda3LDO0s=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250702134955eucas1p2ca553f63f44c63a56ba0b2c605edd097~Oc2flYolM0138301383eucas1p2u;
+	Wed,  2 Jul 2025 13:49:55 +0000 (GMT)
+Received: from AMDC4942.eu.corp.samsungelectronics.net (unknown
+	[106.210.136.40]) by eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250702134954eusmtip280bf8af38661f8acaf6fd2cc62a6ce1c~Oc2egQ78x1329113291eusmtip22;
+	Wed,  2 Jul 2025 13:49:53 +0000 (GMT)
+From: Michal Wilczynski <m.wilczynski@samsung.com>
+Date: Wed, 02 Jul 2025 15:45:29 +0200
+Subject: [PATCH v7 1/8] pwm: Expose PWM_WFHWSIZE in public header
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250701-dev-adp5589-fw-v7-0-b1fcfe9e9826@analog.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250702-rust-next-pwm-working-fan-for-sending-v7-1-67ef39ff1d29@samsung.com>
+In-Reply-To: <20250702-rust-next-pwm-working-fan-for-sending-v7-0-67ef39ff1d29@samsung.com>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,  Miguel Ojeda
+	<ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,  Boqun Feng
+	<boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	=?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,  Andreas
+	Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,  Trevor
+	Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,  Michal
+	Wilczynski <m.wilczynski@samsung.com>, Guo Ren <guoren@kernel.org>,  Fu Wei
+	<wefu@redhat.com>, Rob Herring <robh@kernel.org>,  Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,  Conor Dooley <conor+dt@kernel.org>,  Paul Walmsley
+	<paul.walmsley@sifive.com>,  Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou
+	<aou@eecs.berkeley.edu>,  Alexandre Ghiti <alex@ghiti.fr>,  Marek Szyprowski
+	<m.szyprowski@samsung.com>,  Benno Lossin <lossin@kernel.org>,  Michael
+	Turquette <mturquette@baylibre.com>,  Drew Fustini <fustini@kernel.org>,
+	Benno Lossin <lossin@kernel.org>,  Drew Fustini <fustini@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+	rust-for-linux@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	devicetree@vger.kernel.org
+X-Mailer: b4 0.15-dev
+X-CMS-MailID: 20250702134955eucas1p2ca553f63f44c63a56ba0b2c605edd097
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250702134955eucas1p2ca553f63f44c63a56ba0b2c605edd097
+X-EPHeader: CA
+X-CMS-RootMailID: 20250702134955eucas1p2ca553f63f44c63a56ba0b2c605edd097
+References: <20250702-rust-next-pwm-working-fan-for-sending-v7-0-67ef39ff1d29@samsung.com>
+	<CGME20250702134955eucas1p2ca553f63f44c63a56ba0b2c605edd097@eucas1p2.samsung.com>
 
-Enjoy!
+The WFHWSIZE constant defines the maximum size for the hardware-specific
+waveform representation buffer. It is currently local to
+drivers/pwm/core.c, which makes it inaccessible to external tools like
+bindgen.
 
-The following changes since commit 19272b37aa4f83ca52bdf9c16d5d81bdd1354494:
+Move the constant to include/linux/pwm.h to make it part of the public
+API. As part of this change, rename it to PWM_WFHWSIZE to follow
+standard kernel conventions for namespacing macros in public headers.
 
-  Linux 6.16-rc1 (2025-06-08 13:44:43 -0700)
+This allows bindgen to automatically generate a corresponding constant
+for the Rust PWM abstractions, ensuring the value remains synchronized
+between the C core and Rust code and preventing future maintenance
+issues.
 
-are available in the Git repository at:
+Signed-off-by: Michal Wilczynski <m.wilczynski@samsung.com>
+---
+ drivers/pwm/core.c  | 26 ++++++++++++--------------
+ include/linux/pwm.h |  2 ++
+ 2 files changed, 14 insertions(+), 14 deletions(-)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-gpio-input-pwm-v6.17
-
-for you to fetch changes up to 45ee66c37f9bd8cff7718c70d84e0291d385a093:
-
-  mfd: adp5585: Add support for a reset pin (2025-07-01 21:50:51 +0100)
-
-----------------------------------------------------------------
-Immutable branch between MFD, GPIO, Input and PWM due for the v6.17 merge window
-
-----------------------------------------------------------------
-Nuno Sá (20):
-      dt-bindings: mfd: adp5585: ease on the required properties
-      mfd: adp5585: Only add devices given in FW
-      mfd: adp5585: Enable oscillator during probe
-      mfd: adp5585: Make use of MFD_CELL_NAME()
-      dt-bindings: mfd: adp5585: document adp5589 I/O expander
-      mfd: adp5585: Refactor how regmap defaults are handled
-      mfd: adp5585: Add support for adp5589
-      mfd: adp5585: Add a per chip reg struture
-      gpio: adp5585: add support for the adp5589 expander
-      pwm: adp5585: add support for adp5589
-      dt-bindings: mfd: adp5585: add properties for input events
-      mfd: adp5585: Add support for event handling
-      mfd: adp5585: Support reset and unlock events
-      mfd: adp5585: Add support for input devices
-      gpio: adp5585: support gpi events
-      Input: adp5585: Add Analog Devices ADP5585/89 support
-      Input: adp5589: remove the driver
-      mfd: adp5585: Support getting vdd regulator
-      dt-bindings: mfd: adp5585: document reset gpio
-      mfd: adp5585: Add support for a reset pin
-
- .../devicetree/bindings/mfd/adi,adp5585.yaml       |  240 ++++-
- .../devicetree/bindings/trivial-devices.yaml       |    2 -
- MAINTAINERS                                        |    1 +
- drivers/gpio/Kconfig                               |    1 +
- drivers/gpio/gpio-adp5585.c                        |  364 ++++++-
- drivers/input/keyboard/Kconfig                     |   21 +-
- drivers/input/keyboard/Makefile                    |    2 +-
- drivers/input/keyboard/adp5585-keys.c              |  371 +++++++
- drivers/input/keyboard/adp5589-keys.c              | 1066 --------------------
- drivers/mfd/adp5585.c                              |  739 +++++++++++++-
- drivers/pwm/pwm-adp5585.c                          |   78 +-
- include/linux/mfd/adp5585.h                        |  118 ++-
- 12 files changed, 1796 insertions(+), 1207 deletions(-)
- create mode 100644 drivers/input/keyboard/adp5585-keys.c
- delete mode 100644 drivers/input/keyboard/adp5589-keys.c
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index b86f06ab2a324ac98115845f72d9386966a0a3b8..c1e8ab1a0945889d92dada003060b8b109f2a138 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -210,8 +210,6 @@ static int __pwm_write_waveform(struct pwm_chip *chip, struct pwm_device *pwm, c
+ 	return ret;
+ }
+ 
+-#define WFHWSIZE 20
+-
+ /**
+  * pwm_round_waveform_might_sleep - Query hardware capabilities
+  * Cannot be used in atomic context.
+@@ -248,10 +246,10 @@ int pwm_round_waveform_might_sleep(struct pwm_device *pwm, struct pwm_waveform *
+ 	struct pwm_chip *chip = pwm->chip;
+ 	const struct pwm_ops *ops = chip->ops;
+ 	struct pwm_waveform wf_req = *wf;
+-	char wfhw[WFHWSIZE];
++	char wfhw[PWM_WFHWSIZE];
+ 	int ret_tohw, ret_fromhw;
+ 
+-	BUG_ON(WFHWSIZE < ops->sizeof_wfhw);
++	BUG_ON(PWM_WFHWSIZE < ops->sizeof_wfhw);
+ 
+ 	if (!pwmchip_supports_waveform(chip))
+ 		return -EOPNOTSUPP;
+@@ -306,10 +304,10 @@ int pwm_get_waveform_might_sleep(struct pwm_device *pwm, struct pwm_waveform *wf
+ {
+ 	struct pwm_chip *chip = pwm->chip;
+ 	const struct pwm_ops *ops = chip->ops;
+-	char wfhw[WFHWSIZE];
++	char wfhw[PWM_WFHWSIZE];
+ 	int err;
+ 
+-	BUG_ON(WFHWSIZE < ops->sizeof_wfhw);
++	BUG_ON(PWM_WFHWSIZE < ops->sizeof_wfhw);
+ 
+ 	if (!pwmchip_supports_waveform(chip) || !ops->read_waveform)
+ 		return -EOPNOTSUPP;
+@@ -334,11 +332,11 @@ static int __pwm_set_waveform(struct pwm_device *pwm,
+ {
+ 	struct pwm_chip *chip = pwm->chip;
+ 	const struct pwm_ops *ops = chip->ops;
+-	char wfhw[WFHWSIZE];
++	char wfhw[PWM_WFHWSIZE];
+ 	struct pwm_waveform wf_rounded;
+ 	int err, ret_tohw;
+ 
+-	BUG_ON(WFHWSIZE < ops->sizeof_wfhw);
++	BUG_ON(PWM_WFHWSIZE < ops->sizeof_wfhw);
+ 
+ 	if (!pwmchip_supports_waveform(chip))
+ 		return -EOPNOTSUPP;
+@@ -650,9 +648,9 @@ static int __pwm_apply(struct pwm_device *pwm, const struct pwm_state *state)
+ 
+ 	if (pwmchip_supports_waveform(chip)) {
+ 		struct pwm_waveform wf;
+-		char wfhw[WFHWSIZE];
++		char wfhw[PWM_WFHWSIZE];
+ 
+-		BUG_ON(WFHWSIZE < ops->sizeof_wfhw);
++		BUG_ON(PWM_WFHWSIZE < ops->sizeof_wfhw);
+ 
+ 		pwm_state2wf(state, &wf);
+ 
+@@ -809,10 +807,10 @@ int pwm_get_state_hw(struct pwm_device *pwm, struct pwm_state *state)
+ 		return -ENODEV;
+ 
+ 	if (pwmchip_supports_waveform(chip) && ops->read_waveform) {
+-		char wfhw[WFHWSIZE];
++		char wfhw[PWM_WFHWSIZE];
+ 		struct pwm_waveform wf;
+ 
+-		BUG_ON(WFHWSIZE < ops->sizeof_wfhw);
++		BUG_ON(PWM_WFHWSIZE < ops->sizeof_wfhw);
+ 
+ 		ret = __pwm_read_waveform(chip, pwm, &wfhw);
+ 		if (ret)
+@@ -1696,8 +1694,8 @@ static bool pwm_ops_check(const struct pwm_chip *chip)
+ 		    !ops->write_waveform)
+ 			return false;
+ 
+-		if (WFHWSIZE < ops->sizeof_wfhw) {
+-			dev_warn(pwmchip_parent(chip), "WFHWSIZE < %zu\n", ops->sizeof_wfhw);
++		if (PWM_WFHWSIZE < ops->sizeof_wfhw) {
++			dev_warn(pwmchip_parent(chip), "PWM_WFHWSIZE < %zu\n", ops->sizeof_wfhw);
+ 			return false;
+ 		}
+ 	} else {
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 2492c91452f9641881e9923e5a97e0705047da59..8cafc483db53addf95591d1ac74287532c0fa0ee 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -274,6 +274,8 @@ struct pwm_capture {
+ 	unsigned int duty_cycle;
+ };
+ 
++#define PWM_WFHWSIZE 20
++
+ /**
+  * struct pwm_ops - PWM controller operations
+  * @request: optional hook for requesting a PWM
 
 -- 
-Lee Jones [李琼斯]
+2.34.1
+
