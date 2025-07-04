@@ -1,44 +1,43 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB4A23A58E
-	for <linux-pwm@vger.kernel.org>; Fri,  4 Jul 2025 12:02:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 515822D6615
+	for <linux-pwm@vger.kernel.org>; Fri,  4 Jul 2025 12:02:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751630544; cv=none; b=l533xNyq1V5Hi7ntxDGFF37ijU9F2yipG7AV2zLvJkxEloeW6bx1Y0E7e4O0iBfGaeQLz7E1CUFq1RABGE2h1GKpXu6V5km/5dS/SJsd6P+0hJE1WM9L1wrZlXGXlDqHjhOqawseLG83lLWH9taSbipq1bVtVon/CVt32ADX72Q=
+	t=1751630546; cv=none; b=Eaw8KU4rKqwkRiGBXq3PL54B/amd0AMUnQNND6fC8yJxWHMTKHKb44+AYOBGSwIZ+b4YSO32RbF9TD/XdlB/23jE6NLQW+XQQG8uL27KCK0kwm0mUldeeWG1P5JI49AtzQF04TDV+zmYx12tZpDmT4/obiKDiiEpyhWQVlLMZdo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751630544; c=relaxed/simple;
-	bh=DczjI35ZY7BAzTfO19RxJOiKoYPwpsomUHNHQ53TFB0=;
+	s=arc-20240116; t=1751630546; c=relaxed/simple;
+	bh=hX2av2xjzn/+RKgJ8848FZk7yLs0Dll78dZHn0/Xpik=;
 	h=From:Date:Subject:MIME-Version:Message-Id:In-Reply-To:To:Cc:
-	 Content-Type:References; b=n4gE885qJpq8oz+x1W4BM04dUYt685CJU9Dw2hn1EGcYM8lUR5I3E4pN4UkzR3hkCUDxK0jTLWaivc8nhn2Q/E4WeOF1B+nlphVjaLzFijZAwZILTMsijmRB/2UJogMhKdQjPDigZu4TLf7pHs/dvIcsShvzjLllpQt+cwWczxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Y42Bvtgs; arc=none smtp.client-ip=210.118.77.11
+	 Content-Type:References; b=p0Du5cX7v0JnbsiPw19XG25gZnne9CvtqNYVCt6VnAt8Pr9OwSnYq1BwI2pyHq1yd/UCWX1hh4UeVSTQACZ5aIXKY8y+3EyjvcXW6+u6vdygiX8Uk4t+jbMebj0jx4Iwcykmu+ZSWQUp/J/UlW5ToBOhTRIZYbeFRiHj9yiMQxc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=hd80e+VL; arc=none smtp.client-ip=210.118.77.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Y42Bvtgs"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250704120213euoutp013517e23250073d2ff6a30d91d8825652~PCrClO2Nz2175221752euoutp01W
-	for <linux-pwm@vger.kernel.org>; Fri,  4 Jul 2025 12:02:13 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250704120213euoutp013517e23250073d2ff6a30d91d8825652~PCrClO2Nz2175221752euoutp01W
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="hd80e+VL"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250704120216euoutp026bc66d474000a2381dc775473d54c8b8~PCrE0X9uR1041010410euoutp02a
+	for <linux-pwm@vger.kernel.org>; Fri,  4 Jul 2025 12:02:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250704120216euoutp026bc66d474000a2381dc775473d54c8b8~PCrE0X9uR1041010410euoutp02a
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1751630533;
-	bh=3X5nMi7+YNW25BArZ2DX4aFZ8IPmZROtEC5Cbq+AlGw=;
+	s=mail20170921; t=1751630536;
+	bh=OLoD0sOwsXTnuQJQMarfch3gu6laEwVQBDwKzfAtcAA=;
 	h=From:Date:Subject:In-Reply-To:To:Cc:References:From;
-	b=Y42BvtgsDXqiA9T6VpEuHnf6LH+l4dFd0RRpYf6Zwo0OwQoz+Kiq/HNsZzwVO+TGz
-	 qWnlMn3YNuNQxxPF8ZtEnsuSfreveJAnR7Bv3poQ0OVyeO1GWgIZSVtGJB/SLE+aeN
-	 HDjOyv8+uMUTZ75D7D5sYG4yjK8+hXa35zvYrfF0=
+	b=hd80e+VLdxIlp+noBf2z9BfBBDM+wuQNM4BlLINpdoea/cP3fPo6hzqUiQnsnVS1O
+	 v8I7DnZBF30w/+Wl6JDnFjxZ8ZM+9UXq9SyujPUdzse2RWW0aIR/P+peK4Tvy7tcj7
+	 pZHddmiEomvJOaY5z2HH7lwpmOj2Xo6wUEhhvZ6A=
 Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250704120212eucas1p1c9ffeefa41b0ddb27db74d26174831bf~PCrBmHxox1819018190eucas1p1r;
-	Fri,  4 Jul 2025 12:02:12 +0000 (GMT)
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250704120215eucas1p29f4872872d92a4df001539d100418688~PCrD4sreB3204832048eucas1p2A;
+	Fri,  4 Jul 2025 12:02:15 +0000 (GMT)
 Received: from AMDC4942.eu.corp.samsungelectronics.net (unknown
 	[106.210.136.40]) by eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20250704120211eusmtip12522615cdee71b47938f19820c85f210~PCrAf6SAh0801408014eusmtip1j;
-	Fri,  4 Jul 2025 12:02:11 +0000 (GMT)
+	20250704120214eusmtip1ddca9cd11abea8c391ac25acafc52a82~PCrCx6Ri72253422534eusmtip1g;
+	Fri,  4 Jul 2025 12:02:14 +0000 (GMT)
 From: Michal Wilczynski <m.wilczynski@samsung.com>
-Date: Fri, 04 Jul 2025 14:01:12 +0200
-Subject: [PATCH v8 2/7] rust: pwm: Add core 'Device' and 'Chip' object
- wrappers
+Date: Fri, 04 Jul 2025 14:01:14 +0200
+Subject: [PATCH v8 4/7] pwm: Add Rust driver for T-HEAD TH1520 SoC
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -46,7 +45,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250704-rust-next-pwm-working-fan-for-sending-v8-2-951e5482c9fd@samsung.com>
+Message-Id: <20250704-rust-next-pwm-working-fan-for-sending-v8-4-951e5482c9fd@samsung.com>
 In-Reply-To: <20250704-rust-next-pwm-working-fan-for-sending-v8-0-951e5482c9fd@samsung.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,  Miguel Ojeda
 	<ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,  Boqun Feng
@@ -66,329 +65,447 @@ Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
 	rust-for-linux@vger.kernel.org, linux-riscv@lists.infradead.org, 
 	devicetree@vger.kernel.org
 X-Mailer: b4 0.15-dev
-X-CMS-MailID: 20250704120212eucas1p1c9ffeefa41b0ddb27db74d26174831bf
+X-CMS-MailID: 20250704120215eucas1p29f4872872d92a4df001539d100418688
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250704120212eucas1p1c9ffeefa41b0ddb27db74d26174831bf
+X-RootMTR: 20250704120215eucas1p29f4872872d92a4df001539d100418688
 X-EPHeader: CA
-X-CMS-RootMailID: 20250704120212eucas1p1c9ffeefa41b0ddb27db74d26174831bf
+X-CMS-RootMailID: 20250704120215eucas1p29f4872872d92a4df001539d100418688
 References: <20250704-rust-next-pwm-working-fan-for-sending-v8-0-951e5482c9fd@samsung.com>
-	<CGME20250704120212eucas1p1c9ffeefa41b0ddb27db74d26174831bf@eucas1p1.samsung.com>
+	<CGME20250704120215eucas1p29f4872872d92a4df001539d100418688@eucas1p2.samsung.com>
 
-Building on the basic data types, this commit introduces the central
-object abstractions for the PWM subsystem: Device and Chip. It also
-includes the core trait implementations that make the Chip wrapper a
-complete, safe, and managed object.
+Introduce a PWM driver for the T-HEAD TH1520 SoC, written in Rust and
+utilizing the safe PWM abstractions from the preceding commit.
 
-The main components of this change are:
- - Device and Chip Structs: These structs wrap the underlying struct
-   pwm_device and struct pwm_chip C objects, providing safe, idiomatic
-   methods to access their fields.
+The driver implements the pwm::PwmOps trait using the modern waveform
+API (round_waveform_tohw, write_waveform, etc.) to support configuration
+of period, duty cycle, and polarity for the TH1520's PWM channels.
 
- - High-Level `Device` API: Exposes safe wrappers for the modern
-   `waveform` API, allowing consumers to apply, read, and pre-validate
-   hardware configurations.
+Resource management is handled using idiomatic Rust patterns. The PWM
+chip object is allocated via pwm::Chip::new and its registration with
+the PWM core is managed by the pwm::Registration RAII guard. This
+ensures pwmchip_remove is always called when the driver unbinds,
+preventing resource leaks. Device managed resources are used for the
+MMIO region, and the clock lifecycle is correctly managed in the
+driver's private data Drop implementation.
 
- - Core Trait Implementations for Chip:
-    - AlwaysRefCounted: Links the Chip's lifetime to its embedded
-      struct device reference counter. This enables automatic lifetime
-      management via ARef.
-    - Send and Sync: Marks the Chip wrapper as safe for use across
-      threads. This is sound because the C core handles all necessary
-      locking for the underlying object's state.
+The driver's core logic is written entirely in safe Rust, with no unsafe
+blocks.
 
-These wrappers and traits form a robust foundation for building PWM
-drivers in Rust.
-
-Reviewed-by: Danilo Krummrich <dakr@kernel.org>
 Signed-off-by: Michal Wilczynski <m.wilczynski@samsung.com>
 ---
- rust/kernel/pwm.rs | 266 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 263 insertions(+), 3 deletions(-)
+ MAINTAINERS               |   1 +
+ drivers/pwm/Kconfig       |  11 ++
+ drivers/pwm/Makefile      |   1 +
+ drivers/pwm/pwm_th1520.rs | 354 ++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 367 insertions(+)
 
-diff --git a/rust/kernel/pwm.rs b/rust/kernel/pwm.rs
-index 3fad101406eac728d9b12083fad7abf7b7f89b25..ba2f5a0ce5b9c4ca64f2984a627324aa8ab669cc 100644
---- a/rust/kernel/pwm.rs
-+++ b/rust/kernel/pwm.rs
-@@ -7,11 +7,12 @@
- //! C header: [`include/linux/pwm.h`](srctree/include/linux/pwm.h).
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 494de42ca8c36b30d80e14b03d3c9e0e054fb267..2449178a6d7b83b5202f8209c0b38e8302bc6b15 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21531,6 +21531,7 @@ F:	drivers/net/ethernet/stmicro/stmmac/dwmac-thead.c
+ F:	drivers/pinctrl/pinctrl-th1520.c
+ F:	drivers/pmdomain/thead/
+ F:	drivers/power/sequencing/pwrseq-thead-gpu.c
++F:	drivers/pwm/pwm_th1520.rs
+ F:	drivers/reset/reset-th1520.c
+ F:	include/dt-bindings/clock/thead,th1520-clk-ap.h
+ F:	include/dt-bindings/power/thead,th1520-power.h
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index c32655566d6ab9eff9d10f29e469f9aef89cecfa..02faf93600b6464d3c02495eeb5824ea541cff35 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -728,6 +728,17 @@ config PWM_TEGRA
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-tegra.
  
- use crate::{
--    bindings,
-+    bindings, device,
-+    error::{self, to_result},
-     prelude::*,
--    types::Opaque,
-+    types::{ARef, AlwaysRefCounted, ForeignOwnable, Opaque},
- };
--use core::convert::TryFrom;
-+use core::{convert::TryFrom, ptr::NonNull};
- 
- /// PWM polarity. Mirrors [`enum pwm_polarity`](srctree/include/linux/pwm.h).
- #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-@@ -135,3 +136,262 @@ pub fn enabled(&self) -> bool {
-         self.0.enabled
-     }
- }
++config PWM_TH1520
++	tristate "TH1520 PWM support"
++	depends on RUST
++	select RUST_PWM_ABSTRACTIONS
++	help
++	  This option enables the driver for the PWM controller found on the
++	  T-HEAD TH1520 SoC.
 +
-+/// Describes the outcome of a `round_waveform` operation.
-+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-+pub enum RoundingOutcome {
-+    /// The requested waveform was achievable exactly or by rounding values down.
-+    ExactOrRoundedDown,
++	  To compile this driver as a module, choose M here; the module
++	  will be called pwm-th1520. If you are unsure, say N.
 +
-+    /// The requested waveform could only be achieved by rounding up.
-+    RoundedUp,
+ config PWM_TIECAP
+ 	tristate "ECAP PWM support"
+ 	depends on ARCH_OMAP2PLUS || ARCH_DAVINCI_DA8XX || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index ff4f47e5fb7a0dbac72c12de82c3773e5582db6d..5c15c95c6e49143969389198657eed0ecf4086b2 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -67,6 +67,7 @@ obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
+ obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
+ obj-$(CONFIG_PWM_SUNPLUS)	+= pwm-sunplus.o
+ obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
++obj-$(CONFIG_PWM_TH1520)	+= pwm_th1520.o
+ obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
+ obj-$(CONFIG_PWM_TIEHRPWM)	+= pwm-tiehrpwm.o
+ obj-$(CONFIG_PWM_TWL)		+= pwm-twl.o
+diff --git a/drivers/pwm/pwm_th1520.rs b/drivers/pwm/pwm_th1520.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..10ecf67b263985c754ff2e0f3f4e9d22b274e10e
+--- /dev/null
++++ b/drivers/pwm/pwm_th1520.rs
+@@ -0,0 +1,354 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2025 Samsung Electronics Co., Ltd.
++// Author: Michal Wilczynski <m.wilczynski@samsung.com>
++
++//! Rust T-HEAD TH1520 PWM driver
++//!
++//! Limitations:
++//! - The period and duty cycle are controlled by 32-bit hardware registers,
++//!   limiting the maximum resolution.
++//! - The driver supports continuous output mode only; one-shot mode is not
++//!   implemented.
++//! - The controller hardware provides up to 6 PWM channels.
++//! - Reconfiguration is glitch free - new period and duty cycle values are
++//!   latched and take effect at the start of the next period.
++//! - Polarity is handled via a simple hardware inversion bit; arbitrary
++//!   duty cycle offsets are not supported.
++//! - Disabling a channel is achieved by configuring its duty cycle to zero to
++//!   produce a static low output. Clearing the `start` does not reliably
++//!   force the static inactive level defined by the `INACTOUT` bit. Hence
++//!   this method is not used in this driver.
++//!
++
++use core::ops::Deref;
++use kernel::{
++    c_str,
++    clk::Clk,
++    device::{Bound, Core, Device},
++    devres,
++    io::mem::IoMem,
++    of, platform,
++    prelude::*,
++    pwm, time,
++};
++
++const TH1520_MAX_PWM_NUM: u32 = 6;
++
++// Register offsets
++const fn th1520_pwm_chn_base(n: u32) -> usize {
++    (n * 0x20) as usize
 +}
 +
-+/// Wrapper for a PWM device [`struct pwm_device`](srctree/include/linux/pwm.h).
-+#[repr(transparent)]
-+pub struct Device(Opaque<bindings::pwm_device>);
++const fn th1520_pwm_ctrl(n: u32) -> usize {
++    th1520_pwm_chn_base(n)
++}
 +
-+impl Device {
-+    /// Creates a reference to a [`Device`] from a valid C pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The caller must ensure that `ptr` is valid and remains valid for the lifetime of the
-+    /// returned [`Device`] reference.
-+    pub(crate) unsafe fn as_ref<'a>(ptr: *mut bindings::pwm_device) -> &'a Self {
-+        // SAFETY: The safety requirements guarantee the validity of the dereference, while the
-+        // `Device` type being transparent makes the cast ok.
-+        unsafe { &*ptr.cast::<Self>() }
-+    }
++const fn th1520_pwm_per(n: u32) -> usize {
++    th1520_pwm_chn_base(n) + 0x08
++}
 +
-+    /// Returns a raw pointer to the underlying `pwm_device`.
-+    fn as_raw(&self) -> *mut bindings::pwm_device {
-+        self.0.get()
-+    }
++const fn th1520_pwm_fp(n: u32) -> usize {
++    th1520_pwm_chn_base(n) + 0x0c
++}
 +
-+    /// Gets the hardware PWM index for this device within its chip.
-+    pub fn hwpwm(&self) -> u32 {
-+        // SAFETY: `self.as_raw()` provides a valid pointer for `self`'s lifetime.
-+        unsafe { (*self.as_raw()).hwpwm }
-+    }
++// Control register bits
++const TH1520_PWM_START: u32 = 1 << 0;
++const TH1520_PWM_CFG_UPDATE: u32 = 1 << 2;
++const TH1520_PWM_CONTINUOUS_MODE: u32 = 1 << 5;
++const TH1520_PWM_FPOUT: u32 = 1 << 8;
 +
-+    /// Gets a reference to the parent `Chip` that this device belongs to.
-+    pub fn chip<T: ForeignOwnable>(&self) -> &Chip<T> {
-+        // SAFETY: `self.as_raw()` provides a valid pointer. (*self.as_raw()).chip
-+        // is assumed to be a valid pointer to `pwm_chip` managed by the kernel.
-+        // Chip::as_ref's safety conditions must be met.
-+        unsafe { Chip::<T>::as_ref((*self.as_raw()).chip) }
-+    }
++const TH1520_PWM_REG_SIZE: usize = 0xB0;
 +
-+    /// Gets the label for this PWM device, if any.
-+    pub fn label(&self) -> Option<&CStr> {
-+        // SAFETY: self.as_raw() provides a valid pointer.
-+        let label_ptr = unsafe { (*self.as_raw()).label };
-+        if label_ptr.is_null() {
-+            None
-+        } else {
-+            // SAFETY: label_ptr is non-null and points to a C string
-+            // managed by the kernel, valid for the lifetime of the PWM device.
-+            Some(unsafe { CStr::from_char_ptr(label_ptr) })
++fn ns_to_cycles(ns: u64, rate_hz: u64) -> u64 {
++    const NSEC_PER_SEC_U64: u64 = time::NSEC_PER_SEC as u64;
++
++    (match ns.checked_mul(rate_hz) {
++        Some(product) => product,
++        None => u64::MAX,
++    }) / NSEC_PER_SEC_U64
++}
++
++fn cycles_to_ns(cycles: u64, rate_hz: u64) -> u64 {
++    const NSEC_PER_SEC_U64: u64 = time::NSEC_PER_SEC as u64;
++
++    // Round up
++    let Some(numerator) = cycles
++        .checked_mul(NSEC_PER_SEC_U64)
++        .and_then(|p| p.checked_add(rate_hz - 1))
++    else {
++        return u64::MAX;
++    };
++
++    numerator / rate_hz
++}
++
++/// Hardware-specific waveform representation for TH1520.
++#[derive(Copy, Clone, Debug, Default)]
++struct Th1520WfHw {
++    period_cycles: u32,
++    duty_cycles: u32,
++    ctrl_val: u32,
++    enabled: bool,
++}
++
++/// The driver's private data struct. It holds all necessary devres managed resources.
++#[pin_data(PinnedDrop)]
++struct Th1520PwmDriverData {
++    #[pin]
++    iomem: devres::Devres<IoMem<TH1520_PWM_REG_SIZE>>,
++    clk: Clk,
++}
++
++// This `unsafe` implementation is a temporary necessity because the underlying `kernel::clk::Clk`
++// type does not yet expose `Send` and `Sync` implementations. This block should be removed
++// as soon as the clock abstraction provides these guarantees directly.
++// TODO: Remove those unsafe impl's when Clk will support them itself.
++
++// SAFETY: The `devres` framework requires the driver's private data to be `Send` and `Sync`.
++// We can guarantee this because the PWM core synchronizes all callbacks, preventing concurrent
++// access to the contained `iomem` and `clk` resources.
++unsafe impl Send for Th1520PwmDriverData {}
++
++// SAFETY: The same reasoning applies as for `Send`. The PWM core's synchronization
++// guarantees that it is safe for multiple threads to have shared access (`&self`)
++// to the driver data during callbacks.
++unsafe impl Sync for Th1520PwmDriverData {}
++
++impl pwm::PwmOps for Th1520PwmDriverData {
++    type DrvData = Pin<KBox<Th1520PwmDriverData>>;
++    type WfHw = Th1520WfHw;
++
++    fn round_waveform_tohw(
++        chip: &pwm::Chip<Self::DrvData>,
++        _pwm: &pwm::Device,
++        wf: &pwm::Waveform,
++    ) -> Result<(c_int, Self::WfHw)> {
++        let data = chip.drvdata();
++
++        if wf.period_length_ns == 0 {
++            return Ok((
++                0,
++                Th1520WfHw {
++                    enabled: false,
++                    ..Default::default()
++                },
++            ));
 +        }
-+    }
 +
-+    /// Gets a copy of the board-dependent arguments for this PWM device.
-+    pub fn args(&self) -> Args {
-+        // SAFETY: self.as_raw() gives a valid pointer to `pwm_device`.
-+        // The `args` field is a valid `pwm_args` struct embedded within `pwm_device`.
-+        // `Args::from_c_ptr`'s safety conditions are met by providing this pointer.
-+        unsafe { Args::from_c_ptr(&(*self.as_raw()).args) }
-+    }
++        let rate_hz = data.clk.rate().as_hz() as u64;
 +
-+    /// Gets a copy of the current state of this PWM device.
-+    pub fn state(&self) -> State {
-+        // SAFETY: `self.as_raw()` gives a valid pointer. `(*self.as_raw()).state`
-+        // is a valid `pwm_state` struct. `State::from_c` copies this data.
-+        State::from_c(unsafe { (*self.as_raw()).state })
-+    }
++        let period_cycles = ns_to_cycles(wf.period_length_ns, rate_hz).min(u64::from(u32::MAX));
++        let mut duty_cycles = ns_to_cycles(wf.duty_length_ns, rate_hz).min(u64::from(u32::MAX));
 +
-+    /// Sets the PWM waveform configuration and enables the PWM signal.
-+    pub fn set_waveform(&self, wf: &Waveform, exact: bool) -> Result {
-+        let c_wf = bindings::pwm_waveform::from(*wf);
++        let mut ctrl_val = TH1520_PWM_CONTINUOUS_MODE;
 +
-+        // SAFETY: `self.as_raw()` provides a valid `*mut pwm_device` pointer.
-+        // `&c_wf` is a valid pointer to a `pwm_waveform` struct. The C function
-+        // handles all necessary internal locking.
-+        let ret = unsafe { bindings::pwm_set_waveform_might_sleep(self.as_raw(), &c_wf, exact) };
-+        to_result(ret)
-+    }
-+
-+    /// Queries the hardware for the configuration it would apply for a given
-+    /// request.
-+    pub fn round_waveform(&self, wf: &mut Waveform) -> Result<RoundingOutcome> {
-+        let mut c_wf = bindings::pwm_waveform::from(*wf);
-+
-+        // SAFETY: `self.as_raw()` provides a valid `*mut pwm_device` pointer.
-+        // `&mut c_wf` is a valid pointer to a mutable `pwm_waveform` struct that
-+        // the C function will update.
-+        let ret = unsafe { bindings::pwm_round_waveform_might_sleep(self.as_raw(), &mut c_wf) };
-+
-+        to_result(ret)?;
-+
-+        *wf = Waveform::from(c_wf);
-+
-+        if ret == 1 {
-+            Ok(RoundingOutcome::RoundedUp)
++        let is_inversed = wf.duty_length_ns > 0
++            && wf.duty_offset_ns > 0
++            && wf.duty_length_ns + wf.duty_offset_ns >= wf.period_length_ns;
++        if is_inversed {
++            duty_cycles = period_cycles - duty_cycles;
 +        } else {
-+            Ok(RoundingOutcome::ExactOrRoundedDown)
++            ctrl_val |= TH1520_PWM_FPOUT;
 +        }
++
++        let wfhw = Th1520WfHw {
++            period_cycles: period_cycles as u32,
++            duty_cycles: duty_cycles as u32,
++            ctrl_val,
++            enabled: true,
++        };
++
++        dev_dbg!(
++            chip.device(),
++            "clk_rate: {}Hz Requested: period {}ns, duty {}ns, offset {}ns -> HW: period {} cyc, duty {} cyc, ctrl 0x{:x}\n",
++            rate_hz,
++            wf.period_length_ns,
++            wf.duty_length_ns,
++            wf.duty_offset_ns,
++            wfhw.period_cycles,
++            wfhw.duty_cycles,
++            wfhw.ctrl_val
++        );
++
++        Ok((0, wfhw))
 +    }
 +
-+    /// Reads the current waveform configuration directly from the hardware.
-+    pub fn get_waveform(&self) -> Result<Waveform> {
-+        let mut c_wf = bindings::pwm_waveform::default();
++    fn round_waveform_fromhw(
++        chip: &pwm::Chip<Self::DrvData>,
++        _pwm: &pwm::Device,
++        wfhw: &Self::WfHw,
++        wf: &mut pwm::Waveform,
++    ) -> Result<c_int> {
++        let data = chip.drvdata();
++        let rate_hz = data.clk.rate().as_hz() as u64;
 +
-+        // SAFETY: `self.as_raw()` is a valid pointer. We provide a valid pointer
-+        // to a stack-allocated `pwm_waveform` struct for the kernel to fill.
-+        let ret = unsafe { bindings::pwm_get_waveform_might_sleep(self.as_raw(), &mut c_wf) };
++        wf.period_length_ns = cycles_to_ns(u64::from(wfhw.period_cycles), rate_hz);
 +
-+        to_result(ret)?;
++        let duty_cycles = u64::from(wfhw.duty_cycles);
 +
-+        Ok(Waveform::from(c_wf))
-+    }
-+}
++        if (wfhw.ctrl_val & TH1520_PWM_FPOUT) != 0 {
++            wf.duty_length_ns = cycles_to_ns(duty_cycles, rate_hz);
++            wf.duty_offset_ns = 0;
++        } else {
++            let period_cycles = u64::from(wfhw.period_cycles);
++            let original_duty_cycles = period_cycles.saturating_sub(duty_cycles);
 +
-+/// Wrapper for a PWM chip/controller ([`struct pwm_chip`](srctree/include/linux/pwm.h)).
-+#[repr(transparent)]
-+pub struct Chip<T: ForeignOwnable>(Opaque<bindings::pwm_chip>, PhantomData<T>);
++            // For an inverted signal, `duty_length_ns` is the high time (period - low_time).
++            wf.duty_length_ns = cycles_to_ns(original_duty_cycles, rate_hz);
++            // The offset is the initial low time, which is what the hardware register provides.
++            wf.duty_offset_ns = cycles_to_ns(duty_cycles, rate_hz);
++        }
 +
-+impl<T: ForeignOwnable> Chip<T> {
-+    /// Creates a reference to a [`Chip`] from a valid pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The caller must ensure that `ptr` is valid and remains valid for the lifetime of the
-+    /// returned [`Chip`] reference.
-+    pub(crate) unsafe fn as_ref<'a>(ptr: *mut bindings::pwm_chip) -> &'a Self {
-+        // SAFETY: The safety requirements guarantee the validity of the dereference, while the
-+        // `Chip` type being transparent makes the cast ok.
-+        unsafe { &*ptr.cast::<Self>() }
++        Ok(0)
 +    }
 +
-+    /// Returns a raw pointer to the underlying `pwm_chip`.
-+    pub(crate) fn as_raw(&self) -> *mut bindings::pwm_chip {
-+        self.0.get()
++    fn read_waveform(
++        chip: &pwm::Chip<Self::DrvData>,
++        pwm: &pwm::Device,
++        parent_dev: &Device<Bound>,
++    ) -> Result<Self::WfHw> {
++        let data = chip.drvdata();
++        let hwpwm = pwm.hwpwm();
++        let iomem_accessor = data.iomem.access(parent_dev)?;
++        let iomap = iomem_accessor.deref();
++
++        let ctrl = iomap.try_read32(th1520_pwm_ctrl(hwpwm))?;
++        let period_cycles = iomap.try_read32(th1520_pwm_per(hwpwm))?;
++        let duty_cycles = iomap.try_read32(th1520_pwm_fp(hwpwm))?;
++
++        let wfhw = Th1520WfHw {
++            period_cycles,
++            duty_cycles,
++            ctrl_val: ctrl,
++            enabled: duty_cycles != 0,
++        };
++
++        dev_dbg!(
++            chip.device(),
++            "PWM-{}: read_waveform: Read hw state - period: {}, duty: {}, ctrl: 0x{:x}, enabled: {}",
++            hwpwm,
++            wfhw.period_cycles,
++            wfhw.duty_cycles,
++            wfhw.ctrl_val,
++            wfhw.enabled
++        );
++
++        Ok(wfhw)
 +    }
 +
-+    /// Gets the number of PWM channels (hardware PWMs) on this chip.
-+    pub fn npwm(&self) -> u32 {
-+        // SAFETY: `self.as_raw()` provides a valid pointer for `self`'s lifetime.
-+        unsafe { (*self.as_raw()).npwm }
-+    }
++    fn write_waveform(
++        chip: &pwm::Chip<Self::DrvData>,
++        pwm: &pwm::Device,
++        wfhw: &Self::WfHw,
++        parent_dev: &Device<Bound>,
++    ) -> Result {
++        let data = chip.drvdata();
++        let hwpwm = pwm.hwpwm();
++        let iomem_accessor = data.iomem.access(parent_dev)?;
++        let iomap = iomem_accessor.deref();
++        let was_enabled = pwm.state().enabled();
 +
-+    /// Returns `true` if the chip supports atomic operations for configuration.
-+    pub fn is_atomic(&self) -> bool {
-+        // SAFETY: `self.as_raw()` provides a valid pointer for `self`'s lifetime.
-+        unsafe { (*self.as_raw()).atomic }
-+    }
++        if !wfhw.enabled {
++            if was_enabled {
++                iomap.try_write32(wfhw.ctrl_val, th1520_pwm_ctrl(hwpwm))?;
++                iomap.try_write32(0, th1520_pwm_fp(hwpwm))?;
++                iomap.try_write32(wfhw.ctrl_val | TH1520_PWM_CFG_UPDATE, th1520_pwm_ctrl(hwpwm))?;
++            }
++            return Ok(());
++        }
 +
-+    /// Returns a reference to the embedded `struct device` abstraction.
-+    pub fn device(&self) -> &device::Device {
-+        // SAFETY: `self.as_raw()` provides a valid pointer to `bindings::pwm_chip`.
-+        // The `dev` field is an instance of `bindings::device` embedded within `pwm_chip`.
-+        // Taking a pointer to this embedded field is valid.
-+        // `device::Device` is `#[repr(transparent)]`.
-+        // The lifetime of the returned reference is tied to `self`.
-+        unsafe { device::Device::as_ref(&raw mut (*self.as_raw()).dev) }
-+    }
++        iomap.try_write32(wfhw.ctrl_val, th1520_pwm_ctrl(hwpwm))?;
++        iomap.try_write32(wfhw.period_cycles, th1520_pwm_per(hwpwm))?;
++        iomap.try_write32(wfhw.duty_cycles, th1520_pwm_fp(hwpwm))?;
++        iomap.try_write32(wfhw.ctrl_val | TH1520_PWM_CFG_UPDATE, th1520_pwm_ctrl(hwpwm))?;
 +
-+    /// Returns a reference to the parent device of this PWM chip's device.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The caller must guarantee that the parent device exists and is bound.
-+    /// This is guaranteed by the PWM core during `PwmOps` callbacks.
-+    unsafe fn bound_parent_device(&self) -> &device::Device<Bound> {
-+        // SAFETY: Per the function's safety contract, the parent device exists.
-+        let parent = unsafe { self.device().parent().unwrap_unchecked() };
++        // The `TH1520_PWM_START` bit must be written in a separate, final transaction, and
++        // only when enabling the channel from a disabled state.
++        if !was_enabled {
++            iomap.try_write32(wfhw.ctrl_val | TH1520_PWM_START, th1520_pwm_ctrl(hwpwm))?;
++        }
 +
-+        // SAFETY: Per the function's safety contract, the parent device is bound.
-+        // The pointer is cast from `&Device` to `&Device<Bound>`.
-+        unsafe { &*core::ptr::from_ref(parent).cast::<device::Device<Bound>>() }
-+    }
-+}
++        dev_dbg!(
++            chip.device(),
++            "PWM-{}: Wrote (per: {}, duty: {})",
++            hwpwm,
++            wfhw.period_cycles,
++            wfhw.duty_cycles,
++        );
 +
-+impl<T: 'static + ForeignOwnable> Chip<T> {
-+    /// Allocates and wraps a PWM chip using `bindings::pwmchip_alloc`.
-+    ///
-+    /// Returns an [`ARef<Chip>`] managing the chip's lifetime via refcounting
-+    /// on its embedded `struct device`.
-+    pub fn new(
-+        parent_dev: &device::Device,
-+        npwm: u32,
-+        sizeof_priv: usize,
-+        drvdata: T,
-+    ) -> Result<ARef<Self>> {
-+        // SAFETY: `parent_device_for_dev_field.as_raw()` is valid.
-+        // `bindings::pwmchip_alloc` returns a valid `*mut bindings::pwm_chip` (refcount 1)
-+        // or an ERR_PTR.
-+        let c_chip_ptr_raw =
-+            unsafe { bindings::pwmchip_alloc(parent_dev.as_raw(), npwm, sizeof_priv) };
-+
-+        let c_chip_ptr: *mut bindings::pwm_chip = error::from_err_ptr(c_chip_ptr_raw)?;
-+
-+        // Cast the `*mut bindings::pwm_chip` to `*mut Chip`. This is valid because
-+        // `Chip` is `repr(transparent)` over `Opaque<bindings::pwm_chip>`, and
-+        // `Opaque<T>` is `repr(transparent)` over `T`.
-+        let chip_ptr_as_self = c_chip_ptr.cast::<Self>();
-+
-+        // SAFETY: The pointer is valid, so we can create a temporary ref to set data.
-+        let chip_ref = unsafe { &*chip_ptr_as_self };
-+        // SAFETY: `chip_ref` points to a valid chip from `pwmchip_alloc` and `drvdata` is a valid,
-+        // owned pointer from `ForeignOwnable` to be stored in the chip's private data.
-+        unsafe { bindings::pwmchip_set_drvdata(chip_ref.as_raw(), drvdata.into_foreign().cast()) }
-+
-+        // SAFETY: `chip_ptr_as_self` points to a valid `Chip` (layout-compatible with
-+        // `bindings::pwm_chip`) whose embedded device has refcount 1.
-+        // `ARef::from_raw` takes this pointer and manages it via `AlwaysRefCounted`.
-+        Ok(unsafe { ARef::from_raw(NonNull::new_unchecked(chip_ptr_as_self)) })
-+    }
-+
-+    /// Gets the *typed* driver-specific data associated with this chip's embedded device.
-+    pub fn drvdata(&self) -> T::Borrowed<'_> {
-+        // SAFETY: `self.as_raw()` gives a valid pwm_chip pointer.
-+        // `bindings::pwmchip_get_drvdata` is the C function to retrieve driver data.
-+        let ptr = unsafe { bindings::pwmchip_get_drvdata(self.as_raw()) };
-+
-+        // SAFETY: The only way to create a chip is through Chip::new, which initializes
-+        // this pointer.
-+        unsafe { T::borrow(ptr.cast()) }
-+    }
-+}
-+
-+// SAFETY: Implements refcounting for `Chip` using the embedded `struct device`.
-+unsafe impl<T: ForeignOwnable> AlwaysRefCounted for Chip<T> {
-+    #[inline]
-+    fn inc_ref(&self) {
-+        // SAFETY: `self.0.get()` points to a valid `pwm_chip` because `self` exists.
-+        // The embedded `dev` is valid. `get_device` increments its refcount.
-+        unsafe { bindings::get_device(&raw mut (*self.0.get()).dev); }
-+    }
-+
-+    #[inline]
-+    unsafe fn dec_ref(obj: NonNull<Chip<T>>) {
-+        let c_chip_ptr = obj.cast::<bindings::pwm_chip>().as_ptr();
-+
-+        // SAFETY: `obj` is a valid pointer to a `Chip` (and thus `bindings::pwm_chip`)
-+        // with a non-zero refcount. `put_device` handles decrement and final release.
-+        unsafe { bindings::put_device(&raw mut (*c_chip_ptr).dev); }
++        Ok(())
 +    }
 +}
 +
-+// SAFETY: `Chip` is a wrapper around `*mut bindings::pwm_chip`. The underlying C
-+// structure's state is managed and synchronized by the kernel's device model
-+// and PWM core locking mechanisms. Therefore, it is safe to move the `Chip`
-+// wrapper (and the pointer it contains) across threads.
-+unsafe impl<T: ForeignOwnable + Send> Send for Chip<T> {}
++#[pinned_drop]
++impl PinnedDrop for Th1520PwmDriverData {
++    fn drop(self: Pin<&mut Self>) {
++        self.clk.disable_unprepare();
++    }
++}
 +
-+// SAFETY: It is safe for multiple threads to have shared access (`&Chip`) because
-+// the `Chip` data is immutable from the Rust side without holding the appropriate
-+// kernel locks, which the C core is responsible for. Any interior mutability is
-+// handled and synchronized by the C kernel code.
-+unsafe impl<T: ForeignOwnable + Sync> Sync for Chip<T> {}
++static TH1520_PWM_OPS: pwm::PwmOpsVTable = pwm::create_pwm_ops::<Th1520PwmDriverData>();
++
++struct Th1520PwmPlatformDriver;
++
++kernel::of_device_table!(
++    OF_TABLE,
++    MODULE_OF_TABLE,
++    <Th1520PwmPlatformDriver as platform::Driver>::IdInfo,
++    [(of::DeviceId::new(c_str!("thead,th1520-pwm")), ())]
++);
++
++impl platform::Driver for Th1520PwmPlatformDriver {
++    type IdInfo = ();
++    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
++
++    fn probe(
++        pdev: &platform::Device<Core>,
++        _id_info: Option<&Self::IdInfo>,
++    ) -> Result<Pin<KBox<Self>>> {
++        let dev = pdev.as_ref();
++        let resource = pdev.resource(0).ok_or(ENODEV)?;
++
++        let drvdata = KBox::pin_init(
++            try_pin_init!(Th1520PwmDriverData {
++                iomem <- pdev.ioremap_resource_sized::<TH1520_PWM_REG_SIZE>(resource),
++                clk <- Clk::get(dev, None),
++            }),
++            GFP_KERNEL,
++        )?;
++
++        drvdata.clk.prepare_enable()?;
++
++        // TODO: Get exclusive ownership of the clock to prevent rate changes.
++        // The Rust equivalent of `clk_rate_exclusive_get()` is not yet available.
++        // This should be updated once it is implemented.
++        let rate_hz = drvdata.clk.rate().as_hz();
++        if rate_hz == 0 {
++            dev_err!(dev, "Clock rate is zero\n");
++            return Err(EINVAL);
++        }
++
++        if rate_hz > time::NSEC_PER_SEC as usize {
++            dev_err!(
++                dev,
++                "Clock rate {} Hz is too high, not supported.\n",
++                rate_hz
++            );
++            return Err(ERANGE);
++        }
++
++        let chip = pwm::Chip::new(dev, TH1520_MAX_PWM_NUM, 0, drvdata)?;
++
++        pwm::Registration::register(dev, chip, &TH1520_PWM_OPS)?;
++
++        Ok(KBox::new(Th1520PwmPlatformDriver, GFP_KERNEL)?.into())
++    }
++}
++
++kernel::module_platform_driver! {
++    type: Th1520PwmPlatformDriver,
++    name: "pwm-th1520",
++    authors: ["Michal Wilczynski <m.wilczynski@samsung.com>"],
++    description: "T-HEAD TH1520 PWM driver",
++    license: "GPL v2",
++}
 
 -- 
 2.34.1
