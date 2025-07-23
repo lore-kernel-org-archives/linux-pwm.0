@@ -1,38 +1,37 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8118281525;
-	Tue, 22 Jul 2025 16:24:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6AD121D5AA;
+	Wed, 23 Jul 2025 17:35:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753201461; cv=none; b=JUKA6Kg0ov9St2oB+6HpX66trQFzYrf/IOytRIKfuemzOZa7fWV5O9YRUZYWlpav0jvdNLvcU7E2isikPxky97Xw4eMBorY4s/2GvpJ3euSDHMreQbBvN+RweYu6D5HSyXVmlM8k3Zp9koQh3LutRfWOo2Ft2yhOridErrOKqm8=
+	t=1753292106; cv=none; b=fI85n2Gv/rmIdiKutbtSUVUyrxclXQSmc3Vw9d7Wqve4R9DZFfkfaKPOGj2BhjWXbmhhp0EtHjGpYpzP7cnGQcP6uelep9eoX5j9OhdgMMIH8rjiYmHTYnkHXVYiaHVkWvJMRLfSuq6yk61g9d6TZW3J+OEdRaKUf6NljeSa3wE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753201461; c=relaxed/simple;
-	bh=xJ6iY8o+ZOpmD8Y1clJfWaa8E3xKOaOVi2G4V5Rnvlk=;
+	s=arc-20240116; t=1753292106; c=relaxed/simple;
+	bh=SSXg8ECWTIfwP0u4L4pppiz7mam/bpcy0GKszAlTwNg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=EU1A85DcwiLw3A0px/fFHuLT7KlLjlxPbbuHGm915d8EsjB1qsiWrUfFQn4OIFH7y4mZosw4ePh6TH2nFkPlYNwoNqrDAuIbfGO4gXn+3OublTeTjdiDPdEN7vNQ7PyQdjB9z9JRw7yHLo4xyFaWd0nG+GBwl8M11VXovFZXAHU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=bLGzyCoq; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	 In-Reply-To:To:Cc; b=tz2vAWAwMJpRmxcGWCqharcAx5yIf8T2jcgxsXN/zfTz5HXDzXdxODoCInSmGapQ3KMHwXJOmx70hRpbnFHTpYhP2kON81XZuuyKGDG/LaPx8gQsKCkrHni3tZV6phfdGpZvOI0bnBxuk7pN13w+mrKULNGNpZ5P/53UxWVkhck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lnSyv37g; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="bLGzyCoq"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 3903E442BA;
-	Tue, 22 Jul 2025 16:24:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1753201454;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Sx6wkia9Ry4UV/E6LGN80qIoVg+MTk5IsREllQ76Ch0=;
-	b=bLGzyCoqzxIMa79ZmkUahyDwsQ+XS6zaMNd5Pf5V2rhY8d7vNUINERAx5x5Mt8gYhp4F0B
-	Jg5Px/QOUd+A9V9dY7VAXZZwItq1PeQiMZqb13VBwgjme0i2RnRSM4QO1wjvQuyMdGM0JG
-	rlb47DSgd3f5XyvNx5daQyMTmsFUOzvmxUYnk9BrYUu+AtKZdF2ZCP9LBrNV4fvg3vEODl
-	+P9d0cWXD8buV5w5P0QGnFt2drcApwLWG56ynsnZULkyRTgcPfCo5fpGB6/4lEMEtCKZGt
-	B0OopUC/tfJ1PTjplNLMJk6iVQZhWlbtsaY8jnimobHo0Nqmq/i1iXtCh4/NRg==
-From: Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>
-Date: Tue, 22 Jul 2025 18:23:54 +0200
-Subject: [PATCH v12 10/10] MAINTAINERS: Add entry on MAX7360 driver
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lnSyv37g"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A0146C4CEF4;
+	Wed, 23 Jul 2025 17:35:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1753292106;
+	bh=SSXg8ECWTIfwP0u4L4pppiz7mam/bpcy0GKszAlTwNg=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=lnSyv37gO5xEHqB8K/CQpzv8VsCYVOl5A46fWuaQ3DShpB3S9EK1/g5sx1s0AST5L
+	 2DWJbjiG7Mnkgn9YAWwB+twyx3bC6umrddPQEk3hKNo8lPTZRJb5FTcmMW5sDsICxs
+	 w1IWe1LB1i6wEL1t9NFcsZd8iUYuATN/jb0/M49Ru7Wh0YB9cbWnC6fBmv2lygU39N
+	 uUMEYjIV22THLf2tfnwYaCv3JbM9zjittx6WHhngM+Ru1iqsfXaGCpuzI2xUqCE7Dm
+	 Y3iK67ZS06YkkRFr1q/POiUoi4RI9yZ4kV0ywEzSd0oEKor2VeamUIMSnFz54s7ekX
+	 32lxvXm6ID9PA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F335C83F17;
+	Wed, 23 Jul 2025 17:35:06 +0000 (UTC)
+From: Dimitri Fedrau via B4 Relay <devnull+dimitri.fedrau.liebherr.com@kernel.org>
+Date: Wed, 23 Jul 2025 19:34:56 +0200
+Subject: [PATCH v5 1/2] pwm: mc33xs2410: add hwmon support
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -41,72 +40,146 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250722-mdb-max7360-support-v12-10-3747721a8d02@bootlin.com>
-References: <20250722-mdb-max7360-support-v12-0-3747721a8d02@bootlin.com>
-In-Reply-To: <20250722-mdb-max7360-support-v12-0-3747721a8d02@bootlin.com>
-To: Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Kamel Bouhara <kamel.bouhara@bootlin.com>, 
- Linus Walleij <linus.walleij@linaro.org>, 
- Bartosz Golaszewski <brgl@bgdev.pl>, 
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Michael Walle <mwalle@kernel.org>, Mark Brown <broonie@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-input@vger.kernel.org, 
- linux-pwm@vger.kernel.org, andriy.shevchenko@intel.com, 
- =?utf-8?q?Gr=C3=A9gory_Clement?= <gregory.clement@bootlin.com>, 
- Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
- Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>
-X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1753201440; l=1082;
- i=mathieu.dubois-briand@bootlin.com; s=20241219; h=from:subject:message-id;
- bh=xJ6iY8o+ZOpmD8Y1clJfWaa8E3xKOaOVi2G4V5Rnvlk=;
- b=RCtvc6Srpi81Hw3SAZmo9YPbfFfM9Vq/dZhYOLivl7rVBPorISC3LthYFL0evjIQ9O0I0LgBM
- smlCMBzi1IPCGB54JVnNsV915RaNmFWhlivYJPIbbp5VuJ2sDKhD6vw
-X-Developer-Key: i=mathieu.dubois-briand@bootlin.com; a=ed25519;
- pk=1PVTmzPXfKvDwcPUzG0aqdGoKZJA3b9s+3DqRlm0Lww=
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdejheefiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephfffufggtgfgkfhfjgfvvefosehtjeertdertdejnecuhfhrohhmpeforghthhhivghuucffuhgsohhishdquehrihgrnhguuceomhgrthhhihgvuhdrughusghoihhsqdgsrhhirghnugessghoohhtlhhinhdrtghomheqnecuggftrfgrthhtvghrnheptdfhgeetvddvheejieehheehueetjeelkedtfeehhefgfeeglefhteegtddthfetnecukfhppedvrgdtudemtggsudegmeehheeimeejrgdttdemfehftghfmehfsgdtugemuddviedvmedvvgejieenucevlhhushhtvghrufhiiigvpeehnecurfgrrhgrmhepihhnvghtpedvrgdtudemtggsudegmeehheeimeejrgdttdemfehftghfmehfsgdtugemuddviedvmedvvgejiedphhgvlhhopegluddvjedrtddruddrudgnpdhmrghilhhfrhhomhepmhgrthhhihgvuhdrughusghoihhsqdgsrhhirghnugessghoohhtlhhinhdrtghomhdpnhgspghrtghpthhtohepvdefpdhrtghpthhtoheplhhinhhushdrfigrlhhlvghijheslhhinhgrrhhordhorhhgpdhrtghpthhtohepmhifrghllhgvsehkvghrnhgvlhdrohhrghdprhgtphhtthhopegrnhgurhhihidrshhhv
- ghvtghhvghnkhhosehinhhtvghlrdgtohhmpdhrtghpthhtoheprhgrfhgrvghlsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehkrhiikhdoughtsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpfihmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheptghonhhorhdoughtsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlvggvsehkvghrnhgvlhdrohhrgh
-X-GND-Sasl: mathieu.dubois-briand@bootlin.com
+Message-Id: <20250723-mc33xs2410-hwmon-v5-1-f62aab71cd59@liebherr.com>
+References: <20250723-mc33xs2410-hwmon-v5-0-f62aab71cd59@liebherr.com>
+In-Reply-To: <20250723-mc33xs2410-hwmon-v5-0-f62aab71cd59@liebherr.com>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, 
+ Jonathan Corbet <corbet@lwn.net>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, 
+ Dimitri Fedrau <dimitri.fedrau@liebherr.com>, 
+ Dimitri Fedrau <dima.fedrau@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1753292105; l=4016;
+ i=dimitri.fedrau@liebherr.com; s=20241202; h=from:subject:message-id;
+ bh=7Ba6D8Nsq70XyxD+K636D3Vr+HrfmANRkuQUcbHIPpM=;
+ b=Yaf9Q27JI8cGgE4AVwyyY7jDYQB6CmIz1eC+D5TC5XcPI8bV5vjVbWPl3DdTS++lMvSe3KSU0
+ Z0zxTv8nh8xDtV1acg6fIdb3PgS+A/SCS+myjLGVawzrc5yxYuySto4
+X-Developer-Key: i=dimitri.fedrau@liebherr.com; a=ed25519;
+ pk=rT653x09JSQvotxIqQl4/XiI4AOiBZrdOGvxDUbb5m8=
+X-Endpoint-Received: by B4 Relay for dimitri.fedrau@liebherr.com/20241202
+ with auth_id=290
+X-Original-From: Dimitri Fedrau <dimitri.fedrau@liebherr.com>
+Reply-To: dimitri.fedrau@liebherr.com
 
-Add myself as maintainer of Maxim MAX7360 driver and device-tree bindings.
+From: Dimitri Fedrau <dimitri.fedrau@liebherr.com>
 
-Signed-off-by: Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>
+Support for hwmon is provided by a separate driver residing in hwmon
+subsystem which is implemented as auxiliary device. Add handling of this
+device.
+
+Signed-off-by: Dimitri Fedrau <dimitri.fedrau@liebherr.com>
 ---
- MAINTAINERS | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/pwm/Kconfig          |  1 +
+ drivers/pwm/pwm-mc33xs2410.c | 20 ++++++++++++++++++--
+ include/linux/mc33xs2410.h   | 16 ++++++++++++++++
+ 3 files changed, 35 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 60bba48f5479..469317272dab 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14808,6 +14808,19 @@ L:	linux-iio@vger.kernel.org
- S:	Maintained
- F:	drivers/iio/temperature/max30208.c
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 3ef1757502ebd92b30584cd10611311a0fbfc03b..64f1c86340fdc7d0ef41bf14be5f6f0623a2bd31 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -436,6 +436,7 @@ config PWM_MC33XS2410
+ 	tristate "MC33XS2410 PWM support"
+ 	depends on OF
+ 	depends on SPI
++	select AUXILIARY_BUS
+ 	help
+ 	  NXP MC33XS2410 high-side switch driver. The MC33XS2410 is a four
+ 	  channel high-side switch. The device is operational from 3.0 V
+diff --git a/drivers/pwm/pwm-mc33xs2410.c b/drivers/pwm/pwm-mc33xs2410.c
+index a1ac3445ccdb4709d92e0075d424a8abc1416eee..6d99e3ff7239891d87711d98aa463ac158af70e1 100644
+--- a/drivers/pwm/pwm-mc33xs2410.c
++++ b/drivers/pwm/pwm-mc33xs2410.c
+@@ -17,11 +17,14 @@
+  *   behavior of the output pin that is neither the old nor the new state,
+  *   rather something in between.
+  */
++#define DEFAULT_SYMBOL_NAMESPACE		"PWM_MC33XS2410"
  
-+MAXIM MAX7360 KEYPAD LED MFD DRIVER
-+M:	Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/gpio/maxim,max7360-gpio.yaml
-+F:	Documentation/devicetree/bindings/mfd/maxim,max7360.yaml
-+F:	drivers/gpio/gpio-max7360.c
-+F:	drivers/input/keyboard/max7360-keypad.c
-+F:	drivers/input/misc/max7360-rotary.c
-+F:	drivers/mfd/max7360.c
-+F:	drivers/pinctrl/pinctrl-max7360.c
-+F:	drivers/pwm/pwm-max7360.c
-+F:	include/linux/mfd/max7360.h
++#include <linux/auxiliary_bus.h>
+ #include <linux/bitfield.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/math64.h>
++#include <linux/mc33xs2410.h>
+ #include <linux/minmax.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+@@ -120,12 +123,19 @@ static int mc33xs2410_read_reg(struct spi_device *spi, u8 reg, u16 *val, u8 flag
+ 	return mc33xs2410_read_regs(spi, &reg, flag, val, 1);
+ }
+ 
+-static int mc33xs2410_read_reg_ctrl(struct spi_device *spi, u8 reg, u16 *val)
++int mc33xs2410_read_reg_ctrl(struct spi_device *spi, u8 reg, u16 *val)
+ {
+ 	return mc33xs2410_read_reg(spi, reg, val, MC33XS2410_FRAME_IN_DATA_RD);
+ }
++EXPORT_SYMBOL_GPL(mc33xs2410_read_reg_ctrl);
+ 
+-static int mc33xs2410_modify_reg(struct spi_device *spi, u8 reg, u8 mask, u8 val)
++int mc33xs2410_read_reg_diag(struct spi_device *spi, u8 reg, u16 *val)
++{
++	return mc33xs2410_read_reg(spi, reg, val, 0);
++}
++EXPORT_SYMBOL_GPL(mc33xs2410_read_reg_diag);
 +
- MAXIM MAX77650 PMIC MFD DRIVER
- M:	Bartosz Golaszewski <brgl@bgdev.pl>
- L:	linux-kernel@vger.kernel.org
++int mc33xs2410_modify_reg(struct spi_device *spi, u8 reg, u8 mask, u8 val)
+ {
+ 	u16 tmp;
+ 	int ret;
+@@ -139,6 +149,7 @@ static int mc33xs2410_modify_reg(struct spi_device *spi, u8 reg, u8 mask, u8 val
+ 
+ 	return mc33xs2410_write_reg(spi, reg, tmp);
+ }
++EXPORT_SYMBOL_GPL(mc33xs2410_modify_reg);
+ 
+ static u8 mc33xs2410_pwm_get_freq(u64 period)
+ {
+@@ -314,6 +325,7 @@ static int mc33xs2410_reset(struct device *dev)
+ static int mc33xs2410_probe(struct spi_device *spi)
+ {
+ 	struct device *dev = &spi->dev;
++	struct auxiliary_device *adev;
+ 	struct pwm_chip *chip;
+ 	int ret;
+ 
+@@ -361,6 +373,10 @@ static int mc33xs2410_probe(struct spi_device *spi)
+ 	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "Failed to add pwm chip\n");
+ 
++	adev = devm_auxiliary_device_create(dev, "hwmon", NULL);
++	if (!adev)
++		return dev_err_probe(dev, -ENODEV, "Failed to register hwmon device\n");
++
+ 	return 0;
+ }
+ 
+diff --git a/include/linux/mc33xs2410.h b/include/linux/mc33xs2410.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..31c0edf10dd7370a0c3e603947256577d4d40854
+--- /dev/null
++++ b/include/linux/mc33xs2410.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2024 Liebherr-Electronics and Drives GmbH
++ */
++#ifndef _MC33XS2410_H
++#define _MC33XS2410_H
++
++#include <linux/spi/spi.h>
++
++MODULE_IMPORT_NS("PWM_MC33XS2410");
++
++int mc33xs2410_read_reg_ctrl(struct spi_device *spi, u8 reg, u16 *val);
++int mc33xs2410_read_reg_diag(struct spi_device *spi, u8 reg, u16 *val);
++int mc33xs2410_modify_reg(struct spi_device *spi, u8 reg, u8 mask, u8 val);
++
++#endif /* _MC33XS2410_H */
 
 -- 
 2.39.5
+
 
