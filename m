@@ -1,178 +1,166 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10135284B3B;
-	Tue,  9 Sep 2025 09:12:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64F54246BB2;
+	Tue,  9 Sep 2025 10:26:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757409156; cv=none; b=FZx1DliUrlYg59mNLVACYYiQAeNEybI9/DZBlycYmAyTe2XCLjk42hAPlUvEiL57Mudt103czp9oGqRgM9Sk/wT8/I18WWBApOc3kz85OMrRFe/qUB9p28FlvPDNqvz9V3t0EgmsLzZFmxsyhPqfQSPtzByDWuujCt0tAVt85Z8=
+	t=1757413611; cv=none; b=slIfc6mPHxZnbxHa+7MshJ7/RO6ohGRIDY3UvOROgQW8S3jJtoy98k6LdW18M5flsQptU9MarrP4069nd32SlpeP4g6/DSWoxMGS7NaBtJqxkGmCClg++HVAJIpuB67cH3ZNuIFqbiCaBNErHNZPRK7vftYmdqEMI1I6FM4KHcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757409156; c=relaxed/simple;
-	bh=iaVrUZVAGtIDDo7CrJ99ZmVFWRx5LBGc89EHHd9+jTo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KlmAAJ3xysA2owtuHkcZE+c3DVFOi5M2x43ckxqGGMUWSUKi0N/omOc2ctSWxdDhIjAdbobx4tP6pI9shghdqZtEshV7MSaT0vm95EEsdbLsZ/9FBIZVdMk9B1T5KR/yPhXWzJKzryksKpwf71HjGfNbHtH0t+dlNWt/uh7Ms9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=khzi6jBD; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1757413611; c=relaxed/simple;
+	bh=R8rJgzV0GkpvyeVk/7ra3rtAhpfBKmMB2QE4UL6QAwI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oUCilY7bhXRDUk2eFKFxfL+ioueuAylUBAk6GBde5E0zMy9398XbRVkYrDwm+nIxHWt8q7yJ9Kr1weED3YhqWj2cLMdltLlBvEnQ5ll/PvAOXss/IstA7cMIoiEKkHvY0FThb6xuRXBe2VHPvH+/7gQofCoEMDfUxrnXqsNr8zk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dvPYCV8r; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="khzi6jBD"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3d3ff4a4d6fso3263029f8f.0;
-        Tue, 09 Sep 2025 02:12:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1757409150; x=1758013950; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cmrSlLjkNOQrq8mOEczlTxlQvJ7lcou1Etlwq2uNfJY=;
-        b=khzi6jBDU4/bDCsTBfHFpN6bIEm/NjC4PbnYGt61HlqpB98qWPESRqqq0/A611JDph
-         936kWw6GyLKjao2RNU1m4qkfpLCLZbloJJvW7UcrJx4mNtxbQ/Jl2kdssgZ+4X1Ni0Y4
-         FYRUN8aeEFmwi+PQIUNcLON7sUiFlX1W/ehWT3k1NtKnbWRJalXqtumV7scJ0KWfMXs2
-         qELH1isC5XMDjUaaeLsjxqlmfkMPUJV8nGMzxjOQ7iuLfTgNcGB/SUHhgF+61PSrX/iS
-         6e60FttYED2I02/+80s5ntoNHY6Y4b3iQ7t9M+t2RvuBdlAlu55yvWQEH818EI9/8ZDe
-         PwOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757409150; x=1758013950;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cmrSlLjkNOQrq8mOEczlTxlQvJ7lcou1Etlwq2uNfJY=;
-        b=Ja5qTPMnCJn3Qr3ANHUFACVFxybweXX59/Se6g8xE70B0uGowsj8vEhmigJwp2ikBB
-         wmaHYUryuXkq6WhxYhhp0BSjW5NWOGI4JGdDB1YkVI/AMUiFLgEUS6uw4nlYVETEPjQX
-         wTkw964skQOPHKufrbe4KsXAlnQkJEH53vdXquFx5vMQcBT3UzbEjoxR8Xd63dg4dY8D
-         KOvkQ1rgkid1qoIJT+spc+aIKLC0x7q0Y8Wb2N13+HwZflYJA/LWrmEGwMpbeI4HKkFb
-         xU60FH93WOI/gdTZPDSize6HhVZ85Yqw/MrqPHlucNflTB9N8iV3ivmgvQrHrhpN4vie
-         sfjw==
-X-Forwarded-Encrypted: i=1; AJvYcCUG0bUckNWON15RReFVd2R7c3ihfS5Uz6qmzNFnfPvVBEr58G/hFdyOIdaDrnXYrxKDeZE1j+/zpejVRHwvUFHQeQs=@vger.kernel.org, AJvYcCUYN4pFJtJhn67P7IQG73oda+My5qUv2LqWqkD3pjsZkFE23ZuKgUSW4dN6PeS08V2M7+XGzNfsI14F7A4=@vger.kernel.org, AJvYcCWcc9N0sxdqZHTv7SIPPBllqye0MYN7gjOuT2OBYGauMKlqhrz3EItVA4KVH9uZpwQS6iLLcUfw/gBx@vger.kernel.org
-X-Gm-Message-State: AOJu0YxypgiaMKxeUS5QnCFI543kxzRvGEHvxa4uvRZlBre2i1GThpmK
-	ousL7fvlOBOi7jjWrQEJa7toDCoUF2QB5yPxd2JLjdx8hmhjDC/Vfqfe
-X-Gm-Gg: ASbGnctN8W369vMgVS/4OmO2w9bqdO0EwtksBNmGxalgeydgP692zO4VcMepwwD5qjJ
-	HrLN8LjrVG9JLw5qn4/wRmGuX1S3zRiAeeX6P2RZ2Z/SIJe5XS4r8Pe3sRIxe/YPWjnEMeiuwEf
-	hgHRSgCYdz9rZ1SyBKeG5BQ4fH6ikpUJwgBe5RH7FvvuZQma/qTMG4NHI4clysL27piRWZ3YDN5
-	mTDzpsHP7OroDoumvBun/uCXKvKuemrnafdn4L8ptACfkA95aC7w385C4HSKe87kxzE3ZvmKJLM
-	HLZHOgtK0bWsSI/H9WSnfQH8RauV+xI6bknjJy9GsAFw5At7ze7B09S/dZESDMwCPI8vwk1z01E
-	V2jXhNJI1eWC+XPUiWl7KleegIQgz4jGsJxLYaSnKg1xjbzN2X9j5pZLdm8fRpJgPMsN+4l2Hea
-	g9Gk/pi2J0NbmC
-X-Google-Smtp-Source: AGHT+IFDsZqw02vEByOKMEv/UGLYz2ZEcUyPHaw7tQpEgp6x8v/e6K+eJZCANhOlh1VtOzj3T0wc1g==
-X-Received: by 2002:a05:6000:178b:b0:3d1:721:31de with SMTP id ffacd0b85a97d-3e636d8fb10mr8931403f8f.7.1757409149986;
-        Tue, 09 Sep 2025 02:12:29 -0700 (PDT)
-Received: from biju.lan (host86-139-30-37.range86-139.btcentralplus.com. [86.139.30.37])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45deff68b43sm6975685e9.2.2025.09.09.02.12.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Sep 2025 02:12:29 -0700 (PDT)
-From: Biju <biju.das.au@gmail.com>
-X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>,
-	linux-pwm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Biju Das <biju.das.au@gmail.com>,
-	Tommaso Merciai <tommaso.merciai.xr@bp.renesas.com>
-Subject: [PATCH v2 4/8] pwm: rzg2l-gpt: Add prescale_pow_of_two_mult_factor variable to struct rzg2l_gpt_info
-Date: Tue,  9 Sep 2025 10:12:14 +0100
-Message-ID: <20250909091225.128658-5-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250909091225.128658-1-biju.das.jz@bp.renesas.com>
-References: <20250909091225.128658-1-biju.das.jz@bp.renesas.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dvPYCV8r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81DE5C4CEF4;
+	Tue,  9 Sep 2025 10:26:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757413610;
+	bh=R8rJgzV0GkpvyeVk/7ra3rtAhpfBKmMB2QE4UL6QAwI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=dvPYCV8rqkQ4ndd3rt4Qz4bwz6NdSDJRtaw71f/axAsG5SK4HBqVrtXHoBoHQ+R0+
+	 wfoWxJUih9JfGY8rTsOXQ+KSe/lt8X9O2hf82gV6DYvv/2WqFmfGeOFVoB9Cv1XryX
+	 8S1Ijq+f6aO/jC8Dl4LC05KuAs0T4lz990FPCJJrCcncw88S5xAAEMzUrReniT2nQV
+	 gzWSYjr1S+vNYbUv+g2aDoc3g/ll5f/StpCrrTrrCsU7HZ5k/ZmulqaY2jpES6nEO8
+	 3hRyXnLI7pkBzIw5UtnErkehvwNSfXOc4y3jjpYnCXSmfjVhkkU3OAKGwsqHpm1O+u
+	 bLbSbbeYH1bRA==
+Date: Tue, 9 Sep 2025 12:26:48 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Christian Marangi <ansuelsmth@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	Benjamin Larsson <benjamin.larsson@genexis.eu>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Lorenzo Bianconi <lorenzo@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v23] pwm: airoha: Add support for EN7581 SoC
+Message-ID: <o32quqohph6xq73f65izjocjdhv2ri4dld4tcmmmtisa632ucq@lpz4ewja3xtd>
+References: <20250708145053.798-1-ansuelsmth@gmail.com>
+ <xsblhw36y3corxx3pxe6223auirrsqr3efovfnrm5lbo4xy3lf@wf3ytlivzv6g>
+ <68bf2509.050a0220.702b3.c003@mx.google.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="dynu75es6kbw6gat"
+Content-Disposition: inline
+In-Reply-To: <68bf2509.050a0220.702b3.c003@mx.google.com>
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
 
-RZ/G3E GPT IP has prescale factor power of 2 where as that of RZ/G2L is 4.
-Add prescale_pow_of_two_mult_factor variable to struct rzg2l_gpt_info for
-handling this difference.
+--dynu75es6kbw6gat
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v23] pwm: airoha: Add support for EN7581 SoC
+MIME-Version: 1.0
 
-Reviewed-by: Tommaso Merciai <tommaso.merciai.xr@bp.renesas.com>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-v1->v2:
- * Collected tag.
----
- drivers/pwm/pwm-rzg2l-gpt.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+Hello Christian,
 
-diff --git a/drivers/pwm/pwm-rzg2l-gpt.c b/drivers/pwm/pwm-rzg2l-gpt.c
-index bf989defa527..74bb0cca4ab4 100644
---- a/drivers/pwm/pwm-rzg2l-gpt.c
-+++ b/drivers/pwm/pwm-rzg2l-gpt.c
-@@ -91,6 +91,7 @@
- 
- struct rzg2l_gpt_info {
- 	u32 gtcr_tpcs_mask;
-+	u8 prescale_pow_of_two_mult_factor;
- };
- 
- struct rzg2l_gpt_chip {
-@@ -226,6 +227,7 @@ static void rzg2l_gpt_disable(struct rzg2l_gpt_chip *rzg2l_gpt,
- static u64 rzg2l_gpt_calculate_period_or_duty(struct rzg2l_gpt_chip *rzg2l_gpt,
- 					      u32 val, u8 prescale)
- {
-+	const struct rzg2l_gpt_info *info = rzg2l_gpt->info;
- 	u64 tmp;
- 
- 	/*
-@@ -235,15 +237,18 @@ static u64 rzg2l_gpt_calculate_period_or_duty(struct rzg2l_gpt_chip *rzg2l_gpt,
- 	 *     < 2^32 * 2^10 * 2^20
- 	 *     = 2^62
- 	 */
--	tmp = (u64)val << (2 * prescale);
-+	tmp = (u64)val << (info->prescale_pow_of_two_mult_factor * prescale);
- 	tmp *= USEC_PER_SEC;
- 
- 	return DIV64_U64_ROUND_UP(tmp, rzg2l_gpt->rate_khz);
- }
- 
--static u32 rzg2l_gpt_calculate_pv_or_dc(u64 period_or_duty_cycle, u8 prescale)
-+static u32 rzg2l_gpt_calculate_pv_or_dc(const struct rzg2l_gpt_info *info,
-+					u64 period_or_duty_cycle, u8 prescale)
- {
--	return min_t(u64, DIV_ROUND_DOWN_ULL(period_or_duty_cycle, 1 << (2 * prescale)),
-+	return min_t(u64,
-+		     DIV_ROUND_DOWN_ULL(period_or_duty_cycle,
-+					1 << (info->prescale_pow_of_two_mult_factor * prescale)),
- 		     U32_MAX);
- }
- 
-@@ -254,6 +259,7 @@ static int rzg2l_gpt_round_waveform_tohw(struct pwm_chip *chip,
- 
- {
- 	struct rzg2l_gpt_chip *rzg2l_gpt = to_rzg2l_gpt_chip(chip);
-+	const struct rzg2l_gpt_info *info = rzg2l_gpt->info;
- 	struct rzg2l_gpt_waveform *wfhw = _wfhw;
- 	u8 ch = RZG2L_GET_CH(pwm->hwpwm);
- 	u64 period_ticks, duty_ticks;
-@@ -287,12 +293,12 @@ static int rzg2l_gpt_round_waveform_tohw(struct pwm_chip *chip,
- 	}
- 
- 	wfhw->prescale = rzg2l_gpt_calculate_prescale(rzg2l_gpt, period_ticks);
--	pv = rzg2l_gpt_calculate_pv_or_dc(period_ticks, wfhw->prescale);
-+	pv = rzg2l_gpt_calculate_pv_or_dc(info, period_ticks, wfhw->prescale);
- 	wfhw->gtpr = pv;
- 	duty_ticks = mul_u64_u64_div_u64(wf->duty_length_ns, rzg2l_gpt->rate_khz, USEC_PER_SEC);
- 	if (duty_ticks > period_ticks)
- 		duty_ticks = period_ticks;
--	dc = rzg2l_gpt_calculate_pv_or_dc(duty_ticks, wfhw->prescale);
-+	dc = rzg2l_gpt_calculate_pv_or_dc(info, duty_ticks, wfhw->prescale);
- 	wfhw->gtccr = dc;
- 
- 	/*
-@@ -477,6 +483,7 @@ static int rzg2l_gpt_probe(struct platform_device *pdev)
- 
- static const struct rzg2l_gpt_info rzg2l_data = {
- 	.gtcr_tpcs_mask = GENMASK(26, 24),
-+	.prescale_pow_of_two_mult_factor = 2,
- };
- 
- static const struct of_device_id rzg2l_gpt_of_table[] = {
--- 
-2.43.0
+On Mon, Sep 08, 2025 at 08:48:38PM +0200, Christian Marangi wrote:
+> On Fri, Aug 01, 2025 at 11:15:41AM +0200, Uwe Kleine-K=F6nig wrote:
+> > On Tue, Jul 08, 2025 at 04:50:52PM +0200, Christian Marangi wrote:
+> > > +	duty_ticks =3D airoha_pwm_get_duty_ticks_from_ns(period_ns, duty_ns=
+);
+> >=20
+> > As duty_ticks depends on the selected period_ticks, I think the bucket
+> > selection algorithm is still wrong.
+> >=20
+> > Consider a request to implement
+> >=20
+> > 	period_ns =3D 256 ms
+> > 	duty_ns =3D 128 ms
+> >=20
+> > which at first correctly results in
+> >=20
+> > 	period_ticks =3D 64
+> > 	duty_ticks =3D 127
+> >=20
+> > If however all buckets are used and we only find one with say 62 period
+> > ticks we get period_ns =3D 248 and with that duty_ticks should better be
+> > 131 and not 127.
+>
+> sorry for checking this only now and maybe we need to catch this again.
 
+no need to be sorry here. Taking time for replies is fine for me.
+
+> Maybe we are getting confused here but itsn't this already handled by
+> the upper condition?
+>=20
+> 		/* Ignore bucket with invalid configs */
+> 		if (bucket_period_ticks > period_ticks ||
+> 		    bucket_duty_ticks > duty_ticks)
+> 			continue;
+>=20
+> 		/*
+> 		 * Search for a bucket closer to the requested period/duty
+> 		 * that has the maximal possible period that isn't bigger
+> 		 * than the requested period. For that period pick the maximal
+> 		 * duty cycle that isn't bigger than the requested duty_cycle.
+> 		 */
+> 		if (bucket_period_ticks > best_period_ticks ||
+> 		    (bucket_period_ticks =3D=3D best_period_ticks &&
+> 		     bucket_duty_ticks > best_duty_ticks)) {
+> 			best_period_ticks =3D bucket_period_ticks;
+> 			best_duty_ticks =3D bucket_duty_ticks;
+> 			best =3D i;
+> 		}
+>=20
+> We first limit for a bucket that doesn't got over both period and duty
+> and then we search for period and best duty. This should account for
+> never exceeding a duty since both period and duty are precalculated for
+> the current bucket and even if duty depends on period, again it's
+> precalculated. Am I missing something?
+
+Let me describe the issue in more detail:
+
+The period length is configured in the AIROHA_PWM_WAVE_GEN_CYCLE
+register in multiples of 4 ms. The duty length is configured in the
+AIROHA_PWM_GPIO_FLASH_PRD_HIGH register in multiples of
+$period_length/255.
+
+So if you calcultate the number of multiples you need for duty_ns =3D 128
+ms based on the assumption that period_ns =3D 256 ms the result becomes
+wrong when you are forced to switch to period_ns =3D 248.
+
+So to implement a request for period =3D 256 ms (64 ticks) and duty_cycle
+=3D 128 ms (127.5 duty ticks) having the choice between the two buckets:
+
+ a) period_ticks =3D 62; duty_ticks =3D 127
+    (period =3D 248 ms, duty_cycle =3D 123.51372549019608 ms)
+ b) period_ticks =3D 62; duty_ticks =3D 131
+    (period =3D 248 ms, duty_cycle =3D 127.40392156862744 ms)
+
+b) is the better one despite 127 duty_ticks would be an exact match for
+period_ticks =3D 64. So the issue is that the "Ignore bucket with invalid
+configs" kicks out b). That's wrong because
+
+	bucket_duty_ticks > duty_ticks
+
+doesn't imply
+
+	bucket_duty > duty
+
+=2E
+
+Best regards
+Uwe
+
+--dynu75es6kbw6gat
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmjAAOUACgkQj4D7WH0S
+/k7CSAgAki22lN1bHPIS6kecihLK/yOOxggSBjdqFNeyYEv8GZX56Pbz9JR9V9jM
+VQhUuWGJA7rgwqYukKLoS9uW8pe+rCSbUusWO26NFviBYzpZlCzF3xfIH/TKt84t
+CdooGAsqb9qwlptN5IRozedy/SNL83OWrvt0OJlSAlBjJhTR2mSMlJU75nQ/nPUl
+x4Q+Ar2XlgVt1+ttsVSER6pM5H8yAaG1sXG/ZJa3na6/M4UXYTZlz4GGZ7a7OB4C
+bl5enb88ZD7MRZ4zgmCUzLWzLEsc8efdrAuWSJktMotEMrLSoAEnT914F3Y+dO4S
+gj32PnUAonZuLjQBEPg1xNJGIi7g7g==
+=gvPL
+-----END PGP SIGNATURE-----
+
+--dynu75es6kbw6gat--
