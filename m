@@ -1,51 +1,51 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCACE2FAC0A
-	for <linux-pwm@vger.kernel.org>; Tue, 30 Sep 2025 12:27:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B4E92FBDE3
+	for <linux-pwm@vger.kernel.org>; Tue, 30 Sep 2025 12:27:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759235261; cv=none; b=puIoZWvXSk12I0jB/YGApfZWpJumZWkqiEyVJUykCRVjECL8qCPtFK/rKcrbXgQZqDsyJ+wmA3k9f7WSs0gOTEVh5ndlU3TLKgBFCfdbfEMq2nj+2Hsq+SNtddboLLtq4oBF1Jz+knWWSbeSS8d+FKMKnA1lt0nF6YQ/pRAeFtU=
+	t=1759235263; cv=none; b=cepiDw2NmFO7F5ZyXUscr7IQTLR9nEV5Jm6ypo+/OGuXu2KQtY6vrIHfDedsAdZrNjG5wo5cVMTZGg8par6XrW4C8+ow7jNNIaMGoAsBspca5B4d6c9d4rLI1aSI4rSjfdHEIhP9tSbvYTALEvqSMf6//DC60CCID5hlnjtPxs0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759235261; c=relaxed/simple;
-	bh=gcsLL+OYdYVlUpralYTdFw0jI8A+oCehXo1j38hYJLY=;
+	s=arc-20240116; t=1759235263; c=relaxed/simple;
+	bh=GhamRMgiRuEY8EYeFYRn0QQWl17r0gKB8us6iMNro3w=;
 	h=From:Date:Subject:MIME-Version:Message-Id:In-Reply-To:To:Cc:
-	 Content-Type:References; b=Ab071Hcbx7gFWXyFn/vaQf6Pl6eY/DscnQfeAGtu7GI6n6X+eRsllpLVESV1gf5SfBASUgTY2a5KyHl1BDkVqJrb+nd+q5/3WjWIRxX8+Tn/WHq7ptou2JlZP9s6m6DWHOpGGf0D9YxMlgu/Gy2fam7WyYA9s6qXkMldD2XaCxw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=rRkb2Vrm; arc=none smtp.client-ip=210.118.77.12
+	 Content-Type:References; b=WzGudqlnGhLbdgz4akc062w85K/cntIlkhUpigqYTDVxIPmhrjdwggUi2JeAya3ZDbrP7eggDmi3vYgnLTCEy8CiJoJJwcWVrXpwgodbzmKfXLkfwGaWwiw+HVdzCr4tAL1IHZSn5/lIfaqmPSb+QpSPkOR5s09KNMS6rprtk6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Eu5z51NA; arc=none smtp.client-ip=210.118.77.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="rRkb2Vrm"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250930122738euoutp0285b3baa5b8c0edcd335373cdc963c40f~qDyV65dlq2357023570euoutp02L
-	for <linux-pwm@vger.kernel.org>; Tue, 30 Sep 2025 12:27:38 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250930122738euoutp0285b3baa5b8c0edcd335373cdc963c40f~qDyV65dlq2357023570euoutp02L
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Eu5z51NA"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250930122732euoutp01d42f2fb2cdd103d0aaabb3ddf9ff15c1~qDyQ_FeSv0245902459euoutp01I
+	for <linux-pwm@vger.kernel.org>; Tue, 30 Sep 2025 12:27:32 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250930122732euoutp01d42f2fb2cdd103d0aaabb3ddf9ff15c1~qDyQ_FeSv0245902459euoutp01I
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1759235258;
-	bh=GGb78YSEZMSjoaa+oC6oCUglv6Dc1sWOZiypzXGHKbw=;
+	s=mail20170921; t=1759235252;
+	bh=1YXxUdy2h6s4QZQQ5Cl3vowj7ed1PIKtu4444nNQC8g=;
 	h=From:Date:Subject:In-Reply-To:To:Cc:References:From;
-	b=rRkb2Vrmk2kkzh8vw1qA/Cyhw3KUWKIxeUw5axeodZ+c5CQryVxBOk18BSwD5D5dZ
-	 XlU7SAs0TFhujsAErliP8WxnR2SlcYmdklnbeqxVdy7gDzPzGVOIe1wfSOsTqd3JcV
-	 t4WBj/9dZfgRrCGCjb/Oe9doWBJn16wl+jyMCy6M=
+	b=Eu5z51NA7Yk+M1VBGwFFYmkydDctsBCFpi6uE0v/2tVcIkow7s7NMGOHxOxLfY8hT
+	 K3EfR/tRy5V9ejM6xuZ/mml9sO1tvt2dU2m8kbQLV1I6WEmrkMPbdz9RYoSeon2VAX
+	 QmaI2P8tMznOT+x86A00BMA19cGFLQHg9a14P9nw=
 Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543~qDyVD1vjA2573025730eucas1p1s;
-	Tue, 30 Sep 2025 12:27:37 +0000 (GMT)
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250930122732eucas1p2fbf9c050934b356165377776a8aef247~qDyQdc00B2309923099eucas1p2w;
+	Tue, 30 Sep 2025 12:27:32 +0000 (GMT)
 Received: from AMDC4942.eu.corp.samsungelectronics.net (unknown
 	[106.210.136.40]) by eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250930122736eusmtip2699b60bfd1c7abd20bc6c44973a47378~qDyT_rWbk1846318463eusmtip2a;
-	Tue, 30 Sep 2025 12:27:35 +0000 (GMT)
+	20250930122730eusmtip2fa430534fbeba49aa7a2a625f228c890~qDyPSuez52410724107eusmtip2r;
+	Tue, 30 Sep 2025 12:27:30 +0000 (GMT)
 From: Michal Wilczynski <m.wilczynski@samsung.com>
-Date: Tue, 30 Sep 2025 14:20:37 +0200
-Subject: [PATCH v15 6/7] riscv: dts: thead: Add PWM controller node
+Date: Tue, 30 Sep 2025 14:20:33 +0200
+Subject: [PATCH v15 2/7] rust: pwm: Add Kconfig and basic data structures
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250930-rust-next-pwm-working-fan-for-sending-v15-6-5661c3090877@samsung.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250930-rust-next-pwm-working-fan-for-sending-v15-2-5661c3090877@samsung.com>
 In-Reply-To: <20250930-rust-next-pwm-working-fan-for-sending-v15-0-5661c3090877@samsung.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,  Miguel Ojeda
 	<ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,  Boqun Feng
@@ -66,43 +66,257 @@ Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
 	rust-for-linux@vger.kernel.org, linux-riscv@lists.infradead.org, 
 	devicetree@vger.kernel.org, Elle Rhumsaa <elle@weathered-steel.dev>
 X-Mailer: b4 0.15-dev
-X-CMS-MailID: 20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543
+X-CMS-MailID: 20250930122732eucas1p2fbf9c050934b356165377776a8aef247
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543
+X-RootMTR: 20250930122732eucas1p2fbf9c050934b356165377776a8aef247
 X-EPHeader: CA
-X-CMS-RootMailID: 20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543
+X-CMS-RootMailID: 20250930122732eucas1p2fbf9c050934b356165377776a8aef247
 References: <20250930-rust-next-pwm-working-fan-for-sending-v15-0-5661c3090877@samsung.com>
-	<CGME20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543@eucas1p1.samsung.com>
+	<CGME20250930122732eucas1p2fbf9c050934b356165377776a8aef247@eucas1p2.samsung.com>
 
-Add the Device Tree node for the T-HEAD TH1520 SoC's PWM controller.
+Introduce the foundational support for PWM abstractions in Rust.
 
-Reviewed-by: Drew Fustini <fustini@kernel.org>
+This commit adds the `RUST_PWM_ABSTRACTIONS` Kconfig option to enable
+the feature, along with the necessary build-system support and C
+helpers.
+
+It also introduces the first set of safe wrappers for the PWM
+subsystem, covering the basic data carrying C structs and enums:
+- `Polarity`: A safe wrapper for `enum pwm_polarity`.
+- `Waveform`: A wrapper for `struct pwm_waveform`.
+- `State`: A wrapper for `struct pwm_state`.
+
+These types provide memory safe, idiomatic Rust representations of the
+core PWM data structures and form the building blocks for the
+abstractions that will follow.
+
 Tested-by: Drew Fustini <fustini@kernel.org>
+Reviewed-by: Daniel Almeida <daniel.almeida@collabora.com>
 Reviewed-by: Elle Rhumsaa <elle@weathered-steel.dev>
 Signed-off-by: Michal Wilczynski <m.wilczynski@samsung.com>
 ---
- arch/riscv/boot/dts/thead/th1520.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ MAINTAINERS                     |   8 ++++
+ drivers/pwm/Kconfig             |  13 +++++
+ rust/bindings/bindings_helper.h |   1 +
+ rust/helpers/helpers.c          |   1 +
+ rust/helpers/pwm.c              |  20 ++++++++
+ rust/kernel/lib.rs              |   2 +
+ rust/kernel/pwm.rs              | 102 ++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 147 insertions(+)
 
-diff --git a/arch/riscv/boot/dts/thead/th1520.dtsi b/arch/riscv/boot/dts/thead/th1520.dtsi
-index 42724bf7e90e08fac326c464d0f080e3bd2cd59b..513dc6977b2633503515ad260913156fbe57d92f 100644
---- a/arch/riscv/boot/dts/thead/th1520.dtsi
-+++ b/arch/riscv/boot/dts/thead/th1520.dtsi
-@@ -493,6 +493,13 @@ uart2: serial@ffec010000 {
- 			status = "disabled";
- 		};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fe168477caa45799dfe07de2f54de6d6a1ce0615..5d7c0676c1d00a02b3d7db2de88b039c08c99c6e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -20387,6 +20387,14 @@ F:	include/linux/pwm.h
+ F:	include/linux/pwm_backlight.h
+ K:	pwm_(config|apply_might_sleep|apply_atomic|ops)
  
-+		pwm: pwm@ffec01c000 {
-+			compatible = "thead,th1520-pwm";
-+			reg = <0xff 0xec01c000 0x0 0x4000>;
-+			clocks = <&clk CLK_PWM>;
-+			#pwm-cells = <3>;
-+		};
++PWM SUBSYSTEM BINDINGS [RUST]
++M:	Michal Wilczynski <m.wilczynski@samsung.com>
++L:	linux-pwm@vger.kernel.org
++L:	rust-for-linux@vger.kernel.org
++S:	Maintained
++F:	rust/helpers/pwm.c
++F:	rust/kernel/pwm.rs
 +
- 		clk: clock-controller@ffef010000 {
- 			compatible = "thead,th1520-clk-ap";
- 			reg = <0xff 0xef010000 0x0 0x1000>;
+ PXA GPIO DRIVER
+ M:	Robert Jarzmik <robert.jarzmik@free.fr>
+ L:	linux-gpio@vger.kernel.org
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index f00ce973dddf651287168b44228574f4d5c28dc0..2b608f4378138775ee3ba4d53f682952e1914118 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -800,4 +800,17 @@ config PWM_XILINX
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-xilinx.
+ 
++ config RUST_PWM_ABSTRACTIONS
++	bool "Rust PWM abstractions support"
++	depends on RUST
++	depends on PWM=y
++	help
++	  This option enables the safe Rust abstraction layer for the PWM
++	  subsystem. It provides idiomatic wrappers and traits necessary for
++	  writing PWM controller drivers in Rust.
++
++	  The abstractions handle resource management (like memory and reference
++	  counting) and provide safe interfaces to the underlying C core,
++	  allowing driver logic to be written in safe Rust.
++
+ endif
+diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
+index 84d60635e8a9baef1f1a1b2752dc0fa044f8542f..7a06ee5781eadc9f21ccd456b574a9cb152cd58c 100644
+--- a/rust/bindings/bindings_helper.h
++++ b/rust/bindings/bindings_helper.h
+@@ -66,6 +66,7 @@
+ #include <linux/pm_opp.h>
+ #include <linux/poll.h>
+ #include <linux/property.h>
++#include <linux/pwm.h>
+ #include <linux/refcount.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/sched.h>
+diff --git a/rust/helpers/helpers.c b/rust/helpers/helpers.c
+index 7cf7fe95e41dd51717050648d6160bebebdf4b26..861052ffffaff60e9c2e8109e55f3b6158ff2281 100644
+--- a/rust/helpers/helpers.c
++++ b/rust/helpers/helpers.c
+@@ -35,6 +35,7 @@
+ #include "platform.c"
+ #include "poll.c"
+ #include "property.c"
++#include "pwm.c"
+ #include "rbtree.c"
+ #include "rcu.c"
+ #include "refcount.c"
+diff --git a/rust/helpers/pwm.c b/rust/helpers/pwm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..d75c588863685d3990b525bb1b84aa4bc35ac397
+--- /dev/null
++++ b/rust/helpers/pwm.c
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2025 Samsung Electronics Co., Ltd.
++// Author: Michal Wilczynski <m.wilczynski@samsung.com>
++
++#include <linux/pwm.h>
++
++struct device *rust_helper_pwmchip_parent(const struct pwm_chip *chip)
++{
++	return pwmchip_parent(chip);
++}
++
++void *rust_helper_pwmchip_get_drvdata(struct pwm_chip *chip)
++{
++	return pwmchip_get_drvdata(chip);
++}
++
++void rust_helper_pwmchip_set_drvdata(struct pwm_chip *chip, void *data)
++{
++	pwmchip_set_drvdata(chip, data);
++}
+diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
+index ed53169e795c0badf548025a57f946fa18bc73e3..e339b552f9650803b1efa1eb8ecc6fe9d2c56563 100644
+--- a/rust/kernel/lib.rs
++++ b/rust/kernel/lib.rs
+@@ -117,6 +117,8 @@
+ pub mod seq_file;
+ pub mod sizes;
+ mod static_assert;
++#[cfg(CONFIG_RUST_PWM_ABSTRACTIONS)]
++pub mod pwm;
+ #[doc(hidden)]
+ pub mod std_vendor;
+ pub mod str;
+diff --git a/rust/kernel/pwm.rs b/rust/kernel/pwm.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..beabf0086a2f1beea01e0b0a9f6540c601f77a49
+--- /dev/null
++++ b/rust/kernel/pwm.rs
+@@ -0,0 +1,102 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2025 Samsung Electronics Co., Ltd.
++// Author: Michal Wilczynski <m.wilczynski@samsung.com>
++
++//! PWM subsystem abstractions.
++//!
++//! C header: [`include/linux/pwm.h`](srctree/include/linux/pwm.h).
++
++use crate::{
++    bindings,
++    prelude::*,
++    types::Opaque,
++};
++use core::convert::TryFrom;
++
++/// PWM polarity. Mirrors [`enum pwm_polarity`](srctree/include/linux/pwm.h).
++#[derive(Copy, Clone, Debug, PartialEq, Eq)]
++pub enum Polarity {
++    /// Normal polarity (duty cycle defines the high period of the signal).
++    Normal,
++
++    /// Inversed polarity (duty cycle defines the low period of the signal).
++    Inversed,
++}
++
++impl TryFrom<bindings::pwm_polarity> for Polarity {
++    type Error = Error;
++
++    fn try_from(polarity: bindings::pwm_polarity) -> Result<Self, Error> {
++        match polarity {
++            bindings::pwm_polarity_PWM_POLARITY_NORMAL => Ok(Polarity::Normal),
++            bindings::pwm_polarity_PWM_POLARITY_INVERSED => Ok(Polarity::Inversed),
++            _ => Err(EINVAL),
++        }
++    }
++}
++
++impl From<Polarity> for bindings::pwm_polarity {
++    fn from(polarity: Polarity) -> Self {
++        match polarity {
++            Polarity::Normal => bindings::pwm_polarity_PWM_POLARITY_NORMAL,
++            Polarity::Inversed => bindings::pwm_polarity_PWM_POLARITY_INVERSED,
++        }
++    }
++}
++
++/// Represents a PWM waveform configuration.
++/// Mirrors struct [`struct pwm_waveform`](srctree/include/linux/pwm.h).
++#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
++pub struct Waveform {
++    /// Total duration of one complete PWM cycle, in nanoseconds.
++    pub period_length_ns: u64,
++
++    /// Duty-cycle active time, in nanoseconds.
++    ///
++    /// For a typical normal polarity configuration (active-high) this is the
++    /// high time of the signal.
++    pub duty_length_ns: u64,
++
++    /// Duty-cycle start offset, in nanoseconds.
++    ///
++    /// Delay from the beginning of the period to the first active edge.
++    /// In most simple PWM setups this is `0`, so the duty cycle starts
++    /// immediately at each period’s start.
++    pub duty_offset_ns: u64,
++}
++
++impl From<bindings::pwm_waveform> for Waveform {
++    fn from(wf: bindings::pwm_waveform) -> Self {
++        Waveform {
++            period_length_ns: wf.period_length_ns,
++            duty_length_ns: wf.duty_length_ns,
++            duty_offset_ns: wf.duty_offset_ns,
++        }
++    }
++}
++
++impl From<Waveform> for bindings::pwm_waveform {
++    fn from(wf: Waveform) -> Self {
++        bindings::pwm_waveform {
++            period_length_ns: wf.period_length_ns,
++            duty_length_ns: wf.duty_length_ns,
++            duty_offset_ns: wf.duty_offset_ns,
++        }
++    }
++}
++
++/// Wrapper for PWM state [`struct pwm_state`](srctree/include/linux/pwm.h).
++#[repr(transparent)]
++pub struct State(bindings::pwm_state);
++
++impl State {
++    /// Creates a `State` wrapper by taking ownership of a C `pwm_state` value.
++    pub(crate) fn from_c(c_state: bindings::pwm_state) -> Self {
++        State(c_state)
++    }
++
++    /// Returns `true` if the PWM signal is enabled.
++    pub fn enabled(&self) -> bool {
++        self.0.enabled
++    }
++}
 
 -- 
 2.34.1
