@@ -1,43 +1,43 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155BC2FB0A4
-	for <linux-pwm@vger.kernel.org>; Tue, 30 Sep 2025 12:27:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCACE2FAC0A
+	for <linux-pwm@vger.kernel.org>; Tue, 30 Sep 2025 12:27:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759235260; cv=none; b=ogtMz0iSCeLooS6PVAle1zBXjq3dRTZ16DvP12IeS833yhbdgpY9ee5x4bQ5goGENaNz11XzpQFur8ch1js6OOG0y0oTGv1wnAmi7ycHWuUtvVN5cwMi+Bij1vlDEwphV1MCE1GHQgQFB5K/hs76QO7s0B3nhQiztI2VoJEu5NY=
+	t=1759235261; cv=none; b=puIoZWvXSk12I0jB/YGApfZWpJumZWkqiEyVJUykCRVjECL8qCPtFK/rKcrbXgQZqDsyJ+wmA3k9f7WSs0gOTEVh5ndlU3TLKgBFCfdbfEMq2nj+2Hsq+SNtddboLLtq4oBF1Jz+knWWSbeSS8d+FKMKnA1lt0nF6YQ/pRAeFtU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759235260; c=relaxed/simple;
-	bh=OsXGZpjhn/bcvoR4nyicnkd/6UvKt5+0TaTkZnyK7gw=;
+	s=arc-20240116; t=1759235261; c=relaxed/simple;
+	bh=gcsLL+OYdYVlUpralYTdFw0jI8A+oCehXo1j38hYJLY=;
 	h=From:Date:Subject:MIME-Version:Message-Id:In-Reply-To:To:Cc:
-	 Content-Type:References; b=UmKA2ISsCcBidQkM7ENNqIUpujX/QRhZZ7CMyXrLQhAlzfgNWIfCDxIgJ5jce/RdxguiJZ4tClBnUVd697Lc76ikPY64Rwp2q3P2CT/pl/HZ3CdiQu8p1uQU7DLSrLu06HmNksjCtak1Mof8NgYcKztKw5KgdzVvRRBl4KqMhFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=H0a4/G8R; arc=none smtp.client-ip=210.118.77.11
+	 Content-Type:References; b=Ab071Hcbx7gFWXyFn/vaQf6Pl6eY/DscnQfeAGtu7GI6n6X+eRsllpLVESV1gf5SfBASUgTY2a5KyHl1BDkVqJrb+nd+q5/3WjWIRxX8+Tn/WHq7ptou2JlZP9s6m6DWHOpGGf0D9YxMlgu/Gy2fam7WyYA9s6qXkMldD2XaCxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=rRkb2Vrm; arc=none smtp.client-ip=210.118.77.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="H0a4/G8R"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250930122731euoutp014b4168bc08387cc242b28b030cc64859~qDyPwRwc_0378403784euoutp01h
-	for <linux-pwm@vger.kernel.org>; Tue, 30 Sep 2025 12:27:31 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250930122731euoutp014b4168bc08387cc242b28b030cc64859~qDyPwRwc_0378403784euoutp01h
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="rRkb2Vrm"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250930122738euoutp0285b3baa5b8c0edcd335373cdc963c40f~qDyV65dlq2357023570euoutp02L
+	for <linux-pwm@vger.kernel.org>; Tue, 30 Sep 2025 12:27:38 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250930122738euoutp0285b3baa5b8c0edcd335373cdc963c40f~qDyV65dlq2357023570euoutp02L
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1759235251;
-	bh=Zaf3CvVE7vDNtuforIU/AX8V1l2za6jRnyAi7V9DPZE=;
+	s=mail20170921; t=1759235258;
+	bh=GGb78YSEZMSjoaa+oC6oCUglv6Dc1sWOZiypzXGHKbw=;
 	h=From:Date:Subject:In-Reply-To:To:Cc:References:From;
-	b=H0a4/G8R3TYJ0AuMPhinlZLL2iloUNBh4BJiKfvjzTC7u1U96akSK88N8nbvnh5Lx
-	 KwjVf0MN+ayfhJUcYvNdHbLffJUHD9jXCPfD0OiunkBUVBidc6e70/tcHvJR+1jiZm
-	 uQhPCuTcLLN27p/zQeQayk/BjjTjcdSoXjMrcUVk=
+	b=rRkb2Vrmk2kkzh8vw1qA/Cyhw3KUWKIxeUw5axeodZ+c5CQryVxBOk18BSwD5D5dZ
+	 XlU7SAs0TFhujsAErliP8WxnR2SlcYmdklnbeqxVdy7gDzPzGVOIe1wfSOsTqd3JcV
+	 t4WBj/9dZfgRrCGCjb/Oe9doWBJn16wl+jyMCy6M=
 Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
 	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250930122730eucas1p11afe23eee92daac1023a826768b1f92d~qDyPOjAV12445224452eucas1p1h;
-	Tue, 30 Sep 2025 12:27:30 +0000 (GMT)
+	20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543~qDyVD1vjA2573025730eucas1p1s;
+	Tue, 30 Sep 2025 12:27:37 +0000 (GMT)
 Received: from AMDC4942.eu.corp.samsungelectronics.net (unknown
 	[106.210.136.40]) by eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250930122729eusmtip2ae44be48f37c522de1ee16749443ad86~qDyOH45bz2176221762eusmtip2L;
-	Tue, 30 Sep 2025 12:27:29 +0000 (GMT)
+	20250930122736eusmtip2699b60bfd1c7abd20bc6c44973a47378~qDyT_rWbk1846318463eusmtip2a;
+	Tue, 30 Sep 2025 12:27:35 +0000 (GMT)
 From: Michal Wilczynski <m.wilczynski@samsung.com>
-Date: Tue, 30 Sep 2025 14:20:32 +0200
-Subject: [PATCH v15 1/7] pwm: Export `pwmchip_release` for external use
+Date: Tue, 30 Sep 2025 14:20:37 +0200
+Subject: [PATCH v15 6/7] riscv: dts: thead: Add PWM controller node
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -45,7 +45,7 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250930-rust-next-pwm-working-fan-for-sending-v15-1-5661c3090877@samsung.com>
+Message-Id: <20250930-rust-next-pwm-working-fan-for-sending-v15-6-5661c3090877@samsung.com>
 In-Reply-To: <20250930-rust-next-pwm-working-fan-for-sending-v15-0-5661c3090877@samsung.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,  Miguel Ojeda
 	<ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,  Boqun Feng
@@ -66,71 +66,43 @@ Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
 	rust-for-linux@vger.kernel.org, linux-riscv@lists.infradead.org, 
 	devicetree@vger.kernel.org, Elle Rhumsaa <elle@weathered-steel.dev>
 X-Mailer: b4 0.15-dev
-X-CMS-MailID: 20250930122730eucas1p11afe23eee92daac1023a826768b1f92d
+X-CMS-MailID: 20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250930122730eucas1p11afe23eee92daac1023a826768b1f92d
+X-RootMTR: 20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543
 X-EPHeader: CA
-X-CMS-RootMailID: 20250930122730eucas1p11afe23eee92daac1023a826768b1f92d
+X-CMS-RootMailID: 20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543
 References: <20250930-rust-next-pwm-working-fan-for-sending-v15-0-5661c3090877@samsung.com>
-	<CGME20250930122730eucas1p11afe23eee92daac1023a826768b1f92d@eucas1p1.samsung.com>
+	<CGME20250930122737eucas1p1b3b1afe746a30463c9bdd159ef801543@eucas1p1.samsung.com>
 
-The upcoming Rust abstraction layer for the PWM subsystem uses a custom
-`dev->release` handler to safely manage the lifetime of its driver
-data.
+Add the Device Tree node for the T-HEAD TH1520 SoC's PWM controller.
 
-To prevent leaking the memory of the `struct pwm_chip` (allocated by
-`pwmchip_alloc`), this custom handler must also call the original
-`pwmchip_release` function to complete the cleanup.
-
-Make `pwmchip_release` a global, exported function so that it can be
-called from the Rust FFI bridge. This involves removing the `static`
-keyword, adding a prototype to the public header, and exporting the
-symbol.
-
+Reviewed-by: Drew Fustini <fustini@kernel.org>
+Tested-by: Drew Fustini <fustini@kernel.org>
 Reviewed-by: Elle Rhumsaa <elle@weathered-steel.dev>
 Signed-off-by: Michal Wilczynski <m.wilczynski@samsung.com>
 ---
- drivers/pwm/core.c  | 3 ++-
- include/linux/pwm.h | 6 ++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ arch/riscv/boot/dts/thead/th1520.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 0d66376a83ec350e0c3718959f4d794efd71595a..a33da3dff608fdff91251e5fd07b0dbd295be022 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -1600,12 +1600,13 @@ void pwmchip_put(struct pwm_chip *chip)
- }
- EXPORT_SYMBOL_GPL(pwmchip_put);
+diff --git a/arch/riscv/boot/dts/thead/th1520.dtsi b/arch/riscv/boot/dts/thead/th1520.dtsi
+index 42724bf7e90e08fac326c464d0f080e3bd2cd59b..513dc6977b2633503515ad260913156fbe57d92f 100644
+--- a/arch/riscv/boot/dts/thead/th1520.dtsi
++++ b/arch/riscv/boot/dts/thead/th1520.dtsi
+@@ -493,6 +493,13 @@ uart2: serial@ffec010000 {
+ 			status = "disabled";
+ 		};
  
--static void pwmchip_release(struct device *pwmchip_dev)
-+void pwmchip_release(struct device *pwmchip_dev)
- {
- 	struct pwm_chip *chip = pwmchip_from_dev(pwmchip_dev);
- 
- 	kfree(chip);
- }
-+EXPORT_SYMBOL_GPL(pwmchip_release);
- 
- struct pwm_chip *pwmchip_alloc(struct device *parent, unsigned int npwm, size_t sizeof_priv)
- {
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 8cafc483db53addf95591d1ac74287532c0fa0ee..d86061024b52172edf3845bf9252a966f120e365 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -485,6 +485,12 @@ int __pwmchip_add(struct pwm_chip *chip, struct module *owner);
- #define pwmchip_add(chip) __pwmchip_add(chip, THIS_MODULE)
- void pwmchip_remove(struct pwm_chip *chip);
- 
-+/*
-+ * For FFI wrapper use only:
-+ * The Rust PWM abstraction needs this to properly free the pwm_chip.
-+ */
-+void pwmchip_release(struct device *dev);
++		pwm: pwm@ffec01c000 {
++			compatible = "thead,th1520-pwm";
++			reg = <0xff 0xec01c000 0x0 0x4000>;
++			clocks = <&clk CLK_PWM>;
++			#pwm-cells = <3>;
++		};
 +
- int __devm_pwmchip_add(struct device *dev, struct pwm_chip *chip, struct module *owner);
- #define devm_pwmchip_add(dev, chip) __devm_pwmchip_add(dev, chip, THIS_MODULE)
- 
+ 		clk: clock-controller@ffef010000 {
+ 			compatible = "thead,th1520-clk-ap";
+ 			reg = <0xff 0xef010000 0x0 0x1000>;
 
 -- 
 2.34.1
