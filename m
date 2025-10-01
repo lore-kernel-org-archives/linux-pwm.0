@@ -1,105 +1,63 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49F630277F;
-	Wed,  1 Oct 2025 14:04:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90EE12DCC13;
+	Wed,  1 Oct 2025 18:42:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759327463; cv=none; b=iIO51GZ3Y9IcGB5DP0WJar7iSES7P6e37+k+lpy3AgJelpbK97INWnn7gKpoH7duj2Hjazx5truD3drwDxK80ztkwUZVwjxFCDTWNsFdPnOAbBtUPh6FLVn1JG46bPomw/oUtEY8c95RBYyQe1+Nl/na913wxX3Vy+3x5nF/uug=
+	t=1759344166; cv=none; b=A5O4Nca23o5lyAlV/m0eBhLqH5qOgR/a+LeWWwJI90nhqsgdKesSz+5S4Y2yHmn9rpZJbTzxVa2Qu7H9QTjxIkbb7BxkmpiEHt4Gdh2drRpuj3AzPCmz7FwziR5+OefBN6tmWPDNY/0mP5jKcwAjJjhCRMHbKREz7aoF1/7uLL8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759327463; c=relaxed/simple;
-	bh=Pi8UCkwgJIEOdVhZWtrj0Uu7QhaUGHxfSoe/0iViBsQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=VGv4Nqd69740Vc6yZNkxc5pioaSZFJdhsYvnRsPbFzhdGbH7qTY9KZHIuaBDrIiYgY0PzvB9YSt5LukblcYPQi+X7bij3JRR61vCtTgrsbt5/oNB6cwnUE5xCTykFgCxN7nmsC8DAE9KWt5BR/VZ2Oh/rH7b7R+J2OSAyQz8Hlo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SPnF481b; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759344166; c=relaxed/simple;
+	bh=TCMZZWzB3Z0vieAHw0/T/FgdXVqIjG1gH1eiF6rPBHo=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=MWE1SgMdpqQK7eaMS3EgSUg7cT/gD3kUBEK1Woeo++tyrMNvdoIHmVyRW13lQ1GgnmBzh3SdNGHevMBszPUHCLx/kLyLTHPhhwHxI7cwzk6gftwzlAGis2/vaQTehlXlLXt3vkiJyEz/l27tUO0gHboOOwQbTnKLfASaqk9UtLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BRq+ZVqi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SPnF481b"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 71632C19422;
-	Wed,  1 Oct 2025 14:04:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BRq+ZVqi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 745C3C4CEF1;
+	Wed,  1 Oct 2025 18:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759327463;
-	bh=Pi8UCkwgJIEOdVhZWtrj0Uu7QhaUGHxfSoe/0iViBsQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=SPnF481bRUsR+gspp1H7c7FoBsi2sp1mhFut3RZ+O9XpW8nU8e5495pzHmTi773vQ
-	 EtfGr0sKZkekLd3NBU2AT2GTOhHQ6KZRPlWXM2GlGY12ScmJ/mMG2lFNGA+XAnJla7
-	 IHgdnn1eOMWPpUGLkCb+51ZSBowDSejAvKZXL9hLTNrWxTn4xK8znDYVah6Ww2dyFH
-	 sjvYXrXmqkK8SwcOG7Caq7hd45dyVNz7tV0vGpYYq5kA3rteyC/LAut0Ku646lB2an
-	 uiKSxgcnsuHx/gMxgko7/xMd7cCFMDhkYN9H/0e+iba+/WKzxM/2YxkrQxh0RWvMjh
-	 NjzJaJqltNniw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F55CAC5BB;
-	Wed,  1 Oct 2025 14:04:23 +0000 (UTC)
-From: George Moussalem via B4 Relay <devnull+george.moussalem.outlook.com@kernel.org>
-Date: Wed, 01 Oct 2025 18:04:24 +0400
-Subject: [PATCH v16 8/9] arm64: dts: qcom: ipq5332: add pwm node
+	s=k20201202; t=1759344166;
+	bh=TCMZZWzB3Z0vieAHw0/T/FgdXVqIjG1gH1eiF6rPBHo=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=BRq+ZVqilH6HSDqSmYY4V5bk738Lg5uSiaqWQFCYZKQ/DcRRERShR2bnRsXBTZHjX
+	 FizEshT5Ep7bMd6SP/Ry6EPkUtIE6UBKwDphM/3F5urr8ScxuPMiwImQ51dOBo70ZB
+	 txvPxNegZPIQotiZ50GjmCp9MIbDgrfzWb+Y8j3yhpC0mR2Yx+GlJM1GgF5gRpaQFh
+	 /Jabc1/wLGu+bjddFHSVMHrs9RmI6antbf29CfaCkjv2goHw4KG3tkQFaP2Y1YR1QL
+	 3lOSx1g/gRn1NO5C+lUcoeMgr4WeQouPXbJkFyGY8JU+7+RL/dCio8Gq3VvFxzt/lK
+	 0nGmQHQz0hINw==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 33E7439D0C3F;
+	Wed,  1 Oct 2025 18:42:40 +0000 (UTC)
+Subject: Re: [GIT PULL] pwm: Changes for v6.18-rc1
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <jeblxobrtuzcsgs3r7g5fxvpmauttof3qzrlvlaglueg4ls4ea@dk7kpwkplno2>
+References: <jeblxobrtuzcsgs3r7g5fxvpmauttof3qzrlvlaglueg4ls4ea@dk7kpwkplno2>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <jeblxobrtuzcsgs3r7g5fxvpmauttof3qzrlvlaglueg4ls4ea@dk7kpwkplno2>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git tags/pwm/for-6.18-rc1
+X-PR-Tracked-Commit-Id: 8f2689f194b8d1bff41150ae316abdfccf191309
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: c050daf69f3edf72e274eaa321f663b1779c4391
+Message-Id: <175934415870.2574344.6445445619974650791.pr-tracker-bot@kernel.org>
+Date: Wed, 01 Oct 2025 18:42:38 +0000
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Lee Jones <lee@kernel.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20251001-ipq-pwm-v16-8-300f237e0e68@outlook.com>
-References: <20251001-ipq-pwm-v16-0-300f237e0e68@outlook.com>
-In-Reply-To: <20251001-ipq-pwm-v16-0-300f237e0e68@outlook.com>
-To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Baruch Siach <baruch@tkos.co.il>, 
- Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- George Moussalem <george.moussalem@outlook.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1759327459; l=1186;
- i=george.moussalem@outlook.com; s=20250321; h=from:subject:message-id;
- bh=KvYbb087e0IlFv5OJiQl0AaX3Z3Wvu4mRV8HcggrQbU=;
- b=Ah/Gp1IRi9I3RMtMSorPmK/+gcsW3TwS7R/hNSgj/sNzrA7Tu6dkcYzMMxwReGloAXjEVZhP8
- mSOlAuQdzujCMwH1mc5aqE8mwyfl1f3od1bKV1NL9p6SYyR3BwOwbI/
-X-Developer-Key: i=george.moussalem@outlook.com; a=ed25519;
- pk=/PuRTSI9iYiHwcc6Nrde8qF4ZDhJBlUgpHdhsIjnqIk=
-X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20250321
- with auth_id=364
-X-Original-From: George Moussalem <george.moussalem@outlook.com>
-Reply-To: george.moussalem@outlook.com
 
-From: George Moussalem <george.moussalem@outlook.com>
+The pull request you sent on Mon, 29 Sep 2025 07:41:38 +0200:
 
-Describe the PWM block on IPQ5332.
+> https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git tags/pwm/for-6.18-rc1
 
-Although PWM is in the TCSR area, make pwm its own node as simple-mfd
-has been removed from the bindings and as such hardware components
-should have its own node.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/c050daf69f3edf72e274eaa321f663b1779c4391
 
-Signed-off-by: George Moussalem <george.moussalem@outlook.com>
----
- arch/arm64/boot/dts/qcom/ipq5332.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/ipq5332.dtsi b/arch/arm64/boot/dts/qcom/ipq5332.dtsi
-index 45fc512a3bab221c0d99f819294abf63369987da..4ff6e38521ed94fac0f4caac5c5b0d9be3704d7e 100644
---- a/arch/arm64/boot/dts/qcom/ipq5332.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq5332.dtsi
-@@ -334,6 +334,16 @@ tcsr: syscon@1937000 {
- 			reg = <0x01937000 0x21000>;
- 		};
- 
-+		pwm: pwm@1941010 {
-+			compatible = "qcom,ipq5332-pwm", "qcom,ipq6018-pwm";
-+			reg = <0x01941010 0x20>;
-+			clocks = <&gcc GCC_ADSS_PWM_CLK>;
-+			assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
-+			assigned-clock-rates = <100000000>;
-+			#pwm-cells = <2>;
-+			status = "disabled";
-+		};
-+
- 		sdhc: mmc@7804000 {
- 			compatible = "qcom,ipq5332-sdhci", "qcom,sdhci-msm-v5";
- 			reg = <0x07804000 0x1000>, <0x07805000 0x1000>;
+Thank you!
 
 -- 
-2.51.0
-
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
