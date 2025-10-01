@@ -1,323 +1,245 @@
-Received: from mx-out2.startmail.com (mx-out2.startmail.com [145.131.90.155])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9226A2727FA;
-	Wed,  1 Oct 2025 21:01:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=145.131.90.155
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BED7014A4CC;
+	Wed,  1 Oct 2025 23:42:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759352498; cv=none; b=WntjaugkW/PENiNk8x2MJ/IRwJ1wJjmAaAar7OdS2m4TyKOBVyS7kCrlUfILQ522k1bb05w1S8RPVRy/OhGEcGazSR6dLg+SK05t8ne7dai80CMtIjyBtEO+jOXrIHParTRHbp/TgExgf/NYAr2y4GVM3qX1DmK123mIpTY/ESM=
+	t=1759362134; cv=none; b=eENvH+m3/xzuMxdiQAHwH97Nsizxrkvu5L4Cn+dqvXOMpIBzwpZiTDdS7NG4gJcdOczgpQMN8howJ2G7u5iIbnY0nTxKltlZ3lKV1DpncYuPc9aNLZU3dFvMhz3bNzIxjX+d6JDylM/r5MxTZ5wiHrhMbK8ic5ruKLxH4MNVU9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759352498; c=relaxed/simple;
-	bh=h0SDlqzubMyx2T3IEnyVrEp7j/ci3ZmMZB1Oq8kB3UY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Mime-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ohIw8GbPAAC7aNqFmv0K3KrLncHrKhGzyaEM4ypajNDfRQACfWdTLWZ6Yu9OVlbnstDqwEy7LImGCeKfx0y+U0FWFUC5lH2AMskXuRRJmMZn1oJ/k675NJ+np7J5kCTptgqf7ES38Byax+6BD1Za9JHK8F7albeD1LWwh596Z/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=weathered-steel.dev; spf=pass smtp.mailfrom=weathered-steel.dev; dkim=pass (2048-bit key) header.d=weathered-steel.dev header.i=@weathered-steel.dev header.b=Q3rH9e6Q; arc=none smtp.client-ip=145.131.90.155
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=weathered-steel.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=weathered-steel.dev
+	s=arc-20240116; t=1759362134; c=relaxed/simple;
+	bh=56Q3mKCX5WNb0zWYZjwIbTPOM9CZ0gwVrw1wqhQJrKI=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=XGlRtXJk9EB06VOvR2WaaPSayjf1KSkWiHJVdqX41w99omMiT2KOQatSJO2cgJfIXf2jlUBR2fQ9VHwYaoe+iDBdoY0aE4JBTGswkXb8VEj2JWxvBnkyz8VQVcDQ96zdFDukSYCxoU4m5maDiZfGEeyf5yBCX1zpoTqYW8wI/pU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XJgQigYw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=weathered-steel.dev header.i=@weathered-steel.dev header.b="Q3rH9e6Q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=weathered-steel.dev;
-	s=startmail1; t=1759351963;
-	bh=UoLolgZjobGjS/KiQaI7MTlo0BgUiakv4CVrspm+7+k=;
-	h=Date:From:To:Subject:Message-ID:References:Mime-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To:From:Subject:To:Date:Sender:Content-Type:
-	 Content-Transfer-Encoding:Content-Disposition:Mime-Version:
-	 Reply-To:In-Reply-To:References:Message-Id:List-Unsubscribe:
-	 List-Unsubscribe-Post:Autocrypt;
-	b=Q3rH9e6Q0Ei+/evpcdwzIcU4DnfCsJbXD/3fzLRk3weIh8Jbn85D2yBOaiHlOy1Ij
-	 70EoEjE/a0a5mG74BJZ0kB9hohYooyTxdzwL4tRvWSQOrc0LZp1hvO7o5g2Orq7cAD
-	 581zSHYD7PdTKvzV9Iqt9uMyml4z0nqhIzCjqZ5hDsi+HNAx80SJkMZ6NIHS5raroT
-	 9RMbpSSwYEkniT4heI6UGS640jLv0gMSrUTJpPUjPv2AYV1NreZxBjHknWQLgYzaQZ
-	 wnFcksso4yoBF3nEC+ea83im1nG0tqdJ/MGoz4ypPQYmh8iNUON9jmEh5ag4oz91dA
-	 1g9XW9XIIKfyA==
-Date: Wed, 1 Oct 2025 20:52:39 +0000
-From: Elle Rhumsaa <elle@weathered-steel.dev>
-To: Michal Wilczynski <m.wilczynski@samsung.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>, Guo Ren <guoren@kernel.org>,
-	Fu Wei <wefu@redhat.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Drew Fustini <fustini@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	rust-for-linux@vger.kernel.org, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v15 2/7] rust: pwm: Add Kconfig and basic data structures
-Message-ID: <aN2Ul7nHCg6M4uez@archiso>
-References: <20250930-rust-next-pwm-working-fan-for-sending-v15-0-5661c3090877@samsung.com>
- <CGME20250930122732eucas1p2fbf9c050934b356165377776a8aef247@eucas1p2.samsung.com>
- <20250930-rust-next-pwm-working-fan-for-sending-v15-2-5661c3090877@samsung.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJgQigYw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E96CC4CEF5;
+	Wed,  1 Oct 2025 23:42:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1759362134;
+	bh=56Q3mKCX5WNb0zWYZjwIbTPOM9CZ0gwVrw1wqhQJrKI=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=XJgQigYw532nfL1FqUz9yrdRItxPUDJhR0WRtrM2Tqx/tYB4vSC9dDXau8xv8qJdu
+	 lkhwfTA1UQxLosGWMweB89CKn+iXKyuBpOX43LDvPjyC/mxsisjm8Pql94Ibk6Htu0
+	 Ipyx4lJRgxhnsxW6r88N0V70U/jgj5+TEW29+ZmXMuMff7kdzdcCZDvrk6SqUeqvMu
+	 xfDHoMgLoYHxEXhnGeRivsqsLAvm/jUIAGxovLCfiNP3Bp1g5G6JuJLQsATr96iLT4
+	 EYvdw+v8DCFrAK6aJfq9UMvRJtEZtrUIWH2U/CIS1o03994hJ96DOIsjxBJQ0ihYR4
+	 9zisiHQGXIiOA==
+Date: Wed, 01 Oct 2025 18:42:12 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250930-rust-next-pwm-working-fan-for-sending-v15-2-5661c3090877@samsung.com>
+MIME-Version: 1.0
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+ linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Baruch Siach <baruch.siach@siklu.com>, Baruch Siach <baruch@tkos.co.il>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org, 
+ devicetree@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Devi Priya <quic_devipriy@quicinc.com>
+To: George Moussalem <george.moussalem@outlook.com>
+In-Reply-To: <20251001-ipq-pwm-v16-0-300f237e0e68@outlook.com>
+References: <20251001-ipq-pwm-v16-0-300f237e0e68@outlook.com>
+Message-Id: <175936202881.2426650.1624694657690403545.robh@kernel.org>
+Subject: Re: [PATCH v16 0/9] Add PWM support for IPQ chipsets
 
-On Tue, Sep 30, 2025 at 02:20:33PM +0200, Michal Wilczynski wrote:
-> Introduce the foundational support for PWM abstractions in Rust.
+
+On Wed, 01 Oct 2025 18:04:16 +0400, George Moussalem wrote:
+> Add PWM driver and binding support for IPQ chipsets.
+> Also, add nodes to add support for pwm in ipq6018, ipq5018, ipq5332, and
+> ipq9574.
 > 
-> This commit adds the `RUST_PWM_ABSTRACTIONS` Kconfig option to enable
-> the feature, along with the necessary build-system support and C
-> helpers.
+> I've picked up work based on Devi's last submission (v15) which dates
+> back to 05 October 2023 as below SoCs are still active.
 > 
-> It also introduces the first set of safe wrappers for the PWM
-> subsystem, covering the basic data carrying C structs and enums:
-> - `Polarity`: A safe wrapper for `enum pwm_polarity`.
-> - `Waveform`: A wrapper for `struct pwm_waveform`.
-> - `State`: A wrapper for `struct pwm_state`.
+> V16:
 > 
-> These types provide memory safe, idiomatic Rust representations of the
-> core PWM data structures and form the building blocks for the
-> abstractions that will follow.
+>   Removed reg description in bindings as the offset is not relative to
+>   the TCSR region anymore since simple-mfd support was dropped and PWM
+>   nodes defined as their own nodes, not child nodes. Updated the example
+>   too.
 > 
-> Tested-by: Drew Fustini <fustini@kernel.org>
-> Reviewed-by: Daniel Almeida <daniel.almeida@collabora.com>
-> Reviewed-by: Elle Rhumsaa <elle@weathered-steel.dev>
-> Signed-off-by: Michal Wilczynski <m.wilczynski@samsung.com>
-> ---
->  MAINTAINERS                     |   8 ++++
->  drivers/pwm/Kconfig             |  13 +++++
->  rust/bindings/bindings_helper.h |   1 +
->  rust/helpers/helpers.c          |   1 +
->  rust/helpers/pwm.c              |  20 ++++++++
->  rust/kernel/lib.rs              |   2 +
->  rust/kernel/pwm.rs              | 102 ++++++++++++++++++++++++++++++++++++++++
->  7 files changed, 147 insertions(+)
+>   Dropped patch to add simple-mfd support to the qcom,tcsr bindings
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index fe168477caa45799dfe07de2f54de6d6a1ce0615..5d7c0676c1d00a02b3d7db2de88b039c08c99c6e 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -20387,6 +20387,14 @@ F:	include/linux/pwm.h
->  F:	include/linux/pwm_backlight.h
->  K:	pwm_(config|apply_might_sleep|apply_atomic|ops)
->  
-> +PWM SUBSYSTEM BINDINGS [RUST]
-> +M:	Michal Wilczynski <m.wilczynski@samsung.com>
-> +L:	linux-pwm@vger.kernel.org
-> +L:	rust-for-linux@vger.kernel.org
-> +S:	Maintained
-> +F:	rust/helpers/pwm.c
-> +F:	rust/kernel/pwm.rs
-> +
->  PXA GPIO DRIVER
->  M:	Robert Jarzmik <robert.jarzmik@free.fr>
->  L:	linux-gpio@vger.kernel.org
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index f00ce973dddf651287168b44228574f4d5c28dc0..2b608f4378138775ee3ba4d53f682952e1914118 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -800,4 +800,17 @@ config PWM_XILINX
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-xilinx.
->  
-> + config RUST_PWM_ABSTRACTIONS
-> +	bool "Rust PWM abstractions support"
-> +	depends on RUST
-> +	depends on PWM=y
-> +	help
-> +	  This option enables the safe Rust abstraction layer for the PWM
-> +	  subsystem. It provides idiomatic wrappers and traits necessary for
-> +	  writing PWM controller drivers in Rust.
-> +
-> +	  The abstractions handle resource management (like memory and reference
-> +	  counting) and provide safe interfaces to the underlying C core,
-> +	  allowing driver logic to be written in safe Rust.
-> +
->  endif
-> diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
-> index 84d60635e8a9baef1f1a1b2752dc0fa044f8542f..7a06ee5781eadc9f21ccd456b574a9cb152cd58c 100644
-> --- a/rust/bindings/bindings_helper.h
-> +++ b/rust/bindings/bindings_helper.h
-> @@ -66,6 +66,7 @@
->  #include <linux/pm_opp.h>
->  #include <linux/poll.h>
->  #include <linux/property.h>
-> +#include <linux/pwm.h>
->  #include <linux/refcount.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/sched.h>
-> diff --git a/rust/helpers/helpers.c b/rust/helpers/helpers.c
-> index 7cf7fe95e41dd51717050648d6160bebebdf4b26..861052ffffaff60e9c2e8109e55f3b6158ff2281 100644
-> --- a/rust/helpers/helpers.c
-> +++ b/rust/helpers/helpers.c
-> @@ -35,6 +35,7 @@
->  #include "platform.c"
->  #include "poll.c"
->  #include "property.c"
-> +#include "pwm.c"
->  #include "rbtree.c"
->  #include "rcu.c"
->  #include "refcount.c"
-> diff --git a/rust/helpers/pwm.c b/rust/helpers/pwm.c
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..d75c588863685d3990b525bb1b84aa4bc35ac397
-> --- /dev/null
-> +++ b/rust/helpers/pwm.c
-> @@ -0,0 +1,20 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2025 Samsung Electronics Co., Ltd.
-> +// Author: Michal Wilczynski <m.wilczynski@samsung.com>
-> +
-> +#include <linux/pwm.h>
-> +
-> +struct device *rust_helper_pwmchip_parent(const struct pwm_chip *chip)
-> +{
-> +	return pwmchip_parent(chip);
-> +}
-> +
-> +void *rust_helper_pwmchip_get_drvdata(struct pwm_chip *chip)
-> +{
-> +	return pwmchip_get_drvdata(chip);
-> +}
-> +
-> +void rust_helper_pwmchip_set_drvdata(struct pwm_chip *chip, void *data)
-> +{
-> +	pwmchip_set_drvdata(chip, data);
-> +}
-> diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
-> index ed53169e795c0badf548025a57f946fa18bc73e3..e339b552f9650803b1efa1eb8ecc6fe9d2c56563 100644
-> --- a/rust/kernel/lib.rs
-> +++ b/rust/kernel/lib.rs
-> @@ -117,6 +117,8 @@
->  pub mod seq_file;
->  pub mod sizes;
->  mod static_assert;
-> +#[cfg(CONFIG_RUST_PWM_ABSTRACTIONS)]
-> +pub mod pwm;
->  #[doc(hidden)]
->  pub mod std_vendor;
->  pub mod str;
-> diff --git a/rust/kernel/pwm.rs b/rust/kernel/pwm.rs
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..beabf0086a2f1beea01e0b0a9f6540c601f77a49
-> --- /dev/null
-> +++ b/rust/kernel/pwm.rs
-> @@ -0,0 +1,102 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2025 Samsung Electronics Co., Ltd.
-> +// Author: Michal Wilczynski <m.wilczynski@samsung.com>
-> +
-> +//! PWM subsystem abstractions.
-> +//!
-> +//! C header: [`include/linux/pwm.h`](srctree/include/linux/pwm.h).
-> +
-> +use crate::{
-> +    bindings,
-> +    prelude::*,
-> +    types::Opaque,
-> +};
-> +use core::convert::TryFrom;
-> +
-> +/// PWM polarity. Mirrors [`enum pwm_polarity`](srctree/include/linux/pwm.h).
-> +#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-> +pub enum Polarity {
-> +    /// Normal polarity (duty cycle defines the high period of the signal).
-> +    Normal,
-> +
-> +    /// Inversed polarity (duty cycle defines the low period of the signal).
-> +    Inversed,
-> +}
-> +
-> +impl TryFrom<bindings::pwm_polarity> for Polarity {
-> +    type Error = Error;
-> +
-> +    fn try_from(polarity: bindings::pwm_polarity) -> Result<Self, Error> {
-> +        match polarity {
-> +            bindings::pwm_polarity_PWM_POLARITY_NORMAL => Ok(Polarity::Normal),
-> +            bindings::pwm_polarity_PWM_POLARITY_INVERSED => Ok(Polarity::Inversed),
-> +            _ => Err(EINVAL),
-> +        }
-> +    }
-> +}
-> +
-> +impl From<Polarity> for bindings::pwm_polarity {
-> +    fn from(polarity: Polarity) -> Self {
-> +        match polarity {
-> +            Polarity::Normal => bindings::pwm_polarity_PWM_POLARITY_NORMAL,
-> +            Polarity::Inversed => bindings::pwm_polarity_PWM_POLARITY_INVERSED,
-> +        }
-> +    }
-> +}
-> +
-> +/// Represents a PWM waveform configuration.
-> +/// Mirrors struct [`struct pwm_waveform`](srctree/include/linux/pwm.h).
-> +#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
-> +pub struct Waveform {
-> +    /// Total duration of one complete PWM cycle, in nanoseconds.
-> +    pub period_length_ns: u64,
-> +
-> +    /// Duty-cycle active time, in nanoseconds.
-> +    ///
-> +    /// For a typical normal polarity configuration (active-high) this is the
-> +    /// high time of the signal.
-> +    pub duty_length_ns: u64,
-> +
-> +    /// Duty-cycle start offset, in nanoseconds.
-> +    ///
-> +    /// Delay from the beginning of the period to the first active edge.
-> +    /// In most simple PWM setups this is `0`, so the duty cycle starts
-> +    /// immediately at each period’s start.
-> +    pub duty_offset_ns: u64,
-> +}
-> +
-> +impl From<bindings::pwm_waveform> for Waveform {
-> +    fn from(wf: bindings::pwm_waveform) -> Self {
-> +        Waveform {
-> +            period_length_ns: wf.period_length_ns,
-> +            duty_length_ns: wf.duty_length_ns,
-> +            duty_offset_ns: wf.duty_offset_ns,
-> +        }
-> +    }
-> +}
-> +
-> +impl From<Waveform> for bindings::pwm_waveform {
-> +    fn from(wf: Waveform) -> Self {
-> +        bindings::pwm_waveform {
-> +            period_length_ns: wf.period_length_ns,
-> +            duty_length_ns: wf.duty_length_ns,
-> +            duty_offset_ns: wf.duty_offset_ns,
-> +        }
-> +    }
-> +}
-> +
-> +/// Wrapper for PWM state [`struct pwm_state`](srctree/include/linux/pwm.h).
-> +#[repr(transparent)]
-> +pub struct State(bindings::pwm_state);
-> +
-> +impl State {
-> +    /// Creates a `State` wrapper by taking ownership of a C `pwm_state` value.
-> +    pub(crate) fn from_c(c_state: bindings::pwm_state) -> Self {
-> +        State(c_state)
-> +    }
-> +
-> +    /// Returns `true` if the PWM signal is enabled.
-> +    pub fn enabled(&self) -> bool {
-> +        self.0.enabled
-> +    }
-> +}
+>   Simplified code to calculate divs and duty cycle as per Uwe's comments
 > 
-> -- 
+>   Removed unused pwm_chip struct from ipq_pwm_chip struct
+> 
+>   Removed unnecessary cast as per Uwe's comment
+> 
+>   Replaced devm_clk_get & clk_prepare_enable by devm_clk_get_enabled
+> 
+>   Replaced pwmchip_add by devm_pwmchip_add and removed .remove function
+> 
+>   Removed .owner from driver struct
+> 
+>   Added compatibles to the bindings and nodes to the device trees to add
+>   PWM support PWM in the IPQ5018, IPQ5332, and IPQ9574 SoCs
+> 
+> v15:
+> 
+>   No change
+> 
+> v14:
+> 
+>   Picked up the R-b tag
+> 
+> v13:
+> 
+>   Updated the file name to match the compatible
+> 
+>   Sorted the properties and updated the order in the required field
+> 
+>   Dropped the syscon node from examples
+> 
+> v12:
+> 
+>   Picked up the R-b tag
+> 
+> v11:
+> 
+>   No change
+> 
+> v10:
+> 
+>   No change
+> 
+> v9:
+> 
+>   Add 'ranges' property to example (Rob)
+> 
+>   Drop label in example (Rob)
+> 
+> v8:
+> 
+>   Add size cell to 'reg' (Rob)
+> 
+> v7:
+> 
+>   Use 'reg' instead of 'offset' (Rob)
+> 
+>   Drop 'clock-names' and 'assigned-clock*' (Bjorn)
+> 
+>   Use single cell address/size in example node (Bjorn)
+> 
+>   Move '#pwm-cells' lower in example node (Bjorn)
+> 
+>   List 'reg' as required
+> 
+> v6:
+> 
+>   Device node is child of TCSR; remove phandle (Rob Herring)
+> 
+>   Add assigned-clocks/assigned-clock-rates (Uwe Kleine-König)
+> 
+> v5: Use qcom,pwm-regs for phandle instead of direct regs (Bjorn
+>     Andersson, Kathiravan T)
+> 
+> v4: Update the binding example node as well (Rob Herring's bot)
+> 
+> v3: s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
+> 
+> v2: Make #pwm-cells const (Rob Herring)
+> 
+> V15:
+> Detailed Change logs are added to the respective patches.
+> 
+> V14 can be found at:
+> https://lore.kernel.org/linux-arm-msm/20231005043127.2690639-1-quic_devipriy@quicinc.com/
+> 
+> Devi Priya (4):
+>   pwm: driver for qualcomm ipq6018 pwm block
+>   dt-bindings: pwm: add IPQ6018 binding
+>   dt-bindings: mfd: qcom,tcsr: Add simple-mfd support for IPQ6018
+>   arm64: dts: qcom: ipq6018: add pwm node
+> 
+>  .../devicetree/bindings/mfd/qcom,tcsr.yaml    | 112 +++++--
+>  .../bindings/pwm/qcom,ipq6018-pwm.yaml        |  45 +++
+>  arch/arm64/boot/dts/qcom/ipq6018.dtsi         |  15 +-
+>  drivers/pwm/Kconfig                           |  12 +
+>  drivers/pwm/Makefile                          |   1 +
+>  drivers/pwm/pwm-ipq.c                         | 282 ++++++++++++++++++
+>  6 files changed, 435 insertions(+), 32 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
+>  create mode 100644 drivers/pwm/pwm-ipq.c
+> 
+> --
 > 2.34.1
 > 
+> ---
+> Devi Priya (3):
+>       dt-bindings: pwm: add IPQ6018 binding
+>       pwm: driver for qualcomm ipq6018 pwm block
+>       arm64: dts: qcom: ipq6018: add pwm node
+> 
+> George Moussalem (6):
+>       dt-bindings: pwm: qcom,ipq6018-pwm: Add compatible for ipq5018
+>       dt-bindings: pwm: qcom,ipq6018-pwm: Add compatible for ipq5332
+>       dt-bindings: pwm: qcom,ipq6018-pwm: Add compatible for ipq9574
+>       arm64: dts: qcom: ipq5018: add pwm node
+>       arm64: dts: qcom: ipq5332: add pwm node
+>       arm64: dts: qcom: ipq9574: add pwm node
+> 
+>  .../devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml  |  51 +++++
+>  arch/arm64/boot/dts/qcom/ipq5018.dtsi              |  10 +
+>  arch/arm64/boot/dts/qcom/ipq5332.dtsi              |  10 +
+>  arch/arm64/boot/dts/qcom/ipq6018.dtsi              |  10 +
+>  arch/arm64/boot/dts/qcom/ipq9574.dtsi              |  10 +
+>  drivers/pwm/Kconfig                                |  12 ++
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-ipq.c                              | 214 +++++++++++++++++++++
+>  8 files changed, 318 insertions(+)
+> ---
+> base-commit: 846bd2225ec3cfa8be046655e02b9457ed41973e
+> change-id: 20250922-ipq-pwm-c8c75c147d52
+> 
+> Best regards,
+> --
+> George Moussalem <george.moussalem@outlook.com>
+> 
+> 
+> 
 
-Reviewed-by: Elle Rhumsaa <elle@weathered-steel.dev>
+
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
+
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
+
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
+
+  pip3 install dtschema --upgrade
+
+
+This patch series was applied (using b4) to base:
+ Base: using specified base-commit 846bd2225ec3cfa8be046655e02b9457ed41973e
+
+If this is not the correct base, please add 'base-commit' tag
+(or use b4 which does this automatically)
+
+New warnings running 'make CHECK_DTBS=y for arch/arm64/boot/dts/qcom/' for 20251001-ipq-pwm-v16-0-300f237e0e68@outlook.com:
+
+arch/arm64/boot/dts/qcom/ipq6018.dtsi:418.4-28: Warning (reg_format): /soc@0/pwm@1941010:reg: property has invalid length (8 bytes) (#address-cells == 2, #size-cells == 2)
+arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dtb: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dtb: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dtb: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dtb: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dtb: soc@0 (simple-bus): pwm@1941010:reg:0: [26480656, 32] is too short
+	from schema $id: http://devicetree.org/schemas/reg.yaml#
+
+
+
+
+
