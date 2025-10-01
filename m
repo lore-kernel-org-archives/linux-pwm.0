@@ -1,84 +1,137 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEAF3139E;
-	Wed,  1 Oct 2025 00:01:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 278771547F2;
+	Wed,  1 Oct 2025 14:04:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759276874; cv=none; b=F4neBTNeP99vQDzZf7456tu7C2Y2vFBY9bGrdkeGN9U6bdJ5nGhfMGIfKlOJxh5koQhFA/wF02gNMO1DpYgOMbW9BK0h43V1TYa3ulBgYchkRlyOW+vFaizAaUetM9J8c5DZug5Hxj4NTTU+Z2hSJGx7pN/pwh7cDOr3pkR6wb4=
+	t=1759327463; cv=none; b=tvcxql/3LXuxo2gnPTsoVIze0WmNGnqHNuvfA7IE0p061ey02Ut87oXLENUv6wG09sCYv3PS+CIQ+4jdYaiGLQyFtQAkj2H2MmwMXCHuPD+/gZ6wdHxM3SvJhJIouSuSi/M5Tm9MFR75pAK3/Wx7W0vfiUjS++BVX4CFUDkPh/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759276874; c=relaxed/simple;
-	bh=OS51U7OU5GJ0yf/o9GaQhMdAvaYjkphStJrxtY7XLnM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SI5q1jBs96O+g0DHcntZpmzKO/Siq34KS3TEUKEG2NvhxYq/9KxVoiIhRW+RoAi95aK34Id2HWF9FbRsHeZfJIBfUQfwW/SRikxK/KiRBeEAjowQ5x4wN1wQ5ueMjOhKQOsrvN/SBEnLPlzuNxLPqmy0VzeKbo89buJpPA8eEfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AdK7wDUh; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759327463; c=relaxed/simple;
+	bh=DcwuyX8vW2kqJZ7nlBXFHvGPhvHT+XYW91wlJclysz4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=NlfV2qJyNB60E5Ha3ZL4yfcaMLyGf91KkDMrAsVzSP9DvJCgfmw5WquGfSs5zdzcbZS47eIZ03D0Fw/kE67tMUzLgukiBn53kjgfbXuAms48WrLMzhfNy93q2orCu7zwFcOUDU6HFHufWBySir1tPPMSGxizg30unwfs1xTkXM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dw+WDp7t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AdK7wDUh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04E64C4CEF0;
-	Wed,  1 Oct 2025 00:01:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dw+WDp7t"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0663BC4CEF9;
+	Wed,  1 Oct 2025 14:04:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759276873;
-	bh=OS51U7OU5GJ0yf/o9GaQhMdAvaYjkphStJrxtY7XLnM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AdK7wDUhqAanqU5rG9sXWDlEBCTU3CexIcGMHyiKw0YKz/JijEWlO59/TSW74OgXD
-	 BZlO5Nwdwd/OIoyB68U8hG11JOyLJWTOyVPrhFiiTvLnzJMKJ5o+9YXZH5CCkBWqO5
-	 OmQKto6Kx3VWX/IvEa+ea8whSIqr1PJoxOMrV61jzV3UmYA1mYlWy1alF+PvBeHccX
-	 Pj0L3iNJzg86fdKGykOFi6+p0bpWvrhhkOmrmuIgNQ/DnJZLPpEsFbcV5kzcjc34RE
-	 pTFSuiN+m9sEa3haCPGUtFrJuQRDoKqWJednXnht0UBdX3QSCmpDeLvw0fbBUmzwkz
-	 d8aqFwpcOLxpw==
-Date: Tue, 30 Sep 2025 17:01:11 -0700
-From: Drew Fustini <fustini@kernel.org>
-To: Michal Wilczynski <m.wilczynski@samsung.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>, Guo Ren <guoren@kernel.org>,
-	Fu Wei <wefu@redhat.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	rust-for-linux@vger.kernel.org, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Elle Rhumsaa <elle@weathered-steel.dev>
-Subject: Re: [PATCH v15 5/7] dt-bindings: pwm: thead: Add T-HEAD TH1520 PWM
- controller
-Message-ID: <aNxvR5eNAB3NKbtT@x1>
-References: <20250930-rust-next-pwm-working-fan-for-sending-v15-0-5661c3090877@samsung.com>
- <CGME20250930122735eucas1p1c49ed11a4a48155c123ead6aec4b64a2@eucas1p1.samsung.com>
- <20250930-rust-next-pwm-working-fan-for-sending-v15-5-5661c3090877@samsung.com>
+	s=k20201202; t=1759327463;
+	bh=DcwuyX8vW2kqJZ7nlBXFHvGPhvHT+XYW91wlJclysz4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=dw+WDp7tfCs/HdgNqdsMHlB2nMh3x8+mTmXTaPGGQR52J7hnBEZujO3BlSWmebkQu
+	 cXwawYWSr2HuNu2zLs79BUGij2t4JBAE9j/ABBH3jzr3RpTJ6GQXr9d5CgH5q7yqfb
+	 Mme06hyKYJ5YP5iX0EyEAdkER96vSobhNJNWhF88yzqOkC5ZfBKxJ5J65UKjzszOGb
+	 BtEHQz1ZwQ4GcJj2s8Idf4y14vS+DXxnzG4GIT1dCS+bji2cmRTuKYZhjz1W2pDCgJ
+	 LaHaCcyZEJzt66B70BmJL1SH6HqgxGvuwwpqjx4uxqJb6OnVYJjnbkkK9BPL574A4u
+	 TKhUaFE4QHi2g==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E347CCAC5BB;
+	Wed,  1 Oct 2025 14:04:22 +0000 (UTC)
+From: George Moussalem via B4 Relay <devnull+george.moussalem.outlook.com@kernel.org>
+Date: Wed, 01 Oct 2025 18:04:17 +0400
+Subject: [PATCH v16 1/9] dt-bindings: pwm: add IPQ6018 binding
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250930-rust-next-pwm-working-fan-for-sending-v15-5-5661c3090877@samsung.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20251001-ipq-pwm-v16-1-300f237e0e68@outlook.com>
+References: <20251001-ipq-pwm-v16-0-300f237e0e68@outlook.com>
+In-Reply-To: <20251001-ipq-pwm-v16-0-300f237e0e68@outlook.com>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Baruch Siach <baruch@tkos.co.il>, 
+ Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Devi Priya <quic_devipriy@quicinc.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Baruch Siach <baruch.siach@siklu.com>, 
+ Bjorn Andersson <andersson@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1759327459; l=1766;
+ i=george.moussalem@outlook.com; s=20250321; h=from:subject:message-id;
+ bh=TIgQXfGvQp7H4uzUZyQsZZpdMSae9nM97ANzvYRj3gc=;
+ b=XaG2XNit7oo8lR7gdorPFnH0Ww9dnr+Pi96LwXAiOjPFL+WQwpLo9hCKoijz1+QuFaEfWh1v/
+ 8VBy6ez2YO3BWj/OXxkNspVoUeztQJR518JzrPZNHdy3aVTs+hFNY+m
+X-Developer-Key: i=george.moussalem@outlook.com; a=ed25519;
+ pk=/PuRTSI9iYiHwcc6Nrde8qF4ZDhJBlUgpHdhsIjnqIk=
+X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20250321
+ with auth_id=364
+X-Original-From: George Moussalem <george.moussalem@outlook.com>
+Reply-To: george.moussalem@outlook.com
 
-On Tue, Sep 30, 2025 at 02:20:36PM +0200, Michal Wilczynski wrote:
-> Add the Device Tree binding documentation for the T-HEAD
-> TH1520 SoC PWM controller.
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Tested-by: Drew Fustini <fustini@kernel.org>
+From: Devi Priya <quic_devipriy@quicinc.com>
 
-Minor comment: if you do end doing another rev for other reasons, then
-please remove the Tested-by and use this instead:
+DT binding for the PWM block in Qualcomm IPQ6018 SoC.
 
-Acked-by: Drew Fustini <fustini@kernel.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Co-developed-by: Baruch Siach <baruch.siach@siklu.com>
+Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+Signed-off-by: Devi Priya <quic_devipriy@quicinc.com>
+---
+ .../devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml  | 44 ++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-Thanks,
-Drew
+diff --git a/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml b/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..1172f0b53fadc140482f9384a36020260df372b7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/qcom,ipq6018-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm IPQ6018 PWM controller
++
++maintainers:
++  - Baruch Siach <baruch@tkos.co.il>
++
++properties:
++  compatible:
++    const: qcom,ipq6018-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - "#pwm-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-ipq6018.h>
++
++    pwm: pwm@1941010 {
++        compatible = "qcom,ipq6018-pwm";
++        reg = <0x01941010 0x20>;
++        clocks = <&gcc GCC_ADSS_PWM_CLK>;
++        assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
++        assigned-clock-rates = <100000000>;
++        #pwm-cells = <2>;
++    };
+
+-- 
+2.51.0
+
+
