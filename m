@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5458E2F998A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5464B2F998D;
 	Wed,  8 Oct 2025 15:33:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759937627; cv=none; b=tmV7Q6ZbQ78NwM+RhHREPgJ9GolIwaJcUTXG6sznqopFogA8d9/Vu0In+cx6aLf8010+7vcoy2ZC0UJDgcdoJXJ/+RCKqJgMRfDw7deUMG3C6HJO+H+bewkM7laBvKse1vuHV6iAO3oeDD7rD1KN0Ldqy+dmXjBS+GqGOb4vtR0=
+	t=1759937627; cv=none; b=TXL0VtQJ1jgb9HhytWapLoZsvwDY0iV7qKWIY2UpJKcGw+KpuWLbgzunNqAtYg/Yp76+HaoPvb0/IzBGNA48MJFjMyqA4nb9+GCtAuRbm5aE4SEltFjhTCKEKZeZ/qJSgjwASAxwAEgAdk3aDwDjhp8I5cShUdVwaMpcd2RuBRs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1759937627; c=relaxed/simple;
-	bh=eVOsFH8osOeZ8GHSlQlqi0o9HHh6RBAnnXxTD6MchR0=;
+	bh=BH9RyEUffqjPp+Gnltyt4X5dVubCxy25UZTDkRJK8ss=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=XhmN5IfDYuZh1kJJTsv42kUDqXcmHE6QESphXDJ5ogSzgHRY6W/fATWhxB6b8nEeUACREsdpkM7W2QO0QC8vHRS4uw+4joe0GaObY/2CFqhige+KJzpBTAw+Si6N6KET8X6o6yCqRHkPPLqzUL0eiQeUgHcKtJGxi25lJHybJQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JOvkIdvK; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=tnNN153gWz3SVEofPMsP2uypVkraEgQSI2az1NM+yiWh0/VTZHJpwupiYQ1c1zhqWxOr9n+kP80aJsXIPfbvFqU4mH1/4aRNaHb19VE6aGlPiM2x+Z6ZK21KSzESa1lIHjCuZvyQKZLFOA0BmasvlCJ7tAHCRUYwaCv7hdBnpmg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nLRi1kZj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JOvkIdvK"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1C4EEC116D0;
-	Wed,  8 Oct 2025 15:33:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nLRi1kZj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E450BC116B1;
+	Wed,  8 Oct 2025 15:33:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759937627;
-	bh=eVOsFH8osOeZ8GHSlQlqi0o9HHh6RBAnnXxTD6MchR0=;
+	s=k20201202; t=1759937626;
+	bh=BH9RyEUffqjPp+Gnltyt4X5dVubCxy25UZTDkRJK8ss=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=JOvkIdvKAasO3xCoq/L5vJozz+ODbzwBc0z5L17uzeoK2L+bffNxUdtXm8sBNiFxs
-	 4Ta5uLvWKrFBIzDWyDaJHHy3ENMR0l7Ebavm8rk2IP//Sn4LKIdG/L9a1H1Erelq5m
-	 XrZDzAMYXsB3ZrCRhTLN1eF0d251rWveB1gdA0+iXaJEtGtvIKDcQmLz0zKoFmIlZE
-	 OLdjrpMPQhU0GXpxl61+qcCs3poHTTha50DDMU9eT0gJqMrMxhA+7DZKWHaQKVfFda
-	 XHu8OUmigZPw/KrrLFJhmzKV3DiWTAkao0YWs4caur94kOlBOve/eH5tNB3OJVRR0a
-	 k1eJPQp6d939A==
+	b=nLRi1kZj4xvK+iTdiR+NKkvqCSrgLaj+GxGISYWtepgzGDmFoIrdthb7uGWs6zRmq
+	 2AtUOWampKKqHB+dgpjth23pJ1pkHHnVwyzuDfIuXWJ7GmF3nfBfHpkE/v2GAL9vJI
+	 dBB692aLBz1mW2BtoBuhtn+JFgRpGpS4Xh+MdrOc5g24+CFgn/6ZOPytKP2Gm1AuWy
+	 pfN4XmLFY+i1mUhyAAbHQGGAVQg3FRziUZYontfQn/UVzUbt57nzlhhPDoYtae02K8
+	 ybsfNaWCLVUmQGJqRCjdR/DTiAN2kYPrR1+SN9tC6MzA6qrSxAJxJRxrKmasi9TYgH
+	 an9KOLBZTtIkA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 117B4CCA470;
-	Wed,  8 Oct 2025 15:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD82CCA472;
+	Wed,  8 Oct 2025 15:33:46 +0000 (UTC)
 From: George Moussalem via B4 Relay <devnull+george.moussalem.outlook.com@kernel.org>
-Date: Wed, 08 Oct 2025 19:33:01 +0400
-Subject: [PATCH v17 9/9] arm64: dts: qcom: ipq9574: add pwm node
+Date: Wed, 08 Oct 2025 19:32:58 +0400
+Subject: [PATCH v17 6/9] arm64: dts: qcom: ipq6018: add pwm node
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251008-ipq-pwm-v17-9-9bd43edfc7f7@outlook.com>
+Message-Id: <20251008-ipq-pwm-v17-6-9bd43edfc7f7@outlook.com>
 References: <20251008-ipq-pwm-v17-0-9bd43edfc7f7@outlook.com>
 In-Reply-To: <20251008-ipq-pwm-v17-0-9bd43edfc7f7@outlook.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
@@ -51,13 +51,15 @@ To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
 Cc: linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  George Moussalem <george.moussalem@outlook.com>, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+ Devi Priya <quic_devipriy@quicinc.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Baruch Siach <baruch.siach@siklu.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1759937623; l=1234;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1759937623; l=1391;
  i=george.moussalem@outlook.com; s=20250321; h=from:subject:message-id;
- bh=qc4VIzmfGZ/Xd+TOMpfJif2wj3plsSY0LnXsUU/Cm6A=;
- b=kdV2vbA1Dga3vyES71ONOlSMDOa1obqQ9fBP2whZgu3oe3HCJspmEAOggz5qK9ydJxnCXqMgD
- 3z1S8ogGsRuCv9c2BeNpVoRQ2k13z4v7IvAoO6q5cIhZ0fyXRIZZfWz
+ bh=O41HNKdswyFzcZl8XVjha1wsITAQCaBZJ3Hx8/DgYw4=;
+ b=+N86pOedhWoXNzBaY4DZ0LAbr2QHng2kRT/nWvhCFuf/05h2KftoaKvPrqJ9cgmYkXvIZ6Ed0
+ JOjXQMurxL9B3kNfSQh6wTNa3QyktpE8hbHbpdvm+7ASpr9UE2j+G4i
 X-Developer-Key: i=george.moussalem@outlook.com; a=ed25519;
  pk=/PuRTSI9iYiHwcc6Nrde8qF4ZDhJBlUgpHdhsIjnqIk=
 X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20250321
@@ -65,31 +67,34 @@ X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20250321
 X-Original-From: George Moussalem <george.moussalem@outlook.com>
 Reply-To: george.moussalem@outlook.com
 
-From: George Moussalem <george.moussalem@outlook.com>
+From: Devi Priya <quic_devipriy@quicinc.com>
 
-Describe the PWM block on IPQ9574.
+Describe the PWM block on IPQ6018.
 
 Although PWM is in the TCSR area, make pwm its own node as simple-mfd
 has been removed from the bindings and as such hardware components
 should have its own node.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Co-developed-by: Baruch Siach <baruch.siach@siklu.com>
+Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+Signed-off-by: Devi Priya <quic_devipriy@quicinc.com>
 Signed-off-by: George Moussalem <george.moussalem@outlook.com>
 ---
- arch/arm64/boot/dts/qcom/ipq9574.dtsi | 10 ++++++++++
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 10 ++++++++++
  1 file changed, 10 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq9574.dtsi b/arch/arm64/boot/dts/qcom/ipq9574.dtsi
-index 86c9cb9fffc98fdd1b0b08e81428ce5e7bb87e17..8dba80d76d609a317a66f514c64ab8f5612e6938 100644
---- a/arch/arm64/boot/dts/qcom/ipq9574.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq9574.dtsi
-@@ -449,6 +449,16 @@ tcsr: syscon@1937000 {
- 			reg = <0x01937000 0x21000>;
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 40f1c262126eff3761430a47472b52d27f961040..7925c9a6b0dcff9e3157dd9de01fbc2d240486a4 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -413,6 +413,16 @@ tcsr: syscon@1937000 {
+ 			reg = <0x0 0x01937000 0x0 0x21000>;
  		};
  
 +		pwm: pwm@1941010 {
-+			compatible = "qcom,ipq9574-pwm", "qcom,ipq6018-pwm";
-+			reg = <0x01941010 0x20>;
++			compatible = "qcom,ipq6018-pwm";
++			reg = <0x0 0x01941010 0x0 0x20>;
 +			clocks = <&gcc GCC_ADSS_PWM_CLK>;
 +			assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
 +			assigned-clock-rates = <100000000>;
@@ -97,9 +102,9 @@ index 86c9cb9fffc98fdd1b0b08e81428ce5e7bb87e17..8dba80d76d609a317a66f514c64ab8f5
 +			status = "disabled";
 +		};
 +
- 		sdhc_1: mmc@7804000 {
- 			compatible = "qcom,ipq9574-sdhci", "qcom,sdhci-msm-v5";
- 			reg = <0x07804000 0x1000>,
+ 		usb2: usb@70f8800 {
+ 			compatible = "qcom,ipq6018-dwc3", "qcom,dwc3";
+ 			reg = <0x0 0x070f8800 0x0 0x400>;
 
 -- 
 2.51.0
