@@ -1,96 +1,137 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.tkos.co.il (wiki.tkos.co.il [84.110.109.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 548222F999A;
-	Wed,  8 Oct 2025 15:33:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D6082417E6;
+	Wed,  8 Oct 2025 16:18:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.110.109.230
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759937627; cv=none; b=gagU65eBEZ2DRF08qklGdVi4uNBqgbAI3Am3kChilXjdal8QKWoVZPDJo7GEqpiujb+snlv5/BfTramX0vwHw0ukde28/zY1KatPLoDy2gk3DVJiKzSEw7A2VIFPE9G7UY4Hkmc7y1q1i2I9bLqtLYJqw2AMrrRWJRHOOrVfe60=
+	t=1759940312; cv=none; b=RWsTnFURQplvypwA3gnXmyhmWMsWtoP7OkQpAHAoZhA39CpzV2/MsrhiV6M4uan5USpwXmw3uOqWeEXwHpP9uZ8AL1OzHhVmv0MVnKVT0H7zLrRXKJuNA8fin1NN0r5BX7NP9PuxSJI5ubAzzIxfl942NnuinWVvnD0WRhZDxVU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759937627; c=relaxed/simple;
-	bh=e2ugSOI2UTAErCdXtASkJNADsZs45cfO9nbqKrgUZzA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=k7zD8YRPHWSp4pyWj9fiSbBX99u+HzWxsoQhDJVjKVx2k6Q5lXtf5ze2WT1Jhgz7Dxs3ooN0jjBQE7uCRbVEQoY+MiSAgmx+yH4rd+VutVpwzRjBC9N8avQ72CsHJQA5UipLlnpQRm/3uHbJuUuol5fyIWbnz0gPhjje/9OG5iQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ICZsUVwF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759940312; c=relaxed/simple;
+	bh=PbMDtEvTjUpuOYUXU318hJZ2SLk5Jfj316HRQAhtXVQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=lULdwtLx5NmFxgHjGWag5yFEC1UaREwT7x6cpE1sMW1F5XFJjX8BLZon9Q/+PL8nEO6+zFCIYIf86Vad8sPSf4e7FR/TAtCWwgHX0GzEYZIOI2V6t34S/TLcFneKt83pvZzXtE4w9z7anLtLatvcpJPUT1EXrcRgjKG1N6qbyss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il; spf=pass smtp.mailfrom=tkos.co.il; dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b=OERXjzjC; arc=none smtp.client-ip=84.110.109.230
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ICZsUVwF"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D4D4FC19421;
-	Wed,  8 Oct 2025 15:33:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759937626;
-	bh=e2ugSOI2UTAErCdXtASkJNADsZs45cfO9nbqKrgUZzA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ICZsUVwF0BwJMxJQpmWW5OqNoOYUeDZdjmM8CeQEQ4YsDjrWbtH3mLXF64+DnMkqd
-	 ZaUXwdUsYZnpT1cOWrYhC02Q3P3GiNYJ4Gd9dr+vOBsyDqvgMKl9R8qK4Pln125uMK
-	 3JqAMblVmocsdYG4oyvrK0f9tKo4QT6t7v0sEw9odKF8gC/kApHVS3hpH7CXDHMwXQ
-	 aYh+ms22sqdGUq0aNT657qQa8FwrIVgvHtMrSFLudjIgoKfQ77xbT4pO0MTMdEkfCc
-	 4VHJfSn6+uRNzznJgmBhamxqLpUSAKMcy0QOHkhi3ZfuP2H1UxQrc5tv/zBJ2tNPtP
-	 9cCCa9ihkNJqg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE57CCD188;
-	Wed,  8 Oct 2025 15:33:46 +0000 (UTC)
-From: George Moussalem via B4 Relay <devnull+george.moussalem.outlook.com@kernel.org>
-Date: Wed, 08 Oct 2025 19:32:57 +0400
-Subject: [PATCH v17 5/9] dt-bindings: pwm: qcom,ipq6018-pwm: Add compatible
- for ipq9574
+	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="OERXjzjC"
+Received: from localhost (unknown [10.0.8.2])
+	by mail.tkos.co.il (Postfix) with ESMTP id 08B074400C6;
+	Wed,  8 Oct 2025 19:07:31 +0300 (IDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+	s=default; t=1759939651;
+	bh=PbMDtEvTjUpuOYUXU318hJZ2SLk5Jfj316HRQAhtXVQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=OERXjzjC7qIH/cjKSmeX8G0qmWI2QVC+WFWpFq5Q2+R+QWUWlSilRGMFzAN9YswGW
+	 KmLYDvxeDPlcWphNSSufvurGdwuy//ToQzN7+GFK3XJuhR8JfJH1nxkPn8eEevIa8Y
+	 9lppD0gUPFW2uGIKBMx/kGIyxmUjt76/44mEtUlq1nlqBBibfDOeUhOWvvQxmcC/ox
+	 7reHJr7ayDgoEw9cdiA3/zZdYpm5yatYq5ethj/dEMjmBjxepmVYEGfYAnI865x0uz
+	 Gcotn5fR4BKsSyWk6lVxDWwWVuGH3xh5AsaB9mfl1c+A1z6ZE5jeGpJRmtwqMbNUgN
+	 V35+eeYy1sKNw==
+From: Baruch Siach <baruch@tkos.co.il>
+To: George Moussalem via B4 Relay
+ <devnull+george.moussalem.outlook.com@kernel.org>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,  Rob Herring
+ <robh@kernel.org>,
+  Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor Dooley
+ <conor+dt@kernel.org>,  Bjorn Andersson <andersson@kernel.org>,  Konrad
+ Dybcio <konradybcio@kernel.org>,  george.moussalem@outlook.com,
+  linux-arm-msm@vger.kernel.org,  linux-pwm@vger.kernel.org,
+  devicetree@vger.kernel.org,  linux-kernel@vger.kernel.org,  Devi Priya
+ <quic_devipriy@quicinc.com>,  Krzysztof Kozlowski
+ <krzysztof.kozlowski@linaro.org>,  Baruch Siach <baruch.siach@siklu.com>
+Subject: Re: [PATCH v17 1/9] dt-bindings: pwm: add IPQ6018 binding
+In-Reply-To: <20251008-ipq-pwm-v17-1-9bd43edfc7f7@outlook.com> (George
+	Moussalem via's message of "Wed, 08 Oct 2025 19:32:53 +0400")
+References: <20251008-ipq-pwm-v17-0-9bd43edfc7f7@outlook.com>
+	<20251008-ipq-pwm-v17-1-9bd43edfc7f7@outlook.com>
+User-Agent: mu4e 1.12.12; emacs 30.1
+Date: Wed, 08 Oct 2025 19:08:28 +0300
+Message-ID: <87347tl6kj.fsf@tarshish>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20251008-ipq-pwm-v17-5-9bd43edfc7f7@outlook.com>
-References: <20251008-ipq-pwm-v17-0-9bd43edfc7f7@outlook.com>
-In-Reply-To: <20251008-ipq-pwm-v17-0-9bd43edfc7f7@outlook.com>
-To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Baruch Siach <baruch@tkos.co.il>, 
- Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- George Moussalem <george.moussalem@outlook.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1759937623; l=1000;
- i=george.moussalem@outlook.com; s=20250321; h=from:subject:message-id;
- bh=hrkECPGJIlhb4smP284sXv3tC5v7hT/ab5fvLg2W1dU=;
- b=36g7JgZ2r2cBC71ovyzzWLy1PdMUxHvB9NOgJRIBxR3UjaNYQ9HfsrwJY8Xl67WlSXM6Hdyaj
- XKuQmkVmiORAh27hDo0ap1Y92DwqWyHvgWauVndQzX69gFRSuP45uiT
-X-Developer-Key: i=george.moussalem@outlook.com; a=ed25519;
- pk=/PuRTSI9iYiHwcc6Nrde8qF4ZDhJBlUgpHdhsIjnqIk=
-X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20250321
- with auth_id=364
-X-Original-From: George Moussalem <george.moussalem@outlook.com>
-Reply-To: george.moussalem@outlook.com
+Content-Type: text/plain
 
-From: George Moussalem <george.moussalem@outlook.com>
+Hi George,
 
-The IPQ9574 SoC contains a PWM block which is exactly the same as the
-one found in IPQ6018. So let's add a compatible for IPQ9574 and use
-IPQ6018 as the fallback.
+On Wed, Oct 08 2025, George Moussalem via B4 Relay wrote:
+> From: Devi Priya <quic_devipriy@quicinc.com>
+>
+> DT binding for the PWM block in Qualcomm IPQ6018 SoC.
+>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Co-developed-by: Baruch Siach <baruch.siach@siklu.com>
+> Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+> Signed-off-by: Devi Priya <quic_devipriy@quicinc.com>
+> ---
+>  .../devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml  | 44 ++++++++++++++++++++++
+>  1 file changed, 44 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
+> b/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..1172f0b53fadc140482f9384a36020260df372b7
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
+> @@ -0,0 +1,44 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pwm/qcom,ipq6018-pwm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm IPQ6018 PWM controller
+> +
+> +maintainers:
+> +  - Baruch Siach <baruch@tkos.co.il>
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
-Signed-off-by: George Moussalem <george.moussalem@outlook.com>
----
- Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Unfortunately I have no access to this PWM hardware anymore. I don't
+think I can maintain hardware DT binding.
 
-diff --git a/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml b/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
-index e00b9e01f4f89dd0d08610772c984a0e2725d154..48dd7d1b8f511b0dd2cbebc07f33cafc3655ce50 100644
---- a/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
-@@ -16,6 +16,7 @@ properties:
-           - enum:
-               - qcom,ipq5018-pwm
-               - qcom,ipq5332-pwm
-+              - qcom,ipq9574-pwm
-           - const: qcom,ipq6018-pwm
-       - const: qcom,ipq6018-pwm
- 
+baruch
+
+> +
+> +properties:
+> +  compatible:
+> +    const: qcom,ipq6018-pwm
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  "#pwm-cells":
+> +    const: 2
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - "#pwm-cells"
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/qcom,gcc-ipq6018.h>
+> +
+> +    pwm: pwm@1941010 {
+> +        compatible = "qcom,ipq6018-pwm";
+> +        reg = <0x01941010 0x20>;
+> +        clocks = <&gcc GCC_ADSS_PWM_CLK>;
+> +        assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
+> +        assigned-clock-rates = <100000000>;
+> +        #pwm-cells = <2>;
+> +    };
 
 -- 
-2.51.0
-
-
+                                                     ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
