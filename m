@@ -1,203 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7422FC869;
-	Thu,  9 Oct 2025 16:01:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4412B1E51EE
+	for <linux-pwm@vger.kernel.org>; Thu,  9 Oct 2025 16:23:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760025669; cv=none; b=A/XD4BhFyg+GMwuqVaKRvMZGQTIVriHudAxC/VZ3WgMf2PNZc5G1oSM206gLX/hlKD7r501dRA+uwEaqPirxvh4ikLtjW0T+owcVT+jjkehq99DCV/DG929+mm0t3GK6KVhAiGxP/dVPzlON4RXVW2ngNIy4A8iB32q6vh3X9UA=
+	t=1760027037; cv=none; b=FxuwjMfC6+RTfAD6DazyjTYIw+59QIuzCY6zsx8iCxtunuL5Jpc0rykygRkh/VvwbyjfEkXmdarcNWUu6EqdeO+7ZApQF4dzqJ8m00tKK61X1oKBQrPDaEoRG5x46etxNFVx50baYn/m96/lFvTOn0ZO8GsNqK+wRUruT9VmSCI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760025669; c=relaxed/simple;
-	bh=rnM9C5ciw8KHlWwe0+yd9sUniD1HWQyWJ+pwcqcmOfQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tkdzu47nvIdOnUG09OGO5y9F5trdZBYBKpgCaWFLIkwsR5DR9ZhToE83AO5SWO2id+nJns372PDuj/cXa7lBsgFcPFezy2ffM1A3fyub7Y76d8E374cUyp4Vg/zwPOrQo2CMfQIn4HrhZNfl2DaE7/C+vyGIE0R016pTGRZKXPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NW1ISmQH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1760027037; c=relaxed/simple;
+	bh=eVvkeQWqrG4dYBffY48He8ILJTh8EX7LtPQhkX3h+lI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JHe0MlsSR17Loba+TVyZ+TlBOmhKiVkwSDImbBCY3cFucYBWI3BRs3zEvA+rzKrBw4aR5HITUzaKw/+fRBk+nTyiePsdAPucMI0bhW4VLwTJgVpKjbcX4NPO3NjKodrSiV6Qst09yGiGR4uYirPy8ceDgWjJzjNeoKqF/paKZl8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MCnG8vPR; arc=none smtp.client-ip=209.85.215.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NW1ISmQH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F5FC4CEF7;
-	Thu,  9 Oct 2025 16:01:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760025669;
-	bh=rnM9C5ciw8KHlWwe0+yd9sUniD1HWQyWJ+pwcqcmOfQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=NW1ISmQHkM0Z1U/+XNxAyDi7kGIpZZEOit0JB4bbPtWuII5T58eRFC4qAasD3DiKT
-	 XCbU8yjvbnCNf9LZyVv2cJidN/9flcbqVvosdqa+MrjYxfLL5HT/SItz4ep+XUuSBe
-	 TU/MbPbBWQebg6DuSDgZjV3w0CzJaV8i/fvFmDNl9c1cYz5vXJn3UrM7BgXSrGw8kn
-	 6r3Hf0IJVn/11EM9Uii5nYuSgqaLyeZzDJFnPtUt55I87hmMMBnse/jVnbrDEl3Q6t
-	 0FkY/VfnBFZBymf0oJTmtds6l3o41fh3McxqTqyu5J+EUuyMs8WfUsKX/+25IacUsf
-	 tsmlErLjv9SVg==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
-	linux-pwm@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.17-6.12] pwm: pca9685: Use bulk write to atomicially update registers
-Date: Thu,  9 Oct 2025 11:56:10 -0400
-Message-ID: <20251009155752.773732-104-sashal@kernel.org>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20251009155752.773732-1-sashal@kernel.org>
-References: <20251009155752.773732-1-sashal@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MCnG8vPR"
+Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-b6329b6e3b0so1662971a12.1
+        for <linux-pwm@vger.kernel.org>; Thu, 09 Oct 2025 09:23:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1760027035; x=1760631835; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=j4C1j3OOKsjCqjPjMDTFb2+CfJ4gki9Qbk/4PqhkQDc=;
+        b=MCnG8vPRQYAB/sRTi4esoaO/JWYoy5ApLLqeX6QndxwVYySMVYJKfC4gJjO3FwPqSV
+         S30/FC8jXscm2L1XPxnjUqDd27oc5xOjcOGAGIa/5BlueteWIktVI8o/v3dMZDbmDeF8
+         z5AR8SUuVLUDndif6y1kd0i2+o7Wee/2h2SVC/9uVSGcm5WK5k7oueRP+T90pEh+XE4a
+         1d/kTqHfwlX9LPsj0YGzfnpL06PNlMtzs7tRQTGQIyBbwtT+lH5U1pKcVbVIix5OkX9B
+         3adjH2abP2vWlPTF0J3nPlLFMQsmVhism3zMR9wh1pzs/U7nQ3hoL6WTMqh4mJNEytzO
+         UfSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760027035; x=1760631835;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=j4C1j3OOKsjCqjPjMDTFb2+CfJ4gki9Qbk/4PqhkQDc=;
+        b=J9z6AY5BqUB931CK4quTAkK33xsutztPfHNsN7p7qLEbwsZKCZHTh1kkgyKRuk5RpP
+         AF192JCihLYRL/ta8cgjt1bnu10yLj9tUwtjfnpleOKUf/4w1TYgnRCgRBvIb2ITmuW1
+         Xzi+4extPU7MM+mtQ7iXn997BYJ6yKOrSWXoIB13wn9x+708XHJZlDMc0ZsRtjVD0ejQ
+         7q86wWy8p0QFbnqnN2fNzHJ17/DVieYRnQ1IDQLp2SdX3uwdAHeYZmqdejGni+rdXUJJ
+         cC4MaBQexP+fNNxhQaJSGieAQPewPNf5+kOdqQBrG/Ki0ovLxzasijg7MphZ4UF+qgLo
+         QFEA==
+X-Forwarded-Encrypted: i=1; AJvYcCUECNCrB83twK3jmzSAD7G5a09+mkg9RjuhukoZzJbqxTstZstkJpxhWVM8QMDE1SxoKAtJMAwjcuo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw+BgCMptYeHwioqx+WFRnPOaV0rRCuN4HuxcZYQjIZt5XILMvl
+	ebQ2XQkGWIT1opnuy6LN1JfBln27co4KQUDTfXnhL0lbywXxqzktoorg
+X-Gm-Gg: ASbGncui1A4xq+dFB0LloN2HQAdG1tkYZ4MnamaF9mQWEvMVu8o0siPz0SAFqJd5PfP
+	Q1jLUT+JF2jrMEEUZJtQAsAM1nUpQLd2vXqcpznVrrjGN4Wa38k1OxuHkkAeQonnLfXbNUXH5v+
+	DLz2PZan3r18OA4822cCD5v4K8JH9Iw2kEH0cgn5dfShMPz9GChiCTtG3cr6W/+7mP8N92f221b
+	2RcMYko1Hvsoct2/CBlcwXgJFm2D2H+CdaWytYzK8kqR0c4jBEolHSytT/d2Nh6gjdZhUEVVvzn
+	djmZjN4WHIapUXsk0vxyEhPwgMedj8g/rVIte1vthSkr9k2lQgXv1OgJbh7McT77wuBhOhI3Alo
+	Pr+3cxM+WLLjbsI+Rzg/rVY3l1aA58gFe4dSauxIFdmLLju8PYCu0+y8=
+X-Google-Smtp-Source: AGHT+IG5iTuS4lml5ybOjWvkOCPTHDj9ZrBTt/dnU/W0P0sGl3oiFllm8k9GBt9WpwjupCqN6+ivSQ==
+X-Received: by 2002:a17:903:1a10:b0:271:d1ab:17ce with SMTP id d9443c01a7336-28ec9cd59afmr138719345ad.26.1760027035566;
+        Thu, 09 Oct 2025 09:23:55 -0700 (PDT)
+Received: from localhost ([2804:30c:b65:6a00:ceaa:2ed0:e81e:8f51])
+        by smtp.gmail.com with UTF8SMTPSA id d9443c01a7336-29034e1854asm33475565ad.37.2025.10.09.09.23.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Oct 2025 09:23:54 -0700 (PDT)
+Date: Thu, 9 Oct 2025 13:24:54 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jic23@kernel.org, ukleinek@kernel.org,
+	michael.hennerich@analog.com, nuno.sa@analog.com,
+	eblanc@baylibre.com, dlechner@baylibre.com, andy@kernel.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	corbet@lwn.net
+Subject: Re: [PATCH v4 7/8] dt-bindings: iio: adc: adi,ad4030: Add ADAQ4216
+ and ADAQ4224
+Message-ID: <aOfh1puxPJr367n7@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1759929814.git.marcelo.schmitt@analog.com>
+ <7e51e036ba930284c74cf42afd53b17d49093654.1759929814.git.marcelo.schmitt@analog.com>
+ <20251008-penniless-tiling-9a83d4b4ba48@spud>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.17.1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251008-penniless-tiling-9a83d4b4ba48@spud>
 
-From: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
+On 10/08, Conor Dooley wrote:
+> On Wed, Oct 08, 2025 at 10:51:37AM -0300, Marcelo Schmitt wrote:
+> 
+> > Change log v3 -> v4
+> > - Now only documenting GPIO setup to control ADAQ PGA pins.
+> 
+> > +    else:
+> > +      properties:
+> > +        adi,pga-value: false
+> 
+> I assume this is an oversight?
 
-[ Upstream commit de5855613263b426ee697dd30224322f2e634dec ]
+Oops. Sure, should have dropped that.
+If the device is not an ADAQ (no PGA circuitry present), then we should not have
+properties associated to that.
 
-The output of a PWM channel is configured by four register values. Write
-them in a single i2c transaction to ensure glitch free updates.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
-Link: https://lore.kernel.org/r/bfa8c0267c9ec059d0d77f146998d564654c75ca.1753784092.git.u.kleine-koenig@baylibre.com
-Signed-off-by: Uwe Kleine-König <ukleinek@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
-
-LLM Generated explanations, may be completely bogus:
-
-YES
-- The driver currently programs each PCA9685 channel by four independent
-  I²C writes, so the hardware latches intermediate ON/OFF values and the
-  output glitches whenever duty/phase changes. The commit fixes that by
-  introducing `pca9685_write_4reg()` and switching the two callsites in
-  `pca9685_pwm_set_duty()` to a single `regmap_bulk_write()` transaction
-  (`drivers/pwm/pwm-pca9685.c:136-183`), eliminating the observable
-  glitch for both PWM and the GPIO shim users.
-- To make the bulk write possible, the probe code now enables the
-  device’s auto-increment bit and clears the OCH latch mode (`MODE1_AI`
-  and rewrites of MODE2 in `drivers/pwm/pwm-pca9685.c:557-586`). This
-  guarantees that the four-byte transfer is accepted as one atomic
-  update and keeps the controller in its documented default signalling
-  modes (invert/open-drain remain governed by the same DT properties).
-- The reset path for the “all LED” channel is moved to the same helper
-  (`drivers/pwm/pwm-pca9685.c:584-586`), so the fix also covers the
-  initial state and any error paths that need to reinitialise the chip.
-- The change is tightly scoped to `drivers/pwm/pwm-pca9685.c`, does not
-  add features, and relies only on long-standing regmap APIs, so it
-  backports cleanly without extra dependencies. The only behavioural
-  change beyond glitch avoidance is that MODE2 is no longer inherited
-  from firmware, but the new value matches the datasheet defaults; no
-  existing in-kernel consumer depends on custom OUTNE/OCH bits, keeping
-  regression risk low compared to the very visible glitch it resolves.
-
-Given the real user-facing malfunction it corrects and the limited,
-well-understood impact area, this is a solid candidate for the stable
-trees.
-
- drivers/pwm/pwm-pca9685.c | 46 ++++++++++++++++++++++++---------------
- 1 file changed, 29 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 9ce75704a15f8..91f96b28ce1b5 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -61,6 +61,8 @@
- #define MODE1_SUB2		BIT(2)
- #define MODE1_SUB1		BIT(3)
- #define MODE1_SLEEP		BIT(4)
-+#define MODE1_AI		BIT(5)
++    else:
++      properties:
++        pga-gpios: false
 +
- #define MODE2_INVRT		BIT(4)
- #define MODE2_OUTDRV		BIT(2)
- 
-@@ -131,6 +133,19 @@ static int pca9685_write_reg(struct pwm_chip *chip, unsigned int reg, unsigned i
- 	return err;
- }
- 
-+static int pca9685_write_4reg(struct pwm_chip *chip, unsigned int reg, u8 val[4])
-+{
-+	struct pca9685 *pca = to_pca(chip);
-+	struct device *dev = pwmchip_parent(chip);
-+	int err;
-+
-+	err = regmap_bulk_write(pca->regmap, reg, val, 4);
-+	if (err)
-+		dev_err(dev, "regmap_write to register 0x%x failed: %pe\n", reg, ERR_PTR(err));
-+
-+	return err;
-+}
-+
- /* Helper function to set the duty cycle ratio to duty/4096 (e.g. duty=2048 -> 50%) */
- static void pca9685_pwm_set_duty(struct pwm_chip *chip, int channel, unsigned int duty)
- {
-@@ -143,12 +158,10 @@ static void pca9685_pwm_set_duty(struct pwm_chip *chip, int channel, unsigned in
- 		return;
- 	} else if (duty >= PCA9685_COUNTER_RANGE) {
- 		/* Set the full ON bit and clear the full OFF bit */
--		pca9685_write_reg(chip, REG_ON_H(channel), LED_FULL);
--		pca9685_write_reg(chip, REG_OFF_H(channel), 0);
-+		pca9685_write_4reg(chip, REG_ON_L(channel), (u8[4]){ 0, LED_FULL, 0, 0 });
- 		return;
- 	}
- 
--
- 	if (pwm->state.usage_power && channel < PCA9685_MAXCHAN) {
- 		/*
- 		 * If usage_power is set, the pca9685 driver will phase shift
-@@ -163,12 +176,9 @@ static void pca9685_pwm_set_duty(struct pwm_chip *chip, int channel, unsigned in
- 
- 	off = (on + duty) % PCA9685_COUNTER_RANGE;
- 
--	/* Set ON time (clears full ON bit) */
--	pca9685_write_reg(chip, REG_ON_L(channel), on & 0xff);
--	pca9685_write_reg(chip, REG_ON_H(channel), (on >> 8) & 0xf);
--	/* Set OFF time (clears full OFF bit) */
--	pca9685_write_reg(chip, REG_OFF_L(channel), off & 0xff);
--	pca9685_write_reg(chip, REG_OFF_H(channel), (off >> 8) & 0xf);
-+	/* implicitly clear full ON and full OFF bit */
-+	pca9685_write_4reg(chip, REG_ON_L(channel),
-+			   (u8[4]){ on & 0xff, (on >> 8) & 0xf, off & 0xff, (off >> 8) & 0xf });
- }
- 
- static unsigned int pca9685_pwm_get_duty(struct pwm_chip *chip, int channel)
-@@ -544,9 +554,8 @@ static int pca9685_pwm_probe(struct i2c_client *client)
- 
- 	mutex_init(&pca->lock);
- 
--	ret = pca9685_read_reg(chip, PCA9685_MODE2, &reg);
--	if (ret)
--		return ret;
-+	/* clear MODE2_OCH */
-+	reg = 0;
- 
- 	if (device_property_read_bool(&client->dev, "invert"))
- 		reg |= MODE2_INVRT;
-@@ -562,16 +571,19 @@ static int pca9685_pwm_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
--	/* Disable all LED ALLCALL and SUBx addresses to avoid bus collisions */
-+	/*
-+	 * Disable all LED ALLCALL and SUBx addresses to avoid bus collisions,
-+	 * enable Auto-Increment.
-+	 */
- 	pca9685_read_reg(chip, PCA9685_MODE1, &reg);
- 	reg &= ~(MODE1_ALLCALL | MODE1_SUB1 | MODE1_SUB2 | MODE1_SUB3);
-+	reg |= MODE1_AI;
- 	pca9685_write_reg(chip, PCA9685_MODE1, reg);
- 
- 	/* Reset OFF/ON registers to POR default */
--	pca9685_write_reg(chip, PCA9685_ALL_LED_OFF_L, 0);
--	pca9685_write_reg(chip, PCA9685_ALL_LED_OFF_H, LED_FULL);
--	pca9685_write_reg(chip, PCA9685_ALL_LED_ON_L, 0);
--	pca9685_write_reg(chip, PCA9685_ALL_LED_ON_H, LED_FULL);
-+	ret = pca9685_write_4reg(chip, PCA9685_ALL_LED_ON_L, (u8[]){ 0, LED_FULL, 0, LED_FULL });
-+	if (ret < 0)
-+		return dev_err_probe(&client->dev, ret, "Failed to reset ON/OFF registers\n");
- 
- 	chip->ops = &pca9685_pwm_ops;
- 
--- 
-2.51.0
 
+Thanks,
+Marcelo
