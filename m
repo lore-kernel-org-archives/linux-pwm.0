@@ -1,193 +1,167 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADC8C207A20
-	for <linux-pwm@vger.kernel.org>; Fri, 10 Oct 2025 19:50:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 141CF21FF38
+	for <linux-pwm@vger.kernel.org>; Fri, 10 Oct 2025 20:36:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760125817; cv=none; b=ioakJF2Uhrbz3PDH6z1dmDzycWCb2xSQCF3EbjF+llr+6ZQb+dCVmDU7JNmBgmPPtZ+R7uCbf6CqUn+HHdwnqIF0agKaOIzoqd6TPjzaZ2UDQU+ZDoG0XCq7a6jAsgGMLeBDzehNaR/BZlvOETtlySCKbWZXiOp7Y3uNdIKkidY=
+	t=1760128615; cv=none; b=tzC+pBwCWqn9icxGESlWPrmIkxmfQdzuTkrIpv3JNoBujBZ88soUwYV4rcbwdPvo4DQINnz4KyKco5M7kckPJ7SjWahMkoL1KetROS426hWM5hCDcRUCm12yD6amBGCYLUD9GEcdzz/XI3ZJZULTUt6ngV5Lb5zJ4ClVmNecZmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760125817; c=relaxed/simple;
-	bh=dDRddy0hTLMC1Q2l5YTbUr56IthAb5s29SZb7ZL5aM0=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=O6MQfSm3NqK0fkwa2xCThmELocrynI3Qf1qcZU/EsjVVNqBaxT6kqIBeGz6XKhxsJFDoSrIYmNhdLgt6e4xKS4ou3FSD7IPepaTe2/IZnX2ujWSdTjIz7YEXeVoZbnC+7tw/VHz4pjyRHsEtkInM/nwvbXVxkzkEl1hteHEitXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GuGvX3hB; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1760128615; c=relaxed/simple;
+	bh=Emo7hhyobRfducLrcbdgGE5EzoH+3R3fQ3ddbvBlCu0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V6yw/P8vwQaZhhiJaoAtuQK0HGgDXZzj9zcWYRpV38pEjBIE4MZ5kcOxY4+FhkaajOmmkEJ7/+84K0kdDSDVeQyV01ydSFy9F2HRhXso2flbVZ+XakAV8iyawio9MBY+2rLYtg0+SKmPwufswpMH0paHB1mrV13IS9H9LUBU0cw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Rm8s3l5Y; arc=none smtp.client-ip=209.85.215.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GuGvX3hB"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-46e37d6c21eso14170795e9.0
-        for <linux-pwm@vger.kernel.org>; Fri, 10 Oct 2025 12:50:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rm8s3l5Y"
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-b631b435d59so1612018a12.0
+        for <linux-pwm@vger.kernel.org>; Fri, 10 Oct 2025 13:36:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1760125814; x=1760730614; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=uD99ohMxZEnhdEHdGOxQcLw8qff06m3mKbdtK3D4uSo=;
-        b=GuGvX3hBgVoyzdhPr2XT97bsIEema04S0xegECtujmTfdOyR6Hv2ySTEJn06bOHYio
-         u+Z8gpMGCS7pQvLpR9kn5bBCfH5hqhsUsrs1OfCBMnmvu9Y/7iyE3RzCwVyuESQOgr9K
-         hkrXXvs+M0PAPqgcCrDuy6MP1c89jZ1ZSMboNS2W579bwo5Y5nDs7GqFZVRAYyqnZMCU
-         AMYOtWxAGyJ0JyVDwWRGLc34mUmxm1D86IjQ2dfl895U0Z8qJuaBJkNrzM66Ok8Xz8y2
-         zhdNBp7ejtZcZHD+gTluo7qZR4Cmjer6YjrTyp8nWQOW/N4Jat/XBwFdF+FsUp2p2tDD
-         0M0g==
+        d=gmail.com; s=20230601; t=1760128613; x=1760733413; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=z342sgXhiD/O8A715zP2egB65IpjdIWZS6PWIEJhgKI=;
+        b=Rm8s3l5Y9ymJS5f9tPpiIQZB0fH47+5z/y/3qFVEU2HwpqmuiN5+JWVBGER64fol/k
+         UQu5gTrmnIDOGQH8qL9Y+AYym6bkIepg2XiADGeHjEvUO4qdOxrB256Bhvty6HP7XqSL
+         PdFN+Np6FbHnOIaAJa7pYb/9ouErxom+1yKRmoA0bjpQicC7l6t71j+sSeD36NW14d8L
+         vHWO0Y6tZb+mVZzSt+4UD05EaROcaMXKdKXPw2jGAn5Rl8OvcJ+xbkUC9RwXZOdfUAeH
+         BT3LFyYADKwGLw46TpCRK/w+ABf3v5C5cGTcrcLvcLAGUwx5zRD7ZbpSaQP/q/a1GeUg
+         R8UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760125814; x=1760730614;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=uD99ohMxZEnhdEHdGOxQcLw8qff06m3mKbdtK3D4uSo=;
-        b=CO6hecS/+aZgtsrr7mEct9vPFXCyzRFW6rNuLatCuaw+4jtR1Ju4xKPnVMTmu3QES/
-         nG01FlF0Y7JzUCjetCqEadOQNMcC6GWH5vJvpURPZH7s36k/mQx++OGJ7Wh+yJsaZsvk
-         R3fiAqr/H9kzGgdNFZb8ndyEiD6rwSH+TUz6zXgDX0n/QudPpyRd0+ZVb8PEdnyG36YD
-         ysZIcYh8ZvOODp33vV4QA8x4fZOix5YnmQUMkEQL4FHv3O9R5AHT4EVN3t1cPcv5X4ub
-         wrv7jWmXMfr7GgU6yPwfuHrOq7ukugYDhJEOjGhMGU3gKMiGD9CBt7N1qmCBgBBzqo7e
-         UKHA==
-X-Forwarded-Encrypted: i=1; AJvYcCU/CqhW/YLcjyTeG0LbPHCTlAjCYWU4d+isDl+PH6QSrggeWeos/0RI4CtEMH43ZEy4jF2/VUAOV/w=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxQVk2Ibd3a3Qgr7Lvolf8gZKhEnBwTM1jAxnajRrY1nSAkk1Ti
-	3vR6+t5SQLrn2kgCwb7tTVsxT1VjPj0se98vKXzROqFO+gP7k9dOATec
-X-Gm-Gg: ASbGncsw8HuPXegWguWsp7KEU9wSnvpskt/ZTlgnxWvB5b3HGEJcxfBUVj8ed43DCMO
-	j1dzfDWVpFM+gA3NdPnnbu/i08EvyAMN8CRO50uPJ9Cn3irfadwmjsyCPc9FqifXs6WmTcGIaES
-	lWtHMUNKO5t1hORK8jn+PCZsbi2mQFZyYSOZxzdeuwI22afUW46dtqw/0k0SG7MF6Xw6sY6QASn
-	13Y4naCxp2et2pxoSm3+ylfxkBKkvKcwRrLDM2cj6ru0BgOXpheAwQfgBjwu7iwzwczb0Ne4fDr
-	gB47oNXxzI6xl/zNTvmiBCy9H2eBxVWkckcI/4u75AP41d10m0+2bBigD6Of7pf0cDbedTrTYBY
-	N71sgUqQ2JD54AkvzqI1GAO9G3HjdtJAZnMOkA1VDoFEjJzt+sMk8dNnHnMV3g8iQDZ8wlUAf30
-	8OYxdcVfJ3M9caqpsdh2jINRnK
-X-Google-Smtp-Source: AGHT+IF0OZCVxzB0OYjh+2qV/roiwzWcqHXK7nUan4FNVuMCPACvaleacFPbxehK0aOb0eyJdTbIEg==
-X-Received: by 2002:a05:6000:2681:b0:425:7153:80af with SMTP id ffacd0b85a97d-4266e8dab65mr7995317f8f.49.1760125813796;
-        Fri, 10 Oct 2025 12:50:13 -0700 (PDT)
-Received: from ?IPv6:2001:818:ea56:d000:94c4:fb0e:28f:2a8d? ([2001:818:ea56:d000:94c4:fb0e:28f:2a8d])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce5d015esm5665065f8f.33.2025.10.10.12.50.13
+        d=1e100.net; s=20230601; t=1760128613; x=1760733413;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=z342sgXhiD/O8A715zP2egB65IpjdIWZS6PWIEJhgKI=;
+        b=UxYFfuHOhtw7PxRTYczObOUwF1lL+sqdDVyUVipExopHIyEN6q0KfwcxwrOKxKwejo
+         As8p4+Vdbbu4syPsHz2ZLn8vHqDBViQaqSQOVN2eZV52C24pButsp4+SxMO3lVaj8Kb/
+         JfIog+EvPyR0QCfFK1N1t+T5MD37XosBReuobMA6dWBlI/54wf2vAal4pyN/qhrGcUWY
+         nJqV2HybhfwOqmeKHhqB7cJJM223fGtvjkqZtP+2sL5z11oIISyr1yejgSaanBcEwP6j
+         yqQ6BfxxWC6FPOWs7VojqKnRMa/yamp378Ms1YNiE4Ke8q9M6bAOCTBn5yCT1Rd5iLNH
+         xl8w==
+X-Forwarded-Encrypted: i=1; AJvYcCW7VCh3MkZJhdfMJdiBasmAIPLZizLuTPNE8zAwCABwazbPvCT0uQicUUMRhcG1e8PJR1s8lRzmAZ0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YykD0e5KeFZAKeqfZXT9a2b4kgUr/u7wNCxDIwQm6hMEy42ELud
+	x71TpVflQpT+ntGQ3mF4PzzrszhHlAbG0ZXUtE/K40OQLaLVP5z2En9B
+X-Gm-Gg: ASbGncsLMQ/ZDt9A6c1/vu8H69xECAgS9hWErSTAOJf0h1idYEnc9oLS2WfHb9dM6Lc
+	7lizedJcsmKe+Rx+zYhDro1vKI5rOs55JLp66yeywRw3aXT5yoYj+kj8MLjsZ5zD6oepa3I+XSe
+	OAu+AxjDlabHakKBSfsBIYH3/nmkD2pDzbQSK+QymKyqKt5KW0U4mQUCcc7sh5oAzZH2a4j2HGD
+	HDecPXp0Qw6kO7eiOcg9kKn7/NvcNKRNv5L6oh3+ltxzD4jNICDONirqXlwqF1R44Bgj6OEqp5q
+	PlPtQOyGXXG+5xWnuWc/6p0G/nuOz6UB4OXq2YLfti+fNQD+wJjDcKhj1GNHmVqGZHTvSg/j6Zu
+	GJaqEQQ7foI6ywQWu0OB3xrrvSNlqVm95qnszY7bT6QFMFeLIDg==
+X-Google-Smtp-Source: AGHT+IH9jJP+gVV3DYzKpzglB7kWoF3neWRRoVNVj3O59IVhAsyeWrtkFm3S3KlF9BP78LUiXGfghg==
+X-Received: by 2002:a17:902:e952:b0:262:4878:9dff with SMTP id d9443c01a7336-290273567a8mr166430805ad.12.1760128613169;
+        Fri, 10 Oct 2025 13:36:53 -0700 (PDT)
+Received: from localhost ([2804:30c:b65:6a00:ceaa:2ed0:e81e:8f51])
+        by smtp.gmail.com with UTF8SMTPSA id d9443c01a7336-29034f99fbfsm65398065ad.128.2025.10.10.13.36.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Oct 2025 12:50:13 -0700 (PDT)
-Message-ID: <04eb5b1ccc0268ff7e9b88835203771886c5ee25.camel@gmail.com>
-Subject: Re: [PATCH] pwm: Declare waveform stubs for when PWM is not
- reachable
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>, Marcelo
- Schmitt <marcelo.schmitt@analog.com>, linux-pwm@vger.kernel.org,
- linux-kernel@vger.kernel.org, 	jic23@kernel.org, kernel test robot
- <lkp@intel.com>, Trevor Gamblin	 <tgamblin@baylibre.com>, Axel Haslam
- <ahaslam@baylibre.com>
-Date: Fri, 10 Oct 2025 19:51:09 +0100
-In-Reply-To: <aOlYDyLzVGbCh5mE@debian-BULLSEYE-live-builder-AMD64>
-References: 
-	<1ac0fc529e02744aacfcb9140ed597ff60886f39.1759873890.git.marcelo.schmitt@analog.com>
-	 <6v4hny7hxjsdf6zvinhpagtbhluxbd6psq7wpx5ls6zdbnjtym@lnygnkav4ewk>
-	 <2e82eaf275b5c8df768c8b842167c3562991e50c.camel@gmail.com>
-	 <aOlYDyLzVGbCh5mE@debian-BULLSEYE-live-builder-AMD64>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+        Fri, 10 Oct 2025 13:36:52 -0700 (PDT)
+Date: Fri, 10 Oct 2025 17:37:52 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, kernel test robot <lkp@intel.com>,
+	Trevor Gamblin <tgamblin@baylibre.com>,
+	Axel Haslam <ahaslam@baylibre.com>, dlechner@baylibre.com
+Subject: Re: [PATCH] pwm: Declare waveform stubs for when PWM is not reachable
+Message-ID: <aOluoP01oaDzaseV@debian-BULLSEYE-live-builder-AMD64>
+References: <1ac0fc529e02744aacfcb9140ed597ff60886f39.1759873890.git.marcelo.schmitt@analog.com>
+ <6v4hny7hxjsdf6zvinhpagtbhluxbd6psq7wpx5ls6zdbnjtym@lnygnkav4ewk>
+ <2e82eaf275b5c8df768c8b842167c3562991e50c.camel@gmail.com>
+ <aOlYDyLzVGbCh5mE@debian-BULLSEYE-live-builder-AMD64>
+ <04eb5b1ccc0268ff7e9b88835203771886c5ee25.camel@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <04eb5b1ccc0268ff7e9b88835203771886c5ee25.camel@gmail.com>
 
-On Fri, 2025-10-10 at 16:01 -0300, Marcelo Schmitt wrote:
-> On 10/10, Nuno S=C3=A1 wrote:
-> > On Thu, 2025-10-09 at 18:53 +0200, Uwe Kleine-K=C3=B6nig wrote:
-> ...
-> > > >=20
-> > > > Fixes: 6c5126c6406d ("pwm: Provide new consumer API functions for
-> > > > waveforms")
-> > >=20
-> > > At the time 6c5126c6406d was applied, there was no user of the API th=
-at
-> > > doesn't depend on CONFIG_PWM, so I object adding this Fixes line.
->=20
-> Fair. Looks like the stubs are not the preferred solution so probably goi=
-ng to
-> drop this patch.=20
->=20
-> > >=20
-> ...
-> > >=20
-> > > 	WARNING: unmet direct dependencies detected for
-> > > SPI_OFFLOAD_TRIGGER_PWM
-> > > 	=C2=A0 Depends on [n]: SPI [=3Dy] && SPI_OFFLOAD [=3Dy] && PWM [=3Dn=
-]
-> > > 	=C2=A0 Selected by [y]:
-> > > 	=C2=A0 - AD4030 [=3Dy] && IIO [=3Dy] && SPI [=3Dy] && GPIOLIB [=3Dy]
-> > >=20
-> > > This is the thing that needs fixing, i.e. don't select a symbol with
-> > > dependencies that the selecting symbol doesn't assert to be fulfilled=
-.
-> > >=20
-> >=20
-> > Agreed. Seems to be one of those cases where we select a symbol that de=
-pends on
-> > something.
-> >=20
-> > However, this driver can indeed work without spi offload and hence PWM =
-and
-> > SPI_OFFLOAD (AFAIR) are optional so I wonder what's the right approach.=
- Looking
-> > at the new series I already see:
-> >=20
-> > select SPI_OFFLOAD_TRIGGER_PWM if (SPI_OFFLOAD && PWM)
-> >=20
-> > Which makes more sense but I guess we still need the stubs with the abo=
-ve. But=20
-> > I would also expect stubs to be needed for spi/offload/consumer.h. Mayb=
-e I'm
-> > missing something though...
->=20
-> I have successfully tested it with imply SPI_OFFLOAD_TRIGGER_PWM in Kconf=
-ig and
-> MODULE_IMPORT_NS("SPI_OFFLOAD") in the ADC driver.
-> Both the PWM offload trigger and ADC driver were built as modules.
-> I'm not sure the import ns is needed, but ended up breaking the remote te=
-st
-> setup so will only be able to tell it next week.
->=20
-> >=20
-> > I did not tested but I also wonder if 'imply SPI_OFFLOAD_TRIGGER_PWM' i=
-s not
-> > similar to the above.
->=20
-> It works, and I'll update the IIO patch to have
+...
+> > > 
+> > > I did not tested but I also wonder if 'imply SPI_OFFLOAD_TRIGGER_PWM' is not
+> > > similar to the above.
+> > 
+> > It works, and I'll update the IIO patch to have
+> > 	select SPI_OFFLOAD
+> > 	imply PWM
+> > 	imply SPI_OFFLOAD_TRIGGER_PWM
+> > in Kconfig. The PWM imply is because I think SPI offload support meets the 
+> > "highly desirable feature" criterion mentioned by kbuild doc [1].
+> 
+> With imply we then need to take care either using stubs (which seems not to be an
+> option) or with preprocessor conditions in your driver. As discussed in the other
+> thread I would just select SPI_OFFLOAD. Basically I would:
+> 
 > 	select SPI_OFFLOAD
-> 	imply PWM
-> 	imply SPI_OFFLOAD_TRIGGER_PWM
-> in Kconfig. The PWM imply is because I think SPI offload support meets th=
-e=20
-> "highly desirable feature" criterion mentioned by kbuild doc [1].
+> 	select SPI_OFFLOAD_TRIGGER_PWM
+> 	depends on PWM
 
-With imply we then need to take care either using stubs (which seems not to=
- be an
-option) or with preprocessor conditions in your driver. As discussed in the=
- other
-thread I would just select SPI_OFFLOAD. Basically I would:
+Yeah, depending on PWM is what I was trying to avoid because the ADC can be used
+without PWM. Doing the above is the easiest solution - depend on everything,
+select everything. Though, I guess I'm technically not keeping backwards
+compatibility if I add a new dependency to the driver.
 
-	select SPI_OFFLOAD
+IIO_BUFFER_DMA and IIO_BUFFER_DMAENGINE are part of IIO subsystem so okay to
+select them? Otherwise, yeah, they should be optional too (would either imply
+them or select if SPI_OFFLOAD).
+
+I'm currently leaning towards
+ 	imply PWM
+ 	imply SPI_OFFLOAD_TRIGGER_PWM //(SPI_OFFLOAD_TRIGGER_PWM depends on SPI_OFFLOAD)
+but not really sure.
+
+It's sort of a feature bundle we want to enable to provide SPI offloading.
+
+if SPI_OFFLOAD && PWM
 	select SPI_OFFLOAD_TRIGGER_PWM
-	depends on PWM
+	select IIO_BUFFER_DMA
+	select IIO_BUFFER_DMAENGINE
 
-- Nuno S=C3=A1
-=09
->=20
-> [1]:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
-ocumentation/kbuild/kconfig-language.rst?h=3Dv6.17#n197
->=20
-> One alternative to this patch is to have `#if IS_REACHABLE(CONFIG_PWM)` i=
-n the
-> ADC driver as David suggested in the other thread. I'll probably do that =
-and
-> drop the changes to PWM.
->=20
-> I first thought of using `#ifdef CONFIG_PWM`, but couldn't convince mysel=
-f about
-> that from the relatively small number of ifdef use-cases in IIO.
->=20
-> Thanks,
-> Marcelo
->=20
-> >=20
-> > - Nuno S=C3=A1
-> >=20
-> > > Best regards
-> > > Uwe
+we can have
+	imply IIO_BUFFER_DMA
+	imply IIO_BUFFER_DMAENGINE
+ 	imply PWM
+ 	imply SPI_OFFLOAD_TRIGGER_PWM
+
+but we could then have IIO_BUFFER_DMA=y and PWM=n and still be unable to SPI offload?
+
+Maybe
+	imply IIO_BUFFER_DMA if (SPI_OFFLOAD && PWM)
+	imply IIO_BUFFER_DMAENGINE if (SPI_OFFLOAD && PWM)
+ 	imply PWM
+ 	imply SPI_OFFLOAD_TRIGGER_PWM if (SPI_OFFLOAD && PWM)
+?
+
+Forgot to add David to CC list on previous reply so doing it now.
+
+> 
+> - Nuno Sá
+> 	
+> > 
+> > [1]:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/kbuild/kconfig-language.rst?h=v6.17#n197
+> > 
+> > One alternative to this patch is to have `#if IS_REACHABLE(CONFIG_PWM)` in the
+> > ADC driver as David suggested in the other thread. I'll probably do that and
+> > drop the changes to PWM.
+> > 
+> > I first thought of using `#ifdef CONFIG_PWM`, but couldn't convince myself about
+> > that from the relatively small number of ifdef use-cases in IIO.
+> > 
+> > Thanks,
+> > Marcelo
+> > 
+> > > 
+> > > - Nuno Sá
+> > > 
+> > > > Best regards
+> > > > Uwe
