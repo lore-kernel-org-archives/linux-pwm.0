@@ -1,75 +1,107 @@
-Received: from out-183.mta0.migadu.com (out-183.mta0.migadu.com [91.218.175.183])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 758682D7DC2
-	for <linux-pwm@vger.kernel.org>; Wed, 29 Oct 2025 01:00:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 589AA30B533;
+	Wed, 29 Oct 2025 08:37:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761699614; cv=none; b=J7tYNse+qCpmAgCcExaRkOw8nlcBBcq0JXPzHYcGcTEZ+N23+EBhuF0+NbVwlZgHIC8o5cFzWKJyRU2ZVnQ+5NoxG054y/C23oKLDqVz4JPTauh1lG1oXrM7KVZIQSZqqOjVst69YB2MY+d2GOEfvhu5iCfBZrOiiLh6GFXuwog=
+	t=1761727038; cv=none; b=X7ijjvkWSF+sMLtmE+XHdwMjfyVwGdBqylG5h0FeSJzlODz1qTuF+cp4X9zgAyw/zTdnu8DxexlhOU5ga6z1LEPjov7yaL5gKN7A0236iKhRJRVgI0rK3+aFOBZ2exJHTmB33N2wlHERrsp2UVCzsHgcjqylytYbcaZPUJIn3y8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761699614; c=relaxed/simple;
-	bh=m2TntnE29Ayjgb90lea7jgHxSXwtxhfaO+9MYo3cUqA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kv5fDA1kAS3FBtn8YmqOqodLa4mWQwU5xwPFRMCjsncTZp4sADH0tZTb67h8+igCSFG1BO8Dc1xVluASabd9h7bFK0NjiBKxpaelF76+rWn96j8USVMJXfHtqk1oUds+HQUMBzQHDj42SwL4QbwKIGmlozakf0SsBRUYnarSwFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=C+uHI4yJ; arc=none smtp.client-ip=91.218.175.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1761727038; c=relaxed/simple;
+	bh=GJAfy7iKEcJpEfXRc0Uu3ufFD0wbM4VeuQSosfa52Vc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=pWfWCUBD6g+Xch+vT6yUCs9Y+GVR7fxxE8FnaEC5vzzPkOkxG5jctbjdlIaZs2JApfB9UnTrxi88dbM++tqF6s8bg3oPLrBnFSnmsjANCHkIOTRgp3FawOTgAJEaSdjhwyi9RdutYN0iwZ9DK9e38kXu89h9ApfA2YXL+uqiWK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KsVsks/x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="C+uHI4yJ"
-Date: Wed, 29 Oct 2025 08:59:49 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1761699600;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=axfy//ogFDe/yGbFMo1sZMCFPL+4baIeWWIdu2LpDI8=;
-	b=C+uHI4yJrnTWHNX09+K4A6XEe9JSPPUru03wyNSgVfHv61E7wLAa4TZ331QLDUnPoQ1P6E
-	VjUIg4YW3JXeZ4EO+p4elnyhBy5vg944BCDQMdxymYkrakt5HKwr3RRDjZBvBZO2zy4wqQ
-	Odu3Jg8x6KTSeZ3PTZpwj1+hNJQKZC4=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Troy Mitchell <troy.mitchell@linux.dev>
-To: Michal Wilczynski <m.wilczynski@samsung.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>,
-	Fu Wei <wefu@redhat.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, rust-for-linux@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	Troy Mitchell <troy.mitchell@linux.dev>
-Subject: Re: [PATCH 3/4] pwm: th1520: Use module_pwm_platform_driver! macro
-Message-ID: <aQFnBYc7C-nQslJ9@kernel.org>
-References: <20251028-pwm_fixes-v1-0-25a532d31998@samsung.com>
- <CGME20251028122318eucas1p17161f0e1f2281c868688e8a4cc3d8f68@eucas1p1.samsung.com>
- <20251028-pwm_fixes-v1-3-25a532d31998@samsung.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KsVsks/x"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 20417C4CEF7;
+	Wed, 29 Oct 2025 08:37:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761727038;
+	bh=GJAfy7iKEcJpEfXRc0Uu3ufFD0wbM4VeuQSosfa52Vc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=KsVsks/xdOve8Ep3E7YiKEdtxIfVorqAFAjiViyiO84OIfEXvNzGW3qpSlPgLD9g+
+	 IoEgoySO6BKqriHq8zv4BM1GtlegxIBor0XfJjuaWoMeU1hdjUBbeULMBfHWbjMXSA
+	 STSf6sDPqX1sEC488KpYMZ8Wta5mo21o/WSq+i6UGWKwpRuZ4fl1DShzJRUFW4K39W
+	 awaaAH0WO6zxJj1tgxMs1uNhheeD5Kbf5fd/DtnxuydCgtncewcnVSZZnbo/u3Onrq
+	 C/7+z4D9rumnpBsw+gwNbRPMIi1xqt9DlTqLvtLY5STdOZ/vFvlSSilE3dcK0AsDqY
+	 hrV4RP/nOqDNA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 169B4CCF9F6;
+	Wed, 29 Oct 2025 08:37:18 +0000 (UTC)
+From: George Moussalem via B4 Relay <devnull+george.moussalem.outlook.com@kernel.org>
+Date: Wed, 29 Oct 2025 12:37:00 +0400
+Subject: [PATCH v18 4/6] arm64: dts: qcom: ipq5018: add pwm node
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251028-pwm_fixes-v1-3-25a532d31998@samsung.com>
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20251029-ipq-pwm-v18-4-edbef8efbb8e@outlook.com>
+References: <20251029-ipq-pwm-v18-0-edbef8efbb8e@outlook.com>
+In-Reply-To: <20251029-ipq-pwm-v18-0-edbef8efbb8e@outlook.com>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Baruch Siach <baruch@tkos.co.il>, 
+ Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ George Moussalem <george.moussalem@outlook.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1761727035; l=1233;
+ i=george.moussalem@outlook.com; s=20250321; h=from:subject:message-id;
+ bh=+/1aXltD7q4tXAN+T3JtxPoncHcVNEKWMgEN9+0w1GA=;
+ b=i3q1JE/4S1Tu1RWYInUDD8rmTZiDQocGH8conPr4Kla25HlnvgknFXIl5hu+YjWdHlHwCAKnK
+ qgNOdez+TAhBDSeSSv0mVHXGVGw4srRUmA1iRmbFSEUiaTMUaw6GTt0
+X-Developer-Key: i=george.moussalem@outlook.com; a=ed25519;
+ pk=/PuRTSI9iYiHwcc6Nrde8qF4ZDhJBlUgpHdhsIjnqIk=
+X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20250321
+ with auth_id=364
+X-Original-From: George Moussalem <george.moussalem@outlook.com>
+Reply-To: george.moussalem@outlook.com
 
-On Tue, Oct 28, 2025 at 01:22:34PM +0100, Michal Wilczynski wrote:
-> The `pwm_th1520` Rust driver calls C functions from the `PWM` namespace,
-> triggering `modpost` warnings due to missing namespace import
-> declarations in its `.modinfo` section.
-> 
-> Fix these warnings and simplify the module declaration by switching from
-> the generic `kernel::module_platform_driver!` macro to the newly
-> introduced PWM-specific `kernel::module_pwm_platform_driver!` macro.
-> The new macro automatically handles the required `imports_ns: ["PWM"]`
-> declaration.
-> 
-> Signed-off-by: Michal Wilczynski <m.wilczynski@samsung.com>
-Reviewed-by: Troy Mitchell <troy.mitchell@linux.dev>
+From: George Moussalem <george.moussalem@outlook.com>
+
+Describe the PWM block on IPQ5018.
+
+Although PWM is in the TCSR area, make pwm its own node as simple-mfd
+has been removed from the bindings and as such hardware components
+should have its own node.
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+---
+ arch/arm64/boot/dts/qcom/ipq5018.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/ipq5018.dtsi b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
+index f024b3cba33f6100ac3f4d45598ff2356e026dcf..d4bdf2884aa7f73711cf8a37b7a4c4e7e54c503c 100644
+--- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
+@@ -453,6 +453,16 @@ tcsr: syscon@1937000 {
+ 			reg = <0x01937000 0x21000>;
+ 		};
+ 
++		pwm: pwm@1941010 {
++			compatible = "qcom,ipq5018-pwm", "qcom,ipq6018-pwm";
++			reg = <0x01941010 0x20>;
++			clocks = <&gcc GCC_ADSS_PWM_CLK>;
++			assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
++			assigned-clock-rates = <100000000>;
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
++
+ 		sdhc_1: mmc@7804000 {
+ 			compatible = "qcom,ipq5018-sdhci", "qcom,sdhci-msm-v5";
+ 			reg = <0x7804000 0x1000>;
+
+-- 
+2.51.1
+
+
