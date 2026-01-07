@@ -1,138 +1,128 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2944036403A;
-	Wed,  7 Jan 2026 15:10:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D118337998A;
+	Wed,  7 Jan 2026 15:54:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767798617; cv=none; b=ngBuqc4R6NHFPiIMHJgNYeM6mwJ/VB8fy7jtk4lsKFQZJfmtMsDwZrrD2XdSuo9hPpoi+0RPyegLhnj3vNwqrPUzt08J94g0AYgz06fPr0qKFZ2NGNhaU3KdEIA0oPLZuuo9eZUC/L8aPnT2TXMeFNhHdg98EKZsIAcYdvu1uBQ=
+	t=1767801289; cv=none; b=byDYoJRwGFXpB82ih9j47lLjD8sJhCqSPLdi7zDiB5rGh5DD2A63f0/jE9qzo8WUl6pPdRzU8jtYi7IWjJIwx5fcnUXj0/U99tHk0VXz7KpKpvJLesf8AkxYzBmQ3aqcD3+pp7uyNfo3M0Y7tI14qKDeo+hQJkIr2+sRqbke1RY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767798617; c=relaxed/simple;
-	bh=ruLJwy622onfjhp6xw4ADLI848biIUuAYSyoTpnglgk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=EXZU1um8PsGdkyqdrILpaLcRPp3tqKVoBLLPBgBiqz8rynZICKJBWf+IULPFXTtFitF1KxMZYoWVg7O/20Dk7VvE4D5+zK3yBG8jRtKmJKR4QyPV3BQLp4VHwDgMETTU+QYTHiHR9nrprEemY6gTLpJIlBFk/HyzEeFtOI5TVBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=Ns//fbuH; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1767801289; c=relaxed/simple;
+	bh=dQHczuUO01yiJUoA4VVJbRjpUINgq/SBa7rpIL/696o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M5+XIF9SghIEZcs/wPkKveae9u8ZTxjRZmrapuDQ6ndnWBY7GxWWLvKQxmfzBS8mYIoNQh7Bt0kyvoEQh1gPU9fyyr6bPb2JRH4wNtt1xtc7VwJ7JqRuTV8kyhpaLlxporW7l5ur57aRELAUL5OShxfcIRJLfy7RXDMZX7QEFm0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MzrWFiYr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="Ns//fbuH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1767798613;
-	bh=ruLJwy622onfjhp6xw4ADLI848biIUuAYSyoTpnglgk=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=Ns//fbuHmUm/HgngBvDsWHryUZciMHDGToh4HmqboY21nv7PgA6YRLVzqwc/ussOs
-	 ZQP3qHnEY7LqDX37RDggfwg/Ml0FDGY0sMDUIiqk025dyeZ/kBFFdFq1l/kvUm0b5r
-	 WXGEzLK7OW0bpfwKe3UVLwAfAsO6VZFPBNuX15y7DalJk+OIispsFWxNJqFoIgCif8
-	 5BkFdTvV+ZVCAekmzuVxH/MuWSigA7mpmnDmERHcXxWk+noVZu12+Q28ujpxY4BxnW
-	 pfNz18biBjrIzEvESliCT7I1uNocZbY439hV4UveGeKp3PvIvaxLxcSIUtDiznvijR
-	 6j8wQDyLu0zfA==
-Received: from [192.168.0.79] (unknown [IPv6:2804:14d:72b4:81ae:67c:16ff:fe57:b5a3])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: dwlsalmeida)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 2D03E17E1534;
-	Wed,  7 Jan 2026 16:10:09 +0100 (CET)
-From: Daniel Almeida <daniel.almeida@collabora.com>
-Date: Wed, 07 Jan 2026 12:09:54 -0300
-Subject: [PATCH v3 3/3] rust: clk: use 'kernel vertical style' for imports
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MzrWFiYr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8AFAC4CEF1;
+	Wed,  7 Jan 2026 15:54:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767801289;
+	bh=dQHczuUO01yiJUoA4VVJbRjpUINgq/SBa7rpIL/696o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=MzrWFiYr1lLU7Zo+vJOoMuB6y3YJDu3ijrEKUJhEYVuiRKPCKpIOagB9YslXNI74o
+	 kUQAwTd18zutfYUw+fOkoRM7OsGpAMTNWYkm1jGXjzThQtvLO8eFhX2rq8lW1HUu6b
+	 h6fnQ0k89bBDzpAi/xaBxhfFQYlX6X6h0D6WOOhV9jN7zdwAL2udsBD6es5Qu5W6Pk
+	 TCIPhLiOQ9++Yz2mFrqZxrvtco6aXeu7+5le5mI01NGQgjOvsZocJA3MLPKut2rT67
+	 dvOA4/aegHqCtdG+3Msr/oH97Z4qJrKMCA/3aO4YXAKYqkBd0GeNFcroJmgaN1rC/f
+	 EtJJVfnO3/nVQ==
+Date: Wed, 7 Jan 2026 16:54:46 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Sean Nyekjaer <sean@geanix.com>
+Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+	linux-pwm@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] pwm: stm32: handle polarity change when PWM is enabled
+Message-ID: <nwhixocvhii27jvcyg7ex5emewntgfhyxa4ds5vo2dphe7xfe4@ibjsjdd5fgmn>
+References: <20260106-stm32-pwm-v1-1-33e9e8a9fc33@geanix.com>
+ <kemjjoyrhqglqq4p2j6kygspevq2mdbiujtnksw4rkdapoqcfy@zte2c7fhqvn3>
+ <2e2iahbzcepbzwgk7xeta2afxmycfjgv2zofzngqjvp4on46r2@mzpi4bz4uqie>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260107-clk-type-state-v3-3-77d3e3ee59c2@collabora.com>
-References: <20260107-clk-type-state-v3-0-77d3e3ee59c2@collabora.com>
-In-Reply-To: <20260107-clk-type-state-v3-0-77d3e3ee59c2@collabora.com>
-To: "Rafael J. Wysocki" <rafael@kernel.org>, 
- Viresh Kumar <viresh.kumar@linaro.org>, Danilo Krummrich <dakr@kernel.org>, 
- Alice Ryhl <aliceryhl@google.com>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
- Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>, 
- Fu Wei <wefu@redhat.com>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Stephen Boyd <sboyd@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
- Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
- Trevor Gross <tmgross@umich.edu>
-Cc: linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, 
- dri-devel@lists.freedesktop.org, linux-riscv@lists.infradead.org, 
- linux-pwm@vger.kernel.org, linux-clk@vger.kernel.org, 
- rust-for-linux@vger.kernel.org, 
- Daniel Almeida <daniel.almeida@collabora.com>
-X-Mailer: b4 0.14.3
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="64gye46smpsbdd4v"
+Content-Disposition: inline
+In-Reply-To: <2e2iahbzcepbzwgk7xeta2afxmycfjgv2zofzngqjvp4on46r2@mzpi4bz4uqie>
 
-Convert all imports to use the new import style. This will make it easier
-to land new changes in the future.
 
-No change of functionality implied.
+--64gye46smpsbdd4v
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] pwm: stm32: handle polarity change when PWM is enabled
+MIME-Version: 1.0
 
-Link: https://docs.kernel.org/rust/coding-guidelines.html#imports
-Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
----
- rust/kernel/clk.rs | 32 ++++++++++++++++++++++++++------
- 1 file changed, 26 insertions(+), 6 deletions(-)
+Hey Sean,
 
-diff --git a/rust/kernel/clk.rs b/rust/kernel/clk.rs
-index e840e7c20af7..73a2b51414a1 100644
---- a/rust/kernel/clk.rs
-+++ b/rust/kernel/clk.rs
-@@ -80,12 +80,23 @@ fn from(freq: Hertz) -> Self {
- mod common_clk {
-     use super::Hertz;
-     use crate::{
--        device::{Bound, Device},
--        error::{from_err_ptr, to_result, Result},
--        prelude::*,
-+        device::{
-+            Bound,
-+            Device, //
-+        },
-+        error::{
-+            from_err_ptr,
-+            to_result,
-+            Result, //
-+        },
-+        prelude::*, //
-     };
- 
--    use core::{marker::PhantomData, mem::ManuallyDrop, ptr};
-+    use core::{
-+        marker::PhantomData,
-+        mem::ManuallyDrop,
-+        ptr, //
-+    };
- 
-     mod private {
-         pub trait Sealed {}
-@@ -216,8 +227,17 @@ pub struct Error<State: ClkState> {
-     ///
-     /// ```
-     /// use kernel::c_str;
--    /// use kernel::clk::{Clk, Enabled, Hertz, Unprepared, Prepared};
--    /// use kernel::device::{Bound, Device};
-+    /// use kernel::clk::{
-+    ///     Clk,
-+    ///     Enabled,
-+    ///     Hertz,
-+    ///     Prepared,
-+    ///     Unprepared, //
-+    /// };
-+    /// use kernel::device::{
-+    ///     Bound,
-+    ///     Device, //
-+    /// };
-     /// use kernel::error::Result;
-     ///
-     /// fn configure_clk(dev: &Device<Bound>) -> Result {
+On Tue, Jan 06, 2026 at 11:30:34AM +0000, Sean Nyekjaer wrote:
+> On Tue, Jan 06, 2026 at 11:22:57AM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Tue, Jan 06, 2026 at 08:01:57AM +0100, Sean Nyekjaer wrote:
+> > > After commit 7346e7a058a2 ("pwm: stm32: Always do lazy disabling"),
+> > > polarity changes are ignored. Updates to the TIMx_CCER CCxP bits are
+> > > ignored by the hardware when the master output is enabled via the
+> > > TIMx_BDTR MOE bit.
+> > [...]
+> > I have hardware using this driver, will set it up later this week for
+> > testing.
+>=20
+> Very cool, looking forward to hear if you can re-produce.
 
--- 
-2.52.0
+I cannot. I have:
 
+	# uname -r
+	6.11.0-rc1-00028-geb18504ca5cf-dirty
+
+(the -dirty is only from enabling the pwm for my machine, no driver
+changes)
+
+	# cat /sys/kernel/debug/pwm
+	0: platform/40001000.timer:pwm, 4 PWM devices
+	...
+	 pwm-3   (sysfs               ): requested enabled period: 313720 ns duty:=
+ 10000 ns polarity: normal
+
+and pulseview/sigrok detects 3.187251% with a period of 313.8 =B5s.
+
+After
+
+	echo inversed > /sys/class/pwm/pwmchip0/pwm3/polarity
+
+the output changes to
+
+	# cat /sys/kernel/debug/pwm
+	0: platform/40001000.timer:pwm, 4 PWM devices
+	...
+	 pwm-3   (sysfs               ): requested enabled period: 313720 ns duty:=
+ 10000 ns polarity: inverse
+
+and pulseview/sigrok claims 96.812749% with a period of 313.8 =B5s.
+So the polarity change happend as expected.
+
+This is on an st,stm32mp135f-dk board.
+
+Where is the difference to your observations?
+
+Best regards
+Uwe
+
+--64gye46smpsbdd4v
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmlegcMACgkQj4D7WH0S
+/k4fRwf+IoPI/fQOF4r4TdyNyj65K6n+ilKzhOPYzKYcI84BEcJY/rHKy5tCk9Un
+DB3fGdGsshoeaQtmX1qobV/wi6PFT27ecr9Li3lppUnc7ncvEKwKstDEY79THvf9
+laZNtq6+trpelYq4JQGCoXwgE+sJTjMpFtoJLFGko4LrJxXvhVZEuU8oYuelRaOe
+e7jMVbf/EdBMnLkI7TopaonJ+/FH+YDFED2h1AJPY9RbGU6VbJ+Y76pIFQwC5/Nz
+zfheLxXGMWT5G9eV6atq4rcrvRQDB3pr3fULyKSwb8q9vpObaJjyIiOkqCDK8zOF
+MIfKdXUl/rx9CggHjkGDcVN+AzBkEA==
+=Hapr
+-----END PGP SIGNATURE-----
+
+--64gye46smpsbdd4v--
