@@ -1,201 +1,116 @@
-Received: from LO2P265CU024.outbound.protection.outlook.com (mail-uksouthazon11021115.outbound.protection.outlook.com [52.101.95.115])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09DE53A1A53;
-	Wed,  7 Jan 2026 17:35:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.95.115
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767807330; cv=fail; b=cNERvG9696YtOvaeXEwnRz6LIiJywne8Kqm1PZ9NR1xywT8qq3O1bZ+4Q8SU3wjtpzWInCNaZfo4V6sQ8y2bMoLjo56v5bGRD/PSAVQ690ebhelVbvR/yuuVumNUqFcIS8qVRYfD5KVPi5AUHGp1sMlTpB+aggVB2mHXTUnOISE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767807330; c=relaxed/simple;
-	bh=bZiKqQ1yhyjAtZfQpu6F8X6PuwUwaLeYaMBMyKsAc/g=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=XcdUKg1/eLFInpm5WRbAWM1EUG5tB3P4H+zNIweLPrPC0BtTK21ic7k9ld5FnGP+gYQhbqP+v1aX7bMHwheENwqtxU5Du6JeecMdJAfkv8CBouCXQ2d65MzUgW/TtYMmlRN5KfC9pSmuyonSzZE4OpqGajDFK3lsRd/i8cxLICg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=IRAvgd8B; arc=fail smtp.client-ip=52.101.95.115
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54C1B2D0C82
+	for <linux-pwm@vger.kernel.org>; Wed,  7 Jan 2026 19:48:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1767815318; cv=none; b=Hl5D55eA6qYBdye9b7gI6JsJ4ZEoz9hv8G2SYq+/gf8L01BKojSEM4xsfAHZXIKSeIh6dwaZWmb7eA5i/ISGH5agl4wcbFXWfImdwqsx8jjyA5coVaBaxNuVYR3t1QXdnnIAf0CTg4Q95rLNhvvhR/SMLvqSFdBQfZ9LhLkvBMw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1767815318; c=relaxed/simple;
+	bh=2NF359DW37ZojkG4f4MDIy0ciudLZitBmJbZxlljHso=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=mJaFxfHmQv2AKZtybuipwesk8Nh0GnZatnLNOskUtt4H+fhGiDruxe50sDCXUDxWdrtVG/0ZTcLzeBrI5r/kE/4f2NBjIc3BLAe3LnSjAjMAA9LMQDMSzKckgRPUyslBsTqnuODhxTFze1pgP0A7AVRnSry/H2+teN6v9HYN0No=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RoB4MfJv; arc=none smtp.client-ip=74.125.82.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="IRAvgd8B"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lSWIjdx5hk4gHhbWTuseICfFekhEL7noHMZE4PDRDNahsXUiO5RYmmUnFZ6RapxEDI+cnJXYlcUTeF5i4NyGY70cK7Ow+myE7QKfQrKaXCD8FCRMSPwDKd3WSPPgnmvQxkfNTDs6IuiWKG4rOK11geNr7FOf5mCDUn42yC8LRah1zSjh/94X6JxcwINLxmXveaJBFILavo2PAQTDvILJYKxaGtjEhc5gaz0JnHJHDGWthGpllUVHK+MvFOvnEWY6bruG84HD2A3fGRBmgR38J4PR+qSZZSWcLgwJdcmylrJODnmfnCBAYIjD8oKBZMSsHTr+XlFeworUG4lxstkCXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CAyWIQ2KLkFvsHf0ra/WOby/OMBj1Gpmah+5bPWhk3E=;
- b=PZazAIUHElO30+Wd8ssQOQZ0ehCrVQQb40nxZguICCcylG84cwsIOhuqK3cfJ0LOFNhb2jBUSsq4Qg1hcJxLJw+lT1x9VqCsqPwtA0QB054JXKNbptoykqSHn+rN5fmCXBWgJxLtLy50gbZcwDrL8b/6c7InDPE3i93v2IOccjZVbSK5ZdSIt2f5cnZIOXXIHojqfwb0wwhqMTEpsZenBcq5CeLv47KxvxK9h9GolyoEhihPIwQ4PFznHOnxv9S96wbMbG3fxc87LXeti0rtCRwaBNRreU1Hzhrk+u1x5+jHrDVmTmY6j8km7Mc9VIHhA1ia9u51tGUK5j5fwlPbfw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
- dkim=pass header.d=garyguo.net; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CAyWIQ2KLkFvsHf0ra/WOby/OMBj1Gpmah+5bPWhk3E=;
- b=IRAvgd8BFQFkdseZnO2Cd2JNrNYCRurXmUdvtBJ48Pga3JUOnQylJ6AtcqY58Xqi+Ul5Pszy3aWC67ZN9/JjIUiiqAEccwLQ54/ETq/LreQHgddHVY7PR0xQbrAIKbERqJ0qwV8gsXJV5YmgjOop9Me3q1RWFihtk00WWjJPAfI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=garyguo.net;
-Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:488::16)
- by LO4P265MB6264.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:273::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9499.2; Wed, 7 Jan
- 2026 17:35:25 +0000
-Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
- ([fe80::1c3:ceba:21b4:9986]) by LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
- ([fe80::1c3:ceba:21b4:9986%5]) with mapi id 15.20.9499.002; Wed, 7 Jan 2026
- 17:35:25 +0000
-Date: Wed, 7 Jan 2026 17:35:23 +0000
-From: Gary Guo <gary@garyguo.net>
-To: Alice Ryhl <aliceryhl@google.com>
-Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Drew Fustini <fustini@kernel.org>, Guo
- Ren <guoren@kernel.org>, Fu Wei <wefu@redhat.com>, "Uwe =?UTF-8?B?S2xl?=
- =?UTF-8?B?aW5lLUvDtm5pZw==?=" <ukleinek@kernel.org>, Michal Wilczynski
- <m.wilczynski@samsung.com>, Viresh Kumar <viresh.kumar@linaro.org>, Miguel
- Ojeda <ojeda@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, "
- =?UTF-8?B?QmrDtnJu?= Roy Baron" <bjorn3_gh@protonmail.com>, Benno Lossin
- <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross
- <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, Daniel Almeida
- <daniel.almeida@collabora.com>, linux-clk@vger.kernel.org,
- rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-riscv@lists.infradead.org,
- linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] Implement Send and Sync for clk
-Message-ID: <20260107173523.5550b5e8.gary@garyguo.net>
-In-Reply-To: <20251218-clk-send-sync-v3-0-e48b2e2f1eac@google.com>
-References: <20251218-clk-send-sync-v3-0-e48b2e2f1eac@google.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0082.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:190::15) To LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:488::16)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RoB4MfJv"
+Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-2abf5900cd5so2067710eec.1
+        for <linux-pwm@vger.kernel.org>; Wed, 07 Jan 2026 11:48:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1767815307; x=1768420107; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2NF359DW37ZojkG4f4MDIy0ciudLZitBmJbZxlljHso=;
+        b=RoB4MfJvgo8/S7am11OHkY+UURZPxzGbWLUsM2E40xaAWUCmtSbrTlcNT4C2yAgEpF
+         /1wkzk+GrxJhwocREGmY/1U/rsdYh3/Vrb1SH33Y9n/urBXRWZOaZhwv/sbjrdpesey4
+         43VCnzcvXLpvQXm1RSPzMm88aeeZ8OKl2MvhBBqL3JYOVotHImupPr9dXbImK+uAGKDY
+         gos4rrTCx7oxm/cQm6uqRPEcW7OAnaspQK5J2XamMWI5XOz4xydqX23ZBFM70X4j3vF5
+         mXe3Ju9cT0clpzRu0t/qFNJChuzfcNUCAag2hyKz8tKfSEBBA81Nj1OErkIse+0QG2Wr
+         idMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767815307; x=1768420107;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=2NF359DW37ZojkG4f4MDIy0ciudLZitBmJbZxlljHso=;
+        b=KCULkiH86MeUAZOftftl8uECtfPizjUPPnPdNH+E5W6wt1Pydaa2oTA4JSTIHA/2tk
+         7LeCd4EKKTvdYo+qbYPAVfsjhAkZEOgSh5Tw2hpm0Z2e+tuNQym+eLPczbTxFFRMNcae
+         QS+vxPC4/aPHqkXLDxewc9o9gt1fcgyaReuOnOqNQHvsmPlfty7Ggs29Y2sJSwar0x15
+         3W5wywi0xNge0xP05LBKGAKeIRiiFo3KFVr6F/cNfao2mVgeDgPBoj4vFRzNz7RsLRXh
+         mjB+EHrPVFfrumdBlH0SCPF53VdKQdf81KaSsi/Mn9S0CWKtmqhuPECN2t2iq3hzu80O
+         YNwg==
+X-Forwarded-Encrypted: i=1; AJvYcCX+TCSG/5CexxjuIYrsL/eLBS60WtYHpO7Co4czJUpARce64bVieNrjWO41L+cX4CRMsc+RCj6Y62o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyX/qz5r1vdvwKoOQfyWBiQHJQW2Pw/W/cH8/vBxkxrxHyD9x5z
+	By4/VEgTdZazXiLPVayGxFq7w6Cs7AnugdXAsCW4Hy15W6U+ZbDNp0X7
+X-Gm-Gg: AY/fxX6wt9SQE7krr7Nb3Xl8CCuOTc9L8VW/ihA53HccuPdcj3lI93WH8yrPtisLBiH
+	QP0KUOL0GSLenoD/IrvtWZRHoZXZboMSlkK+5BOUhnAhit6oNgdEpZiVXd1AeVeI57b4N9L91SY
+	XFxCTNLeSZs5dKNB9YQpoNQdV1En7qV7gyBwnzikOqawOLjXjNcHNFw5R8DO/zfon9Yadx9zEQl
+	8oWT4nm6Tu121Pkfjbg/KQAb1Tq2tNnNPS0qLrbXqVCR8QZCi7RRFhAhneXXY6HpD7+Nxl3y6h0
+	K8FyfgLvLmALlAWRuy6Ih61yo0figWGXEIf/XHhXtpSfMeTQBD2hM46nKygT+ezWk6Z89rDeE/C
+	bMlFuhLo5dUE1OtriK7BSC1zN7nN1bExHyNpH/E5n2trpdZvPuCwrPV8OAJxSZcQVcqLtNAw220
+	lNdhD1KDp5J7pmCheleAKxt9eOyduw4b19hg8kMg0Ounln0TwhJVIAxVLZeuPLhlRpOdvV7nDJd
+	UydXAWVFN/36pXTqD0l5ctpe0n1Dg==
+X-Google-Smtp-Source: AGHT+IGYjVUu+lgv9P/uKlsGT5xYW9cLxtGl24dRMoeIVtDU/FsjhOKh8eUikrWCzN/Ql7qltByiCg==
+X-Received: by 2002:a05:7300:3f05:b0:2b0:56fd:4b67 with SMTP id 5a478bee46e88-2b17d21b4dcmr1970898eec.12.1767815306652;
+        Wed, 07 Jan 2026 11:48:26 -0800 (PST)
+Received: from ParadiseLost.localdomain ([177.10.10.214])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2b17078dd8fsm8626994eec.20.2026.01.07.11.48.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Jan 2026 11:48:26 -0800 (PST)
+From: "Rafael V. Volkmer" <rafael.v.volkmer@gmail.com>
+To: ukleinek@kernel.org
+Cc: g-praveen@ti.com,
+	j-keerthy@ti.com,
+	linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org,
+	n-francis@ti.com,
+	rafael.v.volkmer@gmail.com,
+	u-kumar1@ti.com
+Subject: Re: [PATCH v2] pwm: tiehrpwm: Enable EHRPWM controller before setting configuration
+Date: Wed,  7 Jan 2026 16:47:58 -0300
+Message-ID: <20260107194802.3917-1-rafael.v.volkmer@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <kkddrxw37dx7w6f6csomopcwz5xk2o7ezddrisfisij6lq46hf@ije72we4xrek>
+References: <kkddrxw37dx7w6f6csomopcwz5xk2o7ezddrisfisij6lq46hf@ije72we4xrek>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LOVP265MB8871:EE_|LO4P265MB6264:EE_
-X-MS-Office365-Filtering-Correlation-Id: 81b70c78-3bd4-42e6-e7d7-08de4e132458
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|10070799003|366016|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?BdbftHq9m/k8rUDQUtobCOUOdllmt6NkT6B1m8IwIqHPdpWSrJ6/4G14/H6r?=
- =?us-ascii?Q?Mcc3ZBvNsaR0uVngXb3GmUZQXCLEB13kSZyQw+fKjWyTDJRjoHuulcVsnPv6?=
- =?us-ascii?Q?AToMIu7zwz48hZuCHuu94tWpeop0zmvNKxq9/RPruY73HpOAnUuQ7gFOzw0e?=
- =?us-ascii?Q?sU60eZGgPcmFnbI5Vf+vHuWOA+vskVJj/0rnzylLoTsKDIoiFkwBWw/RDqye?=
- =?us-ascii?Q?vBGCTnSYoyWRG1TZPn24JXvP70LNt2c084k7u8yBQNb/E4rsm6t6xbzw3Fdp?=
- =?us-ascii?Q?X9byrVTSS16qaSWQT45CW6jaxG28+B5EojNTWcEuhyMPgOAIj2HWw2TyiqFO?=
- =?us-ascii?Q?9PiRV841RzMlvkFoV+/0YvoAgNGZz/oUFT1/VSa1eUX5FqiEDCktH2u0uwEz?=
- =?us-ascii?Q?+LXqoTO2Oz59vWAWEzPDqO6OygXPinFbM6+3kSkm3yRc6GEMIPe4cYt8nk9o?=
- =?us-ascii?Q?p0lUJpoo9QMcy7nHFYoBNOKpS6l7jhc9qrOKQOskdXRMDSYpoi6m2vnwrT9d?=
- =?us-ascii?Q?7ePKW2Vju86QjyyIC0vOwBwRuui/dXILC7s7j65hcq7h2Y+uksWEriMXCiZ5?=
- =?us-ascii?Q?6T7iG3btnHceeWMvohhQgn5rSoosLxsCYNew4tJW3ZHVHRNTzBGYEqqmQ9SB?=
- =?us-ascii?Q?pi+BoZrUphnQWZ3sl7Xmb5TBNQJRyp+SiJLu8qKXfD2fYGwj/KgFSeh//ayc?=
- =?us-ascii?Q?KxYfHOhHWp9IoRJ/PhL+hIfDV4MFDqkcHfoqKdVBuUShbdj9UtyWpem5ltV5?=
- =?us-ascii?Q?09i/+n8sApL2VW5/88fe7K5MB9/PWTCyiRVxN69gVX/QTfeFQKd2zz2Sz2Kr?=
- =?us-ascii?Q?xSzZxLHoqlOvtPUWmV1VpCFIosOBiyp7pmyVUYHeaG76EqOZbm6jnTDo5493?=
- =?us-ascii?Q?0qKoKa3jtWNUBniToy7c0Rplg7BuPV/A34MhHJTOkiD4F1cXrOBKzyI0PRxx?=
- =?us-ascii?Q?1HBxvl4SFN1hLMdeDW3JU+ar7LcfMSusqxchWCQqmsvsbn0hzNQZ+a4OVn9n?=
- =?us-ascii?Q?HSfOMWAGgmovcXCoDxt/At5m376XhKSzDYGJ6M68J4uw5gu6RaCKIOpd9XdH?=
- =?us-ascii?Q?Q+hKpHtogXmbrdLb20HtkI5F7w7VxBKera+glZUEmMDE3wTQzteTiES/IB1/?=
- =?us-ascii?Q?/FTyntwtjpYFt1eCk2FU6eSMYYEYzN/fJp5ZRFtNPBAvYtw+qFX9lLUNovDW?=
- =?us-ascii?Q?iqv8t6w6e3fD7FFHIEkbZkSB4/8RqtVoRIfxMNRXBtvpeyI3dgqlyhaVcBhC?=
- =?us-ascii?Q?WqGY/0udTLP8qvDbvan7gO0IxD/RRvRHSAgGj/am4MYUlCWIN2LgBHAsJb6K?=
- =?us-ascii?Q?loY5ej0MCpy5LcU5/yAqyhLti2HUVfJPlJtw8k9AwIQRnCcKD7L21bhqqECk?=
- =?us-ascii?Q?1VmIQHYeDF9YGiTZDm52eTP9Da/4AW3RXGIcyuin4c23n+ROEWaKuU0iO+Aw?=
- =?us-ascii?Q?v3Uyzx7v59G0CdQydFnz9yUIwyM1g51x?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(10070799003)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?BHNzthN/oyALapL460T6r7Ykn92538Z14QolaA8pbN4DeiAwCqSEmNJ84tOj?=
- =?us-ascii?Q?WCchtz5VecuDgGhiZ7dwvSFBApwjHlE6K70apmIQt5xXrrRmKslXCR/RbJDv?=
- =?us-ascii?Q?/XkuJlLHEwsCEOvfZZThK3mBB4+3y9STz0NTqm2vcMwMB0Y0W5Aa4TYuHTJ9?=
- =?us-ascii?Q?M9OABO4rzaOr/Dl4lwVzXc8WpjjYiJO8AIUe0NG27wOlpm9IzIXxektDeF/P?=
- =?us-ascii?Q?D7NtV27rFGWk/UhNsAPh8mJJdnUo/nCES3xinRcYTreSmMrhbC/smye5yozf?=
- =?us-ascii?Q?s573uQKEgrw/zq9PxrMZ8pDcYInNOwXUFtbXVlNXNN9qsgysvm512D8aJ6ni?=
- =?us-ascii?Q?9XYXhWvsQw8qXoM3MUv3DvsSGRNJfJes5WElu3GTlXDkAkMIoGTkC3/74nbZ?=
- =?us-ascii?Q?iN/01qAzcT4kZILWqP6eNayV7DI7rUV6QmEcZ3hxQmfiHiCFitxSYg7wunAt?=
- =?us-ascii?Q?5fkLfhEkQiKr1MLUcUx5Ocorh+1vMa+hSxPspWmWevXeLjNlpjBU37BnhMLa?=
- =?us-ascii?Q?cJei40ZTuwFLxY0I6wcxNZBnfLq3UQWWZAlYP2syF/FUaXQgWtbERfvFSUfp?=
- =?us-ascii?Q?9wy1aJ8A3sIuIISqqpK8J9MBaUwptGD8CspZztz8wCOBanmmirM/74PsGfkk?=
- =?us-ascii?Q?KZ5gVrZZOt0TK3OoQaZ94Ua6CqtpMVNAUqaiUGRnRxJvL17rYvjtWkT5GiLs?=
- =?us-ascii?Q?FeO7ZvwU6aa+iRK2tykw9UHWelHvk8DV/rIxOShnGbAVkc5R9ZeEpqUsDKYC?=
- =?us-ascii?Q?CDlfgJXbMdhfVPFIxphYMLP59/0oaMSgnMRQZ/E+CbuEyWjiyWInKXdSJIGP?=
- =?us-ascii?Q?TImHCqs8Zno/r1peaz4M+/jMr2R6zNNXIpC5npGFoa9rAjxF2zXyDjb6WtEm?=
- =?us-ascii?Q?GgMz4f/fr7DPPdR6ECDek9nDMlDrHJ+M/C6t3WtbKYtwqwjftGlu7r+oUIdg?=
- =?us-ascii?Q?V8M6rJuvjTqhKUTD69HbbPAddy2WTPwJswr50vM0jlF7/HgymBVaAk9h785i?=
- =?us-ascii?Q?6ISvg4yBvXQEaJn79EsOXHCDZz3+vbWg7RIQyxY8E8HGh5vI7B6FcJlDzLY+?=
- =?us-ascii?Q?cbB3foUg1O8t2MIMbjX2vpA8Xmz8+A5X1HzZ95Bf52f9W7CRCsu7JBvNHNhA?=
- =?us-ascii?Q?QqTx7nxwPFdEUAlgr1NtvmnNIkXrb6XtjEqisFNcByWDQHm4bBBEheCKDpzm?=
- =?us-ascii?Q?u/1tEkXjkoe+OjxX0sIsrHc3iIHXbwhfw5ZodCu6LoKAzz6DnocPbaDoMKjn?=
- =?us-ascii?Q?18GgPR1djvLOl5RCPQeJCKfnA24o8y/iVMP6SyxWNLfi6qkqhByqpME+0d0+?=
- =?us-ascii?Q?EwmZWcIUDGNrIYMnSsZv6uXWTEjR9fOqEfGbv5EGXq47yaLhZ2lsFTmn2ZKV?=
- =?us-ascii?Q?9CSH9v7gWWsIQGPFExBJM574sDOz1yw7qedNxu+hEedJZ5xrXo3SjAyx7pZD?=
- =?us-ascii?Q?rZDYi4o37OBJJ6LsvuO/+RelQyeGO41FTdwbvYoRpk73i2vwjRgH0x+n6dpJ?=
- =?us-ascii?Q?rAe/Bi1I3hXFcPxkhINRvE7wx3MxtBOfvELF1+H5EJKr2RhLKpYuN5IRSDjB?=
- =?us-ascii?Q?a4/FLXUELWL7pWDN2hIDA8SVwC9S568LpjDKA4dCKC+F9K9OO9QwhnhO8rhL?=
- =?us-ascii?Q?jxi2DHy0n7RwGg5gPMM1ZUQo2DzkBqmFVD68xQI5mGyU2xOzc/IKOqy8gjyN?=
- =?us-ascii?Q?w30w20Fm5Yyaf62k1qidd4lBh5sANKL6r64pm3T9sYapsoAZ5Wo+B1SqT5u+?=
- =?us-ascii?Q?zTB8haXykQ=3D=3D?=
-X-OriginatorOrg: garyguo.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81b70c78-3bd4-42e6-e7d7-08de4e132458
-X-MS-Exchange-CrossTenant-AuthSource: LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2026 17:35:25.5213
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mEDOXcK30LRiGoKJU4fBSyMWdzKQ2kXnmMjzeSXsGyMu7YIGZ2D9AzWco+kXOad6fn1TuXxoebHMpCocLlXviA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO4P265MB6264
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 18 Dec 2025 13:27:39 +0000
-Alice Ryhl <aliceryhl@google.com> wrote:
-
-> The Clk type is thread-safe, so let's mark it as thread-safe in the type
-> system. This lets us get rid of hacks in drivers.
-> 
-> For Stephen's clk tree.
-> 
-> Signed-off-by: Alice Ryhl <aliceryhl@google.com>
-
-For the series:
-
-Reviewed-by: Gary Guo <gary@garyguo.net>
-
-Best,
-Gary
-
-> ---
-> Changes in v3:
-> - Rebase on v6.19-rc1.
-> - Pick up tags.
-> - Add fix for pwm driver as well.
-> - Link to v2: https://lore.kernel.org/r/20251020-clk-send-sync-v2-0-44ab533ae084@google.com
-> 
-> Changes in v2:
-> - Rebase on v6.18-rc1.
-> - Add patch to tyr driver.
-> - Link to v1: https://lore.kernel.org/r/20250904-clk-send-sync-v1-1-48d023320eb8@google.com
-> 
-> ---
-> Alice Ryhl (3):
->       rust: clk: implement Send and Sync
->       tyr: remove impl Send/Sync for TyrData
->       pwm: th1520: remove impl Send/Sync for Th1520PwmDriverData
-> 
->  drivers/gpu/drm/tyr/driver.rs | 12 ------------
->  drivers/pwm/pwm_th1520.rs     | 15 ---------------
->  rust/kernel/clk.rs            |  7 +++++++
->  3 files changed, 7 insertions(+), 27 deletions(-)
-> ---
-> base-commit: 8f0b4cce4481fb22653697cced8d0d04027cb1e8
-> change-id: 20250904-clk-send-sync-3cfa7f4e1ce2
-> 
-> Best regards,
-
+Hi Uwe, Gokul,=0D
+=0D
+Thanks for CC'ing me on this thread.=0D
+=0D
+On 07/01/26 15:21, Uwe Kleine-K=C3=B6nig wrote:=0D
+> Hello,=0D
+> =0D
+> adding Rafael to Cc: who sent a patch series for this driver that I=0D
+> didn't come around to review yet. Given that neither he nor me noticed=0D
+> the problem addressed in this patch I wonder if it applies to all=0D
+> hardware variants.=0D
+>=0D
+=0D
+I also didn't observe the issue described here in my testing: duty cycle an=
+d=0D
+period changes always appeared to take effect as expected.=0D
+=0D
+My tests were done on an AM623 EVM.=0D
+=0D
+One possible explanation is that my test flow mostly exercised configuratio=
+n=0D
+while the PWM was already enabled/active, which could mask the effect of a=
+=0D
+put_sync/reset happening after configuration.=0D
+=0D
+Regarding my pending patch series for this driver: it should not =0D
+conflict this change, as it's largely preparatory refactoring for a =0D
+follow-up series.=0D
+=0D
+Best regards,=0D
+Rafael V. Volkmer=0D
