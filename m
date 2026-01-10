@@ -1,187 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.mleia.com (mleia.com [178.79.152.223])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71C4D86353;
-	Fri,  9 Jan 2026 22:53:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944F0126BF7;
+	Sat, 10 Jan 2026 01:45:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.79.152.223
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767999208; cv=none; b=dG7fbSxJY7f1+cOBfze9r+98pmk3w+qr4ok7gjYGcFgpUzuxzop6eTbS1EQnYI2xIy2M90JXBZ3gHoY2CaxYbzpRX3Lqysy8lZoAwY77/bcp0CQe6RPHAOnkRX3ot2pDOiPrNdG8jloGphBnPZuApcMROCO4rVXMYVvONXgrt50=
+	t=1768009546; cv=none; b=F8vseFJHyC2LMciLmqm7L1FJJa1Rdql3XVSR8TtRbFg6eAShupOFlb65qUTSvmjNQQij9KDcFC8N0WishVWu4hGmUCYWICphrgmBf58p7INJU48tqayV7bv9Z1A+uZoJ35VgysPtMIVfMxoKnbAhLeUPDPLNfgIZnDT2hndues4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767999208; c=relaxed/simple;
-	bh=Lh76pUDlrIZA7UcUIPT39vadtYQclkB+pECR5OifXvk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tfJfo+5kOHqa7/7TTqw1UAKPUZn3iFERATZXrgTA5I9fqSlp/CiBNr7uJHelrAuX7Ode9k0AaOEvoQbeLhr7Al6V1OhRN/vkvtiiveTYjFSX2HnZscNL7r6GWzJTmT1OqgfTUaQIfk3eTiRFOFRg1+Y5hT3zh9Y2XOgjNihn8hY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X/i/WRqr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768009546; c=relaxed/simple;
+	bh=qg7Pk8rockg88W3JqvhGHWcVwuZqkGR0+ZYRgz5obY0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=jZpGt4vM4EtpVoSCnp4B5OulOU5q0wtQlJk4AJv4XPz+0Slao0S0vViwXWHZH0SFcQvK+qs3F3rxHF/7cpezvvABTnpxg8MEMSVzMZ2gE/ORKE4lkdU3aL9cw/jY2yM1kyUEblOP64bsTtbYkzTIbIxda9aNjHFvAuFEr0s1rA0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com; spf=none smtp.mailfrom=mleia.com; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=Vl8Vo7aq; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=Vl8Vo7aq; arc=none smtp.client-ip=178.79.152.223
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=mleia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X/i/WRqr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D165C4CEF1;
-	Fri,  9 Jan 2026 22:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767999208;
-	bh=Lh76pUDlrIZA7UcUIPT39vadtYQclkB+pECR5OifXvk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=X/i/WRqrNK0S7FViQ49z/hf3OqXp+ASrvjFhaqxUb+foy6HyTfKUtRzHM0Hf565sx
-	 imsszVTB3LLnGrPOxinj/KZ7Eyexmp3LvORVGEaqQIf9QZSrpKF7RsZ2OrNQVY34b1
-	 apcSc4MiM8wHo6xzwwMMLlP58sNV3bsQrwhmxdkYUw4K/RPZ9FX9+LguKoDLp/Lnur
-	 fZkEgtV3n78Tp+MUwixkXe7N+/vzqQ58CzUY2kqcmbDM36wYhBPtUHAIqNu+ePgUVK
-	 ihUUjRRC1V64wBVozLQRYrgp93Q1rvnzSqFuPpIUin2UmrUocTkxN9ghUF/TuOBFTP
-	 LiqYvlgLIKdfg==
-Date: Fri, 9 Jan 2026 23:53:22 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Gokul Praveen <g-praveen@ti.com>
-Cc: "Rafael V. Volkmer" <rafael.v.volkmer@gmail.com>, j-keerthy@ti.com, 
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, n-francis@ti.com, u-kumar1@ti.com
-Subject: Re: [PATCH v2] pwm: tiehrpwm: Enable EHRPWM controller before
- setting configuration
-Message-ID: <xdj2ceubkss3ingkxdvc64zqrcd3wzz2uxa6wqwgvilu2ykukc@hbn6tt2gnxj5>
-References: <kkddrxw37dx7w6f6csomopcwz5xk2o7ezddrisfisij6lq46hf@ije72we4xrek>
- <20260107194802.3917-1-rafael.v.volkmer@gmail.com>
- <60da27d5-5d85-4fbe-9b18-b7e74f9ab893@ti.com>
- <hjiyxkzimydqjrtte6r5kemfthwdmhtkysplsptm3npgwqiv4b@d6vlu2fhks37>
- <575bfd8e-9246-4acf-ba76-8d5a84689643@ti.com>
+	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="Vl8Vo7aq";
+	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="Vl8Vo7aq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
+	t=1768009543; bh=qg7Pk8rockg88W3JqvhGHWcVwuZqkGR0+ZYRgz5obY0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Vl8Vo7aq+nOgj87EwVbk1ye617XCPDyvUD8hsuZKqhbFw1RnFrHg5GAar0M27rqFo
+	 01hssqOfY4FecFCYY2qTPg6Pd9TAUayl7DU54DOdVdljS9PIcujdFRtf1TRGhYuNRR
+	 WQyMeJWIZV8Pf66imYFI2zAEpLIFuUDQawW4zGJ/8jBdepylyDND6t/tyhYYb5yYt1
+	 lvzPmqE+xRXbE3OmUrdu63l7M8jVSptfP4I3KuJe7LW/mcmge0IilnFOyetapNYRGY
+	 c0jS6prFJmxvRw/7Fq8tKB2ZHEhpHjFDTPFvh3vNGAZZSVrMg4RGC+7fw20Ms+xCpF
+	 /iKsRyGpKaB8w==
+Received: from mail.mleia.com (localhost [127.0.0.1])
+	by mail.mleia.com (Postfix) with ESMTP id 5419E3EB2D5;
+	Sat, 10 Jan 2026 01:45:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
+	t=1768009543; bh=qg7Pk8rockg88W3JqvhGHWcVwuZqkGR0+ZYRgz5obY0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Vl8Vo7aq+nOgj87EwVbk1ye617XCPDyvUD8hsuZKqhbFw1RnFrHg5GAar0M27rqFo
+	 01hssqOfY4FecFCYY2qTPg6Pd9TAUayl7DU54DOdVdljS9PIcujdFRtf1TRGhYuNRR
+	 WQyMeJWIZV8Pf66imYFI2zAEpLIFuUDQawW4zGJ/8jBdepylyDND6t/tyhYYb5yYt1
+	 lvzPmqE+xRXbE3OmUrdu63l7M8jVSptfP4I3KuJe7LW/mcmge0IilnFOyetapNYRGY
+	 c0jS6prFJmxvRw/7Fq8tKB2ZHEhpHjFDTPFvh3vNGAZZSVrMg4RGC+7fw20Ms+xCpF
+	 /iKsRyGpKaB8w==
+Received: from mail.mleia.com (91-159-24-186.elisa-laajakaista.fi [91.159.24.186])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.mleia.com (Postfix) with ESMTPSA id A180A3EB80E;
+	Sat, 10 Jan 2026 01:45:42 +0000 (UTC)
+From: Vladimir Zapolskiy <vz@mleia.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>
+Cc: Piotr Wojtaszczyk <piotr.wojtaszczyk@timesys.com>,
+	linux-pwm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 1/2] dt-bindings: pwm: nxp,lpc32xx-pwm: Add optional Motor Control PWM interrupt
+Date: Sat, 10 Jan 2026 03:45:23 +0200
+Message-ID: <20260110014524.3379187-2-vz@mleia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260110014524.3379187-1-vz@mleia.com>
+References: <20260110014524.3379187-1-vz@mleia.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="x7tthsuk3omquahv"
-Content-Disposition: inline
-In-Reply-To: <575bfd8e-9246-4acf-ba76-8d5a84689643@ti.com>
+Content-Transfer-Encoding: 8bit
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
+X-CRM114-CacheID: sfid-20260110_014543_361927_B6921BB8 
+X-CRM114-Status: UNSURE (   6.94  )
+X-CRM114-Notice: Please train this message. 
 
+NXP LPC32xx Motor Control PWM has an interrupt line shared with TIMER4,
+and the interrupt may be used to report events from programmable counters
+e.g. timer counter limit (period), match counter (pulse-width), or from
+counters on input lines of PWM channels.
 
---x7tthsuk3omquahv
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2] pwm: tiehrpwm: Enable EHRPWM controller before
- setting configuration
-MIME-Version: 1.0
+As a reference and for more details see NXP LPC32xx User Manual, table 595.
 
-Hello Gokul,
+Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
+---
+ .../devicetree/bindings/pwm/nxp,lpc3220-pwm.yaml       | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-On Fri, Jan 09, 2026 at 11:21:46AM +0530, Gokul Praveen wrote:
-> On 08/01/26 23:40, Uwe Kleine-K=F6nig wrote:
-> > On Thu, Jan 08, 2026 at 12:10:35PM +0530, Gokul Praveen wrote:
-> > > On 08/01/26 01:17, Rafael V. Volkmer wrote:
-> > > > Thanks for CC'ing me on this thread.
-> > > >=20
-> > > > On 07/01/26 15:21, Uwe Kleine-K=F6nig wrote:
-> > > > > adding Rafael to Cc: who sent a patch series for this driver that=
- I
-> > > > > didn't come around to review yet. Given that neither he nor me no=
-ticed
-> > > > > the problem addressed in this patch I wonder if it applies to all
-> > > > > hardware variants.
-> > > > >=20
-> > > >=20
-> > > > I also didn't observe the issue described here in my testing: duty =
-cycle and
-> > > > period changes always appeared to take effect as expected.
-> > > >=20
-> > > > My tests were done on an AM623 EVM.
-> > > >=20
-> > > > One possible explanation is that my test flow mostly exercised conf=
-iguration
-> > > > while the PWM was already enabled/active, which could mask the effe=
-ct of a
-> > > > put_sync/reset happening after configuration.
-> > > >=20
-> > >=20
-> > > Yes, this is the reason why the configuration was taking effect for y=
-ou ,
-> > > Rafael, as the PWM was already enabled when setting the configuration=
- hence
-> > > masking the effect of a put_sync/reset happening after configuration.
-> >=20
-> > Can you provide a list of commands that show the failure? That would
-> > result in less guessing for me. My plan is to reproduce the failure
-> > tomorrow to better understand it on my boneblack.
->=20
-> Sure Uwe. These are the commands I have tried for PWM signal generation:
->=20
-> cd /sys/class/pwm/pwmchip0
-> /sys/class/pwm/pwmchip0# echo 0 > export
-> /sys/class/pwm/pwmchip0# cd pwm0/
-> /sys/class/pwm/pwmchip0/pwm0# echo 10000000 > period
-> /sys/class/pwm/pwmchip0/pwm0# echo 3000000 > duty_cycle
-> /sys/class/pwm/pwmchip0/pwm0# echo "normal" > polarity
-> /sys/class/pwm/pwmchip0/pwm0# echo 1 > enable
->=20
-> Once these commands were executed, I measured the PWM signal using logic
-> analyzer and the duty cycle was 100% even though we had set 30% duty cycle
-> through the sysfs nodes.
+diff --git a/Documentation/devicetree/bindings/pwm/nxp,lpc3220-pwm.yaml b/Documentation/devicetree/bindings/pwm/nxp,lpc3220-pwm.yaml
+index cdd83ac29caf..53520f005acb 100644
+--- a/Documentation/devicetree/bindings/pwm/nxp,lpc3220-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/nxp,lpc3220-pwm.yaml
+@@ -32,6 +32,16 @@ required:
+ 
+ allOf:
+   - $ref: pwm.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - nxp,lpc3220-motor-pwm
++    then:
++      properties:
++        interrupts:
++          maxItems: 1
+ 
+ unevaluatedProperties: false
+ 
+-- 
+2.43.0
 
-After that sequence I "see" a 30% relative duty cycle on my boneblack.
-(With the follwing patch applied on top of pwm/for-next:
-
-diff --git a/arch/arm/boot/dts/ti/omap/am335x-boneblack.dts b/arch/arm/boot=
-/dts/ti/omap/am335x-boneblack.dts
-index b4fdcf9c02b5..a3f4a4bb64e4 100644
---- a/arch/arm/boot/dts/ti/omap/am335x-boneblack.dts
-+++ b/arch/arm/boot/dts/ti/omap/am335x-boneblack.dts
-@@ -173,3 +173,25 @@ &gpio3 {
- &baseboard_eeprom {
- 	vcc-supply =3D <&ldo4_reg>;
- };
-+
-+&am33xx_pinmux {
-+	ehrpwm0_pins: ehrpwm0-pins {
-+		pinctrl-single,pins =3D <
-+			/* P9.21 UART2_TXD -> ehrpwm0B */
-+			AM33XX_PADCONF(AM335X_PIN_SPI0_D0, PIN_OUTPUT_PULLDOWN, MUX_MODE3)
-+			/* P9.22 UART2_RXD -> ehrpwm0A */
-+			AM33XX_PADCONF(AM335X_PIN_SPI0_SCLK, PIN_OUTPUT_PULLDOWN, MUX_MODE3)
-+		>;
-+	};
-+};
-+
-+&ehrpwm0 {
-+	pinctrl-names =3D "default";
-+	pinctrl-0 =3D <&ehrpwm0_pins>;
-+
-+	status =3D "okay";
-+};
-+
-+&epwmss0 {
-+	status =3D "okay";
-+};
-
-)
-
-That makes me think the problem isn't understood well yet and needs more
-research. @Rafael, does the problem reproduce for you with Gokul's
-recipe? (Or did you try that already? I understood your reply as "I
-didn't encounter the issue but also didn't test specifically for that.")
-
-As I cannot reproduce the issue, can you please check if adding
-
-	pm_runtime_get_sync(pwmchip_parent(chip));
-
-to the probe function makes the problem disappear? Also please boot with
-
-	trace_event=3Dpwm
-
-on the command line and provide the content of
-/sys/kernel/debug/tracing/trace after reproducing the problem.
-
-Best regards
-Uwe
-
---x7tthsuk3omquahv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmlhht8ACgkQj4D7WH0S
-/k6lxgf/QC/Ny5+xg9ESlY4lSJuZbP25L01Ak6yAMAuvO34gxnV6ixI+0C8MuYP4
-M7f3dwL7rrz+yRnbDRyYoFSnbM6sHCpJ36CKMictJcqjXxNBRnuOD/1s+bZyQzRh
-+Z3BeJvPqfM/vg8OJRLaVtfK1WF/oxZSHAdO4Z5e6CNHFrlFUn/NP9T0W44NWd4c
-VUG920LK/JXjWmqg1pzheigEDxHUMGmjyJWwTUZ45NqMuqOVCMbriQ3eS9l0tb+v
-t6G446poK/ie95s9iwarxJzqGOoeBAhXQNADyKgamRofymg2DfzHl4s47vAvi4Q9
-gaz1vrbbYoYqTucGsmXIvCeGeFNolg==
-=Rgz7
------END PGP SIGNATURE-----
-
---x7tthsuk3omquahv--
