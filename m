@@ -1,130 +1,86 @@
-Received: from mail-wr1-f73.google.com (mail-wr1-f73.google.com [209.85.221.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49DD136A02C
-	for <linux-pwm@vger.kernel.org>; Tue, 13 Jan 2026 15:13:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D123C17;
+	Tue, 13 Jan 2026 16:39:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768317216; cv=none; b=AsD+4siYjZ4b6/eOS72Sm3eS4Sb4QfCmqYyw18B9FYaHGX4iOyLc183bf7atKBbRI3Ovrv1P9792s70PRzm0SMwu37ln/7GWR7oMRCRNHP6CzkZ+WZvYYut7vaxKnlH2zPeE0IYKIPbKM1p086Fx/lXi5oLQhUJHRKLgZmqoEOs=
+	t=1768322365; cv=none; b=hxh9d5l09MiXOfC1I0NTxLFABIRzV7pVtv3N7NaUyKTsbGBc0ER4BayefrZnyRaVNuHMlBKA4H72gTIISVBzJEnHNRnR9PcZnyTqm+zVz2HhLcVl/LM14wC03uimVpautursqjm1jhzwYBkZXR63PPYoCD/N2bB9EjMT+v2eX1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768317216; c=relaxed/simple;
-	bh=5DE8fHUHNeug+88kGFo3S/QoXnkelD/PvswD8rGjIrM=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=od0+37tK7/FnENzd52YfaqtuwK0eIHHsSPU017ZF00SkIilhvt5v7UJSSWjLGG8c5o1G/+W9sKeUvjx7ZL8MOmOcc08pglvZQK24zs0Wap9ziiZew3F8AN7PI660hUR4OYAtlohHKd27z1fYoRfHjsx5wbBRBS/NMnYaBCLE2zI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=I0xhZ6ud; arc=none smtp.client-ip=209.85.221.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
+	s=arc-20240116; t=1768322365; c=relaxed/simple;
+	bh=cTDaOcYsR23e0TMCw3wMeBVLm8PmOyoD26HsN1zuacA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZUlwfHyWaNUl8LxfWUZctoF5jwoEh7BYpEWApBamnv9Eiwqe5oPWB1Iz+j6N7KnzpscVw6mU1y8XC8YCMnIbh+Ds+W2F7t4owj3e+QKXbF4cyN4eubTzxXrrjyw4ZBgE385jv4cTi7GtBCanENT5ipQ1MRXFWsdO1aew8gpRa7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=EWEw/cU3; arc=none smtp.client-ip=185.246.85.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="I0xhZ6ud"
-Received: by mail-wr1-f73.google.com with SMTP id ffacd0b85a97d-43284f60a8aso4350404f8f.3
-        for <linux-pwm@vger.kernel.org>; Tue, 13 Jan 2026 07:13:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1768317207; x=1768922007; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=clahOJSyAVmCLVNVjHaJTlJ4hThwgbY6ylIwpTEN8h8=;
-        b=I0xhZ6udPcaRNeEhWztS9BIlheYHH78ilQ0ssnqyG+aDyEtt2ZgRIJEFMXcZxmErFh
-         Ej2OY3B9/C1PglWoh/3bi7ywKQ9Bu5WqQgOzme5UiIqNVRzyb/pQXdUnkO6Qmgkjtrt+
-         VV8NK9cTKMs6OTRzWSN8SAXRtB9ypauip8DK5c77gK3x0M6AZ5GljGjFio4BWiy7IzkO
-         OSIzEOHDw6GimKjcPKgT/IlhLE7eXigs3cSRMyYQcP+NVnhC02k7+z2xaiaE4vOvtQbp
-         oq2p3JqOcIirjWXkhLjLJdZo5/nTn7RtXay4utXCAc9lv569lZArjJVIyxu8U2kfUKi3
-         eAZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768317207; x=1768922007;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=clahOJSyAVmCLVNVjHaJTlJ4hThwgbY6ylIwpTEN8h8=;
-        b=ZA2/ZQtVqP93cWSJTfH+mHLklVAFIsqiHfKyxuTOLMHRnmQ3NeXp7yfJIbzMph3LC5
-         ARNtoBvnz8Xb92mXE5sGX92ksAbQFedknanGDHyLojgb3p4rO7Y4SSGHxyNBKPC9UIHs
-         75tFHHmf3EQzAhLaBP8wMJCnIL5LuGEf0rM+2/a6zBz0RqzckY5byo5qoztLOK3ESzlH
-         YymNXZmyeAuxzKAgZvhh3lN6mGIU5w5Dc/nLhew5tCwJGqdp4xXrbgJg19ZiZU5aoGcz
-         a4S/hsRUISdZmGa1BrIbT0rh7D/Jwho2d7ehSQJIM+DlLvkDuOsQuNcHzES219Nus6eQ
-         EHjg==
-X-Forwarded-Encrypted: i=1; AJvYcCU9jPpAeH0GX4DER5j+gXFhqC//tTSLUeBv+iadRC/klJV5WnpltBeWR5FW9VtjbhmaKTote99l9iQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxrsXiwTw8VcCon6KOB96W3pr0JyKrp+ioxxyd71fOkCKtNIGiD
-	QWckjFjrHgslZ6yERMlyYobkw7BCEUnTZmV5j1CCeJjrjTK5NRdlYLxdWkxo4Cl+vlrxbYk2GyN
-	E8IxI/VFVfObsy83mLA==
-X-Google-Smtp-Source: AGHT+IFANjV4vLX5QPuJ5KpCs0Rj644PourkYIVXhMKZkYuRk0oEaR0gmzWWf8Xi/v74hg4ToVXO6AC9XE7qoTU=
-X-Received: from wrbbs10.prod.google.com ([2002:a05:6000:70a:b0:430:a835:4ce8])
- (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6000:1a8b:b0:432:84f9:95f4 with SMTP id ffacd0b85a97d-432c374f4a7mr27176145f8f.31.1768317206801;
- Tue, 13 Jan 2026 07:13:26 -0800 (PST)
-Date: Tue, 13 Jan 2026 15:12:36 +0000
-In-Reply-To: <20260113-clk-send-sync-v4-0-712bc7d94a79@google.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="EWEw/cU3"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-03.galae.net (Postfix) with ESMTPS id 5FC104E4208B;
+	Tue, 13 Jan 2026 16:39:20 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 2AA8560701;
+	Tue, 13 Jan 2026 16:39:20 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C2CE9103C85AC;
+	Tue, 13 Jan 2026 17:39:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1768322359; h=from:subject:date:message-id:to:cc:mime-version:
+	 content-transfer-encoding; bh=3sodVq0G5QcdTkgkdEymmQRfiyFtPBZqKfxHa0BjOzc=;
+	b=EWEw/cU3jLcfMo5hZohS++j0nzFS+bXcgu9ptWa96a5Rlvdk7oNkWQXAJaIOmtzSOCd7sk
+	Kw1K5+zkOCec4gjca9Zkv/ze2P47C4A8cWDmjQo248gbkDtFmuF4HHcCHSr7fUkrnOoAsI
+	WrnEO8ZkJbUhXZk3+yrJC6ET819jikfrpHnq5nsRQbfbeQ69Czvl0y01ldqYN+ssjd9cw3
+	hh/WhbpEzCwokOmU0kC7FiyFJTp/0zAaa5rwL1DHDs5i0a+hNUlLv+k2UNfwWPP3NahFzk
+	WDXMaRaHNSmrEq6RQiEc6dILfaSJ1WkezaADgd2TMjD5/lev9Hwa/Q/bRAZ+nQ==
+From: Richard Genoud <richard.genoud@bootlin.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>
+Cc: Lee Jones <lee@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Kamel Bouhara <kamel.bouhara@bootlin.com>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	linux-pwm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Richard Genoud <richard.genoud@bootlin.com>
+Subject: [PATCH] pwm: max7360: populate missing .sizeof_wfhw in max7360_pwm_ops
+Date: Tue, 13 Jan 2026 17:39:07 +0100
+Message-ID: <20260113163907.368919-1-richard.genoud@bootlin.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20260113-clk-send-sync-v4-0-712bc7d94a79@google.com>
-X-Developer-Key: i=aliceryhl@google.com; a=openpgp; fpr=49F6C1FAA74960F43A5B86A1EE7A392FDE96209F
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1369; i=aliceryhl@google.com;
- h=from:subject:message-id; bh=5DE8fHUHNeug+88kGFo3S/QoXnkelD/PvswD8rGjIrM=;
- b=owEBbQKS/ZANAwAKAQRYvu5YxjlGAcsmYgBpZmEQNNwQvfw9jQxuDNt4fC2n5Cfx+vcwSjcWB
- EjbHAg9hU2JAjMEAAEKAB0WIQSDkqKUTWQHCvFIvbIEWL7uWMY5RgUCaWZhEAAKCRAEWL7uWMY5
- RvRxEACuwFIesZvoHE5gK5RQaiufwGNORvDKEuP1GJmMebtB3qC4PmH2wFMguWvNpJTUKWU0D5d
- jdQ+ITMxKWDtDMpGzdoBMliByodTN5wwtvNZGIPaLLEUZ+uImdP1HlZ+5M03+eyQJOMs05GW7Zc
- TSlL6zpiv+54WAj40TJH1d5HPB0WLbITPscM6xHXaCvfaCMxSEcbqqDprp8VoDZ6zgZSeAIqc8v
- zVSXwizZxkbc9uGfqfyY6kGS2soNpo+IyeElYFqMNY4pR992VOqL1+37BbqF6BxAxLrtBwNoyBC
- KbUq7ZcC+1DqYAejPv1soQ+e+hcJK9X/dtfkBjW6GBe3B9P0Y6s7qEHIUqV7BSEvxOB/mIQ5UZ0
- rtRm3VEAOnA8v8E2oGTQazJ58ezoKWwB5L6muDTmHlSyEYQhVqNUNAVsxi61bWxCcuXPu9KmxgC
- LHI3zLNriAuors7Gzwlu7Ahzu/6yPgqwJ6ebzzMhWAwTKLvVRvIL7BbAMjEEfFofP9IEuyazi/l
- Up8zWnwYgaiqqLz/g9gxZdaF1h1dm0DWqMUCkAe0/o95w00/ZUtgyOkYMGdSqL8zyYHhS6K7/Qg
- NaPzd6f01DT77HGn2DEO6xOX2PbrAgvzU9PVSXxUEpt/0wR1I5PF2aS3brFDfpjwLpJ/0c2p8pf 28UFVHEynEoLnxg==
-X-Mailer: b4 0.14.2
-Message-ID: <20260113-clk-send-sync-v4-1-712bc7d94a79@google.com>
-Subject: [PATCH v4 1/3] rust: clk: implement Send and Sync
-From: Alice Ryhl <aliceryhl@google.com>
-To: Stephen Boyd <sboyd@kernel.org>
-Cc: Michael Turquette <mturquette@baylibre.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>, Fu Wei <wefu@redhat.com>, 
-	"=?utf-8?q?Uwe_Kleine-K=C3=B6nig?=" <ukleinek@kernel.org>, Michal Wilczynski <m.wilczynski@samsung.com>, 
-	Viresh Kumar <viresh.kumar@linaro.org>, Miguel Ojeda <ojeda@kernel.org>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	"=?utf-8?q?Bj=C3=B6rn_Roy_Baron?=" <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
-	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
-	Danilo Krummrich <dakr@kernel.org>, Daniel Almeida <daniel.almeida@collabora.com>, 
-	linux-clk@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linux-pwm@vger.kernel.org, Alice Ryhl <aliceryhl@google.com>
-Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 
-These traits are required for drivers to embed the Clk type in their own
-data structures because driver data structures are usually required to
-be Send. Since the Clk type is thread-safe, implement the relevant
-traits.
+The sizeof_wfhw field wasn't populated in max7360_pwm_ops so it was set
+to 0 by default.
+While this is ok for now because:
+sizeof(struct max7360_pwm_waveform) < PWM_WFHWSIZE
+in the future, if struct max7360_pwm_waveform grows, it could lead to
+stack corruption.
 
-Reviewed-by: Daniel Almeida <daniel.almeida@collabora.com>
-Reviewed-by: Danilo Krummrich <dakr@kernel.org>
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Reviewed-by: Boqun Feng <boqun.feng@gmail.com>
-Reviewed-by: Gary Guo <gary@garyguo.net>
-Signed-off-by: Alice Ryhl <aliceryhl@google.com>
+Fixes: d93a75d94b79 ("pwm: max7360: Add MAX7360 PWM support")
+Signed-off-by: Richard Genoud <richard.genoud@bootlin.com>
 ---
- rust/kernel/clk.rs | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/pwm/pwm-max7360.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/rust/kernel/clk.rs b/rust/kernel/clk.rs
-index c1cfaeaa36a22be2e3180b1e9142bb608ab276ea..d192fbd97861212d738d24510eebcd99c9177f2c 100644
---- a/rust/kernel/clk.rs
-+++ b/rust/kernel/clk.rs
-@@ -129,6 +129,13 @@ mod common_clk {
-     #[repr(transparent)]
-     pub struct Clk(*mut bindings::clk);
+diff --git a/drivers/pwm/pwm-max7360.c b/drivers/pwm/pwm-max7360.c
+index 16261958ce7f..732969303dd7 100644
+--- a/drivers/pwm/pwm-max7360.c
++++ b/drivers/pwm/pwm-max7360.c
+@@ -153,6 +153,7 @@ static int max7360_pwm_read_waveform(struct pwm_chip *chip,
+ }
  
-+    // SAFETY: It is safe to call `clk_put` on another thread than where `clk_get` was called.
-+    unsafe impl Send for Clk {}
-+
-+    // SAFETY: It is safe to call any combination of the `&self` methods in parallel, as the
-+    // methods are synchronized internally.
-+    unsafe impl Sync for Clk {}
-+
-     impl Clk {
-         /// Gets [`Clk`] corresponding to a [`Device`] and a connection id.
-         ///
+ static const struct pwm_ops max7360_pwm_ops = {
++	.sizeof_wfhw = sizeof(struct max7360_pwm_waveform),
+ 	.request = max7360_pwm_request,
+ 	.round_waveform_tohw = max7360_pwm_round_waveform_tohw,
+ 	.round_waveform_fromhw = max7360_pwm_round_waveform_fromhw,
 
+base-commit: 0f61b1860cc3f52aef9036d7235ed1f017632193
 -- 
-2.52.0.457.g6b5491de43-goog
+2.47.3
 
