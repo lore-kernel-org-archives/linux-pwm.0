@@ -1,81 +1,80 @@
-Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF936346E4C
-	for <linux-pwm@vger.kernel.org>; Tue, 13 Jan 2026 15:13:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4806438E100
+	for <linux-pwm@vger.kernel.org>; Tue, 13 Jan 2026 15:13:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768317207; cv=none; b=ujaGV5FrMXpjYJmwzJ17dcwlQL147gqpPPRU3FO0IVSK7LlM41ydRhInoW0ASlspZ8EA+P3XbNac7RRagyD6IGww3spcTgpy7AjzcH2sgGC9q+nYrr7PPsR8ZKNc/sbAmXOSuB0v1ftzw74G/8ceWD4+OY2KmAhRDAXMTTyQ4EI=
+	t=1768317212; cv=none; b=QvM1jwAuTZHhDQCK4o+uGqCPZsJWsfcDv2xD+6IguhinajnFdBP93tyC8C4DgVguJ5b9gj9vH18aIqR5qlkgy+Q3lBjqHkG+E7Pu5zVFszokHyEJhONN/ZUz0UqJZw/0Gxw/u4iVYA7WwQubbMOVrE+p6IWMSsSbuRd0dg7tWC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768317207; c=relaxed/simple;
-	bh=uKkVhBaphq3Yv4o1VV/s1jKOfUDc6KdF7Ew3LDTjeJI=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=nuyBefE8c7A1PsE7Rc78XHmOYZrAFMTfinudy0taL6M2PCTCQsOjwlLcbpd1HMEYsWzncu7PN1eE8pwBY8MUGkpvQMGhJD+Fvbc60lC6xRFAs/B5pZeEpcqOdzzzGlHVSvagpVYQgMD/Y0sRZ0TQ0mjagafeJ8xYcNjm7pZ0UQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oRXiX8if; arc=none smtp.client-ip=209.85.128.73
+	s=arc-20240116; t=1768317212; c=relaxed/simple;
+	bh=gBgvzdGxsZJ9P+o4TYuYZOZRWaJW6R3le+1fCyVi18I=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=WcS8iftmy+ThonMTnewUE9k6ggkRlGLkSCq0muteoGZi5W8IMwwZ5xrec/y7ACuZPJN4DOkSG+tBmE0QkOtY+DtccUjBrodScaPoK8lgbcT7Stsy2SgA3ndqIm5z4CPmjZSN7dgMwAVTwKU5uvBJuLaLPAHWnf5x/0D5if6iWRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Dj+qPv+j; arc=none smtp.client-ip=209.85.128.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oRXiX8if"
-Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-477c49f273fso77620825e9.3
-        for <linux-pwm@vger.kernel.org>; Tue, 13 Jan 2026 07:13:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Dj+qPv+j"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-47d28e7960fso78405125e9.0
+        for <linux-pwm@vger.kernel.org>; Tue, 13 Jan 2026 07:13:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1768317204; x=1768922004; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=6N1TEsiPesyo6Bt0PZvnhVY3O3p5gV/3E/K/p2dHoxc=;
-        b=oRXiX8ifzq46e+fVjY2/l2aphR1S8AN0ogGEBgNzOLcwAhuvt6H4Zn8/9STxZuywGZ
-         cE3rNpUtDyU86Khmc/4JGeVc11llgq/hVQsgiivkdiDuI5W3ncPJJDoS9mmzJkrEuDAK
-         EydVJoNellUJ4NAlBZn7odpTFKUHNVJr3TJ4qKjfDvDLuNIJnjm7OX0TJuqN94xuaeyy
-         b5zUs0OtRmFt+1ObHZt08rXnQXvgfPGdpKLyudSGmF61zERsqdga00KrVsTuhh2IRd4f
-         TmqMKO+LZE5yJp7lVFussQt0wG84SsfJUyTze01WygjrzGha9mBvMzypHIRRCwD/v6gb
-         kgAQ==
+        d=google.com; s=20230601; t=1768317209; x=1768922009; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+856FUFrQ1uMLS1oGlG8WJLskHLLy9o2M4Kx5xq+7BM=;
+        b=Dj+qPv+jJqupyZRP7Wj37/5EsQU+bNFiakmdCA3aNZJS6iapgb4zKg/sYzUB+oIrSG
+         tc8/6UBQBj5CWJnRY73jLigb6vZBJ7m5N4onkJ4PNZ/VXaI0uF6ckckOw9mzuoNlrFm7
+         sbtnnrEt4L8kY8VMQeTjYfkwAb31SHZtOLHs/mR6faOCZSS4TtTl8uMyBep+om0FkIQc
+         C1rm+TsNue6AhtOQ3NrKV07mQT8624VGrnGC9VK48ne34gXjfU7PX1aXQa+tp561eDJY
+         G6TNBaH8fX9vEqPpVCDZfKPU6BNOk+2f6EBQ2baWfVjwLsWbKwbu7cFEZ8LHpbyYiFXf
+         fHMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768317204; x=1768922004;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6N1TEsiPesyo6Bt0PZvnhVY3O3p5gV/3E/K/p2dHoxc=;
-        b=cdbINiJhGhXqu9qruPWK0HoxPSpbi002avw9iGf6SGm+xOpXhJVS8KO40+feeNCHLQ
-         U9PkTmiqagYptk/01WhTy47R8edaXkbBlLMRn0ao7NPpynfkcfo9gGYnwENtDZnH0iqm
-         TDFBMw5xWhlCfqyZRdoRpNl2CDQEPcyJITdInheFeSFAW9QtKDttqhiX1Q6uPJNs/VUa
-         ZkGs07h8DJ/QvyqRETVK/3hZcE/pk3xxqsaq6uUKblz0hl/0gzOBaUiG5xc+PbndJdru
-         qiagm5mtHxomsNrn38lkgtcbwqtYfhREori9Bi2ytpO3JwrdOIhkQRTUuNxywk1cVBGz
-         WypQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXBrtblOni/Vym69+gjxPbcX60UQHHP+DFPMXDCOa7gcy6KLyUeA7XeZM8xYu0xfDLyAKHEGfjDiUs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyxBB2Yd+3l8+HXxp1eH1+Lquq3uCC12i2czGuChcdlgvPAd1ZE
-	1mRfan0EdbWtHko0Gr1ZrOax+olsl+UACjR6TIsVl6KPPGWJk8LycVTgEbI3zMtgxB2/bQkfiUI
-	W73npt8BqFx03R8eGnQ==
-X-Google-Smtp-Source: AGHT+IHoXaO70n2FJmZP8Rd2OF/hvQHQN06mNSOik2NmPij5NQxkTvgCkvgal1N4XDc5+fSDkHKcsHUBNt57n8A=
-X-Received: from wmim12.prod.google.com ([2002:a7b:cb8c:0:b0:47a:9f70:c329])
+        d=1e100.net; s=20230601; t=1768317209; x=1768922009;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+856FUFrQ1uMLS1oGlG8WJLskHLLy9o2M4Kx5xq+7BM=;
+        b=PRThVFiinXdkXEkcvfLPSsZfG3MQwhzCR+jxk6qGlk5ExUaUiKEqiDTtlXb0tJKUhd
+         3uOtVOc2iYXRqzRuU3MasEX1GvXe6hhyLXxzW2LgsPWDm0PfZ+QOuUx+NI1b/6yAgfl1
+         FwHrf+imDK/tcVs4lc/8leFA9tTXtdtNANHrVzzTKJL+tkNq6P2Alh1td8qVS2Kn1HJr
+         n8UhPvZ/uLPjH37btXEB7SDmZzSLGGEGHTTk3eOpjc6JDEm8Pf5d/ToPjFuUjxuk8baE
+         0QLOXLE6Cc8BOFjKMKoFcYvRLy1JBikIk0MJ4KeSSeQPS3SqNCGQzxbFJ6goJOEGd0lC
+         ReqA==
+X-Forwarded-Encrypted: i=1; AJvYcCW7dmHuQDbfb1W+2RUNl2BLo+Y0QEfuNdQltp2tnqovjqzJxqthQ2ZFPhH8GqKaNsCXuRQ/fTGy3ek=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWu9VPJadGc5uGI25NhAUBh2orNsQZC1r5HKHF3QxzjPcZxdOI
+	QJE61NSBIHR6NvaCMztmw6tnUEV6PPdDgm8lqDBBlYcSOm8dMRu5xap1HlOp9xnaQyuxwkmIHlj
+	7YgNvzH3oTaNVbhVE0g==
+X-Google-Smtp-Source: AGHT+IGmHpal9o9kYRCqeudE5OGpHQsDJxQXH71nc/uK+vHzcbqRlM1R9M+yj/rHy+PL0q1Xd9tRxUhXRg/AaE8=
+X-Received: from wmkn12.prod.google.com ([2002:a7b:c5cc:0:b0:47b:e2d9:2e56])
  (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:8119:b0:477:b0b9:3129 with SMTP id 5b1f17b1804b1-47d84b0a8dfmr237085685e9.3.1768317204383;
- Tue, 13 Jan 2026 07:13:24 -0800 (PST)
-Date: Tue, 13 Jan 2026 15:12:35 +0000
+ 2002:a05:600c:1f8c:b0:477:7d94:5d0e with SMTP id 5b1f17b1804b1-47d84b40955mr245818705e9.27.1768317208607;
+ Tue, 13 Jan 2026 07:13:28 -0800 (PST)
+Date: Tue, 13 Jan 2026 15:12:37 +0000
+In-Reply-To: <20260113-clk-send-sync-v4-0-712bc7d94a79@google.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
-X-B4-Tracking: v=1; b=H4sIAORgZmkC/3XMQQ6CMBCF4auYrh0znZZYXXkP46KUARqRGmqIh
- HB3CwuNGJfvJd8/isid5yiOm1F03PvoQ5uG3m6Eq21bMfgibUFIGR5Qg2uuELktIA6tA+VKuy8
- 1S8ckkrl3XPrn0jtf0q59fIRuWPK9nN9/pV6CBG0KJKUIOTenKoSq4Z0LNzGnenpziYRrToCgt c0zpSyj0T9cfThJs+YqcdYmJ6ZSsnVffJqmF9R+xfwpAQAA
-X-Change-Id: 20250904-clk-send-sync-3cfa7f4e1ce2
+References: <20260113-clk-send-sync-v4-0-712bc7d94a79@google.com>
 X-Developer-Key: i=aliceryhl@google.com; a=openpgp; fpr=49F6C1FAA74960F43A5B86A1EE7A392FDE96209F
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1242; i=aliceryhl@google.com;
- h=from:subject:message-id; bh=uKkVhBaphq3Yv4o1VV/s1jKOfUDc6KdF7Ew3LDTjeJI=;
- b=owEBbQKS/ZANAwAKAQRYvu5YxjlGAcsmYgBpZmELFbghZxWZ7vaaZvAKoZIouMjeMx/D5VtYF
- y/dj/EnouKJAjMEAAEKAB0WIQSDkqKUTWQHCvFIvbIEWL7uWMY5RgUCaWZhCwAKCRAEWL7uWMY5
- RkUiD/9LHMHZPK8MfjH8P7x1+RzDmIXcOknAAS7n4m+VzrOjWzYSNqifU29O+VSt/W2ByxeTzYT
- aS1g2+Knt0WvtdmrmjV9Oi8vVsvlvJBWxBDtYFz8JW0c1m9w9+PUR2prE63e9bhpaF9ZK4jtN9F
- LMiiOZoqtCep7C+0aLHtunxvrUdJg39W8HXc0/RMJXv0iv9KImXAeuk0Gk/WV9npuZxU1AWMVV8
- W2zKm7ZD2cAB8V5JVSrh0LHN8lpMGSWU38mzd4N/0c662gulPBXsY47rbyj+ieUCU1e7Xb4rq5B
- XIC8Mu1AgLO0cM5Yr6G1Z1v09A1OECpW2F76vg16IFCNsCP5LNcYx2QE9SJh/dszq6riDB7N58q
- tZkOXDELeZ4++DyyRgnTGh+f07jh89dg9v77g/B+USWQm/jZ9P1VRFHJfhkdjjKmSCZuidXUx0U
- aHVaDuZcRBdGpZz0lGsO6868mSmdNYqR+PMcjDTiFqa2n2HRQCvdJybEcQoQGCmTgkxNLaicwR+
- 0UDy8ZXpzI/D8WLlV/EyKHrvutrSXsAv1f3SEOvqzrq8WgsKNhrKiH+GHnyuGjAnCz1JmMumvTf
- 0KM745KlQEWD2wlcWYm6yXD7EPEXhU+/gLRvZKu7c5b9rnjPGb90UJbYFFOb2UmYeVz9Imn43fN yqmFT6fOTRmLMfg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1702; i=aliceryhl@google.com;
+ h=from:subject:message-id; bh=gBgvzdGxsZJ9P+o4TYuYZOZRWaJW6R3le+1fCyVi18I=;
+ b=owEBbQKS/ZANAwAKAQRYvu5YxjlGAcsmYgBpZmEQ3m0NLVAdMWPcGPUsnYIg3W5r/sNDHFFhx
+ Dkr8r8Oc/GJAjMEAAEKAB0WIQSDkqKUTWQHCvFIvbIEWL7uWMY5RgUCaWZhEAAKCRAEWL7uWMY5
+ RvfEEACjTscIGJhJynFAKM6GeR0pshAjNruRsL1XI2fjXIhSE+SSnT4iB2E59xTIcS3M+nwv0oR
+ lptUt2zMowQ0JNWnWfMlhYHwaSgd7j+IBwQOVbs8KFtzuMLrLQD1PpJmYQYsx9aIlzyb5uPIF+p
+ 6I7+cnay5Xpoc6yv21NhJ1/WW77v+u3zgxTMoY6eyuF7ItHn0gI12TPn5TDUyqba8oE7XCAEiz5
+ DY7lo6vCuKHJHY/ysoW1cIN/3CLRBTgof4w8crzoLDnO26t1/55uZ6xRyhgkVNrWfpuKTpOFW+R
+ AES7YP3VLCq2TMXhF9XeJ/ZqiDJFo2sawCja+1APoWHLnZRPL7Yn4JhxuD0vg9JpdjyEEGQk1LJ
+ eNCsvUE1AsYAHWajubBONw1i0Zp9grMM2d+rkKCESW7cmqCNVBTEMUekH/wzc8r4N4FJSRq5Gen
+ a/jBA/914TYhFX3ld9WgYBN1nrvIur9CJdr3CwZZmc1y6cAwUw21Fnh77pJF5/CRK2VXR1UPL4Y
+ epuqg2O56ZCBKBG24sLv0yZ2FylVV1jXkBGC0sPytS+Zw26BczE2hM1tgQ0JaDOKKFTGWLF2x6Z
+ 1h9mybuFKl/JaZmCCV/9SPM03m6WMzhmRV/Xnv6AGxM6KuU/VWAMbEPsCuoc0Po791vKHzbbfCd 1qJ4UwkULxYnX9A==
 X-Mailer: b4 0.14.2
-Message-ID: <20260113-clk-send-sync-v4-0-712bc7d94a79@google.com>
-Subject: [PATCH v4 0/3] Implement Send and Sync for clk
+Message-ID: <20260113-clk-send-sync-v4-2-712bc7d94a79@google.com>
+Subject: [PATCH v4 2/3] tyr: remove impl Send/Sync for TyrData
 From: Alice Ryhl <aliceryhl@google.com>
 To: Stephen Boyd <sboyd@kernel.org>
 Cc: Michael Turquette <mturquette@baylibre.com>, 
@@ -89,47 +88,49 @@ Cc: Michael Turquette <mturquette@baylibre.com>,
 	Danilo Krummrich <dakr@kernel.org>, Daniel Almeida <daniel.almeida@collabora.com>, 
 	linux-clk@vger.kernel.org, rust-for-linux@vger.kernel.org, 
 	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linux-pwm@vger.kernel.org, Alice Ryhl <aliceryhl@google.com>, 
-	linux-riscv@lists.infradead.org
+	linux-pwm@vger.kernel.org, Alice Ryhl <aliceryhl@google.com>
 Content-Type: text/plain; charset="utf-8"
 
-The Clk type is thread-safe, so let's mark it as thread-safe in the type
-system. This lets us get rid of hacks in drivers.
+Now that clk implements Send and Sync, we no longer need to manually
+implement these traits for TyrData. Thus remove the implementations.
 
-For Stephen's clk tree.
+The comment also mentions the regulator. However, the regulator had the
+traits added in commit 9a200cbdb543 ("rust: regulator: implement Send
+and Sync for Regulator<T>"), which is already in mainline.
 
+Reviewed-by: Danilo Krummrich <dakr@kernel.org>
+Reviewed-by: Boqun Feng <boqun.feng@gmail.com>
+Reviewed-by: Gary Guo <gary@garyguo.net>
+Reviewed-by: Daniel Almeida <daniel.almeida@collabora.com>
 Signed-off-by: Alice Ryhl <aliceryhl@google.com>
 ---
-Changes in v4:
-- Pick up Reviewed-by tags.
-- Link to v3: https://lore.kernel.org/r/20251218-clk-send-sync-v3-0-e48b2e2f1eac@google.com
-
-Changes in v3:
-- Rebase on v6.19-rc1.
-- Pick up tags.
-- Add fix for pwm driver as well.
-- Link to v2: https://lore.kernel.org/r/20251020-clk-send-sync-v2-0-44ab533ae084@google.com
-
-Changes in v2:
-- Rebase on v6.18-rc1.
-- Add patch to tyr driver.
-- Link to v1: https://lore.kernel.org/r/20250904-clk-send-sync-v1-1-48d023320eb8@google.com
-
----
-Alice Ryhl (3):
-      rust: clk: implement Send and Sync
-      tyr: remove impl Send/Sync for TyrData
-      pwm: th1520: remove impl Send/Sync for Th1520PwmDriverData
-
  drivers/gpu/drm/tyr/driver.rs | 12 ------------
- drivers/pwm/pwm_th1520.rs     | 15 ---------------
- rust/kernel/clk.rs            |  7 +++++++
- 3 files changed, 7 insertions(+), 27 deletions(-)
----
-base-commit: 8f0b4cce4481fb22653697cced8d0d04027cb1e8
-change-id: 20250904-clk-send-sync-3cfa7f4e1ce2
+ 1 file changed, 12 deletions(-)
 
-Best regards,
+diff --git a/drivers/gpu/drm/tyr/driver.rs b/drivers/gpu/drm/tyr/driver.rs
+index 0389c558c0367522471ea78fcf72a6b58c4a3650..09711fb7fe0b1c83b72bffba06f5a76c53244f4d 100644
+--- a/drivers/gpu/drm/tyr/driver.rs
++++ b/drivers/gpu/drm/tyr/driver.rs
+@@ -53,18 +53,6 @@ pub(crate) struct TyrData {
+     pub(crate) gpu_info: GpuInfo,
+ }
+ 
+-// Both `Clk` and `Regulator` do not implement `Send` or `Sync`, but they
+-// should. There are patches on the mailing list to address this, but they have
+-// not landed yet.
+-//
+-// For now, add this workaround so that this patch compiles with the promise
+-// that it will be removed in a future patch.
+-//
+-// SAFETY: This will be removed in a future patch.
+-unsafe impl Send for TyrData {}
+-// SAFETY: This will be removed in a future patch.
+-unsafe impl Sync for TyrData {}
+-
+ fn issue_soft_reset(dev: &Device<Bound>, iomem: &Devres<IoMem>) -> Result {
+     regs::GPU_CMD.write(dev, iomem, regs::GPU_CMD_SOFT_RESET)?;
+ 
+
 -- 
-Alice Ryhl <aliceryhl@google.com>
+2.52.0.457.g6b5491de43-goog
 
