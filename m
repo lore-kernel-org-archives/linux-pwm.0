@@ -1,45 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C1DD318EE3;
-	Mon, 19 Jan 2026 16:35:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7135E30C619;
+	Mon, 19 Jan 2026 16:41:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768840503; cv=none; b=uMH5nFLm8/Rat9NFb2r8wk/bQyoR7+oXywt4YB270P3qMAfeA23UA73Jm9ND4wSxc9yJJW73xGvvsC3prw7u9eB3GjFMArQl7w1gXl76g011H7djl5OYqAgRBGifqIarL9z8R3c5J98hldye9vYj570P0k3qNfkpJQfI8q7VjQA=
+	t=1768840886; cv=none; b=QM+1CCFAZy2ZAMEVr14Q+Sye+S4paUmJLkbITIPMmOFHPNWn9a9JkTxrrVnYR9e9JcEv4w0y7/xiqrDPpvMVijeFf1V2TNU9DoMtrvV3cv2yJ4/iRJWSLiQfSwTKhi0I1FmApWTv8UCYjtJcy9bOpJLLBzHEfiGeyQOamMgFheU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768840503; c=relaxed/simple;
-	bh=/gbd7uauHMhX1AhH4FUvMRgJbzZjxB7Krt+HDac4cSI=;
+	s=arc-20240116; t=1768840886; c=relaxed/simple;
+	bh=YNvQdTjzzov2cZczYT3rRjpzQMiOwdu9Sj+m96xZ4+0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m57RSAxZItKf+G7BwY9gtuEut87MOMda58+CZtLqLc2nFuQUnz+J22EIFn0d8BFDHIpFJ+hgMWJ/b2fyyRYOzEf0Tpvwpb78eOz83FzJWV4WKiyVOI7ySuNLfB5Bua9y7BD0vqnw5IIxyiz3IiXkxhYS30R72Acvcc0P8SVq7Ys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U0P+KRsV; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=SzB70srbJErIxSZIzf+YyJ5xTMlI8VQq0A2eDXDMHYx5CkyvNciR+7VLYqnpzzLHJJrEMw6FK5m+fvvnzMgZywtk3AaW+LWALhfPssanRTEsglUWRqHKoMb6NgUCUBoU3j8u4t8nQg2LdXbWvhYE2YMfJVaftpUE0gZOvVgvpDg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vet8+dRQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U0P+KRsV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B622C116C6;
-	Mon, 19 Jan 2026 16:35:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vet8+dRQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B77C16AAE;
+	Mon, 19 Jan 2026 16:41:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768840502;
-	bh=/gbd7uauHMhX1AhH4FUvMRgJbzZjxB7Krt+HDac4cSI=;
+	s=k20201202; t=1768840886;
+	bh=YNvQdTjzzov2cZczYT3rRjpzQMiOwdu9Sj+m96xZ4+0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=U0P+KRsVlkBSU7e43cnEgF7c1XMNQ8R0RMyslp374matQVHrEkRcPj6zc3iI5ny+R
-	 x6QzKhLuo19SUlesdUq75K9wbpmzwXGs9Xd3dFyD+nTl1w1JJ+VbCqqrVJuR3aClOA
-	 ltUEdtikRac49pW1mQ+9olu7sZl9bZrOA9yT4NeEvmMo8SUDSO6PF/Z7Y57YnJLRcq
-	 hD7UcSlEatDLHJctyDO0DjI94j255BrTXpdX1u9dSnDuzs1dSjTCKkOy+VfMKAQk3D
-	 UooD8hG/l52jMk1uNcXwvrjcShgsztEkw4nJEgq0R4RgTtrhWKJgI7/eyJNAAwylmG
-	 5v1mzDY9VL+qw==
-Date: Mon, 19 Jan 2026 17:35:00 +0100
+	b=Vet8+dRQydCn18sJ3c14v/RiPuSPJ/LhX8zlbJt/HUPXuvlx637nnvWe8NDrUF2ZS
+	 7tBW0M4jfrp3GRRKmrGgWeoI6ByVuO+Esn9PvIX2MEr1tJRR7R8Ca2wcSNxLc46duN
+	 9CpG41GlWuaezR4lXmCdmUJvBBY1OTKKF4MPgWBrqLybZ+WSwB0AYQ1cSsggWySPIj
+	 m+qQmxka49mCu4VZodiakf1hDkywi64yPw66qSWNQqYqJdjYjAegEZpGxAPCRrZhao
+	 qDu4NMzWuKUDGcE3mlq7eJml7S1kQglJgiZFjitUCYFiJvtiz/SaKbYM7i6cRjK9yd
+	 b7CvQXQvcCPSQ==
+Date: Mon, 19 Jan 2026 17:41:23 +0100
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: George Moussalem <george.moussalem@outlook.com>, 
-	Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, Devi Priya <quic_devipriy@quicinc.com>, 
-	Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Baruch Siach <baruch.siach@siklu.com>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>
-Subject: Re: [PATCH v19 1/6] dt-bindings: pwm: add IPQ6018 binding
-Message-ID: <ysbuuhn7cdndv5ieae4uaeylxe7d3iuqqehkdtcvhr7xs5wxsi@rcfqzbxn3lqf>
+To: George Moussalem <george.moussalem@outlook.com>
+Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Baruch Siach <baruch@tkos.co.il>, 
+	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Devi Priya <quic_devipriy@quicinc.com>, 
+	Baruch Siach <baruch.siach@tkos.co.il>
+Subject: Re: [PATCH v19 2/6] pwm: driver for qualcomm ipq6018 pwm block
+Message-ID: <xnrjz7v4trkhayskyn5efksqor4xnxz7zbf6qgk3qvnybncrit@ejgnw2hl3fon>
 References: <20251128-ipq-pwm-v19-0-13bc704cc6a5@outlook.com>
- <20251128-ipq-pwm-v19-1-13bc704cc6a5@outlook.com>
- <176432871822.1774259.10260811586771769913.robh@kernel.org>
+ <20251128-ipq-pwm-v19-2-13bc704cc6a5@outlook.com>
+ <3aa86b13-9505-4f64-a168-4c46962b715e@oss.qualcomm.com>
+ <BL4PR19MB8902F80FE2D7FD5BCBE340689DA2A@BL4PR19MB8902.namprd19.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -47,77 +49,61 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="bi43ollq7h2qpl5p"
+	protocol="application/pgp-signature"; boundary="swptr2pfrym525fs"
 Content-Disposition: inline
-In-Reply-To: <176432871822.1774259.10260811586771769913.robh@kernel.org>
+In-Reply-To: <BL4PR19MB8902F80FE2D7FD5BCBE340689DA2A@BL4PR19MB8902.namprd19.prod.outlook.com>
 
 
---bi43ollq7h2qpl5p
+--swptr2pfrym525fs
 Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v19 1/6] dt-bindings: pwm: add IPQ6018 binding
+Subject: Re: [PATCH v19 2/6] pwm: driver for qualcomm ipq6018 pwm block
 MIME-Version: 1.0
 
 Hello,
 
-On Fri, Nov 28, 2025 at 05:18:38AM -0600, Rob Herring (Arm) wrote:
-> On Fri, 28 Nov 2025 14:29:13 +0400, George Moussalem wrote:
-> > From: Devi Priya <quic_devipriy@quicinc.com>
+On Mon, Dec 08, 2025 at 07:40:21PM +0400, George Moussalem wrote:
+> On 11/28/25 15:32, Konrad Dybcio wrote:
+> > On 11/28/25 11:29 AM, George Moussalem via B4 Relay wrote:
+> >> +static unsigned int ipq_pwm_reg_read(struct pwm_device *pwm, unsigned=
+ int reg)
+> >> +{
+> >> +	struct ipq_pwm_chip *ipq_chip =3D ipq_pwm_from_chip(pwm->chip);
+> >> +	unsigned int off =3D 8 * pwm->hwpwm + reg;
 > >=20
-> > DT binding for the PWM block in Qualcomm IPQ6018 SoC.
-> >=20
-> > Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > Co-developed-by: Baruch Siach <baruch.siach@siklu.com>
-> > Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
-> > Signed-off-by: Devi Priya <quic_devipriy@quicinc.com>
-> > Signed-off-by: George Moussalem <george.moussalem@outlook.com>
-> > ---
-> >  .../devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml  | 51 ++++++++++++++=
-++++++++
-> >  1 file changed, 51 insertions(+)
-> >=20
+> > This magic 8 could be #defined as IPQ6018_PWM_CONTROLLER_STRIDE or so
 >=20
-> My bot found errors running 'make dt_binding_check' on your patch:
->=20
-> yamllint warnings/errors:
->=20
-> dtschema/dtc warnings/errors:
-> Documentation/devicetree/bindings/thermal/thermal-sensor.example.dtb: /ex=
-ample-0/soc/thermal-sensor@c263000: failed to match any schema with compati=
-ble: ['qcom,sdm845-tsens', 'qcom,tsens-v2']
-> Documentation/devicetree/bindings/thermal/thermal-sensor.example.dtb: /ex=
-ample-0/soc/thermal-sensor@c263000: failed to match any schema with compati=
-ble: ['qcom,sdm845-tsens', 'qcom,tsens-v2']
-> Documentation/devicetree/bindings/thermal/thermal-sensor.example.dtb: /ex=
-ample-0/soc/thermal-sensor@c265000: failed to match any schema with compati=
-ble: ['qcom,sdm845-tsens', 'qcom,tsens-v2']
-> Documentation/devicetree/bindings/thermal/thermal-sensor.example.dtb: /ex=
-ample-0/soc/thermal-sensor@c265000: failed to match any schema with compati=
-ble: ['qcom,sdm845-tsens', 'qcom,tsens-v2']
+> good suggestion, will add it should another iteration be required.
 
-I admit I didn't try to reproduce that, but the patch in question
-creates Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml and
-isn't about temperature stuff at all. So I don't understand where
-thermal-sensor and tsens comes into play here. Bot bug?
+I don't consider that an advantage. If I see a register dump and want to
+interpret it, I think
+
+	8 * pwm->hwpwm + reg
+
+is much more helpful than
+
+	IPQ_PWM_CONTROLLER_STRIDE * pwm->hwpwm + reg
+
+where I have to check the value of the define. Yes, then the 8 appears
+twice (i.e. in reg_read and reg_write), but IMHO that's ok.
 
 Best regards
 Uwe
 
---bi43ollq7h2qpl5p
+--swptr2pfrym525fs
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmluXTEACgkQj4D7WH0S
-/k5d2QgAk5j8xOD8QtaBY9LPywQb80D30raDaSdFKdb3wTr7OZ867esYpSqMx5sB
-Os7iy1eTCRZwAbP/52fsn+b5olc6JSZWxGlZPkZ5xMtPJ/ybC2xwFLC+w0jWMCk8
-SnaIB06++1UQ+jAiZ4aiqSdB2LzQRioVdPK2e/+7rfsjNTiS8dfsN+VefmCGwYNF
-WNT4eyD/lrgM9d8ETzrMIqPgktSHNoBxaXhIwzaguI8eIdU7H+XNDvwjtLPxtqVn
-QnjTJFcEh/RnWkildmb6UwteFClkvVN25pIMjwx4z1glRv2kyumnfdMYHDrV5+ph
-5f2hb2nD053Z2lF55+x5WjYs9cPFnQ==
-=wTWK
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmluXrEACgkQj4D7WH0S
+/k6cnggAsCQqWsDFQVUkeYVImS9/l5GX6eHwnikgTTnlW6a+ZgWaTTReANaJcOWi
+Xg2ReisUE9OBLMyy26ZTyyJhtbtBcM9j7Xh+cPJJU9+ldPO+Dj0LCzwxzf9h16h7
+iI4mYNmPhlX7guGfEmlZRp5jiPWjLNuPeBl+36rW3D2CnfVGZ2/eCStO3YEUAqEf
+KhSoE51+4/wY7M7/91RIQQmAo2bu+kM7r9sQ1arcg5jgprkeBTwxkV71IFhnrcER
+yE1iBb8DBwvX9Or6B8YNWFihen2IeNnRzmZ+ESPHRvgYOpG6YviBg/6jPKflYmhR
+jh/y8WWPcDfZW7OMQN53zjW43QQmkw==
+=Wjqu
 -----END PGP SIGNATURE-----
 
---bi43ollq7h2qpl5p--
+--swptr2pfrym525fs--
