@@ -1,134 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80823205E26;
-	Mon, 19 Jan 2026 16:53:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768841591; cv=none; b=nCorjy9a474fvz3VpnL6U6/mgQdFFWRUkVlgVtO8CSqU22p2OLy1RfEYpOvY10CioQ8wmmJvir/mdoI3iY+PluhXUCkIhZkw1xpPAp44Ab7Fr0H02a+o8XUs5k06id5beTU1GwI6RJeQzLMNXV11VLlz61O4HCef3UE2CMepdOg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768841591; c=relaxed/simple;
-	bh=2ZkOa9bEBe+GCTApBrgpJ3K+Kz14rXJVbtoTGmBF0vU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XC3WA4vv2WLptEYzM1hxUuAZrXcIibDVycW0hKWo18WDpTMDGkSqxOwVElkmV3XPmTJYZU9ZQZhBkMnjCoG49krmGc2FDn+18tZiCuZ0f/IjFT/6MlIm7zluwbxdSM+ydcUbglU8Sj0RpLwZoC71TnbE9cECQx6BdMmDEGzC6DI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R/GHQ5rk; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DC8832FA30
+	for <linux-pwm@vger.kernel.org>; Mon, 19 Jan 2026 18:01:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768845709; cv=pass; b=JjRO8yq5tGa3CLKAqP3HMLHgvA3qcFbeMNRdm+rlfgu5pauNKcw7qGq32XGC0m1i/bMvFgMWjxlcoasCnyBjs2izDyk60gm95tG4ddGZUZ49WCLb06/xb3ZPfug4vf1HxirfCYZirSx3z2E5tJO2KJktBxpWv6cAxtm1CWvKB04=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768845709; c=relaxed/simple;
+	bh=Oimec9R0aCFMLabyDlzla37quguLmEv21TSD6RGlpLw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=dMDbIHzNpjz+6ecZMVdoHRsYjkCy3jWYH1cZk8lWzJTXynB57qOtymcwIGxwqddBCB5ggR/NRcnqLzG35bTe7XbhwUdTCxDFzfy5h8ag89JIyLaiMpd/jkKTY2o1V4JT2lGYMQS/50O+ASxwX6XEeE5hBgvEkN6pHZrZota+HE8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CJdbRge5; arc=pass smtp.client-ip=74.125.82.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R/GHQ5rk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9109AC116C6;
-	Mon, 19 Jan 2026 16:53:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768841591;
-	bh=2ZkOa9bEBe+GCTApBrgpJ3K+Kz14rXJVbtoTGmBF0vU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=R/GHQ5rkIxsHBLAflksNjI8LN/ZvzHFyetNHZkl2nzSxe/2OF79xF4IZJ1hOB3SDI
-	 4j8i4Vd4j5D2t2q9CSqe86TgnRTYCaF8aKGrZvhno013ettWe4k2MbodN0XfZWpgMU
-	 zKPyAThfTCOfgFKa0cUdPNxL/OHTukriZV4KoCiLWtAbGWy4XVeBaFSR8y5zxwR2gD
-	 e6K+LDX/KhQ96uQbdVMRUGk4ee8BulbxRbhVnrmgQ5WgauYmOneDxEdt3qoW3k2qYP
-	 JFs01WPCc7fOhHNrUPh4EEPQyJdP1T3iMUE6bLU5+/niaRk6LYBi7oiZ93Z0EcFW3q
-	 FFxNMJqIhA4jg==
-Date: Mon, 19 Jan 2026 17:53:08 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Tamir Duberstein <tamird@gmail.com>
-Cc: Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>, 
-	Fu Wei <wefu@redhat.com>, Miguel Ojeda <ojeda@kernel.org>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
-	Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
-	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, 
-	linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, Michal Wilczynski <m.wilczynski@samsung.com>
-Subject: Re: [PATCH] drivers: pwm: replace `kernel::c_str!` with C-Strings
-Message-ID: <2wmijhs5pbrynsgxuropvlxuozsubk7euybxzwc5ox2a3izfci@v6hzmzs5pmml>
-References: <20251222-cstr-pwm-v1-1-e8916d976f8d@gmail.com>
- <CAJ-ks9mrpcLaeiGjBcXNqTUwo00Y2MhhHWnWauou6exU1y920Q@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CJdbRge5"
+Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-1232c98f98cso330752c88.3
+        for <linux-pwm@vger.kernel.org>; Mon, 19 Jan 2026 10:01:48 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1768845708; cv=none;
+        d=google.com; s=arc-20240605;
+        b=QlvL0+hzjLql8uzFBRRhRMtWvHKye0MSkXVdgeR9ikSDS8UVWd2TRbEBiGWiaBqR28
+         mnnC8C3xsuVSSrN/hYYmHqrT2FUSCayEqrqyr//IwVIEuqq65z5w04nXKNDrto57T2lp
+         yNibNN6+OM5fuFTGY8t+wCMcfZIXRMluQARRjCOPEx51g2DpP6aJe+0qStq5g6W/5KTH
+         6umsCku3JFrlOPl+FKAcHIngaN15ogPBdp6fDl5xWJxIP5yGYdT15Rf+h9MZxlXErzNM
+         zFY6o+7aXO+F/5hTyZ07PA/x+6vQkZOszHsIRXhDEBO8FShQx4uwIGcNBM6e8DyFLGk6
+         4ilg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Mj1iZoozHo2mgRESpJHRS1ASPF5/w4G9hbGEhm4hd+o=;
+        fh=3iaId0HQ4X4RaDrKU8wzXdb6FEOya1MRf0/SVlrwHVI=;
+        b=dkzhcMn+ks9wwdZBqFGnCton8bqRQnW2P0WSGWDTZ40fYDQZounaub6J/Qo7YzfpFo
+         MK4tQMpaZ0VZI7fyNRoDA/raKus77vGsOCtPbUC/N/zE1HqVozaRXgoxr7yxkwQRodUm
+         ds6GtiM81F3uucb3r7psepNfZPVozvjIZSjxYG+4PSlLwEcwDgcZm9ZzlFnVXEmppvFJ
+         rl8wC5umyLJ+qpowYdXJr/fPPc4WPOnpMxsahCFXdyhLJqid5HYKdl1sU5fWkOq9kfQG
+         ydShEwzEQPh464p9ViJvU0WJQ2Yk6+KT8IxeVAJpLrvnuXVQ586yK8SRw1twno6ZY7jA
+         VuQQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1768845708; x=1769450508; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Mj1iZoozHo2mgRESpJHRS1ASPF5/w4G9hbGEhm4hd+o=;
+        b=CJdbRge5s0pPvmy3/e23f6abZrXzcXc5NwsFKz4S3xyxH22dxH+zB5kDMidXoFyuMl
+         sC3+6K+lzS6VirlURL/epg2X9iSjfXIF2FFXjyqaq2tE314i0L5bx+8uZxT7mgyBtOZs
+         cc8gbQMj4Us5Y9zITm3Vd4TiSQSQc0nu9eKG4a+08e964A0TV/TeJHKwx7W01WO24Vx3
+         HYK1bCkiZkaGCZjrqmuCIvdsurAewdRGEzikx8+HK4v5CMtsUcHgHP5EYWebfH/pvYAj
+         2ZrfMTEZSRIEQ5IwA/3gFyPvb8QlKO6CBB/D5X7FVNbGzYclPDpvzxsaFDYw3t8BZN6o
+         3qFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768845708; x=1769450508;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Mj1iZoozHo2mgRESpJHRS1ASPF5/w4G9hbGEhm4hd+o=;
+        b=w03AV410dnExPFpUGc9qQz8vT0e96QHy+4i+ZjwhaiyBPfzG6OCYl6GVw/FAJp+d/1
+         vqaEi4LBbHMsVA5WuYq41MCrRboejUxOeugDXn34HMzdNVP4pyeJlBch2huuYdOGUBV/
+         rNqEN/OoK4lFHTnadT8+N93qV/Ys4HyourhQCNGhkc8lTvYTIXdMj9+r20cdhdEnV13w
+         bzCqfRV7lj1OxwLxXDxiYd0x4TAdz/75qhXEX/vcHx/xqcoEf5pyR+3vsGJkQo8cYq7x
+         gD6Rm2CUH8DIP3dB8kng8Drt9dajXoFmS7lV00QSJE3brCeNp3TJUMFFeGlWa2v4wnpN
+         tTHQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU+zBEQsK484BjyUH82PiUPQ1AWA65hgwz0IoU3E8dOhZCiOwEZZUpBUNRdr0O1eLQhK4YygaFdspA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywcm0jyxvnd4V5Hnp4pr/IDxHcXjif6RWXyOQ8ebMR6t92WL1tH
+	q46Lb17yIxgtDHXdR2KOxYkuElKGHMkSLWgAgXaXEa6t4Vc3QLf1X46AIYhyrCC5Q8qxxfoUAUl
+	6RfzvxD+ls+V3+w3043Tgg9tQh1DFjDI=
+X-Gm-Gg: AZuq6aKtbSp+YulFL38AHQCyrIi70/tOak2EUTE5VZyWhq2oVwPl3RA6tEblyZd5R6A
+	2UW861bUuWRGyR//lRZpiIdpQ3fBPZu5QE3l4bZltKT52cNA8lM7HNP7unTg0ooKoa0jRN6JYgw
+	C+kbwnzfBSPeekFICUVGUKIE4Y3Dvh6VtGyaqc7QyrYcEYgwbro4YIFKckDlZ8gzhu02m7unpk8
+	rP1bUBVCIBSubKIqlI3kqbu+WwhoIoNKQkLNpWbe6YAh3adQqbz97eEk00cXUTUi6uILW/ayErK
+	1LPTjSMaWKYMJmm/ya5G5uSm8RPII6mQViN0jYuTu/vbhAlueDKob9dvgr/MrNR8XKLraD7rvOB
+	NbHHzjuXrHkP+
+X-Received: by 2002:a05:7300:6d06:b0:2b0:2e6:5363 with SMTP id
+ 5a478bee46e88-2b6f6f808a9mr129151eec.1.1768845707489; Mon, 19 Jan 2026
+ 10:01:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ag6ssgt3jtvb55cw"
-Content-Disposition: inline
-In-Reply-To: <CAJ-ks9mrpcLaeiGjBcXNqTUwo00Y2MhhHWnWauou6exU1y920Q@mail.gmail.com>
-
-
---ag6ssgt3jtvb55cw
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+References: <20251222-cstr-pwm-v1-1-e8916d976f8d@gmail.com>
+ <CAJ-ks9mrpcLaeiGjBcXNqTUwo00Y2MhhHWnWauou6exU1y920Q@mail.gmail.com> <2wmijhs5pbrynsgxuropvlxuozsubk7euybxzwc5ox2a3izfci@v6hzmzs5pmml>
+In-Reply-To: <2wmijhs5pbrynsgxuropvlxuozsubk7euybxzwc5ox2a3izfci@v6hzmzs5pmml>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Mon, 19 Jan 2026 19:01:33 +0100
+X-Gm-Features: AZwV_QiT9HJYrgBsJ2EfKS49UFQygV8XYXgkjsQ2HaIze_49iHqtRlkRLMtga98
+Message-ID: <CANiq72mSxtO0s8xGhgYemfz9DvvwDzC0fsF2covGFspduDz5XA@mail.gmail.com>
 Subject: Re: [PATCH] drivers: pwm: replace `kernel::c_str!` with C-Strings
-MIME-Version: 1.0
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Tamir Duberstein <tamird@gmail.com>, Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>, 
+	Fu Wei <wefu@redhat.com>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, 
+	Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
+	Danilo Krummrich <dakr@kernel.org>, linux-riscv@lists.infradead.org, 
+	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, Michal Wilczynski <m.wilczynski@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+On Mon, Jan 19, 2026 at 5:53=E2=80=AFPM Uwe Kleine-K=C3=B6nig <ukleinek@ker=
+nel.org> wrote:
+>
+> I did, but given I'm more or less rust illiterate I would welcome
+> feedback by Michal Wilczynski. I only now notice that he wasn't on Cc:
+> up to now.
 
-On Sat, Jan 03, 2026 at 09:30:31PM -0500, Tamir Duberstein wrote:
-> On Mon, Dec 22, 2025 at 7:24=E2=80=AFAM Tamir Duberstein <tamird@kernel.o=
-rg> wrote:
-> >
-> > From: Tamir Duberstein <tamird@gmail.com>
-> >
-> > C-String literals were added in Rust 1.77. Replace instances of
-> > `kernel::c_str!` with C-String literals where possible.
-> >
-> > Signed-off-by: Tamir Duberstein <tamird@gmail.com>
-> > ---
-> >  drivers/pwm/pwm_th1520.rs | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/pwm/pwm_th1520.rs b/drivers/pwm/pwm_th1520.rs
-> > index e3b7e77356fc..8ae8f852ec02 100644
-> > --- a/drivers/pwm/pwm_th1520.rs
-> > +++ b/drivers/pwm/pwm_th1520.rs
-> > @@ -22,7 +22,6 @@
-> >
-> >  use core::ops::Deref;
-> >  use kernel::{
-> > -    c_str,
-> >      clk::Clk,
-> >      device::{Bound, Core, Device},
-> >      devres,
-> > @@ -327,7 +326,7 @@ fn drop(self: Pin<&mut Self>) {
-> >      OF_TABLE,
-> >      MODULE_OF_TABLE,
-> >      <Th1520PwmPlatformDriver as platform::Driver>::IdInfo,
-> > -    [(of::DeviceId::new(c_str!("thead,th1520-pwm")), ())]
-> > +    [(of::DeviceId::new(c"thead,th1520-pwm"), ())]
-> >  );
-> >
-> >  impl platform::Driver for Th1520PwmPlatformDriver {
-> >
-> > ---
-> > base-commit: 8f0b4cce4481fb22653697cced8d0d04027cb1e8
-> > change-id: 20251222-cstr-pwm-c9b9a4701157
-> >
-> > Best regards,
-> > --
-> > Tamir Duberstein <tamird@gmail.com>
-> >
->=20
-> @Uwe could you please have a look?
+Thanks!
 
-I did, but given I'm more or less rust illiterate I would welcome
-feedback by Michal Wilczynski. I only now notice that he wasn't on Cc:
-up to now.
+In case it helps, for context, this is part of a long migration:
 
-Best regards
-Uwe
+    https://github.com/Rust-for-Linux/linux/issues/1075
+    https://lore.kernel.org/all/20250704-core-cstr-prepare-v1-0-a9152403778=
+3@gmail.com/
 
---ag6ssgt3jtvb55cw
-Content-Type: application/pgp-signature; name="signature.asc"
+(@Tamir: in the future, for patches like this, and especially since
+the patch was split from a series and was a multi-step/multi-cycle
+migration etc., it probably helps to give maintainers some context
+with Link: tags to the ones above).
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmluYXIACgkQj4D7WH0S
-/k60Vwf+L9+sMF3DsYlxCUroWbaKU2YlEkePawJRhurmC6+MZsBE1EX/+eToCGGy
-tqkb4TmjhbSrQdgbZXoyxMXV9XguGzCq7aq0lZ7gI556Zc9iOll2EIJVUKCqjQ7z
-CklQ6HQMGB3X9oSXWuIUvfMkVgDej3YRVUIBlQ9WJVzuqoLOTMNYO5ymu0X1ll+Q
-mSHDQ9p4fDB7Ef8uIq41Zk+DldPQ+nBSY9TciePw1aApJg4DXmpaOwrBARbXzQdF
-8xBi1lN75cvNOvu5HEGYNNMP6QtiwLU5NuA/5SCMJsxl0eP1rXs8Yyg5XLxP8wU/
-jKWyRx8IwYFLbkQHfw48pJB/6nGUdw==
-=3gtg
------END PGP SIGNATURE-----
-
---ag6ssgt3jtvb55cw--
+Cheers,
+Miguel
