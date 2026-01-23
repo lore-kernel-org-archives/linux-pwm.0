@@ -1,188 +1,134 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77212F532C;
-	Fri, 23 Jan 2026 00:30:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769128261; cv=pass; b=n7iqrceOGbH0PKpQUO8RLISLbocVzYPhZkA1M0m/ufI6F3Pgp9eGj0VoOR6ITwKO2AysWdjWDK91AoeT3x3DAiXSoTcJI/eFSkqEovrPA5FLufkg/+5lPzzjyS3wlXUvEivDy04AZ77kT6ftE/jJPStEveqEiUlvXQGvGzxbzuA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769128261; c=relaxed/simple;
-	bh=/yeziewaw15H86mUs/MvNCnEniIqbrsf9kqGH0zpSXc=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=uRy5ei4hkKdj9NG7KYSons7fNu7uQVkC8V9oKkZaQz2ICPkWJmzwH6ey8UmRoNSsPE/Iq3RPTxshDuotQ+XP79jcFzpiY60OUUbO22FUVU+t+imPN7DPNX42oc9mD8tHqxvNVP5k11GmYpLA0nr3U6cd2XK5KRMmznHYzVwQ3Z8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=JFVN7vr2; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A75E5368279
+	for <linux-pwm@vger.kernel.org>; Fri, 23 Jan 2026 09:33:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769160833; cv=none; b=Qj1RpFbIuvdKWAS1T8zfizbyiucXRjI66aUUkJMq93exVUhJxzpiXZLB+KMoeSr3KapMVYvL5dxyMhytNIiIEy0EXfCgQJ7it9fXWE0u/HZ5qZ9xjtkGIJXernfZAIRcWNLvVWuCE5P/Y42ZvjC0/p1JFhleLLa4ZxXd0Vtwc/0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769160833; c=relaxed/simple;
+	bh=in40fZfBJur7b2gTli4i7mrCZHp27MkqzsX2uoHgeGg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=FxCjIVt+P3u2JfAaQOB1T8374R+A7QXz+SKnMq34dDA210rJnaPLFVSl1X5UpXlsaXryF8ZUINH6IFwv+qn9dd/uHtwQUoupSAKVEkmjMG0M9CTgq6vkKfOrox8ShnTt1BA455ytgW/O4oMIWW2ULaJQONmNyDz9zaf8mq9slug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=bUVGLMgC; arc=none smtp.client-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="JFVN7vr2"
-ARC-Seal: i=1; a=rsa-sha256; t=1769128221; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=IZX+1LsCpQQ+Rl7KDSFtZgqKtr0PFsWoY/u+das8x/TXSxh+Ln1Hk9x+LvhBnMOhhD04WoVYYpE5cQ7UuNgeA7XlHCsKB5IjjWyZ1BvfungO69wQ/8scKUuKaVt01w89ed8KawoVYjMdgiGCZoTubcf9rarqe8R+8TI2Y8+77dc=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1769128221; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=/yeziewaw15H86mUs/MvNCnEniIqbrsf9kqGH0zpSXc=; 
-	b=Tt3GOU/H/cyscwd7myazOyzRW77JnO56/aqYeAt/Zkpoe1vOTJYpVVs//RrL8nLiVC50uAxu8dPVbEFPFncY3Zi8ScUHJFG/fTrevf7PE1rmXyegT6LtmAMu7xKcFSitHRUUDmxCOgHUfHdefBNj9kz+/maGAMxgCUlPa0Xryes=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1769128221;
-	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
-	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
-	bh=/yeziewaw15H86mUs/MvNCnEniIqbrsf9kqGH0zpSXc=;
-	b=JFVN7vr2V3WZMOROff8QAPjioTjWXyMphmAFlpev66SuROF3067M31vA00BA9Qdv
-	9k2102LwLuyRGbUhXPt7+F8xLhnysIan5A9yTTYnFciNuqWiFEWVWPUEbWV9s4yDnMX
-	8Y0Hf0auyWwWFoUrq7zk34PewHnWOptInla8L9JM=
-Received: by mx.zohomail.com with SMTPS id 1769128219741646.6810529308862;
-	Thu, 22 Jan 2026 16:30:19 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="bUVGLMgC"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 07344C21ABB;
+	Fri, 23 Jan 2026 09:33:47 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id CF3396070A;
+	Fri, 23 Jan 2026 09:33:46 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 306B6119A879B;
+	Fri, 23 Jan 2026 10:33:44 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1769160825; h=from:subject:date:message-id:to:cc:mime-version:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=AumlAK3D+nBnNV49+1NREtHq21qZzWdFJkGV6lEmtAE=;
+	b=bUVGLMgCg9aRioam0lpyysvJCDaFLPOQhcfrTllGrrS2jyDuwMQsvJt0DH1KGe21byYjyQ
+	41mr/zGLcvhgMk9BaH0tjgwJexMTkbGFsE9h5FbgUppqrr2C+pI7BhTNDqBVAswNn3sANl
+	15BCg7BQMN1ocXNcO/FTGVaPaCmm8dz53qKRXeDisqC6/8Xen0AISJG7L8F6+qVmo3vtbx
+	hR7tZQMi/x9RFsadJ181ywUbVyPO70D76TnEuYASXgXL69s5WYrUQ0QNvqJaohq1p7JNMu
+	HatsgjnC6FWSEKDH21MhK8x8m/hCTBp+MX7YqjKJaNgB+nl25oLFHe4qzRqDLw==
+From: Richard Genoud <richard.genoud@bootlin.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Paul Kocialkowski <paulk@sys-base.io>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	linux-pwm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Richard Genoud <richard.genoud@bootlin.com>
+Subject: [PATCH v3 1/4] dt-bindings: pwm: allwinner: add h616 pwm compatible
+Date: Fri, 23 Jan 2026 10:33:19 +0100
+Message-ID: <20260123093322.1327389-2-richard.genoud@bootlin.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260123093322.1327389-1-richard.genoud@bootlin.com>
+References: <20260123093322.1327389-1-richard.genoud@bootlin.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81\))
-Subject: Re: [PATCH v3 1/3] rust: clk: use the type-state pattern
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <20260122-majestic-masterful-jaguarundi-d0abde@houat>
-Date: Thu, 22 Jan 2026 21:29:30 -0300
-Cc: Danilo Krummrich <dakr@kernel.org>,
- Alice Ryhl <aliceryhl@google.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Viresh Kumar <viresh.kumar@linaro.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>,
- Drew Fustini <fustini@kernel.org>,
- Guo Ren <guoren@kernel.org>,
- Fu Wei <wefu@redhat.com>,
- =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- Michael Turquette <mturquette@baylibre.com>,
- Stephen Boyd <sboyd@kernel.org>,
- Miguel Ojeda <ojeda@kernel.org>,
- Boqun Feng <boqun.feng@gmail.com>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <lossin@kernel.org>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>,
- linux-pm@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org,
- linux-riscv@lists.infradead.org,
- linux-pwm@vger.kernel.org,
- linux-clk@vger.kernel.org,
- rust-for-linux@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <2F3D3A40-6EF9-46FC-A769-E5A3AAF67E65@collabora.com>
-References: <20260107-clk-type-state-v3-0-77d3e3ee59c2@collabora.com>
- <20260107-clk-type-state-v3-1-77d3e3ee59c2@collabora.com>
- <20260108-delectable-fennec-of-sunshine-ffca19@houat>
- <98CD0BF6-3350-40B9-B8A9-F569AE3E3220@collabora.com>
- <20260119-thundering-tested-robin-4be817@houat> <aW4lCfUyumOKRRJm@google.com>
- <518D8B09-B9A1-4DB4-85CD-37A2DD3D5FB1@collabora.com>
- <DFSLCI9U4NCW.2HI2UPUI7G134@kernel.org>
- <20260119-weightless-pelican-of-anger-190db0@houat>
- <DFSN4FDCYHMW.3J3237PEBV2ZP@kernel.org>
- <20260122-majestic-masterful-jaguarundi-d0abde@houat>
-To: Maxime Ripard <mripard@kernel.org>
-X-Mailer: Apple Mail (2.3826.700.81)
-X-ZohoMailClient: External
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 
+Allwinner H616 PWM block is quite different from the A10 or H6, but at
+the end, it uses the same clocks as the H6; so the sun4i pwm binding can
+be used.
+It has 6 channels than can generate PWM waveforms.
+If the bypass is enabled (one bypass per channel) the output is no more
+a PWM waveform, but a clock that can (and is) used as input for other
+devices, like the AC300 PHY.
 
+Signed-off-by: Richard Genoud <richard.genoud@bootlin.com>
+---
+ .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-> On 22 Jan 2026, at 10:44, Maxime Ripard <mripard@kernel.org> wrote:
->=20
-> On Mon, Jan 19, 2026 at 03:37:17PM +0100, Danilo Krummrich wrote:
->> On Mon Jan 19, 2026 at 3:18 PM CET, Maxime Ripard wrote:
->>> On Mon, Jan 19, 2026 at 02:13:48PM +0100, Danilo Krummrich wrote:
->>>> On Mon Jan 19, 2026 at 1:54 PM CET, Daniel Almeida wrote:
->>>>>> On 19 Jan 2026, at 09:35, Alice Ryhl <aliceryhl@google.com> =
-wrote:
->>>>>> I think that if you still want an API where you just call =
-enable/disable
->>>>>> directly on it with no protection against unbalanced calls, then =
-that
->>>>>> should be the special API. Probably called RawClk and functions =
-marked
->>>>>> unsafe. Unbalanced calls seem really dangerous and use should not =
-be
->>>>>> encouraged.
->>>>=20
->>>> +1; and unless there is a use-case that requires otherwise, it =
-should not even
->>>> be possible to do this at all -- at least for driver code.
->>>=20
->>> I mean, it's great, it's safe, etc. but it's also suboptimal from a =
-PM
->>> perspective on many platforms. It's totally fine to provide nice, =
-safe,
->>> ergonomic wrappers for the drivers that don't care (or can't, =
-really),
->>> but treating a legitimate optimisation as something we should =
-consider
->>> impossible to do is just weird to me.
->>=20
->> I said that an unsafe API with potentially unbalanced calls is =
-something we
->> should clearly avoid for drivers. This is *not* equivalent to =
-"treating a
->> legitimate optimisation as something we should consider impossible".
->>=20
->> If we discover use-cases where the current API doesn't work well, we =
-can
->> invenstigate further.
->=20
-> I'm not sure I'm following what you're saying, sorry. I've pointed out
-> such a use-case already.
->=20
->>>>> I think we should discourage RawClk if at all possible. But if the =
-consensus
->>>>> is that we *really* need this easily-abused thing, I can provide a =
-follow-up.
->>>>=20
->>>> I think we should only do this if there are use-case with no =
-alternative, so far
->>>> there haven't been any AFAIK.
->>>=20
->>> I don't really care about which alternative we come up with, but =
-look at
->>> devm_regmap_init_mmio_clk for example. It is a valid use-case that
->>> already exists today, and has had for more than a decade at this =
-point.
->>=20
->> I don't see the issue with devm_regmap_init_mmio_clk()? It takes a =
-reference
->> count of the clock and prepares it when called and unprepares the clk =
-in drops
->> its reference in regmap_mmio_free_context() called from the devres =
-callback.
->>=20
->> That something we can easily do with the current API, no?
->=20
-> The current one, yes. Doing that in the API suggested here would =
-involve
-> some boilerplate in all those drivers they don't have right now.
->=20
-> Maxime
-
-Maxime, I know you=E2=80=99ve already pointed out a use-case, but I =
-think the
-confusion stems from why you seem to think that the current solution =
-cannot
-cater to the API you mentioned in a clean way. You seem to imply that =
-there
-will be a lot of boilerplate involved, but we (or I) cannot see this. =
-Perhaps
-it would help if you highlighted how exactly the type state solution =
-would be
-verbose using some pseudocode. I guess that would make your point =
-clearer for
-us.
-
-=E2=80=94 Daniel
-
+diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
+index 1197858e431f..4f58110ec98f 100644
+--- a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
+@@ -14,6 +14,9 @@ properties:
+   "#pwm-cells":
+     const: 3
+ 
++  "#clock-cells":
++    const: 1
++
+   compatible:
+     oneOf:
+       - const: allwinner,sun4i-a10-pwm
+@@ -36,6 +39,7 @@ properties:
+           - const: allwinner,sun50i-h5-pwm
+           - const: allwinner,sun5i-a13-pwm
+       - const: allwinner,sun50i-h6-pwm
++      - const: allwinner,sun50i-h616-pwm
+ 
+   reg:
+     maxItems: 1
+@@ -62,7 +66,9 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: allwinner,sun50i-h6-pwm
++            enum:
++              - allwinner,sun50i-h6-pwm
++              - allwinner,sun50i-h616-pwm
+ 
+     then:
+       properties:
+@@ -83,6 +89,17 @@ allOf:
+         clocks:
+           maxItems: 1
+ 
++  - if:
++      not:
++        properties:
++          compatible:
++            contains:
++              const: allwinner,sun50i-h616-pwm
++
++    then:
++      properties:
++        "#clock-cells": false
++
+ required:
+   - compatible
+   - reg
+-- 
+2.47.3
 
