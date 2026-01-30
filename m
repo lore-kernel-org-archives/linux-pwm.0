@@ -1,76 +1,99 @@
-Received: from Atcsqr.andestech.com (exmail.andestech.com [60.248.187.195])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1422329392;
-	Fri, 30 Jan 2026 05:12:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.248.187.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53A6E3168EF;
+	Fri, 30 Jan 2026 10:13:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769749940; cv=none; b=n+2OpuvMFNm1IcdGu16L06pbbcm87J4vewb+haKVbw+0d08WfY9+6EYX0LVjnB8759PW9U3x0T0AHN0rorazZ6epGZ6wSPWPG5jAdqe6R/2rg496Oltnwp0zb6+eJ8+v4uSH11ZjCRjew56MLEZ1+18rBezw1i6sNcz4SZ3wNU4=
+	t=1769768021; cv=none; b=NM3vBTe51YcDP71Fs653IfnV+kA387pb9aFI+1o4pQRwHXVrCElekn9HikRV9cywb6P8DrqfM2e7nwx3ERjHbRrFM+Om/6bCBYafOydZ3sD2DddHVtoV+q+T59KJahntpQ7ft20bllxCi/MPHvoTpnwJTe7cp+ZNaDkazdAdw/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769749940; c=relaxed/simple;
-	bh=XRTXKmVjr3TZFfKZ/DbL+RHaFXvxsYezIPJIp/AqseA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mFTgwmswhrW1U+5J6qYL8bq7xdcDPWlq5JS1k1FZw4HN733wVDev+/FlEBPK+Eri6LdbZOPxhJq9xCkGjfOCmG98OcsBFrFanDmJ51fDCXee7hWACkyuI3iulu6l88vj6oxMQPZIhXELZp9dtsEpOXXsh8N0CjnLsB9uCCzD/pg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=permerror header.from=andestech.com; spf=pass smtp.mailfrom=andestech.com; arc=none smtp.client-ip=60.248.187.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=permerror header.from=andestech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=andestech.com
-Received: from mail.andestech.com (ATCPCS31.andestech.com [10.0.1.89])
-	by Atcsqr.andestech.com with ESMTP id 60U5Bgw0021883;
-	Fri, 30 Jan 2026 13:11:42 +0800 (+08)
-	(envelope-from ben717@andestech.com)
-Received: from swlinux02 (10.0.15.183) by ATCPCS31.andestech.com (10.0.1.89)
- with Microsoft SMTP Server (TLS) id 14.3.498.0; Fri, 30 Jan 2026 13:11:42
- +0800
-Date: Fri, 30 Jan 2026 13:11:41 +0800
-From: Ben Zong-You Xie <ben717@andestech.com>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-CC: <linux-pwm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+	s=arc-20240116; t=1769768021; c=relaxed/simple;
+	bh=qxTwcF/RKUxSlx0NpzW9q/qr4hHP06KPsn1qOzxicQk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EEvaitYU5H9iFD+sZl/2YyPnaPmOmFHmlMguD4jnAgJqNYhDjJeqoMJ47ctGnvmZnIs4RE/ziawdd9S9kthkUHVAukNSxYOumuLanc8yqv3+5fO+CmOKnb1+oGl0yXX67s9C4BraYwDdB3EyWefZtZAnyWAkhRMCBW87tXD13Fk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tr6IkeE1; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tr6IkeE1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE4BC116D0;
+	Fri, 30 Jan 2026 10:13:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769768020;
+	bh=qxTwcF/RKUxSlx0NpzW9q/qr4hHP06KPsn1qOzxicQk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=tr6IkeE1UNPeu7vgRDjv46zF2YF65GjoA4phPm+zvju2ZBUckxqjwmrej6pRiLeFj
+	 Xl6vTBPp8hSf7Y+wTIpj+x0hjxhK/vG97hrXvimWXqcEUxs86qq9C9uCtnrABLKimX
+	 +byKRJrHbfE/aNrpLNKOov+v6sBScLlUODQYqdoeytNxZaKwu1x32rOfdAKCu2AVVn
+	 KfQd3wJJw6Dx6MGWA3/fLKYJqUA/EpO/ViBlflyjsSJROo6/YJt0cXjtZRRh1WOXY9
+	 woYHWXB5MOYO8Ksy6wR/X5hsFEAd6wNNw3oItf827gEbhbqpGT6Y5atqjraHLh1UoQ
+	 Iup/vqU6XuHaw==
+Date: Fri, 30 Jan 2026 11:12:18 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Ben Zong-You Xie <ben717@andestech.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] drivers: pwm: remove redundant check in pwm_ops_check()
-Message-ID: <aXw9jY5kpPNAiyxR@swlinux02>
+Message-ID: <lfxvek7ms2p5fehr6qibx2awc2m6shazlqvavrdea6t2nips46@mcayd6h3sepc>
 References: <20260129-fix-pwm-ops-check-v1-1-6f0b7952c875@andestech.com>
  <jxzeyujbaj6s2j3woj7lyuilwi7tzlhenamlih2q23khxw4d3f@dpbnhlxzsjmr>
+ <aXw9jY5kpPNAiyxR@swlinux02>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="62bwmerseozplaeh"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <jxzeyujbaj6s2j3woj7lyuilwi7tzlhenamlih2q23khxw4d3f@dpbnhlxzsjmr>
-User-Agent: Mutt/2.3.0 (2026-01-25)
-X-DKIM-Results: atcpcs31.andestech.com; dkim=none;
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:Atcsqr.andestech.com 60U5Bgw0021883
+In-Reply-To: <aXw9jY5kpPNAiyxR@swlinux02>
 
-On Thu, Jan 29, 2026 at 08:19:00AM +0100, Uwe Kleine-König wrote:
-> I would rewrite the commit log to:
-> 
-> 	pwm: Remove redundant check in pwm_ops_check()
-> 
-> 	ops->write_waveform is already known to be non-NULL so there is
-> 	no need to check it a second time.
-> 
-> 	The superflous check was introduced in commit 17e40c25158f
-> 	("pwm: New abstraction for PWM waveforms").
-> 
-> 	Signed-off-by: Ben Zong-You Xie <ben717@andestech.com>
-> 
-> to make the change more clear and also to not bother the stable team
-> with backporting the commit to stable.
-> 
-> Please confirm if you're ok with this change, then I cope for the update
-> while applying your change.
-> 
-> Best regards
-> Uwe
 
-Hi Uwe,
+--62bwmerseozplaeh
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] drivers: pwm: remove redundant check in pwm_ops_check()
+MIME-Version: 1.0
 
-I'm ok with the change, and thank you for the review.
+hello Ben,
 
-Best regards,
-Ben
+On Fri, Jan 30, 2026 at 01:11:41PM +0800, Ben Zong-You Xie wrote:
+> On Thu, Jan 29, 2026 at 08:19:00AM +0100, Uwe Kleine-K=F6nig wrote:
+> > I would rewrite the commit log to:
+> >=20
+> > [...]
+> >=20
+> > to make the change more clear and also to not bother the stable team
+> > with backporting the commit to stable.
+> >=20
+> > Please confirm if you're ok with this change, then I cope for the update
+> > while applying your change.
+>
+> I'm ok with the change, and thank you for the review.
 
+Thanks for confirming, I applied to
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for=
+-next
+
+=2E With the merge window opening in more than a week from now I will
+include it in my MR for 6.20-rc1.
+
+Best regards
+Uwe
+
+--62bwmerseozplaeh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAml8g/8ACgkQj4D7WH0S
+/k5wKAf/R+uv3siYpHtcqcdvSD78fKqYdchp2ssz8h4aR3AhYnMradWh1k4U2kSy
+lpTHG8n9mdrhpWxXbPNBUCuvUa0Ncij/zoRu/3b9ryqXf0tDN6NIPJzQfB1Xf9BK
+1b5Tiun32HCw3ZyQ4yYJxsn7N4v4jSlrIii0wLTT7Ot/qJCfMSAM7QbEpZuu/4f7
+1o2gO8/gt3ZO21ztPtxjfMfEGEdezFmz3zPUpOqRYaxwFnDP1wdkrP8Y0odE4dMC
+TCWtNZUaZCecFDUhgQUqby6mdJXUzkSbt/mvpD7ajs1QROoyiEZHnn7pfoJ27RE/
+7EEDZUzjk0QhOMtQl2lY1LZL5nCd7A==
+=iEtf
+-----END PGP SIGNATURE-----
+
+--62bwmerseozplaeh--
