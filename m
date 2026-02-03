@@ -1,29 +1,29 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E62E22B594;
-	Tue,  3 Feb 2026 16:17:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90138299927;
+	Tue,  3 Feb 2026 16:28:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770135452; cv=none; b=OIi4aVmn7zoIlkXzJjEOBPyZMPbmYNIANTDBOVl1yLA4rBlm27TaIQKwGWi9cxR6gVRRng6xkJlMou6fYcXgSo4CDkzXGBCT+WtMXoMUkmrLiw7r6XO4nu6/OsvOdQjb96TVbMaxMqoITpZRHFr3O2RCBdRi5CEvuwqjzR/P5Zk=
+	t=1770136138; cv=none; b=EAcHRMl1alMMxmLDndb7IDSUE9ogk/RVGvWRxTtsJwLo10Hv1Ca6XXOfwhp4xBRZTZmJARAQAyuWxnppk0s7XUuO0O935T5KXTBmUXvccIdbtbg4VqxLEdcm3DPgZbjJnJwGkZ6BHlU4VmelrutQfJ5ls4tyCw3CK8UjjW0p/Qg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770135452; c=relaxed/simple;
-	bh=Y5GCQ53SPa0Arre4QKWM7rqqfYEk92SpOKdkmzkB/sA=;
+	s=arc-20240116; t=1770136138; c=relaxed/simple;
+	bh=QLM8Cd4lYQ1gk9LxsTCcNODV4GYG29LzN7JYwrYqBvw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cf6up5o0mEkwXqWTMc66R0GWuoZtdWMWDY+focy6EEuJTOMPWfLEZVYRicCQEgtQ06UxkyV02S2Cv3xpzTKSq6qnaVdT4SXeTwgl0Ma8SZENSIAgy5n05lCg0k58lPoLbiVShFcyUuueUE0THvUFkRWckks6YbJzSdTgGWC/bQQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=K7PxGaVp; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=bFMR0pq/AsYiC4cR8Oq1UhYmG58dUa4hFgT6BqLP5XARTO7DRqnxUuczJnpJd33I767J7FUrRCQIB3kMYQ8SXkt0WVWk0kl91eLQGCjz3lShithbYWsdE76zux1tg+iY+/DkI6rCZqwY6SvxFzjQZRDhf8S0wtajU1sHla/Ss5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=n7Ei7/gK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="K7PxGaVp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47725C116D0;
-	Tue,  3 Feb 2026 16:17:31 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="n7Ei7/gK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89252C16AAE;
+	Tue,  3 Feb 2026 16:28:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1770135451;
-	bh=Y5GCQ53SPa0Arre4QKWM7rqqfYEk92SpOKdkmzkB/sA=;
+	s=korg; t=1770136138;
+	bh=QLM8Cd4lYQ1gk9LxsTCcNODV4GYG29LzN7JYwrYqBvw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=K7PxGaVpkAZn7aly4ZMsjZhSYTnF4SyjU8VoRi2Vhbpg881m+qfI1FT4LJo8z9XiC
-	 D44AcpGlVQa/p93cPsgwNmjTs5KKQuUdWvGW9iSA8uxUDz5/0huFWLGZ6OjELXvkoa
-	 NEG4D3mW7+IFrkRCQpGqDfd7X5vWtHVHaGpPnzAc=
-Date: Tue, 3 Feb 2026 17:17:28 +0100
+	b=n7Ei7/gK+3w3UVBbUFYUxCIGM74q6ghSuVmLT0GQjrLcpb2DVYFuvyEc4Fg2Oe5BZ
+	 9DA+SBIsrifVQiytUfgIkTTc876TPTUpb4vCU0rYb6BFbCe/K45ih3+SEqJQ9E8Vtb
+	 O4GGnM46moFdad62LnviYrIFwfSWdEShKShFmqEQ=
+Date: Tue, 3 Feb 2026 17:28:55 +0100
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Matthew Maurer <mmaurer@google.com>
 Cc: Bjorn Andersson <andersson@kernel.org>,
@@ -46,10 +46,10 @@ Cc: Bjorn Andersson <andersson@kernel.org>,
 	linux-arm-msm@vger.kernel.org, rust-for-linux@vger.kernel.org,
 	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org,
 	linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] rust: device: Support testing devices for equality
-Message-ID: <2026020338-gratitude-overplay-98b0@gregkh>
+Subject: Re: [PATCH v2 6/6] soc: qcom: socinfo: Convert to Rust
+Message-ID: <2026020315-conch-trickle-2d84@gregkh>
 References: <20260203-qcom-socinfo-v2-0-d6719db85637@google.com>
- <20260203-qcom-socinfo-v2-3-d6719db85637@google.com>
+ <20260203-qcom-socinfo-v2-6-d6719db85637@google.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -58,20 +58,109 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260203-qcom-socinfo-v2-3-d6719db85637@google.com>
+In-Reply-To: <20260203-qcom-socinfo-v2-6-d6719db85637@google.com>
 
-On Tue, Feb 03, 2026 at 03:46:32PM +0000, Matthew Maurer wrote:
-> This allows device drivers to check if, for example, an auxiliary
-> devices is one of its children by comparing the parent field, or
-> checking if a device parameter is its own device.
-> 
-> Also convert existing `.as_raw() != .as_raw()` to  use this new
-> implementation.
+On Tue, Feb 03, 2026 at 03:46:35PM +0000, Matthew Maurer wrote:
+> Convert the socinfo driver to Rust for a number of improvements:
+> * Accessing IO mapped regions through the IO subsystem, rather than
+>   through regular memory accesses.
 
-Ah, ok, I can see how getting rid of the as_raw() calls here is a "good
-thing", but overall it's just the same code paths :)
+That's good, but the C code could also be "fixed" to do this, right?
 
-And I don't see what patch in this series uses this, am I missing it?
+> * Binds the device as an auxiliary device rather than a platform device,
+>   ensuring the mapped IO regions cannot be accessed after the smem
+>   device is removed.
+
+I'm all for this, but is this really an aux device?  What is the
+"parent" device of this aux device?  Where are the "siblings"?  What
+does sysfs look like before/after this?
+
+> * Adds bounds-checking to all accesses, hardening against a repeat of
+>   CVE-2024-58007
+
+How do you now "know" that the bounds checking is correct?  The C
+version also had this, it was just "not correct" :)
+
+And which accesses are you referring to?  From userspace?  From the
+kernel?  That CVE looks very odd, it's probably not even a real one and
+should be revoked, right?
+
+
+> diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
+> index fef840b5457407a85051ded0e835430dbebfe8bb..dcea2d7f37067b0b6f801b3d2b457422ad9f342c 100644
+> --- a/drivers/soc/qcom/smem.c
+> +++ b/drivers/soc/qcom/smem.c
+> @@ -4,6 +4,7 @@
+>   * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+>   */
+>  
+> +#include <linux/auxiliary_bus.h>
+>  #include <linux/hwspinlock.h>
+>  #include <linux/io.h>
+>  #include <linux/module.h>
+> @@ -279,7 +280,6 @@ struct qcom_smem {
+>  	struct hwspinlock *hwlock;
+>  
+>  	u32 item_count;
+> -	struct platform_device *socinfo;
+>  	struct smem_ptable *ptable;
+>  	struct smem_partition global_partition;
+>  	struct smem_partition partitions[SMEM_HOST_COUNT];
+> @@ -675,6 +675,32 @@ static void *qcom_smem_get_private(struct qcom_smem *smem,
+>  	return ERR_PTR(-EINVAL);
+>  }
+>  
+> +/**
+> + * qcom_smem_get_aux() - resolve ptr of size of a smem item
+> + * @aux:        an aux device that should be our child
+> + * @host:	the remote processor, or -1
+> + * @item:	smem item handle
+> + * @size:	pointer to be filled out with size of the item
+> + *
+> + * Looks up smem item and returns pointer to it. Size of smem
+> + * item is returned in @size.
+> + *
+> + * The caller may take the loaded state of the provided aux device as
+> + * an acceptable proxy for this memory being valid.
+> + *
+> + * Return: a pointer to an SMEM item on success, ERR_PTR() on failure.
+> + */
+> +void *qcom_smem_get_aux(struct auxiliary_device *aux, unsigned int host,
+> +		unsigned int item, size_t *size)
+> +{
+> +	if (IS_ERR(__smem))
+> +		return __smem;
+> +	if (aux->dev.parent != __smem->dev)
+> +		return ERR_PTR(-EINVAL);
+> +	return qcom_smem_get(host, item, size);
+
+So you are returning a void pointer?  But don't you really know the
+"type" of what is being asked here?  It's a memory chunk, so u8?  Or
+something else?  void * feels "rough" here.
+
+> +}
+> +EXPORT_SYMBOL_GPL(qcom_smem_get_aux);
+> +
+>  /**
+>   * qcom_smem_get() - resolve ptr of size of a smem item
+>   * @host:	the remote processor, or -1
+> @@ -684,6 +710,9 @@ static void *qcom_smem_get_private(struct qcom_smem *smem,
+>   * Looks up smem item and returns pointer to it. Size of smem
+>   * item is returned in @size.
+>   *
+> + * It is up to the caller to ensure that the qcom_smem device remains
+> + * loaded by some mechanism when accessing returned memory.
+
+What do you mean by "loaded"?  You are saying that the caller needs to
+rely on this driver remaining in memory for that memory to be "valid"?
+
+If this is the case, why not take a reference count?
+
+> +impl Smem {
+> +    pub(crate) fn access<'a>(&'a self, dev: &'a Device<Bound>) -> Option<&'a Mmio> {
+> +        if *dev != *self.dev {
+
+How can this ever happen?
 
 thanks,
 
