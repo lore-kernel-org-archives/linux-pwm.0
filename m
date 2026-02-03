@@ -1,79 +1,90 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE4A82652B6;
-	Tue,  3 Feb 2026 16:35:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E98822339;
+	Tue,  3 Feb 2026 16:40:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770136531; cv=none; b=fokvl3DUM9zpysRPI2h+laN/u5OWImW7DF13AAGLyW3eeMjsm/IKtF533Y8jjeP61kujOsrE8LFaeuX+xGbGvV0n8TqKid7dUpEdiUIFIsB5RccMZuaGE7WRQcPSV6EB7ADvxMMgRyBrJIOS1P5oSq5ZZT0zypF5bz0nzmhUwC0=
+	t=1770136831; cv=none; b=oovn6wufFO/mGyqIiX7cd9Hp41MYllv7oYgYh9RWGtenV88C9bzsO8WSSXKWpB/aS7IILfCZ4ISA4ddcdFJH16jkBw6FKGaajlBDNs4hC9jhWaMgeoLr5XrNN1MteM/t+GWP0e2OXyvaK58VDlFF0DeNRO7jcb49jgCWtts/hWE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770136531; c=relaxed/simple;
-	bh=svcm0GrCFCCWTCUqWcGBWZZ/Zew4ni38dBsP6egJUg0=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=ILk+I0AhMytyYkOz5lP6PZybFe7meDNLRn+JsNY97xpwvNSeUCPwmPRGdi72LC5dPbzyFJ2ePKanVRa1l9y4LfZLw99GZB9W28geXYAL3ef45PgLSjCG3oyFT238Le8Skc3LxNk1/n48Ub0dYBj4FuzuOGPIbqZ7VnroXyhCkGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rgf9TuzE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770136831; c=relaxed/simple;
+	bh=aZrOFWbYL/CIDgy9O+tBoiAZFqwv81jbqu1pKEIQ/s8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rfcPPPhu0pYXDjHr6sGLcTE0xqqM458o/nMt/2eD89iAhbWViXS39ktk9kcBPoKZ6uUbs0GrdMJ3eQu9QaW5X08tmIUsazC/BN80ds2+qZUOdQ/FOSbLC+y5hQNAW0rHDpZPo9ShEtVDjYcQUnKiA/rHK1P3+C6xphFLmdaFxmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=nqgV1DFv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rgf9TuzE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B96C116D0;
-	Tue,  3 Feb 2026 16:35:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770136531;
-	bh=svcm0GrCFCCWTCUqWcGBWZZ/Zew4ni38dBsP6egJUg0=;
-	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
-	b=rgf9TuzEcnLQ6TkQ7G9ARzcgwvlIUXEuyhtBrvQ9hBHxZBgg0fn8Ax6Yj4qLtVRAY
-	 t5j+/29jVgL/JUK6N1iTkIulIwvvzFVhU5QVa8SymF7sjI+icGRtpv5phgU9OvCSrr
-	 /7PrnUtus2rOVjiJeA0Vf/A6TH4WrPmi1SAU1kaHXWlCLwqaqb6meSyOZZKF+08a/1
-	 UOs96GhH66/a+ykPToHDTXENcOKfixoRYRgICh3OUmWPAxUxVu0d3eKN/KCkGjZx6j
-	 RRbm4IOiV2kw6b5HZTJiCfxeXQUKW8NeOOcZ9BzuCL7CVhhL4ca3wS8owJsAG+92Hk
-	 5Iyl+kBYwJ34Q==
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="nqgV1DFv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4DF3C116D0;
+	Tue,  3 Feb 2026 16:40:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1770136830;
+	bh=aZrOFWbYL/CIDgy9O+tBoiAZFqwv81jbqu1pKEIQ/s8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nqgV1DFvdCPf52Jr2RfRF98OglnYWvCNHNFUFRPA0vBT6Rc6KcxkDcqWxMFLNsg2l
+	 dhtBRY60gxsiJRihJhUqj2qAvVshgOSLCcV5nzSrF8HYVozyoHERceTh2FtXRbjOe1
+	 UGdLg51T+4PDawREdFlxBc9MdhKPrVNrHco97cMQ=
+Date: Tue, 3 Feb 2026 17:40:27 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Danilo Krummrich <dakr@kernel.org>
+Cc: Matthew Maurer <mmaurer@google.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Satya Durga Srinivasu Prabhala <satyap@quicinc.com>,
+	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
+	Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Michal Wilczynski <m.wilczynski@samsung.com>,
+	Dave Ertman <david.m.ertman@intel.com>,
+	Ira Weiny <ira.weiny@intel.com>, Leon Romanovsky <leon@kernel.org>,
+	Trilok Soni <tsoni@quicinc.com>, linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, rust-for-linux@vger.kernel.org,
+	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org,
+	linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v2 3/6] rust: device: Support testing devices for equality
+Message-ID: <2026020342-dime-sharply-3fd4@gregkh>
+References: <20260203-qcom-socinfo-v2-0-d6719db85637@google.com>
+ <20260203-qcom-socinfo-v2-3-d6719db85637@google.com>
+ <2026020338-gratitude-overplay-98b0@gregkh>
+ <DG5GWC5MR1ZC.3VFVRL0G0NMUW@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 03 Feb 2026 17:35:24 +0100
-Message-Id: <DG5H119NY68Q.TWLCK3W36CM5@kernel.org>
-Subject: Re: [PATCH v2 6/6] soc: qcom: socinfo: Convert to Rust
-Cc: "Matthew Maurer" <mmaurer@google.com>, "Bjorn Andersson"
- <andersson@kernel.org>, "Konrad Dybcio" <konradybcio@kernel.org>, "Satya
- Durga Srinivasu Prabhala" <satyap@quicinc.com>, "Miguel Ojeda"
- <ojeda@kernel.org>, "Boqun Feng" <boqun.feng@gmail.com>, "Gary Guo"
- <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>, "Benno Lossin" <lossin@kernel.org>, "Andreas
- Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>,
- "Trevor Gross" <tmgross@umich.edu>, "Daniel Almeida"
- <daniel.almeida@collabora.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
- "David Airlie" <airlied@gmail.com>, "Simona Vetter" <simona@ffwll.ch>,
- "Michal Wilczynski" <m.wilczynski@samsung.com>, "Dave Ertman"
- <david.m.ertman@intel.com>, "Ira Weiny" <ira.weiny@intel.com>, "Leon
- Romanovsky" <leon@kernel.org>, "Trilok Soni" <tsoni@quicinc.com>,
- <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
- <rust-for-linux@vger.kernel.org>, <driver-core@lists.linux.dev>,
- <dri-devel@lists.freedesktop.org>, <linux-pwm@vger.kernel.org>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-From: "Danilo Krummrich" <dakr@kernel.org>
-References: <20260203-qcom-socinfo-v2-0-d6719db85637@google.com>
- <20260203-qcom-socinfo-v2-6-d6719db85637@google.com>
- <2026020315-conch-trickle-2d84@gregkh>
-In-Reply-To: <2026020315-conch-trickle-2d84@gregkh>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DG5GWC5MR1ZC.3VFVRL0G0NMUW@kernel.org>
 
-On Tue Feb 3, 2026 at 5:28 PM CET, Greg Kroah-Hartman wrote:
-> On Tue, Feb 03, 2026 at 03:46:35PM +0000, Matthew Maurer wrote:
->> +impl Smem {
->> +    pub(crate) fn access<'a>(&'a self, dev: &'a Device<Bound>) -> Optio=
-n<&'a Mmio> {
->> +        if *dev !=3D *self.dev {
->
-> How can this ever happen?
+On Tue, Feb 03, 2026 at 05:29:16PM +0100, Danilo Krummrich wrote:
+> On Tue Feb 3, 2026 at 5:17 PM CET, Greg Kroah-Hartman wrote:
+> > And I don't see what patch in this series uses this, am I missing it?
+> 
+> 	impl Smem {
+> 	    pub(crate) fn access<'a>(&'a self, dev: &'a Device<Bound>) -> Option<&'a Mmio> {
+> 	        if *dev != *self.dev {
+> 	            return None;
+> 	        }
+> 	
+> 	        // SAFETY: By our invariant, this was a subrange of what was returned by smem_aux_get, for
+> 	        // self.dev, and by our above check, that auxdev is still available.
+> 	        Some(unsafe { Mmio::from_raw(&self.raw) })
+> 	    }
+> 	}
+> 
+> It's used to ensure that the Smem provided by the auxiliary parent can only be
+> accessed as long as the auxiliary parent device is bound.
 
-You are right, since this resource is local to the driver, it should not be
-possible to have another devce from somewhere else (especially not a
-&Device<Bound>).
+But how can a parent device ever bevome "unbound"?  A child can always
+rely on its parent being present (some odd scsi devices are the one
+exception, that mess is hell at times...)
 
-However, from a Rust perspective I think not having this check would be uns=
-ound,
-as the method by itself would not be able guarantee correct behavor anymore=
-.
+thanks,
+
+greg k-h
