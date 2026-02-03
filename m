@@ -1,90 +1,105 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E98822339;
-	Tue,  3 Feb 2026 16:40:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C92743D3489;
+	Tue,  3 Feb 2026 16:46:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770136831; cv=none; b=oovn6wufFO/mGyqIiX7cd9Hp41MYllv7oYgYh9RWGtenV88C9bzsO8WSSXKWpB/aS7IILfCZ4ISA4ddcdFJH16jkBw6FKGaajlBDNs4hC9jhWaMgeoLr5XrNN1MteM/t+GWP0e2OXyvaK58VDlFF0DeNRO7jcb49jgCWtts/hWE=
+	t=1770137206; cv=none; b=FrL/TGietCKcd6g+ZWcxTxAhZBdBb37VpS4DcBnhJ1tZ6niq/zDuXs+pdsAVKTCSr7sxI8kdNRwD0kdda/xELxjJSLP1JrqYD0pWtpRgQUHBw6PJI9KMwFEHpdBWGSqZ136UyUsWgYCGQcV7Nf4YmsExCh+S+iqIw9SpJlWtxWs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770136831; c=relaxed/simple;
-	bh=aZrOFWbYL/CIDgy9O+tBoiAZFqwv81jbqu1pKEIQ/s8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rfcPPPhu0pYXDjHr6sGLcTE0xqqM458o/nMt/2eD89iAhbWViXS39ktk9kcBPoKZ6uUbs0GrdMJ3eQu9QaW5X08tmIUsazC/BN80ds2+qZUOdQ/FOSbLC+y5hQNAW0rHDpZPo9ShEtVDjYcQUnKiA/rHK1P3+C6xphFLmdaFxmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=nqgV1DFv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770137206; c=relaxed/simple;
+	bh=SN3mq4DneEguOI8zzgWysg+fcRGURMTHTYxbyoFa1/M=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=quP+sv5YIN9ngrUz7BxhuYwqkpynLt7iiGT+zigcCSu/V5V4So4yVNNJPATh8BTgKDzIPcyWhTgtONcGgHcQaLxHHjZPtCiHayLgz9vf2iMMRtS/xgmzJxc/Ho3O5ZdikIeu/xo74h6R9Q+cMGboOaevSjIhyceWbBdHonYTvWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MRTMR4oN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="nqgV1DFv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4DF3C116D0;
-	Tue,  3 Feb 2026 16:40:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1770136830;
-	bh=aZrOFWbYL/CIDgy9O+tBoiAZFqwv81jbqu1pKEIQ/s8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nqgV1DFvdCPf52Jr2RfRF98OglnYWvCNHNFUFRPA0vBT6Rc6KcxkDcqWxMFLNsg2l
-	 dhtBRY60gxsiJRihJhUqj2qAvVshgOSLCcV5nzSrF8HYVozyoHERceTh2FtXRbjOe1
-	 UGdLg51T+4PDawREdFlxBc9MdhKPrVNrHco97cMQ=
-Date: Tue, 3 Feb 2026 17:40:27 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Matthew Maurer <mmaurer@google.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Satya Durga Srinivasu Prabhala <satyap@quicinc.com>,
-	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
-	Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Michal Wilczynski <m.wilczynski@samsung.com>,
-	Dave Ertman <david.m.ertman@intel.com>,
-	Ira Weiny <ira.weiny@intel.com>, Leon Romanovsky <leon@kernel.org>,
-	Trilok Soni <tsoni@quicinc.com>, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, rust-for-linux@vger.kernel.org,
-	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org,
-	linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] rust: device: Support testing devices for equality
-Message-ID: <2026020342-dime-sharply-3fd4@gregkh>
-References: <20260203-qcom-socinfo-v2-0-d6719db85637@google.com>
- <20260203-qcom-socinfo-v2-3-d6719db85637@google.com>
- <2026020338-gratitude-overplay-98b0@gregkh>
- <DG5GWC5MR1ZC.3VFVRL0G0NMUW@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MRTMR4oN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F66BC2BCB7;
+	Tue,  3 Feb 2026 16:46:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770137206;
+	bh=SN3mq4DneEguOI8zzgWysg+fcRGURMTHTYxbyoFa1/M=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
+	b=MRTMR4oNnQwjKFji63iZnjCbODzO67FUaFCb82HB3Bg1qRDJ5K2FaflXFWUVS6Le/
+	 5aDwl3Ze0/50Lr9lNN5mg7rvfhZK4kXAZRQdNIA3pmcQ1JprqxDQtfkm63kPF774kX
+	 b0eDwwNZfHLAMLfa8q6pAjhoyNMLe3NP7EesSqqwh0Sl+mQ6Rblj3jQlT2PljwSJKX
+	 cCUdEfvMh/HSp5Jx5YxGOIMOc4/fwjz/LK5glYHcmc6LkpDozYtaKvxXaGSwebzdBv
+	 CU6SERbxxptO48aTaV0nw+/FuYnWJ+H7HLGtTkfzAavwwZ1eVEPAclrFpsxaNaVySA
+	 M51SqFPMP4F5A==
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DG5GWC5MR1ZC.3VFVRL0G0NMUW@kernel.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 03 Feb 2026 17:46:39 +0100
+Message-Id: <DG5H9N9QKZUW.3KLJW09OBNRD0@kernel.org>
+Subject: Re: [PATCH v2 3/6] rust: device: Support testing devices for
+ equality
+Cc: "Matthew Maurer" <mmaurer@google.com>, "Bjorn Andersson"
+ <andersson@kernel.org>, "Konrad Dybcio" <konradybcio@kernel.org>, "Satya
+ Durga Srinivasu Prabhala" <satyap@quicinc.com>, "Miguel Ojeda"
+ <ojeda@kernel.org>, "Boqun Feng" <boqun.feng@gmail.com>, "Gary Guo"
+ <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, "Benno Lossin" <lossin@kernel.org>, "Andreas
+ Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>,
+ "Trevor Gross" <tmgross@umich.edu>, "Daniel Almeida"
+ <daniel.almeida@collabora.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ "David Airlie" <airlied@gmail.com>, "Simona Vetter" <simona@ffwll.ch>,
+ "Michal Wilczynski" <m.wilczynski@samsung.com>, "Dave Ertman"
+ <david.m.ertman@intel.com>, "Ira Weiny" <ira.weiny@intel.com>, "Leon
+ Romanovsky" <leon@kernel.org>, "Trilok Soni" <tsoni@quicinc.com>,
+ <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+ <rust-for-linux@vger.kernel.org>, <driver-core@lists.linux.dev>,
+ <dri-devel@lists.freedesktop.org>, <linux-pwm@vger.kernel.org>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <20260203-qcom-socinfo-v2-0-d6719db85637@google.com>
+ <20260203-qcom-socinfo-v2-3-d6719db85637@google.com>
+ <2026020338-gratitude-overplay-98b0@gregkh>
+ <DG5GWC5MR1ZC.3VFVRL0G0NMUW@kernel.org>
+ <2026020342-dime-sharply-3fd4@gregkh>
+In-Reply-To: <2026020342-dime-sharply-3fd4@gregkh>
 
-On Tue, Feb 03, 2026 at 05:29:16PM +0100, Danilo Krummrich wrote:
-> On Tue Feb 3, 2026 at 5:17 PM CET, Greg Kroah-Hartman wrote:
-> > And I don't see what patch in this series uses this, am I missing it?
-> 
-> 	impl Smem {
-> 	    pub(crate) fn access<'a>(&'a self, dev: &'a Device<Bound>) -> Option<&'a Mmio> {
-> 	        if *dev != *self.dev {
-> 	            return None;
-> 	        }
-> 	
-> 	        // SAFETY: By our invariant, this was a subrange of what was returned by smem_aux_get, for
-> 	        // self.dev, and by our above check, that auxdev is still available.
-> 	        Some(unsafe { Mmio::from_raw(&self.raw) })
-> 	    }
-> 	}
-> 
-> It's used to ensure that the Smem provided by the auxiliary parent can only be
-> accessed as long as the auxiliary parent device is bound.
+On Tue Feb 3, 2026 at 5:40 PM CET, Greg Kroah-Hartman wrote:
+> On Tue, Feb 03, 2026 at 05:29:16PM +0100, Danilo Krummrich wrote:
+>> On Tue Feb 3, 2026 at 5:17 PM CET, Greg Kroah-Hartman wrote:
+>> > And I don't see what patch in this series uses this, am I missing it?
+>>=20
+>> 	impl Smem {
+>> 	    pub(crate) fn access<'a>(&'a self, dev: &'a Device<Bound>) -> Optio=
+n<&'a Mmio> {
+>> 	        if *dev !=3D *self.dev {
+>> 	            return None;
+>> 	        }
+>> =09
+>> 	        // SAFETY: By our invariant, this was a subrange of what was re=
+turned by smem_aux_get, for
+>> 	        // self.dev, and by our above check, that auxdev is still avail=
+able.
+>> 	        Some(unsafe { Mmio::from_raw(&self.raw) })
+>> 	    }
+>> 	}
+>>=20
+>> It's used to ensure that the Smem provided by the auxiliary parent can o=
+nly be
+>> accessed as long as the auxiliary parent device is bound.
+>
+> But how can a parent device ever bevome "unbound"?
 
-But how can a parent device ever bevome "unbound"?  A child can always
-rely on its parent being present (some odd scsi devices are the one
-exception, that mess is hell at times...)
+It can't, that's why auxiliary::Device::parent() returns a &Device<Bound>, =
+i.e.
+as long as the child is bound the parent is guaranteed to be bound as well.
 
-thanks,
+The point in this implementation is that we need to prove to the resource
+container (Smem) that we are allowed to access the resource, since it is on=
+ly
+valid to access for the duration the parent is bound.
 
-greg k-h
+In the end this is equivalent to Devres::access(), which bypasses the Revoc=
+able
+if we can prove that we are in a &Device<Bound> scope.
+
+Having that said, the code should probably just use Devres instead. :)
