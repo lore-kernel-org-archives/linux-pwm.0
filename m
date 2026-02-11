@@ -1,175 +1,63 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87BA8318EC2;
-	Wed, 11 Feb 2026 17:10:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2992E36656F;
+	Wed, 11 Feb 2026 20:28:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770829803; cv=none; b=KvAL7zqPL0Q0p+LXx99gntiv3/eblRxoAXBatM43aylhz3YlRCLK25XHByKNxCd68vgLRuGTCOLF+pUzQwVu/doXBGJCgP6D5xoVZwgqZvXCHQUecN7EK2WyOCXNGg/DOntyMNf82wm+7/ZsCNmXCkpuyrihVdkmW0p+9hsfkL4=
+	t=1770841699; cv=none; b=tOey2bsTfjHnSIDWaWs5t1aDekpobXI4+OMduY0u2V4Vn4kesSeAf059dpwHaLIyF4CxNzH9Q07G1uvDiPuu0G7Vuti+CjUoCNgxG5czk01yjPogqDFWPl6wDMScYqK1a5Vvx/WU4Aj4xnnGSIGJs+0/ymfOzHBZenwQCZs9vEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770829803; c=relaxed/simple;
-	bh=7upHBVEG2uZ4tUa36JEchClxWzr7WEN4Moqq4nZx3TQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ESbHtbOKwLIgm1c9IGwDpQ5VsuBDVE+aR3E5aAiQtzI1NFEWztD9CPua/HN7L6x/jvFc+v5v2ttAO/zxmoLGTfB1A3cxRieeNqHamyLecwGKUSCIcqgnBfDVCmjoiD0U+EZGQUEermyp/2YNyTbaPdmV4a/aAs84l8+ZtJjYzT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FPUCpqes; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770841699; c=relaxed/simple;
+	bh=5txl9W/WyKIl9UF95e+c2WEsmGRtKJOxjrtyAu4Xh9Y=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=GdxXHFxfbTLF6P7nKzisduB7S1pkFm5aqgyZvzj1R7lIKvvuQfqYm5yTHvmrmeMpFAg/hWSrayMOdMCpNBJvGOftTonWNZbEPIQgQeRUDAiXSqO7qp2a6K0yulpjsSEk/nmtG5QCWAXimLUk6pKT+Dvmj6veAfKyKXdMXwhQ5p0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bv0zwsSj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FPUCpqes"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C51EC4CEF7;
-	Wed, 11 Feb 2026 17:10:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bv0zwsSj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F308C19425;
+	Wed, 11 Feb 2026 20:28:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770829803;
-	bh=7upHBVEG2uZ4tUa36JEchClxWzr7WEN4Moqq4nZx3TQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=FPUCpqeshNrFe7QwVZo35hpGE0PPMURxmpxFlY59YAgwUHkpowMwHp8PzUVj3Ucie
-	 5G3Gm61SeYcAxxh9q0FFJlTHdGJxInsnz02k/5sa5bQBFvOzXj1HefF/V0qmC2WUlD
-	 qka/8lepkA8dZNqia0wv7vahTt6/JPKswRilyCVfFYQ7hAztI4hVlYiiAyKMZ7nXVB
-	 hypZXN47GCC6Z+tyE3EdU8cMskxnxyjGftL6cPRWxF14LPJUMOHR6oumE+gaTvwrXT
-	 U/JTKnYQtQyTRk2VXBVOCwCT9dCfXTVXW4lmH96GcYOKPNXjH7FQlPJRrOmeePZfkj
-	 DuCD2HQtB+nqQ==
-Date: Wed, 11 Feb 2026 18:10:00 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	DRI mailing list <dri-devel@lists.freedesktop.org>, lee@kernel.org, danielt@kernel.org, jingoohan1@gmail.com, 
-	Richard Weinberger <richard.weinberger@gmail.com>
-Subject: Re: PWM implementation in HWMON and backlight
-Message-ID: <aYy0bO7ZWUsj0ENu@monoceros>
-References: <CAFLxGvyhdpQMnW6VqyXjLPKyZSQvrV-+GFdUogV4JX7DiGePyg@mail.gmail.com>
- <aYxaXmguGRk1pWpT@monoceros>
- <e5ccfd91-9c0c-45f1-bbc8-40e93bffca43@roeck-us.net>
+	s=k20201202; t=1770841699;
+	bh=5txl9W/WyKIl9UF95e+c2WEsmGRtKJOxjrtyAu4Xh9Y=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=Bv0zwsSjQShNgz7SpJ3ERaGldzSArCSJlwP719Wj1ydkvz+edBc1f2xpVHSdfrYPk
+	 8Sv/dGKlVlYv1qbUigmgEBlAGZFnQzId6fmUq9aewoM8bpTbGb3IIX7PkzUImubguh
+	 i2IozDZz1S99hzsiDiSKwYBAiWqvrKrv0BUeXr5PZ3qLd4vbX76Uk0B2O/flqAmz24
+	 RLs92RZ03lpW6G/aZ4CiapaLZx6h0ZcTZ8zoVKlBWXUQmGibk59ltkOQgnVddM9yxT
+	 Wp+uuc2lAruTSezAknHjGiSb1sYG3h2l7MiWbrDvxiPqT9NIogDtagdShzOIOF+jVR
+	 vqa76F0tIfIYw==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 0B27E39EF964;
+	Wed, 11 Feb 2026 20:28:15 +0000 (UTC)
+Subject: Re: [GIT PULL] pwm: Changes for 7.0-rc1
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <aYmcqN2aAqhqqwxX@monoceros>
+References: <aYmcqN2aAqhqqwxX@monoceros>
+X-PR-Tracked-List-Id: <linux-pwm.vger.kernel.org>
+X-PR-Tracked-Message-Id: <aYmcqN2aAqhqqwxX@monoceros>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git tags/pwm/for-7.0-rc1
+X-PR-Tracked-Commit-Id: 9321f9d27fbaf6c4f32772fc2620961a0c492135
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: c371f62da7982ff4f19484a131db7a255538ad00
+Message-Id: <177084169368.710910.13772028139307837669.pr-tracker-bot@kernel.org>
+Date: Wed, 11 Feb 2026 20:28:13 +0000
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="r5nv7bzmwhj2lfjf"
-Content-Disposition: inline
-In-Reply-To: <e5ccfd91-9c0c-45f1-bbc8-40e93bffca43@roeck-us.net>
 
+The pull request you sent on Mon, 9 Feb 2026 09:46:41 +0100:
 
---r5nv7bzmwhj2lfjf
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: PWM implementation in HWMON and backlight
-MIME-Version: 1.0
+> https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git tags/pwm/for-7.0-rc1
 
-Hello Guenter,
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/c371f62da7982ff4f19484a131db7a255538ad00
 
-On Wed, Feb 11, 2026 at 07:47:36AM -0800, Guenter Roeck wrote:
-> On 2/11/26 02:46, Uwe Kleine-K=F6nig wrote:
-> > On Wed, Feb 11, 2026 at 10:28:55AM +0100, Richard Weinberger wrote:
-> > > The backlight of a board I am working with is controlled via PWM.
-> > > Naturally, I thought this would be a straightforward task using the
-> > > pwm-backlight driver.
-> > >=20
-> > > However, the PWM in question is implemented using an NCT6106D chip.
-> > > The associated HWMON driver, nct6775-core.c, does not implement a
-> > > standard PWM device interface but rather its own custom one.
-> >=20
-> > Looking around in drivers/hwmon made me a sad. There are four drivers
-> > that handle parsing #pwm-cells:
-> >=20
-> > 	$ git grep pwm-cell drivers/hwmon/
-> > 	drivers/hwmon/adt7475.c:        ret =3D fwnode_property_get_reference_=
-args(fwnode, "pwms", "#pwm-cells", 0, 0, &rargs);
-> > 	drivers/hwmon/amc6821.c:        if (of_parse_phandle_with_args(fan_np,=
- "pwms", "#pwm-cells", 0, &args))
-> > 	drivers/hwmon/emc2305.c:        ret =3D of_parse_phandle_with_args(chi=
-ld, "pwms", "#pwm-cells", 0, &args);
-> > 	drivers/hwmon/nct7363.c:        ret =3D of_parse_phandle_with_args(chi=
-ld, "pwms", "#pwm-cells",
-> >=20
-> > instead of using the pwm subsystem. Also the driver mentioned by Richard
-> > above has some self-made PWM handling including a set of driver specific
-> > sysfs files to control the PWMs. I stopped looking at the output of
-> >=20
-> > 	git grep pwm drivers/hwmon/
-> >=20
-> > after finding some more sad things. (My "favourite" so far was:
-> >=20
-> > 	dev_dbg(dev, "chmod -w pwm%d failed\n", nr + 1);
->=20
-> That code is from 2006. Are you serious ? Did you bother to read
-> the context ? Did you bother considering that this was possibly the
-> best means available at the time to control visibility of an
-> attribute file ?
+Thank you!
 
-This was just something that I spotted while looking at the git-grep
-output. The thing that actually triggered my mail was commit
-46b94c485ed197bc681da242440c6e2315697c57 and less that it doesn't use
-the pwm stuff (which was only in next at that time probably), but more
-that I wasn't involved.
-
-> For the most part the pwm implementation in hwmon chips is tied to suppor=
-ting
-> pwm output for fans and isn't usable for anything else. This gets worse f=
-or
-> chips where pwm vs. voltage control on the output signal can be selected.
->=20
-> Unless there is an actual use case for utilizing the pwm subsystem for a
-> given chip, doing so would just create overhead. _If_ there is a proven
-> use case, I don't mind if people submit patches to add generic support
-> for the the pwm subsystem to such drivers. Keep in mind though that suppo=
-rt
-> for the ability to switch between pwm and voltage control (as is very com=
-mon
-> for fans) is mandatory for chips with that capability.
->=20
-> Talking about this specific driver, it has been in the upstream kernel si=
-nce v3.10
-> (2013). Almost all hwmon drivers supporting pwm fan control are much olde=
-r than
-> v6.13. While many of those would benefit from a modernization update, sup=
-porting
-> the pwm subsystem just because it exists would, from my perspective, be a=
- waste
-> of time. I most certainly won't do it.
-
-The bit I don't like about these drivers is that their binding (using
-#pwm-cells) suggests that these chips are usable as generic PWM. That's
-what Richard seems to have expected, too.
-
-> In my opinion calling it "sad" that drivers are not re-implemented to use=
- a
-> newly available out-of-subsystem API is close to being an insult to those
-> who would have to do that work.
->=20
-> Sorry, you folks really got me on the wrong foot. If there is anything sa=
-d,
-> it is people complaining about 20 year old code without doing anything ab=
-out
-> it themselves. I by now spent months if not years of my time modernizing =
-hwmon
-> drivers. Did you ?
-
-That wasn't the message that I intended to transport and I'm taking the
-blame for that. The actual intended take away was: Please for the next
-driver implementing PWM stuff, poke me, such that the nice things in
-drivers/pwm are reused instead of partly reimplemented with less
-functionality and that the maybe not so nice things are improved.
-
-I didn't want to blame you (or anyone else) with my mail, and I'm sorry
-that this was how you received my mail.
-
-Thanks for being honest,
-Uwe
-
---r5nv7bzmwhj2lfjf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmmMt7sACgkQj4D7WH0S
-/k6EZgf+LK4+qEc/Wf3mhkqpelRgXUyxLRPmvypGyjy1ysoP11EC9EkBvEp9y+ZX
-Su87iK9acDmUa5mAB+Ql/EXiKI4NhIi/CuqOPT8vPW7yKKIAGtmrOsBxjj/YqGfq
-62XifKi6mb60CVBqQDd4TrLu/qCEWIRppFHBazBei9UutCzynFWfklc1o+85Axyc
-fgqF4YHx8sUC5mVJ7yqJ15p0iqcX5NxIV86seZoZHBuRq3eNY6SgnxGzqQ8T9Obz
-+y5ujU7SQJMoyQH1K5DvuHsJBD98hbx/nMvwlwOQDqwxDNc81TmYxEOGcHPQkunh
-/aZpDQqlqVP8NuizNPEcaUsS7AeQDg==
-=MzJ3
------END PGP SIGNATURE-----
-
---r5nv7bzmwhj2lfjf--
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
