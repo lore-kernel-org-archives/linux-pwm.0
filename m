@@ -1,497 +1,369 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAFBC39C65B;
-	Thu,  5 Mar 2026 12:23:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B91A639B4A9;
+	Thu,  5 Mar 2026 12:44:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772713415; cv=none; b=XED6/T2LM+3T6N8QQNK55t9fgGTA5xpT70dueEe4EuAGJ/wvs36gdwhwtJmiOdgdkWvkJkQVVgnuo2tHNhaYsISvY6xO40+gXs0IRhX+vwOvmp3ICIoliMPUbrf3iBkTQfvIJb5XOlUD9isnLiUwgAwSJy7th0ZLjGy9PH5j3i4=
+	t=1772714668; cv=none; b=rYCIaF0iWB2jJLB34MX8Leaij/+QFhcG4wk59dhb35BycVKNcIwCS+FKIHtYnq1heJswqdLza3FgR5Nlrd51e++Ew+ryR/7BYdtO2K/Tu5dw2oYqkZc8NdmwBseGocdxbjwTruii3YilqhYiQm4p2/UegYquLTXjfh4bcUgCgSc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772713415; c=relaxed/simple;
-	bh=ToV/Hpupn/875tGIVeR2aJoXP72Fruda01TvefbQ94w=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=kDI9OftZsek9o8ZmngXzy6TtTqx7/SvHQEQX7rzTElDJe3HYoBXThnrHuGfMOLY2ktTOqf0Hwz/pWuXHCS+1VcUOXBKgdTdJ0rpaqm9/q1s+QVRBHWJKmyYzdT2sFxz8kDK+QzNsUicUJQViDWb7bih5bJfvWRj5iaBqi0Q/u58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QvdAk9US; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772714668; c=relaxed/simple;
+	bh=1w1RB447ldnhlv8Hxu9zjeDMNtNYv/NPl51WMASJdHA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tGcSQVLaLf6PoU9KSijosV1RXLeVCHeDXSmeD8EPGnyu2VCi2urciYYPhYHp5PSDKWDwzr1VJi/Vb+OH6ZGtsjfbM49TS2TVW8wag2Nib2yJ3qns3e1XDyLgJqLkBtYzV5o5iQ1OHSS2zz5V0NNevmviXCrLrIjpEOjtrCKf+VU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LDxIZTHJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QvdAk9US"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 70EDEC2BCB2;
-	Thu,  5 Mar 2026 12:23:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LDxIZTHJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DB4FC116C6;
+	Thu,  5 Mar 2026 12:44:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772713415;
-	bh=ToV/Hpupn/875tGIVeR2aJoXP72Fruda01TvefbQ94w=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=QvdAk9USDxxhhj0r+hCo5JcjC+PARN2duf0LnNe46w7wsdMTbs9Zp1YbU1AZx5+Yu
-	 xITLNTNTvYM01Zb/xu6zb8PLY8PjtberuENwU+sYSVBaSoIMSKWKuy1PmDMu5+MMA0
-	 iLmBbZuJ1k3ASpQHYM9SyLoyNDIrxUspyzVkjAAmvfmWaw3GB6/NGRg7dWZL/QgnNq
-	 2VoqVntKvrE/QRHplY70UIkHrFpHr/eyd8MQjD1xKxIgxjTvL0PDXahUfj24IiOUfG
-	 VCP1oNI90yvOWqUbHLGR5G/bNrKbyQaJ3neUw8LddDkEomYRZfHttVl4iW0DvOfbBA
-	 okesqtZss0mgA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620D9F30959;
-	Thu,  5 Mar 2026 12:23:35 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Thu, 05 Mar 2026 14:23:29 +0200
-Subject: [PATCH 3/4] iio: adc: ad4691: add triggered buffer support
+	s=k20201202; t=1772714668;
+	bh=1w1RB447ldnhlv8Hxu9zjeDMNtNYv/NPl51WMASJdHA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=LDxIZTHJ2mYAqUYUpM4rqzZqtOy9udLdU1nPT/u3StPVOAxHfd1HkkpzQVNBSMNCH
+	 tHAAbXHXvchUiXKghhZ/gTWDIczkMPjXTj5SXEg2l6KA5uZ9T7SNE2pTHnkOPGiC/N
+	 R+jvYfQZkT5R0zYOrUApdyIuMpJE2gaQKcjZiWS0aIapVW/Gl7pvBkItwBaJNBWaqY
+	 DspG8lnPxmxXQfJlwIaAI4BIe1+2wKsNdNXPNfblQVleHP6DcEQPVv0LznMOrZKC6L
+	 i1iJ3VLPsiU1NRIuHz9lNYrs/PLJjveniEzGFvjojTShf9jVCLI39Fudl1ICZ2sB7K
+	 1RYQ3uYn/pX2A==
+Message-ID: <d77de930-d988-40ad-9b29-9bfe8f4584df@kernel.org>
+Date: Thu, 5 Mar 2026 13:44:22 +0100
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260305-ad4692-multichannel-sar-adc-driver-v1-3-336229a8dcc7@analog.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add bindings for AD4691 family
+To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+ linux-gpio@vger.kernel.org
 References: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
-In-Reply-To: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
- linux-gpio@vger.kernel.org, Radu Sabau <radu.sabau@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1772713413; l=12862;
- i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=ljLdjl7LKh8bWVM9PqQW0wndeElVvojPks9hWMLcmBg=;
- b=oFwWvou/67Hi/3HgCN2YTbMr8UyIeJdiG39EcCty4hSiHVEV28SgiavIXMzglfipeNw1DXbEZ
- CvBuKgoMDSAAiDzjcEtmq2kV28XJ4cqkUh56QyhT9CKZXz3dVpAqwFd
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
- auth_id=642
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
+ <20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Radu Sabau <radu.sabau@analog.com>
+On 05/03/2026 13:23, Radu Sabau via B4 Relay wrote:
+> From: Radu Sabau <radu.sabau@analog.com>
+> 
+> Add YAML bindings and dt-bindings header for the Analog Devices AD4691
 
-Add buffered capture support using the IIO triggered buffer framework.
-
-For CNV Clock, CNV Burst, Autonomous and SPI Burst modes the GP0 pin
-is configured as DATA_READY output and an interrupt is registered on
-its falling edge. Each interrupt fires the trigger, which reads
-accumulated results from the internal accumulator registers via regmap.
-
-For Manual Mode (pipelined SPI protocol) there is no DATA_READY
-signal, so an hrtimer-based IIO trigger is used instead. The timer
-period is derived from the requested sampling frequency and validated
-against the minimum SPI transfer time for the active channel count.
-The trigger handler walks the active scan mask issuing one 3-byte SPI
-transfer per channel (selecting the next channel while reading the
-previous result) and pushes samples to the IIO buffer.
-
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
- drivers/iio/adc/Kconfig  |   2 +
- drivers/iio/adc/ad4691.c | 316 +++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 318 insertions(+)
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 3685a03aa8dc..d498f16c0816 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -142,6 +142,8 @@ config AD4170_4
- config AD4691
- 	tristate "Analog Devices AD4691 Family ADC Driver"
- 	depends on SPI
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
- 	select REGMAP
- 	help
- 	  Say yes here to build support for Analog Devices AD4691 Family MuxSAR
-diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
-index dee8bc312d44..ab48f336e46c 100644
---- a/drivers/iio/adc/ad4691.c
-+++ b/drivers/iio/adc/ad4691.c
-@@ -10,6 +10,7 @@
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/gpio/consumer.h>
-+#include <linux/hrtimer.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/math.h>
-@@ -24,8 +25,13 @@
- #include <linux/units.h>
- #include <linux/unaligned.h>
- 
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- 
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+
- #include <dt-bindings/iio/adc/adi,ad4691.h>
- 
- #define AD4691_NUM_REGULATORS			1
-@@ -42,6 +48,7 @@
-  *        = spi_hz / (36 * (num_channels + 1))
-  */
- #define AD4691_MANUAL_MODE_STD_FREQ(x, y)	((y) / (36 * ((x) + 1)))
-+#define AD4691_BITS_PER_XFER			24
- #define AD4691_CNV_DUTY_CYCLE_NS		380
- #define AD4691_MAX_CONV_PERIOD_US		800
- 
-@@ -287,6 +294,8 @@ struct ad4691_state {
- 
- 	struct regulator_bulk_data	regulators[AD4691_NUM_REGULATORS];
- 
-+	struct iio_trigger		*trig;
-+
- 	enum ad4691_adc_mode		adc_mode;
- 
- 	int				vref;
-@@ -297,6 +306,8 @@ struct ad4691_state {
- 	 */
- 	struct mutex			lock;
- 
-+	/* hrtimer for MANUAL_MODE triggered buffer (non-offload) */
-+	struct hrtimer			sampling_timer;
- 	ktime_t				sampling_period;
- 
- 	/* DMA (thus cache coherency maintenance) may require the
-@@ -306,6 +317,11 @@ struct ad4691_state {
- 	 */
- 	unsigned char rx_data[ALIGN(3, sizeof(s64)) + sizeof(s64)]	__aligned(IIO_DMA_MINALIGN);
- 	unsigned char tx_data[ALIGN(3, sizeof(s64)) + sizeof(s64)]	__aligned(IIO_DMA_MINALIGN);
-+	/* Scan buffer for triggered buffer push (one sample + timestamp) */
-+	struct {
-+		u32 val;
-+		s64 ts __aligned(8);
-+	} scan __aligned(IIO_DMA_MINALIGN);
- };
- 
- static void ad4691_disable_regulators(void *data)
-@@ -949,6 +965,233 @@ static int ad4691_reg_access(struct iio_dev *indio_dev, unsigned int reg,
- 	return ret;
- }
- 
-+static int ad4691_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct ad4691_state *st = iio_priv(indio_dev);
-+	int n_active = hweight_long(*indio_dev->active_scan_mask);
-+	int ret;
-+
-+	if (st->adc_mode == AD4691_MANUAL_MODE) {
-+		u64 min_period_ns;
-+
-+		/* N+1 transfers needed for N channels, with 50% overhead */
-+		min_period_ns = div64_u64((u64)(n_active + 1) * AD4691_BITS_PER_XFER *
-+					  NSEC_PER_SEC * 3,
-+					  st->spi->max_speed_hz * 2);
-+
-+		if (ktime_to_ns(st->sampling_period) < min_period_ns) {
-+			dev_err(&st->spi->dev,
-+				"Sampling period %lld ns too short for %d channels. Min: %llu ns\n",
-+				ktime_to_ns(st->sampling_period), n_active,
-+				min_period_ns);
-+			return -EINVAL;
-+		}
-+
-+		hrtimer_start(&st->sampling_timer, st->sampling_period,
-+			      HRTIMER_MODE_REL);
-+		return 0;
-+	}
-+
-+	ret = regmap_write(st->regmap, AD4691_STATE_RESET_REG,
-+			   AD4691_STATE_RESET_ALL);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, AD4691_ACC_MASK1_REG,
-+				 ~(*indio_dev->active_scan_mask) & 0xFF);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, AD4691_ACC_MASK2_REG,
-+				 ~(*indio_dev->active_scan_mask >> 8) & 0xFF);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
-+				*indio_dev->active_scan_mask);
-+	if (ret)
-+		return ret;
-+
-+	if (st->adc_mode == AD4691_AUTONOMOUS_MODE)
-+		ret = regmap_write(st->regmap, AD4691_GPIO_MODE1_REG, AD4691_ADC_BUSY);
-+	else
-+		ret = regmap_write(st->regmap, AD4691_GPIO_MODE1_REG, AD4691_DATA_READY);
-+	if (ret)
-+		return ret;
-+
-+	switch (st->adc_mode) {
-+	case AD4691_CNV_BURST_MODE:
-+		/*
-+		 * Recompute the PWM period now that the active channel count is
-+		 * known. The period must cover one full burst cycle: oscillator
-+		 * conversion time (tOSC * (n+1)) plus all SPI transfer time.
-+		 */
-+		st->cnv_period = ad4691_cnv_burst_period_ns(st, n_active, false);
-+		fallthrough;
-+	case AD4691_AUTONOMOUS_MODE:
-+	case AD4691_SPI_BURST_MODE:
-+	case AD4691_CNV_CLOCK_MODE:
-+		return ad4691_sampling_enable(st, true);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int ad4691_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct ad4691_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (st->adc_mode) {
-+	case AD4691_AUTONOMOUS_MODE:
-+	case AD4691_SPI_BURST_MODE:
-+	case AD4691_CNV_BURST_MODE:
-+	case AD4691_CNV_CLOCK_MODE:
-+		ret = ad4691_sampling_enable(st, false);
-+		if (ret)
-+			return ret;
-+		break;
-+	case AD4691_MANUAL_MODE:
-+		hrtimer_cancel_wait_running(&st->sampling_timer);
-+		return 0;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
-+			   AD4691_SEQ_ALL_CHANNELS_OFF);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(st->regmap, AD4691_STATE_RESET_REG,
-+			    AD4691_STATE_RESET_ALL);
-+}
-+
-+static const struct iio_buffer_setup_ops ad4691_buffer_setup_ops = {
-+	.postenable = &ad4691_buffer_postenable,
-+	.postdisable = &ad4691_buffer_postdisable,
-+};
-+
-+static irqreturn_t ad4691_irq(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct ad4691_state *st = iio_priv(indio_dev);
-+
-+	/*
-+	 * DATA_READY has asserted: stop conversions before reading so the
-+	 * accumulator does not continue sampling while the trigger handler
-+	 * processes the data. Then fire the IIO trigger to push the sample
-+	 * to the buffer.
-+	 *
-+	 * In direct (read_raw) mode the buffer is not enabled; read_raw uses
-+	 * a timed delay and stops conversions itself, so skip the trigger poll.
-+	 */
-+	ad4691_sampling_enable(st, false);
-+
-+	if (iio_buffer_enabled(indio_dev))
-+		iio_trigger_poll(st->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static enum hrtimer_restart ad4691_sampling_timer_handler(struct hrtimer *timer)
-+{
-+	struct ad4691_state *st = container_of(timer, struct ad4691_state,
-+					       sampling_timer);
-+
-+	iio_trigger_poll(st->trig);
-+	hrtimer_forward_now(timer, st->sampling_period);
-+
-+	return HRTIMER_RESTART;
-+}
-+
-+static const struct iio_trigger_ops ad4691_trigger_ops = {
-+	.validate_device = iio_trigger_validate_own_device,
-+};
-+
-+static irqreturn_t ad4691_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct ad4691_state *st = iio_priv(indio_dev);
-+	unsigned int val;
-+	int ret, i;
-+
-+	mutex_lock(&st->lock);
-+
-+	if (st->adc_mode == AD4691_MANUAL_MODE) {
-+		unsigned int prev_val;
-+		int prev_chan = -1;
-+
-+		/*
-+		 * MANUAL_MODE with CNV tied to CS: each transfer triggers a
-+		 * conversion AND returns the previous conversion's result.
-+		 * First transfer returns garbage, so we do N+1 transfers for
-+		 * N channels.
-+		 */
-+		iio_for_each_active_channel(indio_dev, i) {
-+			ret = ad4691_transfer(st, AD4691_ADC_CHAN(i), &val);
-+			if (ret)
-+				goto done;
-+
-+			/* Push previous channel's data (skip first - garbage) */
-+			if (prev_chan >= 0) {
-+				st->scan.val = prev_val;
-+				iio_push_to_buffers_with_ts(indio_dev,
-+					&st->scan, sizeof(st->scan),
-+					iio_get_time_ns(indio_dev));
-+			}
-+			prev_val = val;
-+			prev_chan = i;
-+		}
-+
-+		/* Final NOOP transfer to get last channel's data */
-+		ret = ad4691_transfer(st, AD4691_NOOP, &val);
-+		if (ret)
-+			goto done;
-+
-+		st->scan.val = val;
-+		iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
-+					    iio_get_time_ns(indio_dev));
-+		goto done;
-+	}
-+
-+	for (i = 0; i < st->chip->num_channels; i++) {
-+		if (BIT(i) & *indio_dev->active_scan_mask) {
-+			ret = regmap_read(st->regmap, AD4691_AVG_IN(i), &val);
-+			if (ret)
-+				goto done;
-+
-+			st->scan.val = val;
-+			iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
-+						    iio_get_time_ns(indio_dev));
-+		}
-+	}
-+
-+	regmap_write(st->regmap, AD4691_STATE_RESET_REG, AD4691_STATE_RESET_ALL);
-+
-+	/* START next conversion. */
-+	switch (st->adc_mode) {
-+	case AD4691_CNV_CLOCK_MODE:
-+	case AD4691_CNV_BURST_MODE:
-+	case AD4691_AUTONOMOUS_MODE:
-+	case AD4691_SPI_BURST_MODE:
-+		ad4691_sampling_enable(st, true);
-+		break;
-+	case AD4691_MANUAL_MODE:
-+	default:
-+		break;
-+	}
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+	mutex_unlock(&st->lock);
-+	return IRQ_HANDLED;
-+done:
-+	mutex_unlock(&st->lock);
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
- static const struct iio_info ad4691_info = {
- 	.read_raw = &ad4691_read_raw,
- 	.read_avail = &ad4691_read_avail,
-@@ -1121,6 +1364,75 @@ static void ad4691_setup_channels(struct iio_dev *indio_dev,
- 	indio_dev->num_channels = st->chip->num_channels;
- }
- 
-+static int ad4691_setup_triggered_buffer(struct iio_dev *indio_dev,
-+					 struct ad4691_state *st)
-+{
-+	struct device *dev = &st->spi->dev;
-+	int irq, ret;
-+
-+	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
-+					  indio_dev->name,
-+					  iio_device_id(indio_dev));
-+	if (!st->trig)
-+		return dev_err_probe(dev, -ENOMEM,
-+				     "Failed to allocate IIO trigger\n");
-+
-+	st->trig->ops = &ad4691_trigger_ops;
-+	iio_trigger_set_drvdata(st->trig, st);
-+
-+	ret = devm_iio_trigger_register(dev, st->trig);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "IIO trigger register failed\n");
-+
-+	indio_dev->trig = iio_trigger_get(st->trig);
-+
-+	switch (st->adc_mode) {
-+	case AD4691_CNV_CLOCK_MODE:
-+	case AD4691_CNV_BURST_MODE:
-+	case AD4691_AUTONOMOUS_MODE:
-+	case AD4691_SPI_BURST_MODE:
-+		/*
-+		 * DATA_READY asserts at end-of-conversion (or when the
-+		 * accumulator fills in AUTONOMOUS_MODE). The IRQ handler stops
-+		 * conversions and fires the IIO trigger so the trigger handler
-+		 * can read and push the sample to the buffer.
-+		 */
-+		irq = fwnode_irq_get_byname(dev_fwnode(dev), "DRDY");
-+		if (irq <= 0)
-+			return dev_err_probe(dev, irq ? irq : -ENOENT,
-+					     "failed to get DRDY interrupt\n");
-+
-+		ret = devm_request_threaded_irq(dev, irq, NULL,
-+						&ad4691_irq,
-+						IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
-+						indio_dev->name, indio_dev);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "request irq %d failed\n", irq);
-+		break;
-+	case AD4691_MANUAL_MODE:
-+		/*
-+		 * No DATA_READY signal in MANUAL_MODE; CNV is tied to CS so
-+		 * conversions start with each SPI transfer. Use an hrtimer to
-+		 * schedule periodic reads.
-+		 */
-+		hrtimer_setup(&st->sampling_timer, ad4691_sampling_timer_handler,
-+			      CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-+		st->sampling_period = ns_to_ktime(DIV_ROUND_CLOSEST_ULL(
-+			NSEC_PER_SEC,
-+			AD4691_MANUAL_MODE_STD_FREQ(st->chip->num_channels,
-+						    st->spi->max_speed_hz)));
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return devm_iio_triggered_buffer_setup(dev, indio_dev,
-+					       &iio_pollfunc_store_time,
-+					       &ad4691_trigger_handler,
-+					       &ad4691_buffer_setup_ops);
-+}
-+
- static int ad4691_probe(struct spi_device *spi)
- {
- 	struct device *dev = &spi->dev;
-@@ -1169,6 +1481,10 @@ static int ad4691_probe(struct spi_device *spi)
- 
- 	ad4691_setup_channels(indio_dev, st);
- 
-+	ret = ad4691_setup_triggered_buffer(indio_dev, st);
-+	if (ret)
-+		return ret;
-+
- 	return devm_iio_device_register(dev, indio_dev);
- }
- 
-
--- 
-2.43.0
+There are no such thing as YAML bindings. DT bindings.
 
 
+> family of multichannel SAR ADCs (AD4691, AD4692, AD4693, AD4694).
+> 
+> The binding describes five operating modes selectable via the
+
+No, describe the hardware, not binding.
+
+
+A nit, subject: drop second/last, redundant "bindings". The
+"dt-bindings" prefix is already stating that these are bindings.
+See also:
+https://elixir.bootlin.com/linux/v6.17-rc3/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
+
+
+> adi,spi-mode property, optional PWM/clock for CNV Clock and CNV Burst
+> modes, GPIO pins, voltage supplies and the trigger-source interface for
+> SPI Engine offload operation.
+> 
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+> ---
+>  .../devicetree/bindings/iio/adc/adi,ad4691.yaml    | 278 +++++++++++++++++++++
+>  MAINTAINERS                                        |   8 +
+>  include/dt-bindings/iio/adc/adi,ad4691.h           |  13 +
+>  3 files changed, 299 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
+> new file mode 100644
+> index 000000000000..b0d8036184b0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
+> @@ -0,0 +1,278 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/adi,ad4691.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices AD4691 Family Multichannel SAR ADCs
+> +
+> +maintainers:
+> +  - Radu Sabau <radu.sabau@analog.com>
+> +
+> +description: |
+> +  The AD4691 family are high-speed, low-power, multichannel successive
+> +  approximation register (SAR) analog-to-digital converters (ADCs) with
+> +  an SPI-compatible serial interface. The family supports multiple operating
+> +  modes including CNV Clock Mode, CNV Burst Mode, Autonomous Mode, SPI Burst
+> +  Mode, and Manual Mode.
+> +
+> +  The driver supports both standard SPI and SPI Engine (offload) operation.
+
+Driver is irrelevant. If you change mode, you change bindings?
+
+> +
+> +  Datasheets:
+> +    * https://www.analog.com/en/products/ad4692.html
+> +    * https://www.analog.com/en/products/ad4691.html
+> +    * https://www.analog.com/en/products/ad4694.html
+> +    * https://www.analog.com/en/products/ad4693.html
+> +
+> +$ref: /schemas/spi/spi-peripheral-props.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,ad4691
+> +      - adi,ad4692
+> +      - adi,ad4693
+> +      - adi,ad4694
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 40000000
+> +
+> +  spi-cpol: true
+> +  spi-cpha: true
+> +
+> +  adi,spi-mode:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+
+Nope. You already have such property, so you cannot redefine it. Look at
+other sources.
+
+...
+
+
+> +  clocks:
+> +    description: Reference clock for PWM timing in CNV Clock and CNV Burst modes.
+> +    maxItems: 1
+> +
+> +  clock-names:
+
+Drop clock-names. Not useful if you call it just ref.
+
+> +    items:
+> +      - const: ref_clk
+> +
+> +  pwms:
+> +    description:
+> +      PWM connected to the CNV pin. Required for CNV Clock Mode and CNV Burst
+> +      Mode to control conversion timing.
+> +    maxItems: 1
+> +
+> +  pwm-names:
+> +    items:
+> +      - const: cnv
+> +
+> +  interrupts:
+> +    description:
+> +      Interrupt from the GP0 pin configured as DATA_READY or BUSY. Required
+> +      for non-offload operation in all modes except Manual Mode (mode 4),
+> +      where CNV is tied to CS and no DATA_READY signal is generated.
+> +    maxItems: 1
+> +
+> +  interrupt-names:
+> +    items:
+> +      - const: DRDY
+
+Lowercase. Or actually drop names...
+
+> +
+> +  '#trigger-source-cells':
+> +    description: |
+> +      For SPI Engine offload operation, this node acts as a trigger source.
+> +      Two cells are required:
+> +        - First cell: Trigger event type (0 = BUSY, 1 = DATA_READY)
+> +        - Second cell: GPIO pin number (only 0 = GP0 is supported)
+> +
+> +      Macros are available in dt-bindings/iio/adc/adi,ad4691.h:
+> +        AD4691_TRIGGER_EVENT_BUSY, AD4691_TRIGGER_EVENT_DATA_READY
+> +        AD4691_TRIGGER_PIN_GP0
+> +    const: 2
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - adi,spi-mode
+> +  - vio-supply
+> +  - reset-gpios
+> +
+> +allOf:
+> +  # vref-supply and vrefin-supply are mutually exclusive, one is required
+> +  - oneOf:
+> +      - required:
+> +          - vref-supply
+> +      - required:
+> +          - vrefin-supply
+> +
+> +  # AD4694 (20-bit) does not support Manual Mode
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          const: adi,ad4694
+> +    then:
+> +      properties:
+> +        adi,spi-mode:
+> +          enum: [0, 1, 2, 3]
+> +
+> +  # CNV Clock Mode and CNV Burst Mode require PWM and clock
+> +  - if:
+> +      properties:
+> +        adi,spi-mode:
+> +          enum: [0, 1]
+> +    then:
+> +      required:
+> +        - clocks
+> +        - clock-names
+> +        - pwms
+> +        - pwm-names
+> +
+> +  # Non-Manual modes (0-3) without SPI offload require a DRDY interrupt.
+> +  # Offload configurations expose '#trigger-source-cells' instead.
+> +  - if:
+> +      properties:
+> +        adi,spi-mode:
+> +          enum: [0, 1, 2, 3]
+> +      not:
+> +        required:
+> +          - '#trigger-source-cells'
+> +    then:
+> +      required:
+> +        - interrupts
+> +        - interrupt-names
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/iio/adc/adi,ad4691.h>
+> +
+> +    /* Example: AD4692 in CNV Clock Mode with standard SPI */
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        adc@0 {
+> +            compatible = "adi,ad4692";
+> +            reg = <0>;
+> +            spi-cpol;
+> +            spi-cpha;
+> +            spi-max-frequency = <40000000>;
+> +
+> +            adi,spi-mode = <0>; /* CNV Clock Mode */
+> +
+> +            vio-supply = <&vio_supply>;
+> +            vref-supply = <&vref_5v>;
+> +
+> +            reset-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
+> +            gp0-gpios = <&gpio 11 GPIO_ACTIVE_HIGH>;
+> +
+> +            clocks = <&ref_clk>;
+> +            clock-names = "ref_clk";
+> +
+> +            pwms = <&pwm_gen 0 0>;
+> +            pwm-names = "cnv";
+> +
+> +            interrupts = <12 4>;
+> +            interrupt-names = "DRDY";
+> +        };
+> +    };
+> +
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/iio/adc/adi,ad4691.h>
+> +
+> +    /* Example: AD4692 in Manual Mode with SPI Engine offload */
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        adc@0 {
+> +            compatible = "adi,ad4692";
+> +            reg = <0>;
+> +            spi-cpol;
+> +            spi-cpha;
+> +            spi-max-frequency = <31250000>;
+> +
+> +            adi,spi-mode = <4>; /* Manual Mode */
+> +
+> +            vio-supply = <&vio_supply>;
+> +            vrefin-supply = <&vrefin_supply>;
+> +
+> +            reset-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
+> +        };
+> +    };
+> +
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/iio/adc/adi,ad4691.h>
+
+Where do you use the header?
+
+Anyway, drop example, two are enough.
+
+
+Best regards,
+Krzysztof
