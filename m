@@ -1,100 +1,276 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54273C73D9;
-	Fri, 20 Mar 2026 14:50:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC686301704;
+	Fri, 20 Mar 2026 15:16:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774018228; cv=none; b=YkaApWpyNErZUvZFHnc4hQCwtb7X9k0dUxz6IVmW9QdKWXxgwiFRBEQW7qejIBwk0y9MOd9h7/eXug2XYboF/ch+tBheDPJgF0FO0+NDdZtyZx1KihDeyc4B9F3+d2b20szNRfw83BZcKWDx7C9l9BhGd3HlSVuim6cIfzcM1os=
+	t=1774019793; cv=none; b=FwIiAo/qEHEI/SJAvZE2Fwfi+uCtpyTwYE4K+mN3xguOcZTt07TG76jIusVpBjlGBN0gu6smyAKL9Y0uwupDdKQjU2x5CWIpSxP4Hjz3vLFtHQrfZRsAkDXSzEaih2p/u/v+Z4p/dIE8gLZ1x7ug/PvJPkLysJw9nosVieV+ZZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774018228; c=relaxed/simple;
-	bh=xEq0lkHiWlfzRjTk9tAbY2BUU4eS/9QAmtJ8rJpta60=;
+	s=arc-20240116; t=1774019793; c=relaxed/simple;
+	bh=GkNDdaVsOUqNwYWo7W4428KaeYtWZrqhStkpVFxO/AU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ho83ocKaPVOW6sTICrI+fQjeL1xCvyL6nMMUos8WO9+gGLYIaugt/NHOozipZhP+860xTRHQejtcuURFlB8xlPMPOIKtBVXXdtDVTfU+vW6VNZEjJv80WHR7V+hvLqFYhYo6Z9fjej2CDoIDMDC4s7gHJUSJUJImIJ4ho81qQkg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X8PyEklX; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=FGEloPiMjbsub9HFyDIHY4OLpb9Eyo5P1jayhPd9VKYDGxgB/CSET+8KhXCDUPIK03vLb5oxKt6g6FqRZQLx6f3kfNQV/e8I82z1YZDLKA8BGP8x3VVd+Rn5FwcFJIuv9G3hJEHCVjbixE6k2PS9SUKAnNgp3i9gzMgnzhQubKs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TCNCaFvl; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X8PyEklX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3FC3C19425;
-	Fri, 20 Mar 2026 14:50:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774018227;
-	bh=xEq0lkHiWlfzRjTk9tAbY2BUU4eS/9QAmtJ8rJpta60=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=X8PyEklXlRJu+UqDu9GCKeEZJfQdaZQ3fRzearO8/+biLOD5xVHtfvWxJ83UTPeTm
-	 e3vfw/zpLxQpWpcuCfR/Ot1WDWP6YV6P0j3HqTUX9hXJDnxljg+GIn6pFEgBlqPe8i
-	 GMJJKLqjV2etuZF+CCXEUaMFnWJKgxzzldDO9rHQdo0vESuUDXw8L/GJAGpYHk44bO
-	 v+KchtE9yiJAOELCm8qR2BhmbUSSPoviK0FF2OWgY2BSP9ciCloM3FwE+nPW9lzSdZ
-	 x/jvOIcgKEl/RfsbNMEDvoNAJ3xRPleQRcLWO2w2X9XMw0kVjdrM4NhhMMcXvtgYAV
-	 VoCq4zNKjnF3Q==
-Date: Fri, 20 Mar 2026 15:50:24 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Janne Grunau <j@jannau.net>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>, 
-	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Linus Walleij <linusw@kernel.org>, Mark Kettenis <kettenis@openbsd.org>, 
-	Andi Shyti <andi.shyti@kernel.org>, Sasha Finkelstein <fnkl.kernel@gmail.com>, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, asahi@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-i2c@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 7/9] dt-bindings: pwm: apple,s5l-fpwm: Add t8122
- compatible
-Message-ID: <ab1d82Y9dGzstkgy@monoceros>
-References: <20260320-apple-m3-initial-devicetrees-v1-0-5842e1e393a8@jannau.net>
- <20260320-apple-m3-initial-devicetrees-v1-7-5842e1e393a8@jannau.net>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TCNCaFvl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774019792; x=1805555792;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GkNDdaVsOUqNwYWo7W4428KaeYtWZrqhStkpVFxO/AU=;
+  b=TCNCaFvlRG5La3Dzhh8PPJ5x+ImD2ZAB52D1wUq0gRIRlN4xeupsTzWs
+   0Gk9BroU+/7xAw1MJZZBiIdNB1kNvmmSxNdsLXcSW3DG1bCuo8ZaqwNbF
+   HZNJSjLHaG6jabimuwuker2mB5fM6w8pqevnNrUndvXk0686yxLraS4nr
+   oB/FICRb3LMXjABkIllhglP9To5NsLyl431st26CbA/3+dByjFhZx57CJ
+   2dHUtl/P8QwHTt8DEi6fMoP+aalfwDG5NKQmeeqQZ4t9bxiXPwm7oJo9k
+   l4UMOBt9QH+4I8wCwr6+x+PyVCWAYam5mijA+/Z9Rk3iUFTJumG2cvo0w
+   A==;
+X-CSE-ConnectionGUID: DhxsN5BJTfKwZg80GygFdg==
+X-CSE-MsgGUID: hjLw8A6qRROV8bR7PQzrSw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11735"; a="97725588"
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="97725588"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 08:16:31 -0700
+X-CSE-ConnectionGUID: LJIG37obSneLj5G8pQfLWg==
+X-CSE-MsgGUID: VxaY5xfiQSyjNDsBM6s/ZA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="223300291"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.40])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 08:16:27 -0700
+Date: Fri, 20 Mar 2026 17:16:24 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: radu.sabau@analog.com
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v4 2/4] iio: adc: ad4691: add initial driver for AD4691
+ family
+Message-ID: <ab1kyFPyrkxJLw2Z@ashevche-desk.local>
+References: <20260320-ad4692-multichannel-sar-adc-driver-v4-0-052c1050507a@analog.com>
+ <20260320-ad4692-multichannel-sar-adc-driver-v4-2-052c1050507a@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="pshe747cvhfvjhsk"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260320-apple-m3-initial-devicetrees-v1-7-5842e1e393a8@jannau.net>
+In-Reply-To: <20260320-ad4692-multichannel-sar-adc-driver-v4-2-052c1050507a@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
+
+On Fri, Mar 20, 2026 at 01:03:56PM +0200, Radu Sabau via B4 Relay wrote:
+
+> Add support for the Analog Devices AD4691 family of high-speed,
+> low-power multichannel SAR ADCs: AD4691 (16-ch, 500 kSPS),
+> AD4692 (16-ch, 1 MSPS), AD4693 (8-ch, 500 kSPS) and
+> AD4694 (8-ch, 1 MSPS).
+> 
+> The driver implements a custom regmap layer over raw SPI to handle the
+> device's mixed 1/2/3/4-byte register widths and uses the standard IIO
+> read_raw/write_raw interface for single-channel reads.
+> 
+> The chip idles in Autonomous Mode so that single-shot read_raw can use
+> the internal oscillator without disturbing the hardware configuration.
+> 
+> Three voltage supply domains are managed: avdd (required), vio, and a
+> reference supply on either the REF pin (ref-supply, external buffer)
+> or the REFIN pin (refin-supply, uses the on-chip reference buffer;
+> REFBUF_EN is set accordingly). Hardware reset is performed via
+> the reset controller framework; a software reset through SPI_CONFIG_A
+> is used as fallback when no hardware reset is available.
+> 
+> Accumulator channel masking for single-shot reads uses ACC_MASK_REG via
+> an ADDR_DESCENDING SPI write, which covers both mask bytes in a single
+> 16-bit transfer.
+
+...
+
+> +static int ad4691_reg_read(void *context, unsigned int reg, unsigned int *val)
+> +{
+> +	struct spi_device *spi = context;
+> +	u8 tx[2], rx[4];
+> +	int ret;
+
+> +	put_unaligned_be16(0x8000 | reg, tx);
+
+I would expect that the config will have read_flag_mask set and here you just
+use it. But it's fine like now, just add a comment
+
+	/* Set bit 15 to mark the operation READ */
+
+or something similar.
+
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_SAT_OVR_REG(15):
+> +		ret = spi_write_then_read(spi, tx, 2, rx, 1);
+> +		if (ret)
+> +			return ret;
+> +		*val = rx[0];
+> +		return 0;
+> +	case AD4691_STD_SEQ_CONFIG:
+> +	case AD4691_AVG_IN(0) ... AD4691_AVG_IN(15):
+> +		ret = spi_write_then_read(spi, tx, 2, rx, 2);
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be16(rx);
+> +		return 0;
+> +	case AD4691_AVG_STS_IN(0) ... AD4691_AVG_STS_IN(15):
+> +	case AD4691_ACC_IN(0) ... AD4691_ACC_IN(15):
+> +		ret = spi_write_then_read(spi, tx, 2, rx, 3);
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be24(rx);
+> +		return 0;
+> +	case AD4691_ACC_STS_DATA(0) ... AD4691_ACC_STS_DATA(15):
+> +		ret = spi_write_then_read(spi, tx, 2, rx, 4);
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be32(rx);
+> +		return 0;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +static int ad4691_regulator_setup(struct ad4691_state *st)
+> +{
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	int ret;
+> +
+> +	ret = devm_regulator_get_enable(dev, "avdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to get and enable AVDD\n");
+
+> +	ret = devm_regulator_get_enable(dev, "ldo-in");
+> +	if (ret && ret != -ENODEV)
+> +		return dev_err_probe(dev, ret, "Failed to get and enable LDO-IN\n");
+> +	st->ldo_en = (ret == -ENODEV);
+
+You can use the approach from below
+
+	ret = devm_regulator_get_enable(dev, "ldo-in");
+	if (ret == -ENODEV)
+		st->ldo_en = true;
+	else if (ret)
+		return dev_err_probe(dev, ret, "Failed to get and enable LDO-IN\n");
+	// no other branches assuming ldo_en = false due to kzalloc():ed memory.
 
 
---pshe747cvhfvjhsk
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 7/9] dt-bindings: pwm: apple,s5l-fpwm: Add t8122
- compatible
-MIME-Version: 1.0
+> +	ret = devm_regulator_get_enable(dev, "vio");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to get and enable VIO\n");
+> +
+> +	st->vref_uV = devm_regulator_get_enable_read_voltage(dev, "ref");
 
-Hello,
+> +	if (st->vref_uV >= 0) {
+> +		st->refbuf_en = false;
 
-On Fri, Mar 20, 2026 at 01:23:25PM +0100, Janne Grunau wrote:
-> The PWM controller on the Apple silicon t8122 (M3) SoC is compatible
-> with the existing driver. Add "apple,t8122-fpwm" as SoC specific
-> compatible under "apple,s5l-fpwm" used by the driver.
->=20
-> Signed-off-by: Janne Grunau <j@jannau.net>
+Do you need this? Isn't 'st' allocated with kzalloc() or alike?
 
-You didn't say what the merge plan is here. I assume they should all go
-in together via arm-soc?
+> +	} else if (st->vref_uV == -ENODEV) {
+> +		st->vref_uV = devm_regulator_get_enable_read_voltage(dev, "refin");
+> +		st->refbuf_en = true;
 
-If so:
+> +	}
+> +	if (st->vref_uV < 0)
+> +		return dev_err_probe(dev, st->vref_uV,
+> +				     "Failed to get reference supply\n");
 
-Acked-by: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
+> +	if (st->vref_uV < AD4691_VREF_uV_MIN || st->vref_uV > AD4691_VREF_uV_MAX)
+> +		return dev_err_probe(dev, -EINVAL,
+> +				     "vref(%d) must be in the range [%u...%u]\n",
+> +				     st->vref_uV, AD4691_VREF_uV_MIN,
+> +				     AD4691_VREF_uV_MAX);
+> +
+> +	return 0;
+> +}
 
-Best regards
-Uwe
+...
 
---pshe747cvhfvjhsk
-Content-Type: application/pgp-signature; name="signature.asc"
+> +	if (!rst)
 
------BEGIN PGP SIGNATURE-----
+It's not an error check, so I would invert the condition.
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmm9Xq4ACgkQj4D7WH0S
-/k7iZQf/VTQKMp3e1OfZ1SAfsbTIm7E2kaGDHWHFtIVuX45NMEsa5s60N6D2/j0T
-nwX7JnD1CLlsDCLGR9s3H/iTHHlfdmptcfT2+I8ViUMDZ5driYxpysuUMnyDfzMe
-aQbUtV3SRsRzD35HLuiLV06UIUXEiwt1aeBCZRlzfmWsi14Or0IPcHY/D1lPnVvT
-bLrFxHXIfECSWwXcuFekr+Iu7h5iM5EuUiJ7JcaPW4G/K0a+mL8s5LbV69kGF9Lb
-2y+ow+PAdQbmSY9swQuO17set/frraA/XfgUV5DmB+QDwXZ/r927lMNIbdsfTPuk
-woJH3T+AOnP7z2Su0xKexD40E0FiBA==
-=kFFv
------END PGP SIGNATURE-----
+> +		/* No hardware reset available, fall back to software reset. */
+> +		return regmap_write(st->regmap, AD4691_SPI_CONFIG_A_REG,
+> +				    AD4691_SW_RESET);
+> +
+> +	reset_control_assert(rst);
+> +	/* Reset delay required. See datasheet Table 5. */
+> +	fsleep(300);
+> +	reset_control_deassert(rst);
 
---pshe747cvhfvjhsk--
+	if (rst) {
+		reset_control_assert(rst);
+		/* Reset delay required. See datasheet Table 5. */
+		fsleep(300);
+		reset_control_deassert(rst);
+
+		return 0;
+	}
+
+	/* No hardware reset available, fall back to software reset. */
+	return regmap_write(st->regmap, AD4691_SPI_CONFIG_A_REG, AD4691_SW_RESET);
+
+
+...
+
+> +	ret = regmap_write(st->regmap, AD4691_REF_CTRL,
+> +			   FIELD_PREP(AD4691_REF_CTRL_MASK, ref_val) |
+> +			   (st->refbuf_en ? AD4691_REFBUF_EN : 0));
+
+regmap_update_bits()?
+regmap_assign_bits()?
+
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write REF_CTRL\n");
+> +
+> +	ret = regmap_write(st->regmap, AD4691_DEVICE_SETUP,
+> +			   st->ldo_en ? AD4691_LDO_EN : 0);
+
+Ditto.
+
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write DEVICE_SETUP\n");
+> +
+> +	/*
+> +	 * Set the internal oscillator to the highest valid rate for this chip.
+> +	 * Index 0 (1 MHz) is valid only for AD4692/AD4694; AD4691/AD4693 start
+> +	 * at index 1 (500 kHz).
+> +	 */
+> +	ret = regmap_write(st->regmap, AD4691_OSC_FREQ_REG,
+> +			   (st->info->max_rate == HZ_PER_MHZ) ? 0 : 1);
+
+Ditto.
+
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write OSC_FREQ\n");
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
