@@ -1,108 +1,205 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42D411917CD;
-	Mon, 23 Mar 2026 13:06:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522613B775A
+	for <linux-pwm@vger.kernel.org>; Mon, 23 Mar 2026 16:27:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774271191; cv=none; b=B+auL71lzF10+Z0DT6ces6MzzWn75QayLBh4Awx4BIob4x8PEMOOAZS07yVYVLnIqXC1qoRAFSnkLgegOEGDXMcOlvvLpaNrYbt9WaxPaC6mS7a6NKwxiAMNFj9dVE+90Be0uXNQigAx//g8rEkDnTTuyQqLeEo1bV/VXmoZcWY=
+	t=1774283238; cv=none; b=h3HRApXLdgxNdetm/psymz2Ky+D8UEg5AH2BwZL7yqYJScT6g1nLP7NVMibxiz7dnnomZcECl2R+iFFy5o9qX3jLuCLrEqtwoBYtmJeoRaqhwLqZB9+OxulsM/CjcR3mM1AKbkKC2606g+gGY8dAIeVynxrb2hlaaRzokkcIalc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774271191; c=relaxed/simple;
-	bh=gOgv5bKsksgGx3nrv4fb0woIoZIh4/V/CUpY0JM0vXI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o1aaX+24czW4+41B+edcpm7BRncRWzVDno+HGDHfJrkYqDEJxGAoG7mo7Q4636iJyaH4KyusHjYLmIzHDIQH9B5FQk4h6Wpn31Q708NqEZ1s/KRTiMn3tF87L+MEHPjZM+7V7h4wpitERMXZ5HzWs1TqrFVMBbwgXD4oxuySKqQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ikl1fSsQ; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1774283238; c=relaxed/simple;
+	bh=negpr9ymqdcFH8ARZ0fVPTcU/bLZrgK4U2z5BTwZzQI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HdzZXuPdXvU7xcpOfADzuBjTiGeDmTyvU45u3oT7wj1tz7/vJEVBGKpA8/mAxbvuh/skha+hPpDJOu/WpSIw/esm0Mu2MpE0/ws4AD3KdSkG0qJO9GTgwzqfXLD26BCYkvkadv0C7dI3G/OCzZ+1mLROF82dGhPPeHxtq2AWyLM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=TXowK2Ek; arc=none smtp.client-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ikl1fSsQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774271189; x=1805807189;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gOgv5bKsksgGx3nrv4fb0woIoZIh4/V/CUpY0JM0vXI=;
-  b=ikl1fSsQN01POC/6fLBTSOAH+OphbMORWXCkkgvlxB7EDKyVDyqiiDjw
-   OFAaCh30UnaP8gMChjGQxp9/qPI7B0Ktoor4UO5k2Y3UxptjGSaT+QRvG
-   0VjPnaemMjlOKzxCwEGsSPQWQwGlr3Zw4n85ASt0CHC6FYPIqN5LbCsyE
-   qOsk3sKkE8ZwJkaUXx4iPWUS2SxFzXrN1KgmSSv2CuCCsyaEDuoSO1fbm
-   vXy7BPsSr4EaszajvsmvWAB2acqXpl0uI/VQD6L2DnOp7TV7uc4rVk0OO
-   6AkFumiIqx7r4OEPJy6Y2+Gr70yWmbDSTJDU4PXK5putxXwTIxoVKUAqq
-   A==;
-X-CSE-ConnectionGUID: OZYIWwnTR8isps2Cy+UnOg==
-X-CSE-MsgGUID: BEDOk68ZS62Q6MI0lsrEhg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11737"; a="75332744"
-X-IronPort-AV: E=Sophos;i="6.23,137,1770624000"; 
-   d="scan'208";a="75332744"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2026 06:06:28 -0700
-X-CSE-ConnectionGUID: W/sWqUpCSw2K+giilmXCDw==
-X-CSE-MsgGUID: K15JoVVdTbGmKczSDs/sOw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,137,1770624000"; 
-   d="scan'208";a="224235586"
-Received: from lkp-server01.sh.intel.com (HELO 3905d212be1b) ([10.239.97.150])
-  by orviesa007.jf.intel.com with ESMTP; 23 Mar 2026 06:06:21 -0700
-Received: from kbuild by 3905d212be1b with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w4ez2-000000000Zt-0X7C;
-	Mon, 23 Mar 2026 13:06:16 +0000
-Date: Mon, 23 Mar 2026 21:06:13 +0800
-From: kernel test robot <lkp@intel.com>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-gpio@vger.kernel.org, Radu Sabau <radu.sabau@analog.com>
-Subject: Re: [PATCH v4 4/4] iio: adc: ad4691: add SPI offload support
-Message-ID: <202603232017.8IO2whBG-lkp@intel.com>
-References: <20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a@analog.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="TXowK2Ek"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 9CFEAC58081;
+	Mon, 23 Mar 2026 16:27:40 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id B55FA5FEF6;
+	Mon, 23 Mar 2026 16:27:13 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9E6CE10450D30;
+	Mon, 23 Mar 2026 17:27:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1774283232; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:content-language:in-reply-to:references;
+	bh=rNB46l86KhEE2SPNXttKfCE0ClL7ezUhxWzUZSM4r9U=;
+	b=TXowK2EkL0zs85jOe3inW1IcVG7tXjhR3+1Xx8pd1rwRB0Pvka2AW6OGjwybZLXNw4YxLr
+	2kfDMnsPnl06UmYne/mLGaxTNDdIo/D/QxDsDMuR3mrBm9vhAF3nNIS3dlOjN34a4wLFg5
+	QItJ4JvuZ7k2USxBHlnPEV9Ac8+BTYAsVaAqHEJOQ0zeErFQF3+Rk+CWBZYbzZ2Ucaypyi
+	d0vlXkSTYbmlPaGd0Qe8GsyRsjuluHjsvLlnJoOaFXHCsPjHv1340FR9Nv8zp1s1mTDE1f
+	zc7wxTzTjYtHknt4bpQ2BbllBHvwnE2iti57YAJeXR+zOknZaFI1eR4JsiFjtg==
+Message-ID: <b47801f9-3828-4c68-992c-e85373576f3d@bootlin.com>
+Date: Mon, 23 Mar 2026 17:27:07 +0100
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a@analog.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 0/4] Introduce Allwinner H616 PWM controller
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Paul Kocialkowski <paulk@sys-base.io>,
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+ John Stultz <jstultz@google.com>, Joao Schim <joao@schimsalabim.eu>,
+ linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260305091959.2530374-1-richard.genoud@bootlin.com>
+From: Richard GENOUD <richard.genoud@bootlin.com>
+Content-Language: en-US, fr
+Organization: Bootlin
+In-Reply-To: <20260305091959.2530374-1-richard.genoud@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 
-Hi Radu,
+Le 05/03/2026 à 10:19, Richard Genoud a écrit :
+> Allwinner H616 PWM controller is quite different from the A10 one.
+> 
+> It can drive 6 PWM channels, and like for the A10, each channel has a
+> bypass that permits to output a clock, bypassing the PWM logic, when
+> enabled.
+> 
+> But, the channels are paired 2 by 2, sharing a first set of
+> MUX/prescaler/gate.
+> Then, for each channel, there's another prescaler (that will be bypassed
+> if the bypass is enabled for this channel).
+> 
+> It looks like that:
+>              _____      ______      ________
+> OSC24M --->|     |    |      |    |        |
+> APB1 ----->| Mux |--->| Gate |--->| /div_m |-----> PWM_clock_src_xy
+>             |_____|    |______|    |________|
+>                            ________
+>                           |        |
+>                        +->| /div_k |---> PWM_clock_x
+>                        |  |________|
+>                        |    ______
+>                        |   |      |
+>                        +-->| Gate |----> PWM_bypass_clock_x
+>                        |   |______|
+> PWM_clock_src_xy -----+   ________
+>                        |  |        |
+>                        +->| /div_k |---> PWM_clock_y
+>                        |  |________|
+>                        |    ______
+>                        |   |      |
+>                        +-->| Gate |----> PWM_bypass_clock_y
+>                            |______|
+> 
+> Where xy can be 0/1, 2/3, 4/5
+> 
+> PWM_clock_x/y serve for the PWM purpose.
+> PWM_bypass_clock_x/y serve for the clock-provider purpose.
+> The common clock framework has been used to manage those clocks.
+> 
+> This PWM driver serves as a clock-provider for PWM_bypass_clocks.
+> This is needed for example by the embedded AC300 PHY which clock comes
+> from PMW5 pin (PB12).
+> 
+> Usually, to get a clock from a PWM driver, we use the pwm-clock driver
+> so that the PWM driver doesn't need to be a clk-provider itself.
+> While this works in most cases, here it just doesn't.
+> That's because the pwm-clock request a period from the PWM driver,
+> without any clue that it actually wants a clock at a specific frequency,
+> and not a PWM signal with duty cycle capability.
+> So, the PWM driver doesn't know if it can use the bypass or not, it
+> doesn't even have the real accurate frequency information (23809524 Hz
+> instead of 24MHz) because PWM drivers only deal with periods.
+> 
+> With pwm-clock, we loose a precious information along the way (that we
+> actually want a clock and not a PWM signal).
+> That's ok with simple PWM drivers that don't have multiple input clocks,
+> but in this case, without this information, we can't know for sure which
+> clock to use.
+> And here, for instance, if we ask for a 24MHz clock, pwm-clock will
+> requests 42ns (assigned-clocks doesn't help for that matter). The logic
+> is to select the highest clock (100MHz) with no prescaler and a duty
+> cycle value of 2/4 => we have 25MHz instead of 24MHz.
+> And that's a perfectly fine choice for a PMW, because we still can
+> change the duty cycle in the range [0-4]/4.
+> But obviously for a clock, we don't care about the duty cycle, but more
+> about the clock accuracy.
+> 
+> And actually, this PWM is really a PWM AND a real clock when the bypass
+> is set.
+> 
+> This series is based onto v6.19-rc4
+> 
+> NB: checkpatch is not happy with patch 2, but it's a false positive.
+> It doesn't detect that PWM_XY_SRC_MUX/GATE/DIV are structures, but as
+> it's more readable like that, I prefer keeping it that way.
+> 
+> NB2: for geopolitical reasons, I didn't re-use the old series that Paul
+> was referring to.
+> 
 
-kernel test robot noticed the following build warnings:
+Hi Uwe, do you plan to grab this series or does it needs some further 
+reviews?
 
-[auto build test WARNING on 11439c4635edd669ae435eec308f4ab8a0804808]
+Regards,
+Richard
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Radu-Sabau-via-B4-Relay/dt-bindings-iio-adc-add-AD4691-family/20260321-120718
-base:   11439c4635edd669ae435eec308f4ab8a0804808
-patch link:    https://lore.kernel.org/r/20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a%40analog.com
-patch subject: [PATCH v4 4/4] iio: adc: ad4691: add SPI offload support
-config: hexagon-allmodconfig (https://download.01.org/0day-ci/archive/20260323/202603232017.8IO2whBG-lkp@intel.com/config)
-compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260323/202603232017.8IO2whBG-lkp@intel.com/reproduce)
+> Changes since v3:
+> - gather Acked-by/Tested-by
+> - fix cast from pointer to integer of different size (kernel test robot
+>    with arc platform)
+> - add devm_action for clk_hw_unregister_composite as suggested by Philipp
+> - remove now unused pwm_remove as suggested by Philipp
+> 
+> Changes since v2:
+> - use U32_MAX instead of defining UINT32_MAX
+> - add a comment on U32_MAX usage in clk_round_rate()
+> - change clk_table_div_m (use macros)
+> - fix formatting (double space, superfluous comma, extra line feed)
+> - fix the parent clock order
+> - simplify code by using scoped_guard()
+> - add missing const in to_h616_pwm_chip() and rename to
+> h616_pwm_from_chip()
+> - add/remove missing/superflous error messages
+> - rename cnt->period_ticks, duty_cnt->duty_ticks
+> - fix PWM_PERIOD_MAX
+> - add .remove() callback
+> - fix DIV_ROUND_CLOSEST_ULL->DIV_ROUND_UP_ULL
+> - add H616_ prefix
+> - protect _reg in macros
+> - switch to waveforms instead of apply/get_state
+> - shrink struct h616_pwm_channel
+> - rebase on v6.19-rc4
+> 
+> Changes since v1:
+> - rebase onto v6.19-rc1
+> - add missing headers
+> - remove MODULE_ALIAS (suggested by Krzysztof)
+> - use sun4i-pwm binding instead of creating a new one (suggested by Krzysztof)
+> - retrieve the parent clocks from the devicetree
+> - switch num_parents to unsigned int
+> 
+> Richard Genoud (4):
+>    dt-bindings: pwm: allwinner: add h616 pwm compatible
+>    pwm: sun50i: Add H616 PWM support
+>    arm64: dts: allwinner: h616: add PWM controller
+>    MAINTAINERS: Add entry on Allwinner H616 PWM driver
+> 
+>   .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml |  19 +-
+>   MAINTAINERS                                   |   5 +
+>   .../arm64/boot/dts/allwinner/sun50i-h616.dtsi |  47 +
+>   drivers/pwm/Kconfig                           |  12 +
+>   drivers/pwm/Makefile                          |   1 +
+>   drivers/pwm/pwm-sun50i-h616.c                 | 936 ++++++++++++++++++
+>   6 files changed, 1019 insertions(+), 1 deletion(-)
+>   create mode 100644 drivers/pwm/pwm-sun50i-h616.c
+> 
+> 
+> base-commit: 11439c4635edd669ae435eec308f4ab8a0804808
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603232017.8IO2whBG-lkp@intel.com/
-
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
-
->> WARNING: modpost: module ad4691 uses symbol devm_iio_dmaengine_buffer_setup_with_handle from namespace IIO_DMAENGINE_BUFFER, but does not import it.
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
