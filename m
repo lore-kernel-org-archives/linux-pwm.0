@@ -1,134 +1,179 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E63D30B509;
-	Wed, 25 Mar 2026 14:22:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B643D22E3E9;
+	Wed, 25 Mar 2026 15:02:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774448535; cv=none; b=dN55R0sYdzU76Om7/BZro4BBRidcJyo5s304kHz0+4RNtz7qQvtDweWCGwGjlJEa3R39GNdcoKFy49vldNlO1veJBpzRaX4+h9F5E+5juFhAVJoFBXVic4k2+cJwQ7BRj7Jobuygmn3JjqXy4MRPxw25g5mIWHzBHjyRVv6DRuk=
+	t=1774450924; cv=none; b=AwZJa55mZa87IFUp2ZA3fbrAWG9SJZsaoaQRSyf9dqoi4AZbhrtk5FTYTFJySCYs73q9jL2pN77dNzN0167QhuvO4qTUzsAXa14bbIMg5lQf8D0IKN/klLVSQdAjE39iAhBmNfW8XD9rsniwCapgNH3qshjmkqF2NHJI2U42Hao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774448535; c=relaxed/simple;
-	bh=vmrj39rcfkGKh/Ia7TefUaESQzcw43p3ZywMgJ2IK3s=;
+	s=arc-20240116; t=1774450924; c=relaxed/simple;
+	bh=gIUfeBRRWBa0s/P/ovRzF4jBgBesrI0Q2uvAtRlUSL8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iJdYB8mTThB8e3hySYCQAbxCJs8X3oVUmQjT1HrnA18O50adUvz4PUmNHgi8IKFjtn+ndga2o0dxbGHE+MiV8RgYwLvKxQqHzngfkoRadZvwaIt5u1nhYKmZjIRDCt+dclw2kAbZtGXX1SkNm8dWjwt+HyscuNEauuHEXACpC+8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aph2us2B; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=i51GRu2oidwcCdKhphGYGjLO03LmKsC+4jmT3qcjNuJl32LgmChiyqVgVvwYtSJ2DL1PX+NLG5+sP4AF2k7Rul9DgYVw/qWVxlbUedv4d8lrwnQ2B+EesesQUrZtfBD2WIOSk/qckV7eDuDArGnIChRh2/DdsHsBQwli8HP57g8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B5qtIkjM; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aph2us2B"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B15EC4CEF7;
-	Wed, 25 Mar 2026 14:22:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774448535;
-	bh=vmrj39rcfkGKh/Ia7TefUaESQzcw43p3ZywMgJ2IK3s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=aph2us2BflIXnVhCOfyNFd1GFIZnxAQJPccWNWn8EJPcFUsAqPoydGbOg70qjWrGy
-	 CVjndUFIAVL2gqoBxL7GyX36OrUXELjMMUxzcrnk3sO3Yl0gRoCkdjpGGvzg76CvUw
-	 ygqEH5FiczErRcYFujYwiIutjZSsabXVlbl2PJx164MJhBrUMuNuzGVfh5GVm0XiFa
-	 7oGPa8t89PfGEkBxJyy2chyzDXgU3g5MsmYPjXRoxN/g6GdHIWoU79e1TTeuaSgbna
-	 DRCDQSjwzgtuoKt3FCyy00YiG/2gqdbpRfo3saLoPIFa09pTyBrdMS1Z0lghhUhgGC
-	 fjJ25aXpZ02uw==
-Date: Wed, 25 Mar 2026 15:22:13 +0100
-From: Thierry Reding <thierry.reding@kernel.org>
-To: Mikko Perttunen <mperttunen@nvidia.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v2 1/7] dt-bindings: pwm: Document Tegra194 and Tegra264
- controllers
-Message-ID: <acPuMGhPw74roB1E@orome>
-References: <20260325-t264-pwm-v2-0-998d885984b3@nvidia.com>
- <20260325-t264-pwm-v2-1-998d885984b3@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B5qtIkjM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774450923; x=1805986923;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gIUfeBRRWBa0s/P/ovRzF4jBgBesrI0Q2uvAtRlUSL8=;
+  b=B5qtIkjMAZpsDE68/3NKZpe9WBe7Xhp0foPie7FiLojMFCQaicRqaG9w
+   G/3CZ8DFm5PSkwk5Zc9KMQ4516ShY9/14g1GEYiFtGeEoBYdp0jILLXW7
+   IdBvR+X7TsYZdmCmkp436XzDRmxHmOkZkkn00laoB4I7Pit9+cHtfxHqM
+   mZxzgde5m1U4FX711LfcT678edu1JtXKi/IXVFqGYLkK9TWGXw/OFkzlE
+   3GvxnxjqWsBWdcWqIxxsowX4Mql76g5nWh8yiT3X3debo+uRqWtdXaePZ
+   XT7lRgdoyrXFtVccyzBE9co7llAvgpSuyAG7IdnDRk0+4wr9tPiC8V0BI
+   Q==;
+X-CSE-ConnectionGUID: wHIfhkybRWSa5KcSdqkm8w==
+X-CSE-MsgGUID: rNSZ0KuySQWcZRZzR/h1NQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11740"; a="75395806"
+X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
+   d="scan'208";a="75395806"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 08:02:02 -0700
+X-CSE-ConnectionGUID: 73C6AkAaTH+hmQJStSXH5A==
+X-CSE-MsgGUID: wzCUs5cJQuy8BEO4N6nDLg==
+X-ExtLoop1: 1
+Received: from lkp-server01.sh.intel.com (HELO 3905d212be1b) ([10.239.97.150])
+  by fmviesa003.fm.intel.com with ESMTP; 25 Mar 2026 08:01:57 -0700
+Received: from kbuild by 3905d212be1b with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1w5Pk2-0000000074z-3dZS;
+	Wed, 25 Mar 2026 15:01:54 +0000
+Date: Wed, 25 Mar 2026 23:01:15 +0800
+From: kernel test robot <lkp@intel.com>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>
+Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+	Radu Sabau <radu.sabau@analog.com>
+Subject: Re: [PATCH v3 2/4] iio: adc: ad4691: add initial driver for AD4691
+ family
+Message-ID: <202603252241.8UAUrLG4-lkp@intel.com>
+References: <20260313-ad4692-multichannel-sar-adc-driver-v3-2-b4d14d81a181@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="sznsudrqo2r736d6"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260325-t264-pwm-v2-1-998d885984b3@nvidia.com>
+In-Reply-To: <20260313-ad4692-multichannel-sar-adc-driver-v3-2-b4d14d81a181@analog.com>
+
+Hi Radu,
+
+kernel test robot noticed the following build errors:
+
+[auto build test ERROR on 11439c4635edd669ae435eec308f4ab8a0804808]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Radu-Sabau-via-B4-Relay/dt-bindings-iio-adc-add-bindings-for-AD4691-family/20260314-040740
+base:   11439c4635edd669ae435eec308f4ab8a0804808
+patch link:    https://lore.kernel.org/r/20260313-ad4692-multichannel-sar-adc-driver-v3-2-b4d14d81a181%40analog.com
+patch subject: [PATCH v3 2/4] iio: adc: ad4691: add initial driver for AD4691 family
+config: nios2-allmodconfig (https://download.01.org/0day-ci/archive/20260325/202603252241.8UAUrLG4-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.5.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260325/202603252241.8UAUrLG4-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202603252241.8UAUrLG4-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   In file included from <command-line>:
+   drivers/iio/adc/ad4691.c: In function '__ad4691_set_sampling_freq':
+>> include/linux/compiler_types.h:706:45: error: call to '__compiletime_assert_418' declared with attribute error: clamp(freq, 1, st->chip->max_rate) signedness error
+     706 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |                                             ^
+   include/linux/compiler_types.h:687:25: note: in definition of macro '__compiletime_assert'
+     687 |                         prefix ## suffix();                             \
+         |                         ^~~~~~
+   include/linux/compiler_types.h:706:9: note: in expansion of macro '_compiletime_assert'
+     706 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+         |                                     ^~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:190:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+     190 |         BUILD_BUG_ON_MSG(!__types_ok3(uval, ulo, uhi),                          \
+         |         ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:195:9: note: in expansion of macro '__clamp_once'
+     195 |         __clamp_once(type, val, lo, hi, __UNIQUE_ID(v_), __UNIQUE_ID(l_), __UNIQUE_ID(h_))
+         |         ^~~~~~~~~~~~
+   include/linux/minmax.h:206:28: note: in expansion of macro '__careful_clamp'
+     206 | #define clamp(val, lo, hi) __careful_clamp(auto, val, lo, hi)
+         |                            ^~~~~~~~~~~~~~~
+   drivers/iio/adc/ad4691.c:419:16: note: in expansion of macro 'clamp'
+     419 |         freq = clamp(freq, 1, st->chip->max_rate);
+         |                ^~~~~
+--
+   In file included from <command-line>:
+   ad4691.c: In function '__ad4691_set_sampling_freq':
+>> include/linux/compiler_types.h:706:45: error: call to '__compiletime_assert_418' declared with attribute error: clamp(freq, 1, st->chip->max_rate) signedness error
+     706 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |                                             ^
+   include/linux/compiler_types.h:687:25: note: in definition of macro '__compiletime_assert'
+     687 |                         prefix ## suffix();                             \
+         |                         ^~~~~~
+   include/linux/compiler_types.h:706:9: note: in expansion of macro '_compiletime_assert'
+     706 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+         |                                     ^~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:190:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+     190 |         BUILD_BUG_ON_MSG(!__types_ok3(uval, ulo, uhi),                          \
+         |         ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:195:9: note: in expansion of macro '__clamp_once'
+     195 |         __clamp_once(type, val, lo, hi, __UNIQUE_ID(v_), __UNIQUE_ID(l_), __UNIQUE_ID(h_))
+         |         ^~~~~~~~~~~~
+   include/linux/minmax.h:206:28: note: in expansion of macro '__careful_clamp'
+     206 | #define clamp(val, lo, hi) __careful_clamp(auto, val, lo, hi)
+         |                            ^~~~~~~~~~~~~~~
+   ad4691.c:419:16: note: in expansion of macro 'clamp'
+     419 |         freq = clamp(freq, 1, st->chip->max_rate);
+         |                ^~~~~
 
 
---sznsudrqo2r736d6
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 1/7] dt-bindings: pwm: Document Tegra194 and Tegra264
- controllers
-MIME-Version: 1.0
+vim +/__compiletime_assert_418 +706 include/linux/compiler_types.h
 
-On Wed, Mar 25, 2026 at 07:16:59PM +0900, Mikko Perttunen wrote:
-> From: Thierry Reding <treding@nvidia.com>
->=20
-> The PWM controller found on Tegra264 is largely compatible with the one
-> on prior generations, but it comes with some extra features, hence a new
-> compatible string is needed.
->=20
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> ---
->  Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yam=
-l b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml
-> index 41cea4979132..15706d2a808d 100644
-> --- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml
-> @@ -16,6 +16,8 @@ properties:
->        - enum:
->            - nvidia,tegra20-pwm
->            - nvidia,tegra186-pwm
-> +          - nvidia,tegra194-pwm
-> +          - nvidia,tegra264-pwm
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  692  
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  693  #define _compiletime_assert(condition, msg, prefix, suffix) \
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  694  	__compiletime_assert(condition, msg, prefix, suffix)
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  695  
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  696  /**
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  697   * compiletime_assert - break build and emit msg if condition is false
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  698   * @condition: a compile-time constant condition to check
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  699   * @msg:       a message to emit if condition is false
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  700   *
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  701   * In tradition of POSIX assert, this macro will break the build if the
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  702   * supplied condition is *false*, emitting the supplied error message if the
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  703   * compiler has support to do so.
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  704   */
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  705  #define compiletime_assert(condition, msg) \
+eb5c2d4b45e3d2d Will Deacon 2020-07-21 @706  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+eb5c2d4b45e3d2d Will Deacon 2020-07-21  707  
 
-I think this was lost during the earlier conversation we had on the
-split of these patches. Krzysztof had pointed out that tegra194-pwm is
-now a duplicate entry. I don't know exactly how it ended up like this,
-but I'm pretty sure what I meant was:
-
-	- items:
-	    - const: tegra264-pwm
-	    - const: tegra194-pwm
-
-This mirrors the fact that this is in fact backwards-compatible with
-Tegra194 but also has additional features that we need the Tegra264
-compatible string for.
-
-Krzysztof also requested that we drop the latter part of, or reword, the
-commit message because we always want the compatible string to be added,
-regardless of backwards-compatibility, etc.
-
-So I think maybe something like this would be better for the commit
-message:
-
-  The PWM controller found on Tegra264 is largely compatible with the one
-  on prior generations, but it comes with some extra features. The new
-  Tegra264-specific compatible string can be used to distinguish between
-  the feature sets.
-
-Thierry
-
---sznsudrqo2r736d6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmnD75EACgkQ3SOs138+
-s6G5NQ/+LBYFLyiwHVj8hNS7M7cP6oPBAOX2MBsAWE9dUDKBjs4L/Ez/hVd5rhyU
-7qNedPNvkYS1K9BoCjEwXiazWiVytz8r0V+X7nn4zXl74s7T8wuVCuNXzANUMYpm
-n1LlIx2pSuHqT0M9vw+g8q+xtUGhepkv9gtypkMlD3kgoMmzesqz5/mtOfsqL+GQ
-jVzxCnsyMzpZvjYnQg9P5l7gHZbaFBiuE3ssz/uwjfMe5Yj7a2FS8hTqvAXPEWbP
-DO0xgF96kdb2dj8S7LYkqRxy++DrFlB9doALGgyET0jNv/xLajkwZn2fcmkHw0e1
-rlhR+Z+KZ+RUI4Fc1FFe6oVrHGWZCb3zLk/Ak1VzC1gEHBfHNaeDv7/V0BR1+isX
-9vMsXJbbi92lypvBoQGfnI/Xy5kiKJO0q4V3nrxlQat44henR2RvvvRrFFvl7yeR
-u+dcs+omSwNeZe5FmGNSTba5XGQvgCFoJR1mxAjvdabwiPxGuwEcvo4WiBRaorI1
-HZNd48jpDDAguA8Y96dd5SP4UUzQ3xJfDcGza1GpyaD/KkDaIGfcdYxYDITYVzOL
-hru8gXsym4c0iJexKYqZqMmhehrx/YacIyIecEp+x1fs4TYpem3/g7KbpStL8vpw
-pSSheEqc/B8+q2jItzeze85J5yyOwP91tLC/xIHqY6tDwrMozxY=
-=l5QA
------END PGP SIGNATURE-----
-
---sznsudrqo2r736d6--
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
