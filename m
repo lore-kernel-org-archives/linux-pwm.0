@@ -1,57 +1,55 @@
 Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012057.outbound.protection.outlook.com [52.101.43.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41E7A36680E;
-	Tue, 31 Mar 2026 02:12:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5316368269;
+	Tue, 31 Mar 2026 02:12:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.57
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774923159; cv=fail; b=bCrLsF9fJizcdvZkf75VL0bdmrvOmNfuRJ2xv6/MgSSZdtLlz5GQDnqaIH8O+rOixs/eq9f7mjOqorj2HWzjpf1t+wS/6NmPI8GcLzJsBAhjJc/wAILmpNZq/r5pIottl5yLxnTPKoqaKW6tPHcboUSddjkY9Q+VZEZktd0V1vU=
+	t=1774923161; cv=fail; b=nrwv+vhEVnfKjeCyZs7EcMs9xGLdFuVwNqLa0wR+mz6cyVj6ybx0+C4U4C9YgpIXiyqm67MAFaWMYV60rLmOjvzap/XosBNMPLhtn43CKh9TYTPPyvSW2HJCVy2pL+34GeBD+ABqw5cblEgFlHaTRAuygs+O8L98GxjFNlH5deA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774923159; c=relaxed/simple;
-	bh=leTbcj4FMLcK9z9PHJTEcwIoKBcs5rLbh6e3rbxL0Hc=;
-	h=From:Subject:Date:Message-Id:Content-Type:To:Cc:MIME-Version; b=s6Tkb0gtq0nLrTIOZlUFL2j01drAVs/k6kbkyKFsGlSgW5QpoPKja0ma8hs8wxtLVvtuezC1pZzh5fgTIYlVvDZeNX8WHvSr+H77lLnUAYjmt4MYalJUtKpb5Pk+XE9u9ZZRnws+kf/35eBemXBZtd2mPCFjPbwxQhhLL3TyCqU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=eU4eEqjG; arc=fail smtp.client-ip=52.101.43.57
+	s=arc-20240116; t=1774923161; c=relaxed/simple;
+	bh=sIrW+zqQa5j7X1BwYl3TNCV+Nc04mLF4kFKItEfY8KU=;
+	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
+	 To:Cc:MIME-Version; b=hoRpCTgDjJNnal0foF929Y4gXnkj9kBsgpWCWGSKmWgKYR5rpzai2fQE7FwkLkcCOCq+oHPl6xkFPFk2/tcnBWbj1k1yiAl0hSrx5KsRNuxcXuCJuIkivk2u6BNZynnP/TUPiAiayKF1fYIlGqJku+yvWw2aIZuFuYvg9SKuaDM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=V0+9elzF; arc=fail smtp.client-ip=52.101.43.57
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="eU4eEqjG"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="V0+9elzF"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=waAvgPxMQYKj8Bjs0OB4sDNP884CtQgtSNmverYf7oJDSyJUHEwcCOgvVP1FTug6Vmc9h97NnpwhpKCKFy64XMRdYXhSSq+f6mM6/zm+ItxL6hnq7yOfVZEATwq9HylGx+TRbqjwpZlnUc0MBGrtZBoB4UOj1huOcbOXUGP8IMqT6Cx0QReFX+xarV/sNWL3G+2yOx40a0OlSjxzenIhgmgofACLZT3oEVMQgxeQSp0BTFQFi3/QbC0kFDV1FkBbcHvhOrAZsjMOt8/kGTP9fJOHLmcaubTpAtkA9ncaEMs3ZaNkuG5ngk1YKftyi2I6q5M9wg1Bn5fc8QKoSAArkA==
+ b=vpMc/XKRCY+7FRqePl0uPfHM09AyfwEfrztQVlVnOhPoB69MjYcIOvxbyCHltw8F8vwThzKVvDJYV77kWjLn8fzx+woAp+v2h/1aZ6leFOy0XiNReP7C8iUZreE4abB1FlNZ/eYfN9nO6p1aUyHUkz4C6sa+xlEPX+RrSMEyRz7Klm8Ps0p2Ai+oHz30UMu61y+Hh1INlxM7xDIAP0Ngh4DSH/GuMUNMn1+KIWUgd8D10vbxYEpKs6DAqDa//Zyj4wrKjWokg8nJwlQdRrpFLn/vQNVI8vD6X6LiVzgPKB+Gla1VIjNGWlf0oUZoum3fLYxtxz6mNmfeYUAd/fpK/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=37uCpLWqPlXVN7F/G1DOY8UA28+L+hols+4SBM4yLh8=;
- b=qW22utyzaOf93ZaHE/ncnTSAx9R9/2GDQl7cD8FXNvJDC/WAiXIue2KZdcY7/d41gfCpC+jQYqRDrGNX5+3HayTRqKBhfKTVgfh7LVMNj9tR3lyBl29tjS/T6pY3d0Vx/d+22L3hlsLISitpJP+BbME1bcIhy2domqFiGAAdtsTY5pL10CNA2whfajvLan1Q3MbohLsK9/CMP/LuLcFCRtScvwQ9K8RlYk3fy1ITPbK4JlLdNFUWpe9VO9D4k7eopYpYc+pcy51aY+NEJz4UCf0IG6wG0FAI6aMh7jw6QXs0IKZyIDsWvWtBODrHOdskMXgDyskw5Bmjr44Ug6mIxg==
+ bh=s2c/BzWy3S3JVMDhunFNtRx0qBS5klsK1w9bsQu0VlU=;
+ b=P356oh+EZw1yUK864lwQ++ODxZV5BSCfAgF1fl4aFQDSGgHvpmcRr9iq8gL9nQ0QKEmAeHT5V6ljWoIOQdZH7vYvZsSomw+2ZIGnLedV+4hWsqsCjxiLDMzvVHy1tkMUTJOeyEJXuorPySI1aLsM0thoFt8zlI2lRjb4kD4JsX824cJpIE0AdzX8+DTgartEcHW5NU2CWtwf0Rsid9ZMj5ZHPsX3eQmMd72QCQTjpl07V4piimq6Rkf3A3whXrciIWJY35XPjCHoCjlUDXPou+hwWPid5m/gL8UQhfHQxPaS7onB3Owm72icVtUdmDcX+8UB9QrvjhrixvnETiyXmw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=37uCpLWqPlXVN7F/G1DOY8UA28+L+hols+4SBM4yLh8=;
- b=eU4eEqjG6WIH2nDfRkpKy17FtJEjZBRdGOjN7zaauV8+UguQSZQz2WCgTaaVCUiCRxLFkMG/7R+UTsvMrZlQKJvOW56ik9sD4xqVTDGkmaSN5oNjJ4plfzI7staTFivxarYRN84tnbzYbkgKV8RMuTyp88HM4wJ6RsYbJXthuGg2loV2/87x5pNUbsXZXXJbYg4lwf7W/L5JKFfC1jxNjmqIvloarQ8gH8hdbDtou87aNhDs5KhdVgQTDNMpiJ5zRxeOpqUn0BUXW68Bxhjn4EXDE3jBQPuipM6pRxKDFmvfgePU6Jz5cXp/Pq9qwvUPvvSL8TQGX2mP77YZDfhNlg==
+ bh=s2c/BzWy3S3JVMDhunFNtRx0qBS5klsK1w9bsQu0VlU=;
+ b=V0+9elzFuEuj+QYBRYhk/f7ASO8/Q1wMvWdStzw6Nn5yuvuyvpvtBfDxAP6PUk7BXHHvlHxVmukYrgE4uZSiUooeTBpA7fpSYVYENCFEwKx7sIdUfFgGc/1eoJr0airRd8xMD2yVoEJAuTbXqB6o3qhINYRSEsIQDJ8MCPVytfe/ecXFaPb2c2x/G+dZdEIyTk/1xXAM1nmI+UmxbvnE9NluASjpfdTL0UY8pePNPtQDuks0uUJELNJtulrEbJhmFeUeNjaGUzxP7m/3evYLVmn+j/8Cjg5VV9E2EFMf30YlZQS73DbdxkEfDZfMfWVSGtVc3kiN79p0sR0KrfUW/Q==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
  by CH3PR12MB8330.namprd12.prod.outlook.com (2603:10b6:610:12c::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Tue, 31 Mar
- 2026 02:12:30 +0000
+ 2026 02:12:36 +0000
 Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
  ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
  ([fe80::d9d1:8c49:a703:b017%4]) with mapi id 15.20.9769.014; Tue, 31 Mar 2026
- 02:12:30 +0000
+ 02:12:36 +0000
 From: Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH v4 0/7] Tegra264 PWM support
-Date: Tue, 31 Mar 2026 11:12:12 +0900
-Message-Id: <20260331-t264-pwm-v4-0-c041659677cf@nvidia.com>
+Date: Tue, 31 Mar 2026 11:12:14 +0900
+Subject: [PATCH v4 2/7] pwm: tegra: Avoid hard-coded max clock frequency
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/2XMTQ6CMBCG4auQrq2Z/lHqynsYF0hbmYVAWlI1h
- LtbiIsal99knnch0QV0kZyqhQSXMOI45CEPFen6drg7ijZvwoHXIEDQmdeSTs8HVdoxsCCM9Yz
- k9yk4j689dbnm3WOcx/Dey4lt12+EF5HEKFDZSe+1FKDAn4eEFttjNz7IVkm8lKqQPEtjGts0y
- jTyJv6kKKSAQooslWZScm2V0fWPXNf1A3G1+WIVAQAA
-X-Change-ID: 20260303-t264-pwm-57e10d039df1
+Message-Id: <20260331-t264-pwm-v4-2-c041659677cf@nvidia.com>
+References: <20260331-t264-pwm-v4-0-c041659677cf@nvidia.com>
+In-Reply-To: <20260331-t264-pwm-v4-0-c041659677cf@nvidia.com>
 To: Thierry Reding <thierry.reding@gmail.com>, 
  =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
  Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh@kernel.org>, 
@@ -59,11 +57,10 @@ To: Thierry Reding <thierry.reding@gmail.com>,
  Conor Dooley <conor+dt@kernel.org>
 Cc: linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, 
  linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
- Thierry Reding <treding@nvidia.com>, 
- Mikko Perttunen <mperttunen@nvidia.com>, Yi-Wei Wang <yiweiw@nvidia.com>
+ Yi-Wei Wang <yiweiw@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>
 X-Mailer: b4 0.14.3
-X-ClientProxiedBy: TYWP286CA0029.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:262::17) To SJ2PR12MB9161.namprd12.prod.outlook.com
+X-ClientProxiedBy: TY4P286CA0043.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:405:36e::10) To SJ2PR12MB9161.namprd12.prod.outlook.com
  (2603:10b6:a03:566::20)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
@@ -73,123 +70,143 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|CH3PR12MB8330:EE_
-X-MS-Office365-Filtering-Correlation-Id: 49ce0acc-0219-4388-c879-08de8ecaf653
+X-MS-Office365-Filtering-Correlation-Id: 7c3aa5d6-3e55-42ac-11d4-08de8ecafa15
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|10070799003|366016|56012099003|18002099003;
+	BCL:0;ARA:13230040|1800799024|376014|10070799003|366016|56012099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	wfb+rzQf+gBSJBvoXnR6nRbEfpsLsqYy4VVoPvdSJAGmxBVWx9vlpZdbwHRwJKdkZgToYRfU5s4KOUdYrozqBV9IX3h/4pKw5mikBhYbURnZmQeee1q2w94GHIOi78VQ8/IJHHMEfPfwwS/0JbcsKfhtdgpn2CD03yjuyUDPGgi3B/3yyxlhlkSIk6I76egmPZExGMVn7FIDH8ZJn0fD1PlZDxAT6H00KA7BgNsJJgV4aiHw1oHz+YSupaYGOzBQ7p2ZLG7QngbYHX16N6OQ+hkATB0YTOGMdedLXsDnzY6EbCw1RmUJi92afebYZR2AMEde2I1aFuvlJZzjHoyrN/Xqs5171nu6bPqUFHIhxyQD1CvIYSrh4QlbZwE0Ljeu1Dy/FPRk0h08rU7Zjjt8auD4V98zdVzwynqZUNXlq+/fNLFV1pmVPoEALSZYXyUI/RdCaxclaaXJX6sPDFRY8KEGrQHj5DiCWyBzUguZkDIXQrhaujOhB0VNJzv61Kgb6Bwt/GdWDLSwsW8sG40QXGs6aIEFmBOPoWGZYMSumTufLNtyiXQtK4CKsrHqrUyQlk38HGJZYkKItA1XO4/ziDu2drmmSFN+2nxP3aPh36xq3i4lHV/lLjixE0Q8dCfNwE9XzmRMpQ+T4PY/NP+M9Cu+zI0uwnl+uTV677WdvNW6hheKFzzHi4rdXku87B1hcaCmXoRybZnP0uE8ioZjigrvbzi+4Qc3izyHoD9dYgc=
+	OWpjJ7yoz12l2LGOHXcXX6jK8YE4+vmfGlkmUbdeKDgPBNV0CmRFS7C0UeO2XS+Wy9knk5/JvgXDb5dsDV0Fm7Bdj6kCVEWP9CGSCznqyZFf4xY+BcaG2L9J/1XFpeI0W/u3I5z57pEa5ne8Ntzu6rkr+MJwgPuyUMNvKJkE9pfqSEMDa0GFXKUBGrZGtjPtQmjwRWNqDy17aMsx587hvRSvTfNuMnNdry61HrpbMXW1/LvKjGay1cxjwW71Idpue71TfhDEvYw2NFYm5PjflfhPZyNS6nDm6J6ubVjuiTYrlmZo9b5vlMzTlxi93y11up3ebQojKzQ1289RcGfY60pyhuqzdQfRDHedZJvGjJSLxLBNeoKX+px+J+i2sRzcBsTh3dF8m9ehqSF9kqgl9VLXzBXC/EbK1jtTWbSA7BShVZcu55OrXpXgMUK8/WE6W/XBjngwLmHsqa9z/0Xll3mizJWw8KReI118QP4mfm+elc2LwvEoIoa7lSF3m0vWP7YA7JEiWNyVZaDHsvCj/aBG0aG5a0uAsEuWuzM8B3z59toa9KfgT+GtnSb529zjeM50VeznnLg9tWP8v7h/xw09lKt06nKQYBHT/UkWWKNbXKQxvtPJHvQP7oAjag3sj+hekjEcmJeBhjobpP4d7844Y0cM8Akq37qIx+ct2nv1U9A3+SyWh/W/i6XCLits1ZVc/6m9KxGpH+C6fjcdGIHKlE67k6GA21o9RxD5Spc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(10070799003)(366016)(56012099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(10070799003)(366016)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bzd0UFArd21qWk9UWjEydXB1d2JHWTJJN3Vob0twbkNrekt3UjB6ZUNtLzlk?=
- =?utf-8?B?SndBN0QxRUpIOS9mVHlIZkFqWUxVMHNURHFNUWN6QTAvKzJUV2dxRWNwRk9v?=
- =?utf-8?B?TXBkcnlvUnREa0lPbytIaUxmN2o1OEx5dDJwTS9rVXM0ZHl3dEhReE9mamF5?=
- =?utf-8?B?RlVjVmErZ0tLTmFpN3hZYmk4ZC8xRVdJZEdHS1M0RTMvaVpScHBnSytOYVhU?=
- =?utf-8?B?RTg0c21VcEZ0ODFId0o4dWhmd1Nnemh1Q1djNGc2U283Z09WWVlBM2hvNWJX?=
- =?utf-8?B?citEVnFhaG5CejJJcXFVcjBKYUdSU21QZjlJN1lrUDA1a01mSVo0S0ZrRUJF?=
- =?utf-8?B?bHVBVno0NmwwRURCbzAzSmhoWFBCYjQ4UW9pbDdYUE5xdHRUU0p2Wnp6SHds?=
- =?utf-8?B?RDA0OVQ5N2ZYaWRSOHdWUllKMmpaR0tUSTVzVnY1c1gzZjdsbUllM1I0VWV4?=
- =?utf-8?B?ekt6cCsrYlppWlJjVm9temxVakRMaDJnaEYzeFIwemxBdkxHaU9xejNPZUxp?=
- =?utf-8?B?TjJ5Y2lmMXNNYXdiVSt4OHhZaG0yekgzaCticGh0aFJwYkdiZ2VWdnlTeUg5?=
- =?utf-8?B?K3pqTTNzOUJ0VEo1cEdaL1pNYkRVWHc3Q0k4YitzQU9zdzhDNGZMUlJKZE1y?=
- =?utf-8?B?WmlMZG9KSG51eWlVZUpkbDY1dXNVbkJ4MHNqS3pIbHpVSXRpTTZsOFNQaXlp?=
- =?utf-8?B?Y2FDQWd0S0VvWkxNVTI5NG55L2ZlZFNrTVJ5SmExRFRLMGJadmdOR1RQMFBZ?=
- =?utf-8?B?NG0vL2ZvUnpCQ2wzM3FIckpOeVlSVnczQmdrOUxicy9vdnIvTXpZMmltNFJh?=
- =?utf-8?B?a3RoTjRlM3VsT0ZUQk15Z0NBR0xieG1uVnZ2MWdscllIMEMrcE9ldm04dHpp?=
- =?utf-8?B?ckV6KzZvNThTdjZDZHlkVVREaUhEWlRYRWdjUHdJa0d4ZEptTUhIZHNwRldK?=
- =?utf-8?B?TjVJL1V1cHlnanc2ZnljcEk1TDM5dmZUWVg1RXp0NHM2MjZmczNFb3Z6US9r?=
- =?utf-8?B?TWlzNHVNd1JvUXM3bVJWdTJqeGJ3SVRNc0x2elloSU5SY3VZbyt6VmEvQlc1?=
- =?utf-8?B?NEV3aVVZaHpsSy95SWJyaHFFcFFJeTErazZ2d0x0cTY1dzhDakJnSUdvZjRv?=
- =?utf-8?B?NlZERWlXRGJBQ09zaHVnTVRKVkxZb0drQ0lXVlU4NlVaNzB0czVtcklMekVS?=
- =?utf-8?B?L1VLaG5QdjhMM3NiQyt4WUZFSWpJVzkxa3NrMXJvMGRmTVJVWUpaSGRBbVFI?=
- =?utf-8?B?SnVJeXlEaWY0ZmhVMi92UFJtcldLVUl6UW5wRWNiU1FmM0d5RUwzTzdnUitD?=
- =?utf-8?B?elhoSGxJVGdkY3ltejFwdzNLaTBVYzBLcXBJOEozYmxJMTNUOGd3MXBkWkdx?=
- =?utf-8?B?ZGdUZ2tZMDZISzBmbXpjalRPelplRnZmMVBpZC9KUkpReFhyaW9sTXZOY1dm?=
- =?utf-8?B?Y1BXek1IZ1I5eEZKdUhZTE1VMHBHb2xwTDRqeFBKcEYxY1l2b3pGNUJ1NXZo?=
- =?utf-8?B?M2I1WkwvWWpVdlQ1WjJRcUZ5Z3lqc1JvUzdYQUhqeDBkcU9nUmRJMzFXeVY4?=
- =?utf-8?B?MEZybjIxVVF1TnRRdzdqaVJSckI1Y2kyVTBJbW4vSWlEeDR1S1RRUjFiMzBx?=
- =?utf-8?B?T2ZRL0U0YnZna1B0WXFzZytlUGp3TVV6dzA4SWRxOGZINUFqYnZtdXZiRStQ?=
- =?utf-8?B?R1BKNCsyRjRJVDNrV0FkNEp3c25CWXdlL2JpcEJOOE1obUdNbHFmNkV6UU80?=
- =?utf-8?B?SU9UUEZ2OXQ3RlNqV1dnZVFWbS9nVWMrYldMNWx4NEdPUnN2U3JiWEQxdVdK?=
- =?utf-8?B?UVFoZE1VNmJpempLaTNaN0lGSmMxZXNTeEtIZGlOL1RmbjRpSlhoRWV2ZytF?=
- =?utf-8?B?UmQzcHM5U3I1U3ZrYmhOWDVJejVnOWwzalBLU3QySzRNRmFOMXZZaDdHcnhY?=
- =?utf-8?B?MUlHQS91aHh3d0xwUE1vbGpHRWtpR2tjMlA2ZmpXSVBRTFdVNG1LQkVEWkxh?=
- =?utf-8?B?Yk1CaHMrM0hTSVhzWjhqSXdLSmgwdGVOL2FHK3RIMFY3MENkWTA5ZEZ2Wm5S?=
- =?utf-8?B?OURCdnVoOGlVQkIwZjhGTUtmZVZiUWNnMk1IWER0MEFCakE5eDBGWmVQdHQ3?=
- =?utf-8?B?OFlNTjZ3WWJGYkpTalNCNVpkKzBLTG11ZVBDWm96eWNsOU4ySi9QVFZpRFJa?=
- =?utf-8?B?bVZSNkhEZUs3VEE3cmQ2c0ZkSTBLTC9MbG50MzMrSDdlTUIzTkRxeWFUQkpp?=
- =?utf-8?B?WDAxaENpV3RYRWNITFRVNU50MmVGSzhqL2hvcGlFWFRaMVFCcjRaUjRMTW9w?=
- =?utf-8?B?MDl3eDhPaUpqWkQ5QWNFUHZmZjRUdmp0OGx5cyt1RGJreU5zV0RTYWt2ZUJh?=
- =?utf-8?Q?cRrYK2OvOlClKEqPUm7fA0WCQs7t5q5+MBt/TItGK1/zk?=
-X-MS-Exchange-AntiSpam-MessageData-1: wmUOuF/cOYpckA==
+	=?utf-8?B?M21zT0llUTBXL2V3U2M2MGpjcDBZeVEyRlJkSkFnc3hnbkZ3OGtHa3RWSnZ6?=
+ =?utf-8?B?K0JKZ21lUVVSZHVuclp3YW5NTmxmdkhEQnAxUjRhTzJWQkc4Sk44Sm05RFVy?=
+ =?utf-8?B?Sm96V1Q1ZGdFRVk3V2NtejlLUWxDUWg5L3ArSEYwenhlTlZ4ck44U1dqRUNt?=
+ =?utf-8?B?VVo3MHNGZDlyYzI4YVZvaTBxOFQ4ajQwL0xzQnB2dFYxNHRCTzJXYlBUZVE2?=
+ =?utf-8?B?SnBpUjB5Y2g4UGY2dTZJR3RwMmVTYTIwWDAvTnNBaUM0QS9lelRPSENKUUZk?=
+ =?utf-8?B?cm8wZ25YMDc3TllKU1EzTzZMTnFXeU5YMk5CWWpoMUc3VlhLWHNQdXhHVFk3?=
+ =?utf-8?B?a0lPUHNEVG1QVHNjdlBRZDFRdmd3Q0hZVlZBQnJCaG5ibTVERGk1TGdmaDJN?=
+ =?utf-8?B?M1c3NFdxeHR3WWw4dXQwWUNpU3pzQWdqYWZ4czlrNFMzYml0N3c4MWxLbENk?=
+ =?utf-8?B?VlMyMC9YYUtsWllKazgrUkhYK1UxUGtzTXl0Tzl5a3FJSlFURjN1SS9SQnNJ?=
+ =?utf-8?B?ZXhFV0Y5eWptWTJtR2lPeDQyRUIwT0krZGJxZThPbkxoWXFBeWxpekdzajFx?=
+ =?utf-8?B?VG94MXhRRUpqNjF4RTB6SWlkbGdKdXd2SWdQNC81aENyQ1hxM3FtRVFidy8x?=
+ =?utf-8?B?aXZIendSU29KRXBMY1JpeWhFM3MxaVFXdkR6Tm1xZVFFVXRobGo2Z2d5T3JF?=
+ =?utf-8?B?aHkvU1RBWERhTXhlcTZlcW54Z3BLK1VIM09NU1ZZWW9vYTFRVGRnT3E3K0c4?=
+ =?utf-8?B?RS9wT0pPZW4wU2dSUGJUZmgrZElLSXcyYjhtd2F0VDcycVVabC94V2RqMmIr?=
+ =?utf-8?B?dWtUT29yQmx2MTZHVVg2V29McDFQMlRpV2d6TFBkNnBrQXpNaGZuMEg0M2dP?=
+ =?utf-8?B?QU50cVhRVFIzWVRSc0V5dzZVMjF3eG11NW5Pc0F6MjJsN0dYSnBhNEFwRU8r?=
+ =?utf-8?B?WitUMGNDNElkaDdGOVRCZkEyL3h2ZG1ZZm1tZkdjY1RQbVRVWVQ3bVZNK3Av?=
+ =?utf-8?B?cWVxbWVyNldwRG5lNVVHOG1Ib3VMM2FUcklhM20rT2ptaUlVQ1FGcWtnbllW?=
+ =?utf-8?B?NUprb21hZGlZVkVoeCttWnl3N2pUaDR2VEhRK2RUNko2Z2JJWSs0STY3WE9C?=
+ =?utf-8?B?RStQUlpHRUttdjRSREwwMkJTK2FhVFBGR0ZYcXJDU08wSmsvczAvOHh0OHBt?=
+ =?utf-8?B?bC8yRkQrTGFIb0Vac21YVnVsa213bElRTWsvVUNtRTgrY0I1L1M5eEtTM1Q4?=
+ =?utf-8?B?VVZVSjUrZDQrTi84VGYxR3RnQTNvNm5BUjg1dHRNN0tnL2FBcFdnMEdQazJJ?=
+ =?utf-8?B?dzFkS1d2cUVKcUFjRjd4b1pxazJ1UE4zbkhvVSs4TmswMW5DOXViQ25wTWZQ?=
+ =?utf-8?B?Q09rTXNuWmtkRVY5V2FqWFNGbU5lOVk1ZktJTHdDM1lnMWc5NmN2SnF5QXR5?=
+ =?utf-8?B?MmErWGVYaHRPdEpadU9TWm13MWJPazNUK1k1aG5uOEtoaDk0cHI5OFovck9L?=
+ =?utf-8?B?N0dKdWtycTNvOG9NRDNPUWJEL2ZScXp2dyt4WFJqZ216K2JMNyt0cGgzc2Vw?=
+ =?utf-8?B?VzFVd0J5VnhnYmduMGpaWG5iKzAwalRzSFR1Mm9scUZFSUx2aDdsZGF0aTV4?=
+ =?utf-8?B?S1ZSdHprcEFLZHZCdjZabnUzVlhkMTJ2cDdsUVJYNHhsS1lkdytoR3R3Q1dv?=
+ =?utf-8?B?YS91VHB3d2ZnQnFvZWNOM2Z1SGJiNGpoY1ZHL1NoT1Y5TlZKbXRVZVVqWjlK?=
+ =?utf-8?B?K2hBUGJPbDZIZjhTU2NCUmVHdDl3cnR2dDdMZnp0dXBTM3BMSUJVT216ZWNk?=
+ =?utf-8?B?UWFGb1F1aWxkcXhsSHNmZGJMeUI1NEJ2c2JsZjBXQ2tYSy9EQkdJUUFSVE50?=
+ =?utf-8?B?QjRyb2xsUStkZ0Y2Sm1SVTFRcy9zRjFPS0s2LzVMdVgwcnFBblQ4SndrQ2dZ?=
+ =?utf-8?B?b1pxdmlHRlhrV1lnd3ByRzJIcGZTbnUxemNNbjlRUTA1RXZWZERBTlJYNU83?=
+ =?utf-8?B?dyt3RlhXRk9xZkc5N0hBNVdJb0pTZGVmY1JGWkxEU0FETXF2SWxyZHNwVXo3?=
+ =?utf-8?B?L3dZa2V1SmxUdUVuQ3llbUloUWJ5dndldlhTWkhFSFZ5b1VjY2hJZG1uSFF3?=
+ =?utf-8?B?MHBUSzVLVVFGT2hxclF6aUIyeDI4NUhCdW93Sms1NWRkTytmb05iU05WV0JX?=
+ =?utf-8?B?Ly9tZXZUV1pTZXh0bzNza2hCeThMQnRVa3prSUdic2NXbGZDUGZpaFBHdzdw?=
+ =?utf-8?B?WktFUDNMVVl4Q2NnT1luZWxXMFVQWmsvQWp1L3FtYmkwbnlYN2s3QUpCLy9I?=
+ =?utf-8?B?UE92a29mTU5KQ01MRkRMajJCbnRRQUhhbGhhRFF6S0RidzRmaEVOQTRtR1o5?=
+ =?utf-8?Q?v7mMc/bVcnetaNRM0zthIGS6Hyo5LVdIlwZUf8Z3MvTgt?=
+X-MS-Exchange-AntiSpam-MessageData-1: z9GbsvjH7meK5waZzB4F8/UCrJ4/Y/eIulk=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 49ce0acc-0219-4388-c879-08de8ecaf653
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c3aa5d6-3e55-42ac-11d4-08de8ecafa15
 X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2026 02:12:30.2182
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2026 02:12:36.4549
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EUgf+WHxLPT2eVesHYU5nqG6nSrvudP+/5OYhgT2+yOOm8lkBfb/DNM1npQydNBBhLovdlsANWw+uY1Jh1UUYg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: HPm3XCvndQeCxJgopkIYjg+/LRm08pvfCkufvdRGI2EIy8V8q6Aa+BDFEvco2waEdrC7CbyPORIbq+qU0NcOFQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8330
 
-Hello,
+From: Yi-Wei Wang <yiweiw@nvidia.com>
 
-this adds support for the PWM controller on Tegra264. The controller
-is similar to previous generations, but the register fields are
-widened, the depth is made configurable, and the enable bit moves
-to a different spot.
+The clock driving the Tegra PWM IP can be sourced from different parent
+clocks. Hence, let dev_pm_opp_set_rate() set the max clock rate based
+upon the current parent clock that can be specified via device-tree.
 
-This series adds only basic support with fixed depth -- configurable
-depth will come later.
+After this, the Tegra194 SoC data becomes redundant, so get rid of it.
 
-Patch 1 adds device tree bindings for Tegra264 PWM (compatible
-  string).
-
-Patches 2 to 6 contain the PWM driver changes.
-
-Patch 7 adds device tree nodes for the PWM controllers on Tegra264.
-
-Thanks,
-Mikko
-
+Signed-off-by: Yi-Wei Wang <yiweiw@nvidia.com>
+Co-developed-by: Mikko Perttunen <mperttunen@nvidia.com>
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
-Changes in v4:
-- Use ULONG_MAX rather than S64_MAX to avoid overflow on 32-bit platforms
-- Link to v3: https://lore.kernel.org/r/20260330-t264-pwm-v3-0-5714427d5976@nvidia.com
+ drivers/pwm/pwm-tegra.c | 16 +++-------------
+ 1 file changed, 3 insertions(+), 13 deletions(-)
 
-Changes in v3:
-- Fixed device tree binding patch.
-- Picked up trailers.
-- Link to v2: https://lore.kernel.org/r/20260325-t264-pwm-v2-0-998d885984b3@nvidia.com
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index 172063b51d44..8a330169d531 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -59,9 +59,6 @@
+ 
+ struct tegra_pwm_soc {
+ 	unsigned int num_channels;
+-
+-	/* Maximum IP frequency for given SoCs */
+-	unsigned long max_frequency;
+ };
+ 
+ struct tegra_pwm_chip {
+@@ -303,7 +300,7 @@ static int tegra_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	/* Set maximum frequency of the IP */
+-	ret = dev_pm_opp_set_rate(&pdev->dev, pc->soc->max_frequency);
++	ret = dev_pm_opp_set_rate(&pdev->dev, ULONG_MAX);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "Failed to set max frequency: %d\n", ret);
+ 		goto put_pm;
+@@ -318,7 +315,7 @@ static int tegra_pwm_probe(struct platform_device *pdev)
+ 
+ 	/* Set minimum limit of PWM period for the IP */
+ 	pc->min_period_ns =
+-	    (NSEC_PER_SEC / (pc->soc->max_frequency >> PWM_DUTY_WIDTH)) + 1;
++	    (NSEC_PER_SEC / (pc->clk_rate >> PWM_DUTY_WIDTH)) + 1;
+ 
+ 	pc->rst = devm_reset_control_get_exclusive(&pdev->dev, "pwm");
+ 	if (IS_ERR(pc->rst)) {
+@@ -397,23 +394,16 @@ static int __maybe_unused tegra_pwm_runtime_resume(struct device *dev)
+ 
+ static const struct tegra_pwm_soc tegra20_pwm_soc = {
+ 	.num_channels = 4,
+-	.max_frequency = 48000000UL,
+ };
+ 
+ static const struct tegra_pwm_soc tegra186_pwm_soc = {
+ 	.num_channels = 1,
+-	.max_frequency = 102000000UL,
+-};
+-
+-static const struct tegra_pwm_soc tegra194_pwm_soc = {
+-	.num_channels = 1,
+-	.max_frequency = 408000000UL,
+ };
+ 
+ static const struct of_device_id tegra_pwm_of_match[] = {
+ 	{ .compatible = "nvidia,tegra20-pwm", .data = &tegra20_pwm_soc },
+ 	{ .compatible = "nvidia,tegra186-pwm", .data = &tegra186_pwm_soc },
+-	{ .compatible = "nvidia,tegra194-pwm", .data = &tegra194_pwm_soc },
++	{ .compatible = "nvidia,tegra194-pwm", .data = &tegra186_pwm_soc },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, tegra_pwm_of_match);
 
-Changes in v2:
-- Added device tree binding and Tegra264 device tree patches by Thierry.
-- Link to v1: https://lore.kernel.org/r/20260323-t264-pwm-v1-0-4c4ff743050f@nvidia.com
-
----
-Mikko Perttunen (4):
-      pwm: tegra: Modify read/write accessors for multi-register channel
-      pwm: tegra: Parametrize enable register offset
-      pwm: tegra: Parametrize duty and scale field widths
-      pwm: tegra: Add support for Tegra264
-
-Thierry Reding (2):
-      dt-bindings: pwm: Document Tegra264 controller
-      arm64: tegra: Add PWM controllers on Tegra264
-
-Yi-Wei Wang (1):
-      pwm: tegra: Avoid hard-coded max clock frequency
-
- .../bindings/pwm/nvidia,tegra20-pwm.yaml           |   1 +
- arch/arm64/boot/dts/nvidia/tegra264.dtsi           |  72 +++++++++++
- drivers/pwm/pwm-tegra.c                            | 141 ++++++++++++++-------
- 3 files changed, 171 insertions(+), 43 deletions(-)
----
-base-commit: 11439c4635edd669ae435eec308f4ab8a0804808
-change-id: 20260303-t264-pwm-57e10d039df1
+-- 
+2.53.0
 
