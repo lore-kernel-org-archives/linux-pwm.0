@@ -1,190 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012057.outbound.protection.outlook.com [52.101.43.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80C903B9608;
-	Mon, 30 Mar 2026 23:51:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774914666; cv=none; b=b3eAHHuRi1zAFbgapgCJOj6FoeYwCV7ZRUGuQsOYlrORCVnfBdgDeMK+Yk2SXh1BpnrTibGRZIdZUMntOnS8peDsgMoKDF+gjeZTG7Gi1bdBl1Qm0LDEBltpsdjqxR1v/xk2Z7O1T7jbgdyDIrirn08l+PSuX3lQ6k16B0yVmsQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774914666; c=relaxed/simple;
-	bh=3Ve9LY2wIgFdBUPZpWBHQ981zkpK8qkZE5S/h1XyfBE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PBERajMx1BCeRlxWa+JYeeN3KNZzJEMEgcD9/wpGWrr1chAWQeVfsNjU16iKRP9wBYJF9Ipw4BKoWR8NWD/FJzUUpeLqMIFMHUaV0bJBl7IEkeo4mjK15+KeQUE5ZCj2dsGHOX1RknJ1XX1gh+e+HGbMAmiI+OCpDuDE/5TRmmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PR/2km4+; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4050A95E;
+	Tue, 31 Mar 2026 02:12:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774923158; cv=fail; b=kTojxniunYQCXILrikW69pb+ATi4qUIouKDQl/ZwKJn2su8/6fYQwIunFTedR+TaNriMULkkux8AI2FZiAfUQOmHEWFd8Ja2BA0pom6qh5q4sXFDHzrS+sUc+5BNnitZ5rJgxHGbhX6skeJ6jw5cGW1Aq4Xv+4VRlWVGUFvtjf0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774923158; c=relaxed/simple;
+	bh=tlrSDCUE2UjLR52l+21YO4gbwl+bv/9DTWmxc/JzFOA=;
+	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
+	 To:Cc:MIME-Version; b=RZSKm37IsennzA7tpxe1bJAk8igC+YNJ7nvXJK34xt2kGG7ID2EYstTGliK+KGyCx937GAx5by5pugWJH/mvQizwR5YOUvdLMPvoXYNEfnn1PXPAIwMNud9oKz3EEgYhYHnOTA/71q47/5Nta+vCtpzVLsKDaQquxC4B6c6JBwQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=mtjU8ozj; arc=fail smtp.client-ip=52.101.43.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PR/2km4+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774914666; x=1806450666;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3Ve9LY2wIgFdBUPZpWBHQ981zkpK8qkZE5S/h1XyfBE=;
-  b=PR/2km4+ARthZX9vQWnlzbDCTYgOsyNcGajl4zHCIFQfgntunKmLjF1V
-   g/4Io+XE+7+8OhdjE1eIkerY2MQ0yosNFMWGbDcpgyA6L0O+qHVwRHJVX
-   aI5uVm2f96t9aaaTUoZp2sGUcvNEMvP1t9U2sgatPJDqV0tlpNEDIbHHd
-   xfVXgtiHhbt2JMMQbO7o7bhY8H5t0eY/46BtLlmRa+clEP3vwMKdebBJ9
-   gNRUEc24J+SzJxfQU8net/YFAUbIJnR6YFDNWSeiEaLyMDm57m+EsWdDm
-   sDzeppC6loH+MPOu9UNlbpT7y/8PxL/SlWpSMXn2kLMLq3qn37SGnNdbX
-   g==;
-X-CSE-ConnectionGUID: x0Dyo3z3REGDyQp6VzKVZw==
-X-CSE-MsgGUID: GpPnaW5iR8689AHhGb4XNA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="98528031"
-X-IronPort-AV: E=Sophos;i="6.23,150,1770624000"; 
-   d="scan'208";a="98528031"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2026 16:51:05 -0700
-X-CSE-ConnectionGUID: OVPUjDCUSPO9Em7wSZcCCA==
-X-CSE-MsgGUID: EYhVNtHzTaiYOy311aqwaw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,150,1770624000"; 
-   d="scan'208";a="249419287"
-Received: from lkp-server01.sh.intel.com (HELO 283bf2e1b94a) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 30 Mar 2026 16:51:00 -0700
-Received: from kbuild by 283bf2e1b94a with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w7MNk-000000001sn-41Af;
-	Mon, 30 Mar 2026 23:50:56 +0000
-Date: Tue, 31 Mar 2026 07:50:39 +0800
-From: kernel test robot <lkp@intel.com>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>
-Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-doc@vger.kernel.org, Radu Sabau <radu.sabau@analog.com>
-Subject: Re: [PATCH v5 3/4] iio: adc: ad4691: add triggered buffer support
-Message-ID: <202603310753.zLWq0JDB-lkp@intel.com>
-References: <20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8@analog.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mtjU8ozj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=LK+t9+el/slrfmHPYTWoKkyW9UFW7aH7MRqu7oi41lX4etHBH1Hu85o9t1+98Pvbfjo2QYHrYblGT0TahALK6oK2182vtNG4d/q/72FFWhMCv3G73wzXBc6ttdoVpZ+6F10G7JE1NGpclwjseEyZxiepGL01QUCJkTlDo2JhRF0f1TNH9nzJuiuPFST2UF1viEzjJMAcWFkIXvg9CU+CwBxCIpJkaNePIFo2xo+AQpBttmJLF4p0bjt5quFtZseo5NVP9vJll34NUW6hOiMWLByu3uF76dp2SIc4nsE4mRtJ/AZfH7Qxuw0thZqkRmbVvMzN0QV+U+rO2BGvgz1iww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V7nx+hIrS5IrKIV0i7hW7FBku2wT+Zyk1R8KJS4P0gg=;
+ b=cdOyxInIloAYb9iLr68cHGQLRkCs4a0vg2x0LKVLTiVid7f3LLbqsx/nWEYebtknkKMEGIi3FAQfDTvhDW3zNorRAqtayc5AHX0Pz2tci5czYYpadVrwCoaX/+gHndGkJhG4lCHpu30peS8Gbtqp6lVjKgvupY4Mkd6M5VuGdzBDbFC8lOP5HCEMyigwR+I6k8qTYvJcrklsf2SHfBzO4Qa0EcEB2StJsbNmgikHJvTRAwXDbVsJWH2YyYuvHcYJ0J7UhTrB4ri1dzkvAeteuyOl7wBMSH/lX7kv7ZdVoDdNFbakl9fj/35qR/eZlMPFTJ7LcapcZE2eXQaQRq2PBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V7nx+hIrS5IrKIV0i7hW7FBku2wT+Zyk1R8KJS4P0gg=;
+ b=mtjU8ozjHBhoboEaQ322zT+ri61JEaCy32MyJsWTtHcn6hM9wuhR3tbc7FoiwniNtyg4BIwoLg12Gn8PEsrJlqT6yKklfLjtoKMMrgOBpDIaq7bp5UEot/x4yIYMCUd6DoCD+5Z+kHWz8o/uNHahAGAxffiq5VXxqk3GrL8A9ru8OjFbTMH7crYgveKHL7VuSt0VMJ3glyP6i7tlVt3Pr/OT3tDBGuCiumIpW7rocVooopAp9wO/CSxmcpjftZdLL+871alLrhqULPq8pk+WZpuAELeZtjHK4wLDesLyHhFBr8K5EsPFyqpA+APVQE7kJidr3eYkeBz4jyCBblMLKw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
+ by CH3PR12MB8330.namprd12.prod.outlook.com (2603:10b6:610:12c::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Tue, 31 Mar
+ 2026 02:12:32 +0000
+Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
+ ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
+ ([fe80::d9d1:8c49:a703:b017%4]) with mapi id 15.20.9769.014; Tue, 31 Mar 2026
+ 02:12:32 +0000
+From: Mikko Perttunen <mperttunen@nvidia.com>
+Date: Tue, 31 Mar 2026 11:12:13 +0900
+Subject: [PATCH v4 1/7] dt-bindings: pwm: Document Tegra264 controller
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260331-t264-pwm-v4-1-c041659677cf@nvidia.com>
+References: <20260331-t264-pwm-v4-0-c041659677cf@nvidia.com>
+In-Reply-To: <20260331-t264-pwm-v4-0-c041659677cf@nvidia.com>
+To: Thierry Reding <thierry.reding@gmail.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+ Thierry Reding <treding@nvidia.com>, 
+ Mikko Perttunen <mperttunen@nvidia.com>
+X-Mailer: b4 0.14.3
+X-ClientProxiedBy: TYWP286CA0029.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:262::17) To SJ2PR12MB9161.namprd12.prod.outlook.com
+ (2603:10b6:a03:566::20)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8@analog.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|CH3PR12MB8330:EE_
+X-MS-Office365-Filtering-Correlation-Id: 819430e3-909e-4fa0-5079-08de8ecaf7de
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|10070799003|366016|56012099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	WV2vsSByZFyTLgnEAPVzR9+aWKhsBXFRV+9gOCdWK8wtpbkcAkH4aOVoHvBAa2ZN4HZmWoR1ePp9Bot4k6ouoEvTnbFkqD4S6ROeJRjMMHNGC4EiVyfsZNsQQxW9k2XL/jY/8iv4UfFV/u4oYfnBlRMekpsFduRKQVJUf/WoO7MqaiJtL1DtXH9IuO2eE5OodyzXf7n356vexJGTwoQb0PWEAIvhW8oWwno6pPPuugcHDmNyips7Fpb4yAuaIk6+sio/Qus7YVWKW598I9pkIe27xIMGHhwVJieFzEpYs/JIPWnm480T4295tCnsFpP867756p0XW512ppgwUD24g2BqQTKBcT4Kw82ErFXoOrSz2U4K2crjFEagV18K9P1Xa8LZukxkyvbPE6FnsYcM8P1qe8im4tW6lmh14qsPSt4Fr+wIjL9/dxoZYNVfrVUf4Hvj6mfB7ap8bNiEW5SK1KqwEUabu4fSoVWq9TQ/QASssj9Yb4wM5D4+Nh2riVzewSiF/dnTOqZkGv3OkZZG7cEBaD4dCNhrIDUhbhJdd3R2OHCozWNIgUGbwJi7eoMPK5RXKORuzmjNuJMf+DgEHlAr2bee1t3gWUhgSI5HxXVjfe6ztq/6HUVSdne1Bcpss9ldt6/IsYa/YWRcli3TbdnrdzrP9BvJLowIUHvDck+aYmT/J6k/H7X4zN4EmHQiyhObtdsA0eWpokAUhWN+1goQweneHn6q9ySghfUFuJQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(10070799003)(366016)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?N2E2WHZJSHVCSSsvR21tMFpQRXJ4RlQrbmxUWEgvWXFHRFVGSFN6TGFab2hW?=
+ =?utf-8?B?RlljSlR6VzJmNXpJWEpxNEJSMHlmMDRUQ1FIQkxKVkhHSWlvZEpSVWlXdjU5?=
+ =?utf-8?B?Nk1SdTFYRHdSM0hDM0c3MTZIbERRWjlFYnJRVVp3RGRwMkFpbys0YlZaVVhN?=
+ =?utf-8?B?c0xmQ052RTArdlpCeWdaSGFLeldIcjlTWGdSaVFaU1N6eHF3ZXJxUGE4OVZ0?=
+ =?utf-8?B?cUxwOTliL3RKeUVYaUpBS3RibGVldGtTMmZKS3J5K3FtMXRaN2FIbDdleTJi?=
+ =?utf-8?B?Q1lmUFdFeGtOdERzM1JVWGRtdGRXZ1hLNGRqSk5wNStEM29wQUZYR0tadkNm?=
+ =?utf-8?B?RERUdHBBUEdTanV5RXU0blNqQU9LKzBIUjdIeTFwdVNzRmsyTzI5NWcrWTZu?=
+ =?utf-8?B?Z3dLcko1Rytkb1dyeVQ5U21USmU0dG00Wm1UY01odVJKdHRvR2ppdDd6M3oz?=
+ =?utf-8?B?WXVMODZxU3RUVUVKT1FTN1JVMzRvek1QUitMdDgrbFZyaEgxRHBEKzJwMkIw?=
+ =?utf-8?B?dTlqaVJQMFIzMjBHTEJNWTFmOEp3N1BZNXZ6YU4wWUlWWXQ1UWVXa2xpMWx2?=
+ =?utf-8?B?UVZodkYzSHM0N1lvd0p4T2M2T3RHeFNRV2FRNGFUN093clJUK3hZWHpKMW1z?=
+ =?utf-8?B?WFJjVzF6V2dNSWRicU0wYlFaQkNqRHhYMndSdzNpMUs5blhjUmdlOGVDTjg3?=
+ =?utf-8?B?T1NjZWNIQ2F5a0lua1dVMVcvSk5CSmozK1ZweTBpZlZHdlB4L1Ayb0M1U3VU?=
+ =?utf-8?B?cnViZUovS0VtK2FocWlQZ085d1RETG1CV2wya09LSHdPT1JSdUltTmhCLzdD?=
+ =?utf-8?B?bzU3aVkzTWtPTjNDbEtXZzB1UDl6aE9uOG1JbkNuVmVlYkJhYzNDY0FzSDFE?=
+ =?utf-8?B?eUlxT1JOYVdDYklaUnp4a3RtNTE2M1duWnlFSStBU0tlek53SDVwNEFHdzg3?=
+ =?utf-8?B?NlRSR3poUjNtY0o3WUx2L1pkelJLNWdyYVJqcUg1R1Y5dG8rdGpWd2g3MjBU?=
+ =?utf-8?B?YnpTendFMmh6T1M1aHhaY1pON2QvUHI4Zkg3WmVKTTFxUUFoOWRXeGVIM0lF?=
+ =?utf-8?B?YUZPSGMzQUNyZWNpY0h2TWt1QkdUb1p4aHdxd25xOWYvVnhaSFlsNnpDL2NE?=
+ =?utf-8?B?aisrdW5rNUpEQ01tOFlkTFhDb2ljR0dmYkN4bFhlVzh2N0ppcmsrSzhqUGFP?=
+ =?utf-8?B?eUVuUmtSenFDaHJLSG1tdFV5ZmQ5ZUw4YVVxNzBHaVlDLy9oTlZEeTBKbG1X?=
+ =?utf-8?B?Sk9sc1FVdHpVRjNWa1BOTC9WWkphdnc0YTNka3hnMHU5QTJXZ1NPL09STmYz?=
+ =?utf-8?B?RUpReHFTR2tOaXF3WnZ0Ym9rSjY5aW5SMmlCa201L0tNUVZPbGM2UDZFL3h2?=
+ =?utf-8?B?RXRDaEZrSnp3ZEExcElGWk0waVFOR2ZVZktnSWllTkYvcy9GRzlGQkNHbURk?=
+ =?utf-8?B?Z0tCSUozbmZEWGg5NEs0WlRMc3R2T2FkQjRkNDBNa1dpNGRlRklNRWFiUHBz?=
+ =?utf-8?B?TW9xV3RmdTdjeXB5STZxWEl4Y1phMVE5K3hGeTFqeXAxeXRHb2ZlZnFHS2NH?=
+ =?utf-8?B?Z1dDRkNuaHZsV2lGRWtnbUdtMHpPSkVtSlJiZUhuOTJGbHVUbXJzT3ZxMjJL?=
+ =?utf-8?B?QlBSK3lOTU5tNnRNa3NMV01WbUVDMDcvUnZ4bE1GLzEzakZXQ0pUcmVEdG1J?=
+ =?utf-8?B?VWE5b29pZjFtUjNZSGVveEQyY0xOMjhNTjhEaWY5Y2tIUEZLanpacUxWVHBl?=
+ =?utf-8?B?M2ZxQ0dUQkNBVG1GLzVESnF2TSt2V1NUZWorRUhNbG5odlVUQXE4Q0lVeFg5?=
+ =?utf-8?B?VXB1OWNZSHdzRHdSc0NtQ1FnY3ZsUmpOcHRmMXBBUjZCTm5nQmgvbmlGSWxB?=
+ =?utf-8?B?ZE9yNWY4ZXp0TC96ekpHZHhaNEZScHB2WHJkaDhyMTQ2ckdUMjV4NU16TWRy?=
+ =?utf-8?B?a0x0ZzBMT25BN2ltY05zSEp6UG9NeDN5MldISXk1M1lZYSsyRzc5SHM4bXZa?=
+ =?utf-8?B?djBQNlpYUjkrellZVmVEajYxa2lIRkoyRVJ1bnBQckhtNzJUajBwYkgzNUdw?=
+ =?utf-8?B?TXB5WkI1Ri92N2ZpL3V6WjBKVlN2S2xFQVZuVjBCTWNYOXQ2dzgxZnZkeld5?=
+ =?utf-8?B?amI4OG9qNnl6RWpxZEJZQ2ZXdnlQdmxpcXlLNzVsV2k1RElqdkVkMXpWZzVQ?=
+ =?utf-8?B?T2ZITmN0K3lwNVpZcTBkcFRqbjVFR1BYOXdCN084dUZGV3ZhaEpZMitCby93?=
+ =?utf-8?B?UWkzVGE4U0xQa0VTRFpxMGg2NHlIYUw2K3kwZWhoVTZqU1AzNnhQL2M3R2xr?=
+ =?utf-8?B?RlNMTHV1eUlCaXc3dlBURVczYWVabkVMWEp2bVdhY0xRN2NLS29vdlZGWDJq?=
+ =?utf-8?Q?Dy82dVwQA31E56kT83Yv5+PXEn7F/5WLfu9dRSL6eFK6M?=
+X-MS-Exchange-AntiSpam-MessageData-1: 5KOam0GyK8mWvw==
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 819430e3-909e-4fa0-5079-08de8ecaf7de
+X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2026 02:12:32.7358
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EXMCAJAMsixJlDm6nO36pIkwoOzf4ozRKXdPCqsAfBXuJ00YnTGepQncCPvFXLPcmKVwQ6oJVgHgn0AK5R33JQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8330
 
-Hi Radu,
+From: Thierry Reding <treding@nvidia.com>
 
-kernel test robot noticed the following build warnings:
+Add a new compatible string for the PWM controller found on Tegra264.
+The controller is similar to earlier generations but not compatible
+with them.
 
-[auto build test WARNING on 11439c4635edd669ae435eec308f4ab8a0804808]
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+[mperttunen: Drop extra Tegra194 compatible string]
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+---
+ Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Radu-Sabau-via-B4-Relay/dt-bindings-iio-adc-add-AD4691-family/20260330-200546
-base:   11439c4635edd669ae435eec308f4ab8a0804808
-patch link:    https://lore.kernel.org/r/20260327-ad4692-multichannel-sar-adc-driver-v5-3-11f789de47b8%40analog.com
-patch subject: [PATCH v5 3/4] iio: adc: ad4691: add triggered buffer support
-config: i386-randconfig-r131-20260331 (https://download.01.org/0day-ci/archive/20260331/202603310753.zLWq0JDB-lkp@intel.com/config)
-compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
-sparse: v0.6.5-rc1
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260331/202603310753.zLWq0JDB-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603310753.zLWq0JDB-lkp@intel.com/
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/iio/adc/ad4691.c:675:47: sparse: sparse: dereference of noderef expression
->> drivers/iio/adc/ad4691.c:675:47: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:757:47: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:757:47: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:809:46: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:809:46: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:815:40: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c:815:40: sparse: sparse: dereference of noderef expression
-   drivers/iio/adc/ad4691.c: note: in included file:
-   include/linux/bitmap.h:797:55: sparse: sparse: shift too big (32) for type unsigned long
-   include/linux/bitmap.h:797:55: sparse: sparse: shift too big (32) for type unsigned long
-
-vim +675 drivers/iio/adc/ad4691.c
-
-   668	
-   669	static int ad4691_manual_buffer_preenable(struct iio_dev *indio_dev)
-   670	{
-   671		struct ad4691_state *st = iio_priv(indio_dev);
-   672		struct device *dev = regmap_get_device(st->regmap);
-   673		struct spi_device *spi = to_spi_device(dev);
-   674		unsigned int n_active = bitmap_weight(indio_dev->active_scan_mask,
- > 675						      indio_dev->masklength);
-   676		unsigned int n_xfers = n_active + 1;
-   677		unsigned int k, i;
-   678		int ret;
-   679	
-   680		st->scan_xfers = kcalloc(n_xfers, sizeof(*st->scan_xfers), GFP_KERNEL);
-   681		if (!st->scan_xfers)
-   682			return -ENOMEM;
-   683	
-   684		st->scan_tx = kcalloc(n_xfers, sizeof(*st->scan_tx), GFP_KERNEL);
-   685		if (!st->scan_tx) {
-   686			kfree(st->scan_xfers);
-   687			return -ENOMEM;
-   688		}
-   689	
-   690		st->scan_rx = kcalloc(n_xfers, sizeof(*st->scan_rx), GFP_KERNEL);
-   691		if (!st->scan_rx) {
-   692			kfree(st->scan_tx);
-   693			kfree(st->scan_xfers);
-   694			return -ENOMEM;
-   695		}
-   696	
-   697		spi_message_init(&st->scan_msg);
-   698	
-   699		k = 0;
-   700		iio_for_each_active_channel(indio_dev, i) {
-   701			st->scan_tx[k] = cpu_to_be16(AD4691_ADC_CHAN(i));
-   702			st->scan_xfers[k].tx_buf = &st->scan_tx[k];
-   703			st->scan_xfers[k].rx_buf = &st->scan_rx[k];
-   704			st->scan_xfers[k].len = sizeof(__be16);
-   705			st->scan_xfers[k].cs_change = 1;
-   706			spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
-   707			k++;
-   708		}
-   709	
-   710		/* Final NOOP transfer to retrieve last channel's result. */
-   711		st->scan_tx[k] = cpu_to_be16(AD4691_NOOP);
-   712		st->scan_xfers[k].tx_buf = &st->scan_tx[k];
-   713		st->scan_xfers[k].rx_buf = &st->scan_rx[k];
-   714		st->scan_xfers[k].len = sizeof(__be16);
-   715		spi_message_add_tail(&st->scan_xfers[k], &st->scan_msg);
-   716	
-   717		st->scan_msg.spi = spi;
-   718	
-   719		ret = spi_optimize_message(spi, &st->scan_msg);
-   720		if (ret) {
-   721			ad4691_free_scan_bufs(st);
-   722			return ret;
-   723		}
-   724	
-   725		ret = ad4691_enter_conversion_mode(st);
-   726		if (ret) {
-   727			spi_unoptimize_message(&st->scan_msg);
-   728			ad4691_free_scan_bufs(st);
-   729			return ret;
-   730		}
-   731	
-   732		return 0;
-   733	}
-   734	
+diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml
+index 41cea4979132..cb2f36e7b5d6 100644
+--- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml
+@@ -16,6 +16,7 @@ properties:
+       - enum:
+           - nvidia,tegra20-pwm
+           - nvidia,tegra186-pwm
++          - nvidia,tegra264-pwm
+ 
+       - items:
+           - enum:
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.53.0
+
