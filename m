@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3D5C212542;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3E8A2F5A36;
 	Mon,  6 Apr 2026 20:25:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775507137; cv=none; b=eadbhgF0ic0J3tMifw6IWfIpKxZwRN7yPE741Gv2jFIRG617LwuLFdVqJQU3NIqkXteBZQLohkm81+NJPf23thsoYwriGARlV6NdYymBVFTTcVaTFsMxCCEHFJaDGfZclblVSGGGmWMS4Jwz/d5uue9K7kbnnHtGPwjV2/n1Vew=
+	t=1775507137; cv=none; b=tJzi9FgIBWFZbl3/asAGws+tIxIoXawgi4M3ZdWWijJzxRXK/sUC5yac0ZEItx9tWnxIFOyfvJiS+jIAVe7gM61U+Rj0ZEpapRH6vo3hxR7NNHltbGxUG4kPNDqem/jsaUUbuGJoraQNLXp2Ys74WgqAvUQbotTezMG5yF+t//w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1775507137; c=relaxed/simple;
-	bh=OTR3bFhUuHWfHudW/1mDZVYi5w4WUPb0Vet1Eonn6tg=;
+	bh=i/I3n7L/H6hcG6nNaZkHBC8yKfiawIv49U505TQUT5U=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=kyvUAdYHnX78yYNNa0OpxKhUn2MlGblz8qBDtDnALpiZ59pjtBwjtqkoq9W2oz+G/YnIb1+2SKa/n9o/cGZEUe3cIJAIMcNe6STYqEyEBVEJz3V2zQmgL2oLdNAcnO6nNLwu9sHsSIXhXaNS2GhXmu6h/TBh/WA/tYW/pYkUTP8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sUt6PJfX; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Y7i4h3cH/ainV8R+W6uZ3UOphFtmPKL8Ie0p1AZzRb1RVMM7ssLwLFkDqR9UwtmXBEp5vNBOryx87L9rf6UDSsDgndYiI3vkqJNOvx5RRT5ouoOFAUq2YyCqp1ApkSvvlC8+7yxs/GqFIjWwuysEFW1uRVKgn2vMR/yGUNZNQQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bw3rxeWI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sUt6PJfX"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 62497C2BCB3;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bw3rxeWI"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7E72DC4AF0F;
 	Mon,  6 Apr 2026 20:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1775507137;
-	bh=OTR3bFhUuHWfHudW/1mDZVYi5w4WUPb0Vet1Eonn6tg=;
+	bh=i/I3n7L/H6hcG6nNaZkHBC8yKfiawIv49U505TQUT5U=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=sUt6PJfXlsuSMUk9vWmYRP4td9W979suuEmAmMvy/IWKg2F/oZHvKebwXQ/Lh6Puv
-	 /+6XBBW66KaBrfF9fMDNVbTT3jjf53eXR/5I9DDhWatuOcckgAhOhUa6i2Ih99pqci
-	 FVnLGHBadqz+aXCEn5OX6L0BAxuG19mffbmd4mIbkcs3amIT6MdjH0HVxp/Ozln2sd
-	 y+RxCWvXl+8x12yJZ8QampsMUVVTeMHk3ktN7Nn4sdOSYWY7sMsLijIky0ofHtFmh1
-	 QDqlkLTyfx16Mz2Podv/HJ87R9pdBl1jfnEstwaYbLXaKuTZySKk835i/paQFblSxA
-	 +WHrIwgWOTU4Q==
+	b=Bw3rxeWIawanPQ7g7xbjZwa4vlfiwhvgFdnLm2iG5WaDSFM6eEAtMXtyb5SBAQ+dC
+	 rKuJ5Bi2f0zBFGvafijlogxkNtGITABtdQ7T2jhHz+KaOnagnc+TSorfwo0T82/hyc
+	 S9EVgx1/q6jr/HW6lgauBZDNoe0UqLvxLY6jtIYrAauLh7yRJWuJFv5OY7Ww5rcj8y
+	 gpQujtzypeDrd7nYuTNsbQusA7sQnbfIloU6WVNuTAqwur9c67v3IjyMooklKClpIC
+	 s1rZxeifTaVNm6Z+lb3v11Nf+yd9UvTBw3Pzyy/oBooXw/sTTVzxHIGZhXuNw91Shp
+	 mVDPsx6qQfjFg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 408B0FB5166;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E6AFB516E;
 	Mon,  6 Apr 2026 20:25:37 +0000 (UTC)
 From: George Moussalem via B4 Relay <devnull+george.moussalem.outlook.com@kernel.org>
-Date: Mon, 06 Apr 2026 22:24:38 +0200
-Subject: [PATCH v21 1/6] dt-bindings: pwm: add IPQ6018 binding
+Date: Mon, 06 Apr 2026 22:24:40 +0200
+Subject: [PATCH v21 3/6] arm64: dts: qcom: ipq6018: add pwm node
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260406-ipq-pwm-v21-1-6ed1e868e4c2@outlook.com>
+Message-Id: <20260406-ipq-pwm-v21-3-6ed1e868e4c2@outlook.com>
 References: <20260406-ipq-pwm-v21-0-6ed1e868e4c2@outlook.com>
 In-Reply-To: <20260406-ipq-pwm-v21-0-6ed1e868e4c2@outlook.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
@@ -52,14 +52,14 @@ Cc: linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org,
  George Moussalem <george.moussalem@outlook.com>, 
  Devi Priya <quic_devipriy@quicinc.com>, 
  Baruch Siach <baruch.siach@siklu.com>, 
- Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
  Krzysztof Kozlowski <krzk@kernel.org>
 X-Mailer: b4 0.15.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1775507135; l=1986;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1775507135; l=1396;
  i=george.moussalem@outlook.com; s=20260406; h=from:subject:message-id;
- bh=nDWws50WaNvgOfPtIO2WBqjwriMPqndXS0BxB4pO04E=;
- b=vWsu1ylE+520h9fCI92em01kv+7O5LlzpmfD0ib1MZKI3/mGs5vExbXkpgmE7SvoDhDVnj3Mm
- NIVcIxlzI8kAgmvzaf5m4HsYQrPj2ylqu4GrmhtQOrjKcpNfF6DwfWG
+ bh=rU0+JNTTNlPTGkuyuKC6rpbyunJNB1G3olmsX3Lsvj0=;
+ b=UY26W8b27DfZIb9XTOrlGpRmBuUvC+BUePVSm+qZ8Oqk+6NLyq1o1f+k6Odi/mu5rkA7VNa+Z
+ QIViuXMBfwkB9NZtayiiaUJSkcrkdflayDjY8UDwWDp0PPqJhYEzuTm
 X-Developer-Key: i=george.moussalem@outlook.com; a=ed25519;
  pk=uqspem3ahtBvPEBuxVbyyXT/0Vp3JNb/mo1EPbmBzWg=
 X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20260406
@@ -69,75 +69,43 @@ Reply-To: george.moussalem@outlook.com
 
 From: Devi Priya <quic_devipriy@quicinc.com>
 
-DT binding for the PWM block in Qualcomm IPQ6018 SoC.
+Describe the PWM block on IPQ6018.
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Although PWM is in the TCSR area, make pwm its own node as simple-mfd
+has been removed from the bindings and as such hardware components
+should have its own node.
+
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Co-developed-by: Baruch Siach <baruch.siach@siklu.com>
 Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
 Signed-off-by: Devi Priya <quic_devipriy@quicinc.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 Signed-off-by: George Moussalem <george.moussalem@outlook.com>
 ---
- .../devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml  | 51 ++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml b/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
-new file mode 100644
-index 000000000000..f9f1f652e752
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/qcom,ipq6018-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 40f1c262126e..7866844cc09f 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -413,6 +413,16 @@ tcsr: syscon@1937000 {
+ 			reg = <0x0 0x01937000 0x0 0x21000>;
+ 		};
+ 
++		pwm: pwm@1941010 {
++			compatible = "qcom,ipq6018-pwm";
++			reg = <0x0 0x01941010 0x0 0x20>;
++			clocks = <&gcc GCC_ADSS_PWM_CLK>;
++			assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
++			assigned-clock-rates = <100000000>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
 +
-+title: Qualcomm IPQ6018 PWM controller
-+
-+maintainers:
-+  - George Moussalem <george.moussalem@outlook.com>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - qcom,ipq5018-pwm
-+              - qcom,ipq5332-pwm
-+              - qcom,ipq9574-pwm
-+          - const: qcom,ipq6018-pwm
-+      - const: qcom,ipq6018-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - "#pwm-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-ipq6018.h>
-+
-+    pwm: pwm@1941010 {
-+        compatible = "qcom,ipq6018-pwm";
-+        reg = <0x01941010 0x20>;
-+        clocks = <&gcc GCC_ADSS_PWM_CLK>;
-+        assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
-+        assigned-clock-rates = <100000000>;
-+        #pwm-cells = <3>;
-+    };
+ 		usb2: usb@70f8800 {
+ 			compatible = "qcom,ipq6018-dwc3", "qcom,dwc3";
+ 			reg = <0x0 0x070f8800 0x0 0x400>;
 
 -- 
 2.39.5
