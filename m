@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3F032F619D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC9972F9985;
 	Mon,  6 Apr 2026 20:25:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775507137; cv=none; b=nktYEINRcTvzH00eB4z55ulyLimgpogkGEwBWDTLyiHD3luTUO38kcaxObz3pAMCWtWUYf2eSiI/TW5Jc66Ojx1AkPIO8F4eEk4zh+5AKLxCHOYVjwHSUJG/b5nE9WfvtAeKeHKLeVpzwkztmhj9xOw3k6F40vwqPxNtP2MK7kM=
+	t=1775507137; cv=none; b=ezn6hycoQU4Uy9cylkgpT1cIJSJ+hLkf04Mxmflxop32irRTqACyyjaXBDCRCCJKTENGFLu9JwgDgEp3yv/lO2Tx/2JIetJ9l8/2PgZMkxLn3pYsO3kT7sBOcIjFRG/9aOrPW0XgTF6xD16qvHVdXFTNAMq/aFhEBzttY5HeJHI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1775507137; c=relaxed/simple;
-	bh=SDhHc8Gdlrhgi2kS2fCmPzPir3jVgVnkcwYGV6/fk9M=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=nW58hFznvZeDe45S6pal+85BPFcdpquPQczCCMpXTgZwdC8pn7VG3WdPcLFSsNlrm57f+4fqlJMNXkAyf9lwKg2V+Xnk0z1VbSuYpGT3VQ0HNANM3cRVz9JVR0DSmgH5PGzqKa1ueZ/pbM6PlQsmr6kL/QRBvcHcLFgmaR0SlQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FgBx1ekO; arc=none smtp.client-ip=10.30.226.201
+	bh=vY+msfSpuSB0jDw6x5AYAD4LtNsvmSIBHHnDm/9oW0w=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=tU/bIlqHIhrcrvRqw5jZRzb/R/BMNduWnH5jFdYEVzHZRF5cv1vpBcwbYBb5iiLyVfMAL22f8W8hHxw3ycer9eRPnt7Qb8wkBA6BdPQyB3K+udEcyBJgjrqCPdAAhLzcIENHt5CkWDqlkBKrJlMB1REPWI9osUQlAm+QMKoD5K0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rpWzqBd3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FgBx1ekO"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F2D0C4CEF7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rpWzqBd3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8D3DBC2BCB5;
 	Mon,  6 Apr 2026 20:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1775507137;
-	bh=SDhHc8Gdlrhgi2kS2fCmPzPir3jVgVnkcwYGV6/fk9M=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=FgBx1ekOUTiEsWsUrAoqOOdI/IWsOCVAScIt2qcejLH9Pj0ziRhibBhStbzF6O6QM
-	 j/vGVVgblX9bfnBuRJDjPNZa88To1XUTZP4k9HjPYTZ2CXNuiHixvrBOX9DXRB2OFk
-	 puq1gFoHX6TRe1hEU0dfcRBS3zkF9bOFvKmQvnnfvJBrjx2va5MCPz4p+IUgsnPXp5
-	 UVNMf7f9jTPcqczljd5qrkBkSHkOaGeso6fYsjffhsih4YlhEld1SXbbmpQu71/5y+
-	 gZsUsrdtlD4N7V020P/9hXD4rYbXri8nfC/Xtr3xRLnaBpi2bdl8Wn1OLSLBQe3qCV
-	 +0hzdgksoIs/g==
+	bh=vY+msfSpuSB0jDw6x5AYAD4LtNsvmSIBHHnDm/9oW0w=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=rpWzqBd39rxWR4Sbo+ks6Nqp1m5At37BAHCU7uUkeTcUISZlyGzReQI7Evr4jeL2B
+	 MyreQUKG/KHfoWblP+1OwMA9T54HIAEqp2cs6XpUDtKU/r/m3irc4W0zL6YnOYE+C/
+	 yV6kw3L6WBplFIctkbS0nhMpDjhnXWCB9soX+2t+msZJZM9TPwkUPYNjjEu9MZRbYD
+	 sEhkm2Q8los78LI/HkR58UmMGxPEYZ866Wb0sqybkywv9fVHjNkgQ32FyCGLYdL2h7
+	 dDrvoXAjtWFRjOg5HCm2D484YYSPiLisjUeTgG9tAhV34JSgcYwjYzkCE5xL6xAezU
+	 kAy/P68hUSBxQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FFD7FB5164;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84589FB5168;
 	Mon,  6 Apr 2026 20:25:37 +0000 (UTC)
 From: George Moussalem via B4 Relay <devnull+george.moussalem.outlook.com@kernel.org>
-Subject: [PATCH v21 0/6] Add PWM support for IPQ chipsets
-Date: Mon, 06 Apr 2026 22:24:37 +0200
-Message-Id: <20260406-ipq-pwm-v21-0-6ed1e868e4c2@outlook.com>
+Date: Mon, 06 Apr 2026 22:24:41 +0200
+Subject: [PATCH v21 4/6] arm64: dts: qcom: ipq5018: add pwm node
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -39,14 +39,10 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAIUW1GkC/23O0U7DMAwF0F+Z+kwm22malKf9B0KoTRwWQZcu3
- QrT1H8nrTRWxB6d+FzfazFwCjwUz5trkXgMQ4iHPBA+bQq7bw7vLILLDwUBKaiJROiPov/qhDV
- WK4uldoqKvN0n9uF7iXp5zbNPsROnfeLm5iUCKKxAKdhSSRK0EiiO52DfXD7dp3DZzVM42K2N3
- Ry6D8MppstSb8Rqzl6a5CT8bZI/BAgJ4ElqBq7MLp5PnzF+LDFzmRH12pqV1dnWrSslO2+11w+
- sWVmqV9Zky65lb9i3reEHtr5bpPXdOluUrdVQWls16r8luNkKCMq7JZg7o5YSEBvp8K+dpukHU
- CXzXtgBAAA=
-X-Change-ID: 20250922-ipq-pwm-c8c75c147d52
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260406-ipq-pwm-v21-4-6ed1e868e4c2@outlook.com>
+References: <20260406-ipq-pwm-v21-0-6ed1e868e4c2@outlook.com>
+In-Reply-To: <20260406-ipq-pwm-v21-0-6ed1e868e4c2@outlook.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
@@ -54,18 +50,14 @@ To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
 Cc: linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  George Moussalem <george.moussalem@outlook.com>, 
- Devi Priya <quic_devipriy@quicinc.com>, 
- Baruch Siach <baruch.siach@siklu.com>, 
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
  Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
- Bjorn Andersson <andersson@kernel.org>, 
- Krzysztof Kozlowski <krzk@kernel.org>
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 X-Mailer: b4 0.15.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1775507135; l=6465;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1775507135; l=1238;
  i=george.moussalem@outlook.com; s=20260406; h=from:subject:message-id;
- bh=SDhHc8Gdlrhgi2kS2fCmPzPir3jVgVnkcwYGV6/fk9M=;
- b=3JWHAb2VwyMun5FJ77dftxXSowjvRhsNsVjt17VuQmMMMLEZFy8r7ueQeWewK2OLqnScZg2nh
- KbGnOSdD2R7AOkqDVyp9wzw3F+8kVUYIL8kGu794NbXzZ5C5OHuwPuP
+ bh=Q3Kni45lqsYFrwlIKyqfk0z6yh8vt/BwrVScgBSze6s=;
+ b=fBxEPiCugHIQg0LwhaaK7nTTlhEPCk4139ehZNq13093fuLZ05hrjiKW7DJ/E2L8/9e9eCcYu
+ vvqOEKb6aDJAmom01ZPGzhNlB0CkJqLfc6TKlwSwYmmlUoSiKXWCRaP
 X-Developer-Key: i=george.moussalem@outlook.com; a=ed25519;
  pk=uqspem3ahtBvPEBuxVbyyXT/0Vp3JNb/mo1EPbmBzWg=
 X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20260406
@@ -73,165 +65,44 @@ X-Endpoint-Received: by B4 Relay for george.moussalem@outlook.com/20260406
 X-Original-From: George Moussalem <george.moussalem@outlook.com>
 Reply-To: george.moussalem@outlook.com
 
-Add PWM driver and binding support for IPQ chipsets.
-Also, add nodes to add support for pwm in ipq6018, ipq5018, ipq5332, and
-ipq9574.
+From: George Moussalem <george.moussalem@outlook.com>
 
-I've picked up work based on Devi's last submission (v15) which dates
-back to 05 October 2023 as below SoCs are still active.
+Describe the PWM block on IPQ5018.
 
+Although PWM is in the TCSR area, make pwm its own node as simple-mfd
+has been removed from the bindings and as such hardware components
+should have its own node.
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 Signed-off-by: George Moussalem <george.moussalem@outlook.com>
 ---
-Changes in v21:
-- Added macro definition for minimum supported period and lower bound check to ensure a valid period 
-- Added code comment to explain why pre_div won't overflow
-- Link to v20: https://patch.msgid.link/20260204-ipq-pwm-v20-0-91733011a3d1@outlook.com
+ arch/arm64/boot/dts/qcom/ipq5018.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Changes in v20:
-- Updated IPQ_PWM_MAX_DIV macro definition to use FIELD_MAX
-- Removed clk struct from ipq_pwm struct and added clk_rate field
-  instead which is set during probe.
-- Consolidated config_div_and_duty into ipq_pwm_apply
-- Fixed arithmetic overflows in apply and get_state
-- Fixed off-by-one in divider calculation
-- Enabled 100% relative duty cycle support
-- Aligned continuation on next lines relative to opening parentheses
-- Return 0 instead of ret in probe
-- Link to v19: https://lore.kernel.org/r/20251128-ipq-pwm-v19-0-13bc704cc6a5@outlook.com
+diff --git a/arch/arm64/boot/dts/qcom/ipq5018.dtsi b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
+index 6f8004a22a1f..edff89257468 100644
+--- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
+@@ -453,6 +453,16 @@ tcsr: syscon@1937000 {
+ 			reg = <0x01937000 0x21000>;
+ 		};
+ 
++		pwm: pwm@1941010 {
++			compatible = "qcom,ipq5018-pwm", "qcom,ipq6018-pwm";
++			reg = <0x01941010 0x20>;
++			clocks = <&gcc GCC_ADSS_PWM_CLK>;
++			assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
++			assigned-clock-rates = <100000000>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
+ 		sdhc_1: mmc@7804000 {
+ 			compatible = "qcom,ipq5018-sdhci", "qcom,sdhci-msm-v5";
+ 			reg = <0x7804000 0x1000>;
 
-Changes in v19:
-- Changed pwm-cells property in dt bindings from 2 to 3 as per Uwe's
-  recommendation
-- Added hardware notes and limitations based on own findings as
-  requested. NOTE: there's no publically available datasheet though.
-- Expanded comment on REG1_UPDATE to indicate that when this bit is set,
-  values for div and pre-div take effect. The hardware automatically
-  unsets it when the change is completed.
-- Added newline between MACRO definition and next comment
-- In config_div_and_duty, used mul_u64_u64_div_u64 to avoid overflow
-- Removed unncessary restriction of pwm_div to MAX_DIV - 1 after testing
-- Constrain pre_div to MAX_DIV is pre_div calculated is > MAX_DIV
-- Use of mul_u64_u64_div_u64 in .apply
-- Skip calculation of period and duty cycle when PWM_ENABLE REG is unset
-- Set duty cycle to period value when calculated duty cycle > period to
-  return a valid config
-- Removed .npwm as it's taken care of in devm_pwmchip_alloc
-- Added call to devm_clk_rate_exclusive_get to lock the clock rate
-- Start all kernel messages with a capital letter and end with \n.
-- Changed pwm-cells property in all dtsi from 2->3 for in scope IPQ SOCs
-- Link to v18: https://lore.kernel.org/r/20251029-ipq-pwm-v18-0-edbef8efbb8e@outlook.com
-
-Changes in v18:
-- Updated maintainer info in binding
-- Squashed dt bindings patches into the first for adding compatibles for
-  IPQ5018, IPQ5332, and IPQ9574
-- Link to v17: https://lore.kernel.org/r/20251008-ipq-pwm-v17-0-9bd43edfc7f7@outlook.com
-
-Changes in v17:
-- Picked up RB tags from Dmitry and Rob
-- Removed unnecessary code comments
-- Corrected reg property in PWM node in ipq6018 DTS in line with
-  expected nr of bytes for address and size cells
-- Link to v16: https://lore.kernel.org/r/20251001-ipq-pwm-v16-0-300f237e0e68@outlook.com
-
-Changes in v16:
-- Removed reg description in bindings as the offset is not relative to
-  the TCSR region anymore since simple-mfd support was dropped and PWM
-  nodes defined as their own nodes, not child nodes. Updated the example
-  too.
-- Dropped patch to add simple-mfd support to the qcom,tcsr bindings
-- Simplified code to calculate divs and duty cycle as per Uwe's comments
-- Removed unused pwm_chip struct from ipq_pwm_chip struct
-- Removed unnecessary cast as per Uwe's comment
-- Replaced devm_clk_get & clk_prepare_enable by devm_clk_get_enabled
-- Replaced pwmchip_add by devm_pwmchip_add and removed .remove function
-- Removed .owner from driver struct
-- Added compatibles to the bindings and nodes to the device trees to add
-  PWM support in the IPQ5018, IPQ5332, and IPQ9574 SoCs
-- Link to v15: https://lore.kernel.org/r/20231005160550.2423075-1-quic_devipriy@quicinc.com
-
-Changes in v15:
-- No change
-- Link to v14: https://lore.kernel.org/r/20231005033053.2626465-1-quic_devipriy@quicinc.com
-
-Changes in v14:
-- Picked up the R-b tag
-- Link to v13: https://lore.kernel.org/r/20231004090449.256229-1-quic_devipriy@quicinc.com
-
-Changes in v13:
-- Updated the file name to match the compatible
-- Sorted the properties and updated the order in the required field
-- Dropped the syscon node from examples
-- Link to v12: https://lore.kernel.org/r/20230925065915.3467964-1-quic_devipriy@quicinc.com
-
-Changes in v12:
-- Picked up the R-b tag
-
-Changes in v11:
-- No change
-
-Changes in v10:
-- No change
-
-Changes in v9:
-- Add 'ranges' property to example (Rob)
-- Drop label in example (Rob)
-
-Changes in v8:
-- Add size cell to 'reg' (Rob)
-
-Changes in v7:
-- Use 'reg' instead of 'offset' (Rob)
-- Drop 'clock-names' and 'assigned-clock*' (Bjorn)
-- Use single cell address/size in example node (Bjorn)
-- Move '#pwm-cells' lower in example node (Bjorn)
-- List 'reg' as required
-
-Changes in v6:
-- Device node is child of TCSR; remove phandle (Rob Herring)
-- Add assigned-clocks/assigned-clock-rates (Uwe Kleine-König)
-
-Changes in v5:
-- Use qcom,pwm-regs for phandle instead of direct regs (Bjorn
-    Andersson, Kathiravan T)
-
-Changes in v4:
-- Update the binding example node as well (Rob Herring's bot)
-
-Changes in v3:
-- s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
-
-Changes in v2:
-- Make #pwm-cells const (Rob Herring)
-
----
-
----
-Devi Priya (3):
-      dt-bindings: pwm: add IPQ6018 binding
-      pwm: driver for qualcomm ipq6018 pwm block
-      arm64: dts: qcom: ipq6018: add pwm node
-
-George Moussalem (3):
-      arm64: dts: qcom: ipq5018: add pwm node
-      arm64: dts: qcom: ipq5332: add pwm node
-      arm64: dts: qcom: ipq9574: add pwm node
-
- .../devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml  |  51 ++++
- arch/arm64/boot/dts/qcom/ipq5018.dtsi              |  10 +
- arch/arm64/boot/dts/qcom/ipq5332.dtsi              |  10 +
- arch/arm64/boot/dts/qcom/ipq6018.dtsi              |  10 +
- arch/arm64/boot/dts/qcom/ipq9574.dtsi              |  10 +
- drivers/pwm/Kconfig                                |  12 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-ipq.c                              | 259 +++++++++++++++++++++
- 8 files changed, 363 insertions(+)
----
-base-commit: 2febe6e6ee6e34c7754eff3c4d81aa7b0dcb7979
-change-id: 20250922-ipq-pwm-c8c75c147d52
-
-Best regards,
---  
-George Moussalem <george.moussalem@outlook.com>
+-- 
+2.39.5
 
 
