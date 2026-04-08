@@ -1,155 +1,246 @@
-Received: from smtpbgeu1.qq.com (smtpbgeu1.qq.com [52.59.177.22])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from box.trvn.ru (box.trvn.ru [45.141.101.25])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBB393B9DAD;
-	Wed,  8 Apr 2026 10:08:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.59.177.22
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4D0F37F75C;
+	Wed,  8 Apr 2026 10:42:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.141.101.25
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775642915; cv=none; b=bqmx6eWOOvWYEgnAsk5AvLo2F7qHK7QOTlb3O+mN7rqnzH+f9skpmp0dsMz8tSYSmUgdZCYpiix742F+hG+Zjaj7t6K9z2ibtV8hHPqI2BaCWLBWrMGnT8KqWiTU9GL81teDzL4UF2J1bPK/71BgMaHbA/SreB2bARQBWDbDDow=
+	t=1775644976; cv=none; b=TR1e4iU57wvLq1WGQnsaym3tvwPEh9lyaDmj9eKXgnXb+oMfAk6clIuUpcJYQYHhHLBaYO5n+gChrRV+a5+wa1E3a5f7Zxtfu24B+0Jas0fBsaRoJRfBzDKal/2D6AKyzShOwYl+yI+rylSEOHwpw06PFRHqR/WsB9/fvTZ9m2Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775642915; c=relaxed/simple;
-	bh=hyoSGNKO8z6d1axQ29oBEAL7xl1kP5y9LqcBAulHLMQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GlhXrLFl7kwZpqY/42HDdmQoCaPfo8yWM3igBtca0DkqScM9pGSa1lm79cb9lrCxPzTNtPDpFmI7CkLwqTmudtDX7i95sVQA+0XgH7YOgZkUfFRXr/G/h5jGgvOBChsNKpDg9itIdMWFbL8Pku/qGw5NTp1yYhJXwV6++6QLCN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=radxa.com; spf=pass smtp.mailfrom=radxa.com; arc=none smtp.client-ip=52.59.177.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=radxa.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=radxa.com
-X-QQ-mid: zesmtpsz5t1775642866t6935ec97
-X-QQ-Originating-IP: 4qODUJGb35PW82fgR5f0LCmXadzWoz4xrJ1L5pcMYPQ=
-Received: from [192.168.30.32] ( [116.234.85.158])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Wed, 08 Apr 2026 18:07:45 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 12296274181211464006
-EX-QQ-RecipientCnt: 10
-From: Xilin Wu <sophon@radxa.com>
-Date: Wed, 08 Apr 2026 18:07:32 +0800
-Subject: [PATCH v2 1/2] dt-bindings: pwm: clk-pwm: add optional GPIO and
- pinctrl properties
+	s=arc-20240116; t=1775644976; c=relaxed/simple;
+	bh=RW860wbOyJPK1lrUCMSC83VTWhl2YZIfD3CZo/XgccI=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=Vb/T8ejzIhGoC4b7c4bUeuvVzzingMdbhg2BJ5pJxZzxbO91RjGifmCBufgBvLvGXVMPIz+E1wFP54d8LIpDSyxCkxYg6/OcUP88HTpxAmuUOkyNavzK9mg7coCqQd51n3k+ORfKdIUkpWV4VmkKsirQuU9Szc6Gy9FvWG4Vkcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=trvn.ru; spf=pass smtp.mailfrom=trvn.ru; dkim=pass (2048-bit key) header.d=trvn.ru header.i=@trvn.ru header.b=ISGQ7Jq2; arc=none smtp.client-ip=45.141.101.25
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=trvn.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=trvn.ru
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=trvn.ru header.i=@trvn.ru header.b="ISGQ7Jq2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+	t=1775644966; bh=RW860wbOyJPK1lrUCMSC83VTWhl2YZIfD3CZo/XgccI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=ISGQ7Jq2xxmMcbIJpib4DTRURf1zAjSnyAsOLbVV/IIDk3nBMOPXpMl6WF40+lkLX
+	 HcQFRKt3Qyu1XnHlRhloxPUzcqtM4vu0cFDt25/QN6VoFoTX9ohlB4vCoHGDhWq78D
+	 exF/MRsMw6WGEBQ96e0Qj9tX3NdZTsOFy4iDdLrZDUhyIn2Yw9yBjH953Rn38yqa49
+	 ER07pe9NUDgT9sasmx5/uOj7myxr9RJz+BzldAQcDMKYT3yHdP89FseBiPELM9aFru
+	 /I5LlkjHmPfWZBCNglv37NP+VYPX1lOymihmtAJEKyg8PDQhdLFzyiNRlZKKYx4U4K
+	 et5xs4YsUdoig==
+Received: from authenticated-user (box.trvn.ru [45.141.101.25])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by box.trvn.ru (Postfix) with ESMTPSA id A5F396E95D;
+	Wed,  8 Apr 2026 15:42:46 +0500 (+05)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260408-clk-pwm-gpio-v2-1-d22f1f3498a0@radxa.com>
+Date: Wed, 08 Apr 2026 15:42:46 +0500
+From: Nikita Travkin <nikita@trvn.ru>
+To: Xilin Wu <sophon@radxa.com>
+Cc: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-pwm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] pwm: clk-pwm: add GPIO and pinctrl support for
+ constant output levels
+In-Reply-To: <20260408-clk-pwm-gpio-v2-2-d22f1f3498a0@radxa.com>
 References: <20260408-clk-pwm-gpio-v2-0-d22f1f3498a0@radxa.com>
-In-Reply-To: <20260408-clk-pwm-gpio-v2-0-d22f1f3498a0@radxa.com>
-To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
- Xilin Wu <sophon@radxa.com>
-X-Mailer: b4 0.15.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2512; i=sophon@radxa.com;
- h=from:subject:message-id; bh=hyoSGNKO8z6d1axQ29oBEAL7xl1kP5y9LqcBAulHLMQ=;
- b=owGbwMvMwCVmdFg0fe08Iz/G02pJDJnXNN7tfMb07W11zRRXxo6iZPGW6CMH153PYW5f+LO+d
- EL4SqspHaUsDGJcDLJiiiwK8Qxz2Stzrz0VK9WDmcPKBDKEgYtTACZSsJKRYf6DAzsys7caqdZY
- 2kQncL+cU6uf2DJ9gejd3QuPidf9qmZk6Nk0U7Ds+H+VFKUDKZe21dq1STLF2n349/H+d1W3R28
- 1eAE=
-X-Developer-Key: i=sophon@radxa.com; a=openpgp;
- fpr=205F009D07796DD6E516752E32C31567AD9E324E
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpsz:radxa.com:qybglogicsvrsz:qybglogicsvrsz3b-0
-X-QQ-XMAILINFO: N8r2YJN/ffrjkob54fqR58thY4A5iwbaYUjMjFmkKQCx3HXYzDhzaaGa
-	ZAtQq5IYnwTQb5DZRPvhrkelCsRvCXFs3zbXmbgyc+JqxeRvalRcwCZ2ejudG6y/dB9ZVYl
-	ExRQvOcedBy9t/THaoNDgoF73SGGOxEWGbrAK6fQqg9madUAKdZuCzcrk4zLxsw+BW71HQy
-	eIs/dk2WcI0Yy2CgG18lIilrZfPTrojkSrsxWBNKAnAB2+rngP2jvxbuUU/djTlIQJ8PD9q
-	AUkBlBoBS9d7TfE2FB8tFOplzOcEHDp/zcZeWnZ1pweEOI1vLUtDBb6GxORc0N0rtR6hCgf
-	Eoj9KcciX9lDXJliAngN63b40PsAHSXhMXi7vC0iLG6UgnlfSGBpdOCd+8r54pdeXgg1Xt2
-	F5hA5hG+9c5iemgEFUzE9ngVOXPi6Y2A1uEeVVjMPkfVnKQdALidp/lFUj5KaP7v5PjV42y
-	FhMnd9WGDVkqfP5cVrN8ovhb0yGkC/HUivo0xu5CHFHTs9lVW4LbdONtVE8DdCChesuQ5ZM
-	yXoIno/dZ/FIn3TZVn0gF0W3C5zGRHBju0JWZRABxs/06hwoOQIQ6/oH9IUwKQqJXpae0tn
-	LhvxDqI4QAnYSQvGfSIu8q9bnlJALV1j4OpDQrxd4oJIj/35TYZknjrZ6izLWrBX+Wp5caQ
-	Ls9/Pif5i2zdRgkGnH1BaXpGgyyYZiyXKy6NYAkgUmjc1bRX7t22nupv5iLKHaz7hbJeJh3
-	0GydDhw2sQfq5zE04pEMitrWbElLGMHuXDCjSgKuXV6doB2wsC5WPy7VYJyNXmh/1RYDhO7
-	7Ts5RisMU/uXyU2kFoWdrdVUw4EZ/PG53ByX+mpE2/6I9PaMXTq4T7CZwITZeuKkZs25E5U
-	Cs7gRY1iSDWrFPLm73edyUvaoLL8+5/hhPOMGNXSuYGmK8xtd0pmnIhLajbj9X7rB6XWMWZ
-	XuRCVy9wB3QmhwYEq2qzIUoHtj5xJ64NydVxK5z5fzfnM8dSDh2RaPeEtd47hd+fRhZcbZk
-	j29jsOHpCmys/+3VvbUzmdJl4iRa5r/lm9jHf97ECTC+F7tcF6
-X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
-X-QQ-RECHKSPAM: 0
+ <20260408-clk-pwm-gpio-v2-2-d22f1f3498a0@radxa.com>
+Message-ID: <8030cac3703f9aa1b7a8b476ad92aeae@trvn.ru>
+X-Sender: nikita@trvn.ru
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-The clk-pwm driver cannot produce constant output levels (0% or 100%
-duty cycle, or disabled state) through the clock hardware alone - the
-actual pin level when the clock is off is undefined and
-hardware-dependent.
+Xilin Wu писал(а) 08.04.2026 15:07:
+> The clk-pwm driver cannot guarantee a defined output level when the
+> PWM is disabled or when 0%/100% duty cycle is requested, because the
+> pin state when the clock is stopped is hardware-dependent.
+> 
+> Add optional GPIO and pinctrl support: when a GPIO descriptor and
+> pinctrl states ("default" for clock mux, "gpio" for GPIO mode) are
+> provided in the device tree, the driver switches the pin to GPIO mode
+> and drives the appropriate level for disabled/0%/100% states. For
+> normal PWM output, the pin is switched back to its clock function mux.
+> 
+> If no GPIO is provided, the driver falls back to the original
+> clock-only behavior.
+> 
+> Signed-off-by: Xilin Wu <sophon@radxa.com>
+> ---
+>  drivers/pwm/pwm-clk.c | 84 ++++++++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 80 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
+> index f8f5af57acba..d7d8d2c2dd0f 100644
+> --- a/drivers/pwm/pwm-clk.c
+> +++ b/drivers/pwm/pwm-clk.c
+> @@ -11,11 +11,20 @@
+>   * - Due to the fact that exact behavior depends on the underlying
+>   *   clock driver, various limitations are possible.
+>   * - Underlying clock may not be able to give 0% or 100% duty cycle
+> - *   (constant off or on), exact behavior will depend on the clock.
+> + *   (constant off or on), exact behavior will depend on the clock,
+> + *   unless a gpio pinctrl state is supplied.
+>   * - When the PWM is disabled, the clock will be disabled as well,
+> - *   line state will depend on the clock.
+> + *   line state will depend on the clock, unless a gpio pinctrl
+> + *   state is supplied.
+>   * - The clk API doesn't expose the necessary calls to implement
+>   *   .get_state().
+> + *
+> + * Optionally, a GPIO descriptor and pinctrl states ("default" and
+> + * "gpio") can be provided. When a constant output level is needed
+> + * (0% duty, 100% duty, or disabled), the driver switches the pin to
+> + * GPIO mode and drives the appropriate level. For normal PWM output
+> + * the pin is switched back to its clock function mux. If no GPIO is
+> + * provided, the driver falls back to the original clock-only behavior.
+>   */
+>  
+>  #include <linux/kernel.h>
+> @@ -25,11 +34,17 @@
+>  #include <linux/of.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/clk.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/pinctrl/consumer.h>
+>  #include <linux/pwm.h>
+>  
+>  struct pwm_clk_chip {
+>  	struct clk *clk;
+>  	bool clk_enabled;
+> +	struct pinctrl *pinctrl;
+> +	struct pinctrl_state *pins_default;  /* clock function mux */
+> +	struct pinctrl_state *pins_gpio;     /* GPIO mode */
+> +	struct gpio_desc *gpiod;
+>  };
+>  
+>  static inline struct pwm_clk_chip *to_pwm_clk_chip(struct pwm_chip *chip)
+> @@ -45,14 +60,36 @@ static int pwm_clk_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  	u32 rate;
+>  	u64 period = state->period;
+>  	u64 duty_cycle = state->duty_cycle;
+> +	bool constant_level = false;
+> +	int gpio_value = 0;
+>  
+>  	if (!state->enabled) {
+> -		if (pwm->state.enabled) {
+> +		constant_level = true;
+> +		gpio_value = 0;
+> +	} else if (state->duty_cycle == 0) {
+> +		constant_level = true;
+> +		gpio_value = (state->polarity == PWM_POLARITY_INVERSED) ? 1 : 0;
+> +	} else if (state->duty_cycle >= state->period) {
+> +		constant_level = true;
+> +		gpio_value = (state->polarity == PWM_POLARITY_INVERSED) ? 0 : 1;
+> +	}
+> +
 
-Document optional gpios, pinctrl-names, pinctrl-0, and pinctrl-1
-properties that allow the driver to switch the pin between clock
-function mux (for normal PWM output) and GPIO mode (to drive a
-deterministic constant level).
+So I'm looking at it again, and I'm a bit confused.
 
-Signed-off-by: Xilin Wu <sophon@radxa.com>
----
- Documentation/devicetree/bindings/pwm/clk-pwm.yaml | 36 +++++++++++++++++++++-
- 1 file changed, 35 insertions(+), 1 deletion(-)
+Old behavior was:
+ - pwm was enabled and being disabled -> stop the clock and hope state is 0;
+ - pwm is still enabled but
+                            - duty=0%   -> set clk duty to 0%
+                            - duty=100% -> set clk duty to 100%
 
-diff --git a/Documentation/devicetree/bindings/pwm/clk-pwm.yaml b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
-index ec1768291503..2a0e3e02d27b 100644
---- a/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
-@@ -15,6 +15,11 @@ description: |
-   It's often possible to control duty-cycle of such clocks which makes them
-   suitable for generating PWM signal.
- 
-+  Optionally, a GPIO and pinctrl states can be provided. When a constant
-+  output level is needed (0%, 100%, or disabled), the pin is switched to
-+  GPIO mode to drive the level directly. For normal PWM output the pin is
-+  switched back to its clock function mux.
-+
- allOf:
-   - $ref: pwm.yaml#
- 
-@@ -29,6 +34,26 @@ properties:
-   "#pwm-cells":
-     const: 2
- 
-+  gpios:
-+    description:
-+      Optional GPIO used to drive a constant level when the PWM output is
-+      disabled or set to 0% / 100% duty cycle. When provided, pinctrl states
-+      "default" (clock mux) and "gpio" must also be defined.
-+    maxItems: 1
-+
-+  pinctrl-names: true
-+
-+  pinctrl-0:
-+    description: Pin configuration for clock function mux (normal PWM).
-+    maxItems: 1
-+
-+  pinctrl-1:
-+    description: Pin configuration for GPIO mode (constant level output).
-+    maxItems: 1
-+
-+dependencies:
-+  gpios: [ pinctrl-0, pinctrl-1 ]
-+
- unevaluatedProperties: false
- 
- required:
-@@ -41,6 +66,15 @@ examples:
-       compatible = "clk-pwm";
-       #pwm-cells = <2>;
-       clocks = <&gcc 0>;
--      pinctrl-names = "default";
-+    };
-+
-+  - |
-+    pwm {
-+      compatible = "clk-pwm";
-+      #pwm-cells = <2>;
-+      clocks = <&gcc 0>;
-+      pinctrl-names = "default", "gpio";
-       pinctrl-0 = <&pwm_clk_flash_default>;
-+      pinctrl-1 = <&pwm_clk_flash_gpio>;
-+      gpios = <&tlmm 32 0>;
-     };
+New behavior if we have gpio:
+ - pwm was enabled and being disabled -> constant 0
+ - pwm is still enabled but
+                            - duty=0%   -> constant 0
+                            - duty=100% -> constant 1
 
--- 
-2.53.0
+New behavior if we don't have gpio:
+Same as above but
+  - if we need constant 0 -> clock is halted and we pray it's 0
+  - if we need constant 1 -> clock is halted and we pray it's 1 (??)
 
+Per my recollection, when I wrote this driver 5 years ago, I've manually
+verified that at least on qcom setting duty cycle to 0% and 100% worked
+properly, so this feels like it would regress it if left as-is...
+
+(Btw I wonder what's the platform you need this for?)
+
+> +	if (constant_level) {
+> +		if (pcchip->gpiod) {
+> +			gpiod_direction_output(pcchip->gpiod, gpio_value);
+> +			pinctrl_select_state(pcchip->pinctrl, pcchip->pins_gpio);
+> +		}
+> +		if (pcchip->clk_enabled) {
+>  			clk_disable(pcchip->clk);
+>  			pcchip->clk_enabled = false;
+>  		}
+>  		return 0;
+> -	} else if (!pwm->state.enabled) {
+> +	}
+> +
+> +	if (pcchip->gpiod)
+> +		pinctrl_select_state(pcchip->pinctrl, pcchip->pins_default);
+> +
+> +	if (!pcchip->clk_enabled) {
+>  		ret = clk_enable(pcchip->clk);
+>  		if (ret)
+>  			return ret;
+> @@ -97,6 +134,45 @@ static int pwm_clk_probe(struct platform_device *pdev)
+>  		return dev_err_probe(&pdev->dev, PTR_ERR(pcchip->clk),
+>  				     "Failed to get clock\n");
+>  
+> +	pcchip->pinctrl = devm_pinctrl_get(&pdev->dev);
+> +	if (IS_ERR(pcchip->pinctrl)) {
+> +		ret = PTR_ERR(pcchip->pinctrl);
+> +		pcchip->pinctrl = NULL;
+> +		if (ret == -EPROBE_DEFER)
+> +			return ret;
+> +	} else {
+> +		pcchip->pins_default = pinctrl_lookup_state(pcchip->pinctrl,
+> +							    PINCTRL_STATE_DEFAULT);
+> +		pcchip->pins_gpio = pinctrl_lookup_state(pcchip->pinctrl,
+> +							 "gpio");
+> +		if (IS_ERR(pcchip->pins_default) || IS_ERR(pcchip->pins_gpio))
+> +			pcchip->pinctrl = NULL;
+> +	}
+> +
+> +	/*
+> +	 * Switch to GPIO pinctrl state before requesting the GPIO.
+> +	 * The driver core has already applied the "default" state, which
+> +	 * muxes the pin to the clock function and claims it.  We must
+> +	 * release that claim first so that gpiolib can request the pin.
+> +	 */
+> +	if (pcchip->pinctrl)
+> +		pinctrl_select_state(pcchip->pinctrl, pcchip->pins_gpio);
+> +
+> +	pcchip->gpiod = devm_gpiod_get_optional(&pdev->dev, NULL, GPIOD_ASIS);
+> +	if (IS_ERR(pcchip->gpiod))
+> +		return dev_err_probe(&pdev->dev, PTR_ERR(pcchip->gpiod),
+> +				     "Failed to get gpio\n");
+> +
+> +	/*
+> +	 * If pinctrl states were found but no GPIO was provided, the pin is
+> +	 * stuck in GPIO mode from the switch above.  Restore the default
+> +	 * (clock-function) mux and fall back to clock-only operation.
+> +	 */
+
+Feels slightly weird to silently allow "broken" DT, it would make no sense
+for it to have "gpio" pinctrl and not have a gpio defined, would it?
+
+Perhaps it makes more sense to put getting a gpio under having pins_gpio
+and make it strict, so two allowed states for the driver would be either
+no pinctrl-1 and no gpio, or having both at the same time?
+
+(maybe then also worth adding cross dependency of pinctrl-1 and gpio in
+the binding, it's one way only currently, not sure what's the correct
+way to describe it tho)
+
+Nikita
+
+> +	if (pcchip->pinctrl && !pcchip->gpiod) {
+> +		pinctrl_select_state(pcchip->pinctrl, pcchip->pins_default);
+> +		pcchip->pinctrl = NULL;
+> +	}
+> +
+>  	chip->ops = &pwm_clk_ops;
+>  
+>  	ret = pwmchip_add(chip);
