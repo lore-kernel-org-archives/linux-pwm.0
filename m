@@ -1,38 +1,38 @@
 Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CF8F396B66
-	for <linux-pwm@vger.kernel.org>; Thu, 16 Apr 2026 13:41:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF0523CAE73
+	for <linux-pwm@vger.kernel.org>; Thu, 16 Apr 2026 13:41:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776346866; cv=none; b=PsgoDqIPLcCe893bDeQwrGPGYKHCh7nirFmj9pJmhAMG/dKKQXsI67xe7qtD8FDBsLRwoo7TKSc9KO/mN+oZjpBgBUMFZXCpEGf4Gtz7i9WO0NUUfEKfTmKfyTPrE3bMprP5H7S8rpkR6zgqwjEIeFC88ZeBvqCaTBdtVXlYRDg=
+	t=1776346869; cv=none; b=e19dd0ykDa/J4wEpCY9gBb/d5PvUWr0p3rMRYoGAWKgmNEnS+lHsenKR5nJ0yaYu+rsfFPY0YoI2J3SDdPy5/NxEDpt/QXL9Zy/Ptjf8+mQstWP2yYPlUEwUYNrajssT6Rmfm1UtYa8FIX0dBVmxUXgc/Hcz90uS1dtygu7/msA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776346866; c=relaxed/simple;
-	bh=ccFBjF/h8va7hVwllGTVGR1Ya7n+6b8hVuozzzTpGYo=;
+	s=arc-20240116; t=1776346869; c=relaxed/simple;
+	bh=bh7+rnaWUc30UDylPv9ty+mPi+ah6smRxKVz506P4M8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QC0QzPvTS05GdSWIhXVd23F+GPFrG+ksoPURw6Yq5dSxOQnrBSexTMucwbKMelcrm90+nuUloc6syKVmoi5Q/zsp1RxAYrX8HpP2o+CQW3e3YpoVgccYiCEfZf8JYx7t87meutZBl9BK7hCHx4mzJUtTedlw/bRa1jmEZDUR77E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=gmIVbHzw; arc=none smtp.client-ip=185.171.202.116
+	 MIME-Version; b=JhfF68esi0WKGVKm3/VLVt1aPASaka/+XJ1ILQxXv78G/sdVuzJBkgGPvjTS/DQmWEZFVCbCeLfgN1MadHdoKGWVTI3Rr1mOK5s4PU/l/qKsh2njWLFX32UVSZUS/oqy83VMcBR4RXrqaSmRGxCKDJly7dUYcoNTf5rQrehNbr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=er+MOTyG; arc=none smtp.client-ip=185.171.202.116
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="gmIVbHzw"
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="er+MOTyG"
 Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-04.galae.net (Postfix) with ESMTPS id E84CCC5C3CE;
-	Thu, 16 Apr 2026 13:41:40 +0000 (UTC)
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 6D26EC5C3D3;
+	Thu, 16 Apr 2026 13:41:43 +0000 (UTC)
 Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id E9A0260495;
-	Thu, 16 Apr 2026 13:41:02 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C9552104591FB;
-	Thu, 16 Apr 2026 15:40:59 +0200 (CEST)
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 6EE3160495;
+	Thu, 16 Apr 2026 13:41:05 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 06D61102F19F9;
+	Thu, 16 Apr 2026 15:41:01 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1776346861; h=from:subject:date:message-id:to:cc:mime-version:
+	t=1776346864; h=from:subject:date:message-id:to:cc:mime-version:
 	 content-transfer-encoding:in-reply-to:references;
-	bh=o7thUj1C+8yEK0Fw3YtleNg2pFyzAQb0ZErKMz2sR4s=;
-	b=gmIVbHzwYwoqYp+YGw+LL7HrsDab+lXs3mIzKerCbpxh4+5uCbx/RPt2EKjw42Ae98QdEe
-	sODxSKJLYqkqmWMljBZ5EhtPFmKYpQ7cCOdljfUUW9qH/XjY38+H8XD2WqoWqCnkfcL7S1
-	K4UDsr+LVK+1m5//lIyemYlk7AdS/pxYs2IBLVWG1rudaVJew7QFSJ0DRANgB67D+RCUYC
-	ORiUCv2tsiMyZo13sF7umtGTmqlDyvunijryxwpyZxubUQpxtyeuVQYpchZb99nhv9GZyF
-	6SX9dZD9TxvYlETGuedX+f07J5POzNa2fDbt878J8mvaM848r0H0NAtE2qvGuA==
+	bh=3q12w8LhCi0sIhDoWQ7WEXGPR91dwA3x1q97ei+JcRM=;
+	b=er+MOTyG13sFk5ZCYAQklfOLv86NKfdW0OK/fQuEzKXXsATeo38kJk+Dd9sIr6cEUW7Fmb
+	RWY9ahnf2nFmSr+2vK3BGdRW3Pv1a1bKNB6qRRaYgmU+pFB/EHkdpWVU0AQ73GJw2nbI2x
+	xMdD4EVsZIhOFPq2/QZT80kkeLusaQJcAsJAEShlPOnFpqhcJZmLMSex09yPnxu7ov/Lwx
+	9cMffwrYfV9JTARSwcqGF72QrQxTvM0XK62HbWEC+1IUf2on4Ys4YuEsj0v2aDfu5QHrmr
+	v75t5OqQRpwJRuON5xCnqgxr9wEQhVoLoTlHIGvH3EHh5cazzgmnjgCT+ik3eQ==
 From: Richard Genoud <richard.genoud@bootlin.com>
 To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
 	Rob Herring <robh@kernel.org>,
@@ -53,9 +53,9 @@ Cc: Paul Kocialkowski <paulk@sys-base.io>,
 	linux-sunxi@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Richard Genoud <richard.genoud@bootlin.com>
-Subject: [PATCH v6 3/4] arm64: dts: allwinner: h616: add PWM controller
-Date: Thu, 16 Apr 2026 15:40:36 +0200
-Message-ID: <20260416134037.3160537-4-richard.genoud@bootlin.com>
+Subject: [PATCH v6 4/4] MAINTAINERS: Add entry on Allwinner sun8i/H616 PWM driver
+Date: Thu, 16 Apr 2026 15:40:37 +0200
+Message-ID: <20260416134037.3160537-5-richard.genoud@bootlin.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260416134037.3160537-1-richard.genoud@bootlin.com>
 References: <20260416134037.3160537-1-richard.genoud@bootlin.com>
@@ -68,79 +68,26 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Last-TLS-Session-Version: TLSv1.3
 
-The H616 has a PWM controller that can provide PWM signals, but also
-plain clocks.
+Add myself as maintainer of Allwinner SUN8I PWM driver.
 
-Add the PWM controller node and pins in the device tree.
-
-Tested-by: John Stultz <jstultz@google.com>
 Signed-off-by: Richard Genoud <richard.genoud@bootlin.com>
 ---
- .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ MAINTAINERS | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-index 8d1110c14bad..1c7628a6e4bb 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
-@@ -236,6 +236,17 @@ watchdog: watchdog@30090a0 {
- 			clocks = <&osc24M>;
- 		};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d1cc0e12fe1f..256ab8be19f1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -912,6 +912,11 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/hwlock/allwinner,sun6i-a31-hwspinlock.yaml
+ F:	drivers/hwspinlock/sun6i_hwspinlock.c
  
-+		pwm: pwm@300a000 {
-+			compatible = "allwinner,sun50i-h616-pwm";
-+			reg = <0x0300a000 0x400>;
-+			clocks = <&osc24M>, <&ccu CLK_BUS_PWM>;
-+			clock-names = "mod", "bus";
-+			resets = <&ccu RST_BUS_PWM>;
-+			#pwm-cells = <3>;
-+			#clock-cells = <1>;
-+			status = "disabled";
-+		};
++ALLWINNER SUN8I PWM DRIVER
++M:	Richard Genoud <richard.genoud@bootlin.com>
++S:	Maintained
++F:	drivers/pwm/pwm-sun8i.c
 +
- 		pio: pinctrl@300b000 {
- 			compatible = "allwinner,sun50i-h616-pinctrl";
- 			reg = <0x0300b000 0x400>;
-@@ -340,6 +351,42 @@ nand_rb1_pin: nand-rb1-pin {
- 				bias-pull-up;
- 			};
- 
-+			/omit-if-no-ref/
-+			pwm0_pin: pwm0-pin {
-+				pins = "PD28";
-+				function = "pwm0";
-+			};
-+
-+			/omit-if-no-ref/
-+			pwm1_pin: pwm1-pin {
-+				pins = "PG19";
-+				function = "pwm1";
-+			};
-+
-+			/omit-if-no-ref/
-+			pwm2_pin: pwm2-pin {
-+				pins = "PH2";
-+				function = "pwm2";
-+			};
-+
-+			/omit-if-no-ref/
-+			pwm3_pin: pwm3-pin {
-+				pins = "PH0";
-+				function = "pwm3";
-+			};
-+
-+			/omit-if-no-ref/
-+			pwm4_pin: pwm4-pin {
-+				pins = "PI14";
-+				function = "pwm4";
-+			};
-+
-+			/omit-if-no-ref/
-+			pwm5_pin: pwm5-pin {
-+				pins = "PA12";
-+				function = "pwm5";
-+			};
-+
- 			/omit-if-no-ref/
- 			spi0_pins: spi0-pins {
- 				pins = "PC0", "PC2", "PC4";
+ ALLWINNER THERMAL DRIVER
+ M:	Vasily Khoruzhick <anarsoul@gmail.com>
+ M:	Yangtao Li <tiny.windzz@gmail.com>
