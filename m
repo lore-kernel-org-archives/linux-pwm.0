@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B6BB3B1B3;
-	Thu, 16 Apr 2026 13:24:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4C5E3890E9;
+	Thu, 16 Apr 2026 13:25:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776345865; cv=none; b=CBA/nUh6AxUsTHeRYflyHcOujEKmxthe74ZFNJiHQBZGoi1I2+VHS7hqE/zG3Emvwh9kptdwwabeVWnsomZiurVR8is4ghQIxLu5FY35ms9SLAUTw5LJBjdbL/HxngSQzfAI4IaxFXVR4ghIKn1W+mMRlgFTngudICpQCpeZfHM=
+	t=1776345900; cv=none; b=Te3DQPqdKLqzB+DT7qBKu+Msri6unTg0vGgjDXx3KnGXuR+dNSyKjQUFBYYxXj/aIAMPV+qOyDl4NbuY4vei4mMLTsOJM7KQWlD2JCMi9sjrh3SWIPkF0kS0nQe4w/bQ5NdXe6eWefwfMLYqDICD6InvAn/eU/wkhToF9DMvusI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776345865; c=relaxed/simple;
-	bh=So18fWYUJPi+8pxch5HDhbtM/r2zyEI6RevbEtDfr7k=;
+	s=arc-20240116; t=1776345900; c=relaxed/simple;
+	bh=3mxnZpYe+DxBCQxN7iRoeBbXRFs+cHXzX4/V+Yq/VIw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=my8G9ms1BrivYOQPkawhKhMJdwS7mWjFYGl1EI47AhIIklfPRAuZsYt2HRZKMvsL6NTq8BlKIg58zxpptDSm16FAZl3OSpx5Mc6fR5oYviZGXxy+AGThLZcS9UktTHkNAgYwzdzOAU8SWkz2OKH2s9subkX6cQCtyGmlbKiv/TQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R1PbFdr5; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=AmzP1sIri/Q0fclKh5B/P+XgKMefeaaZcHOgi81p2XB7Wyjlsgux+tkrcqhiW4tw/mjMk7/mnvrIDiusoSZx9X/z+puWf/jx+e6Pie/YY/oD/KD53nh1OH+79Js5fw+I9l5+LCjGjVgpYy1OJEZjhbVm5EL204+r7edkoZwAVfU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gKA/dHzm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R1PbFdr5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78FAAC2BCAF;
-	Thu, 16 Apr 2026 13:24:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gKA/dHzm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C427C2BCB3;
+	Thu, 16 Apr 2026 13:24:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776345864;
-	bh=So18fWYUJPi+8pxch5HDhbtM/r2zyEI6RevbEtDfr7k=;
+	s=k20201202; t=1776345900;
+	bh=3mxnZpYe+DxBCQxN7iRoeBbXRFs+cHXzX4/V+Yq/VIw=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=R1PbFdr5+E9Kl2J4tb4SlIbBZmhJvGQloYDgqncCyHVgMmZ6kq0aTiUhrH45mId7a
-	 o37uNXEGFku/0qpVpWySoWFicjCp625AXY3FrZemyxX0k+VfuMUpvMwE8UoxsdTWFn
-	 PgxqEgxFxASWON3AsbyVSrxC1FqA1IY2FnqKl4UNSowEoTGBeoK6f2Kga19XO2yMKi
-	 KBGP3iObjpHL1ttIGRchI3dmvjmAApv7nWrjX9ObL4KRCkyxetMT2nwiEda2ZEUuHZ
-	 KQurO+tTVwAigwu0sMxHbCexsTbOH3QqC5slHZrrS+z3C2CaqRVs6XL7D+vOYTsRZG
-	 4C1hyu9nTry6Q==
-Message-ID: <8918c9bb-f62d-482e-ad0f-6515c6e9a78b@kernel.org>
-Date: Thu, 16 Apr 2026 15:24:18 +0200
+	b=gKA/dHzmX+ZOc2t2bY6SVjyntjsEOnuoOYR4ww7qoNN3QBmmtEsk+MU1yoJHvE1Yr
+	 KdmXGGd8KkedAipCmIgOU2A+vYaSNZVmoad4RevOn89bl45G4acpGueRNdSav2ocVs
+	 puQ8Qn6y/lWWV3IilSWug/ts9sjqTcE7JapKTP9wmpI/EQwFV2TYPknGWr1mYoFFC1
+	 QfPICQyOnyhLUmb+1/In6l7s2hX7G7xgq6XEGgHFx0hNLfIysiojUgns1ikWGQ9X0F
+	 eCSKnHnXeda+qT1qddEXp4KIvFDqKG5pLnCyvx81StybHibEdSW8wZRtU7ptBfzKeu
+	 A2SUPxoaMcG8Q==
+Message-ID: <b40125d3-bad1-4cf5-b2f7-2c4a0df4d201@kernel.org>
+Date: Thu, 16 Apr 2026 15:24:54 +0200
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -35,8 +35,8 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/4] dt-bindings: pwm: allwinner: add h616 pwm
- compatible
+Subject: Re: [PATCH v5 4/4] MAINTAINERS: Add entry on Allwinner sun8i/H616 PWM
+ driver
 To: Richard Genoud <richard.genoud@bootlin.com>,
  =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -48,10 +48,9 @@ Cc: Paul Kocialkowski <paulk@sys-base.io>,
  John Stultz <jstultz@google.com>, Joao Schim <joao@schimsalabim.eu>,
  bigunclemax@gmail.com, linux-pwm@vger.kernel.org,
  devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
- Conor Dooley <conor.dooley@microchip.com>
+ linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
 References: <20260416131419.3152419-1-richard.genoud@bootlin.com>
- <20260416131419.3152419-2-richard.genoud@bootlin.com>
+ <20260416131419.3152419-5-richard.genoud@bootlin.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -97,27 +96,20 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20260416131419.3152419-2-richard.genoud@bootlin.com>
+In-Reply-To: <20260416131419.3152419-5-richard.genoud@bootlin.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 16/04/2026 15:14, Richard Genoud wrote:
-> Allwinner H616 PWM block is quite different from the A10 or H6, but at
-> the end, it uses the same clocks as the H6; so the sun4i pwm binding can
-> be used.
-> It has 6 channels than can generate PWM waveforms.
-> If the bypass is enabled (one bypass per channel) the output is no more
-> a PWM waveform, but a clock that can (and is) used as input for other
-> devices, like the AC300 PHY.
+> Add myself as maintainer of Allwinner SUN8I PWM driver.
 > 
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
 > Tested-by: John Stultz <jstultz@google.com>
+> Signed-off-by: Richard Genoud <richard.genoud@bootlin.com>
+> 
+> maintainer
+> ---
 
-
-Please drop or help me understand how one can test bindings on the
-device? Build process tools are not testing.
-
-Don't blindly copy tags from cover letter.
+And you have commit msg trailing junk.
 
 Best regards,
 Krzysztof
