@@ -1,191 +1,193 @@
 Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51DD81E5724;
-	Mon, 20 Apr 2026 12:02:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1E663B4EBC;
+	Mon, 20 Apr 2026 13:36:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776686563; cv=pass; b=X7RPqDugmrC/xhDLPDBZYzJRj5WF7lfQ6ay1NNfFW7Dr28tB/WRG41xN2XybU49x0bsCdzkaHNt25OkAcQ6WBqIJt91PyPXbMck2OuRle672WlNguHDLXQkH8HZi4xPVdVmugJDrwrXFx/KyHgZcqf2BZ+Us+b0N3GdOapg8s6U=
+	t=1776692203; cv=pass; b=O1B1VGJklkyQMl8W0GPdy7vcy38+qDMGHKKQe5jSRV9KVY0XPaimifxc1C0xuAavxqOR3eFz0HlVWt5uCZ1fl4q1t66O73Tghk/Rdew3iebethSUnR2FnueTu6rOxmLyCgvd9tLBWWqp1dsBwtBPh0v8cdPp0EinWJn7dy95PQw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776686563; c=relaxed/simple;
-	bh=RcPc1OlRKwWMBhXzycGc+rGrbxc0ZUaYQ6Zh6lfuvmc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VjjHD28xLE3+f67qIfDi8bqVitJoldRsvnpT99PYQ3LG0qr49cn2UhkIjKeXOlNN/77BOk3Fdzdeoo8l/3gq7h34MSDU+3z0c85gMUKGLL+tUQuASpudg54dMQ3QE7sLOm5TxtwPzqLjXMn2uANf1Ppz1fsuRYvW2+JjIJ0tA2Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=JznioJN5; arc=pass smtp.client-ip=136.143.188.112
+	s=arc-20240116; t=1776692203; c=relaxed/simple;
+	bh=QcKVmbaRkNCqiR47r/Fq9+7IbyifeWd+ELd7ZUsnp9Q=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=NFSUuB3061sRdDTfDOHNGc5+dC96+1Q/D4bcTFnM/XXpFgYAJ5OzSaRxAm2slooEAEVrK0xVLYA1rRTYz/lHO2t5L+7NBJYEY0A3ikH1c8yDWg2ipdz73Vu7TwCJL2S3HyBV66360mvt4/rlyij3qxE+74LMLvDNfdFDsviVSR8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b=Ji49vSkd; arc=pass smtp.client-ip=136.143.188.112
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="JznioJN5"
-ARC-Seal: i=1; a=rsa-sha256; t=1776686532; cv=none; 
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=nicolas.frattaroli@collabora.com header.b="Ji49vSkd"
+ARC-Seal: i=1; a=rsa-sha256; t=1776692166; cv=none; 
 	d=zohomail.com; s=zohoarc; 
-	b=D4wV3c/yZdK1eU7KT/phx0dwslxU6lVYK+XH3o6odSa2T2bsmVNuPGkpPokO9odCGebd1VL6x+JQmJochSSU2+ZygtUA8PJjzyUuX0A9Qrl0XWGmVojg77UaxS/3Sny5w7IefWTfwjsdGx5f10vKP7mNZOOq3/lOb08dGJ1R+HE=
+	b=kbWrdoVJzGhTG6U4AOCvWdKVLMOS8MtH4pD9eCVSkzJDFEpSsD/ZTPZTkJiYR206v7BM3BOc96uR+w14z0rIfyW/fZGo3re6vXgiWl277lBrHGlG+zNsNnd4gWKyFlvXwRw6w2CMte8nZAMqmwHDEn+Zp2zw+QJFHGaMzo5PKyE=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1776686532; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=x5mFNmk8QCjW303+12nnTbEnOf0gTpLfX0AgHqHSXVk=; 
-	b=O4SRXC9WiJ06iz4jU46oIS5HKKrQZDbZtgXUWFYVGQe2rswu3bj3BkygH+aWXgqxyyPaddoz9B1yPHO/KFVDzIh7GqYMIRjQejUCYGzFYaYlP5w7SL1/EArLcQBvCc9zv7INEtZGigKIoJ6D0I7RXLUuoYFc0bOQaEYeUm3rmnU=
+	t=1776692166; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=9x9hZMXBpn0P7sSuaA5owfOkbpFsWAWGV2pJQS60n9Q=; 
+	b=Vtoj0hCytPWlUHpOLIw6MRjkxyAb844eoMER6XHwLcvA30on3pE4xPPDn7IMJbyMD4nRBGbdrjl61uKxU4iqNC+JVCDid+s4Pvs9kGaYUqWF63PGYP6BZvYZVDH0ezzfudvUGvtUfkhXu8MdmX2ZOzESpTSy6v7VM4+BotLTBAA=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
 	dkim=pass  header.i=collabora.com;
 	spf=pass  smtp.mailfrom=nicolas.frattaroli@collabora.com;
 	dmarc=pass header.from=<nicolas.frattaroli@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1776686531;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1776692166;
 	s=zohomail; d=collabora.com; i=nicolas.frattaroli@collabora.com;
-	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-	bh=x5mFNmk8QCjW303+12nnTbEnOf0gTpLfX0AgHqHSXVk=;
-	b=JznioJN5R98NhLocaRwmQa8qpR7kvDOKjtwdelsT7L3l+7wbXLNSQEEGVvn+u95v
-	UZwrLnpD0cFG5havrVDsKzAvRnbR7/565GTMHbXmCLQpi0wwBdn9P0HWyPwh07tJV4A
-	s58b6CDl+WyyoJFKqUp6qGkh+0pcHFfjfmEpk9Mw=
-Received: by mx.zohomail.com with SMTPS id 1776686529459133.0396587303926;
-	Mon, 20 Apr 2026 05:02:09 -0700 (PDT)
+	h=From:From:Date:Date:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Message-Id:References:In-Reply-To:To:To:Cc:Cc:Reply-To;
+	bh=9x9hZMXBpn0P7sSuaA5owfOkbpFsWAWGV2pJQS60n9Q=;
+	b=Ji49vSkdVTSHfzJ6C7yxMIMN60E9ymIKS5kbwKbcKfdT+ZKqMF3wX6Ue+pnLRJ7u
+	pqKoObUC8gjBh+FXqOgznACl8Td4aSdPDqt9KW9pKyIJUyWohLDn8qOmRGYD/cPcUjH
+	RWBpHepzOIOIyB0p19AGwn2aFPz4Xq9mTBMSeGXI=
+Received: by mx.zohomail.com with SMTPS id 1776692164179410.7232026286083;
+	Mon, 20 Apr 2026 06:36:04 -0700 (PDT)
 From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-To: William Breathitt Gray <wbg@kernel.org>
-Cc: William Breathitt Gray <wbg@kernel.org>,
- Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, kernel@collabora.com,
- Jonas Karlman <jonas@kwiboo.se>, Alexey Charkov <alchark@gmail.com>,
- linux-rockchip@lists.infradead.org, linux-pwm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 4/5] counter: Add rockchip-pwm-capture driver
-Date: Mon, 20 Apr 2026 14:02:03 +0200
-Message-ID: <oA6h2S_2RQulBS91CKXxhw@collabora.com>
-In-Reply-To: <20251206093419.40067-1-wbg@kernel.org>
-References:
- <20251027-rk3576-pwm-v3-4-654a5cb1e3f8@collabora.com>
- <20251206093419.40067-1-wbg@kernel.org>
+Date: Mon, 20 Apr 2026 15:35:19 +0200
+Subject: [PATCH v4 1/5] dt-bindings: pwm: Add a new binding for
+ rockchip,rk3576-pwm
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260420-rk3576-pwm-v4-1-421738c7bf28@collabora.com>
+References: <20260420-rk3576-pwm-v4-0-421738c7bf28@collabora.com>
+In-Reply-To: <20260420-rk3576-pwm-v4-0-421738c7bf28@collabora.com>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
+ Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>, 
+ Damon Ding <damon.ding@rock-chips.com>
+Cc: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>, 
+ kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>, 
+ Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org, 
+ linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ linux-iio@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.15.2
 
-Hi,
+The Rockchip RK3576 SoC has a newer PWM controller IP revision than
+previous Rockchip SoCs. This IP, called "PWMv4" by Rockchip, introduces
+several new features, and consequently differs in its bindings.
 
-finally got an opportunity to work on this again.
+Instead of expanding the ever-growing rockchip-pwm binding that already
+has an if-condition, add an entirely new binding to handle this.
 
-I'll respond to some things in-line. If a review isn't directly
-addressed, you can assume I acknowledge it and will address it
-in the next revision with no further comment needed.
+There are two additional clocks, "osc" and "rc". These are available for
+every PWM instance, and the PWM hardware can switch between the "pwm",
+"osc" and "rc" clock at runtime.
 
-On Saturday, 6 December 2025 10:34:17 Central European Summer Time William Breathitt Gray wrote:
-> > +struct rockchip_pwm_capture {
-> > +	struct rockchip_mfpwm_func *pwmf;
-> > +	struct counter_device *counter;
-> 
-> Is this structure member used at all? If not, you should just remove it.
+The PWM controller also comes with an interrupt now. This interrupt is
+used to signal various conditions.
 
-The counter member is used in the interrupt handler. I actually
-noticed that I request the interrupt before pc->counter is set,
-so if an interrupt fires before the probe function finishes then
-I think the handler would run with a NULL counter member. Oops,
-I'll rectify that.
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+---
+ .../bindings/pwm/rockchip,rk3576-pwm.yaml          | 77 ++++++++++++++++++++++
+ MAINTAINERS                                        |  7 ++
+ 2 files changed, 84 insertions(+)
 
-> > +	bool is_enabled;
-> 
-> Does this device offer some way to probe whether PWM capture mode is
-> enabled? I suspect so, because I see PWM_ENABLE.pwm_en enables the
-> channel and PWM_CTRL.pwm_mode selects capture mode, so perhaps we're
-> able to read the current state of those registers. If you're able to
-> read those registers to determine the enable state, I'd suggest wrapping
-> that into a helper function and calling it when you need to determine
-> whether the capture mode is currently enabled.
+diff --git a/Documentation/devicetree/bindings/pwm/rockchip,rk3576-pwm.yaml b/Documentation/devicetree/bindings/pwm/rockchip,rk3576-pwm.yaml
+new file mode 100644
+index 000000000000..48d5055c8b06
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/rockchip,rk3576-pwm.yaml
+@@ -0,0 +1,77 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/rockchip,rk3576-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Rockchip PWMv4 controller
++
++maintainers:
++  - Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++
++description: |
++  The Rockchip PWMv4 controller is a PWM controller found on several Rockchip
++  SoCs, such as the RK3576.
++
++  It supports both generating and capturing PWM signals.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    items:
++      - const: rockchip,rk3576-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: Used to derive the PWM signal.
++      - description: Used as the APB bus clock.
++      - description: Used as an alternative to derive the PWM signal.
++      - description: Used as another alternative to derive the PWM signal.
++
++  clock-names:
++    items:
++      - const: pwm
++      - const: pclk
++      - const: osc
++      - const: rc
++
++  interrupts:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/rockchip,rk3576-cru.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        pwm@2add0000 {
++            compatible = "rockchip,rk3576-pwm";
++            reg = <0x0 0x2add0000 0x0 0x1000>;
++            clocks = <&cru CLK_PWM1>, <&cru PCLK_PWM1>, <&cru CLK_OSC_PWM1>,
++                     <&cru CLK_RC_PWM1>;
++            clock-names = "pwm", "pclk", "osc", "rc";
++            interrupts = <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>;
++            #pwm-cells = <3>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 891fb83ba7a9..86f20cb563c6 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -23172,6 +23172,13 @@ F:	Documentation/userspace-api/media/v4l/metafmt-rkisp1.rst
+ F:	drivers/media/platform/rockchip/rkisp1
+ F:	include/uapi/linux/rkisp1-config.h
+ 
++ROCKCHIP MFPWM
++M:	Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++L:	linux-rockchip@lists.infradead.org
++L:	linux-pwm@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/pwm/rockchip,rk3576-pwm.yaml
++
+ ROCKCHIP RK3568 RANDOM NUMBER GENERATOR SUPPORT
+ M:	Daniel Golle <daniel@makrotopia.org>
+ M:	Aurelien Jarno <aurelien@aurel32.net>
 
-I'm going to read the hardware state in the next revision, you're right
-that this is generally a better idea.
-
-> 
-> If we're not able to probe the enable state, is it safe to assume we're
-> in a disabled state when the module loads, or should we ensure it by
-> unconditionally disabling PWM capture mode during
-> rockchip_pwm_capture_probe()?
-
-In my next revision, I've now modified it to mfpwm_acquire if the hardware
-state has the counter enabled during probe. This sounds niche but I'm also
-doing this on the PWM output side, where Uwe rightfully pointed out that
-a bootloader may have enabled PWM output in hardware and Linux needs to
-recognise that state without any heavy-handed actions. For the counter
-PWM capture side, resetting it to a known state wouldn't be disruptive in
-the same way as it would be for PWM output, but I think it's a good idea
-to keep the state as-is since we can read it.
-
-> [... snip ...]
-
-> > +static int rkpwmc_count_read(struct counter_device *counter,
-> > +			     struct counter_count *count, u64 *value)
-> > +{
-> > +	struct rockchip_pwm_capture *pc = counter_priv(counter);
-> > +
-> > +	guard(spinlock)(&pc->enable_lock);
-> > +
-> > +	if (!pc->is_enabled) {
-> > +		*value = 0;
-> > +		return 0;
-> > +	}
-> 
-> I don't think there's a need to check whether capture mode is disabled.
-> The user should be aware of the enable state of the Count by checking
-> the respective "enable" attribute; and if they ignore that, a value of
-> "0" doesn't inherently tell them that the Count is disabled which makes
-> it moot to do so. I'd suggest just removing this check entirely and
-> returning the register values unconditionally.
-
-I see what you're going for, but if the counter isn't enabled, we can't
-rely in the counter having an mfpwm_acquire, and consequently, we can't
-rely on the PWM core clock being on, which is required for reading the
-registers.
-
-In my next revision, I'll still be returning 0 if the counter is disabled,
-but the is_enabled member is gone, so there's a new function called
-rkpwmc_acquire_if_enabled to still make this correct.
-
-I could of course also extend the core driver to let me poke at these
-non-shared registers without exclusive control over the hardware, but
-that may be more trouble than it's worth.
-
-I'll also no longer return 0 on bogus count IDs when the counter is
-disabled.
-
-> > +
-> > +	switch (count->id) {
-> > +	case COUNT_LPC:
-> > +		*value = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_LPC);
-> > +		return 0;
-> > +	case COUNT_HPC:
-> > +		*value = mfpwm_reg_read(pc->pwmf->base, PWMV4_REG_HPC);
-> > +		return 0;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static const struct counter_ops rkpwmc_ops = {
-> > +	.count_read = rkpwmc_count_read,
-> > +};
-> 
-> You should implement a signal_read() callback if its possible to probe
-> the current state of PWM Clock. You should implement action_read() if
-> its possible to probe the current polarity of "pwm_in" in order to set
-> which Synapse is currently active.
-
-Unfortunately, it doesn't seem like the hardware allows direct access to
-read the signal. "pwm_in" as it appears in the block diagram seems to be
-an entirely internal signal that's not accessible through MMIO.
-
-Thank you for the reviews!
-
-Kind regards,
-Nicolas Frattaroli
-
-> 
-> William Breathitt Gray
-> 
-> [^1] https://opensource.rock-chips.com/images/3/36/Rockchip_RK3506_TRM_Part_1_V1.2-20250811.pdf
-> 
-
-
-
+-- 
+2.53.0
 
