@@ -1,93 +1,129 @@
-Received: from mail-m15597.qiye.163.com (mail-m15597.qiye.163.com [101.71.155.97])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E2B17C211;
-	Sun, 26 Apr 2026 12:07:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.97
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC3B735836B;
+	Sun, 26 Apr 2026 13:06:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777205257; cv=none; b=DJfZhzd1uaSM/KQ2k+phYNGm9F5hlJoagktsF+Z23rJrOjXMjRaQ8FCJAx89rLOzuDxMjVQZCS14yQJLxDKFMNVJEJjt1ZUhXvoT/53C9j4jWRznUCOH3bZaCA1qEjnug8U/XpbPP0dKseNPrpnv16HpuP4CeMI/qBt/LZeN0lc=
+	t=1777208788; cv=none; b=OjSTJr9eo7tvFwhwzRZtmbJiel4rguyQmabeaBiIRtBXA/au7cQN4cRc6koAcNV4IJetdYdBoVt8tsaMvEZunY+lwgOmcpY/obzyVfD5fEtwIj/MXwSAivcif0gb2CRW3a/m5JbjUlWIftEbAJ9Ij9Ev8CufP3+nUAL1E4zhfGg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777205257; c=relaxed/simple;
-	bh=KWBNUAXaq4SARsO6xZHW2yyqx4CeLpiPK/53gmtpHV4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JTMfGm12g0YwTU1MjDTqAflZOgybfudjdUNAibRL3GqRL3JlUOh5nIuTU6RI5RXui8nftOGBvh98R5bk7khv1/PdcFZaog5NJo9Z/Yd4i80T5wPioGHHStllX8sEvjO5/jzgTpG3i6gmufjUavGSQr1CKtHINr0WGljFz6CZKyg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=CJLx/i7y; arc=none smtp.client-ip=101.71.155.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1777208788; c=relaxed/simple;
+	bh=F7Ik3qSyzNonPaKu0ttctdmlliVl+oK+J9sKk+2aqjY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y9uvxdVo6AlCQJv8cD9tNJAVgHYb0YwIcNARfwNgVr0ml7UhT5tkkkgFbSoqf3sqgPG45Md51hOmVcCRXnF55hJPuNaTV9i1w+LK5PiHdkvbvHFZ5Kz+KL85fxPRt757F4NJ9Q6cAKqyHOzgXjJ5pesa0hGCd/ViA2nAzIR3RH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GVPJMv6F; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="CJLx/i7y"
-Received: from [172.16.12.43] (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 3c2b50084;
-	Sun, 26 Apr 2026 17:44:46 +0800 (GMT+08:00)
-Message-ID: <4592b323-bebd-4242-ae31-892a51b5b3be@rock-chips.com>
-Date: Sun, 26 Apr 2026 17:44:46 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GVPJMv6F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E85EBC2BCAF;
+	Sun, 26 Apr 2026 13:06:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777208788;
+	bh=F7Ik3qSyzNonPaKu0ttctdmlliVl+oK+J9sKk+2aqjY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GVPJMv6FIVTpry6AKVRzDTg0KfalajIzBsXsUzu24Cws86nrohzBFJzf+Wv72+kji
+	 1HYFrHN3DxmC7Xs+Wwm1ltwpzBkNEpXk7UfJSoXFHpC6J8rJwUh/4FsaDvFaWsrOlv
+	 4q+epwJNpg3iN5J+fkC/ODUEgXT2Em79cwYNVxmiEgQf1xWAAxpLBPxQ7ybVGCwrZM
+	 ZHT5f56Gnp+plPyy/4XhBg9/+wx8sY/55rPGY9QSRfTNMxlJj1kBffQgB4vs4/oVGE
+	 W/oL88hac6IL4KOifWVXTvRoHjEOHpoc8ed692KnHXmbQUIBW+U33CZCQTAZiou/WY
+	 7jellAU74+3jQ==
+Date: Sun, 26 Apr 2026 15:06:24 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Damon Ding <damon.ding@rock-chips.com>
+Cc: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, Lee Jones <lee@kernel.org>, 
+	William Breathitt Gray <wbg@kernel.org>, kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>, 
+	Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org, linux-pwm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 3/6] pwm: Add rockchip PWMv4 driver
+Message-ID: <ae4MCRE_hGJ-VcBQ@monoceros>
+References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
+ <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
+ <4592b323-bebd-4242-ae31-892a51b5b3be@rock-chips.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="eqdlulvhi33joyyv"
+Content-Disposition: inline
+In-Reply-To: <4592b323-bebd-4242-ae31-892a51b5b3be@rock-chips.com>
+
+
+--eqdlulvhi33joyyv
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [PATCH v5 3/6] pwm: Add rockchip PWMv4 driver
-To: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>
-Cc: kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
- Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
- <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
-Content-Language: en-US
-From: Damon Ding <damon.ding@rock-chips.com>
-In-Reply-To: <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Tid: 0a9dc92d5ac103a3kunmad79455f144c6e
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1kYFggdWUFKV1ktWUFJV1kPCRoVCBIfWUFZQ0gZSlZMHU8aT0pIGh
-	8dQx9WFRQJFhoXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0
-	tIVUpLSU9PT0hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=CJLx/i7y6XIEhYYkK+bcgbOZWb7NOyQLgyDPGnFicFerhHIaBNhya23FTvMhF0ELqg0hwYPcLAE8ijcflb+VnzUyvdw1e702NyfyYnKk08xcMHFVZIbWrDHosDGHV59BmABw2a+DV9+1R2xtfFph6z2yjW0VDJnk4GjdMRUUAas=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=QT/EFaL4fcCqqsu06HNkALgIVcLkVsgdWHpd2+shATA=;
-	h=date:mime-version:subject:message-id:from;
+MIME-Version: 1.0
 
-Hi Nicolas,
+Hello,
 
-On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
-> The Rockchip RK3576 brings with it a new PWM IP, in downstream code
-> referred to as "v4". This new IP is different enough from the previous
-> Rockchip IP that I felt it necessary to add a new driver for it, instead
-> of shoehorning it in the old one.
-> 
-> Add this new driver, based on the PWM core's waveform APIs. Its platform
-> device is registered by the parent mfpwm driver, from which it also
-> receives a little platform data struct, so that mfpwm can guarantee that
-> all the platform device drivers spread across different subsystems for
-> this specific hardware IP do not interfere with each other.
-> 
-> Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
-Tested-by: Damon Ding <damon.ding@rock-chips.com>
+first of all thanks for your extensive testing, very appreciated.
 
-The continuous mode of all PWM channels has been preliminarily tested
-and verified working on the RK3576 IoT board.
+On Sun, Apr 26, 2026 at 05:44:46PM +0800, Damon Ding wrote:
+> On 4/20/2026 9:52 PM, Nicolas Frattaroli wrote:
+> > The Rockchip RK3576 brings with it a new PWM IP, in downstream code
+> > referred to as "v4". This new IP is different enough from the previous
+> > Rockchip IP that I felt it necessary to add a new driver for it, instead
+> > of shoehorning it in the old one.
+> >=20
+> > Add this new driver, based on the PWM core's waveform APIs. Its platform
+> > device is registered by the parent mfpwm driver, from which it also
+> > receives a little platform data struct, so that mfpwm can guarantee that
+> > all the platform device drivers spread across different subsystems for
+> > this specific hardware IP do not interfere with each other.
+> >=20
+> > Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+> Tested-by: Damon Ding <damon.ding@rock-chips.com>
+>=20
+> The continuous mode of all PWM channels has been preliminarily tested
+> and verified working on the RK3576 IoT board.
+>=20
+> I have tested with several typical period and duty cycle configurations.
+>=20
+> Following Uwe's suggestion [0], I also tested with libpwm using commands
+> similar to the following:
+>=20
+> ./pwmset -c 0 -p 0 -P 1000000 -D 500000 -s 5000
 
-I have tested with several typical period and duty cycle configurations.
+This one is good if you have an oscilloscope (or something similar) to
+verify the output. Without that (or additionally) pwmtestperf creates a
+series of requests that in combination with PWM_DEBUG should uncover
+rounding errors in the .tohw and .fromhw callbacks.
 
-Following Uwe's suggestion [0], I also tested with libpwm using commands
-similar to the following:
+A good set of calls then is:
 
-./pwmset -c 0 -p 0 -P 1000000 -D 500000 -s 5000
+	pwmtestperf -p ... -c ... -P 50000 -S1
+	pwmtestperf -p ... -c ... -P 50000 -S1 -I
 
-I was previously unaware of the existence of libpwm. I will continue to 
-follow its upstream development and updates going forward. :-)
+	pwmtestperf -p ... -c ... -P 50000 -S-1
+	pwmtestperf -p ... -c ... -P 50000 -S-1 -I
 
-Best regards,
-Damon
+(Assuming that 50000 is a sensible period for the device under test.)
 
-[0]https://lore.kernel.org/all/fgu42esufq2x4fcccncqs3hlotih2gqmws5atotlaznuahoslw@34vblr6vboze/
+And yes, I know, I need to document that using something more permanent
+than a mailing list post.
+
+Best regards
+Uwe
+
+--eqdlulvhi33joyyv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmnuDccACgkQj4D7WH0S
+/k514AgAoS8CgfuXs5XqIUpaG6DUWC9TEK90N9rTPcFI3q1Wfki2g130cEx3h+HQ
+URD/O3wMAg5buTbtEJCYFaecSEVEYsQdyOCd1rOmNCOJRhGSNkWTfcz+LTeSwbb/
+HZkA4FKcd5bn/KSJ0lymXx60zgeOZDCLkz2hOBIOK/wNm9oIJ3nBbHFU+4K3nhBf
+bU0jUkFPgxIq6i8rCb/sewIqpTo0/dAME5F1/ELNCsFhZpACwDZXmCn7xdd4/J4i
+wAZwp5rZWex9L8lIoSM6O0ue72lrrPBdxeMA1DlWeD1u9FV9o5NYFIGUuL8Vrum7
+3KLGPiD/nTpf9LY7Ns5EfDcuKPeJ7w==
+=zN39
+-----END PGP SIGNATURE-----
+
+--eqdlulvhi33joyyv--
