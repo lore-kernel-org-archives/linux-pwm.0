@@ -1,125 +1,127 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 748A43DDDDB
-	for <linux-pwm@vger.kernel.org>; Fri,  8 May 2026 13:00:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCDB633B6F9
+	for <linux-pwm@vger.kernel.org>; Fri,  8 May 2026 18:46:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778245219; cv=none; b=LZdwxHcM4n4IEfuXkD5Uq+TPVZYF9JcCVvBZij83Ryq/6abgaN+iUMT7u9wWYF4T6hveBquP8WQHEzkBCiWi+hqAIB+1jJfuRK4hzzqIHuJdwcjQwaN+Efj38rbg7p9Q4J/umtBaFKCwLQuOSZgvqyBKrlPljtqC46EfCiquV90=
+	t=1778266005; cv=none; b=PGQbj1JKCwzBly3J5nugcR5MP2jvi6oLI+QtZoheIMc5e7bbFQP1KPdjOrdmGLMrxHtx+JVYjbq9qpMLJioIhm+1HV46qUBbEoaytnsaQc2BgoLIRgKfguzIByyVXTRFIY03p2M0Ordx9fStQ2DZW2pMrtdbQruTjanu5YK7X1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778245219; c=relaxed/simple;
-	bh=H+pzZMqcVNHrQGygvPeDFTp2qtgnGuqqJsXL+kRhHX8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R3HlwEP1mmwpPylsobk0gs/wxz6ndrCwNJNcKl2GAuKPjevMdRIJe0+tAF3gXMe+d/PEHydXGzVM/P9kvEOwFOyau9iXF7w1/6LBPOUDQGcBTvRLv0XhmrgYLW1aK34SQA7HGws5CFNSX5UINnHOciV74qea/CmcENKP/2EH94c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=OsNAYx50; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1778266005; c=relaxed/simple;
+	bh=dgL1CIuswNSdc4LrmMhh0E3H607UoGQppq1RIGzbSWE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sZrbRy4umNS2CNB7QaWQCpU0zbE78ojwqvZQnQuxBMvm0LfpeIRrictHkDueChX98xc9kTJDAtk2tOV6BLBl9lLlXDIAjz1Vjgq+awhAjYwa00vnz96RhtienVt6+7aNB5WRl8kA4oYLAEwEvMpFLzyEVnPqanPR58ciwapnRAs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZpqEHIwi; arc=none smtp.client-ip=209.85.215.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="OsNAYx50"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4891e86fabeso23842455e9.1
-        for <linux-pwm@vger.kernel.org>; Fri, 08 May 2026 06:00:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZpqEHIwi"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-c8016d642b2so1609306a12.0
+        for <linux-pwm@vger.kernel.org>; Fri, 08 May 2026 11:46:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778245215; x=1778850015; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=H+pzZMqcVNHrQGygvPeDFTp2qtgnGuqqJsXL+kRhHX8=;
-        b=OsNAYx50S5lagisGLIrzSVbXE8SmRlPDZj7xab5B+gxQr1OhpwYiTzvGDuofGh1O0C
-         yZCUxehgE/M/5VKoRRirYQ0thDVBobt4yZdcWy73+N7Dhl3w5x7rESa/rAtMONv8GcjL
-         YWSiQB3+P9TSPex6PJtCd4IyHBnrUJAE5nnrUYqPV+ASE3wWio//GyOjkzhI/eG/qkCu
-         XmKIDMdsgja3cLFmEbKcIBYORMfSnWkPFsa9CG0xM2wjHVqMGav8Ow/wfFoS9fj4uP5E
-         MRGTGZXer58wEGNO9ZUAsrJI2s+ukTTQQDRqbykHzLkjvjTs/8oeKGZIVh9c2adkSllq
-         EB5w==
+        d=gmail.com; s=20251104; t=1778266003; x=1778870803; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Y8T4V1KOUS/zQQGD3wOEYFO7WBlAjbkL/PMKx62SumA=;
+        b=ZpqEHIwipDBeRa+sVoaMMA9f5SOglXglel/ZgPHfuf7MR5C0p25OTX0Byu4kUWGaSV
+         wTjm/AHoz7w7q83XwZGaoTPHBNDISzT3EQjunp12QlekYCvzIbhfuxejlQg53jcVBErC
+         W2lM4nPU2mWuo+ZcmZSFquXmvzVxCWQBAxGaNUl4DYahaJSas06hd+5dnyOYsnczDfd3
+         8RbwB+0zrlvO73t2DbEQOYX+mwJiNRoKgYjuLvS27Ms0LGyK4iugOXY9kYDt12Yzzz0l
+         qoxZCr2puQC8jrPL7SQPOUrLKlNUxuksENvIdv3WkbI5zp0tT+4MBf5y6ZhsykWLK42w
+         VLxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778245215; x=1778850015;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=H+pzZMqcVNHrQGygvPeDFTp2qtgnGuqqJsXL+kRhHX8=;
-        b=fn0bq2/HqAaPzs0tHhVbDFXpZtYIai9VZq/I8K3T9G/LtWzqtT3GnRVSUeKeg4cz55
-         XCSNSwhx0UYI86GEhMIftvef/7pJtOyNbl7h8xU3uzCiso0nwwPouOQkzp7WCG/EbrAj
-         V6ccG6TsV7z8o/BPVL0tCbwHIF6m0KgnEhIxqykKIuVtxVd0ME5gkiDd4yobf6oSlEP4
-         ZRXypUayHXS9qpE7lhp4+H01va6jPbxcusL+2l0oqUMwiWeA1nnVi3tnWLxLR+wMf+PO
-         ZZDDO/QYZSfnqT45NMV32WJfk4F7MzwwQEZhZhjOi2sYi1aIZpxgVhaSNZqLACDdo9Bm
-         nCUQ==
-X-Gm-Message-State: AOJu0YzQ0z4sd4zXKk2psWBzwAXhBEtE9bffDe1QQYcb5Nogp1Z4x/2Y
-	nT263HCG49D4xb7NoA622Jn+oaMLx20yOPKQP9g/sxgDfYBkJP0nMwuhiedT9vd8lvI=
-X-Gm-Gg: AeBDievYPrv2b62R2nOaWCs0VrdSv+D713pjb/Pqq4jjnkNzXODqqWyuEN5RW3bMPvM
-	srOkLiw843kgBm1VeCOD7uR1iFSe3dyvXuTuybtao79Osw6lPSqtTpVi2dSwGqGJoshGSDSUepU
-	iyw7LCpStemxH7kkx7UYzYNl4ZfgIhVfWcGHhkaeiTo+5Kg/vIH8zOfLmFI5F91JZCUY8g/4Qqw
-	QU1PM1wYxbiFq2IDRGvX8Yealms+UMK8BVyK28GL+CTkTZLuxZPiPggV6vH39tDdrV7AMfaRpDN
-	Pcn05yOddd/zxl9TVzkxtAEy6BEUqzBSb6PTffc12raBzbxdBNh9YOoGf4U1r/mLq28KhEwhYNb
-	RFCXqqfFmhhCq6nYChCGeUyUUfU5vrDKx9/n7N8ThwEjniqWpZye0BK2jO+/sfZCnacma+dibZj
-	3ro8nt5dZdX9grUuy+fwLGxBgP4hEnDTRGoRy9Fg1cympFrqFM9oTcyN1TdkkohXhkaZMUAHpd1
-	xVmKYynOGdfPY0=
-X-Received: by 2002:a05:600c:3151:b0:48a:7605:751e with SMTP id 5b1f17b1804b1-48e51e0837amr191333725e9.4.1778245211651;
-        Fri, 08 May 2026 06:00:11 -0700 (PDT)
-Received: from localhost (p200300f65f114e081c5a29ffa776f241.dip0.t-ipconnect.de. [2003:f6:5f11:4e08:1c5a:29ff:a776:f241])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-48e65e10397sm18026095e9.35.2026.05.08.06.00.10
+        d=1e100.net; s=20251104; t=1778266003; x=1778870803;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Y8T4V1KOUS/zQQGD3wOEYFO7WBlAjbkL/PMKx62SumA=;
+        b=iecKC94nFXCSUQ2Rv+EVR/4pBJlcX1eFmZV+O7FJC9C9UJtLDfEx8aPPtKYFD7M8q0
+         ivBuF+P70Cfb+uVK17SvHnznO2/uKMYxDQ3Co2PE1cZuxko4D+qsp2pUB2N28XAIi6bE
+         vv46zdyaVMOvBDlewo6P/Gavpd9/k/utbkuL5iChK6DjhQysjrLutsFt2a/ufNY6vvbj
+         3epBFVu17ZKagJTfhqBu6rrYL2sDcupTrCaUUb6PLMdw7ZBHcNohkjQ8gtoaPuGI6TR/
+         i6ymbJIbbODG1YvDUIsa5SaXKtkGEmpSAobk+2yv+nFSMJY5Ahli2KGatlwmTIZV2kQi
+         NSew==
+X-Forwarded-Encrypted: i=1; AFNElJ9K7DBOKAwAzFDFRMNSGn8/suaFOK3AvZMewTM9JYF4R081VC8q5HNqnZpWb6VNbYsPtF0ZqS1KMnw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+h9pf/0eld4aM/9eUXrDT8vIS5zLLaPVXu7kLct49eBORJl5l
+	mMbUA1xBZDv3oefNBonSex3gfBms0Nr3AxSkcNDxo/fFh1puXgBqJRTj
+X-Gm-Gg: Acq92OEo9JfXIyjpfPgYV8bvMvCE2zpCBa/jFse8DzkSgjloThNVOUj8URX6wH5Ad0k
+	DqhP0mkcnHbOqZ6piOEuylL9IZWxNBD/veBIbqoff3FE7WcmH1oQ9jqUs71GIxzCLwrQroo/p6Q
+	+V6pylW+Nb3UwZxxvodylAbuQN+NztBskoC1Yx0X0HjxIBns/eSsZ9un8Q5kp1vlBgncFiQeVic
+	RCsd9Xc5fMyFkL0uv/VzLHibSfZwY1wbPhKdkec4/+SFU/vrFQvcDdu+EGKbdtR+SAVSNhksG3g
+	ll+9cmcglAngVbVNvnRRfIZ+4TKyNftHU/YCJnFbOMzEL2foT8LIv0RuKhc+a+Oqhxu2mmvhIqb
+	T+3d5pY8F52JyzbW/WXZPbILvHvmB6FuK5+JERjtMiDPFMOjSfrbzl6/kfZGVuIWe+z6hQz51EO
+	cDx4zHBi50D80D9ihwoxJ2H7NA1uvj6+popy1B3IYH+UI6peXpMCVJf6FnV9gWN7MU1aU=
+X-Received: by 2002:a17:903:2f46:b0:2b9:6cde:c345 with SMTP id d9443c01a7336-2babd4a4742mr76227935ad.18.1778266003085;
+        Fri, 08 May 2026 11:46:43 -0700 (PDT)
+Received: from Ubuntu.. ([49.37.171.172])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1e89d43sm30926035ad.63.2026.05.08.11.46.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 06:00:10 -0700 (PDT)
-Date: Fri, 8 May 2026 15:00:08 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: linux-pwm@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH v1 2/2] pwm: stm32: Make use of
- mul_u64_u64_div_u64_roundup()
-Message-ID: <af3eKKiCpf-pQDGQ@monoceros>
-References: <cover.1776264104.git.u.kleine-koenig@baylibre.com>
- <788319f0fff963feca4df3c5fcdd471dcf70ccdf.1776264104.git.u.kleine-koenig@baylibre.com>
+        Fri, 08 May 2026 11:46:42 -0700 (PDT)
+From: Manish Baing <manishbaing2789@gmail.com>
+To: ukleinek@kernel.org,
+	thierry.reding@gmail.com,
+	linusw@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: mcoquelin.stm32@gmail.com,
+	alexandre.torgue@foss.st.com,
+	linux-pwm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	manishbaing2789@gmail.com
+Subject: [PATCH v2] dt-bindings: pwm: stmpe: drop legacy binding
+Date: Fri,  8 May 2026 18:46:26 +0000
+Message-ID: <20260508184626.15938-1-manishbaing2789@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="7hou7ppk2yrmpvu2"
-Content-Disposition: inline
-In-Reply-To: <788319f0fff963feca4df3c5fcdd471dcf70ccdf.1776264104.git.u.kleine-koenig@baylibre.com>
+Content-Transfer-Encoding: 8bit
 
+The st,stmpe-pwm binding is already covered by the MFD schema
+Documentation/devicetree/bindings/mfd/st,stmpe.yaml. Remove the
+obsolete and redundant text binding file.
 
---7hou7ppk2yrmpvu2
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v1 2/2] pwm: stm32: Make use of
- mul_u64_u64_div_u64_roundup()
-MIME-Version: 1.0
+Signed-off-by: Manish Baing <manishbaing2789@gmail.com>
+---
+Changes in v2:
+- Drop the TXT file instead of converting to YAML, as the
+  functionality is already covered by st,stmpe.yaml.
+- Update the commit subject and description to reflect the drop.
 
-Hello,
+ .../devicetree/bindings/pwm/st,stmpe-pwm.txt   | 18 ------------------
+ 1 file changed, 18 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
 
-On Wed, Apr 15, 2026 at 04:50:13PM +0200, Uwe Kleine-K=F6nig wrote:
-> When the driver was converted to the waveform API the need for this
-> function arised but at that time this function didn't exist yet. In the
-> meantime it's available, so switch to the global function and drop the
-> driver specific implementation.
->=20
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
+diff --git a/Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt b/Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
+deleted file mode 100644
+index f401316e0248..000000000000
+--- a/Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
++++ /dev/null
+@@ -1,18 +0,0 @@
+-== ST STMPE PWM controller ==
+-
+-This is a PWM block embedded in the ST Microelectronics STMPE
+-(ST Multi-Purpose Expander) chips. The PWM is registered as a
+-subdevices of the STMPE MFD device.
+-
+-Required properties:
+-- compatible: should be:
+-  - "st,stmpe-pwm"
+-- #pwm-cells: should be 2. See pwm.yaml in this directory for a description of
+-  the cells format.
+-
+-Example:
+-
+-pwm0: pwm {
+-	compatible = "st,stmpe-pwm";
+-	#pwm-cells = <2>;
+-};
+-- 
+2.43.0
 
-Applied this to
-
-https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-=
-next
-
-as merge window material.
-
-Best regards
-Uwe
-
---7hou7ppk2yrmpvu2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmn93lUACgkQj4D7WH0S
-/k7wDAf9G+aiX3BQ2bfaYJjdgIEJkJ1uqMaChVZsHE8UfZN3lwXYCTUAYwwNHISb
-fD7c8AMwVs8ykrkQ7Z7UiwSqDK5e8E6aE/aDbdT6W49ZyhqZG7DnkdF3HqjKDTgN
-ceo7nqzO/ciAVBB+KAF80xsUQZoFoLKdDS5sYCyaib0FovUnKuEGhuUfzirtbJ/u
-KW9RdGF8C+UyRsiVmugaX6YLGUJEzgaXADiXX2ndsUsbkTZkMfzMhjBAS9oRL8uy
-wGLj57N9Aj2uF86KpC823E1pjbDt30kZk5Syk4AvoeA3Sz5atXsxkgJm6Qeihfwc
-7seC079+uAqQdmiOAWnX7PDcVV0ChA==
-=CTCc
------END PGP SIGNATURE-----
-
---7hou7ppk2yrmpvu2--
