@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29F7F30BBB9;
-	Fri, 15 May 2026 13:06:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4B5302742;
+	Fri, 15 May 2026 13:09:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778850387; cv=none; b=kUx/uegm/TA/BTxcSKfQKQTydDn6AmjgNVbGnBb31vACmDJIVOwEsdnPDlJzybJUXRKCCEo+m2ljUo6VTBxwi8B6+Yf7YGKaxumbfn4Qk47U5eTtmbFK3KdXXHrv027fcytqsO5g/PB6lk9U7gaUvqBfrVu4ifn8l8BH+TEJs3Q=
+	t=1778850587; cv=none; b=uwRp3JIUHz2xGehBSu646aKKA/+xXZWA+UHFvDImB/bM03BtrS9Zx8QV1/glGplfFg48/cv+MddU0ADonRNqyUgbdVKhFX6b2NS6IyCq95a/fxXLu98ic7Qs5icrosYKrI0uIWaDAxrqM5VEK4ZGtk7O78WlZ55eGQbES8xtQGw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778850387; c=relaxed/simple;
-	bh=uUeWRpb6xVmmL+Lm7CLlmRxmdTh61MhPLeJ6UxoXK48=;
+	s=arc-20240116; t=1778850587; c=relaxed/simple;
+	bh=8HT7U6MbGUnPY3w7ftF7Pj8ZwTCOPc4Nj2sUdScJoM8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FW8JIKBNtWTFEi7sP7EKyj3axCTpL6LCR142oBKBeTniRT3pCXeHMl5l+2aQjj+k9qIm/DI3FMj9ZqFZhKRs3Lkq3oY+DUgOGbPdavxhI/qWQ9jtbmeju9wPMPJ79qHjuZphYldL4l1McdkE8/28Dpa7mgB1vElTKp8z67wcrks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ki6lpypO; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=sFnvadxvaz5n3HLSr3ShJmpqhOY4zwjAlo18llpb3+ngi+m09e1OVNCnbOkPY4Ee4pZRjir/azjbzxTqxkKxGOzN8fL4zj/4L9ECDys4qRgZAdow7zRi5Uqu4SRz1hpGFpMmR8Wisy5KVIPRI6VwIysiYx+SIRlycjToESaww/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uETHaK/6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ki6lpypO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C42C2BCB0;
-	Fri, 15 May 2026 13:06:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uETHaK/6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C660CC2BCB8;
+	Fri, 15 May 2026 13:09:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778850386;
-	bh=uUeWRpb6xVmmL+Lm7CLlmRxmdTh61MhPLeJ6UxoXK48=;
+	s=k20201202; t=1778850587;
+	bh=8HT7U6MbGUnPY3w7ftF7Pj8ZwTCOPc4Nj2sUdScJoM8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ki6lpypOzKMiHDITLyOYMf1T4BOaUqjbJKKxUd91YQRXBCpxXWYiJQzi7lEjX/VNk
-	 GdGuMXvO6plYdYaEpO8DthgdPZXsYlO3nkMNEgPnyjDHj0+myWDE1FMHPtj9rmaPN1
-	 Er++cWiIZIMdYHN/uFVIfdzylgJzHF3L22wa+B3NyiPJBxRJu/U4Pv1MCRkuKBNWjs
-	 FGlz6skdhT2o1jxQwKBHUCYdotqPfQeQvEu1WY9Kw2VBeTmJ/Pb+WtTLZKi3H8u04D
-	 c40CopEGAbuQtKljOUTRlz3genvU1aKhvRGujsSYZR8p4xEFzH/jLQ49uSYAwLeLTM
-	 ioi2NqvjCplZQ==
-Date: Fri, 15 May 2026 14:06:21 +0100
+	b=uETHaK/6JA4o/qdms2SZj2AD/cCQx5KtgTOIXmNolrOiywgskoZPcQsJ+SUDzsBjU
+	 gawiHsCZRUZAFAZWcthszhJ/T6z5/9qpAx/oT5R3ptKpk/fW0k/XARmh4GsOxzjVxK
+	 +fu7ZB1nSr9Ryrbvhyjw5jMUnsDFUynEWh8QqXMbqyHQNuwSaFsl2pcE/dfBoyPcHQ
+	 xKf8Fmvthhj180RumlOUS43V496ujSK51NeZwOkKMSm5j5qt93epJWPCGFn95dx7iu
+	 bYrfYDmjylyrYC3edupfu84JtDVYmIgg9hXozM+a4Mz5g22aJBFpK910YylCuG/Ezq
+	 a5vkUB1Na3bdg==
+Date: Fri, 15 May 2026 14:09:42 +0100
 From: Conor Dooley <conor@kernel.org>
 To: Hal Feng <hal.feng@starfivetech.com>
 Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
@@ -39,11 +39,10 @@ Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
 	Changhuang Liang <changhuang.liang@starfivetech.com>,
 	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v18 1/3] dt-bindings: pwm: opencores: Drop starfive
- compatibles and update maintainers
-Message-ID: <20260515-blinked-gigabyte-d2882372b616@spud>
+Subject: Re: [PATCH v18 2/3] riscv: dts: starfive: Correct pwm nodes
+Message-ID: <20260515-dandruff-outpour-7b3b6b5480db@spud>
 References: <20260515054723.25024-1-hal.feng@starfivetech.com>
- <20260515054723.25024-2-hal.feng@starfivetech.com>
+ <20260515054723.25024-3-hal.feng@starfivetech.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -51,84 +50,113 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="bsBRJFDfWIlVk/Sa"
+	protocol="application/pgp-signature"; boundary="JriUJS52jcgo79we"
 Content-Disposition: inline
-In-Reply-To: <20260515054723.25024-2-hal.feng@starfivetech.com>
+In-Reply-To: <20260515054723.25024-3-hal.feng@starfivetech.com>
 
 
---bsBRJFDfWIlVk/Sa
+--JriUJS52jcgo79we
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 15, 2026 at 01:47:20PM +0800, Hal Feng wrote:
-> Each of the StarFive JH7100/JH7110/JH8100 SoCs has 8 OpenCores PTC IP
-> cores. One OpenCores PTC IP core can output one PWM channel. The only
-> difference among them is the register base address. There is no need
-> to add starfive compatibles to distinguish them.
-
-NAK, that's not an acceptable reason to remove soc-specific compatibles.
-
-pw-bot: changes-requested
-
->=20
-> I will maintain the pwm module in place of William.
+On Fri, May 15, 2026 at 01:47:21PM +0800, Hal Feng wrote:
+> Each of the StarFive JH7100/JH7110 SoCs has 8 OpenCores PTC IP
+> cores. One OpenCores PTC IP core can output one PWM channel.
 >=20
 > Signed-off-by: Hal Feng <hal.feng@starfivetech.com>
 > ---
->  .../devicetree/bindings/pwm/opencores,pwm.yaml         | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+>  .../boot/dts/starfive/jh7100-common.dtsi      | 28 ++++++--
+>  arch/riscv/boot/dts/starfive/jh7100.dtsi      | 69 ++++++++++++++++++-
+>  .../boot/dts/starfive/jh7110-common.dtsi      | 27 ++++++--
+>  .../boot/dts/starfive/jh7110-milkv-mars.dts   |  6 +-
+>  .../dts/starfive/jh7110-milkv-marscm.dtsi     |  6 +-
+>  .../dts/starfive/jh7110-pine64-star64.dts     |  6 +-
+>  .../jh7110-starfive-visionfive-2-lite.dtsi    |  6 +-
+>  .../jh7110-starfive-visionfive-2.dtsi         |  6 +-
+>  arch/riscv/boot/dts/starfive/jh7110.dtsi      | 69 ++++++++++++++++++-
+>  9 files changed, 200 insertions(+), 23 deletions(-)
 >=20
-> diff --git a/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml b/D=
-ocumentation/devicetree/bindings/pwm/opencores,pwm.yaml
-> index 52a59d245cdb..834fb17ec595 100644
-> --- a/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: OpenCores PWM controller
+> diff --git a/arch/riscv/boot/dts/starfive/jh7100-common.dtsi b/arch/riscv=
+/boot/dts/starfive/jh7100-common.dtsi
+> index ae1a6aeb0aea..85106545090e 100644
+> --- a/arch/riscv/boot/dts/starfive/jh7100-common.dtsi
+> +++ b/arch/riscv/boot/dts/starfive/jh7100-common.dtsi
+> @@ -199,13 +199,23 @@ GPO_I2C2_PAD_SDA_OEN,
+>  		};
+>  	};
 > =20
->  maintainers:
-> -  - William Qiu <william.qiu@starfivetech.com>
-> +  - Hal Feng <hal.feng@starfivetech.com>
+> -	pwm_pins: pwm-0 {
+> -		pwm-pins {
+> +	pwm0_pins: pwm0-0 {
+> +		pwm0-pins {
+>  			pinmux =3D <GPIOMUX(7,
+>  				  GPO_PWM_PAD_OUT_BIT0,
+>  				  GPO_PWM_PAD_OE_N_BIT0,
+> -				  GPI_NONE)>,
+> -				 <GPIOMUX(5,
+> +				  GPI_NONE)>;
+> +			bias-disable;
+> +			drive-strength =3D <35>;
+> +			input-disable;
+> +			input-schmitt-disable;
+> +			slew-rate =3D <0>;
+> +		};
+> +	};
+> +
+> +	pwm1_pins: pwm1-0 {
+> +		pwm1-pins {
+> +			pinmux =3D  <GPIOMUX(5,
+>  				  GPO_PWM_PAD_OUT_BIT1,
+>  				  GPO_PWM_PAD_OE_N_BIT1,
+>  				  GPI_NONE)>;
+> @@ -359,9 +369,15 @@ &osc_aud {
+>  	clock-frequency =3D <27000000>;
+>  };
 > =20
->  description:
->    The OpenCores PTC ip core contains a PWM controller. When operating in=
- PWM
-> @@ -20,10 +20,6 @@ allOf:
->  properties:
->    compatible:
->      items:
-> -      - enum:
-> -          - starfive,jh7100-pwm
-> -          - starfive,jh7110-pwm
-> -          - starfive,jh8100-pwm
->        - const: opencores,pwm-v1
+> -&pwm {
+> +&pwm0 {
+> +	pinctrl-names =3D "default";
+> +	pinctrl-0 =3D <&pwm0_pins>;
+> +	status =3D "okay";
+> +};
+> +
+> +&pwm1 {
+>  	pinctrl-names =3D "default";
+> -	pinctrl-0 =3D <&pwm_pins>;
+> +	pinctrl-0 =3D <&pwm1_pins>;
+>  	status =3D "okay";
+>  };
 > =20
->    reg:
-> @@ -48,8 +44,8 @@ additionalProperties: false
->  examples:
->    - |
->      pwm@12490000 {
-> -        compatible =3D "starfive,jh7110-pwm", "opencores,pwm-v1";
-> -        reg =3D <0x12490000 0x10000>;
-> +        compatible =3D "opencores,pwm-v1";
-> +        reg =3D <0x12490000 0x10>;
->          clocks =3D <&clkgen 181>;
->          resets =3D <&rstgen 109>;
->          #pwm-cells =3D <3>;
-> --=20
-> 2.43.2
->=20
+> diff --git a/arch/riscv/boot/dts/starfive/jh7100.dtsi b/arch/riscv/boot/d=
+ts/starfive/jh7100.dtsi
+> index 7de0732b8eab..4629e9747307 100644
+> --- a/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> +++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> @@ -360,9 +360,72 @@ watchdog@12480000 {
+>  				 <&rstgen JH7100_RSTN_WDT>;
+>  		};
+> =20
+> -		pwm: pwm@12490000 {
+> -			compatible =3D "starfive,jh7100-pwm", "opencores,pwm-v1";
+> -			reg =3D <0x0 0x12490000 0x0 0x10000>;
+> +		pwm0: pwm@12490000 {
+> +			compatible =3D "opencores,pwm-v1";
+> +			reg =3D <0x0 0x12490000 0x0 0x10>;
 
---bsBRJFDfWIlVk/Sa
+NAK on the compatibles front, but this also looks very suspect, given
+the size of the register regions, but I think it is actually correct.
+You need to explain why it is correct in the commit message.
+
+--JriUJS52jcgo79we
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCagcaSgAKCRB4tDGHoIJi
-0vz7AQDnchzrkgpD5wwGGsBP0yvNyXSvs8NxJBiUXVHJNmwg0wEAgZFhi1GnKqLB
-ujHGBW3J5oDRwL4QP5p0t03/7ZjktQU=
-=shV9
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCagcbFgAKCRB4tDGHoIJi
+0sOZAQCxnM7BwwH632XmI1nkReaAbjpkqxb7gbx/dTUK9rxb9gEA25ebV2QgpQw4
+q+nS+323xE/qF1dkL8S3ShWf/tgduwA=
+=u+CZ
 -----END PGP SIGNATURE-----
 
---bsBRJFDfWIlVk/Sa--
+--JriUJS52jcgo79we--
