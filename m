@@ -1,741 +1,991 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E3B73E5593;
-	Fri, 15 May 2026 13:31:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288E73E3D99
+	for <linux-pwm@vger.kernel.org>; Sat, 16 May 2026 17:11:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778851895; cv=none; b=Dz2BhRueQID8DfLw7/8SEDjxRAEDRScY7qAUd1qPhkngeoWsfMiEof9FKc6fGwyMkssqzE5A3tVw1uc5cacfqEs3SfufsNaFEBueb9rsTv2l0fmRbltiuxV4t8J27Qp9lyssAYmE42OYOeiGJCV9o1UGljVCgeZI8MsDdlvCllQ=
+	t=1778951484; cv=none; b=HffeDzJk9Y3qA/lqEdtBkOmD5nReF16Zu8LEnyCLA3UiBjF0PwbOF1RZRMpWZ0Xcg9mV5z/ufV18B8f/jQVIjY8S183KkinDp3ecsEDFZkklk47ywDWXUoXok2Cc2lCd9KMyWxP1pgReWscZRd6V9048p12V61WUblEUg6yAFK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778851895; c=relaxed/simple;
-	bh=CCD5eNK+6HjEin+9wGix+S3QPeOFOTSOq+DxGMnKCPs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=AAg0e5KFXbZRt/IHcTpSUjmvGNtfkeGPSLF1+fmzfTm8dnH87A1xq3kr2e5jhkUEOFCdZ0mEer22n4uMet1KUM2XEZGpTFql28SMZJPQJAvDCnYdFaOKU7KwyprtBf4XD0Lf5uGuEOVhooxkcV5E3138HDLCDOfpIp/DyePMRsA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OA6W+ZfM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778951484; c=relaxed/simple;
+	bh=QDcCpH2R75CO3pdZtx9NncX3AJcw9hHHX3fE+5suqA0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=F4OSZkC3ESyCfxD4P27hxbI+kgX41+ZG44RH635tQyefKxr/w4jNNCPUEcfw1T6d29QpJlBoD+SkiV4o95JBJX8vAL7tQJbOCpkK/Kbq4m+BW9MrnZk0lFtHdQRcYgS9hVGl08IAKDWdndhTeef5JFVQJFwl6xMg2l8ntY2cBfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=bEO33Aki; arc=none smtp.client-ip=209.85.167.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OA6W+ZfM"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A39BDC4AF5F;
-	Fri, 15 May 2026 13:31:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778851894;
-	bh=CCD5eNK+6HjEin+9wGix+S3QPeOFOTSOq+DxGMnKCPs=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=OA6W+ZfMDUr2/QlW/DPvl2GfDMPM1umIKusmfRUJiHdXugshXcgAuqvSp0Pa6PrPc
-	 y5pkWJQNmOgIG1dF0B1n3sLWGUforb+O45O5RgBSSw6ZwHCIsID4r1fNmnroqgw0/w
-	 rs5s4fj3m0swDbRfsBCS+Api2D/4Pf3wtR0cFt8SCMPsVH+uOQf2HBKbaNH6jGXxfn
-	 8+NPbE9yPNdSLC7sUnRbmUyFJZvccL6V7ndUhKaXI29xetz7Fz8r8h57ZhoYquLAL5
-	 K6ZMKRKyAg8Sw3oD/1hcQ5yfuwghPyB+YoMX261loaHiHB6CW0BJavJyftpOgO8IZa
-	 PnPIPPOGbj5qg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D9E9CD4F47;
-	Fri, 15 May 2026 13:31:34 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Fri, 15 May 2026 16:31:33 +0300
-Subject: [PATCH v11 4/6] iio: adc: ad4691: add SPI offload support
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="bEO33Aki"
+Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-484a2090205so1366735b6e.0
+        for <linux-pwm@vger.kernel.org>; Sat, 16 May 2026 10:11:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1778951479; x=1779556279; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AV1X9shhHnSfJ5+JKZs6jUaJ6gdM+dlaXnG4LN4rYYY=;
+        b=bEO33Aki2ukaHUHfgvhm/GibFY0cqsZGw7TX87Z3gYPg7tGpAroV3grRGPuOQkIdUQ
+         DwiaJuXkM7B3HQvxbVqATwIqbDu81QRSvEYvxrIAK3z9ukFa4GuNjHjgokvTPJfuZPfW
+         sO8rVbcG/gDCVqmeU2oXZGr5DBLYW20bkYdFimf5eA8TJibqaPWUrJg68An0p5Hvge1L
+         /YimDkjzLc3DSxyTiyS88UkQaMpMqqS/MatuojVUVGgtUK/aT3Ujf4hzcUrFhEWehbZ4
+         Ch6qmO+hsPdHN1FXFezJI5pfVA09kf0DGc1lnMNTP9HZerW1hWj7RMh2xdilMHhT+kAz
+         a6Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778951479; x=1779556279;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AV1X9shhHnSfJ5+JKZs6jUaJ6gdM+dlaXnG4LN4rYYY=;
+        b=oNGVZJMiUuvysTXccZ/uvb3OasriqmSEwO2Xaic8HdMnfo4OomdWEiyzAcMcQco9HL
+         ztp82zt5d2aVGtNhmBJ50p0cjkf4PYZL0zg+aqJH+ujtA3MHccH9Wq3Nz7mQ0vnLLh7x
+         Kbm5tCtN64mKNNEsX6Ej/n5p05p+tGhHErXTGbW85AbcFptCMS5mo0t9moWS6Lz6vggc
+         EyfB9caackgg8KBUHhfLDIWbKGLk3Ctdxk8R1yHPROZ8D5YC0STpOm7y4Z0feUsRvNFV
+         Mnzp9f+E/hciUw1oQAN4F9JOuI+2Ko0uXu8N9Mdl6/HhdQuuz1VT1zWjrFbtWlqIcX6Y
+         mOow==
+X-Forwarded-Encrypted: i=1; AFNElJ+DVd82D4TwPyv5lpdLbFCs3sOtGBsl74yoR6QXcpVyuQRnbb1PUMt/ZL7DmEsiYqbz4x7oWpZIxRM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx7PUJJ2Bs4KX3VNlszs/htREHFfsYRZCslSyfwedx/cB96UEAE
+	I1T0vP1E+W4a3AqH9j8qV74ePzdqzyymdHvsC1uM4bzXpAx9dNqleSxjdU4SiYVg7H8=
+X-Gm-Gg: Acq92OHsky7S7TjsE6oNXDtZNRHfkD4NSLwMY8rplRjpmLsYV04tUlK3Tt9emhR1VOU
+	3E+J1frqik4AsMgzSAvf5NU096o21CmsqaisJ3qXzKCpyJNbLRJec4gcT8+tVeeai4qflK1zpXj
+	rEQWvK0A1exy07/JioOrnGxzBYJ0GZQO8dPrT96kAr9bOMCjXsNkIa4W2W8jQ8wAAyDPHfmcjlT
+	3VcczC2AQaeGPkoS5ycKnanU0d5FRvBKI75H913zjVywzSYAe9deThxZOJYldrNyANwZgrvJ6nO
+	OpuhuUbS+RC5GFCyeTjS+d+mzia2rf+sh6TH4+MElBsQJRPJPA20joO5dOPSWe0+Hy8WpNl/NSn
+	0Jduv7ODgrtDqLFlgFROlDMRBLhCoNnFD4zAnDS3Hu1T1oIvvdwycYcZbHXLrtmQqpmWmFDsmpw
+	pozosj1gxk7I1qxysqxjZ2GfopcJtIJTXFFHUjbJypyavAvhCNbbimG+4K8yTyxM4eDozQa8B4L
+	A==
+X-Received: by 2002:a05:6820:1c8c:b0:694:7051:6fef with SMTP id 006d021491bc7-69c5d3b8b3bmr4812159eaf.4.1778951478872;
+        Sat, 16 May 2026 10:11:18 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:b36d:bd18:7c02:29e2? ([2600:8803:e7e4:500:b36d:bd18:7c02:29e2])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69d04911744sm2841986eaf.12.2026.05.16.10.11.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 May 2026 10:11:17 -0700 (PDT)
+Message-ID: <0696b662-f478-4d1a-95e0-0338bbdb719e@baylibre.com>
+Date: Sat, 16 May 2026 12:11:16 -0500
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260515-ad4692-multichannel-sar-adc-driver-v11-4-eab27d852ac2@analog.com>
-References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
-In-Reply-To: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
- Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v11 2/6] iio: adc: ad4691: add initial driver for AD4691
+ family
+To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>,
  Shuah Khan <skhan@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org, 
- Radu Sabau <radu.sabau@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1778851890; l=23393;
- i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=NLdFjC9bWs7rPGjzmEqbgZcC6gCUqgFCePWSJQT8iYs=;
- b=zN/AnZr8ShzKIV3Czvn5UtAo1t2ARxvDYrXIFN70k1aph2Y+aPZV1TQsCvubLY+C7duPM0Cta
- cFESNCyDxpnDPaw+ZPTHpGmRMM/xeaoMUpIB86/N6tZJ+chjjC/a+7m
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
- auth_id=642
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org
+References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
+ <20260515-ad4692-multichannel-sar-adc-driver-v11-2-eab27d852ac2@analog.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260515-ad4692-multichannel-sar-adc-driver-v11-2-eab27d852ac2@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-From: Radu Sabau <radu.sabau@analog.com>
+On 5/15/26 8:31 AM, Radu Sabau via B4 Relay wrote:
+> From: Radu Sabau <radu.sabau@analog.com>
+> 
+> Add support for the Analog Devices AD4691 family of high-speed,
+> low-power multichannel SAR ADCs: AD4691 (16-ch, 500 kSPS),
+> AD4692 (16-ch, 1 MSPS), AD4693 (8-ch, 500 kSPS) and
+> AD4694 (8-ch, 1 MSPS).
+> 
+> The driver implements a custom regmap layer over raw SPI to handle the
+> device's mixed 1/2/3/4-byte register widths and uses the standard IIO
+> read_raw/write_raw interface for single-channel reads.
+> 
+> The chip idles in Autonomous Mode so that single-shot read_raw can use
+> the internal oscillator without disturbing the hardware configuration.
+> 
+> Three voltage supply domains are managed: avdd (required), vio, and a
+> reference supply on either the REF pin (ref-supply, external buffer)
+> or the REFIN pin (refin-supply, uses the on-chip reference buffer;
+> REFBUF_EN is set accordingly). Hardware reset is performed via
+> the reset controller framework; a software reset through SPI_CONFIG_A
+> is used as fallback when no hardware reset is available.
+> 
+> Accumulator channel masking for single-shot reads uses ACC_MASK_REG via
+> an ADDR_DESCENDING SPI write, which covers both mask bytes in a single
+> 16-bit transfer.
+> 
+> IIO_CHAN_INFO_SAMP_FREQ is exposed as info_mask_separate. The oscillator
+> is shared hardware — writing any channel's sampling_frequency attribute
+> sets it for all others — but per-channel attributes are used throughout
+> the series to avoid an ABI change when per-channel oversampling ratios
+> are introduced in a later commit, at which point the effective output
+> rate (osc_freq / osr[N]) becomes genuinely per-channel.
+> 
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+> ---
+>  MAINTAINERS              |   1 +
+>  drivers/iio/adc/Kconfig  |  12 +
+>  drivers/iio/adc/Makefile |   1 +
+>  drivers/iio/adc/ad4691.c | 756 +++++++++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 770 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 438ca850fa1c..24e4502b8292 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1490,6 +1490,7 @@ L:	linux-iio@vger.kernel.org
+>  S:	Supported
+>  W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
+> +F:	drivers/iio/adc/ad4691.c
+>  
+>  ANALOG DEVICES INC AD4695 DRIVER
+>  M:	Michael Hennerich <michael.hennerich@analog.com>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 60038ae8dfc4..5e601a87e5f3 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -139,6 +139,18 @@ config AD4170_4
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called ad4170-4.
+>  
+> +config AD4691
+> +	tristate "Analog Devices AD4691 Family ADC Driver"
+> +	depends on SPI
+> +	depends on REGULATOR || COMPILE_TEST
+> +	select REGMAP
+> +	help
+> +	  Say yes here to build support for Analog Devices AD4691 Family MuxSAR
+> +	  SPI analog to digital converters (ADC).
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called ad4691.
+> +
+>  config AD4695
+>  	tristate "Analog Device AD4695 ADC Driver"
+>  	depends on SPI
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index c76550415ff1..4ac1ea09d773 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD4080) += ad4080.o
+>  obj-$(CONFIG_AD4130) += ad4130.o
+>  obj-$(CONFIG_AD4134) += ad4134.o
+>  obj-$(CONFIG_AD4170_4) += ad4170-4.o
+> +obj-$(CONFIG_AD4691) += ad4691.o
+>  obj-$(CONFIG_AD4695) += ad4695.o
+>  obj-$(CONFIG_AD4851) += ad4851.o
+>  obj-$(CONFIG_AD7091R) += ad7091r-base.o
+> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
+> new file mode 100644
+> index 000000000000..ba77e1bfef16
+> --- /dev/null
+> +++ b/drivers/iio/adc/ad4691.c
+> @@ -0,0 +1,756 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Copyright (C) 2024-2026 Analog Devices, Inc.
+> + * Author: Radu Sabau <radu.sabau@analog.com>
+> + */
+> +#include <linux/array_size.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bitops.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/delay.h>
+> +#include <linux/dev_printk.h>
+> +#include <linux/device/devres.h>
+> +#include <linux/err.h>
+> +#include <linux/limits.h>
+> +#include <linux/math.h>
+> +#include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/reset.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/units.h>
+> +#include <linux/unaligned.h>
+> +
+> +#include <linux/iio/iio.h>
+> +
+> +#define AD4691_VREF_uV_MIN			2400000
+> +#define AD4691_VREF_uV_MAX			5250000
+> +#define AD4691_VREF_2P5_uV_MAX			2750000
+> +#define AD4691_VREF_3P0_uV_MAX			3250000
+> +#define AD4691_VREF_3P3_uV_MAX			3750000
+> +#define AD4691_VREF_4P096_uV_MAX		4500000
+> +
+> +#define AD4691_SPI_CONFIG_A_REG			0x000
+> +#define AD4691_SW_RESET				(BIT(7) | BIT(0))
+> +
+> +#define AD4691_STATUS_REG			0x014
+> +#define AD4691_CLAMP_STATUS1_REG		0x01A
+> +#define AD4691_CLAMP_STATUS2_REG		0x01B
+> +#define AD4691_DEVICE_SETUP			0x020
+> +#define AD4691_LDO_EN				BIT(4)
+> +#define AD4691_REF_CTRL				0x021
+> +#define AD4691_REF_CTRL_MASK			GENMASK(4, 2)
+> +#define AD4691_REFBUF_EN			BIT(0)
+> +#define AD4691_OSC_FREQ_REG			0x023
+> +#define AD4691_OSC_FREQ_MASK			GENMASK(3, 0)
+> +#define AD4691_STD_SEQ_CONFIG			0x025
+> +#define AD4691_SPARE_CONTROL			0x02A
+> +
+> +#define AD4691_OSC_EN_REG			0x180
+> +#define AD4691_STATE_RESET_REG			0x181
+> +#define AD4691_STATE_RESET_ALL			0x01
+> +#define AD4691_ADC_SETUP			0x182
+> +#define AD4691_ADC_MODE_MASK			GENMASK(1, 0)
+> +#define AD4691_AUTONOMOUS_MODE			0x02
+> +/*
+> + * ACC_MASK_REG covers both mask bytes via ADDR_DESCENDING SPI: writing a
+> + * 16-bit BE value to 0x185 auto-decrements to 0x184 for the second byte.
+> + */
+> +#define AD4691_ACC_MASK_REG			0x185
+> +#define AD4691_ACC_DEPTH_IN(n)			(0x186 + (n))
+> +#define AD4691_GPIO_MODE1_REG			0x196
+> +#define AD4691_GPIO_MODE2_REG			0x197
+> +#define AD4691_GPIO_READ			0x1A0
+> +#define AD4691_ACC_STATUS_FULL1_REG		0x1B0
+> +#define AD4691_ACC_STATUS_FULL2_REG		0x1B1
+> +#define AD4691_ACC_STATUS_OVERRUN1_REG		0x1B2
+> +#define AD4691_ACC_STATUS_OVERRUN2_REG		0x1B3
+> +#define AD4691_ACC_STATUS_SAT1_REG		0x1B4
+> +#define AD4691_ACC_STATUS_SAT2_REG		0x1BE
+> +#define AD4691_ACC_SAT_OVR_REG(n)		(0x1C0 + (n))
+> +#define AD4691_AVG_IN(n)			(0x201 + (2 * (n)))
+> +#define AD4691_AVG_STS_IN(n)			(0x222 + (3 * (n)))
+> +#define AD4691_ACC_IN(n)			(0x252 + (3 * (n)))
+> +#define AD4691_ACC_STS_DATA(n)			(0x283 + (4 * (n)))
+> +
+> +static const char * const ad4691_supplies[] = { "avdd", "vio" };
+> +
+> +enum ad4691_ref_ctrl {
+> +	AD4691_VREF_2P5   = 0,
+> +	AD4691_VREF_3P0   = 1,
+> +	AD4691_VREF_3P3   = 2,
+> +	AD4691_VREF_4P096 = 3,
+> +	AD4691_VREF_5P0   = 4,
 
-Add SPI offload support to enable DMA-based, CPU-independent data
-acquisition using the SPI Engine offload framework.
+nit: when I see explicit values, I expect a gap or something odd.
+When don't find any, I wasted my time reading what are the default
+implicit values anyway.
 
-When an SPI offload is available (devm_spi_offload_get() succeeds),
-the driver registers a DMA engine IIO buffer and uses dedicated buffer
-setup operations. If no offload is available the existing software
-triggered buffer path is used unchanged.
+> +};
+> +
+> +struct ad4691_channel_info {
+> +	const struct iio_chan_spec *channels __counted_by_ptr(num_channels);
+> +	unsigned int num_channels;
+> +};
+> +
+> +struct ad4691_chip_info {
+> +	const char *name;
+> +	unsigned int max_rate;
+> +	const struct ad4691_channel_info *sw_info;
+> +};
+> +
+> +#define AD4691_CHANNEL(ch)						\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
+> +				    | BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> +		.info_mask_separate_available =				\
+> +				      BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE),	\
+> +		.channel = ch,						\
+> +		.scan_index = ch,					\
+> +		.scan_type = {						\
+> +			.sign = 'u',					\
 
-Both CNV Burst Mode and Manual Mode support offload, but use different
-trigger mechanisms:
+FYI, this has a new name now, .format.
 
-CNV Burst Mode: the SPI Engine is triggered by the ADC's DATA_READY
-signal on the GP pin specified by the trigger-source consumer reference
-in the device tree (one cell = GP pin number 0-3). For this mode the
-driver acts as both an SPI offload consumer (DMA RX stream, message
-optimization) and a trigger source provider: it registers the
-GP/DATA_READY output via devm_spi_offload_trigger_register() so the
-offload framework can match the '#trigger-source-cells' phandle and
-automatically fire the SPI Engine DMA transfer at end-of-conversion.
+> +			.realbits = 16,					\
+> +			.storagebits = 16,				\
+> +		},							\
+> +	}
+> +
+> +static const struct iio_chan_spec ad4691_channels[] = {
+> +	AD4691_CHANNEL(0),
+> +	AD4691_CHANNEL(1),
+> +	AD4691_CHANNEL(2),
+> +	AD4691_CHANNEL(3),
+> +	AD4691_CHANNEL(4),
+> +	AD4691_CHANNEL(5),
+> +	AD4691_CHANNEL(6),
+> +	AD4691_CHANNEL(7),
+> +	AD4691_CHANNEL(8),
+> +	AD4691_CHANNEL(9),
+> +	AD4691_CHANNEL(10),
+> +	AD4691_CHANNEL(11),
+> +	AD4691_CHANNEL(12),
+> +	AD4691_CHANNEL(13),
+> +	AD4691_CHANNEL(14),
+> +	AD4691_CHANNEL(15),
+> +};
+> +
+> +static const struct iio_chan_spec ad4693_channels[] = {
+> +	AD4691_CHANNEL(0),
+> +	AD4691_CHANNEL(1),
+> +	AD4691_CHANNEL(2),
+> +	AD4691_CHANNEL(3),
+> +	AD4691_CHANNEL(4),
+> +	AD4691_CHANNEL(5),
+> +	AD4691_CHANNEL(6),
+> +	AD4691_CHANNEL(7),
+> +};
+> +
+> +/*
+> + * Internal oscillator frequency table. Index is the OSC_FREQ_REG[3:0] value.
+> + * Index 0 (1 MHz) is only valid for AD4692/AD4694; AD4691/AD4693 support
+> + * up to 500 kHz and use index 1 as their highest valid rate.
+> + */
+> +static const int ad4691_osc_freqs_Hz[] = {
+> +	[0x0] = 1000000,
+> +	[0x1] = 500000,
+> +	[0x2] = 400000,
+> +	[0x3] = 250000,
+> +	[0x4] = 200000,
+> +	[0x5] = 167000,
+> +	[0x6] = 133000,
+> +	[0x7] = 125000,
+> +	[0x8] = 100000,
+> +	[0x9] = 50000,
+> +	[0xA] = 25000,
+> +	[0xB] = 12500,
+> +	[0xC] = 10000,
+> +	[0xD] = 5000,
+> +	[0xE] = 2500,
+> +	[0xF] = 1250,
+> +};
+> +
+> +static const struct ad4691_channel_info ad4691_sw_info = {
+> +	.channels = ad4691_channels,
+> +	.num_channels = ARRAY_SIZE(ad4691_channels),
+> +};
+> +
+> +static const struct ad4691_channel_info ad4693_sw_info = {
+> +	.channels = ad4693_channels,
+> +	.num_channels = ARRAY_SIZE(ad4693_channels),
+> +};
+> +
+> +static const struct ad4691_chip_info ad4691_chip_info = {
+> +	.name = "ad4691",
+> +	.max_rate = 500 * HZ_PER_KHZ,
+> +	.sw_info = &ad4691_sw_info,
+> +};
+> +
+> +static const struct ad4691_chip_info ad4692_chip_info = {
+> +	.name = "ad4692",
+> +	.max_rate = 1 * HZ_PER_MHZ,
+> +	.sw_info = &ad4691_sw_info,
+> +};
+> +
+> +static const struct ad4691_chip_info ad4693_chip_info = {
+> +	.name = "ad4693",
+> +	.max_rate = 500 * HZ_PER_KHZ,
+> +	.sw_info = &ad4693_sw_info,
+> +};
+> +
+> +static const struct ad4691_chip_info ad4694_chip_info = {
+> +	.name = "ad4694",
+> +	.max_rate = 1 * HZ_PER_MHZ,
+> +	.sw_info = &ad4693_sw_info,
+> +};
+> +
+> +struct ad4691_state {
+> +	const struct ad4691_chip_info *info;
+> +	struct regmap *regmap;
+> +	int vref_uV;
+> +	bool refbuf_en;
+> +	bool ldo_en;
+> +	/*
+> +	 * Synchronize access to members of the driver state, and ensure
+> +	 * atomicity of consecutive SPI operations.
+> +	 */
+> +	struct mutex lock;
+> +};
+> +
+> +static int ad4691_reg_read(void *context, unsigned int reg, unsigned int *val)
+> +{
+> +	struct spi_device *spi = context;
+> +	u8 tx[2], rx[4];
+> +	int ret;
+> +
+> +	/* Set bit 15 to mark the operation as READ. */
 
-Manual Mode: the SPI Engine is triggered by a periodic trigger at
-the configured sampling frequency. The pre-built SPI message uses
-the pipelined CNV-on-CS protocol: N+1 16-bit transfers are issued
-for N active channels (the first result is discarded as garbage from
-the pipeline flush) and the remaining N results are captured by DMA.
+Can't we just set read_flag_mask in the regmap config?
 
-All offload transfers use 16-bit frames (bits_per_word=16, len=2).
-The SPI Engine assembles received bits into native 16-bit words before
-DMA, so offload samples land in CPU-native byte order (IIO_CPU).
-Dedicated channel arrays (AD4691_OFFLOAD_CHANNEL) reflect this: they
-omit IIO_BE and carry no soft timestamp (DMA delivers data directly to
-userspace). The software triggered-buffer path retains its IIO_BE
-channels because bits_per_word=8 causes SPI to deliver bytes MSB-first
-into memory, making the on-disk layout big-endian. Both paths use
-storagebits=16 as transfers are 16 bits wide in both cases.
+> +	put_unaligned_be16(0x8000 | reg, tx);
+> +
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_MASK_REG - 1:
+> +	case AD4691_ACC_MASK_REG + 1 ... AD4691_ACC_SAT_OVR_REG(15):
+> +		ret = spi_write_then_read(spi, tx, sizeof(tx), rx, 1);
+> +		if (ret)
+> +			return ret;
+> +		*val = rx[0];
+> +		return 0;
+> +	case AD4691_ACC_MASK_REG:
+> +	case AD4691_STD_SEQ_CONFIG:
+> +	case AD4691_AVG_IN(0) ... AD4691_AVG_IN(15):
+> +		ret = spi_write_then_read(spi, tx, sizeof(tx), rx, 2);
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be16(rx);
+> +		return 0;
+> +	case AD4691_AVG_STS_IN(0) ... AD4691_AVG_STS_IN(15):
+> +	case AD4691_ACC_IN(0) ... AD4691_ACC_IN(15):
+> +		ret = spi_write_then_read(spi, tx, sizeof(tx), rx, 3);
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be24(rx);
+> +		return 0;
+> +	case AD4691_ACC_STS_DATA(0) ... AD4691_ACC_STS_DATA(15):
+> +		ret = spi_write_then_read(spi, tx, sizeof(tx), rx, 4);
+> +		if (ret)
+> +			return ret;
+> +		*val = get_unaligned_be32(rx);
+> +		return 0;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int ad4691_reg_write(void *context, unsigned int reg, unsigned int val)
+> +{
+> +	struct spi_device *spi = context;
+> +	u8 tx[4];
+> +
+> +	put_unaligned_be16(reg, tx);
+> +
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_MASK_REG - 1:
+> +	case AD4691_ACC_MASK_REG + 1 ... AD4691_GPIO_MODE2_REG:
+> +		if (val > U8_MAX)
+> +			return -EINVAL;
+> +		tx[2] = val;
+> +		return spi_write_then_read(spi, tx, 3, NULL, 0);
+> +	case AD4691_ACC_MASK_REG:
+> +	case AD4691_STD_SEQ_CONFIG:
+> +		if (val > U16_MAX)
+> +			return -EINVAL;
+> +		put_unaligned_be16(val, &tx[2]);
+> +		return spi_write_then_read(spi, tx, 4, NULL, 0);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static bool ad4691_volatile_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case AD4691_STATUS_REG:
+> +	case AD4691_CLAMP_STATUS1_REG:
+> +	case AD4691_CLAMP_STATUS2_REG:
+> +	case AD4691_GPIO_READ:
+> +	case AD4691_ACC_STATUS_FULL1_REG ... AD4691_ACC_STATUS_SAT2_REG:
+> +	case AD4691_ACC_SAT_OVR_REG(0) ... AD4691_ACC_SAT_OVR_REG(15):
+> +		return true;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	/*
+> +	 * Multi-byte registers have non-unit strides; only accept base
+> +	 * addresses to prevent debugfs from triggering reads that cross
+> +	 * register boundaries.
+> +	 */
+> +	if (reg >= AD4691_AVG_IN(0) && reg <= AD4691_AVG_IN(15))
+> +		return (reg - AD4691_AVG_IN(0)) % 2 == 0;
+> +	if (reg >= AD4691_AVG_STS_IN(0) && reg <= AD4691_AVG_STS_IN(15))
+> +		return (reg - AD4691_AVG_STS_IN(0)) % 3 == 0;
+> +	if (reg >= AD4691_ACC_IN(0) && reg <= AD4691_ACC_IN(15))
+> +		return (reg - AD4691_ACC_IN(0)) % 3 == 0;
+> +	if (reg >= AD4691_ACC_STS_DATA(0) && reg <= AD4691_ACC_STS_DATA(15))
+> +		return (reg - AD4691_ACC_STS_DATA(0)) % 4 == 0;
+> +
+> +	return false;
+> +}
+> +
+> +static bool ad4691_readable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_SAT_OVR_REG(15):
+> +	case AD4691_STD_SEQ_CONFIG:
+> +		return true;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	/* Multi-byte registers: only accept base addresses (see volatile_reg). */
+> +	if (reg >= AD4691_AVG_IN(0) && reg <= AD4691_AVG_IN(15))
+> +		return (reg - AD4691_AVG_IN(0)) % 2 == 0;
+> +	if (reg >= AD4691_AVG_STS_IN(0) && reg <= AD4691_AVG_STS_IN(15))
+> +		return (reg - AD4691_AVG_STS_IN(0)) % 3 == 0;
+> +	if (reg >= AD4691_ACC_IN(0) && reg <= AD4691_ACC_IN(15))
+> +		return (reg - AD4691_ACC_IN(0)) % 3 == 0;
+> +	if (reg >= AD4691_ACC_STS_DATA(0) && reg <= AD4691_ACC_STS_DATA(15))
+> +		return (reg - AD4691_ACC_STS_DATA(0)) % 4 == 0;
+> +
+> +	return false;
+> +}
+> +
+> +static bool ad4691_writeable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_STD_SEQ_CONFIG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_GPIO_MODE2_REG:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static const struct regmap_config ad4691_regmap_config = {
+> +	.reg_bits = 16,
+> +	.val_bits = 32,
+> +	.reg_read = ad4691_reg_read,
+> +	.reg_write = ad4691_reg_write,
+> +	.volatile_reg = ad4691_volatile_reg,
+> +	.readable_reg = ad4691_readable_reg,
+> +	.writeable_reg = ad4691_writeable_reg,
+> +	.max_register = AD4691_ACC_STS_DATA(15),
+> +	.cache_type = REGCACHE_MAPLE,
+> +};
+> +
+> +/*
+> + * Index 0 in ad4691_osc_freqs_Hz is 1 MHz — valid only for AD4692/AD4694
+> + * (max_rate == 1 MHz). AD4691/AD4693 cap at 500 kHz so their valid range
+> + * starts at index 1.
+> + */
+> +static unsigned int ad4691_samp_freq_start(const struct ad4691_chip_info *info)
+> +{
+> +	return (info->max_rate == 1 * HZ_PER_MHZ) ? 0 : 1;
+> +}
+> +
+> +static int ad4691_get_sampling_freq(struct ad4691_state *st, int *val)
+> +{
+> +	unsigned int reg_val;
+> +	int ret;
+> +
 
-IIO_BUFFER_DMAENGINE is selected because the offload path uses
-devm_iio_dmaengine_buffer_setup_with_handle() to allocate and
-attach the DMA RX buffer to the IIO device.
+No mutex lock here? Maybe without OK since it is a read.
 
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
- drivers/iio/adc/Kconfig  |   2 +
- drivers/iio/adc/ad4691.c | 458 ++++++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 457 insertions(+), 3 deletions(-)
+> +	/*
+> +	 * AD4691_OSC_FREQ_REG is non-volatile and written during
+> +	 * ad4691_config(), so regmap returns the cached value here without
+> +	 * touching the SPI bus. No lock is needed.
+> +	 */
+> +	ret = regmap_read(st->regmap, AD4691_OSC_FREQ_REG, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val = ad4691_osc_freqs_Hz[FIELD_GET(AD4691_OSC_FREQ_MASK, reg_val)];
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int ad4691_set_sampling_freq(struct iio_dev *indio_dev, int freq)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +	unsigned int start = ad4691_samp_freq_start(st->info);
+> +
+> +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +		return -EBUSY;
+> +
+> +	for (unsigned int i = start; i < ARRAY_SIZE(ad4691_osc_freqs_Hz); i++) {
+> +		if (ad4691_osc_freqs_Hz[i] != freq)
+> +			continue;
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 484363458658..44c8dbe3ff0d 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -144,8 +144,10 @@ config AD4691
- 	depends on SPI
- 	depends on REGULATOR || COMPILE_TEST
- 	select IIO_BUFFER
-+	select IIO_BUFFER_DMAENGINE
- 	select IIO_TRIGGERED_BUFFER
- 	select REGMAP
-+	select SPI_OFFLOAD
- 	help
- 	  Say yes here to build support for Analog Devices AD4691 Family MuxSAR
- 	  SPI analog to digital converters (ADC).
-diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
-index bf27d5f33a49..25f7a6939b0f 100644
---- a/drivers/iio/adc/ad4691.c
-+++ b/drivers/iio/adc/ad4691.c
-@@ -25,10 +25,14 @@
- #include <linux/reset.h>
- #include <linux/string.h>
- #include <linux/spi/spi.h>
-+#include <linux/spi/offload/consumer.h>
-+#include <linux/spi/offload/provider.h>
- #include <linux/units.h>
- #include <linux/unaligned.h>
- 
- #include <linux/iio/buffer.h>
-+#include <linux/iio/buffer-dma.h>
-+#include <linux/iio/buffer-dmaengine.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/trigger.h>
-@@ -44,6 +48,11 @@
- 
- #define AD4691_CNV_DUTY_CYCLE_NS		380
- #define AD4691_CNV_HIGH_TIME_NS			430
-+/*
-+ * Conservative default for the manual offload periodic trigger. Low enough
-+ * to work safely out of the box across all OSR and channel count combinations.
-+ */
-+#define AD4691_OFFLOAD_INITIAL_TRIGGER_HZ	(100 * HZ_PER_KHZ)
- 
- #define AD4691_SPI_CONFIG_A_REG			0x000
- #define AD4691_SW_RESET				(BIT(7) | BIT(0))
-@@ -115,6 +124,7 @@ struct ad4691_chip_info {
- 	const char *name;
- 	unsigned int max_rate;
- 	const struct ad4691_channel_info *sw_info;
-+	const struct ad4691_channel_info *offload_info;
- };
- 
- #define AD4691_CHANNEL(ch)						\
-@@ -136,6 +146,30 @@ struct ad4691_chip_info {
- 		},							\
- 	}
- 
-+/*
-+ * Offload path (bits_per_word=16): the SPI Engine assembles received
-+ * bits into native 16-bit words before DMA, so samples are in
-+ * CPU-native byte order (IIO_CPU). storagebits=16 matches the 16-bit
-+ * DMA word size.
-+ */
-+#define AD4691_OFFLOAD_CHANNEL(ch)					\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
-+				    | BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+		.info_mask_separate_available =				\
-+				      BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE),	\
-+		.channel = ch,						\
-+		.scan_index = ch,					\
-+		.scan_type = {						\
-+			.sign = 'u',					\
-+			.realbits = 16,					\
-+			.storagebits = 16,				\
-+		},							\
-+	}
-+
- static const struct iio_chan_spec ad4691_channels[] = {
- 	AD4691_CHANNEL(0),
- 	AD4691_CHANNEL(1),
-@@ -168,6 +202,40 @@ static const struct iio_chan_spec ad4693_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(8),
- };
- 
-+/*
-+ * Offload channel arrays: no IIO_CHAN_SOFT_TIMESTAMP because DMA delivers
-+ * data directly to userspace without a software timestamp.
-+ */
-+static const struct iio_chan_spec ad4691_offload_channels[] = {
-+	AD4691_OFFLOAD_CHANNEL(0),
-+	AD4691_OFFLOAD_CHANNEL(1),
-+	AD4691_OFFLOAD_CHANNEL(2),
-+	AD4691_OFFLOAD_CHANNEL(3),
-+	AD4691_OFFLOAD_CHANNEL(4),
-+	AD4691_OFFLOAD_CHANNEL(5),
-+	AD4691_OFFLOAD_CHANNEL(6),
-+	AD4691_OFFLOAD_CHANNEL(7),
-+	AD4691_OFFLOAD_CHANNEL(8),
-+	AD4691_OFFLOAD_CHANNEL(9),
-+	AD4691_OFFLOAD_CHANNEL(10),
-+	AD4691_OFFLOAD_CHANNEL(11),
-+	AD4691_OFFLOAD_CHANNEL(12),
-+	AD4691_OFFLOAD_CHANNEL(13),
-+	AD4691_OFFLOAD_CHANNEL(14),
-+	AD4691_OFFLOAD_CHANNEL(15),
-+};
-+
-+static const struct iio_chan_spec ad4693_offload_channels[] = {
-+	AD4691_OFFLOAD_CHANNEL(0),
-+	AD4691_OFFLOAD_CHANNEL(1),
-+	AD4691_OFFLOAD_CHANNEL(2),
-+	AD4691_OFFLOAD_CHANNEL(3),
-+	AD4691_OFFLOAD_CHANNEL(4),
-+	AD4691_OFFLOAD_CHANNEL(5),
-+	AD4691_OFFLOAD_CHANNEL(6),
-+	AD4691_OFFLOAD_CHANNEL(7),
-+};
-+
- static const struct ad4691_channel_info ad4691_sw_info = {
- 	.channels = ad4691_channels,
- 	.num_channels = ARRAY_SIZE(ad4691_channels),
-@@ -178,6 +246,16 @@ static const struct ad4691_channel_info ad4693_sw_info = {
- 	.num_channels = ARRAY_SIZE(ad4693_channels),
- };
- 
-+static const struct ad4691_channel_info ad4691_offload_info = {
-+	.channels = ad4691_offload_channels,
-+	.num_channels = ARRAY_SIZE(ad4691_offload_channels),
-+};
-+
-+static const struct ad4691_channel_info ad4693_offload_info = {
-+	.channels = ad4693_offload_channels,
-+	.num_channels = ARRAY_SIZE(ad4693_offload_channels),
-+};
-+
- /*
-  * Internal oscillator frequency table. Index is the OSC_FREQ_REG[3:0] value.
-  * Index 0 (1 MHz) is only valid for AD4692/AD4694; AD4691/AD4693 support
-@@ -208,24 +286,34 @@ static const struct ad4691_chip_info ad4691_chip_info = {
- 	.name = "ad4691",
- 	.max_rate = 500 * HZ_PER_KHZ,
- 	.sw_info = &ad4691_sw_info,
-+	.offload_info = &ad4691_offload_info,
- };
- 
- static const struct ad4691_chip_info ad4692_chip_info = {
- 	.name = "ad4692",
- 	.max_rate = 1 * HZ_PER_MHZ,
- 	.sw_info = &ad4691_sw_info,
-+	.offload_info = &ad4691_offload_info,
- };
- 
- static const struct ad4691_chip_info ad4693_chip_info = {
- 	.name = "ad4693",
- 	.max_rate = 500 * HZ_PER_KHZ,
- 	.sw_info = &ad4693_sw_info,
-+	.offload_info = &ad4693_offload_info,
- };
- 
- static const struct ad4691_chip_info ad4694_chip_info = {
- 	.name = "ad4694",
- 	.max_rate = 1 * HZ_PER_MHZ,
- 	.sw_info = &ad4693_sw_info,
-+	.offload_info = &ad4693_offload_info,
-+};
-+
-+struct ad4691_offload_state {
-+	struct spi_offload *offload;
-+	struct spi_offload_trigger *trigger;
-+	u64 trigger_hz;
- };
- 
- struct ad4691_state {
-@@ -260,8 +348,11 @@ struct ad4691_state {
- 	struct spi_transfer scan_xfers[34];
- 	/*
- 	 * CNV burst: 16 AVG_IN addresses = 16.  Manual: 16 channel cmds +
--	 * 1 NOOP = 17.  Stored as native u16; put_unaligned_be16() fills each
--	 * slot so the SPI controller (bits_per_word=8) sends bytes MSB-first.
-+	 * 1 NOOP = 17.  Stored as native u16.  The non-offload path fills slots
-+	 * with put_unaligned_be16() (bits_per_word=8, bytes go out in memory
-+	 * order).  The offload path assigns native values directly
-+	 * (bits_per_word=bpw, SPI reads each slot as a native 16-bit word and
-+	 * shifts it out MSB-first).
- 	 */
- 	u16 scan_tx[17] __aligned(IIO_DMA_MINALIGN);
- 	/*
-@@ -277,6 +368,8 @@ struct ad4691_state {
- 	 * DMA-aligned because scan_xfers point rx_buf directly into vals[].
- 	 */
- 	IIO_DECLARE_DMA_BUFFER_WITH_TS(__be16, vals, 16);
-+	/* NULL when no SPI offload hardware is present */
-+	struct ad4691_offload_state *offload;
- };
- 
- /*
-@@ -296,6 +389,46 @@ static int ad4691_gpio_setup(struct ad4691_state *st, unsigned int gp_num)
- 				  AD4691_GP_MODE_DATA_READY << shift);
- }
- 
-+static const struct spi_offload_config ad4691_offload_config = {
-+	.capability_flags = SPI_OFFLOAD_CAP_TRIGGER |
-+			    SPI_OFFLOAD_CAP_RX_STREAM_DMA,
-+};
-+
-+static bool ad4691_offload_trigger_match(struct spi_offload_trigger *trigger,
-+					 enum spi_offload_trigger_type type,
-+					 u64 *args, u32 nargs)
-+{
-+	return type == SPI_OFFLOAD_TRIGGER_DATA_READY &&
-+	       nargs == 1 && args[0] <= 3;
-+}
-+
-+static int ad4691_offload_trigger_request(struct spi_offload_trigger *trigger,
-+					  enum spi_offload_trigger_type type,
-+					  u64 *args, u32 nargs)
-+{
-+	struct ad4691_state *st = spi_offload_trigger_get_priv(trigger);
-+
-+	if (nargs != 1)
-+		return -EINVAL;
-+
-+	return ad4691_gpio_setup(st, args[0]);
-+}
-+
-+static int ad4691_offload_trigger_validate(struct spi_offload_trigger *trigger,
-+					   struct spi_offload_trigger_config *config)
-+{
-+	if (config->type != SPI_OFFLOAD_TRIGGER_DATA_READY)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static const struct spi_offload_trigger_ops ad4691_offload_trigger_ops = {
-+	.match    = ad4691_offload_trigger_match,
-+	.request  = ad4691_offload_trigger_request,
-+	.validate = ad4691_offload_trigger_validate,
-+};
-+
- static int ad4691_reg_read(void *context, unsigned int reg, unsigned int *val)
- {
- 	struct spi_device *spi = context;
-@@ -873,6 +1006,222 @@ static const struct iio_buffer_setup_ops ad4691_cnv_burst_buffer_setup_ops = {
- 	.postdisable = &ad4691_cnv_burst_buffer_postdisable,
- };
- 
-+static int ad4691_manual_offload_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct ad4691_state *st = iio_priv(indio_dev);
-+	struct ad4691_offload_state *offload = st->offload;
-+	struct device *dev = regmap_get_device(st->regmap);
-+	struct spi_device *spi = to_spi_device(dev);
-+	struct spi_offload_trigger_config config = {
-+		.type = SPI_OFFLOAD_TRIGGER_PERIODIC,
-+	};
-+	unsigned int bpw = indio_dev->channels[0].scan_type.realbits;
-+	unsigned int bit, k;
-+	int ret;
-+
-+	ret = ad4691_enter_conversion_mode(st);
-+	if (ret)
-+		return ret;
-+
-+	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
-+	memset(st->scan_tx, 0, sizeof(st->scan_tx));
-+
-+	/*
-+	 * N+1 transfers for N channels. Each CS-low period triggers
-+	 * a conversion AND returns the previous result (pipelined).
-+	 *   TX: [AD4691_ADC_CHAN(n), 0x00]
-+	 *   RX: [data_hi, data_lo]     (storagebits=16, shift=0)
-+	 * Transfer 0 RX is garbage; transfers 1..N carry real data.
-+	 * scan_tx is reused for TX commands (mutually exclusive with the
-+	 * non-offload triggered-buffer path).
-+	 *
-+	 * bits_per_word=bpw: the SPI controller reads tx_buf as a native
-+	 * 16-bit word and shifts it out MSB-first.  Store the exact 16-bit
-+	 * value we want on the wire as a plain native u16 — no endianness
-+	 * macro — so the wire bytes are correct on both LE and BE hosts.
-+	 * The channel-select command is a single byte; shift it to the MSB
-+	 * position so SPI sends it first, with a zero pad in the LSB.
-+	 */
-+	k = 0;
-+	iio_for_each_active_channel(indio_dev, bit) {
-+		st->scan_tx[k] = (u16)(AD4691_ADC_CHAN(bit) << 8);
-+		st->scan_xfers[k].tx_buf = &st->scan_tx[k];
-+		st->scan_xfers[k].len = sizeof(st->scan_tx[k]);
-+		st->scan_xfers[k].bits_per_word = bpw;
-+		st->scan_xfers[k].cs_change = 1;
-+		st->scan_xfers[k].cs_change_delay.value = AD4691_CNV_HIGH_TIME_NS;
-+		st->scan_xfers[k].cs_change_delay.unit = SPI_DELAY_UNIT_NSECS;
-+		/* First transfer RX is garbage — skip it. */
-+		if (k > 0)
-+			st->scan_xfers[k].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
-+		k++;
-+	}
-+
-+	/* Final NOOP transfer retrieves the last channel's result. */
-+	st->scan_xfers[k].tx_buf = &st->scan_tx[k]; /* scan_tx[k] == 0 == NOOP */
-+	st->scan_xfers[k].len = sizeof(st->scan_tx[k]);
-+	st->scan_xfers[k].bits_per_word = bpw;
-+	st->scan_xfers[k].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
-+	k++;
-+
-+	spi_message_init_with_transfers(&st->scan_msg, st->scan_xfers, k);
-+	st->scan_msg.offload = offload->offload;
-+
-+	ret = spi_optimize_message(spi, &st->scan_msg);
-+	if (ret)
-+		goto err_exit_conversion;
-+
-+	config.periodic.frequency_hz = offload->trigger_hz;
-+	ret = spi_offload_trigger_enable(offload->offload, offload->trigger, &config);
-+	if (ret)
-+		goto err_unoptimize;
-+
-+	return 0;
-+
-+err_unoptimize:
-+	spi_unoptimize_message(&st->scan_msg);
-+err_exit_conversion:
-+	ad4691_exit_conversion_mode(st);
-+	return ret;
-+}
-+
-+static int ad4691_manual_offload_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct ad4691_state *st = iio_priv(indio_dev);
-+	struct ad4691_offload_state *offload = st->offload;
-+
-+	spi_offload_trigger_disable(offload->offload, offload->trigger);
-+	spi_unoptimize_message(&st->scan_msg);
-+
-+	return ad4691_exit_conversion_mode(st);
-+}
-+
-+static const struct iio_buffer_setup_ops ad4691_manual_offload_buffer_setup_ops = {
-+	.postenable = &ad4691_manual_offload_buffer_postenable,
-+	.predisable = &ad4691_manual_offload_buffer_predisable,
-+};
-+
-+static int ad4691_cnv_burst_offload_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct ad4691_state *st = iio_priv(indio_dev);
-+	struct ad4691_offload_state *offload = st->offload;
-+	struct device *dev = regmap_get_device(st->regmap);
-+	struct spi_device *spi = to_spi_device(dev);
-+	struct spi_offload_trigger_config config = {
-+		.type = SPI_OFFLOAD_TRIGGER_DATA_READY,
-+	};
-+	unsigned int bpw = indio_dev->channels[0].scan_type.realbits;
-+	unsigned int acc_mask, std_seq_config;
-+	unsigned int bit, k;
-+	int ret;
-+
-+	std_seq_config = bitmap_read(indio_dev->active_scan_mask, 0,
-+				     iio_get_masklength(indio_dev)) & GENMASK(15, 0);
-+	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG, std_seq_config);
-+	if (ret)
-+		return ret;
-+
-+	acc_mask = ~std_seq_config & GENMASK(15, 0);
-+	ret = regmap_write(st->regmap, AD4691_ACC_MASK_REG, acc_mask);
-+	if (ret)
-+		return ret;
-+
-+	ret = ad4691_enter_conversion_mode(st);
-+	if (ret)
-+		return ret;
-+
-+	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
-+	memset(st->scan_tx, 0, sizeof(st->scan_tx));
-+
-+	/*
-+	 * Each AVG_IN register read uses two transfers:
-+	 *   TX: [reg_hi | 0x80, reg_lo]  (address phase, CS stays asserted)
-+	 *   RX: [data_hi, data_lo]       (bpw-wide data phase, storagebits=16)
-+	 * Both TX and RX use bits_per_word=bpw: the SPI controller reads tx_buf
-+	 * as a native 16-bit word and shifts it out MSB-first.  Store the exact
-+	 * 16-bit wire value as a plain native u16 — no endianness macro — so the
-+	 * wire bytes are correct on both LE and BE hosts.  The read-address
-+	 * (0x8000 | reg) is already the 16-bit value we want on the wire.
-+	 * scan_tx is reused for TX addresses (mutually exclusive with the
-+	 * non-offload triggered-buffer path).
-+	 */
-+	k = 0;
-+	iio_for_each_active_channel(indio_dev, bit) {
-+		st->scan_tx[k] = 0x8000 | AD4691_AVG_IN(bit);
-+
-+		/* TX: address phase, CS stays asserted into data phase */
-+		st->scan_xfers[2 * k].tx_buf = &st->scan_tx[k];
-+		st->scan_xfers[2 * k].len = sizeof(st->scan_tx[k]);
-+		st->scan_xfers[2 * k].bits_per_word = bpw;
-+
-+		/* RX: data phase, CS toggles after to delimit the next register op */
-+		st->scan_xfers[2 * k + 1].len = sizeof(st->scan_tx[k]);
-+		st->scan_xfers[2 * k + 1].bits_per_word = bpw;
-+		st->scan_xfers[2 * k + 1].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
-+		st->scan_xfers[2 * k + 1].cs_change = 1;
-+		k++;
-+	}
-+
-+	/*
-+	 * State reset: single 4-byte write [addr_hi, addr_lo, STATE_RESET_ALL,
-+	 * OSC_EN=1]. ADDR_DESCENDING writes byte[3]=1 to OSC_EN_REG (0x180) as
-+	 * a deliberate side-write, keeping the oscillator enabled.
-+	 * scan_tx_reset is shared with the non-offload path (len=4 here vs
-+	 * len=3 there) since the two paths are mutually exclusive at probe.
-+	 */
-+	put_unaligned_be16(AD4691_STATE_RESET_REG, st->scan_tx_reset);
-+	st->scan_tx_reset[2] = AD4691_STATE_RESET_ALL;
-+	st->scan_tx_reset[3] = 1;
-+	st->scan_xfers[2 * k].tx_buf = st->scan_tx_reset;
-+	st->scan_xfers[2 * k].len = sizeof(st->scan_tx_reset);
-+	/*
-+	 * 4-byte u8 buffer assembled with put_unaligned_be16(); leave
-+	 * bits_per_word at the default (8) so bytes go out in memory order.
-+	 */
-+
-+	spi_message_init_with_transfers(&st->scan_msg, st->scan_xfers, 2 * k + 1);
-+	st->scan_msg.offload = offload->offload;
-+
-+	ret = spi_optimize_message(spi, &st->scan_msg);
-+	if (ret)
-+		goto err_exit_conversion;
-+
-+	ret = spi_offload_trigger_enable(offload->offload, offload->trigger, &config);
-+	if (ret)
-+		goto err_unoptimize;
-+
-+	ret = ad4691_sampling_enable(st, true);
-+	if (ret)
-+		goto err_disable_trigger;
-+
-+	return 0;
-+
-+err_disable_trigger:
-+	spi_offload_trigger_disable(offload->offload, offload->trigger);
-+err_unoptimize:
-+	spi_unoptimize_message(&st->scan_msg);
-+err_exit_conversion:
-+	ad4691_exit_conversion_mode(st);
-+	return ret;
-+}
-+
-+static int ad4691_cnv_burst_offload_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct ad4691_state *st = iio_priv(indio_dev);
-+	struct ad4691_offload_state *offload = st->offload;
-+
-+	ad4691_sampling_enable(st, false);
-+	spi_offload_trigger_disable(offload->offload, offload->trigger);
-+	spi_unoptimize_message(&st->scan_msg);
-+
-+	return ad4691_exit_conversion_mode(st);
-+}
-+
-+static const struct iio_buffer_setup_ops ad4691_cnv_burst_offload_buffer_setup_ops = {
-+	.postenable = &ad4691_cnv_burst_offload_buffer_postenable,
-+	.predisable = &ad4691_cnv_burst_offload_buffer_predisable,
-+};
-+
- static ssize_t sampling_frequency_show(struct device *dev,
- 				       struct device_attribute *attr,
- 				       char *buf)
-@@ -880,6 +1229,9 @@ static ssize_t sampling_frequency_show(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad4691_state *st = iio_priv(indio_dev);
- 
-+	if (st->manual_mode && st->offload)
-+		return sysfs_emit(buf, "%llu\n", READ_ONCE(st->offload->trigger_hz));
-+
- 	return sysfs_emit(buf, "%lu\n", NSEC_PER_SEC / st->cnv_period_ns);
- }
- 
-@@ -900,6 +1252,20 @@ static ssize_t sampling_frequency_store(struct device *dev,
- 	if (IIO_DEV_ACQUIRE_FAILED(claim))
- 		return -EBUSY;
- 
-+	if (st->manual_mode && st->offload) {
-+		struct spi_offload_trigger_config config = {
-+			.type = SPI_OFFLOAD_TRIGGER_PERIODIC,
-+			.periodic = { .frequency_hz = freq },
-+		};
-+
-+		ret = spi_offload_trigger_validate(st->offload->trigger, &config);
-+		if (ret)
-+			return ret;
-+
-+		WRITE_ONCE(st->offload->trigger_hz, config.periodic.frequency_hz);
-+		return len;
-+	}
-+
- 	ret = ad4691_set_pwm_freq(st, freq);
- 	if (ret)
- 		return ret;
-@@ -1239,9 +1605,83 @@ static int ad4691_setup_triggered_buffer(struct iio_dev *indio_dev,
- 						   ad4691_buffer_attrs);
- }
- 
-+static int ad4691_setup_offload(struct iio_dev *indio_dev,
-+				struct ad4691_state *st,
-+				struct spi_offload *spi_offload)
-+{
-+	struct device *dev = regmap_get_device(st->regmap);
-+	struct ad4691_offload_state *offload;
-+	struct dma_chan *rx_dma;
-+	int ret;
-+
-+	offload = devm_kzalloc(dev, sizeof(*offload), GFP_KERNEL);
-+	if (!offload)
-+		return -ENOMEM;
-+
-+	offload->offload = spi_offload;
-+	st->offload = offload;
-+
-+	indio_dev->channels = st->info->offload_info->channels;
-+	indio_dev->num_channels = st->info->offload_info->num_channels;
-+	/*
-+	 * Offload path uses DMA directly; no IIO trigger is involved, so
-+	 * external triggers are not restricted (no validate_trigger).
-+	 */
-+	indio_dev->info = &ad4691_manual_info;
-+
-+	if (st->manual_mode) {
-+		offload->trigger =
-+			devm_spi_offload_trigger_get(dev, offload->offload,
-+						     SPI_OFFLOAD_TRIGGER_PERIODIC);
-+		if (IS_ERR(offload->trigger))
-+			return dev_err_probe(dev, PTR_ERR(offload->trigger),
-+					     "Failed to get periodic offload trigger\n");
-+
-+		offload->trigger_hz = AD4691_OFFLOAD_INITIAL_TRIGGER_HZ;
-+	} else {
-+		struct spi_offload_trigger_info trigger_info = {
-+			.fwnode = dev_fwnode(dev),
-+			.ops    = &ad4691_offload_trigger_ops,
-+			.priv   = st,
-+		};
-+
-+		ret = devm_spi_offload_trigger_register(dev, &trigger_info);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to register offload trigger\n");
-+
-+		offload->trigger =
-+			devm_spi_offload_trigger_get(dev, offload->offload,
-+						     SPI_OFFLOAD_TRIGGER_DATA_READY);
-+		if (IS_ERR(offload->trigger))
-+			return dev_err_probe(dev, PTR_ERR(offload->trigger),
-+					     "Failed to get DATA_READY offload trigger\n");
-+	}
-+
-+	rx_dma = devm_spi_offload_rx_stream_request_dma_chan(dev, offload->offload);
-+	if (IS_ERR(rx_dma))
-+		return dev_err_probe(dev, PTR_ERR(rx_dma),
-+				     "Failed to get offload RX DMA channel\n");
-+
-+	if (st->manual_mode)
-+		indio_dev->setup_ops = &ad4691_manual_offload_buffer_setup_ops;
-+	else
-+		indio_dev->setup_ops = &ad4691_cnv_burst_offload_buffer_setup_ops;
-+
-+	ret = devm_iio_dmaengine_buffer_setup_with_handle(dev, indio_dev, rx_dma,
-+							  IIO_BUFFER_DIRECTION_IN);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->buffer->attrs = ad4691_buffer_attrs;
-+
-+	return 0;
-+}
-+
- static int ad4691_probe(struct spi_device *spi)
- {
- 	struct device *dev = &spi->dev;
-+	struct spi_offload *spi_offload;
- 	struct iio_dev *indio_dev;
- 	struct ad4691_state *st;
- 	int ret;
-@@ -1277,10 +1717,20 @@ static int ad4691_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
- 
-+	spi_offload = devm_spi_offload_get(dev, spi, &ad4691_offload_config);
-+	ret = PTR_ERR_OR_ZERO(spi_offload);
-+	if (ret == -ENODEV)
-+		spi_offload = NULL;
-+	else if (ret)
-+		return dev_err_probe(dev, ret, "Failed to get SPI offload\n");
-+
- 	indio_dev->name = st->info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	ret = ad4691_setup_triggered_buffer(indio_dev, st);
-+	if (spi_offload)
-+		ret = ad4691_setup_offload(indio_dev, st, spi_offload);
-+	else
-+		ret = ad4691_setup_triggered_buffer(indio_dev, st);
- 	if (ret)
- 		return ret;
- 
-@@ -1318,3 +1768,5 @@ module_spi_driver(ad4691_driver);
- MODULE_AUTHOR("Radu Sabau <radu.sabau@analog.com>");
- MODULE_DESCRIPTION("Analog Devices AD4691 Family ADC Driver");
- MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("IIO_DMA_BUFFER");
-+MODULE_IMPORT_NS("IIO_DMAENGINE_BUFFER");
+mutex lock?
 
--- 
-2.43.0
+> +		return regmap_update_bits(st->regmap, AD4691_OSC_FREQ_REG,
+> +					  AD4691_OSC_FREQ_MASK, i);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ad4691_read_avail(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     const int **vals, int *type,
+> +			     int *length, long mask)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +	unsigned int start = ad4691_samp_freq_start(st->info);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*vals = &ad4691_osc_freqs_Hz[start];
+> +		*type = IIO_VAL_INT;
+> +		*length = ARRAY_SIZE(ad4691_osc_freqs_Hz) - start;
+> +		return IIO_AVAIL_LIST;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int ad4691_single_shot_read(struct iio_dev *indio_dev,
+> +				   struct iio_chan_spec const *chan, int *val)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +	unsigned int reg_val, osc_idx, period_us;
+> +	int ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	/* Use AUTONOMOUS mode for single-shot reads. */
+> +	ret = regmap_write(st->regmap, AD4691_STATE_RESET_REG,
+> +			   AD4691_STATE_RESET_ALL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
+> +			   BIT(chan->channel));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_ACC_MASK_REG,
+> +			   ~BIT(chan->channel) & GENMASK(15, 0));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(st->regmap, AD4691_OSC_FREQ_REG, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_OSC_EN_REG, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	osc_idx = FIELD_GET(AD4691_OSC_FREQ_MASK, reg_val);
+> +	/* Wait 2 oscillator periods for the conversion to complete. */
+> +	period_us = DIV_ROUND_UP(2UL * USEC_PER_SEC, ad4691_osc_freqs_Hz[osc_idx]);
+> +	fsleep(period_us);
+> +
+> +	ret = regmap_write(st->regmap, AD4691_OSC_EN_REG, 0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(st->regmap, AD4691_AVG_IN(chan->channel), &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val = reg_val;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_STATE_RESET_REG, AD4691_STATE_RESET_ALL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int ad4691_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan, int *val,
+> +			   int *val2, long info)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_RAW: {
+> +		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +		if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +			return -EBUSY;
+> +
+> +		return ad4691_single_shot_read(indio_dev, chan, val);
+> +	}
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		return ad4691_get_sampling_freq(st, val);
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = st->vref_uV / (MICRO / MILLI);
+> +		*val2 = chan->scan_type.realbits;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int ad4691_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
 
+Should we aquire direct mode so that we can't change the rate during
+buffered read?
+
+> +		return ad4691_set_sampling_freq(indio_dev, val);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int ad4691_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+> +			     unsigned int writeval, unsigned int *readval)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	if (readval)
+> +		return regmap_read(st->regmap, reg, readval);
+> +
+> +	return regmap_write(st->regmap, reg, writeval);
+> +}
+> +
+> +static const struct iio_info ad4691_info = {
+> +	.read_raw = &ad4691_read_raw,
+> +	.write_raw = &ad4691_write_raw,
+> +	.read_avail = &ad4691_read_avail,
+> +	.debugfs_reg_access = &ad4691_reg_access,
+> +};
+> +
+> +static int ad4691_regulator_setup(struct ad4691_state *st)
+> +{
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	int ret;
+> +
+> +	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(ad4691_supplies),
+> +					     ad4691_supplies);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to get and enable supplies\n");
+> +
+> +	/*
+> +	 * vdd-supply and ldo-in-supply are mutually exclusive:
+> +	 *   vdd-supply present  → external 1.8V VDD; disable internal LDO.
+> +	 *   vdd-supply absent   → enable internal LDO fed from ldo-in-supply.
+> +	 * Having both simultaneously is strongly inadvisable per the datasheet.
+> +	 */
+> +	ret = devm_regulator_get_enable_optional(dev, "vdd");
+> +	if (ret == -ENODEV) {
+
+After some recent discussions, we've been leaning towards using
+if (device_property_present(dev, "vdd-supply") instead of handling
+-ENODEV.
+
+I think it reads more nicely in a linear way here:
+
+	if (device_property_present(dev, "vdd-supply") {
+		/* do stuff with vdd supply */
+	} else if device_property_present(dev, "ldo-in-supply") {
+		/* do stuff with ldo-in supply */
+	} else {
+		return dev_err_probe(dev, -EINVAL, "missing one of vdd-supply, ldo-in-supply\n");
+	}
+
+> +		ret = devm_regulator_get_enable(dev, "ldo-in");
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "Failed to get and enable LDO-IN\n");
+> +		st->ldo_en = true;
+> +	} else if (ret) {
+> +		return dev_err_probe(dev, ret, "Failed to get and enable VDD\n");
+> +	}
+> +
+> +	st->vref_uV = devm_regulator_get_enable_read_voltage(dev, "ref");
+> +	if (st->vref_uV == -ENODEV) {
+
+similar with ref-supply and refin-supply
+
+> +		st->vref_uV = devm_regulator_get_enable_read_voltage(dev, "refin");
+> +		st->refbuf_en = true;
+> +	}
+> +	if (st->vref_uV < 0)
+> +		return dev_err_probe(dev, st->vref_uV,
+> +				     "Failed to get reference supply\n");
+> +
+> +	if (st->vref_uV < AD4691_VREF_uV_MIN || st->vref_uV > AD4691_VREF_uV_MAX)
+> +		return dev_err_probe(dev, -EINVAL,
+> +				     "vref(%d) must be in the range [%u...%u]\n",
+> +				     st->vref_uV, AD4691_VREF_uV_MIN,
+> +				     AD4691_VREF_uV_MAX);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad4691_reset(struct ad4691_state *st)
+> +{
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	struct reset_control *rst;
+> +
+> +	rst = devm_reset_control_get_optional_exclusive(dev, NULL);
+> +	if (IS_ERR(rst))
+> +		return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset\n");
+> +
+> +	if (rst) {
+> +		/*
+> +		 * Assert the reset line before sleeping to guarantee a proper
+> +		 * reset pulse on every probe, including driver reloads where
+> +		 * the line may already be deasserted (reset_control_put() does
+> +		 * not re-assert on release).
+> +		 * devm_reset_control_get_optional_exclusive_deasserted() cannot
+> +		 * be used because it deasserts immediately without delay; the
+> +		 * datasheet (Table 5) requires a ≥300 µs reset pulse width
+> +		 * before deassertion.
+> +		 */
+> +		reset_control_assert(rst);
+> +		fsleep(300);
+> +		return reset_control_deassert(rst);
+> +	}
+> +
+> +	/* No hardware reset available, fall back to software reset. */
+> +	return regmap_write(st->regmap, AD4691_SPI_CONFIG_A_REG,
+> +			    AD4691_SW_RESET);
+> +}
+> +
+> +static int ad4691_config(struct ad4691_state *st)
+> +{
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	enum ad4691_ref_ctrl ref_val;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	switch (st->vref_uV) {
+> +	case AD4691_VREF_uV_MIN ... AD4691_VREF_2P5_uV_MAX:
+> +		ref_val = AD4691_VREF_2P5;
+> +		break;
+> +	case AD4691_VREF_2P5_uV_MAX + 1 ... AD4691_VREF_3P0_uV_MAX:
+> +		ref_val = AD4691_VREF_3P0;
+> +		break;
+> +	case AD4691_VREF_3P0_uV_MAX + 1 ... AD4691_VREF_3P3_uV_MAX:
+> +		ref_val = AD4691_VREF_3P3;
+> +		break;
+> +	case AD4691_VREF_3P3_uV_MAX + 1 ... AD4691_VREF_4P096_uV_MAX:
+> +		ref_val = AD4691_VREF_4P096;
+> +		break;
+> +	case AD4691_VREF_4P096_uV_MAX + 1 ... AD4691_VREF_uV_MAX:
+> +		ref_val = AD4691_VREF_5P0;
+> +		break;
+> +	default:
+> +		return dev_err_probe(dev, -EINVAL,
+> +				     "Unsupported vref voltage: %d uV\n",
+> +				     st->vref_uV);
+> +	}
+> +
+> +	val = FIELD_PREP(AD4691_REF_CTRL_MASK, ref_val);
+> +	if (st->refbuf_en)
+> +		val |= AD4691_REFBUF_EN;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_REF_CTRL, val);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write REF_CTRL\n");
+> +
+> +	ret = regmap_assign_bits(st->regmap, AD4691_DEVICE_SETUP,
+> +				 AD4691_LDO_EN, st->ldo_en);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write DEVICE_SETUP\n");
+> +
+> +	/*
+> +	 * Set the internal oscillator to the highest rate this chip supports.
+> +	 * Index 0 (1 MHz) exceeds the 500 kHz max of AD4691/AD4693, so those
+> +	 * chips start at index 1 (500 kHz).
+> +	 */
+> +	ret = regmap_write(st->regmap, AD4691_OSC_FREQ_REG,
+> +			   ad4691_samp_freq_start(st->info));
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write OSC_FREQ\n");
+> +
+> +	ret = regmap_update_bits(st->regmap, AD4691_ADC_SETUP,
+> +				 AD4691_ADC_MODE_MASK, AD4691_AUTONOMOUS_MODE);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to write ADC_SETUP\n");
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad4691_probe(struct spi_device *spi)
+> +{
+> +	struct device *dev = &spi->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct ad4691_state *st;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +	st->info = spi_get_device_match_data(spi);
+> +	if (!st->info)
+> +		return -ENODEV;
+
+We've recently standardized on not checking return value
+of spi_get_device_match_data().
+
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->regmap = devm_regmap_init(dev, NULL, spi, &ad4691_regmap_config);
+> +	if (IS_ERR(st->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(st->regmap),
+> +				     "Failed to initialize regmap\n");
+> +
+> +	ret = ad4691_regulator_setup(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad4691_reset(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad4691_config(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->name = st->info->name;
+> +	indio_dev->info = &ad4691_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	indio_dev->channels = st->info->sw_info->channels;
+> +	indio_dev->num_channels = st->info->sw_info->num_channels;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
+> +static const struct of_device_id ad4691_of_match[] = {
+> +	{ .compatible = "adi,ad4691", .data = &ad4691_chip_info },
+> +	{ .compatible = "adi,ad4692", .data = &ad4692_chip_info },
+> +	{ .compatible = "adi,ad4693", .data = &ad4693_chip_info },
+> +	{ .compatible = "adi,ad4694", .data = &ad4694_chip_info },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, ad4691_of_match);
+> +
+> +static const struct spi_device_id ad4691_id[] = {
+> +	{ "ad4691", (kernel_ulong_t)&ad4691_chip_info },
+> +	{ "ad4692", (kernel_ulong_t)&ad4692_chip_info },
+> +	{ "ad4693", (kernel_ulong_t)&ad4693_chip_info },
+> +	{ "ad4694", (kernel_ulong_t)&ad4694_chip_info },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, ad4691_id);
+> +
+> +static struct spi_driver ad4691_driver = {
+> +	.driver = {
+> +		.name = "ad4691",
+> +		.of_match_table = ad4691_of_match,
+> +	},
+> +	.probe = ad4691_probe,
+> +	.id_table = ad4691_id,
+> +};
+> +module_spi_driver(ad4691_driver);
+> +
+> +MODULE_AUTHOR("Radu Sabau <radu.sabau@analog.com>");
+> +MODULE_DESCRIPTION("Analog Devices AD4691 Family ADC Driver");
+> +MODULE_LICENSE("GPL");
+> 
 
