@@ -1,87 +1,109 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D72812264C0;
-	Sun, 17 May 2026 14:32:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4008258CD7;
+	Sun, 17 May 2026 15:05:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779028336; cv=none; b=TBAu+vzs1Do8Wp+zvn1l7PQuNWEmpy3HTazkhQSXiC0NWFlSZ4Gd3Z8XcfTOy+ED8E+xiTkKRdAhaId/dyGRYLWGKsFA0ga07nnKsLp2Vdvs49ZzRSs6hTDGbhr1U3B2OtsHyBXu4tcdr8kQm26l0l291np4n626Ct6Hzx2K56o=
+	t=1779030314; cv=none; b=NuGzSvpNPnCIG4ngs+w3Ch6a9OH7px4uqu5sLN5pu1PNWY/vKDVkOXCaUsj9fhxvRWXJ/92uetNmXHltdpTzpK7ggA+VNCEUWV347PAPiMY7HcBAS1Xi+764HCnBL19x3hB3wihnUZHtPdhcFm4nansUgq3oERy7e1BiHKwPzps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779028336; c=relaxed/simple;
-	bh=ulaOuKvCeT6t5jbenSb1LbQU7lp8mpBN6cfjZZoeaOw=;
-	h=Mime-Version:Content-Type:Date:Message-Id:To:From:Subject:Cc:
-	 References:In-Reply-To; b=BKRcDvak/idARv0Qh9MkgAf3F9+YhzzdEPmezW9Ytt0TNwNseNKOs8Pia9wCtCt+/WoK//RA1UnoH6ZhSzgIFxGN7ygKgaUwBX+1W01LnFfxdDwT76ReKAPF1smRC9bz0+5Ux5WH/8vl6HxSWxekASRB4rihsBLTWeuJY1kypHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b7hn5KyF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779030314; c=relaxed/simple;
+	bh=HTf0CYA7N9N3ycOlSsH2RN9JpiCBHmSJID9/ns/WmqU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bx2O+lm3E7/0nyGNAp04vvrRXB0dO3pfRmYiJY8HTaDAeyAA52Nlo23lBukIzDabvtiZN/3MhqvA3RMSqOL3Ja7I7EwxyIzGwZGLjTzNMdJrC6YfSqSAubkV2+pj/+21I7EgsQwvhJxlXigVk18v3uAj1VB6qPjp2SMf0exHZW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OacEpg0B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b7hn5KyF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A257AC2BCB0;
-	Sun, 17 May 2026 14:32:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OacEpg0B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 980A7C2BCB0;
+	Sun, 17 May 2026 15:05:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779028336;
-	bh=ulaOuKvCeT6t5jbenSb1LbQU7lp8mpBN6cfjZZoeaOw=;
-	h=Date:To:From:Subject:Cc:References:In-Reply-To:From;
-	b=b7hn5KyFLmpCLuD3zK9Svmq9lIXAno/+es90/BP2+vlpLNcZVDHpVD1P+Je8H1j7A
-	 3uhnNDNQxihXm10aFTSJ9zEvo2h8iB91wrpUdRqP5yQGKhrc02O52UHmADR6/yrlEY
-	 Ygpk51UPFE9/iMiKddQLVtziwtaVwY/8rLgVLeR8sG0Lr7gU5L+XYpbHwSUR1dBwR7
-	 rE5V84b7XieaRLK7+0tZXUUShD/vW88LUIguHXd5MGejGAJsXrwxhAUmUbCdBk4xp5
-	 P4UUB8RvE9/P+vY9VBAO3VKq8sVkJjWinWYjd5t+biZbp8UPCwc0hYJUhNbY6b3izq
-	 kBAHFbMBrhCeQ==
+	s=k20201202; t=1779030314;
+	bh=HTf0CYA7N9N3ycOlSsH2RN9JpiCBHmSJID9/ns/WmqU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OacEpg0BHllVT5dCFHETKkOb/zz7Q6gsVg68LmodwakwJs7TUwK+px4dfd2w1SItX
+	 SroQwxfa2dxebFsbEq5TJ+CIIfKootwvJE9alpoAqCLALsL/IFibntmjImIo6CCP9v
+	 hMhNc4WPIc2JRIvnEXCUpq8tzXLQEO89zHHz4GPzfn02Vy2WD/KGtkONSGloh3TuKG
+	 zTh3oKtNfwX62moIN6h5K6pGVWelBPzdZq+/n9ZViXSd32bbfLO71eeE5RMVQpiDN3
+	 nGkQ2RavjezKKqbnCJeZNZfRh96kfFQH5fC75f0aVKPwNl95uHNFBR4qHOR3oJIKut
+	 ULi35LN7GpmSA==
+Date: Sun, 17 May 2026 17:05:10 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Manish Baing <manishbaing2789@gmail.com>
+Cc: lee@kernel.org, linusw@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com, 
+	devicetree@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3] dt-bindings: mfd: st,stmpe: fix PWM schema and drop
+ legacy binding
+Message-ID: <agnY16I4sYAdRd9T@monoceros>
+References: <20260509193928.19030-1-manishbaing2789@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="mjp4gispirhzowi5"
+Content-Disposition: inline
+In-Reply-To: <20260509193928.19030-1-manishbaing2789@gmail.com>
+
+
+--mjp4gispirhzowi5
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sun, 17 May 2026 16:32:09 +0200
-Message-Id: <DIL0WRS36ZL2.2CT5UNXVH8VKE@kernel.org>
-To: <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
- <acourbot@nvidia.com>, <aliceryhl@google.com>, <david.m.ertman@intel.com>,
- <ira.weiny@intel.com>, <leon@kernel.org>, <viresh.kumar@linaro.org>,
- <m.wilczynski@samsung.com>, <ukleinek@kernel.org>, <bhelgaas@google.com>,
- <kwilczynski@kernel.org>, <abdiel.janulgue@gmail.com>,
- <robin.murphy@arm.com>, <markus.probst@posteo.de>, <ojeda@kernel.org>,
- <boqun@kernel.org>, <gary@garyguo.net>, <bjorn3_gh@protonmail.com>,
- <lossin@kernel.org>, <a.hindborg@kernel.org>, <tmgross@umich.edu>,
- <igor.korotin@linux.dev>, <daniel.almeida@collabora.com>,
- <pcolberg@redhat.com>
-From: "Danilo Krummrich" <dakr@kernel.org>
-Subject: Re: [PATCH v3 03/27] rust: driver: decouple driver private data
- from driver type
-Cc: <driver-core@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
- <nova-gpu@lists.linux.dev>, <dri-devel@lists.freedesktop.org>,
- <linux-pm@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
- <linux-pci@vger.kernel.org>, <rust-for-linux@vger.kernel.org>
-References: <20260517000149.3226762-1-dakr@kernel.org>
- <20260517000149.3226762-4-dakr@kernel.org>
-In-Reply-To: <20260517000149.3226762-4-dakr@kernel.org>
+Subject: Re: [PATCH v3] dt-bindings: mfd: st,stmpe: fix PWM schema and drop
+ legacy binding
+MIME-Version: 1.0
 
-On Sun May 17, 2026 at 2:00 AM CEST, Danilo Krummrich wrote:
-> diff --git a/rust/kernel/driver.rs b/rust/kernel/driver.rs
-> index 586091cfa45c..3506b4e8bff9 100644
-> --- a/rust/kernel/driver.rs
-> +++ b/rust/kernel/driver.rs
-> @@ -17,6 +17,9 @@
->  //!     /// The type holding information about each device ID supported =
-by the driver.
->  //!     type IdInfo: 'static;
->  //!
-> +//!     /// The type of the driver's bus device private data.
-> +//!     type Data;
+Hello,
 
-Should be:
+On Sat, May 09, 2026 at 07:39:28PM +0000, Manish Baing wrote:
+> The st,stmpe-pwm binding is already covered by the MFD schema in
+> Documentation/devicetree/bindings/mfd/st,stmpe.yaml. However, the
+> PWM subnode was missing a 'required' properties block. This allowed
+> Device Tree nodes to pass validation even if the 'compatible'
+> string was omitted. This omission could lead to probe failures
+> at runtime.
+>=20
+> Fix the schema by adding the missing 'required' block and
+> remove the obsolete and redundant text binding file.
+>=20
+> Signed-off-by: Manish Baing <manishbaing2789@gmail.com>
+> ---
+> Changes in v3:
+> - Added 'required' properties to the pwm subnode in st,stmpe.yaml
+>   to close a validation gap identified by the Sashiko.
+> - Updated commit message and description to reflect MFD subsystem changes.
+>=20
+> Changes in v2:
+>  - Droppped the TXT file instead of converting to YAML, as the
+>    functionality is already covered by st,stmpe.yaml.
+>   =20
+>  .../devicetree/bindings/mfd/st,stmpe.yaml      |  4 ++++
+>  .../devicetree/bindings/pwm/st,stmpe-pwm.txt   | 18 ------------------
 
-@@ -13,10 +13,13 @@
- //! The main driver interface is defined by a bus specific driver trait. F=
-or instance:
- //!
- //! ```ignore
--//! pub trait Driver: Send {
-+//! pub trait Driver {
- //!     /// The type holding information about each device ID supported by=
- the driver.
- //!     type IdInfo: 'static;
- //!
-+//!     /// The type of the driver's bus device private data.
-+//!     type Data: Send;
+If the patch was split into two, each touching just one of the files,
+there would be no need for merge coordination. Also logically it's two
+patches. Would you mind splitting?
+
+Best regards
+Uwe
+
+--mjp4gispirhzowi5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmoJ2SQACgkQj4D7WH0S
+/k7qMgf9F8VgNDKxylmZdIj4jJug5gFq8NLuFrwgb2rwAp26Bz+awUtEStzEzWKd
+YpjTwUDqoiOqAam42pv06UN8+mKhBH9BVfekX4xbfyJ3WtQVCvea1hPgVXfWv7Ed
+ADiMCiIY/8grsyCNp5IFeCgnhYBjn7gh4u+aCdhebcKWUnmTSZjcLAsncqe2WhWI
+PLxxYjvuQyZ32cYE5w0TZ99ak4QNLT4kjaanPA92nxbT7RXSWs2d0OZOPdKAE0i9
+s3Bu31dCoJ9u7XgQxtrlZGHxKMhuv6MBZdf+L73abLabw7tMi+nLe2V8p/nOv9AI
+XTZoWFflGQwfAyG8uEGHOxvzIgCRyw==
+=LQj8
+-----END PGP SIGNATURE-----
+
+--mjp4gispirhzowi5--
