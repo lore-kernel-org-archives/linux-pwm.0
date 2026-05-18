@@ -1,79 +1,80 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8DC238237D;
-	Mon, 18 May 2026 18:26:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB7982E3397
+	for <linux-pwm@vger.kernel.org>; Mon, 18 May 2026 20:46:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779128780; cv=none; b=K4qKyOo+CdkeUWENeTkd4r0lLziTuYsFg+M55ficJ9WjVLE0P6nUCQviCcPdpzoHfo5JCP046pn1YltIcpN4f1FgKtpiXxm3O2s8W9lx66St9syzvZt4LhmeUDrDa8tB2I44L5+MNe9U5Vm7Op4L7HHzp3JimzOcWjdkhYCE0Gg=
+	t=1779137222; cv=none; b=H3TEWiWIRjrvDNncuua8ZRiGK6dLap+NmQj+UOt2aE2RLlzYuHfy1KZt37qFPe4frkUAfNib9NxdMf1Iut9QufUqaefdqkxPtU7oKmSLUgcGIn2PchASb8hI6uDUMI0089RGzAEA5vSkvAOnmOa0wqr6sTxSyLXmBkOtr6Yu45E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779128780; c=relaxed/simple;
-	bh=pbXYLQ1mwct3+ssZlrWJpr6OzTUkZbnMsQ/G5sb/T3M=;
+	s=arc-20240116; t=1779137222; c=relaxed/simple;
+	bh=Ju0bBZL4gIhDXt1wxIRcD+B9cM8rwS33tQQtnjcKUwY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AD7/43eDuGOoEq+T35lC4QD/Y67eyRbJR31nR957MQEP33uzEiMhdd1Os9xCmMCY3IwNa6mJtH6kuzid6b1V1V0QMwYGzZ6Tal+6X1pqp/x9GUTkgvMDhlVWjPAxjcz1/VE5QjG9NyaeTs7t4nCrxNpTKBXlgY277v65NDN6foI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A2T0DUHL; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=MstEtXG2uWP3gthj6zHN4KBs6BAy2TsxNDERH3FfRddo0U1L3du21jlNE/PKEvz9bAXc6wfnT6hYOzzjMlCHUbxupdi3I4lt+xRgPo+nzyuic+bN9V5zqnhr5NqeXe5vpZ9OCaZctTIK3uEW0Fdira/9Kz5VhIKiPo/eG3yCJeo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=hIDL4Pci; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A2T0DUHL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779128779; x=1810664779;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pbXYLQ1mwct3+ssZlrWJpr6OzTUkZbnMsQ/G5sb/T3M=;
-  b=A2T0DUHLXSAZYQw2jRiF+UoKrVoD0sUG+NgJtbnOEQb18t2vQsGxLopw
-   YUxKWtYH8sxVruSa43cAl3BbpnZ04oBxA4nDyeKXLSbRW1afM6G4WSkr4
-   ZJObrW+BGc0Icc6onS9dZJE4WOU0QPpHzD8wHPszfE+/amcnq74W8dnKi
-   ojxajFEfbqExWClaWwZqO4rARkYfU4V+fyjqBpaVjrQhtM0PqYc19qSsI
-   3nLaQA3OGxSSKCqC+ljONKYwvx39XAdeaOkXLxRLKrsuiGC3BZF3e3Dub
-   /9Ft5tR0johwFWGFLRiCCXov2JNgAOk0WOR15314fzbbobb8vfam97s1H
-   A==;
-X-CSE-ConnectionGUID: 9qriItO/ScWlODNBpfRg1Q==
-X-CSE-MsgGUID: +k3VPqE9SVOFJAvzB/QnXg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11790"; a="90575555"
-X-IronPort-AV: E=Sophos;i="6.23,242,1770624000"; 
-   d="scan'208";a="90575555"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:26:18 -0700
-X-CSE-ConnectionGUID: O0zap/NiRba3AYD16GFVrA==
-X-CSE-MsgGUID: e9aNJkI4TGO68gsQIjE1Pw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,242,1770624000"; 
-   d="scan'208";a="239764455"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.3])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 11:26:12 -0700
-Date: Mon, 18 May 2026 21:26:09 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="hIDL4Pci"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=L52K
+	0rxWySw3mD5z7jnwvPV6H6bdzA5sgxRy/hQVyAI=; b=hIDL4Pci78/puo7y9yQi
+	i2QwANMnkO9c+JN2J1AuGPGc7VaJw5mv5oB/Zi5V2NpOtmNWm9XOO1R+IJNZFnZR
+	meEUR+IwLqIIqHU3FlF+jDqISV7XhoIBKJj5YhCwfcISYldprr8eaDDjBG3r5TZw
+	mxP8JHNcHv1dzvI+ZmsQ1fBQiFdtCyshmDbAh204tTJkZb0f6TFW0ExyfM/Kk91P
+	wss0BhGJm15JjnmFgKwqDs+m+p0q5M7k+F6MldfbQ6dnZbJ07U0epn56qjQWMMuA
+	laR67xnGRvGP5v3vFrD1q2AD1KEOA7i38hJabnRO/72MrxDt/qCiKctVFaQbZ1ji
+	mA==
+Received: (qmail 5619 invoked from network); 18 May 2026 22:46:55 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 May 2026 22:46:55 +0200
+X-UD-Smtp-Session: l3s3148p1@dIu7qR1SQNMujnuR
+Date: Mon, 18 May 2026 22:46:55 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: Simon Schuster <schuster.simon@siemens-energy.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>,
+	Ethan Nelson-Moore <enelsonmoore@gmail.com>,
+	Dinh Nguyen <dinguyen@kernel.org>, linux-doc@vger.kernel.org,
+	devicetree@vger.kernel.org, workflows@vger.kernel.org,
+	Linux-Arch <linux-arch@vger.kernel.org>, dmaengine@vger.kernel.org,
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+	Netdev <netdev@vger.kernel.org>, linux-pci@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-hardening@vger.kernel.org,
+	linux-kbuild@vger.kernel.org,
+	"linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH v11 4/6] iio: adc: ad4691: add SPI offload support
-Message-ID: <agtZwbeVeZdnlXTI@ashevche-desk.local>
-References: <20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com>
- <20260515-ad4692-multichannel-sar-adc-driver-v11-4-eab27d852ac2@analog.com>
- <80f61c0b-1f36-4fee-9f76-b93f63b87abe@baylibre.com>
- <LV9PR03MB841418AEF0059E802F7A69B2F7032@LV9PR03MB8414.namprd03.prod.outlook.com>
- <60d66897-41cc-4f3f-afd2-64e49f0bb55e@baylibre.com>
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>, Alex Shi <alexs@kernel.org>,
+	Yanteng Si <si.yanteng@linux.dev>, Dongliang Mu <dzm91@hust.edu.cn>,
+	Hu Haowen <2023002089@link.tyut.edu.cn>,
+	Kees Cook <kees@kernel.org>, Oleg Nesterov <oleg@redhat.com>,
+	Will Deacon <will@kernel.org>,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Nicholas Piggin <npiggin@gmail.com>, Vinod Koul <vkoul@kernel.org>,
+	Frank Li <Frank.Li@kernel.org>, Dave Penkler <dpenkler@gmail.com>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Krzysztof WilczyDski <kwilczynski@kernel.org>,
+	Andreas Oetken <andreas.oetken@siemens-energy.com>
+Subject: Re: [PATCH] nios2: remove the architecture
+Message-ID: <agt6vy3WtjFy9sfU@shikoro>
+References: <20260518042833.272221-1-enelsonmoore@gmail.com>
+ <d40b1e80-37fc-4c88-9d7f-dae6458efe6c@app.fastmail.com>
+ <20260518105735.GW3126523@noisy.programming.kicks-ass.net>
+ <20260518172444.zyd47mcagrcwu7wt@dev-vm-schuster>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -82,45 +83,27 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <60d66897-41cc-4f3f-afd2-64e49f0bb55e@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260518172444.zyd47mcagrcwu7wt@dev-vm-schuster>
 
-On Mon, May 18, 2026 at 10:16:38AM -0500, David Lechner wrote:
-> On 5/18/26 10:14 AM, Sabau, Radu bogdan wrote:
-> >> -----Original Message-----
-> >> From: David Lechner <dlechner@baylibre.com>
-> >> Sent: Saturday, May 16, 2026 8:53 PM
+Hi Simon,
 
-...
+> downstream. In other respects, we try to be good citizens and contribute
+> bugfixes as well as required cleanups (such as implementing clone3 [2]
+> and fixing its flag behaviour on 32-bit architectures) as they come up.
 
-> >>> +	if (st->manual_mode && st->offload)
-> >>> +		return sysfs_emit(buf, "%llu\n", READ_ONCE(st->offload-
-> >>> trigger_hz));
-> >>
-> >> Why do we need READ_ONCE?
-> > 
-> > trigger_hz is u64 and if the target is 32-bit, a 64-bit access compiles to two 32-bit
-> > instructions, so show() reading it without a lock and store() writing it concurrently
-> > can produce a torn value at the compiler level. READ_ONCE/WRITE_ONCE suppress
-> > the compiler transformations that would allow that splitting or caching. We could
-> > have st->lock in show() instead, but that felt heavier than necessary for a single
-> > scalar where a transiently stale-but-whole read is fine.
-> 
-> I would go with the mutex. It will be easier for people to understand.
+Well, this is definitely 'good citizen'...
 
-But why? READ_ONCE() here is exactly enough. We do not care about
-serialisation, we care only about integrity. With mutex it will confuse
-(some) people more, e.g., me. Because in that case I would think about
-some specific access to it that may happen. Yes, I saw many times the show
-functions that do mutex and then print the result when mutex is not held
-anymore, but for simple cases like here, mutex is overkill. Interestingly
-that using guard()() inside show makes the mentioned functions to print
-(almost) latest value of the variable in question. It narrows window down
-as printing will go inside critical section.
+> If desired, we also would be happy to intensify our support regarding
+> reviews or testing to share the maintnance burden if it helps to keep
+> nios2 in mainline a bit longer.
 
--- 
-With Best Regards,
-Andy Shevchenko
+... but given this, you might want to get added in MAINTAINERS as
+reviewer (or even maintainer) for nios2? Besides that your efforts are
+already worth it in my book, it would also ensure you get CCed on
+patches like this. Then, you are not depending on people like Arnd
+putting you in the loop manually.
 
+Happy hacking,
+
+   Wolfram
 
