@@ -1,37 +1,56 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [80.241.56.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26C4632AAB5;
-	Thu, 21 May 2026 08:27:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 908E837FF54;
+	Thu, 21 May 2026 09:54:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779352028; cv=none; b=TrRdSlQpa451P2TTwaXyyGzI2MMOO3BCVvlOJd6CvfkEItucN803nNdV5sLSh1TtbrN11y1s0SqW9dgooUSOq8LhIwOYXZhdjlZqvKts5vROoAsuTSyqe2AgDVV5CihvYUqE/V2MBdzkVjsoK15jYOXpOFoo18X3s3kzH9xJp1g=
+	t=1779357276; cv=none; b=Kpu6TxmE0SDwVd/5eWiV7/SzmXg/+YGsHgSjJNjhFZv3ijKizCG/9zj8ItjnNkDuP0DJt96wNzmajFf6XVfbKQmAuFD4ahEzbSuhabzraFF1r0PGHow/FmKyxAf7i/pShwn/wt6nHRu2KfLhnVmTq2yw9bKmb+oflIu43/qAf8o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779352028; c=relaxed/simple;
-	bh=bzdk7Kr97M8ZTKkR73nEt8S7smKlwLk3jyxCaislBCE=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=NIV+y5cBAus/EVnF9AoZUrsR52hiok4KDdYY/5WM+oJtgmn6iv60oNuQi+N/fLVoeEUCchzCOR0Bw4oNACjiF8guYcnyFlbCnU5yFA7ndRkfNawb4D6V9H5tObBcDc7ApyB3FExCUR+7dzdlnJtXFkFTUAmqykQw899fC+WzmGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gDf6J9CW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779357276; c=relaxed/simple;
+	bh=O5JSAKkDwgIWKtGeQopbZHKrSeY9OSjYeqvakGnnEwA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=G7jXbGUWi/0WoT96sI1Zt6SRe/k5gP5E38kO8YtF38nJfQxR1+E1vYZ115D4pBVCMKKuYQKE0uOrXXE1BwW8mPxDDsk9EK0iHhe4Of5W28ZzNQ4DVuQig/LxXWTpmfwfhRRva2e/lBTRcpO3OfnmKYghUvDd/VS1YnH1WIun6zQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=nSU0Lq5H; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=YiYx2wtD; arc=none smtp.client-ip=80.241.56.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gDf6J9CW"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AC2C5C2BCB4;
-	Thu, 21 May 2026 08:27:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779352027;
-	bh=bzdk7Kr97M8ZTKkR73nEt8S7smKlwLk3jyxCaislBCE=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=gDf6J9CWA0Jkj+sVyKVjYft0qdrfcuAu3LQz1WoiH+hv0NLkaIZ2ATVwNpmU97ioz
-	 0ykkbd4X4S1LvMXMliPzlR/X14Zr+i6PJcnG1/whPEFaw/e7mxFfdo4gwiCupEfN3H
-	 NIHycvMdX6bfrvnknGywZ4OAKDyLRPJ/+i+oztVtQluhAa+A9miJsj+qLzpcehTaze
-	 8kIxP6UET+zM7aP/LRUPtTGoFKsSwNFdn0l/T1JWvSXjMTu6ozAJjX27+78IQjT/8s
-	 W1hIfRQLsjgSn05fJd+BZ8GWrh9i6Y3rbnSW+X1mAvCseKQcUt1V3X3FyFhrd32JT+
-	 BBX/2nkVR32mg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE88CD5BAC;
-	Thu, 21 May 2026 08:27:07 +0000 (UTC)
-From: Xianwei Zhao via B4 Relay <devnull+xianwei.zhao.amlogic.com@kernel.org>
-Subject: [PATCH v3 0/2] Add PWM support Amlogic S7 S7D S6
-Date: Thu, 21 May 2026 08:26:57 +0000
-Message-Id: <20260521-s6-s7-pwm-v3-0-57b073fbafef@amlogic.com>
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="nSU0Lq5H";
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="YiYx2wtD"
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:b231:465::2])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4gLkK33WwPz9t4w;
+	Thu, 21 May 2026 11:54:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1779357271;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=ZBfCE1tFEw1bHwVhbXsEcGvBGEMDeaoxSgRqgJTJ9o0=;
+	b=nSU0Lq5HyQqkFkbqIdXT9Blb6N3UNZVpqN2iMx+JHIbrRf7cbbc1oZxM7akGlRFWHUmn/8
+	DSICq3E7PaJJKqT293eciMZ3QB5aLZTEXg6FH/WtFQp8IBHdO0UbQGboSbQ5Qnf3/EmssM
+	Xi0/Or1PcE9zP3/rvInQVNlTih54f5XlkHOjdpNogIMJAwxePMlCzdQXBxshmrb2zMBAck
+	0oDgI0Z8tLs3thJptkKRM6M7C0zn+lS2mKxWIHR3j31VQLJk8SOrwWgiHB1ZYAtwbbNrh/
+	VINV8uDDeYvyzSuRMf95MX9RtOQ7JgjXm0CDr2Oaiud9Qbd6GbgfPiHatAuovg==
+Authentication-Results: outgoing_mbo_mout;
+	dkim=pass header.d=mailbox.org header.s=mail20150812 header.b=YiYx2wtD;
+	spf=pass (outgoing_mbo_mout: domain of mhi@mailbox.org designates 2001:67c:2050:b231:465::2 as permitted sender) smtp.mailfrom=mhi@mailbox.org
+From: Maurice Hieronymus <mhi@mailbox.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1779357269;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=ZBfCE1tFEw1bHwVhbXsEcGvBGEMDeaoxSgRqgJTJ9o0=;
+	b=YiYx2wtDp2CyM5Y6pBWSfoab5hHzcMT97ZjKyxRkzjDhxCyALo0IFwC6Yl/Bl6/Q5UKIOw
+	7v6UXSIdYdoLa2z+881yGo8+yBG/VA7Jtzn4/fdV3KjpmdAAMzvkTIuDL4f2dHHBSz68RG
+	2sKu49Qexh2u6PCCUSJil2fAMy9MT6bQNYdW/yn2REH5uyQMnxdwQlnLxDObanAUbpCJn0
+	3KMllb+Ndo9YA1x+L18bs3cDVveqz0R14/2VEN68PWa7V9E7y1hyiN/afHf+QE8d5p5183
+	KqPLsyl4SEeynNqRdR9M25Q92+z2lgvqMvlqyiIsZi7u69Nf9KLyZQAaF7LBrQ==
+Date: Thu, 21 May 2026 11:53:59 +0200
+Subject: [PATCH] pwm: th1520: Remove requirement for
+ mul_u64_u64_div_u64_roundup
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -40,64 +59,90 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIANHBDmoC/1WMzQ6CMBAGX4X07Jqy2B88+R7GA5QCmwglrakaw
- rtbSIx4nN1vZmbBerKBnbOZeRspkBsTFIeMmb4aOwvUJGbIUfICBQQJQcH0HAB1LoWutVaFZGk
- /edvSa2tdb4l7Cg/n31s65uv1W5G7SsyBg1QWW4V1qWtzqYa768gcjRvY2on4c08c9y6urlCNs
- elTCvnvLsvyARIbnMHgAAAA
-X-Change-ID: 20260325-s6-s7-pwm-281658b88736
-To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Heiner Kallweit <hkallweit1@gmail.com>, 
- Neil Armstrong <neil.armstrong@linaro.org>, 
- Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, 
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-amlogic@lists.infradead.org, Xianwei Zhao <xianwei.zhao@amlogic.com>, 
- Junyi Zhao <junyi.zhao@amlogic.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779352023; l=1053;
- i=xianwei.zhao@amlogic.com; s=20251216; h=from:subject:message-id;
- bh=bzdk7Kr97M8ZTKkR73nEt8S7smKlwLk3jyxCaislBCE=;
- b=fQiZzM/Lh8PPnpiLD5LGzPb/OkLEGlqImpKBfEDcs3FUg3JubOsnLumaApJU5vjcr4iZI7XYT
- stuhJIZ/1xGCaD7/XckedZzIBGzrxZzihsUTqgTQOjCd/oOqTvvpAOr
-X-Developer-Key: i=xianwei.zhao@amlogic.com; a=ed25519;
- pk=dWwxtWCxC6FHRurOmxEtr34SuBYU+WJowV/ZmRJ7H+k=
-X-Endpoint-Received: by B4 Relay for xianwei.zhao@amlogic.com/20251216 with
- auth_id=578
-X-Original-From: Xianwei Zhao <xianwei.zhao@amlogic.com>
-Reply-To: xianwei.zhao@amlogic.com
+Message-Id: <20260521-pwm-th1520-fix-v1-1-df9cd956dab4@mailbox.org>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDUyND3YLyXN2SDENTIwPdtMwKXYtUE1NTU4ukpBRjQyWgpoKiVKAw2MD
+ o2NpaAH9Rl1JgAAAA
+X-Change-ID: 20260521-pwm-th1520-fix-8e45558bbd31
+To: Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>, 
+ Fu Wei <wefu@redhat.com>, Michal Wilczynski <m.wilczynski@samsung.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, 
+ Gary Guo <gary@garyguo.net>, 
+ =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+ Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
+ Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
+ Danilo Krummrich <dakr@kernel.org>
+Cc: linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+ Maurice Hieronymus <mhi@mailbox.org>
+X-MBO-RS-ID: c7d68cde2b283687114
+X-MBO-RS-META: u84cfcd635d5m45as961oynfre6h9ony
+X-Rspamd-Queue-Id: 4gLkK33WwPz9t4w
 
-Add bindings and driver support Amlogic S7/S7D/S6 SoCs.
+The cycle register is always u32, so cycles_to_ns() can take a u32
+instead of a u64. With that narrowing, cycles * NSEC_PER_SEC is at most
+u32::MAX * 1e9 (~4.3e18), which fits in u64 without overflow. The
+saturating arithmetic is therefore no longer needed, and the ceiling
+division can use Rust's u64::div_ceil() directly instead of the
+open-coded numerator/denominator form.
 
-Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
+This also drops the TODO referring to a future
+mul_u64_u64_div_u64_roundup kernel helper, which is no longer required.
+
+Signed-off-by: Maurice Hieronymus <mhi@mailbox.org>
 ---
-Changes in v3:
-- Use npwm instead of single_pwm in priv_data and format adjustments.
-- Link to v2: https://lore.kernel.org/r/20260402-s6-s7-pwm-v2-0-657dce040956@amlogic.com
+ drivers/pwm/pwm_th1520.rs | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-Changes in v2:
-- Simpler s7 clock desc, and drop the example in bindings.
-- Make minor changes to probe based on Martin's suggestion.
-- Link to v1: https://lore.kernel.org/r/20260326-s6-s7-pwm-v1-0-67e2f72b98bc@amlogic.com
+diff --git a/drivers/pwm/pwm_th1520.rs b/drivers/pwm/pwm_th1520.rs
+index ddd44a5ce497..933c1ec59c2a 100644
+--- a/drivers/pwm/pwm_th1520.rs
++++ b/drivers/pwm/pwm_th1520.rs
+@@ -67,16 +67,10 @@ fn ns_to_cycles(ns: u64, rate_hz: u64) -> u64 {
+     ns.saturating_mul(rate_hz) / NSEC_PER_SEC_U64
+ }
+ 
+-fn cycles_to_ns(cycles: u64, rate_hz: u64) -> u64 {
++fn cycles_to_ns(cycles: u32, rate_hz: u64) -> u64 {
+     const NSEC_PER_SEC_U64: u64 = time::NSEC_PER_SEC as u64;
+ 
+-    // TODO: Replace with a kernel helper like `mul_u64_u64_div_u64_roundup`
+-    // once available in Rust.
+-    let numerator = cycles
+-        .saturating_mul(NSEC_PER_SEC_U64)
+-        .saturating_add(rate_hz - 1);
+-
+-    numerator / rate_hz
++    (u64::from(cycles) * NSEC_PER_SEC_U64).div_ceil(rate_hz)
+ }
+ 
+ /// Hardware-specific waveform representation for TH1520.
+@@ -192,15 +186,15 @@ fn round_waveform_fromhw(
+             return Ok(());
+         }
+ 
+-        wf.period_length_ns = cycles_to_ns(u64::from(wfhw.period_cycles), rate_hz);
++        wf.period_length_ns = cycles_to_ns(wfhw.period_cycles, rate_hz);
+ 
+-        let duty_cycles = u64::from(wfhw.duty_cycles);
++        let duty_cycles = wfhw.duty_cycles;
+ 
+         if (wfhw.ctrl_val & TH1520_PWM_FPOUT) != 0 {
+             wf.duty_length_ns = cycles_to_ns(duty_cycles, rate_hz);
+             wf.duty_offset_ns = 0;
+         } else {
+-            let period_cycles = u64::from(wfhw.period_cycles);
++            let period_cycles = wfhw.period_cycles;
+             let original_duty_cycles = period_cycles.saturating_sub(duty_cycles);
+ 
+             // For an inverted signal, `duty_length_ns` is the high time (period - low_time).
 
 ---
-Junyi Zhao (1):
-      dt-bindings: pwm: amlogic: Add new bindings for S6 S7 S7D
-
-Xianwei Zhao (1):
-      pwm: meson: Add support for Amlogic S7
-
- .../devicetree/bindings/pwm/pwm-amlogic.yaml       | 19 ++++++++++
- drivers/pwm/pwm-meson.c                            | 41 ++++++++++++++++++++--
- 2 files changed, 57 insertions(+), 3 deletions(-)
----
-base-commit: b1385d0c7b7c633e55adcf4a7c1ef46c43a84a4a
-change-id: 20260325-s6-s7-pwm-281658b88736
+base-commit: 3936b25815ee686a273ca7bbdc9ae19af5e608a3
+change-id: 20260521-pwm-th1520-fix-8e45558bbd31
 
 Best regards,
 -- 
-Xianwei Zhao <xianwei.zhao@amlogic.com>
-
+Maurice Hieronymus <mhi@mailbox.org>
 
