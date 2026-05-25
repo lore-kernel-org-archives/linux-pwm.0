@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A93F33F5B2;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EADD33F8A5;
 	Mon, 25 May 2026 10:10:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779703813; cv=none; b=lTSz4jf4ux49h/EIiZx5mgJ8knf02TK6Z0D02ExqofNWNtH0937Wx2ZeeHCMyut4jBShkE61wm8OU67zUqtyEDNtiDdAjV3NB8a/7VOy2HXAbGsvzrpvun32oFcb69d58khn/8j2Ta93azcJm969HldyLH3kSltotMVU4e4nUAI=
+	t=1779703813; cv=none; b=JPDn29Ff296o06mA7pIZ4MgrONXbljUFbSRzleRqqlgm1Ud19YGCtXaRBZhwyNWcGL/6kERk4aOC3x0oeVgcwE38ZQWDF85ZiXIpls4Lx0Kl5ZOhw7S1uKP1EfxxMTeIEOtkkIJ8+oPNAf+Bs2OhhYhgaLrSfRq06rXFacRTseI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1779703813; c=relaxed/simple;
-	bh=IY3lrSyL+NMcsPz3UfCb6rAso4ozOV3ypjxsCRUrcRs=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=NnRfuceuXUyibZy2KTjb3WRKiWpSEtVMsAFA9bCDhPHkl0sRJQgp9LEG12//Q/ViWBl2HlqOol4Fre7jf3lJ32ZWb0CiWr6IPMbIW5GlkoXgp/jY0BYyPgRIreROt3gCTQXPRRJ2D2JU4LjvHCqvwXGfSwMe2gNrJC7tktBgU3E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rUfox1gf; arc=none smtp.client-ip=10.30.226.201
+	bh=9XcSM9LRsOLfy7XTY1HTahaFCN6caKso2JicAz8I0X8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ACPoeaohO6RlUCv0JdcuMCSCcZMA7q54rIWlN6UJHDgbfMnpXTaGJXSLDxb+e8aCOwQdZR+avB71+OxMOPso9+r1vSG8LWyv7fn/rb8dWehTToFvjwmoFxCwKWuQmAfdfooaSKS5DP2nadCbcfZlwkLVwoiJ75t/IGZ6BGhwQHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TvCNdmjh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rUfox1gf"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E51EAC2BCB3;
-	Mon, 25 May 2026 10:10:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TvCNdmjh"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2C267C2BD00;
+	Mon, 25 May 2026 10:10:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1779703813;
-	bh=IY3lrSyL+NMcsPz3UfCb6rAso4ozOV3ypjxsCRUrcRs=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=rUfox1gfiHxgC4gWO2hlVYwq9LM/T1nne6a1nJZmseUGolliGKNgE3xgu0RteuK/F
-	 AE4d6/tKwI4+NcyNVmzxuSLa8h06qPN3D5lxhGFQTzBbhnV1Um+KATMIqrR6wiaIz7
-	 tiq6KE/6NwOntr0N0ZhPJ82ZLngd54cbKmdGbYmZABDMrMmjxWpUcAqO2dYHk3CL8p
-	 bcs/xbdK2cIWgI52pSyMRVYCohnLt/XVDWVHQei/ClAfdI7pSidZ6AB0BI88R8G7xO
-	 6ZEn9MYjF1ALmkDcG9yeCCyNfQmqufS7gN6G1k7CRM+IPQfYxbXmwQIi8n0n16Mmme
-	 rLVgobf/eyNWQ==
+	bh=9XcSM9LRsOLfy7XTY1HTahaFCN6caKso2JicAz8I0X8=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=TvCNdmjhzL6Ewrxb8cWPExbkKew7VzEOiB0ezEo5Y/6XkBOkOEFo8qOjPjzw+gr2A
+	 k4h1h0/l5aLN5GefwqCk7PqQBEVfbRuJuukFw7gx/nauWPjQDbiYXJ/4VxYuBxxxNx
+	 Ccfl47dyDRiye6tBcmf0eWAd/G38AXqqT4HxemnORAV01ykR2UAxguzZe2iuqBbgLH
+	 Xu1Cm5DA/AgCLSGSrdE3OI9eGn0jKf3wlYcgEWtfcezc9GcIljtNReC7IiGP3V/c1e
+	 nNE8DTsZgh6PO37Lnvwq81td/yBWIIgG8YXzBJfiykoUp7nz333TCfmBNGx5TDXtKA
+	 h/uUJDfD5gN6g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AD6CD5BC9;
-	Mon, 25 May 2026 10:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 203D1CD5BC8;
+	Mon, 25 May 2026 10:10:13 +0000 (UTC)
 From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Subject: [PATCH v13 0/6] iio: adc: ad4691: add driver for AD4691
- multichannel SAR ADC family
-Date: Mon, 25 May 2026 13:10:09 +0300
-Message-Id: <20260525-ad4692-multichannel-sar-adc-driver-v13-0-1b7626d3b35c@analog.com>
+Date: Mon, 25 May 2026 13:10:13 +0300
+Subject: [PATCH v13 4/6] iio: adc: ad4691: add SPI offload support
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -41,14 +40,9 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAAEgFGoC/43TzWrDMAwA4FcpOc/DkuXY2WnvMXaQbaUNdO1Iu
- rBR+u5zCqMevhifJMznH0nXbpF5kqV72V27WdZpmc6nHIB52nXxwKe9qCnlRIcae200Kk7UD6g
- +vo6XadtxkqNaeM75qNI8rTIr54USUUIK2GXoc5Zx+r6f8vae48O0XM7zz/3QFbbsH29b+BWUV
- sb0iAP7FKN75RMfz/vneP7oNn/FwgTdZGI20xCCZwlWoDZNaZom02QzUAJKHhg8VCYVJrbdk7K
- pLUbQNi/HlWlL0zWZNpsAo/NDEnLBV2b/MEm3vb3P5sjIGti6SFKZrjSHJtNt/ynG2URpxGgr0
- xcm9E2mz2YksCFp8iObyhwK07TVaLj3p5AZhMbg614C/UAtQFvT57orgTEEcERi6ioBlGrjKG2
- zJBzQJW+RI9YqlmpboWCbJhuMsdAjs/3f+bfb7RfZ6AwIeAQAAA==
-X-Change-ID: 20260302-ad4692-multichannel-sar-adc-driver-78e4d44d24b2
+Message-Id: <20260525-ad4692-multichannel-sar-adc-driver-v13-4-1b7626d3b35c@analog.com>
+References: <20260525-ad4692-multichannel-sar-adc-driver-v13-0-1b7626d3b35c@analog.com>
+In-Reply-To: <20260525-ad4692-multichannel-sar-adc-driver-v13-0-1b7626d3b35c@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
@@ -64,14 +58,13 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
  linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org, 
- Radu Sabau <radu.sabau@analog.com>, 
- Conor Dooley <conor.dooley@microchip.com>
+ Radu Sabau <radu.sabau@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779703810; l=22720;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779703810; l=23174;
  i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=IY3lrSyL+NMcsPz3UfCb6rAso4ozOV3ypjxsCRUrcRs=;
- b=4DM9Wyp0zrJpNriuIgt2EtvAAkmwuOEf2xQK59xfxkbS2B/OfD1IwkskbSupc+rLYZ3y+x1bT
- 67YjLnHsY8GB3T879YoKinMiuC2PNJVVK33Xz1NnrbdJnUiBH73Mf30
+ bh=DIBzAUTaTE58a8My/2mO3toW+oKvdLpEYxRiuoaiBA0=;
+ b=xx3vNFTO+eMoVWK247W7EggWZnVKzQcaa8zFEMFyncn7Kr2WOBJTVnF4eMRD3XHrmbtwV9cU6
+ tFWxEZ6bCjHDSpBMcg5bsuB/6iFi2f4EBbbtJeCyC1Zn8fZ1ryzxKSn
 X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
  pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
 X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
@@ -79,399 +72,664 @@ X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
 X-Original-From: Radu Sabau <radu.sabau@analog.com>
 Reply-To: radu.sabau@analog.com
 
-This series adds support for the Analog Devices AD4691 family of
-high-speed, low-power multichannel successive approximation register
-(SAR) ADCs with an SPI-compatible serial interface.
+From: Radu Sabau <radu.sabau@analog.com>
 
-The family includes:
-  - AD4691: 16-channel, 500 kSPS
-  - AD4692: 16-channel, 1 MSPS
-  - AD4693: 8-channel, 500 kSPS
-  - AD4694: 8-channel, 1 MSPS
+Add SPI offload support to enable DMA-based, CPU-independent data
+acquisition using the SPI Engine offload framework.
 
-The devices support two operating modes, auto-detected from the device
-tree:
-  - CNV Burst Mode: external PWM drives CNV independently of SPI;
-                    DATA_READY on a GP pin signals end of conversion
-  - Manual Mode: CNV tied to SPI CS; each SPI transfer reads
-                 the previous conversion result and starts the
-                 next (pipelined N+1 scheme)
+When an SPI offload is available (devm_spi_offload_get() succeeds),
+the driver registers a DMA engine IIO buffer and uses dedicated buffer
+setup operations. If no offload is available the existing software
+triggered buffer path is used unchanged.
 
-A new driver is warranted rather than extending ad4695: the AD4691
-data path uses an accumulator-register model — results are read from
-AVG_IN registers, with ACC_MASK, ADC_SETUP, DEVICE_SETUP, and
-GPIO_MODE registers controlling the sequencer — none of which exist
-in AD4695. CNV Burst Mode (PWM drives CNV independently of SPI) and
-Manual Mode (pipelined N+1 transfers) also have no equivalent in
-AD4695's command-embedded single-cycle protocol.
+Both CNV Burst Mode and Manual Mode support offload, but use different
+trigger mechanisms:
 
-The series is structured as follows:
-  1/6 - DT bindings (YAML schema) and MAINTAINERS entry
-  2/6 - Initial driver: register map via custom regmap callbacks,
-        IIO read_raw/write_raw, both operating modes, single-channel
-        reads via internal oscillator (Autonomous Mode)
-  3/6 - Triggered buffer support: IRQ-driven (DATA_READY on a GP pin
-        selected via interrupt-names) for CNV Burst Mode; external IIO
-        trigger for Manual Mode to handle the pipelined N+1 SPI protocol
-  4/6 - SPI Engine offload support: DMA-backed high-throughput
-        capture path using the SPI offload subsystem
-  5/6 - Shared oversampling ratio support for CNV Burst Mode
-  6/6 - Driver documentation (Documentation/iio/ad4691.rst)
+CNV Burst Mode: the SPI Engine is triggered by the ADC's DATA_READY
+signal on the GP pin specified by the trigger-source consumer reference
+in the device tree (one cell = GP pin number 0-3). For this mode the
+driver acts as both an SPI offload consumer (DMA RX stream, message
+optimization) and a trigger source provider: it registers the
+GP/DATA_READY output via devm_spi_offload_trigger_register() so the
+offload framework can match the '#trigger-source-cells' phandle and
+automatically fire the SPI Engine DMA transfer at end-of-conversion.
 
-Datasheets:
-  https://www.analog.com/en/products/ad4691.html
-  https://www.analog.com/en/products/ad4692.html
-  https://www.analog.com/en/products/ad4693.html
-  https://www.analog.com/en/products/ad4694.html
+Manual Mode: the SPI Engine is triggered by a periodic trigger at
+the configured sampling frequency. The pre-built SPI message uses
+the pipelined CNV-on-CS protocol: N+1 16-bit transfers are issued
+for N active channels (the first result is discarded as garbage from
+the pipeline flush) and the remaining N results are captured by DMA.
+
+All offload transfers use 16-bit frames (bits_per_word=16, len=2).
+The SPI Engine assembles received bits into native 16-bit words before
+DMA, so offload samples land in CPU-native byte order (IIO_CPU).
+Dedicated channel arrays (AD4691_OFFLOAD_CHANNEL) reflect this: they
+omit IIO_BE and carry no soft timestamp (DMA delivers data directly to
+userspace). The software triggered-buffer path retains its IIO_BE
+channels because bits_per_word=8 causes SPI to deliver bytes MSB-first
+into memory, making the on-disk layout big-endian. Both paths use
+storagebits=16 as transfers are 16 bits wide in both cases.
+
+IIO_BUFFER_DMAENGINE is selected because the offload path uses
+devm_iio_dmaengine_buffer_setup_with_handle() to allocate and
+attach the DMA RX buffer to the IIO device.
 
 Signed-off-by: Radu Sabau <radu.sabau@analog.com>
 ---
-Changes in v13:
-- IIO_CHAN_INFO_SAMP_FREQ and IIO_CHAN_INFO_OVERSAMPLING_RATIO moved to
-  info_mask_shared_by_all: the hardware uses a single internal oscillator
-  and a single ACC_DEPTH_IN(0) register shared across all channels, so
-  per-channel sysfs attributes were incorrect.
-- ad4691_reset: refactor to share the fsleep(300) call between hardware
-  and software reset paths.
-- ad4691_read_scan: check spi_sync() return value; skip push and emit
-  rate-limited error on failure.
-- Drop stale info_mask_separate rationale from commit 2 message.
-- Documentation updated to reflect shared sampling_frequency and
-  oversampling_ratio attributes (in_voltage_* instead of in_voltageN_*).
-- Link to v12: https://lore.kernel.org/r/20260519-ad4692-multichannel-sar-adc-driver-v12-0-5b335162aa51@analog.com
+ drivers/iio/adc/Kconfig  |   2 +
+ drivers/iio/adc/ad4691.c | 444 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 443 insertions(+), 3 deletions(-)
 
-Changes in v12:
-- IIO_DEV_ACQUIRE_DIRECT_MODE moved from set_sampling_freq into write_raw
-- enum ad4691_ref_ctrl: remove explicit values
-- .sign = 'u' → .format = 'u' throughout — the field has a new name
-- device_property_present(dev, "vdd-supply") / device_property_present(dev, "ref-supply")
-  pattern instead of handling -ENODEV
-- AD4691_STATE_RESET_ALL 0x01 → BIT(0)
-- spi_device_id: use named initializers instead of (kernel_ulong_t)&... cast
-- ad4691_reset: 300 µs sleep belongs after reset_control_deassert, not
-  between assert and deassert — actual RESETL minimum time (~10 ns) is
-  covered by overhead; add post-deassert sleep
-- Add guard(mutex)(&st->lock) in get_sampling_freq
-- Don't register or attach iio_trigger in manual mode
-- Remove the if (i >= indio_dev->num_channels - 1) break guards
-- ad4691_read_scan return type → void
-- Remove (u16) cast: st->scan_tx[k] = AD4691_ADC_CHAN(bit) << 8
-- sizeof(st->scan_tx[k]) → sizeof(*st->scan_tx)
-- Remove & from iio_buffer_setup_ops in offload structs
-- Add args[0] <= 3 check in ad4691_offload_trigger_request
-- Embed offload, offload_trigger, trigger_hz directly in struct ad4691_state
-- Link to v11: https://lore.kernel.org/r/20260515-ad4692-multichannel-sar-adc-driver-v11-0-eab27d852ac2@analog.com
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 1d7afde108c0..4d12eeb08020 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -149,8 +149,10 @@ config AD4691
+ 	depends on SPI
+ 	depends on REGULATOR || COMPILE_TEST
+ 	select IIO_BUFFER
++	select IIO_BUFFER_DMAENGINE
+ 	select IIO_TRIGGERED_BUFFER
+ 	select REGMAP
++	select SPI_OFFLOAD
+ 	help
+ 	  Say yes here to build support for Analog Devices AD4691 Family MuxSAR
+ 	  SPI analog to digital converters (ADC).
+diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
+index 2b7bb6717e57..6563488ab8b8 100644
+--- a/drivers/iio/adc/ad4691.c
++++ b/drivers/iio/adc/ad4691.c
+@@ -10,6 +10,7 @@
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+ #include <linux/device/devres.h>
++#include <linux/dmaengine.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+ #include <linux/kstrtox.h>
+@@ -24,11 +25,15 @@
+ #include <linux/reset.h>
+ #include <linux/string.h>
+ #include <linux/spi/spi.h>
++#include <linux/spi/offload/consumer.h>
++#include <linux/spi/offload/provider.h>
+ #include <linux/types.h>
+ #include <linux/units.h>
+ #include <linux/unaligned.h>
+ 
+ #include <linux/iio/buffer.h>
++#include <linux/iio/buffer-dma.h>
++#include <linux/iio/buffer-dmaengine.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/trigger.h>
+@@ -44,6 +49,11 @@
+ 
+ #define AD4691_CNV_DUTY_CYCLE_NS		380
+ #define AD4691_CNV_HIGH_TIME_NS			430
++/*
++ * Conservative default for the manual offload periodic trigger. Low enough
++ * to work safely out of the box across all OSR and channel count combinations.
++ */
++#define AD4691_OFFLOAD_INITIAL_TRIGGER_HZ	(100 * HZ_PER_KHZ)
+ 
+ #define AD4691_SPI_CONFIG_A_REG			0x000
+ #define AD4691_SW_RESET				(BIT(7) | BIT(0))
+@@ -118,6 +128,7 @@ struct ad4691_chip_info {
+ 	const char *name;
+ 	unsigned int max_rate;
+ 	const struct ad4691_channel_info *sw_info;
++	const struct ad4691_channel_info *offload_info;
+ };
+ 
+ #define AD4691_CHANNEL(ch)						\
+@@ -139,6 +150,30 @@ struct ad4691_chip_info {
+ 		},							\
+ 	}
+ 
++/*
++ * Offload path (bits_per_word=16): the SPI Engine assembles received
++ * bits into native 16-bit words before DMA, so samples are in
++ * CPU-native byte order (IIO_CPU). storagebits=16 matches the 16-bit
++ * DMA word size.
++ */
++#define AD4691_OFFLOAD_CHANNEL(ch)					\
++	{								\
++		.type = IIO_VOLTAGE,					\
++		.indexed = 1,						\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE)	\
++				    | BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++		.info_mask_shared_by_all_available =			\
++				      BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++		.channel = ch,						\
++		.scan_index = ch,					\
++		.scan_type = {						\
++			.format = 'u',					\
++			.realbits = 16,					\
++			.storagebits = 16,				\
++		},							\
++	}
++
+ static const struct iio_chan_spec ad4691_channels[] = {
+ 	AD4691_CHANNEL(0),
+ 	AD4691_CHANNEL(1),
+@@ -171,6 +206,40 @@ static const struct iio_chan_spec ad4693_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(8),
+ };
+ 
++/*
++ * Offload channel arrays: no IIO_CHAN_SOFT_TIMESTAMP because DMA delivers
++ * data directly to userspace without a software timestamp.
++ */
++static const struct iio_chan_spec ad4691_offload_channels[] = {
++	AD4691_OFFLOAD_CHANNEL(0),
++	AD4691_OFFLOAD_CHANNEL(1),
++	AD4691_OFFLOAD_CHANNEL(2),
++	AD4691_OFFLOAD_CHANNEL(3),
++	AD4691_OFFLOAD_CHANNEL(4),
++	AD4691_OFFLOAD_CHANNEL(5),
++	AD4691_OFFLOAD_CHANNEL(6),
++	AD4691_OFFLOAD_CHANNEL(7),
++	AD4691_OFFLOAD_CHANNEL(8),
++	AD4691_OFFLOAD_CHANNEL(9),
++	AD4691_OFFLOAD_CHANNEL(10),
++	AD4691_OFFLOAD_CHANNEL(11),
++	AD4691_OFFLOAD_CHANNEL(12),
++	AD4691_OFFLOAD_CHANNEL(13),
++	AD4691_OFFLOAD_CHANNEL(14),
++	AD4691_OFFLOAD_CHANNEL(15),
++};
++
++static const struct iio_chan_spec ad4693_offload_channels[] = {
++	AD4691_OFFLOAD_CHANNEL(0),
++	AD4691_OFFLOAD_CHANNEL(1),
++	AD4691_OFFLOAD_CHANNEL(2),
++	AD4691_OFFLOAD_CHANNEL(3),
++	AD4691_OFFLOAD_CHANNEL(4),
++	AD4691_OFFLOAD_CHANNEL(5),
++	AD4691_OFFLOAD_CHANNEL(6),
++	AD4691_OFFLOAD_CHANNEL(7),
++};
++
+ static const struct ad4691_channel_info ad4691_sw_info = {
+ 	.channels = ad4691_channels,
+ 	.num_channels = ARRAY_SIZE(ad4691_channels),
+@@ -181,6 +250,16 @@ static const struct ad4691_channel_info ad4693_sw_info = {
+ 	.num_channels = ARRAY_SIZE(ad4693_channels),
+ };
+ 
++static const struct ad4691_channel_info ad4691_offload_info = {
++	.channels = ad4691_offload_channels,
++	.num_channels = ARRAY_SIZE(ad4691_offload_channels),
++};
++
++static const struct ad4691_channel_info ad4693_offload_info = {
++	.channels = ad4693_offload_channels,
++	.num_channels = ARRAY_SIZE(ad4693_offload_channels),
++};
++
+ /*
+  * Internal oscillator frequency table. Index is the OSC_FREQ_REG[3:0] value.
+  * Index 0 (1 MHz) is only valid for AD4692/AD4694; AD4691/AD4693 support
+@@ -211,24 +290,28 @@ static const struct ad4691_chip_info ad4691_chip_info = {
+ 	.name = "ad4691",
+ 	.max_rate = 500 * HZ_PER_KHZ,
+ 	.sw_info = &ad4691_sw_info,
++	.offload_info = &ad4691_offload_info,
+ };
+ 
+ static const struct ad4691_chip_info ad4692_chip_info = {
+ 	.name = "ad4692",
+ 	.max_rate = 1 * HZ_PER_MHZ,
+ 	.sw_info = &ad4691_sw_info,
++	.offload_info = &ad4691_offload_info,
+ };
+ 
+ static const struct ad4691_chip_info ad4693_chip_info = {
+ 	.name = "ad4693",
+ 	.max_rate = 500 * HZ_PER_KHZ,
+ 	.sw_info = &ad4693_sw_info,
++	.offload_info = &ad4693_offload_info,
+ };
+ 
+ static const struct ad4691_chip_info ad4694_chip_info = {
+ 	.name = "ad4694",
+ 	.max_rate = 1 * HZ_PER_MHZ,
+ 	.sw_info = &ad4693_sw_info,
++	.offload_info = &ad4693_offload_info,
+ };
+ 
+ struct ad4691_state {
+@@ -250,6 +333,10 @@ struct ad4691_state {
+ 	 * atomicity of consecutive SPI operations.
+ 	 */
+ 	struct mutex lock;
++	/* NULL when no SPI offload hardware is present. */
++	struct spi_offload *offload;
++	struct spi_offload_trigger *offload_trigger;
++	u64 trigger_hz;
+ 	/*
+ 	 * Per-buffer-enable lifetime resources:
+ 	 * Manual Mode - a pre-built SPI message that clocks out N+1
+@@ -264,8 +351,11 @@ struct ad4691_state {
+ 	struct spi_transfer scan_xfers[34];
+ 	/*
+ 	 * CNV burst: 16 AVG_IN addresses = 16.  Manual: 16 channel cmds +
+-	 * 1 NOOP = 17.  Stored as native u16; put_unaligned_be16() fills each
+-	 * slot so the SPI controller (bits_per_word=8) sends bytes MSB-first.
++	 * 1 NOOP = 17.  Stored as native u16.  The non-offload path fills slots
++	 * with put_unaligned_be16() (bits_per_word=8, bytes go out in memory
++	 * order).  The offload path assigns native values directly
++	 * (bits_per_word=bpw, SPI reads each slot as a native 16-bit word and
++	 * shifts it out MSB-first).
+ 	 */
+ 	u16 scan_tx[17] __aligned(IIO_DMA_MINALIGN);
+ 	/*
+@@ -300,6 +390,45 @@ static int ad4691_gpio_setup(struct ad4691_state *st, unsigned int gp_num)
+ 				  AD4691_GP_MODE_DATA_READY << shift);
+ }
+ 
++static const struct spi_offload_config ad4691_offload_config = {
++	.capability_flags = SPI_OFFLOAD_CAP_TRIGGER |
++			    SPI_OFFLOAD_CAP_RX_STREAM_DMA,
++};
++
++static bool ad4691_offload_trigger_match(struct spi_offload_trigger *trigger,
++					 enum spi_offload_trigger_type type,
++					 u64 *args, u32 nargs)
++{
++	return type == SPI_OFFLOAD_TRIGGER_DATA_READY && nargs == 1 && args[0] <= 3;
++}
++
++static int ad4691_offload_trigger_request(struct spi_offload_trigger *trigger,
++					  enum spi_offload_trigger_type type,
++					  u64 *args, u32 nargs)
++{
++	struct ad4691_state *st = spi_offload_trigger_get_priv(trigger);
++
++	if (nargs != 1 || args[0] > 3)
++		return -EINVAL;
++
++	return ad4691_gpio_setup(st, args[0]);
++}
++
++static int ad4691_offload_trigger_validate(struct spi_offload_trigger *trigger,
++					   struct spi_offload_trigger_config *config)
++{
++	if (config->type != SPI_OFFLOAD_TRIGGER_DATA_READY)
++		return -EINVAL;
++
++	return 0;
++}
++
++static const struct spi_offload_trigger_ops ad4691_offload_trigger_ops = {
++	.match    = ad4691_offload_trigger_match,
++	.request  = ad4691_offload_trigger_request,
++	.validate = ad4691_offload_trigger_validate,
++};
++
+ static int ad4691_reg_read(void *context, unsigned int reg, unsigned int *val)
+ {
+ 	struct spi_device *spi = context;
+@@ -876,6 +1005,218 @@ static const struct iio_buffer_setup_ops ad4691_cnv_burst_buffer_setup_ops = {
+ 	.postdisable = ad4691_cnv_burst_buffer_postdisable,
+ };
+ 
++static int ad4691_manual_offload_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++	struct device *dev = regmap_get_device(st->regmap);
++	struct spi_device *spi = to_spi_device(dev);
++	struct spi_offload_trigger_config config = {
++		.type = SPI_OFFLOAD_TRIGGER_PERIODIC,
++	};
++	unsigned int bpw = indio_dev->channels[0].scan_type.realbits;
++	unsigned int bit, k;
++	int ret;
++
++	ret = ad4691_enter_conversion_mode(st);
++	if (ret)
++		return ret;
++
++	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
++	memset(st->scan_tx, 0, sizeof(st->scan_tx));
++
++	/*
++	 * N+1 transfers for N channels. Each CS-low period triggers
++	 * a conversion AND returns the previous result (pipelined).
++	 *   TX: [AD4691_ADC_CHAN(n), 0x00]
++	 *   RX: [data_hi, data_lo]     (storagebits=16, shift=0)
++	 * Transfer 0 RX is garbage; transfers 1..N carry real data.
++	 * scan_tx is reused for TX commands (mutually exclusive with the
++	 * non-offload triggered-buffer path).
++	 *
++	 * bits_per_word=bpw: the SPI controller reads tx_buf as a native
++	 * 16-bit word and shifts it out MSB-first.  Store the exact 16-bit
++	 * value we want on the wire as a plain native u16 — no endianness
++	 * macro — so the wire bytes are correct on both LE and BE hosts.
++	 * The channel-select command is a single byte; shift it to the MSB
++	 * position so SPI sends it first, with a zero pad in the LSB.
++	 */
++	k = 0;
++	iio_for_each_active_channel(indio_dev, bit) {
++		st->scan_tx[k] = AD4691_ADC_CHAN(bit) << 8;
++		st->scan_xfers[k].tx_buf = &st->scan_tx[k];
++		st->scan_xfers[k].len = sizeof(*st->scan_tx);
++		st->scan_xfers[k].bits_per_word = bpw;
++		st->scan_xfers[k].cs_change = 1;
++		st->scan_xfers[k].cs_change_delay.value = AD4691_CNV_HIGH_TIME_NS;
++		st->scan_xfers[k].cs_change_delay.unit = SPI_DELAY_UNIT_NSECS;
++		/* First transfer RX is garbage — skip it. */
++		if (k > 0)
++			st->scan_xfers[k].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
++		k++;
++	}
++
++	/* Final NOOP transfer retrieves the last channel's result. */
++	st->scan_xfers[k].tx_buf = &st->scan_tx[k]; /* scan_tx[k] == 0 == NOOP */
++	st->scan_xfers[k].len = sizeof(*st->scan_tx);
++	st->scan_xfers[k].bits_per_word = bpw;
++	st->scan_xfers[k].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
++	k++;
++
++	spi_message_init_with_transfers(&st->scan_msg, st->scan_xfers, k);
++	st->scan_msg.offload = st->offload;
++
++	ret = spi_optimize_message(spi, &st->scan_msg);
++	if (ret)
++		goto err_exit_conversion;
++
++	config.periodic.frequency_hz = st->trigger_hz;
++	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger, &config);
++	if (ret)
++		goto err_unoptimize;
++
++	return 0;
++
++err_unoptimize:
++	spi_unoptimize_message(&st->scan_msg);
++err_exit_conversion:
++	ad4691_exit_conversion_mode(st);
++	return ret;
++}
++
++static int ad4691_manual_offload_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++
++	spi_offload_trigger_disable(st->offload, st->offload_trigger);
++	spi_unoptimize_message(&st->scan_msg);
++
++	return ad4691_exit_conversion_mode(st);
++}
++
++static const struct iio_buffer_setup_ops ad4691_manual_offload_buffer_setup_ops = {
++	.postenable = ad4691_manual_offload_buffer_postenable,
++	.predisable = ad4691_manual_offload_buffer_predisable,
++};
++
++static int ad4691_cnv_burst_offload_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++	struct device *dev = regmap_get_device(st->regmap);
++	struct spi_device *spi = to_spi_device(dev);
++	struct spi_offload_trigger_config config = {
++		.type = SPI_OFFLOAD_TRIGGER_DATA_READY,
++	};
++	unsigned int bpw = indio_dev->channels[0].scan_type.realbits;
++	unsigned int acc_mask, std_seq_config;
++	unsigned int bit, k;
++	int ret;
++
++	std_seq_config = bitmap_read(indio_dev->active_scan_mask, 0,
++				     iio_get_masklength(indio_dev)) & GENMASK(15, 0);
++	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG, std_seq_config);
++	if (ret)
++		return ret;
++
++	acc_mask = ~std_seq_config & GENMASK(15, 0);
++	ret = regmap_write(st->regmap, AD4691_ACC_MASK_REG, acc_mask);
++	if (ret)
++		return ret;
++
++	ret = ad4691_enter_conversion_mode(st);
++	if (ret)
++		return ret;
++
++	memset(st->scan_xfers, 0, sizeof(st->scan_xfers));
++	memset(st->scan_tx, 0, sizeof(st->scan_tx));
++
++	/*
++	 * Each AVG_IN register read uses two transfers:
++	 *   TX: [reg_hi | 0x80, reg_lo]  (address phase, CS stays asserted)
++	 *   RX: [data_hi, data_lo]       (bpw-wide data phase, storagebits=16)
++	 * Both TX and RX use bits_per_word=bpw: the SPI controller reads tx_buf
++	 * as a native 16-bit word and shifts it out MSB-first.  Store the exact
++	 * 16-bit wire value as a plain native u16 — no endianness macro — so the
++	 * wire bytes are correct on both LE and BE hosts.  The read-address
++	 * (0x8000 | reg) is already the 16-bit value we want on the wire.
++	 * scan_tx is reused for TX addresses (mutually exclusive with the
++	 * non-offload triggered-buffer path).
++	 */
++	k = 0;
++	iio_for_each_active_channel(indio_dev, bit) {
++		st->scan_tx[k] = 0x8000 | AD4691_AVG_IN(bit);
++
++		/* TX: address phase, CS stays asserted into data phase */
++		st->scan_xfers[2 * k].tx_buf = &st->scan_tx[k];
++		st->scan_xfers[2 * k].len = sizeof(*st->scan_tx);
++		st->scan_xfers[2 * k].bits_per_word = bpw;
++
++		/* RX: data phase, CS toggles after to delimit the next register op */
++		st->scan_xfers[2 * k + 1].len = sizeof(*st->scan_tx);
++		st->scan_xfers[2 * k + 1].bits_per_word = bpw;
++		st->scan_xfers[2 * k + 1].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
++		st->scan_xfers[2 * k + 1].cs_change = 1;
++		k++;
++	}
++
++	/*
++	 * State reset: single 4-byte write [addr_hi, addr_lo, STATE_RESET_ALL,
++	 * OSC_EN=1]. ADDR_DESCENDING writes byte[3]=1 to OSC_EN_REG (0x180) as
++	 * a deliberate side-write, keeping the oscillator enabled.
++	 * scan_tx_reset is shared with the non-offload path (len=4 here vs
++	 * len=3 there) since the two paths are mutually exclusive at probe.
++	 */
++	put_unaligned_be16(AD4691_STATE_RESET_REG, st->scan_tx_reset);
++	st->scan_tx_reset[2] = AD4691_STATE_RESET_ALL;
++	st->scan_tx_reset[3] = 1;
++	st->scan_xfers[2 * k].tx_buf = st->scan_tx_reset;
++	st->scan_xfers[2 * k].len = sizeof(st->scan_tx_reset);
++	/*
++	 * 4-byte u8 buffer assembled with put_unaligned_be16(); leave
++	 * bits_per_word at the default (8) so bytes go out in memory order.
++	 */
++
++	spi_message_init_with_transfers(&st->scan_msg, st->scan_xfers, 2 * k + 1);
++	st->scan_msg.offload = st->offload;
++
++	ret = spi_optimize_message(spi, &st->scan_msg);
++	if (ret)
++		goto err_exit_conversion;
++
++	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger, &config);
++	if (ret)
++		goto err_unoptimize;
++
++	ret = ad4691_sampling_enable(st, true);
++	if (ret)
++		goto err_disable_trigger;
++
++	return 0;
++
++err_disable_trigger:
++	spi_offload_trigger_disable(st->offload, st->offload_trigger);
++err_unoptimize:
++	spi_unoptimize_message(&st->scan_msg);
++err_exit_conversion:
++	ad4691_exit_conversion_mode(st);
++	return ret;
++}
++
++static int ad4691_cnv_burst_offload_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct ad4691_state *st = iio_priv(indio_dev);
++
++	ad4691_sampling_enable(st, false);
++	spi_offload_trigger_disable(st->offload, st->offload_trigger);
++	spi_unoptimize_message(&st->scan_msg);
++
++	return ad4691_exit_conversion_mode(st);
++}
++
++static const struct iio_buffer_setup_ops ad4691_cnv_burst_offload_buffer_setup_ops = {
++	.postenable = ad4691_cnv_burst_offload_buffer_postenable,
++	.predisable = ad4691_cnv_burst_offload_buffer_predisable,
++};
++
+ static ssize_t sampling_frequency_show(struct device *dev,
+ 				       struct device_attribute *attr,
+ 				       char *buf)
+@@ -883,6 +1224,9 @@ static ssize_t sampling_frequency_show(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad4691_state *st = iio_priv(indio_dev);
+ 
++	if (st->manual_mode && st->offload)
++		return sysfs_emit(buf, "%llu\n", READ_ONCE(st->trigger_hz));
++
+ 	return sysfs_emit(buf, "%lu\n", NSEC_PER_SEC / st->cnv_period_ns);
+ }
+ 
+@@ -903,6 +1247,20 @@ static ssize_t sampling_frequency_store(struct device *dev,
+ 	if (IIO_DEV_ACQUIRE_FAILED(claim))
+ 		return -EBUSY;
+ 
++	if (st->manual_mode && st->offload) {
++		struct spi_offload_trigger_config config = {
++			.type = SPI_OFFLOAD_TRIGGER_PERIODIC,
++			.periodic = { .frequency_hz = freq },
++		};
++
++		ret = spi_offload_trigger_validate(st->offload_trigger, &config);
++		if (ret)
++			return ret;
++
++		WRITE_ONCE(st->trigger_hz, config.periodic.frequency_hz);
++		return len;
++	}
++
+ 	ret = ad4691_set_pwm_freq(st, freq);
+ 	if (ret)
+ 		return ret;
+@@ -1268,9 +1626,77 @@ static int ad4691_setup_triggered_buffer(struct iio_dev *indio_dev,
+ 						   ad4691_buffer_attrs);
+ }
+ 
++static int ad4691_setup_offload(struct iio_dev *indio_dev,
++				struct ad4691_state *st,
++				struct spi_offload *spi_offload)
++{
++	struct device *dev = regmap_get_device(st->regmap);
++	struct dma_chan *rx_dma;
++	int ret;
++
++	st->offload = spi_offload;
++
++	indio_dev->channels = st->info->offload_info->channels;
++	indio_dev->num_channels = st->info->offload_info->num_channels;
++	/*
++	 * Offload path uses DMA directly; no IIO trigger is involved, so
++	 * external triggers are not restricted (no validate_trigger).
++	 */
++	indio_dev->info = &ad4691_manual_info;
++
++	if (st->manual_mode) {
++		st->offload_trigger =
++			devm_spi_offload_trigger_get(dev, st->offload,
++						     SPI_OFFLOAD_TRIGGER_PERIODIC);
++		if (IS_ERR(st->offload_trigger))
++			return dev_err_probe(dev, PTR_ERR(st->offload_trigger),
++					     "Failed to get periodic offload trigger\n");
++
++		st->trigger_hz = AD4691_OFFLOAD_INITIAL_TRIGGER_HZ;
++	} else {
++		struct spi_offload_trigger_info trigger_info = {
++			.fwnode = dev_fwnode(dev),
++			.ops    = &ad4691_offload_trigger_ops,
++			.priv   = st,
++		};
++
++		ret = devm_spi_offload_trigger_register(dev, &trigger_info);
++		if (ret)
++			return dev_err_probe(dev, ret,
++					     "Failed to register offload trigger\n");
++
++		st->offload_trigger =
++			devm_spi_offload_trigger_get(dev, st->offload,
++						     SPI_OFFLOAD_TRIGGER_DATA_READY);
++		if (IS_ERR(st->offload_trigger))
++			return dev_err_probe(dev, PTR_ERR(st->offload_trigger),
++					     "Failed to get DATA_READY offload trigger\n");
++	}
++
++	rx_dma = devm_spi_offload_rx_stream_request_dma_chan(dev, st->offload);
++	if (IS_ERR(rx_dma))
++		return dev_err_probe(dev, PTR_ERR(rx_dma),
++				     "Failed to get offload RX DMA channel\n");
++
++	if (st->manual_mode)
++		indio_dev->setup_ops = &ad4691_manual_offload_buffer_setup_ops;
++	else
++		indio_dev->setup_ops = &ad4691_cnv_burst_offload_buffer_setup_ops;
++
++	ret = devm_iio_dmaengine_buffer_setup_with_handle(dev, indio_dev, rx_dma,
++							  IIO_BUFFER_DIRECTION_IN);
++	if (ret)
++		return ret;
++
++	indio_dev->buffer->attrs = ad4691_buffer_attrs;
++
++	return 0;
++}
++
+ static int ad4691_probe(struct spi_device *spi)
+ {
+ 	struct device *dev = &spi->dev;
++	struct spi_offload *spi_offload;
+ 	struct iio_dev *indio_dev;
+ 	struct ad4691_state *st;
+ 	int ret;
+@@ -1306,10 +1732,20 @@ static int ad4691_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
++	spi_offload = devm_spi_offload_get(dev, spi, &ad4691_offload_config);
++	ret = PTR_ERR_OR_ZERO(spi_offload);
++	if (ret == -ENODEV)
++		spi_offload = NULL;
++	else if (ret)
++		return dev_err_probe(dev, ret, "Failed to get SPI offload\n");
++
+ 	indio_dev->name = st->info->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	ret = ad4691_setup_triggered_buffer(indio_dev, st);
++	if (spi_offload)
++		ret = ad4691_setup_offload(indio_dev, st, spi_offload);
++	else
++		ret = ad4691_setup_triggered_buffer(indio_dev, st);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1347,3 +1783,5 @@ module_spi_driver(ad4691_driver);
+ MODULE_AUTHOR("Radu Sabau <radu.sabau@analog.com>");
+ MODULE_DESCRIPTION("Analog Devices AD4691 Family ADC Driver");
+ MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS("IIO_DMA_BUFFER");
++MODULE_IMPORT_NS("IIO_DMAENGINE_BUFFER");
 
-Changes in v11:
-- initial driver: fix commit message — IIO_CHAN_INFO_SAMP_FREQ is
-  info_mask_separate throughout the series, not info_mask_shared_by_all
-- initial driver: readable_reg / volatile_reg: replace open switch ranges
-  for multi-byte sparse arrays with stride checks; intermediate (unaligned)
-  addresses are now excluded so debugfs cannot trigger cross-boundary reads
-- initial driver: add comment in ad4691_get_sampling_freq noting that
-  AD4691_OSC_FREQ_REG is non-volatile and served from regcache; no lock
-  is needed
-- triggered buffer: restore .endianness = IIO_BE on AD4691_CHANNEL
-  scan_type; accidentally dropped in v10
-- triggered buffer: add early break in both iio_for_each_active_channel
-  loops to skip the soft timestamp scan index; prevents out-of-bounds
-  writes into scan_tx[] and scan_xfers[]
-- triggered buffer: fix DMA aliasing in manual mode preenable — set
-  rx_buf = NULL for the first transfer (pipeline residual) instead of
-  aliasing it to vals[0] alongside the second transfer
-- triggered buffer: add cs_change_delay of 430 ns on channel transfers
-  to satisfy the minimum CNV high time requirement
-- triggered buffer: remove cs_change=1 from the state-reset transfer;
-  must not be set on the final transfer of a SPI message
-- triggered buffer: move enable_irq() from the trigger handler into a
-  reenable callback on ad4691_trigger_ops, closing the race between
-  enable_irq and iio_trigger_notify_done; fix reenable return type
-  (void, not int)
-- triggered buffer: use two separate iio_info structs so that
-  validate_trigger (iio_validate_own_trigger) is enforced only in CNV
-  burst mode; manual mode must accept external triggers
-- triggered buffer: add comment explaining STATE_RESET_ALL sequencing
-  in CNV burst mode
-- triggered buffer: fix STD_SEQ_CONFIG write in both preenable paths —
-  apply & GENMASK(15, 0) to strip the soft timestamp bit before writing,
-  matching the existing acc_mask computation
-- oversampling: fix commit message — writing oversampling_ratio snaps
-  target_osc_freq_Hz to preserve integer sampling_frequency read-back;
-  the two attributes are not orthogonal
-- docs: add missing Buffer data format section covering the __be16
-  software path and the CPU-native offload DMA path
-- Link to v10: https://lore.kernel.org/r/20260511-ad4692-multichannel-sar-adc-driver-v10-0-e1fbb1744e38@analog.com
-
-Changes in v10:
-- initial driver: depends on REGULATOR || COMPILE_TEST
-- triggered buffer: fix vals[] layout — index vals[] with slot counter k,
-  not channel index i; fixes sparse active_scan_mask producing garbage in
-  userspace buffer
-- triggered buffer: add comment to cnv_burst_buffer_postenable explaining
-  why sampling_enable()/enable_irq() cannot be called from preenable
-- triggered buffer + offload: scan_tx changed from __be16 to u16;
-  non-offload path uses put_unaligned_be16() (bits_per_word=8); offload
-  path uses plain native u16 assignments (bits_per_word=16); also fixes
-  byte-order bug in manual preenable: command byte was in the low byte,
-  now correctly shifted to the high byte
-- oversampling: remove incorrect iio_for_each_active_channel() timestamp
-  guards; active_scan_mask never includes the timestamp channel
-- Link to v9: https://lore.kernel.org/r/20260430-ad4692-multichannel-sar-adc-driver-v9-0-33e439e4fb87@analog.com
-
-Changes in v9:
-- devm_regulator_get_enable() → devm_regulator_get_enable_optional() for
-  vdd-supply. The non-optional variant silently returns a dummy regulator
-  (ret=0) when the supply is absent from DT, so st->ldo_en was never set
-  and the internal LDO was never enabled when only ldo-in-supply was provided.
-- struct ad4691_channel_info (factoring channels + num_channels out of
-  struct ad4691_chip_info into a sw_info pointer) is now introduced in
-  commit 1 instead of commit 2. It is a pure struct cleanup with no
-  relation to triggered buffers.
-- channels and manual_channels fields in struct ad4691_channel_info
-  are now annotated with __counted_by_ptr(num_channels).
-- Link to v8: https://lore.kernel.org/r/20260416-ad4692-multichannel-sar-adc-driver-v8-0-c415bd048fa3@analog.com
-
-Changes in v8:
-- dt-bindings: add commit message note explaining why four separate
-  compatible strings are required (channel count and max rate both
-  differ between variants);
-- initial driver: sizeof(tx) instead of literal 2 in ad4691_reg_read;
-  U8_MAX/U16_MAX instead of 0xFF/0xFFFF in ad4691_reg_write
-- initial driver: extract ad4691_samp_freq_start() helper
-- initial driver: fix regulator model — vdd-supply (external 1.8V,
-  internal LDO disabled) and ldo-in-supply (feeds internal LDO) are
-  mutually exclusive; add vdd-supply to binding and driver
-- initial driver: add comment in ad4691_reset explaining why
-  devm_reset_control_get_optional_exclusive_deasserted() cannot be
-  used (datasheet requires ≥300 µs reset pulse)
-- initial driver: REF_CTRL and OSC_FREQ_REG: regmap_update_bits /
-  regmap_assign_bits → regmap_write (reserved bits are 0 at reset)
-- initial driver: use dev instead of &spi->dev in devm_iio_device_alloc
-- triggered buffer: scan_tx: add __aligned(IIO_DMA_MINALIGN);
-  scan struct: IIO_DECLARE_DMA_BUFFER_WITH_TS(__be16, vals, 16)
-- triggered buffer: full memset of scan_xfers and scan_tx in both
-  preenable functions; move buffer-dma.h / buffer-dmaengine.h to
-  commit 4; spi_optimize_message fail path: return ret directly in
-  cnv_burst_buffer_preenable; reduce devm_iio_trigger_alloc wrapping
-- SPI offload: drop AD4691_OFFLOAD_BITS_PER_WORD; use local
-  bpw = channels[0].scan_type.realbits; num_channels: ARRAY_SIZE - 1
-- SPI offload: rename offload_state.spi → .offload; remove spurious
-  STD_SEQ_CONFIG write from cnv_burst_offload predisable; extract
-  local acc_mask variable for ACC_MASK_REG write
-- SPI offload: sampling_frequency_store: IIO_DEV_ACQUIRE_DIRECT_MODE
-  for auto-release; remove explicit iio_device_release_direct calls
-- oversampling: in_voltageN_sampling_frequency now represents the
-  effective output rate (osc_freq / osr[N]), matching ad4695
-- oversampling: in_voltageN_sampling_frequency_available computed
-  dynamically from the channel's current OSR; only oscillator entries
-  divisible by osr[N] shown as effective rates; list becomes sparser
-  as OSR increases, capping at max_rate / osr[N]
-- oversampling: writing sampling_frequency snaps down to the largest
-  oscillator entry ≤ freq * osr[N] that is divisible by osr[N],
-  guaranteeing integer read-back; writing oversampling_ratio stores
-  the new depth only — target_osc_freq_Hz unchanged; the two
-  attributes are orthogonal
-- oversampling: ad4691_write_osc_freq() called from
-  ad4691_enter_conversion_mode() after manual mode early return,
-  covering all CNV burst buffer enable paths
-- oversampling: (osr + 1) oscillator period wait in single_shot_read
-  (osr for accumulation, +1 pipeline margin)
-- docs: new commit — Documentation/iio/ad4691.rst, userspace-facing
-  only; oversampling section describes effective-rate SF semantics;
-  LDO supply section corrected (vdd-supply vs ldo-in-supply)
-- Link to v7: https://lore.kernel.org/r/20260409-ad4692-multichannel-sar-adc-driver-v7-0-be375d4df2c5@analog.com
-
-Changes in v7:
-- Fix CNV burst triggered-buffer preenable: the state-reset value
-  transfer had tx_buf assigned the return value of cpu_to_be16()
-  (an integer) instead of a pointer to a buffer, which would cause
-  a kernel oops on buffer enable; extend scan_tx[] from 17 to 18
-  entries to hold the extra slot and fix the pointer assignment
-- Extend memset in ad4691_cnv_burst_buffer_preenable to cover the
-  two state-reset transfer slots (previously left with stale data
-  across buffer enable/disable cycles if the active channel count
-  changed)
-- Fix format specifier %u -> %lu for NSEC_PER_SEC in
-  sampling_frequency_show (NSEC_PER_SEC is unsigned long on 32-bit)
-- Fix missing iio_device_release_direct() on spi_offload_trigger_-
-  validate() error path in sampling_frequency_store
-- Correct SPI offload commit message: the implementation uses 16-bit
-  SPI frames (bits_per_word=16, len=2), not 32-bit; storagebits
-  remains 16 (not promoted to 32); there is no shift=16 for manual
-  mode; ad4691_manual_channels[] hides IIO_CHAN_INFO_OVERSAMPLING_-
-  RATIO (not applicable in manual mode), not encodes shift=16
-- Link to v6: https://lore.kernel.org/r/20260403-ad4692-multichannel-sar-adc-driver-v6-0-fa2a01a57c4e@analog.com
-
-Changes in v6:
-- Replace device.h with dev_printk.h + device/devres.h; add array_size.h
-- Rename osc_freqs[] → osc_freqs_Hz[] with explicit [0xN] index designators
-- Move loop variable into for() declaration in set_sampling_freq
-- Convert multi-line block comment to single-line in single_shot_read
-- Replace (u16)~ cast with ~BIT() & GENMASK(15, 0) for ACC_MASK_REG write;
-  GENMASK(15, 0) is still needed, otherwise maximum value condition line
-  in reg_write() would fail.
-- Extract osc_idx/period_us temporaries in single_shot_read; add comment
-- Use devm_regulator_bulk_get_enable() for avdd + vio supplies
-- Reformat reset_gpio_probe() comment; remove (GPIOD_OUT_HIGH) detail
-- Extract REF_CTRL value into temporary before regmap_update_bits
-- Use regmap_assign_bits for OSC_FREQ_REG in config
-- Remove ad4691_free_scan_bufs NULL assignments; they are not checked.
-- Replace indio_dev->masklength with iio_get_masklength() throughout
-- Fix spi_optimize_message error path to use goto err in preenable
-- Add iio_buffer_enabled() guard in sampling_frequency_store and
-  set_oversampling_ratio
-- Move ad4691_gpio_setup call from ad4691_config into
-  setup_triggered_buffer after IRQ lookup; remove duplicate
-  fwnode_irq_get_byname loop
-- Replace oversampling ratio search loop with is_power_of_2 + ilog2
-- Link to v5: https://lore.kernel.org/r/20260327-ad4692-multichannel-sar-adc-driver-v5-0-11f789de47b8@analog.com
-
-Changes in v5:
-- Reorder datasheets numerically
-- Fix interrupt-names: use enum with minItems/maxItems
-- Remove if/then block requiring interrupts — driver detail, not hardware constraint
-- Remove redundant .shift = 0 from channel macro
-- Write max_rate comparison as 1 * HZ_PER_MHZ
-- Invert set_sampling_freq loop to use continue
-- Fix fsleep() line break; remove blank line in read_raw
-- Reorder supply init: vio immediately after avdd
-- Move comment rewrites and OSC_FREQ_REG condition into the base driver patch
-- Add bit-15 READ comment in reg_read
-- Rewrite ldo-in handling with cleaner if/else-if pattern
-- Drop redundant refbuf_en = false; invert if (!rst) in reset
-- Drop reset_control_assert() — GPIO already asserted at probe
-- Use regmap_update_bits/assign_bits in config
-- Remove tab-column alignment of state struct members
-- Declare osc_freqs[] as const int, eliminating explicit casts
-- Drop obvious AUTONOMOUS mode comment
-- Rename ACC_COUNT_LIMIT → ACC_DEPTH_IN to match datasheet
-- Use bitmap_weight()/bitmap_read() for active_scan_mask access;
-  add #include <linux/bitmap.h>
-- Fix channel macro line-continuation tab alignment
-- Use IIO_CHAN_SOFT_TIMESTAMP(8) for 8-channel variants
-- Use aligned_s64 ts in scan struct
-- Add comment explaining start-index removal in set_sampling_freq
-- Remove trailing comma after NULL in buffer_attrs[]
-- Add IRQF_NO_AUTOEN rationale comment
-- Remove unreachable manual_mode guards in sampling_frequency_show/store
-- Remove st->trig; use indio_dev->trig directly
-- Move max_speed_hz param to the offload patch where it is used
-- Use DIV_ROUND_UP for CNV period; use compound pwm_state initializer
-- Move offload fields into a separately allocated sub-struct
-- Build TX words via u8* byte-fill; fixes sparse __be32 warnings
-- Add three scan types (NORMAL/OFFLOAD_CNV/OFFLOAD_MANUAL) with
-  get_current_scan_type; triggered buffer path uses storagebits=16
-- Fix IIO_CHAN_INFO_SCALE: use iio_get_current_scan_type() for realbits
-- Add MODULE_IMPORT_NS("IIO_DMAENGINE_BUFFER")
-- Add Documentation/iio/ad4691.rst
-- Link to v4: https://lore.kernel.org/r/20260320-ad4692-multichannel-sar-adc-driver-v4-0-052c1050507a@analog.com
-
-Changes in v4:
-- dt-bindings: add avdd-supply (required) and ldo-in-supply (optional);
-  rename vref-supply → ref-supply, vrefin-supply → refin-supply;
-  corrected reset-gpios polarity (active-high → active-low); remove
-  clocks and pwm-names; extend interrupts to up to 4 GP pins with
-  interrupt-names "gp0".."gp3"; reduce #trigger-source-cells to
-  const: 1 (GP pin number); add gpio-controller / #gpio-cells = <2>;
-  drop adi,ad4691.h header; update binding examples
-- driver: rename CNV Clock Mode → CNV Burst Mode throughout
-- driver: add avdd-supply (required) and ldo-in-supply; track ref vs.
-  refin supply for REFBUF_EN; set LDO_EN in DEVICE_SETUP when ldo-in
-  is present; add software reset fallback via SPI_CONFIG_A register
-- driver: merge ACC_MASK1_REG / ACC_MASK2_REG into ACC_MASK_REG with
-  a single ADDR_DESCENDING 16-bit SPI write
-- driver: remove clocks usage; set PWM rate directly without ref clock
-- driver: rename chip info structs (ad4691_chip_info etc.); rename
-  *chip → *info in state struct; replace adc_mode enum with manual_mode
-  bool; replace ktime sampling_period with u32 cnv_period_ns
-- driver: move IIO_CHAN_INFO_SAMP_FREQ to info_mask_separate with an
-  available list for the internal oscillator frequency
-- driver: use regcache MAPLE instead of RBTREE
-- triggered buffer: derive DATA_READY GP pin from interrupt-names in
-  firmware ("gp0".."gp3") instead of assuming GP0
-- triggered buffer: use regmap_update_bits for DEVICE_SETUP mode toggle
-  to avoid clobbering LDO_EN when toggling MANUAL_MODE bit
-- triggered buffer: split buffer setup ops into separate Manual and
-  CNV Burst variants (mirrors offload path structure)
-- SPI offload: promote channel storagebits from 16 to 32 to match DMA
-  word size; introduce ad4691_manual_channels[] with shift=16 (data in
-  upper 16 bits of the 32-bit word); update triggered-buffer paths to
-  the same layout for consistency
-- SPI offload: derive GP pin from trigger-source args[0] instead of
-  hardcoding GP0; split offload buffer setup ops per mode
-- replace put_unaligned_be32() + FIELD_PREP() with cpu_to_be32() and
-  plain bit-shift ops for SPI offload message construction
-- multiple reviewer-requested code style and correctness fixes
-  (Andy Shevchenko, Nuno Sá, Uwe Kleine-König, David Lechner)
-- Link to v3: https://lore.kernel.org/r/20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com
-
-Changes in v3:
-- Replace GPIO reset handling with reset controller framework
-- Replace two regmap_write() calls for ACC_MASK1/ACC_MASK2 with regmap_bulk_write()
-- Move conv_us declaration closer to its first use
-- Derive spi_device/dev from regmap instead of storing st->spi
-- ad4691_trigger_handler(): use guard(mutex)() and iio_for_each_active_channel()
-- ad4691_setup_triggered_buffer(): return -ENOMEM/-ENOENT directly instead of
-  wrapping in dev_err_probe(); fix fwnode_irq_get() check (irq <= 0 → irq < 0)
-- Add GENMASK defines for SPI offload 32-bit message layout; replace manual
-  bit-shifts with put_unaligned_be32() + FIELD_PREP()
-- Use DIV_ROUND_CLOSEST_ULL() instead of div64_u64()
-- ad4691_set_sampling_freq(): fix indentation; drop unnecessary else after return
-- ad4691_probe(): use PTR_ERR_OR_ZERO() for devm_spi_offload_get()
-- Link to v2: https://lore.kernel.org/r/20260310-ad4692-multichannel-sar-adc-driver-v2-0-d9bb8aeb5e17@analog.com
-
-Changes in v2:
-- Drop adi,spi-mode DT property; operating mode now auto-detected
-  from pwms presence (CNV Clock Mode if present, Manual Mode if not)
-- Reduce from 5 operating modes to 2 (CNV Clock Mode, Manual Mode);
-  Autonomous, SPI Burst and CNV Burst modes removed as user-selectable
-  modes; Autonomous Mode is now the internal idle/single-shot state
-- Single-shot read_raw always uses internal oscillator (Autonomous
-  Mode), independent of the configured buffer mode
-- Replace bulk regulator API with devm_regulator_get_enable() and
-  devm_regulator_get_enable_read_voltage()
-- Use guard(mutex) and IIO_DEV_ACQUIRE_DIRECT_MODE scoped helpers
-- Replace enum + indexed chip_info array with named chip_info structs
-- Remove product_id field and hardware ID check from probe
-- Factor IIO_CHAN_INFO_RAW body into ad4691_single_shot_read() helper
-- Use fwnode_irq_get(dev_fwnode(dev), 0); drop interrupt-names from
-  DT binding
-- Use devm_clk_get_enabled(dev, NULL); drop clock-names from DT
-  binding
-- Use spi_write_then_read() for DMA-safe register writes
-- Use put_unaligned_be16() for SPI header construction
-- fsleep() instead of usleep_range() in single-shot path
-- storagebits 24->32 for manual-mode channels (uniform DMA layout)
-- Collect full scan into vals[16], single iio_push_to_buffers_with_ts()
-- Use pf->timestamp instead of iio_get_time_ns() in trigger handler
-- Remove IRQF_TRIGGER_FALLING (comes from firmware/DT)
-- Fix offload xfer array size ([17]: N channels + 1 state reset)
-- Drop third DT binding example per reviewer request
-- Link to v1: https://lore.kernel.org/r/20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com
-
----
-Radu Sabau (6):
-      dt-bindings: iio: adc: add AD4691 family
-      iio: adc: ad4691: add initial driver for AD4691 family
-      iio: adc: ad4691: add triggered buffer support
-      iio: adc: ad4691: add SPI offload support
-      iio: adc: ad4691: add oversampling support
-      docs: iio: adc: ad4691: add driver documentation
-
- .../devicetree/bindings/iio/adc/adi,ad4691.yaml    |  180 ++
- Documentation/iio/ad4691.rst                       |  226 +++
- Documentation/iio/index.rst                        |    1 +
- MAINTAINERS                                        |    9 +
- drivers/iio/adc/Kconfig                            |   16 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/ad4691.c                           | 2084 ++++++++++++++++++++
- 7 files changed, 2517 insertions(+)
----
-base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
-change-id: 20260302-ad4692-multichannel-sar-adc-driver-78e4d44d24b2
-
-Best regards,
 -- 
-Radu Sabau <radu.sabau@analog.com>
+2.43.0
 
 
