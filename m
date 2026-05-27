@@ -1,165 +1,89 @@
-Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BB562DEA7B
-	for <linux-pwm@vger.kernel.org>; Tue, 26 May 2026 18:49:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.173
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779821370; cv=pass; b=rjDIJ7CVoo2x+1Xs7/YR2L15ZZWW2GjUj9YqGs8a4aALFrQCOBjhFkw4xF4S6EZlVZh18dEixYneSII6SL4UWbD0FuvW9UkZPHjJod/ljHX6pewCPnQaH6CJZTpFcVBJzg8ovRYmte/cKwD9o6uXXXBZUhHPW4PmliGeODYFndU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779821370; c=relaxed/simple;
-	bh=Ee8xVylefUxsgAC7/wUPXBUGosnDj2MjwQFydFBfjuU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JVj5kM69yZWA6H8hr0anjTkoeZiFqxzAhUw1wu1ddZwmlOpEtjwqEkGzl0LHqYUbNGJh5oiPW4Z+Pa2qDUzxIgxmgiEVc6/s/+oJ/rJQfQXpMi2XSEkbGQFfZIiYA9ypNbmpZb2no/jmVq8CAGKtFUlRFbUfMXHRyPD3SDJKL+I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H/gtWsTx; arc=pass smtp.client-ip=74.125.82.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B06CB3CD8AA;
+	Wed, 27 May 2026 07:55:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779868524; cv=none; b=kaUdklQewsi3B5mu4q65FxGUwGZ7h8DCUvUxe8OQEe2RPXVEtCob7FyLeD4Ywhs4UXGuvpIYNVpwbhrUUfOSbotfwHQGR9IjfOABHu+r02aDRpPn6OA3262rtXur+06wNzIp2eOQy9+3Mzji3mWbeBgYz1hiQzdQgYjqPwb6D1k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779868524; c=relaxed/simple;
+	bh=zDN3dQE0pZCHm/EWjUiAZII+WWQDvvks2kEWRXa7SX8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FgtRW1MRj0m8ut0k42WuvN7vhMsUOGc1hLZT/gB8hYZywvv/vIUorNRW7WxGD6uMML8Fd6DfLKd6K8M6luUBtwkO4xmII1nAbegxTV+JxgX7Q/XLliSW/7xmlrWnnXNJ/pz6LXbj9cbJgOXCyWpAoZUaxXOBD830k9S2cFccr7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UNUWQFCm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H/gtWsTx"
-Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-30436e8f582so595455eec.3
-        for <linux-pwm@vger.kernel.org>; Tue, 26 May 2026 11:49:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779821368; cv=none;
-        d=google.com; s=arc-20240605;
-        b=MG2kPhCl6YdxL11cUaqY+WDmuXqvWS38URUHxY+PaG+f4q/YxuBhfD7HP+YDs8rCDt
-         +DuscPbnhRhcFZo7ILc1Gpi+XVxCNEEENZ3frjGbMltXf47VoJ5ZIapxIEvuHXfto9iK
-         ixriLOZGcNUg9NqfKlEi/V5Dcg4pN58VUHjQPgUXGv0LVuoMIXUogArHIIdPSB68RTPy
-         i/IsAttIgb1MGyfztZUvLSc5M96VwVTGRV8IYhJwWGu22IljNma0wNNMY8qSKKA2HCBI
-         5rf/rgX4//lct0x11BSldl4SVYnVuT0JDSVOzu9UmLz6kKArjax+SD0NSo/hyvaz5fq5
-         K7nA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=gq/O5ZHqDltDecbFmxpc8E+jT5oOcbB4Yuea57wtwdA=;
-        fh=RNV3FoUmlNZXauEQjISq3FcZK9X5pirO4Z5e9Ga99OM=;
-        b=fS1/dZ0Yjo2pbvkVe4mTzJOpmULrrTgbgsS/UxPEbqoVUJ7HsPecTJt0zIsgHMgSih
-         /xVA7eGy80yXxbYFh+QVwqx++BOYr1LNeOkViFPH5UpLAYjQDZPQQI4JhA/l4YBZCE7N
-         QGlYY/TwGojX9tzvkr+R+K04XkSkxkGFhESPhvgmgqtuOK0wFjGbPb+Hy7yH0zD3RLhG
-         85VW7OvB08t4BrUTYExCycCl3uscU7paWutL5tXwlowAcUfI91FPAqb4KcMcxTxTEDHL
-         OV9quh28hb4aoLhsaB1YwMfCJkl451uBsZvKmz6aiwZn2/EB2o9N/XeB3+lOiWKTs0Ow
-         HifQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779821368; x=1780426168; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gq/O5ZHqDltDecbFmxpc8E+jT5oOcbB4Yuea57wtwdA=;
-        b=H/gtWsTxLU0K+b4gFr28hm1M2IqFsQtp4OhQbOtWzR54nA/ZWN3No/6X/dzvj2sjCI
-         tI1SGQ/6hvbxgGEa4S4DaMWZ2UZx2QHLMa/SddknnO4shgZFUzr1qjKX5H6YqO/YltR1
-         R2KyKjtM5f1mOQxdlutG4DMBrlXHvM61XCxRtqLq7Z41pZjXRwrc1fhoC5JoDq7Lzme9
-         XfmcQrhbEUshzeGkdyJRCHqfeuxp6qaxRBJ1PTfswoFhRD8OiVJSjIDm3ZWlwJ4SzMkp
-         i0Zy4SaYI+HOJ/7EgzgfiDlPLcjU0bM7xMZv50tVSH2f9hM00/tvYeQscvP7+VM9a4II
-         nHYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779821368; x=1780426168;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gq/O5ZHqDltDecbFmxpc8E+jT5oOcbB4Yuea57wtwdA=;
-        b=ZRK4J1NY63adTqzXztPWEMGLMjFbdbdKSz9o4rtQWizny4wt+BvYIQGl0p5hrSPrH1
-         AZeKQ/LrMtCsIuHXk9Q0srebUtSofxEQTkwJtpoP4i7Zrxo9Oe/Lwm1IkrawBa9F8k5Q
-         B5HBQzq6K3KLydxYKH7IMkSp/PRK5ZvYlzHekuXkcMWOXrlNGHCJAtn+QmnYpEj3ct+A
-         7qVK3OuSrAzAzx8JXWueTMB3HDHVzDfuI68WzlQZiYDxPzxfVsvFmCjAlliMqFPfEOZv
-         uW2JbucD0DBJlnIzioFpSy2DBg+8Zq7ZdsNrXIBtL4fPc9WbJXwkQZ3u8bDv3/9ur2Bn
-         z/1w==
-X-Forwarded-Encrypted: i=1; AFNElJ9A8iizaZGtAhQlUk/W/1+u0ml0sGCYlDxOVjtsubEWHW+LhGJvnIZVQoxIAk9Qz5CwIc3w4RVZZLQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXzcewv1dSOZSul2hS4qPEMzFzVm0XQVBOuuzv4Mx9ZlmPhKCf
-	9RAlO86h9+FTBNkFjUSFx2eyEiUjL2q/95jc8+IEvcZwwtJz/iEvEIWHQ+nYvZPDjqTdEH+muBr
-	0C7CKYkKJnfge7tYiywdauieTMuf4LTs=
-X-Gm-Gg: Acq92OFxs3bH5kMG3S4gMnD03Kym8R8eh5k76GYDKlQ16w7mlJsnlykuTcO2LalkSG+
-	pMyE70EwQKT6/YqcmEBw4w8nkmyQWMkF+7s1Q4lcmz/7W1M1cDgG4IxKG3bBK+NRlWZtrxBA/Sl
-	W50is3khPCwU/m7swFqqRwclKOslza9aQz7OgRHaVpnqMEjJo/ULXqOQY6BfBHipGpXji0GQY4Y
-	Yqm8pTEm7wYRFZ331cAaeRzB54X8r/CcTc+B0bhPhYWN8/fbP9qFCEXgPUZwuUXAmiYfkGgNjaj
-	6A3JgSDsSNuBcy1VDRRd7iOCdW4/RQ5j8yY7fjtqdUpSchTv9oq0q9L/zQxt3mmjRlQdZZSAKaY
-	Cet8cTA/Ofoyvo9Cnu94y1Lc=
-X-Received: by 2002:a05:7300:5711:b0:2dc:e799:934f with SMTP id
- 5a478bee46e88-30449099a11mr4340063eec.3.1779821368216; Tue, 26 May 2026
- 11:49:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UNUWQFCm"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BF5EA1F000E9;
+	Wed, 27 May 2026 07:55:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779868523;
+	bh=zDN3dQE0pZCHm/EWjUiAZII+WWQDvvks2kEWRXa7SX8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=UNUWQFCmi5dD4PUWIDlyhsoLTrAw7u+EKnCD83Dl+FeOFH21yTR9qoQlpzrn0/Asg
+	 6wl8Q6DA44YlPXZSP+ETUeUeheClz+nXVCCl7KjTpq56EwcM7loZnLuI38m2pxQXMj
+	 YrRey8SH8BzJndKiuWTn4biBT6Pjl76uuNSDFZ96ohRRa1CeYvbe7I8r2wqcpKVhmu
+	 JvffroaCsnKqINBkmXgbdooRNXVnDveZE0T/b7W4RaWPZSgfG0NVd2Zq92xgKHkywN
+	 8sUmQ3MDSorxiyemIS30cwyTZNsG1umaNJ77bc+GBttpjmZntE0XacWoYYx1ebJ9iu
+	 FJWRKHV/WOIxA==
+Date: Wed, 27 May 2026 09:55:20 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Florian Fainelli <florian.fainelli@broadcom.com>
+Cc: Andrea della Porta <andrea.porta@suse.com>, linux-pwm@vger.kernel.org, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	Naushir Patuck <naush@raspberrypi.com>, Stanimir Varbanov <svarbanov@suse.de>, mbrugger@suse.com
+Subject: Re: [PATCH v3 0/3] Add RP1 PWM controller support
+Message-ID: <ahajNRmYNa5SNQnS@monoceros>
+References: <cover.1776932336.git.andrea.porta@suse.com>
+ <af2bsEdAhYY9c4rb@apocalypse>
+ <394b5e02-1aa6-4efe-a5f7-4468d1f82172@broadcom.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260525202921.124698-1-dakr@kernel.org> <20260525202921.124698-23-dakr@kernel.org>
-In-Reply-To: <20260525202921.124698-23-dakr@kernel.org>
-From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date: Tue, 26 May 2026 20:49:15 +0200
-X-Gm-Features: AVHnY4LynmVmerdJFsxXUCWY1urLy48wQB7u14V2mO2sDmYd9U9x9x1s6x7Cz50
-Message-ID: <CANiq72=iLUncNw35tpRinUt15W0aqsEiNn+rMcjC3VGq0gx0Rg@mail.gmail.com>
-Subject: Re: [PATCH v5 22/24] rust: types: add `ForLt` trait for higher-ranked
- lifetime support
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: gregkh@linuxfoundation.org, rafael@kernel.org, acourbot@nvidia.com, 
-	aliceryhl@google.com, david.m.ertman@intel.com, ira.weiny@intel.com, 
-	leon@kernel.org, viresh.kumar@linaro.org, m.wilczynski@samsung.com, 
-	ukleinek@kernel.org, bhelgaas@google.com, kwilczynski@kernel.org, 
-	abdiel.janulgue@gmail.com, robin.murphy@arm.com, markus.probst@posteo.de, 
-	ojeda@kernel.org, boqun@kernel.org, gary@garyguo.net, 
-	bjorn3_gh@protonmail.com, lossin@kernel.org, a.hindborg@kernel.org, 
-	tmgross@umich.edu, igor.korotin@linux.dev, daniel.almeida@collabora.com, 
-	pcolberg@redhat.com, driver-core@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, nova-gpu@lists.linux.dev, 
-	dri-devel@lists.freedesktop.org, linux-pm@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, linux-pci@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, Eliot Courtney <ecourtney@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="euzjwg2lalycyeq4"
+Content-Disposition: inline
+In-Reply-To: <394b5e02-1aa6-4efe-a5f7-4468d1f82172@broadcom.com>
 
-On Mon, May 25, 2026 at 10:32=E2=80=AFPM Danilo Krummrich <dakr@kernel.org>=
- wrote:
->
-> +/// Representation of types generic over a lifetime.
-> +///
-> +/// The type must be covariant over the generic lifetime, i.e. the lifet=
-ime parameter
-> +/// can be soundly shortened.
 
-I wonder if we could keep some of the commit message around here -- it
-was a well-written one!
+--euzjwg2lalycyeq4
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [PATCH v3 0/3] Add RP1 PWM controller support
+MIME-Version: 1.0
 
-> +/// The full syntax is
-> +/// ```
+Hello,
 
-Nit: we are not fully consistent treewide about this, but please add a
-newline before (and after) examples/code blocks.
+On Wed, May 20, 2026 at 04:31:42PM -0700, Florian Fainelli wrote:
+> I would prefer to take the DTS changes through the Broadcom ARM SoC tree to
+> minimize conflicts on my end, are you going to take the PWM patches for 7.2?
 
-> +/// ForLt!(TypeThatUse<'_>) // Equivalent to `ForLt!(for<'a> TypeThatUse=
-<'a>)`
+I didn't find the time yet to look in detail, but skimming
+https://sashiko.dev/#/patchset/cover.1776932336.git.andrea.porta%40suse.com
+suggests that there is still something to do for Andrea.
 
-Nit: please end comments with a period (most in the patch are already OK).
+Best regards
+Uwe
 
-> +        // https://github.com/rust-lang/rust/issues/152489
+--euzjwg2lalycyeq4
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Linked to:
+-----BEGIN PGP SIGNATURE-----
 
-  https://github.com/Rust-for-Linux/linux/issues/355
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmoWo2QACgkQj4D7WH0S
+/k72hwf/eJOLdTqx9awA8YMjMpmRLgfAPn2nkdaDbwV6esNNZT0ofvsM+CvjBPXh
+pJjAAuufZwcSsQjEEd6kB41yTDhIBsR8ZLves3J7ocg1SwKGdmVucyKw9mnCR2ce
+AWsrfAD0AZLrdlxEG1L5N0d95SUPLlFMSJcr9kyol3NsL4i3oerEsMhJC1mkhq8Y
+NZRB86OK1cnc70jWKEUjGvfuHP+G9rn0gOuax2znEwcVxq4Hytm/HCsHoheP119q
+Cq9GRHBRvmt5fl4BsgFxTcpTSOce1quz54tJh2ln0cGEorxO02RfVXipYGXel5xv
+WMPklMj+QVkPq6qK3uqLvmcVkRkZAQ==
+=4Fzh
+-----END PGP SIGNATURE-----
 
-and tagged the issue with our label upstream.
-
-> +    // Currently the Rust compiler doesn't check this, see the above Pro=
-veWf documentation.
-
-Nit: `ProveWf`
-
-> +/// Obtain a type that implements `ForLt` for the given higher-ranked ty=
-pe.
-
-Nit: [`ForLt`] like below.
-
-> +/// Please refer to the documentation of [`ForLt`] trait.
-
-"of the"?
-
-> +#[allow(non_snake_case)] // The macro shares the name with the trait.
-
-We normally put comments on top of attributes, but if somehow that
-messes up the formatting or similar, please ignore it.
-
-Acked-by: Miguel Ojeda <ojeda@kernel.org>
-
-Thanks!
-
-Cheers,
-Miguel
+--euzjwg2lalycyeq4--
