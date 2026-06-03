@@ -1,126 +1,137 @@
-Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A541D187346
-	for <linux-pwm@vger.kernel.org>; Tue,  2 Jun 2026 15:12:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.180
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780413132; cv=pass; b=OM6Y1+AhH/Nvk5g3xioeZohpZey1d0oWvPHpHvvUsSe7ojZh0a8IHqrXeLYkKx6jjIOGgPK9pRtT0kn6gRiNAMffCfGFfo8zVXCXAAqz/cSE6TZg9SV6eMTg2TQR35bBD0RK7iUARi0TVrkp+68F3jpWpVn+asQxasGHQ4JHdkY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780413132; c=relaxed/simple;
-	bh=uFPYloQT7XT6IfJNhJ/SAmsfhwQb5BmEaHuYH5X2XhI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=miglv6WwS3/YngxGkiPzYz9T9nIiVTp7c7ufSDl47k/Qr/jsXnrte7pj16rOb5NgTSjKvqPZz1KZ8d3w223N5KE+4Lcen9fYIeFLIJty18gV6LQeAyGJyb6sPWGSIAsqt7ccQ0Ijpp+IxnTfbL3zmgpFyn20EitsTuC3KBYJw2c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BPTUKWy3; arc=pass smtp.client-ip=74.125.82.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDCA2D7DD4;
+	Wed,  3 Jun 2026 01:10:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780449028; cv=none; b=OZzMKszVszP/tQ0Kt6wYfW43J2j9B3ooVNidfWhSJ+aWl9uNeS3PvngyfCCJ6k/xIz/hreo+vpfaICdStWA9Y8q/gjX/jaauT2+Fd3aq9OpSS3l3viLyPM2wtvjo3P5Mzq3U/BUK196kSWbgtZESRY2n80ain/8+TAdgcdZ3hwI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780449028; c=relaxed/simple;
+	bh=VFJzEinoo/4V280HpZpXwl1kty1kGVWTjct7kNh18nc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dFzz0KIMviltWif40vAvQolCTbDzS13z2K4UiYboTygdcXcjni2VhpzAF/BgROQZw0OMqAx8OZ91/8hnmEJCMo4b9H834kUP+W9JJsGQN4VUIaMYJsqi9xXEm8uf4rKP7ipsfahXmvcmq/DwFyPQnEVOTI7qgpyFa+oC27O11uY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bK40Chfx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BPTUKWy3"
-Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-30741f821cfso92725eec.1
-        for <linux-pwm@vger.kernel.org>; Tue, 02 Jun 2026 08:12:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780413130; cv=none;
-        d=google.com; s=arc-20240605;
-        b=HTl3fP6m11SRLG0k47XR1d7ZRrk1FcGdeQGGFtg8zGNn6wNXUvzhnvfRNEVvoOc/Go
-         9aRmYg6viEoXbxUR/Tw5sE2PvYmd0gXqWhdWpyj4frBX7M05pJE+rwZKlEKRydPJmka4
-         TdwzKVtnqaeusXW5NuPNMydQZgsnCeU/DSlBiXdzDc2B/0/6qJ1TkyAIo7sysugb5i44
-         DHzB0cr62NOjo6wJaBHVdqCAYNONOHjKpZUpvuV4wvzYzZx4rjw6dyJW7RJZ82r8XBO0
-         HOJhgyfPwD428nmwJ6qc6sCsZT5e5WYeskjnvzkBA5XeA7327HBdTHRsOsGqRJo9d0wk
-         Y2LA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=YiJYeG2fCLjzF65IFEg2pHH+5NjWfuJTGzHlNysR1+U=;
-        fh=aBGsj26+cnDjA7nglrc/51+Vgh0QvoVi69Grh9f+/Ow=;
-        b=JKNP5xm6cko4RfwCQ9wYa0aSQskfN9KnCv4ba6XmicF3lTpYClijjCVF2QZn6mY5uB
-         H3XmvmsIypBO3QBQp6wwzvHBRpSApVfzh2LKcHjypGfjcFIwpub14oXSZLRxit3a/mqU
-         2E0dcwITA1q0U2Kefw3BBcjcuyfiUlNWCplGFmz9a/ELQ9/iB0b4q1bKMOd0SHRT3fuG
-         dDWZ3GVNMCj1lM4Rbwr2FjZ63XcyHBQTug/EzNxvj1U2BRncXaSBuHTZG5kKVeZUrMjq
-         jBwLWY93BNo+wSmtbmU2EzLUXdTjCxYi/CDvhDN7ijZL/2Mr1wsgWOz159UU0W5M4VqD
-         guqA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780413130; x=1781017930; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YiJYeG2fCLjzF65IFEg2pHH+5NjWfuJTGzHlNysR1+U=;
-        b=BPTUKWy3oKEljJFweT4sXiVa5VpOeXCztzpDykXqQ/CoKKjEiJkLTBn9KLNPPJxUNI
-         k621brU3PvHS++P7+qk7yJfhdW69iqOHeF8F49UrMvTIhA+OPjIc98YU5ZxXkQeKiXrD
-         FuEykK3sYNMVBTOwatIkyaxznyS/4B7N5foU00kmKhsnOY/cmmTNwpYkuBVsZEbb2KKO
-         AZJmPz3rwcrK0liZjLYsWCl83nysi8+mu6dv8ayxQrDmoZRUq0oU4lEg6d4BgJ4KhX4e
-         H98KYy4eDQfMkzwpUTuj6clKJ96cQUrAgl4+c7vvSejZCjZvKen1tJP/fw7IS3ZSchSz
-         bIzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780413130; x=1781017930;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=YiJYeG2fCLjzF65IFEg2pHH+5NjWfuJTGzHlNysR1+U=;
-        b=WL9gYteUf7BcQ/osnELR/8wYVQIoLjx6U6SKbMML5CglyAxhZYYG7ZdGpYbjmgpYxs
-         ogm/xpN4vYH1ghTFJQsoix3HQJWm57JuHuUUVgis/wLRnAEa3IOICr2BUwc9ItqC4amL
-         XsHk8EDqUif1mYwkwHIaQnn3onMo/PZ+m2EcQrX9ZpSxZBOu0JZtNUMErhN8fhb+ZQfE
-         TB9V4AfLPqDpdWVDyT3klJ/zfFCUnPpzD9GowFpXtEl94RjGLIwdEYZwFlBKEVh5EcI3
-         sQZl2DrnNOJLTY9n+aIXnq8uXwuaGGXF2M82KmZqTeG/hxJRQ8JgP7qeuPW/9T9sKCzP
-         sivw==
-X-Forwarded-Encrypted: i=1; AFNElJ8WiqBJxg5mDncAKQHhJTFygmsag+f1C2uWUpqZJG7w4aS7dBNUY1xz85MHecJcC5KIP81UmrC0DNU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YykF4RVgqfzhFouP3uLc2Mypp7nACtbNvYzrnxcBy3Sfv/mgehE
-	Mon0rtzUFPN6XQaqsqsi7MTKU+2wh4GX33bCB3+aXmrTOndzAwNVHm581UCP1PC5x9vY9iocpTP
-	I4utVnqEz76TYrlYzOmsoMnAssbetxpQ=
-X-Gm-Gg: Acq92OEJS1Au1EsjS+wWQGlVzeMKjOvWlATqUfIBWwOhHoG2aqZ3eB44PSl33Fbrdl6
-	c8crT7Q+ZVWxtUt/7maS5qRTuRJIuF/fGdAk+9Sd4j3it+HlIJosO4Ny4yx9jDbCJuawcBVTCBm
-	G6jWIbd37LOxCsKbCISlHgSi510FhUP0OsTnyA9Aju+tOAlPD4t9k6r22p0L5j9HpYVEJK8JJcl
-	+UWDEH0doJfB84lezO3G7WnB4wToNKg6yvN4bYz9EORjVCOjuSDugZ0N9+LruKe1fu0nSlcT++i
-	k2u6duKWPf80Fb6fI4brEOiGHuuEu5+d/mOtJUPbpr9Sjtsa1q/SqGGI2RHv0LEmbFNf+mRBsR6
-	u+q3QGbA952ck6yCMWLF8j8jaaYngAR/FYg==
-X-Received: by 2002:a05:693c:300c:b0:2ea:5057:a320 with SMTP id
- 5a478bee46e88-304fa4a49b8mr3613659eec.2.1780413129636; Tue, 02 Jun 2026
- 08:12:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bK40Chfx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78B2A1F00893;
+	Wed,  3 Jun 2026 01:10:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780449027;
+	bh=vg4OT7qVOOfiZWFV5Vcsuizp9IDFD8+pqun6oZHSTcM=;
+	h=From:To:Cc:Subject:Date;
+	b=bK40Chfx+OYTbVFoho2VApu/zYarNWFjOtFjO7yjtr8tQILFmaHSzBTcATrsQ5lOt
+	 BzzDNGMelyIeLbDps5lE25YcnmL4lOYemVseUghlhimjykx9sBLUxO/LVIuSL5TfNs
+	 /WQnxYsAq1fscjQsNbEJcqZ0vTlc7b0aNghVgTWJLDxqJEOaw9TQDel7YZUsuO3J/U
+	 xsIDlEF8LylAtjBaClr+Snzq5QWNI8rrwO3FZocJauVvMtXjo/U1dOYTfN61eJf06J
+	 id3S68G+VgFIL2GjMBROGyqe855oW7lPLcRhPVROkwQt06aDl4mcPl/Df8zgTSm7Ry
+	 MwU62cK2I0z0Q==
+From: Danilo Krummrich <dakr@kernel.org>
+To: gregkh@linuxfoundation.org,
+	rafael@kernel.org,
+	dakr@kernel.org,
+	ojeda@kernel.org,
+	boqun@kernel.org,
+	gary@garyguo.net,
+	bjorn3_gh@protonmail.com,
+	lossin@kernel.org,
+	a.hindborg@kernel.org,
+	aliceryhl@google.com,
+	tmgross@umich.edu,
+	acourbot@nvidia.com,
+	ecourtney@nvidia.com,
+	m.wilczynski@samsung.com,
+	david.m.ertman@intel.com,
+	ira.weiny@intel.com,
+	leon@kernel.org,
+	daniel.almeida@collabora.com,
+	bhelgaas@google.com,
+	kwilczynski@kernel.org
+Cc: driver-core@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	nova-gpu@lists.linux.dev,
+	dri-devel@lists.freedesktop.org,
+	linux-pwm@vger.kernel.org,
+	rust-for-linux@vger.kernel.org
+Subject: [PATCH v2 0/7] ForLt/CovariantForLt split, auxiliary closure API and DevresLt
+Date: Wed,  3 Jun 2026 03:10:11 +0200
+Message-ID: <20260603011020.2073650-1-dakr@kernel.org>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260602143002.38390-1-laniel_francis@privacyrequired.com>
-In-Reply-To: <20260602143002.38390-1-laniel_francis@privacyrequired.com>
-From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date: Tue, 2 Jun 2026 17:11:57 +0200
-X-Gm-Features: AVHnY4LFoVeXSriFdB4h3MAWgoxx4YQ8iyP8wPhbEtGQ9gefjQQAfyS_0pWNPPs
-Message-ID: <CANiq72n+tyDcabpwZOR1gHb4mycbpTQbzr0QNgi9c48cSnrZ8w@mail.gmail.com>
-Subject: Re: [PATCH v2] rust: pwm: replace `core::mem::zeroed` with `pin_init::zeroed`
-To: Francis Laniel <laniel_francis@privacyrequired.com>
-Cc: Michal Wilczynski <m.wilczynski@samsung.com>, Miguel Ojeda <ojeda@kernel.org>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Benno Lossin <lossin@kernel.org>, Gary Guo <gary@garyguo.net>, 
-	Alexandre Courbot <acourbot@nvidia.com>, Boqun Feng <boqun@kernel.org>, 
-	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
-	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, linux-pwm@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 2, 2026 at 4:30=E2=80=AFPM Francis Laniel
-<laniel_francis@privacyrequired.com> wrote:
->
-> Link: https://github.com/Rust-for-Linux/linux/issues/1189
-> Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.com>
-> Suggested-by: Benno Lossin <lossin@kernel.org>
-> Reviewed-by: Alexandre Courbot <acourbot@nvidia.com>
-> Acked-by: Michal Wilczynski <m.wilczynski@samsung.com>
+The ForLt trait currently guarantees covariance, which allows safe
+lifetime shortening via cast_ref(). However, some types (e.g. those
+containing Mutex<&'bound T>) are invariant over their lifetime parameter
+and cannot safely use cast_ref().
 
-I would suggest this ordering:
+This series splits ForLt into two traits:
 
-    Suggested-by: Benno Lossin <lossin@kernel.org>
-    Link: https://github.com/Rust-for-Linux/linux/issues/1189
-    Reviewed-by: Alexandre Courbot <acourbot@nvidia.com>
-    Acked-by: Michal Wilczynski <m.wilczynski@samsung.com>
-    Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.com>
+  - ForLt: base trait providing unsafe cast_ref_unchecked() for all
+    lifetime-parameterized types.
 
-I guess this will go through PWM; otherwise, please let me know.
+  - CovariantForLt: unsafe subtrait that guarantees covariance,
+    providing a safe cast_ref() method.
 
-Thanks for the patch!
+For invariant types, a closure-based API (registration_data_with()) is
+added to the auxiliary subsystem. The closure's HRTB prevents the caller
+from choosing a concrete lifetime, which would be unsound for invariant
+types.
 
-Cheers,
-Miguel
+On top of that, this series adds DevresLt<F: ForLt>, a thin wrapper
+around Devres<F::Of<'static>> that shortens the stored 'static lifetime
+back to the caller's borrow scope. DevresLt provides both closure-based
+access (access_with/try_access_with for ForLt types) and direct
+reference access (access/try_access for CovariantForLt types).
+
+Also implement ForLt and CovariantForLt for Bar, IoMem and
+ExclusiveIoMem, and update their into_devres() methods to return
+DevresLt. Provide convenience type aliases DevresBar, DevresIoMem and
+DevresExclusiveIoMem.
+
+Changes in v2:
+- Fold the ForLt -> CovariantForLt rename and the new ForLt base trait
+  into this series
+- Add closure-based registration_data_with() for auxiliary ForLt types
+- Add auxiliary sample demonstrating ForLt with an invariant Mutex type
+- DevresLt: add closure-based access_with()/try_access_with() for ForLt
+  types alongside direct access()/try_access() for CovariantForLt types
+- Make DevresLt::new() unsafe; callers must guarantee the data outlives
+  the device binding
+- Implement both ForLt and CovariantForLt (previously just ForLt) for
+  Bar, IoMem, ExclusiveIoMem
+- Various safety comment and documentation improvements
+
+Danilo Krummrich (7):
+  rust: types: rename ForLt to CovariantForLt
+  rust: types: introduce ForLt base trait for CovariantForLt
+  rust: auxiliary: add registration_data_with() for ForLt types
+  rust: auxiliary: sample: demonstrate ForLt with invariant Mutex type
+  rust: devres: add DevresLt for ForLt-aware device resource access
+  rust: pci: return DevresLt from Bar::into_devres()
+  rust: io: mem: return DevresLt from
+    IoMem/ExclusiveIoMem::into_devres()
+
+ drivers/gpu/nova-core/driver.rs       |   4 +-
+ drivers/pwm/pwm_th1520.rs             |   5 +-
+ rust/kernel/auxiliary.rs              |  74 +++++++++++++---
+ rust/kernel/devres.rs                 | 110 +++++++++++++++++++++++
+ rust/kernel/io/mem.rs                 |  65 +++++++++-----
+ rust/kernel/pci.rs                    |   1 +
+ rust/kernel/pci/io.rs                 |  37 +++++---
+ rust/kernel/types.rs                  |   1 +
+ rust/kernel/types/for_lt.rs           | 122 ++++++++++++++++++++------
+ rust/macros/for_lt.rs                 |  52 ++++++++---
+ rust/macros/lib.rs                    |  18 +++-
+ samples/rust/rust_driver_auxiliary.rs |  96 ++++++++++++++------
+ 12 files changed, 472 insertions(+), 113 deletions(-)
+
+
+base-commit: 0023a1e8d01a9d400257d30c851bd16a29568809
+-- 
+2.54.0
+
