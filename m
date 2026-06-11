@@ -1,134 +1,71 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4D63750AD;
-	Wed, 10 Jun 2026 10:17:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B3C34D901;
+	Thu, 11 Jun 2026 08:46:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781086640; cv=none; b=IHdMNuL0tch8JORNY7p1fM8EZqL3J7H+KqrMMCnyJv3kiIf79kAkYeJLGJiN0mQQtMmKR70dMJbx1Qnmd2mN1LFYLCBZ8qAgvSRjau2Sh+0SHEW6DgnvOiXo5q3tWh+vY4oavMGzAnWUIEeiiFN1yU9YwW2fuh1B9uNSfl2hddk=
+	t=1781167588; cv=none; b=lF838U78PO3HNUZKxFuU9PCUZ+ztP9/52ZDBPkllVB2MiJ4tiffVaZzJVp5Clut5W1BJuVIcxFFXDHD1xZpyYN7DqrOL34iKMR9Q0pHR8H8URB6yTPn5hUaL4ACcCezOvmrEe0sl/3XrgpIkrXvrqd642KBNpFYFBnA8twRyPww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781086640; c=relaxed/simple;
-	bh=QLs+K8uN6SokZzOdgqRBOhUj93ywnya2oJxjFJmAOwQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c3yNOJZCFN59l6+UyH771kJxAYGw6inZ+z2AdDz+irk08VAr3XB5HGvdLtm9AEP29VzajqCPmMPAlp9jXObhze7WZBfGVv7IanvsnrjA+NobeL1cv8Q2zKVIIo9wcodMp9b/iru92wALCa1baYV7TL5fMLAI/jYxUWwBFmjkQ+8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R1SC5xWn; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781167588; c=relaxed/simple;
+	bh=5pvQ8v3SMjwGogRWrF+Ov4Ds5DzEHsb00w0xVEE/07g=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=ILlaS1bEVta7VEpCgoZqA/79PIDnUEP4j41n/aQiLGiapmF0r80yh8ZiXPEtSJxwxep/qypDojAAwYwsVN9VWfafOOCJgp71h80iwYrl6eazcwhzL23AdpQPhJVfNr1iNfI5Je/hr+v7H1eM2hLsIS57o3af7XOyk22ij3VKbDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nFQEdgRH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R1SC5xWn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 271C11F00893;
-	Wed, 10 Jun 2026 10:17:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nFQEdgRH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4AC41F00893;
+	Thu, 11 Jun 2026 08:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781086639;
-	bh=UDlj2dzavJImff0WXbs/3Ldg9y0HsBfP9xcYgIAc9pw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=R1SC5xWnsPrLcF1XIiUaaG0rM+oalmTLb6NIJM6pqulxDtz+89UcrJH0IVFI2HcQa
-	 t+dv73mgK/GiBBqoRzRti8M+J65gqZZTin88iWrezONPFwHGFT5VQ2aH84v8EIrCPN
-	 mv2Yin0JfdnoYqD58hzjTIhbgU5MmP8xW12HQJwTlydeN28L+IK64XCLa/H0hAj3ml
-	 hLnx5vbmJJBmDkz16BeMBSmrky7NxwJQxcsgOWum+H1+1Td2kKmhclHXiYIMD07XwU
-	 H4JdGakx3qCOnfdEmVSLLsYqwjWfg5Fnlci+zh48JwqfF6Tm/SJ8YH9H+6eYbOX2iy
-	 R86fj2DJZQdiQ==
-Message-ID: <09563fd2-344e-4458-831f-1bef862dfb34@kernel.org>
-Date: Wed, 10 Jun 2026 12:17:07 +0200
+	s=k20260515; t=1781167587;
+	bh=2IIKlhb3svN4EPd89ooG0cnVxCK3GU+JlZ80wFVg5BE=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date;
+	b=nFQEdgRHCPlaDppgNORMWkZO4wA854yfVwzCTMLEFdNqjtJ7ksYrCCAthGYjPQiGp
+	 rpX+y/d8juuDwYat3Rij5nuou/Hbl11diPdFieep+eOn2PNZ2g1rHbJVjnGcKpikwD
+	 WyEIv1xUzV0tMHKYIyjEc/T6zO8Z5tSi5tfLRUwMiOhHfXxGl8zQCEh+UFeXkoxh76
+	 XNjctmygrPSqtLV9asIrsf0LWuquijaxdu9zAnPg3drK5DTTasjx2Ec4H3OC0bBbQE
+	 O0u0wfmfYHMdgxILcA5T3LIglS18amCXgz5SlG5vc25S7WTzNfMw7JEEl6OJpin3ko
+	 64l/KQLzvkx0Q==
+From: Lee Jones <lee@kernel.org>
+To: lee@kernel.org, ukleinek@kernel.org, robh@kernel.org, 
+ krzk+dt@kernel.org, conor+dt@kernel.org, mcoquelin.stm32@gmail.com, 
+ alexandre.torgue@foss.st.com, linusw@kernel.org, 
+ Manish Baing <manishbaing2789@gmail.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-stm32@st-md-mailman.stormreply.com, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ Conor Dooley <conor.dooley@microchip.com>
+In-Reply-To: <20260523173251.72540-2-manishbaing2789@gmail.com>
+References: <20260523173251.72540-2-manishbaing2789@gmail.com>
+Subject: Re: (subset) [PATCH v4 1/2] dt-bindings: mfd: st,stmpe: Add
+ missing properties for PWM subnode
+Message-Id: <178116758438.933112.378885249487702601.b4-ty@b4>
+Date: Thu, 11 Jun 2026 09:46:24 +0100
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 1/2] dt-bindings: pwm: dwc: Add eswin compatible and
- resets property
-To: Xuyang Dong <dongxuyang@eswincomputing.com>
-Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, ben-linux@fluff.org, ben.dooks@codethink.co.uk,
- p.zabel@pengutronix.de, linux-pwm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- ningyu@eswincomputing.com, linmin@eswincomputing.com,
- xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com,
- pinkesh.vaghela@einfochips.com
-References: <20260605082242.1541-1-dongxuyang@eswincomputing.com>
- <20260605082318.1599-1-dongxuyang@eswincomputing.com>
- <20260605-scrupulous-tasteful-nuthatch-5d8ce3@quoll>
- <643f9b98.722f.19eabb8fe3e.Coremail.dongxuyang@eswincomputing.com>
- <c4fa85f1-365e-49ab-9549-d6d46529a68b@kernel.org>
- <25b0baf0.731a.19eb0d9bf07.Coremail.dongxuyang@eswincomputing.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGPBBMBCgA5AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJp2mE8AAoJEBuTQ307QWKbeaIP
- /ihHTkTW4KsN/DQ945JJbyu5tI0J80Wue7QyyLPglyKfhgb5cLLNPpOC8cCIJsc7+W3i2P38
- s2c1cOH6CYGE7E9ur3Vfme8NW2S2I/Z8VC7bZnzyS23wT17LrsdS/qCpx4o8U+pt/xdXDKph
- EGRYrIEmMpUWvyYzyYKGIe25FtaayIIKpq8eZYyFcp2f/sG5IkOW5uZzHPMPdcm87jU7fyuQ
- rAU2vx9r+ulUfQ/q9Z2roC/ode3l7t2pN7BCBCsUDp6JCrUyZrtT1e7EbA0ZRP3aOBNk2P2E
- DQOgJGjGdO5Yx2Y9LFtltu6JbsBJHi1syGRX3AtQYOMc4Y1WGoeZJmMlvKj2ZqqXNkcWi2DS
- IQEWB0uW6CqFsBBIMGDa+6OzdaVO/uAVXWDWml02Men3CILdI1MbVjoh8ECqYUY7OQ+JJvNN
- vnliuq5WM3Ghd3jg/LZZrxXjdIginRHFQCjIJYLKpLZWm1/iDFedcfzqRNYmTtqscdCNHW41
- oT3Z7BmO9xwdjuwBS6nmS6JJwkbf5Ot2QR4pB/DRU7ZwjT1qHe+9r9gF32wXVQatHNGK/VVu
- sfwOnkdxCWkp/qb2gdQRmZh+SedStWshigH6sNfuHBloF/q+hjMRc8b2m326OZdrbSHwY1Sz
- vti8Hn7n8NjdHO9LKB7BIdjkA9DA5WsqOuVCzsFNBFVDXDQBEADNkrQYSREUL4D3Gws46JEo
- Z9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLueMNsWLJBv
- BaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6eiOMheesVS
- 5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wAGldWsRxb
- f3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA6z6lBZn0
- WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9YegxWKvX
- XHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt91pFzBSO
- IpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gUBLHFTg2h
- YnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/JoFzZ4B0
- p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu4vXVFBYI
- GmpyNPYzRm0QPwARAQABwsF2BBgBCgAgAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtBYpsFAmna
- YUkACgkQG5NDfTtBYptX+BAApg32CkxwNucNEi8WfWA8oKkW0y8YDuY6ORMo9FWNGiT/OTy0
- vyJrLocrpn86zwfjVp+eCrssPYh8eqJfnWqmYv6ACQtHPYzPZQ3mSo8H97Z01oUxITzCxpXm
- ZkLgPIqtDPcC2E3dPM/fVxcyowM8XsaMA9wcsaUYrta8toOq2b9tKcjleKMfMrm0gQ9u7wUc
- QbLkwj6TCLOwucb07GXzLTNF9PZmaDUpKAZjMjmrW+le+SFvQbhamx0rxLWPR0NWntXpbCn+
- +ACch03p/JyTBVktxFsFyCt7pTPE1kEaeuXBTe/a2D9iQvRxRW19LvuO2e59/u1wYUiH/orz
- wbIC2S4dBsPAPihL3ztOU1yE86GPyQtSE0kU+/7snnLt4QGi6PChf3t5gnNjAzjUUovO8rgI
- c+5yN5heq5loYHgK6OQ9OlHzsPHO9e9MOQcKlFycs1pyijFGzDwdNUm/SchK8iWT2QApTx4A
- K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
- n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
- qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <25b0baf0.731a.19eb0d9bf07.Coremail.dongxuyang@eswincomputing.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.16-dev-ad80c
 
-On 10/06/2026 11:25, Xuyang Dong wrote:
->>> Hi Krzysztof,
->>>
->>> Thanks for your comments and time.
->>>
->>> Regarding snps,dw-apb-timers-pwm2, we previously intended to add the 
->>> resets property in the same patch. 
->>> However, as you suggested, we will split it into a separate patch.
->>
->> I find commit msg still confusing. Please always clearly explain WHY you
->> are doing changes.
->>
+On Sat, 23 May 2026 17:32:50 +0000, Manish Baing wrote:
+> The st,stmpe-pwm binding is already covered by the MFD schema in
+> Documentation/devicetree/bindings/mfd/st,stmpe.yaml. However, the
+> PWM subnode was missing a 'required' properties block. This allowed
+> Device Tree nodes to pass validation even if the 'compatible'
+> string was omitted. This omission could lead to probe failures
+> at runtime.
 > 
-> Hi Krzysztof,
-> 
-> Thanks for your comments.
-> 
-> According to the DesignWare IP for PWM controllers manual, it seems to me 
-> that Ben's previous submission may have missed the optional resets property.
-> 
-> Therefore, I would like to confirm: should I submit a separate fix patch for
-> the resets property, or include it as a feature patch in this series?
-> 
+> [...]
 
-One change is adding resets to existing binding for existing device.
-With its own rationale.
+Applied, thanks!
 
-Another change is adding new device compatible with its own necessary
-changes (if resets are different).
+[1/2] dt-bindings: mfd: st,stmpe: Add missing properties for PWM subnode
+      commit: b07f7904e0523170856876e4412be852377d492a
 
-Best regards,
-Krzysztof
+--
+Lee Jones [李琼斯]
+
