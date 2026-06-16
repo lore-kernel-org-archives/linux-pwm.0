@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5180B436379;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51687436358;
 	Tue, 16 Jun 2026 11:13:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781608409; cv=none; b=BpCNZAfTnM2vCetOchJ8Utg1GKbX9eOcoN4Se5WYjjAMZeOjWNNu4/NDsssgG8tHeglFX5WjiC2AkZ76aKGgoFp0va4JChQszo/gWtbGFZVKo2WcMpJ1hlBVxwzlxg7GC+tpzWi/hg1l1kU4H0mUDOAzXo3f1HzWfwpqBs1wmCw=
+	t=1781608409; cv=none; b=qWFrCWq35dxP1Gic+0E0z+nRHdQ1+9BuKFK2X8sl2J33X1XXP8SyIxvzGV/Znsj5JOMdNkW00BMdmaXklKL5Yz4btl5FvRwqEpG/73vGhSEQv1Kv+8eyrG0TY70XfLKif6sEWvzeIFFifPlc3CZdUMAprs8L6/ymLmgCnIHBigk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1781608409; c=relaxed/simple;
-	bh=NQcRfloY37BJ63E2hMgEtrbL6Ikpgzo6TOQ+KRqAqXs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BVifVqoRmSExT5hFg8rYTLeBrfdQqYwZc5Ok340Ks27l+6DJKdyd+Z6D03adw8A8aarHod3T3SNQ/S5dfjxu4vbTzJfg/3XrcpsHXJiQTjfKUsjWTycnhjithNIsKHX7L1yEmGmVyRUwKu+jOKDn3rR1QKCDvBwrFQlV4eCd90E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DTEQRPHv; arc=none smtp.client-ip=10.30.226.201
+	bh=wuQLvZe5ZnxbCDNi2S87UD72UC7CkBtYW73zX/3xjkE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=KgzRr/I4kbWSWFmilnem8Dv2hmnKrpxeW2yr7+4z3uh4l+4TrhXck71TUgKzLKYjH1+B0nkeD+AqE8GScxJ5S4mKz95W8N2y7MYnWb8lHGS9wshGtieqf0XKU6bcMlwIvdvi/dOhVSLufMzuPvt5lswoUSAs/HyhL20D7RdurTs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZmZIxiyz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DTEQRPHv"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 13A39C2BCB8;
-	Tue, 16 Jun 2026 11:13:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZmZIxiyz"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id ECC07C2BCB7;
+	Tue, 16 Jun 2026 11:13:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1781608409;
-	bh=NQcRfloY37BJ63E2hMgEtrbL6Ikpgzo6TOQ+KRqAqXs=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=DTEQRPHvR5WRIBHZ2q/+/jwM7v2Cp095d8O6mUthUJqmUR1uAV9gz/oPSSitJHE0U
-	 1AtbIJ0znWz+hvqAfn34CmTwVUwa9B1ki7D3jCc5ElcLjALDnv5TuMFPq/Amv3+I0v
-	 Qt2xQUWes07T/ZuJfhg6jqAa1SwDVCyjBzRh+01Xu8pPpWO+D8dAUIeGvjKbwfPW8M
-	 MqRSwU7S/9fjNXye/wZSKEL/dpd5jpYsuk4xj09BKqQmDsRmsXTqPDDStliRk/hoLi
-	 M4YnU1wTkAxakhcTgH4Jb+unwXGn1JvMYLdpZ1HNQ0a4YtM+nWrvL7PN6Kdy6Tuznj
-	 fCfJeTBc6Ngig==
+	bh=wuQLvZe5ZnxbCDNi2S87UD72UC7CkBtYW73zX/3xjkE=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=ZmZIxiyzqwyFLf4idOuSAMR8pslKyZUIHez+YgxA3Ap1IYOC8pwPUOL3e2oI8Rege
+	 bPSnYK511mxuxgaScCQARBq3fgzyiXvoJxWqOerNc9PE3mQznqztpBen0/W9umBm2X
+	 FaHdPtcRpPTkMSEzl/lXkZaw4pPt1Luk0Lgkg3wXTkZyiSbwojNasrEVcIXM7Tk3Gq
+	 Zn50wY5gGBnugeqKXbTn5488/mfgyqE+cvdZqvJtH5PT1B/k82FZTFJeLKjFSeEZ3R
+	 JKlVryMMHGo5CTzcGKAY0RtoQ6L4UGVx3MToggPj+MFx6x90x1H/SPiamM72ypW7QE
+	 VA0kNC4TYVYOQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EAECD98E6;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D30D7CD98E1;
 	Tue, 16 Jun 2026 11:13:28 +0000 (UTC)
 From: Keguang Zhang via B4 Relay <devnull+keguang.zhang.gmail.com@kernel.org>
-Date: Tue, 16 Jun 2026 19:13:18 +0800
-Subject: [PATCH 2/2] pwm: loongson: Reload PWM configuration through
- counter reset
+Subject: [PATCH 0/2] pwm: loongson: Fix PWM configuration handling
+Date: Tue, 16 Jun 2026 19:13:16 +0800
+Message-Id: <20260616-pwm-loongson-fix-v1-0-491dbf260a7f@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -41,19 +40,19 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260616-pwm-loongson-fix-v1-2-491dbf260a7f@gmail.com>
-References: <20260616-pwm-loongson-fix-v1-0-491dbf260a7f@gmail.com>
-In-Reply-To: <20260616-pwm-loongson-fix-v1-0-491dbf260a7f@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAMwvMWoC/x2MWwqAIBAAryL73UJq2eMq0UfUVgulolCBdPekz
+ xmYSRApMEXoRYJAF0d2NoMsBMz7ZDdCXjKDKpUpjVTo7xMP5+wWncWVH5Stboyuakmdhpz5QFn
+ /y2F83w+ABRyVYgAAAA==
 To: Binbin Zhou <zhoubinbin@loongson.cn>, 
  =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Keguang Zhang <keguang.zhang@gmail.com>
 X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781608406; l=1462;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781608406; l=874;
  i=keguang.zhang@gmail.com; s=20231129; h=from:subject:message-id;
- bh=gA7rBvBB2Sub27SnbTAe9bo34GLjvfL8/AMyT7b0/So=;
- b=CxJv9TjcbMOT5ECEV6qjJLXf0uHvkWiUq+iREd26eQiuA6gTrL5gNGkGVXLdCv6Clchv5tNqf
- aL6EFdsx5OeC4MEpMLTaVqr7AC+DZGeo6c+Y3N103VdVVn1Uj0rkTWC
+ bh=wuQLvZe5ZnxbCDNi2S87UD72UC7CkBtYW73zX/3xjkE=;
+ b=P6nXzVQ3Rr4Vmsu2R58w0DdbZMAGG2y6jgHUrxA1leF0wRppAiH4ABDw8SXWfn36qrjn4QkPm
+ M3+zOvHdtJCCK1/PCWgf6b0sLJZDuxrEEZ0BfE/3sGu6QSBE9MnkfJr
 X-Developer-Key: i=keguang.zhang@gmail.com; a=ed25519;
  pk=FMKGj/JgKll/MgClpNZ3frIIogsh5e5r8CeW2mr+WLs=
 X-Endpoint-Received: by B4 Relay for keguang.zhang@gmail.com/20231129 with
@@ -61,43 +60,30 @@ X-Endpoint-Received: by B4 Relay for keguang.zhang@gmail.com/20231129 with
 X-Original-From: Keguang Zhang <keguang.zhang@gmail.com>
 Reply-To: keguang.zhang@gmail.com
 
-From: Keguang Zhang <keguang.zhang@gmail.com>
+This series fixes two issues in the Loongson PWM driver:
 
-By default, the Loongson PWM controller latches the LOW and PERIOD
-registers only at the start of each PWM period, causing configuration
-updates to be delayed until the next period.
+- Fix the handling of the Low Pulse Buffer Register, which was
+  incorrectly treated as a duty-cycle register.
 
-Reset the PWM counter when disabling the PWM and release it when enabling
-the PWM to force the controller to re-latch the updated LOW and PERIOD
-values, allowing configuration changes to take effect immediately.
+- Ensure that PWM configuration updates take effect immediately by
+  resetting the PWM counter to reload the updated settings.
+
+The fixes were verified on LS1B, LS1C, and LS2K0300 boards.
 
 Signed-off-by: Keguang Zhang <keguang.zhang@gmail.com>
 ---
- drivers/pwm/pwm-loongson.c | 2 ++
- 1 file changed, 2 insertions(+)
+Keguang Zhang (2):
+      pwm: loongson: Fix low pulse buffer register handling
+      pwm: loongson: Reload PWM configuration through counter reset
 
-diff --git a/drivers/pwm/pwm-loongson.c b/drivers/pwm/pwm-loongson.c
-index dc77f82fd888..eb89ced530e1 100644
---- a/drivers/pwm/pwm-loongson.c
-+++ b/drivers/pwm/pwm-loongson.c
-@@ -102,6 +102,7 @@ static void pwm_loongson_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct pwm_loongson_ddata *ddata = to_pwm_loongson_ddata(chip);
- 
- 	val = pwm_loongson_readl(ddata, LOONGSON_PWM_REG_CTRL);
-+	val |= LOONGSON_PWM_CTRL_REG_RST;
- 	val &= ~LOONGSON_PWM_CTRL_REG_EN;
- 	pwm_loongson_writel(ddata, val, LOONGSON_PWM_REG_CTRL);
- }
-@@ -112,6 +113,7 @@ static int pwm_loongson_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct pwm_loongson_ddata *ddata = to_pwm_loongson_ddata(chip);
- 
- 	val = pwm_loongson_readl(ddata, LOONGSON_PWM_REG_CTRL);
-+	val &= ~LOONGSON_PWM_CTRL_REG_RST;
- 	val |= LOONGSON_PWM_CTRL_REG_EN;
- 	pwm_loongson_writel(ddata, val, LOONGSON_PWM_REG_CTRL);
- 
+ drivers/pwm/pwm-loongson.c | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
+---
+base-commit: 8d6dbbbe3ba62de0a63e962ee004afb848c8e3ac
+change-id: 20260612-pwm-loongson-fix-183763451e93
 
+Best regards,
 -- 
-2.43.0
+Keguang Zhang <keguang.zhang@gmail.com>
 
 
