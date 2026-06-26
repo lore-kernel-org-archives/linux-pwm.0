@@ -1,95 +1,136 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03813BD241;
-	Fri, 26 Jun 2026 08:31:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA6573E274B;
+	Fri, 26 Jun 2026 11:54:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782462718; cv=none; b=Ug7kdIj8hDvWK0ajfx21fFK55zXVD+y7eYFZAlTqIvIyzx2QsMJdKibU7YqBM0eoEfnRfrdmissDE1zUOXulHVjMYdGuwIjL9GC2YyIZKTNrC/mj6w1G0nSSZQx80XsXg0lAcOIGrSL2pUhdV+PFwyjkwmj1tNWvadnyrZyVicE=
+	t=1782474902; cv=none; b=fs06KRHzfmkBy+N8ElJLUl+0ZJuzHb93DlmUJtMVZZC8dZjm8McrBRvysFh0LcoEnw5EkrLK9AVzbICHYpuitg2QwzloL2A1IZ/N49rRRuSdDPB/m+yD2qSdpjOz80xGp3xNhtn2jzrZJ8kYjQKDEsAN2GN9mraBvJxpIVCWtiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782462718; c=relaxed/simple;
-	bh=FokIJv8AfgUPd2/aIFIvPg8FRcuvZThvaCVNpsev7y0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YJ8a/ubPMv5vrA1w4htE4jNjZQzmuwS2W3PLsjiMMg2KujSKG6yi+6IKukRvINZpoZwoj4nQWMVsp+N8Ygdu9uQhXEX3aJEcB3LDsMnDg13q019Kl7/Mwz2Ea0mjc8JbQ7rFgbzLGwFI1HmM81/i9wPy9ZyIgkWsRCfJvh0BZEk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KsZ9e3Bo; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782474902; c=relaxed/simple;
+	bh=ognTfAxCvoFUWWNRr5OSlBl7wqX/Y/FRoHPVFZpyGvU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=LNrisiGUxw/3H2j1AIIOCcbtc3ELzyNRD+H9wXGUNsTHO26wEDZ8ZPPj8mWMtdi777wIm0aQWlYmISSrqgQLThRE1aCygjGe6APHixug3S+HZYwKUTezYPKNw7yod9mgrlb4Ja0PDpetsMZfq4gNgIHk5t/UAzWiE+pohmvCjdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BDYJfRsw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KsZ9e3Bo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE5D01F000E9;
-	Fri, 26 Jun 2026 08:31:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BDYJfRsw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A8F1F000E9;
+	Fri, 26 Jun 2026 11:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782462717;
-	bh=ETIOhQUjPQWtqaHHtPokG8x+YN/KAxvHFrTSu7Z6x+U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=KsZ9e3BoBiBb6B/WyDZnv2wjYMXQBwMYu6PFx79wuEiXP5V9+V3vU/VnEdoId+kbU
-	 rl+AFNuGYSmgZwuqVxsLGX+9h3yXkLM0dwwUAUVmV2sBlW8pn3nsSzaDTVjqeVQPnD
-	 1qJc0oj817Gu6wyDXZ+ZT8itig2YK0Sj784DjN5T2hOlc1T7NlmLknRAiHordm5ZQs
-	 eEz0U+A5Cx1GLeaOHotg0d086If8gCdHIxD6n6XtKaGRZSnibmpJLzj9pZm1Rfz6Ju
-	 rkcGT1yUp9eoMuLC0axDGYNR3qwhMm7f1g4VmtR+d8JOydt6oRc6UcZELgBEcZRw5T
-	 ywJhUWvYuwuOg==
-Date: Fri, 26 Jun 2026 10:31:52 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Charan Pedumuru <charan.pedumuru@gmail.com>
-Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>, linux-pwm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] dt-bindings: pwm: st,sti-pwm: convert to DT schema
-Message-ID: <20260626-daring-daft-shark-d33234@quoll>
-References: <20260625-st-pwm-v4-1-958d7d6bdf39@gmail.com>
+	s=k20260515; t=1782474897;
+	bh=tI6M6Y2nl4r0WViOFml8Atpt2yMNTJUDccu+Knxm3HI=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc;
+	b=BDYJfRswmlllKsddWLlMEwcM95dTkCYCF64HPZ57pBzELZbt6jGAmmwVc66TTM2I8
+	 3Tec5A5eq134VO8x4lpVU2IdVNs67nrqyt8fyg8fE5Bn9XtbdXao0gO113H0vAgkVI
+	 L5lyzQwN4csTXnXlgSWtUH1yP2A6+R08NaiVbghIFZkSxtH8b7Qt7s2GOEcx/R9+ZM
+	 DT76tQavBwrHC9hWkzwi3PM3tRxSffeOFhWE6iibzw3/BDvAO8l6XCA7dNfCbWY66R
+	 vFIHUjkysHLcCL0KtnND/khDEFldMef/K3qxDplJpjerBcOFvJ44cvKG9CvaoPT0xV
+	 Xrc6ROG/EnUew==
+From: Andreas Hindborg <a.hindborg@kernel.org>
+Date: Fri, 26 Jun 2026 13:54:05 +0200
+Subject: [PATCH v19 8/8] rust: page: add `from_raw()`
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260625-st-pwm-v4-1-958d7d6bdf39@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260626-unique-ref-v19-8-2607ca88dfdf@kernel.org>
+References: <20260626-unique-ref-v19-0-2607ca88dfdf@kernel.org>
+In-Reply-To: <20260626-unique-ref-v19-0-2607ca88dfdf@kernel.org>
+To: Danilo Krummrich <dakr@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, 
+ Vlastimil Babka <vbabka@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+ Uladzislau Rezki <urezki@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, 
+ Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, 
+ =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+ Benno Lossin <lossin@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
+ Trevor Gross <tmgross@umich.edu>, 
+ Daniel Almeida <daniel.almeida@collabora.com>, 
+ Tamir Duberstein <tamird@kernel.org>, 
+ Alexandre Courbot <acourbot@nvidia.com>, 
+ =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>, 
+ Lyude Paul <lyude@redhat.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ =?utf-8?q?Arve_Hj=C3=B8nnev=C3=A5g?= <arve@android.com>, 
+ Todd Kjos <tkjos@android.com>, Christian Brauner <brauner@kernel.org>, 
+ Carlos Llamas <cmllamas@google.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Dave Ertman <david.m.ertman@intel.com>, Ira Weiny <ira.weiny@intel.com>, 
+ Leon Romanovsky <leon@kernel.org>, Paul Moore <paul@paul-moore.com>, 
+ Serge Hallyn <sergeh@kernel.org>, David Airlie <airlied@gmail.com>, 
+ Simona Vetter <simona@ffwll.ch>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+ Jan Kara <jack@suse.cz>, Igor Korotin <igor.korotin@linux.dev>, 
+ Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
+ =?utf-8?q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
+ Pavel Tikhomirov <ptikhomirov@virtuozzo.com>, 
+ Michal Wilczynski <m.wilczynski@samsung.com>
+Cc: Andreas Hindborg <a.hindborg@kernel.org>, 
+ Philipp Stanner <phasta@kernel.org>, rust-for-linux@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+ driver-core@lists.linux.dev, linux-block@vger.kernel.org, 
+ linux-security-module@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ linux-fsdevel@vger.kernel.org, linux-pm@vger.kernel.org, 
+ linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ Andreas Hindborg <a.hindborg@kernel.org>
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1326; i=a.hindborg@kernel.org;
+ h=from:subject:message-id; bh=IpZr4FT6FvBjQrQQDya19Z/r3yR23B/8jNNyN7AG0Ho=;
+ b=owEBbQKS/ZANAwAKAfpQKQiqxb3QAcsmYgBqPmh7a/zRVuwRfdQ6Jwphd9HrB/PVCZ50OLsaK
+ H9dvOcadCOJAjMEAAEKAB0WIQRXitnI2WZ2JirAaob6UCkIqsW90AUCaj5oewAKCRD6UCkIqsW9
+ 0E/AD/9fh1ImpLa0wfs7Sz9/7ZOnEQUUeJqCH7og8Qo4iv0qdA+RBY/oO8FSq5vpQbQ13fY3Ayh
+ DEgavk1z3cPYnuandw1SuuDrLQCxLOeLESl0BDoVxBj/yDzbm7szUpir2LpwCaENUs5GEThvdNZ
+ umvXCC4H0gSO0/hFgyQdrAsF1zYGzD56WcIML0JIjVf99ajYtIrUKOdTbO08ex60k3hewtHYJYe
+ vCz3gIAJNTxGsuumDy/14ym5oK3lmMcSYExXMxewTFyKYmSJRrJ7w8LxyJkvAGMO9gV16Y1BYKC
+ 9A+tHkKCtyz4UPm6VlqNYdQk5VGahhJD2eZM+w9I1FzO58egJeNurQxW5HxgUiMvUoP7CFxyfvm
+ JdZ7qlWp6XAYCVvhOcxzgflQAUlliy3D12W0TdgAT5OXESzE1IcQ/BHtUdXHJtgEIofBOzh2mgo
+ eoDwgwfOXFNDpuiT5TMPQiBC8s9daFRsyQccAlBRfrjfWHBcK9D0fQm2yaZiHL8P7PmcKEY3f/y
+ nL77s9uXC1QKlyBIB323xezmeOacU/pGxOFWljZ1QREEtu0r4u7rznmrDD1WibWb773+RjFKs+m
+ aFKQw3HafY3hrMdsDHOrXjFu150vSQ+BQV9BTq+xWQPW7XYMXFNBqH+Hu/rPL8EXMIg6Du3CrHG
+ wz+vQ055rIQkcfA==
+X-Developer-Key: i=a.hindborg@kernel.org; a=openpgp;
+ fpr=3108C10F46872E248D1FB221376EB100563EF7A7
 
-On Thu, Jun 25, 2026 at 11:24:15AM +0000, Charan Pedumuru wrote:
-> +maintainers:
-> +  - Lee Jones <lee.jones@linaro.org>
-> +
-> +description:
-> +  The STiH41x PWM controller supports both PWM output and input capture
-> +  functionality. It provides multiple PWM output channels for generating
-> +  variable duty-cycle waveforms, and multiple input capture channels for
-> +  measuring external signal periods and pulse widths. PWM output channels
-> +  and input capture channels are configured independently via
-> +  st,pwm-num-chan and st,capture-num-chan respectively.
-> +
-> +allOf:
-> +  - $ref: pwm.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: st,sti-pwm
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "#pwm-cells":
-> +    const: 2
-> +
-> +  pinctrl-names:
-> +    const: default
-> +
-> +  clock-names:
+From: Andreas Hindborg <a.hindborg@samsung.com>
 
-items:
-  minItems: 1
-  - const: pwm
-  - const: capture
+Add a method to `Page` that allows construction of an instance from `struct
+page` pointer.
 
-> +    items:
-> +      enum: [pwm, capture]
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  clocks:
-> +    minItems: 1
-> +    maxItems: 2
+Signed-off-by: Andreas Hindborg <a.hindborg@samsung.com>
+Reviewed-by: Onur Özkan <work@onurozkan.dev>
+---
+ rust/kernel/page.rs | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-Best regards,
-Krzysztof
+diff --git a/rust/kernel/page.rs b/rust/kernel/page.rs
+index 6dc1c2395acaf..c88fda09ead5a 100644
+--- a/rust/kernel/page.rs
++++ b/rust/kernel/page.rs
+@@ -143,6 +143,20 @@ pub fn nid(&self) -> i32 {
+         unsafe { bindings::page_to_nid(self.as_ptr()) }
+     }
+ 
++    /// Create a `&Page` from a raw `struct page` pointer.
++    ///
++    /// # Safety
++    ///
++    /// `ptr` must be convertible to a shared reference with a lifetime of `'a`.
++    #[inline]
++    pub unsafe fn from_raw<'a>(ptr: *const bindings::page) -> &'a Self {
++        // INVARIANT: By the function safety requirements, `ptr` refers to a valid `struct page`, so
++        // the returned reference upholds the type invariant of `Page`.
++        // SAFETY: By function safety requirements, `ptr` is not null and is convertible to a shared
++        // reference.
++        unsafe { &*ptr.cast() }
++    }
++
+     /// Runs a piece of code with this page mapped to an address.
+     ///
+     /// The page is unmapped when this call returns.
+
+-- 
+2.51.2
+
 
