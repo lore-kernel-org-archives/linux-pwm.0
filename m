@@ -1,48 +1,48 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B12C349CE0
-	for <linux-pwm@vger.kernel.org>; Sun, 28 Jun 2026 09:52:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 766F934DCD6
+	for <linux-pwm@vger.kernel.org>; Sun, 28 Jun 2026 10:07:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782640350; cv=none; b=CTOYJsvCZgDXDMCDS0HVxoN3SZA2SLcWuDO6NU4nFRn9urWE7CvUSeE62YcvX9aSW/uukj46FBd3D1c34PjGaimuxEwbL/P5EfFCjmAJCndC3LQn8vSExmaDsS5wEg/tcB7uxin7B6F3ciUgxIclKBunZ/nr68/lEHgjMklqX/E=
+	t=1782641272; cv=none; b=BTqJOG/38oh1qwt12Yxc6/b443MYZ03YKENY8cIFetrFz8QoYfmJUfHjzpvHoLD2nqW/8cspuwLYR2nM0Q7FayhoodofWH1iXIQ6sGGsjr/8nzrjQd9P2f5RKtTJUTFQ7U2zgDjDQuJGnCiSg1WC9pguKcI3R/bMff2PTifPQyM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782640350; c=relaxed/simple;
-	bh=meZwVgcg7tDR9jSuGi9nc98yVdlU/Ib6hApJO4PNMss=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hBUFsCza0/KIZU8gJCI05PFYEsyzhCBPU7er4VgWtevRVeSLvU+P3uftov04bpK81hzUvWeKeWCvPz8ARSd2PkO6PSl9mVnPzgz7cOcs2vMbUOwalFm/alOE7Gkn93KZXjB77qFOyzywXX10ByLrXiW+br/wzC6HaDNfsNlENNE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=trevrosa.dev; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.214.170
+	s=arc-20240116; t=1782641272; c=relaxed/simple;
+	bh=/CwkZU6usKMs6TCbBuaSTJnnGtQl7eoCGg4/1julZtE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ePYbBEIdpKr/eQyIrrTaK06rvdH3pzSM4LN6gc6JX4zjBm5OY3L1XyL1q7BmPEZ8UnxNU0trx/FmnxXz3foSLVJVPD3XZLlRUAJsg25jsMOjpaeKKa9tYQEB9uAM8nXBcjflorsMdk/byG2s43jh0cz1Zph6zfE2mxyiEIETz0c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=trevrosa.dev; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.215.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=trevrosa.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2c9e89fded0so1907945ad.2
-        for <linux-pwm@vger.kernel.org>; Sun, 28 Jun 2026 02:52:24 -0700 (PDT)
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-c96469e951cso115557a12.2
+        for <linux-pwm@vger.kernel.org>; Sun, 28 Jun 2026 03:07:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782640344; x=1783245144;
+        d=1e100.net; s=20251104; t=1782641269; x=1783246069;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lDgOeoLgb3Wg1d9q9LSag5G1FEbopPLBrrQaAkjZfVw=;
-        b=V1+OMpmjkoZkQ/dPLnEBNFDdLS45cyXvb6w1bGkandMU4psqgefhKTOZ1JAQ/YV/6x
-         rGv/3JOV5d41xvsdIOwqfLwSy8B/XXVH3OTTYLty63meXO0aJ5PfPn0l+j7WwFOk5qYw
-         n7NFVHAHYuRHcT/mTHSmTdHJ9vq2uVO4De3VnoykNBcNaxgqZaNaW0HkfvrLiU7yfkfG
-         DQcoDnHGdR8YFLy4YN7F4RdIxYAbz3ADCS9D97kmxiqoiB+km7LC21w39pwBp8Hz/yCk
-         909qWs2+oY1i+ph1Y86J5w83ediEWfC76GTJ2IncCoufvO41r3tnT9+E7btO11IUYBVA
-         rUAA==
-X-Forwarded-Encrypted: i=1; AHgh+RqiyRe7Ex0V5XLyI6MUzYVETZbKcb7p88T7Xo7e2KlTlSXg1Fn5HzXpHbN8uisr0T4WzVtWHtCG8ms=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxneSgqtJcWgoPTfEHoL4HFBt+lghOdBig+yiKAy+rFZMxDXREK
-	i8BXcoQfgtJnNkY9pBxdYQJ3hDFl15h92dcmm5Snh/rIPAeWgSBC5Zso
-X-Gm-Gg: AfdE7clgpsexExZK9r6oFRR0GguEGK12EwYiPntGVfWTnBIRlJbNPCztDm2jq3NXR58
-	No7dCLtqrJbuwRkoKQ/d5W7FX5+qrI4o6jlK1rKWUONuYvTB7Kvepd9fwGx5RzdlolzelghOlFR
-	keHsI2MZu4FeczEv9VmPF3GtpT36sZGOLAN4ilYU4aC2EEpwBhRbWU5vSYzQfci5Kwp1A1LQkFM
-	5dS7bXrQTXrgkpaRK6zzgrB7wJa5hzTwhulWOZ2svO0DOkgdX3irtCCPcb+fKY1HeioUT9IdDFw
-	vIA26tezUQqWF7WE1/dpaympgrue1b2+EsrYreY1VW76ChVlD9VaKtuM7FLlCZH22Ld2n9PNwbI
-	w0v6ZRJFnmAGzkywHEke4DDf8BlklurzLbKfc1mBNAZ6JvqPTo/0nJ0thlu48VaPjna50cKS/Hs
-	0md8pitpEcJRMupz3JN/lNW6UZYQWFWGWPdkFBPbidPwFYXxoh5w==
-X-Received: by 2002:a17:903:19eb:b0:2c2:62ee:5a0d with SMTP id d9443c01a7336-2c7fc74ed9bmr130708665ad.14.1782640343700;
-        Sun, 28 Jun 2026 02:52:23 -0700 (PDT)
+        bh=LQUKSUK9vdQ1Kz4RjZ18oZFcJVkdORoocJ3F5XrJ/Po=;
+        b=OGAxRhTW/wLubZ+qp3lNwTx0yo6FbogUzcezIKfmNsfSXE3dY5u5v7YImMR4qNoQc7
+         LTnQvuRmpIvSWUE90Of/7iPAC8aYC74KnGUX/opcuuV9NHqjit0XGqlOWNDkgm8rwCP4
+         9h4ROT6DqS2aGdwxoQ3He1Jy27H8egcKvDhe6V6efmKvZZnCoKuhmmJo2OLxTaL8A+tg
+         XOy7CewuHSnkq3Ag9tq2h+pRg+QbWqthUT7JPHklJbXmy4ayqXLJ1+pQ+TsevBsfLMwh
+         gKO4aGaeRgqTUJI8ZiMcT8eWaUu7Y2kBsvLpRAx6LnoFsUQGRp6sMEOTBntpBdQshRj4
+         ybdw==
+X-Forwarded-Encrypted: i=1; AHgh+RqaKTUsa6bdC4WJSaQEYA2SmfCjAmvnQdrhpqj7FArGEsZdxY57eOG32gOOWUT9ZQX+ssBtwlYtChw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxiiHKy5kGEqVAgmeJreDYBI/2x+NNnBKNoVvfhNzMbSewOrirU
+	Gmr5MZa4KE9B/NxFrYKbqjyqsiDL/EjLMfWxsYAjBGO5k1FEMxMziVEc
+X-Gm-Gg: AfdE7ckeK3Czf8LEFY4w5EweREXvlbVgvhqYB86FNbW075Pvkh9eFHC+CtKYuHpfoJv
+	5jRVtK/QE7DjYhU56TpagcRhA35DQdnw0rQJA5xkLrXlpcwm2dsNevZ8Wzh079+9Q0UEqC4/d+T
+	OVhr1CzamakjiwQzsrT21SBWda9Ny2WwvzNlSbr8PYCN4rwFuMmGF6M4Wfy0HEEk8TJ4kUdRWX2
+	cE4uX83ol6HZYDILldd8ezSMK9waync7ZvpXw2gcaVgiZ8+si9I5k2dA302ve/Adzl+yEJXJ1XB
+	yw5jBYDg8mn6wRo/iGy2AqzwQQonfYk8ejbsQ02RbltmorkVrqE41Vqhuqe1JUgXPYlHrT595qU
+	GiPXcWatDgcxKkKaoCI2swuJnpkNuKL1Q32Weg5k+ce7qBp4cr4bpr0BkVbyL5D8+xosmSsI+ol
+	6tJEUQZAKDMFAlYLoY9C9isPPOireCFrXkjeqdwFzITdGvT55dZg==
+X-Received: by 2002:a05:6a00:929f:b0:845:c5d5:3743 with SMTP id d2e1a72fcca58-845d2475c86mr6541601b3a.28.1782641268305;
+        Sun, 28 Jun 2026 03:07:48 -0700 (PDT)
 Received: from trevor.localdomain (n119236170163.netvigator.com. [119.236.170.163])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c7f63b2339sm72101365ad.38.2026.06.28.02.52.13
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-845e3455bacsm1840491b3a.37.2026.06.28.03.07.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Jun 2026 02:52:23 -0700 (PDT)
+        Sun, 28 Jun 2026 03:07:47 -0700 (PDT)
 From: Trevor Chan <trev@trevrosa.dev>
 To: gregkh@linuxfoundation.org,
 	rafael@kernel.org,
@@ -97,9 +97,9 @@ Cc: david.m.ertman@intel.com,
 	bhelgaas@google.com,
 	kwilczynski@kernel.org,
 	ptikhomirov@virtuozzo.com
-Subject: [PATCH v6] rust: aref: make `AlwaysRefCounted::inc_ref` an associated function
-Date: Sun, 28 Jun 2026 17:51:32 +0800
-Message-ID: <20260628095132.47753-1-trev@trevrosa.dev>
+Subject: [PATCH v7] rust: aref: make `AlwaysRefCounted::inc_ref` an associated function
+Date: Sun, 28 Jun 2026 18:07:30 +0800
+Message-ID: <20260628100731.64885-1-trev@trevrosa.dev>
 X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
@@ -131,6 +131,8 @@ Changes in v5:
  - Change commit message to be imperative
 Changes in v6:
  - Change all the implementors
+Changes in v7:
+ - Correct changes for implementors that are conditionally compiled
 ---
  rust/kernel/auxiliary.rs        |  4 ++--
  rust/kernel/block/mq/request.rs |  4 ++--
@@ -149,11 +151,11 @@ Changes in v6:
  rust/kernel/pci.rs              |  4 ++--
  rust/kernel/pid_namespace.rs    |  4 ++--
  rust/kernel/platform.rs         |  4 ++--
- rust/kernel/pwm.rs              |  2 +-
+ rust/kernel/pwm.rs              |  4 ++--
  rust/kernel/sync/aref.rs        | 11 +++++++----
  rust/kernel/task.rs             |  4 ++--
  rust/kernel/usb.rs              |  8 ++++----
- 21 files changed, 54 insertions(+), 51 deletions(-)
+ 21 files changed, 55 insertions(+), 52 deletions(-)
 
 diff --git a/rust/kernel/auxiliary.rs b/rust/kernel/auxiliary.rs
 index c42928d5a239..75a61b51cf79 100644
@@ -465,10 +467,10 @@ index 9b362e0495d3..85068ae5a405 100644
  
      unsafe fn dec_ref(obj: NonNull<Self>) {
 diff --git a/rust/kernel/pwm.rs b/rust/kernel/pwm.rs
-index 6c9d667009ef..c95b442a972e 100644
+index 6c9d667009ef..6f85ddceb872 100644
 --- a/rust/kernel/pwm.rs
 +++ b/rust/kernel/pwm.rs
-@@ -631,7 +631,7 @@ pub fn new<'a>(
+@@ -631,10 +631,10 @@ pub fn new<'a>(
  // SAFETY: Implements refcounting for `Chip` using the embedded `struct device`.
  unsafe impl<T: PwmOps> AlwaysRefCounted for Chip<T> {
      #[inline]
@@ -476,7 +478,11 @@ index 6c9d667009ef..c95b442a972e 100644
 +    fn inc_ref(obj: &Self) {
          // SAFETY: `self.0.get()` points to a valid `pwm_chip` because `self` exists.
          // The embedded `dev` is valid. `get_device` increments its refcount.
-         unsafe { bindings::get_device(&raw mut (*self.0.get()).dev) };
+-        unsafe { bindings::get_device(&raw mut (*self.0.get()).dev) };
++        unsafe { bindings::get_device(&raw mut (*obj.0.get()).dev) };
+     }
+ 
+     #[inline]
 diff --git a/rust/kernel/sync/aref.rs b/rust/kernel/sync/aref.rs
 index b721b2e00b98..42e11458b77c 100644
 --- a/rust/kernel/sync/aref.rs
