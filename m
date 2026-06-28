@@ -1,203 +1,265 @@
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [80.241.56.172])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A19D13B6BFE;
-	Sun, 28 Jun 2026 20:18:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F12DA3451B3;
+	Sun, 28 Jun 2026 23:37:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782677886; cv=none; b=hHvnH7eK2/LSWFf2yT+JHoINN8Tdot5z4qU2vf2i6ikbNLIVJ+Fjdhg9Iqxe085+FqfhtewabcdLs4COh2XLImk3v0S1fGkTyaFGdGxhFtm17zjy1azcqMU5dxA3qu8XbyTSQl+SI0umtlLbUvXORPCBozw+0+xm3xldFtQAyPA=
+	t=1782689856; cv=none; b=DJA1YjlIYDEq9ptu+Go8dF4FG1JrrT1j75rGEr8sSR/bMq5fx9FCRwX4MUNP+PJfV+hYOMUZhX6SV4Pez9SJyo9qwevqA3GmXhAZ2IO6aWEGJkkwuKMp4tbA+uzh38V56Q5OW0pELY+/phTO9hHUVd0gfvJ2AF9etwUMTgTKojg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782677886; c=relaxed/simple;
-	bh=Y4wbuB2Q7UtRfee4Zl34eyEe9jsKHEIS7Gdb8j429aY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ZLMlvAe37J57WqZbGu3HEnKrh083WX0QgsEebmKWFwFsTnFUkUXIxlGnwoDtmwcU1FVB7RgRuoNHtrEtwXEK+/fjcy13Lpx5B+/TnfqFz7jKXlG3hLBcWqsFNe9ASmocL9WVkfWKtWT4t22SGrHjdRdDlS8/HIfpcejnExHy0B0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=YqzpIpo3; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=v6DgoObr; arc=none smtp.client-ip=80.241.56.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1782689856; c=relaxed/simple;
+	bh=oFEFVBD5fcKXppEp1kF7LsfMNyXXyuvUCfJ3219R1aw=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=BYF5rxwVmogJDStG2SbI4Mwutt2NkI8L4gjV00kVmED+rECOZcJ/CvEq4vrGD9tDrpLMtR2YN7Ji88N3lpZmHCW57VMlJMDjlX+Um7ILmn2Z2I5CWM11Cev1B3l9lAy/dylsNPWH9MGGTXCXbyQBEFhcLBC+/BmXF7GWRft1ts4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oO3ino49; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="YqzpIpo3";
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="v6DgoObr"
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:b231:465::202])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4gpLLr2ypfz9tq3;
-	Sun, 28 Jun 2026 22:17:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1782677876;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5HOFKh4PR2wybtyQprzVFoqSkRuBhet8B4vwHYABWVM=;
-	b=YqzpIpo3L7EZaVwGrCKSWG5+qknchc8wL0MVgqAbrB/EBzrQZ6AWI/dVNHcoieK7j7xCL6
-	BAPhntIvWuitag4UHNpvkNsYj1SkoGeOU40q1fMS8OfOxprncMgW+jhNjQVfmUM1w2P8Xy
-	bzi20ZjqibOWuQeipRhpwEou0s2IsmSeBvlQUgiQ661ayJybxBnw/fctC+tcYmgVjsh37D
-	+bV1kzSLZguKMToLX0S/MMKuaKrMDxdYuBgnIO0ddRyY/chy4FVL3wNLaHCko9+wILmC1F
-	yfWQXiDU+ZlRsH3zMn1+AAwQT3gFrAOktTxy3YNGEPbYInndE/LBycsTjK3MCA==
-Authentication-Results: outgoing_mbo_mout;
-	dkim=pass header.d=mailbox.org header.s=mail20150812 header.b=v6DgoObr;
-	spf=pass (outgoing_mbo_mout: domain of mhi@mailbox.org designates 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=mhi@mailbox.org
-From: Maurice Hieronymus <mhi@mailbox.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1782677874;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5HOFKh4PR2wybtyQprzVFoqSkRuBhet8B4vwHYABWVM=;
-	b=v6DgoObrYvyLWvtYtCcWS/hNjenTQ8GcAN/0OzrNlj9m42/HLLfDippnt7w6Ax+USjpT2A
-	D2wTFNy7BpFQM2CiWOXMkxgMwvOEQR0tI3zHBc7LzOAoKbj9epCXojMR0RMybsdpisA+M6
-	WwglmZZhdceePphzdIldPM9g+EKIc7lRdeJbplwJ79VRLnzOUrPb2nVBfBYpMaz1aT9Qlu
-	3qtWoqIVaWOwzHhXHhSVmm6MddrQxR/ZJ3M7iZOLfTSatild5/vX0kJABK1wpdAOWiBohL
-	Zb/sMY3+6hO0yjzjeIY7R52BzmTMHToA49naGlB1hRh+TgjDLde2pD6Y4X6Kmw==
-Date: Sun, 28 Jun 2026 22:17:29 +0200
-Subject: [PATCH v3 1/2] rust: clk: Add `ExclusiveClk` wrapper for
- `clk_rate_exclusive_get`
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oO3ino49"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDF541F000E9;
+	Sun, 28 Jun 2026 23:37:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782689854;
+	bh=AsaiapX2vikYIk/w5nfyMPF/cTpFXSz56W7bWM4Pb2M=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To;
+	b=oO3ino49R89n61CsRkBCR9diZ+DKsLiRHMwwMxaYp9HQ173yN75E/utZi7wXI1Zcf
+	 Q6bczIwGlyrmxzGJocFWVRoqN7oB17NuaydphaHrEIz+kQ7h97Ju7w3e7jpckDEfhg
+	 ktpRG4kICCVC3V0sbHoXH++Dsog9uBdzBqkuzrpAn4Kw913UmAZWd1hwwv83tc0kkz
+	 MMTDHUh2jCW9uHlzUzyksf2bAuvZzWfSMSRf58AaaRzD2dtc+qVIPxhR7qgq01N7rJ
+	 k96hLOo3hvvJ7p9+lkeC5/B1aO/8vwUEvJRI3Km6w9HQuDe4J8rk5+GF0h6OtoJNEE
+	 s5fOAwSZbkgOw==
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260628-rate-exclusive-get-th1520-v3-1-c7ca3ebcf60f@mailbox.org>
-References: <20260628-rate-exclusive-get-th1520-v3-0-c7ca3ebcf60f@mailbox.org>
-In-Reply-To: <20260628-rate-exclusive-get-th1520-v3-0-c7ca3ebcf60f@mailbox.org>
-To: Michael Turquette <mturquette@baylibre.com>, 
- Stephen Boyd <sboyd@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
- Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, 
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
- Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
- Danilo Krummrich <dakr@kernel.org>, Drew Fustini <fustini@kernel.org>, 
- Guo Ren <guoren@kernel.org>, Fu Wei <wefu@redhat.com>, 
- Michal Wilczynski <m.wilczynski@samsung.com>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Brian Masney <bmasney@redhat.com>
-Cc: Daniel Almeida <daniel.almeida@collabora.com>, 
- linux-clk@vger.kernel.org, rust-for-linux@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
- linux-pwm@vger.kernel.org, Maurice Hieronymus <mhi@mailbox.org>
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782677860; l=3880;
- i=mhi@mailbox.org; s=20260525; h=from:subject:message-id;
- bh=Y4wbuB2Q7UtRfee4Zl34eyEe9jsKHEIS7Gdb8j429aY=;
- b=xKwZuEATbxSwMsq/BqTX+EV73z4sJzVlYz5zbkRq7NQtOVxWxmhVAcEF+6MtVdkG7uJXRBEwl
- cV59Xj0xUg5A8PA+QvTAL3AoFq/Img4YHwS/oxOb/QUu3pL9GK34fyA
-X-Developer-Key: i=mhi@mailbox.org; a=ed25519;
- pk=AHlEkGG3hpXZHntlEzF42Ip/LFyXWOgsNUvaHqAnV80=
-X-MBO-RS-META: f4sdaq5bogyhktsjn8wgg5nx78msc1t4
-X-MBO-RS-ID: 79f967012ba1555c077
-X-Rspamd-Queue-Id: 4gpLLr2ypfz9tq3
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 29 Jun 2026 01:37:27 +0200
+Message-Id: <DJL2T5XDC53F.3C2QC5L1V2H6@kernel.org>
+Subject: Re: [PATCH v5 00/20] rust: I/O type generalization and projection
+Cc: "Alice Ryhl" <aliceryhl@google.com>, "Daniel Almeida"
+ <daniel.almeida@collabora.com>, "Greg Kroah-Hartman"
+ <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ "Miguel Ojeda" <ojeda@kernel.org>, "Boqun Feng" <boqun@kernel.org>,
+ =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
+ <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Trevor
+ Gross" <tmgross@umich.edu>, "Tamir Duberstein" <tamird@kernel.org>,
+ =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>, "Bjorn Helgaas"
+ <bhelgaas@google.com>, =?utf-8?q?Krzysztof_Wilczy=C5=84ski?=
+ <kwilczynski@kernel.org>, "Abdiel Janulgue" <abdiel.janulgue@gmail.com>,
+ "Robin Murphy" <robin.murphy@arm.com>, "Alexandre Courbot"
+ <acourbot@nvidia.com>, "David Airlie" <airlied@gmail.com>, "Simona Vetter"
+ <simona@ffwll.ch>, "Michal Wilczynski" <m.wilczynski@samsung.com>,
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ <driver-core@lists.linux.dev>, <rust-for-linux@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+ <nova-gpu@lists.linux.dev>, <dri-devel@lists.freedesktop.org>,
+ <linux-pwm@vger.kernel.org>, "Laura Nao" <laura.nao@collabora.com>
+To: "Gary Guo" <gary@garyguo.net>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <20260626-io_projection-v5-0-d0961471ae50@garyguo.net>
+In-Reply-To: <20260626-io_projection-v5-0-d0961471ae50@garyguo.net>
 
-Add Rust bindings for `clk_rate_exclusive_get()` and
-`clk_rate_exclusive_put()`.
+On Fri Jun 26, 2026 at 4:45 PM CEST, Gary Guo wrote:
+> This series presents a major rework of I/O types, as a summary:
 
-`Clk::rate_exclusive_get()` consumes the `Clk<Enabled>` and returns an
-`ExclusiveClk`. The matching put is issued from its Drop impl.
-`ExclusiveClk` derefs to `Clk<Enabled>` so existing APIs remain
-available on the locked handle.
+There are two minor rustdoc warnings:
 
-Reviewed-by: Alice Ryhl <aliceryhl@google.com>
-Signed-off-by: Maurice Hieronymus <mhi@mailbox.org>
----
- rust/kernel/clk.rs | 67 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 67 insertions(+)
+	warning: unresolved link to `include/linux/iosys-map.h`
+	    --> rust/kernel/io.rs:1456:7
+	     |
+	1456 | /// [`include/linux/iosys-map.h`] in C.
+	     |       ^^^^^^^^^^^^^^^^^^^^^^^^^ no item named `include/linux/iosys-=
+map.h` in scope
+	     |
+	     =3D help: to escape `[` and `]` characters, add '\' before them like =
+`\[` or `\]`
+	     =3D note: `#[warn(rustdoc::broken_intra_doc_links)]` on by default
+=09
+	warning: unresolved link to `View`
+	    --> rust/kernel/io.rs:1620:74
+	     |
+	1620 | /// In addition to projecting from [`Io`], you may also project fro=
+m a [`View`] of an [`Io`].
+	     |                                                                    =
+      ^^^^ no item named `View` in scope
+	     |
+	     =3D help: to escape `[` and `]` characters, add '\' before them like =
+`\[` or `\]`
+=09
+	warning: 2 warnings emitted
 
-diff --git a/rust/kernel/clk.rs b/rust/kernel/clk.rs
-index 1412a2f0aedf..89f662b67b95 100644
---- a/rust/kernel/clk.rs
-+++ b/rust/kernel/clk.rs
-@@ -95,6 +95,7 @@ mod common_clk {
-     use core::{
-         marker::PhantomData,
-         mem::ManuallyDrop,
-+        ops::Deref,
-         ptr, //
-     };
- 
-@@ -621,6 +622,23 @@ pub fn set_rate(&self, rate: Hertz) -> Result {
-             // [`clk_set_rate`].
-             to_result(unsafe { bindings::clk_set_rate(self.as_raw(), rate.as_hz()) })
-         }
-+
-+        /// Acquire exclusive control over the clock's rate.
-+        ///
-+        /// Consumes the [`Clk<Enabled>`] and returns an [`ExclusiveClk`] that releases
-+        /// the exclusivity when dropped. While held, no other consumer may change the clock's rate.
-+        ///
-+        /// Equivalent to the kernel's [`clk_rate_exclusive_get`] API. Must not be called from
-+        /// atomic context.
-+        ///
-+        /// [`clk_rate_exclusive_get`]: https://docs.kernel.org/core-api/kernel-api.html#c.clk_rate_exclusive_get
-+        #[inline]
-+        pub fn rate_exclusive_get(self) -> Result<ExclusiveClk> {
-+            // SAFETY: By the type invariants, self.as_raw() is a valid argument for
-+            // clk_rate_exclusive_get.
-+            to_result(unsafe { bindings::clk_rate_exclusive_get(self.as_raw()) })?;
-+            Ok(ExclusiveClk(self))
-+        }
+> Gary Guo (19):
+>       rust: io: add dynamically-sized `Region` type
+>       rust: io: add missing safety requirement in `IoCapable` methods
+>       rust: io: restrict untyped IO access and `register!` to `Region`
+>       rust: io: implement `Io` on reference types instead
+>       rust: io: generalize `MmioRaw` to pointer to arbitrary type
+>       rust: io: rename `Mmio` to `MmioOwned`
+>       rust: io: implement `Mmio` as view type
+>       rust: pci: io: make `ConfigSpace` a view
+>       rust: io: use view types instead of addresses for `Io`
+>       pwm: th1520: remove unnecessary `deref`
+>       rust: io: remove `MmioOwned`
+>       rust: io: move `Io` methods to extension trait
+>       rust: io: add projection macro and methods
+>       rust: io: implement a view type for `Coherent`
+>       rust: io: add `read_val` and `write_val` functions on `Io`
+>       gpu: nova-core: use I/O projection for cleaner encapsulation
+>       rust: dma: drop `dma_read!` and `dma_write!` API
+>       rust: io: add copying methods
+>       rust: io: implement `IoSysMap`
+>
+> Laura Nao (1):
+>       rust: io: add I/O backend for system memory with volatile access
+
+For sharing with the drm-rust tree:
+
+diff --git a/rust/kernel/drm/gem/shmem.rs b/rust/kernel/drm/gem/shmem.rs
+index 3ee19ef6264e..6868b5d80ab7 100644
+--- a/rust/kernel/drm/gem/shmem.rs
++++ b/rust/kernel/drm/gem/shmem.rs
+@@ -29,9 +29,10 @@
+         to_result, //
+     },
+     io::{
+-        Io,
+-        IoCapable,
+-        IoKnownSize, //
++        IoBase,
++        Region,
++        SysMem,
++        SysMemBackend, //
+     },
+     prelude::*,
+     scatterlist,
+@@ -467,6 +468,28 @@ pub fn owner(&self) -> &Object<D, C> {
      }
- 
-     impl<T: ClkState> Clk<T> {
-@@ -650,6 +668,55 @@ fn drop(&mut self) {
-             unsafe { bindings::clk_put(self.as_raw()) };
-         }
-     }
-+
-+    /// A [`Clk<Enabled>`] with exclusive control over its rate.
-+    ///
-+    /// While an [`ExclusiveClk`] exists, no other consumer of the same clock may change its rate.
-+    /// Obtained by calling [`Clk::rate_exclusive_get`]; the exclusivity is released automatically
-+    /// when the value is dropped, after which the inner [`Clk<Enabled>`] is dropped as usual.
-+    ///
-+    /// # Invariants
-+    ///
-+    /// An [`ExclusiveClk`] instance owns a [`Clk<Enabled>`] for which `clk_rate_exclusive_get` has
-+    /// been called and the matching `clk_rate_exclusive_put` has not yet been called.
-+    ///
-+    /// # Examples
-+    ///
-+    /// ```
-+    /// use kernel::clk::{
-+    ///     Clk,
-+    ///     ExclusiveClk,
-+    ///     Enabled //
-+    /// };
-+    /// use kernel::device::{
-+    ///     Bound,
-+    ///     Device, //
-+    /// };
-+    /// use kernel::error::Result;
-+    ///
-+    /// fn lock_rate(dev: &Device<Bound>) -> Result<ExclusiveClk> {
-+    ///     let clk = Clk::<Enabled>::get(dev, None)?;
-+    ///     clk.rate_exclusive_get()
-+    /// }
-+    /// ```
-+    pub struct ExclusiveClk(Clk<Enabled>);
-+
-+    impl Deref for ExclusiveClk {
-+        type Target = Clk<Enabled>;
-+
-+        fn deref(&self) -> &Clk<Enabled> {
-+            &self.0
-+        }
-+    }
-+
-+    impl Drop for ExclusiveClk {
-+        fn drop(&mut self) {
-+            // SAFETY: By the type invariants, self.as_raw() is a valid argument for
-+            // clk_rate_exclusive_put and balances the clk_rate_exclusive_get call from
-+            // Clk::rate_exclusive_get.
-+            unsafe { bindings::clk_rate_exclusive_put(self.as_raw()) };
-+        }
-+    }
  }
- 
- #[cfg(CONFIG_COMMON_CLK)]
 
--- 
-2.51.2
++impl<'a, D, R, C, const SIZE: usize> IoBase<'a> for &'a VMap<D, R, C, SIZE=
+>
++where
++    D: DriverObject,
++    C: DeviceContext,
++    R: Deref<Target =3D Object<D, C>>,
++{
++    type Backend =3D SysMemBackend;
++    type Target =3D Region<SIZE>;
++
++    #[inline]
++    fn as_view(self) -> SysMem<'a, Region<SIZE>> {
++        let ptr =3D Region::ptr_from_raw_parts_mut(self.addr.cast(), self.=
+owner.size());
++
++        // SAFETY: Per type invariants of `VMap`:
++        // - `addr .. addr + owner.size()` is a valid kernel accessible me=
+mory region.
++        // - `addr` is page-aligned, which satisfies `Region`'s 4-byte ali=
+gnment requirement.
++        // - The memory remains valid until this `VMap` is dropped; since =
+`self` is `&'a VMap`,
++        //   the borrow prevents the `VMap` from being dropped for the lif=
+etime `'a`.
++        unsafe { SysMem::new(ptr) }
++    }
++}
++
+ impl<D, R, C, const SIZE: usize> Drop for VMap<D, R, C, SIZE>
+ where
+     D: DriverObject,
+@@ -508,69 +531,6 @@ unsafe impl<D, R, C, const SIZE: usize> Sync for VMap<=
+D, R, C, SIZE>
+ {
+ }
 
+-impl<D, R, C, const SIZE: usize> Io for VMap<D, R, C, SIZE>
+-where
+-    D: DriverObject,
+-    C: DeviceContext,
+-    R: Deref<Target =3D Object<D, C>>,
+-{
+-    #[inline]
+-    fn addr(&self) -> usize {
+-        self.addr as usize
+-    }
+-
+-    #[inline]
+-    fn maxsize(&self) -> usize {
+-        self.owner.size()
+-    }
+-}
+-
+-impl<D, R, C, const SIZE: usize> IoKnownSize for VMap<D, R, C, SIZE>
+-where
+-    D: DriverObject,
+-    C: DeviceContext,
+-    R: Deref<Target =3D Object<D, C>>,
+-{
+-    const MIN_SIZE: usize =3D SIZE;
+-}
+-
+-macro_rules! impl_vmap_io_capable {
+-    ($ty:ty) =3D> {
+-        impl<D, R, C, const SIZE: usize> IoCapable<$ty> for VMap<D, R, C, =
+SIZE>
+-        where
+-            D: DriverObject,
+-            C: DeviceContext,
+-            R: Deref<Target =3D Object<D, C>>,
+-        {
+-            #[inline]
+-            unsafe fn io_read(&self, address: usize) -> $ty {
+-                let ptr =3D address as *mut $ty;
+-
+-                // SAFETY: The safety contract of `io_read` guarantees tha=
+t address is a valid
+-                // address within the bounds of `Self` of at least the siz=
+e of $ty, and is properly
+-                // aligned.
+-                unsafe { ptr::read_volatile(ptr) }
+-            }
+-
+-            #[inline]
+-            unsafe fn io_write(&self, value: $ty, address: usize) {
+-                let ptr =3D address as *mut $ty;
+-
+-                // SAFETY: The safety contract of `io_write` guarantees th=
+at address is a valid
+-                // address within the bounds of `Self` of at least the siz=
+e of $ty, and is properly
+-                // aligned.
+-                unsafe { ptr::write_volatile(ptr, value) }
+-            }
+-        }
+-    };
+-}
+-
+-impl_vmap_io_capable!(u8);
+-impl_vmap_io_capable!(u16);
+-impl_vmap_io_capable!(u32);
+-#[cfg(CONFIG_64BIT)]
+-impl_vmap_io_capable!(u64);
+-
+ /// A reference to a GEM object that is known to have a mapped [`SGTable`]=
+.
+ ///
+ /// This is used by the Rust bindings with [`Devres`] in order to ensure t=
+hat mappings for SGTables
+@@ -638,6 +598,7 @@ mod tests {
+             UnregisteredDevice, //
+         },
+         faux,
++        io::Io,
+         page::PAGE_SIZE, //
+     };
+
+@@ -714,7 +675,7 @@ fn compile_time_vmap_sizes() -> Result {
+         assert!(ptr::eq(vmap.owner(), obj.deref()));
+
+         // Verify the max size matches the actual object size
+-        assert_eq!(vmap.maxsize(), PAGE_SIZE);
++        assert_eq!(vmap.size(), PAGE_SIZE);
+
+         // Make sure creating a vmap that's too large fails
+         assert!(obj.vmap::<{ PAGE_SIZE + 200 }>().is_err());
