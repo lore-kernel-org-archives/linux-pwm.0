@@ -1,59 +1,59 @@
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [80.241.56.151])
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [80.241.56.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B7903B71AE;
-	Sun, 28 Jun 2026 20:18:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.151
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A19D13B6BFE;
+	Sun, 28 Jun 2026 20:18:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782677885; cv=none; b=gPGsxNCjAxAewzQ1tDW3NZ7VZU+Togn1DF9d2T2lDjjGSoRdIEytD8GhCObnZzJMdJYIEsAQGU8Y0eI1SOJ/ddj5tXosiZyvXAdRIsfx/l9b14gRUvij11qkuM0Ouvv8eb4YkWLAODD1EY3tgTW0XZgKfuSjpoK9jKWjhgKKd5o=
+	t=1782677886; cv=none; b=hHvnH7eK2/LSWFf2yT+JHoINN8Tdot5z4qU2vf2i6ikbNLIVJ+Fjdhg9Iqxe085+FqfhtewabcdLs4COh2XLImk3v0S1fGkTyaFGdGxhFtm17zjy1azcqMU5dxA3qu8XbyTSQl+SI0umtlLbUvXORPCBozw+0+xm3xldFtQAyPA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782677885; c=relaxed/simple;
-	bh=XTt9Wb3t8dMkZzuvXmoKi5n+eeWfIrk4FFd5V+XRvs8=;
+	s=arc-20240116; t=1782677886; c=relaxed/simple;
+	bh=Y4wbuB2Q7UtRfee4Zl34eyEe9jsKHEIS7Gdb8j429aY=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=He48bnvPn3y3gGbmdqBXl8z6n2YsxLRytRtin6YSMbXvzjJ7KnxEHwRjAhXHMbLAsdD60TRbtnuCpSrFasFZquA5SZ4wxudhRI9Q//+pBWMgLapVKWN7Rz5E52y8Ei7byizDxzHysEv36pHXyiBdWCynhHXNKYRLyvrqIG39+H0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=FPxJ49dE; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=apYC0TcZ; arc=none smtp.client-ip=80.241.56.151
+	 In-Reply-To:To:Cc; b=ZLMlvAe37J57WqZbGu3HEnKrh083WX0QgsEebmKWFwFsTnFUkUXIxlGnwoDtmwcU1FVB7RgRuoNHtrEtwXEK+/fjcy13Lpx5B+/TnfqFz7jKXlG3hLBcWqsFNe9ASmocL9WVkfWKtWT4t22SGrHjdRdDlS8/HIfpcejnExHy0B0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=YqzpIpo3; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=v6DgoObr; arc=none smtp.client-ip=80.241.56.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="FPxJ49dE";
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="apYC0TcZ"
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="YqzpIpo3";
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="v6DgoObr"
 Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:b231:465::202])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4gpLLx2G9bz9tSc;
-	Sun, 28 Jun 2026 22:18:01 +0200 (CEST)
+	by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4gpLLr2ypfz9tq3;
+	Sun, 28 Jun 2026 22:17:56 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1782677881;
+	t=1782677876;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YRjPBjPuglGnWcYt2EDxgR0fDCyPIyJQtIkqBiIfQ2Q=;
-	b=FPxJ49dEGetgN/5e84HERwmCNj9+TKlfGnmNHB2x993dTS72TteObGCqkhWa8XZBTV6GHp
-	gB/blLpqD7QtALe50h6loOcqmMy401LDaHXdcw4tNyM5zRf79cy+PZ8zoo+hirboW6HzE8
-	Bx8M2EADwbPj0zimmIjfCWD8ULqkyKtQBSafOte3ZhIcKO9PSy0IhHEwQY/Hl028beVGlI
-	6TOA6yuLlgD5hothDMykDg3LOMRo5rGoaycbh5Yqmb4KbavGmz8JieSNOx7OtPa3kmGW3z
-	VMurq//K64ty6RHwucVGyGnenuX9EOTiRrsXH8jmkLec4BeY++n6E+q3gX57gw==
+	bh=5HOFKh4PR2wybtyQprzVFoqSkRuBhet8B4vwHYABWVM=;
+	b=YqzpIpo3L7EZaVwGrCKSWG5+qknchc8wL0MVgqAbrB/EBzrQZ6AWI/dVNHcoieK7j7xCL6
+	BAPhntIvWuitag4UHNpvkNsYj1SkoGeOU40q1fMS8OfOxprncMgW+jhNjQVfmUM1w2P8Xy
+	bzi20ZjqibOWuQeipRhpwEou0s2IsmSeBvlQUgiQ661ayJybxBnw/fctC+tcYmgVjsh37D
+	+bV1kzSLZguKMToLX0S/MMKuaKrMDxdYuBgnIO0ddRyY/chy4FVL3wNLaHCko9+wILmC1F
+	yfWQXiDU+ZlRsH3zMn1+AAwQT3gFrAOktTxy3YNGEPbYInndE/LBycsTjK3MCA==
 Authentication-Results: outgoing_mbo_mout;
-	dkim=pass header.d=mailbox.org header.s=mail20150812 header.b=apYC0TcZ;
+	dkim=pass header.d=mailbox.org header.s=mail20150812 header.b=v6DgoObr;
 	spf=pass (outgoing_mbo_mout: domain of mhi@mailbox.org designates 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=mhi@mailbox.org
 From: Maurice Hieronymus <mhi@mailbox.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1782677879;
+	t=1782677874;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YRjPBjPuglGnWcYt2EDxgR0fDCyPIyJQtIkqBiIfQ2Q=;
-	b=apYC0TcZfZHw73DlxsMfV7sdGIZieeciDhp8qEIkQwEznLamPEybETpMuq8YsepP1BhS1P
-	+zbk4AAcAu36MGbl0HK/UrkNV+wjs+/waIIpf8mhqtuD++C16nMj5Gl6SetLLj4G+kktsb
-	WRkLPybaZM4VdRKBd+XzLfcow1uYSc2HfiJWTyjuE2bHkYogp758ABT7QNdBx4DU/bJvoV
-	U/s/8a3prfMWxFjhU+K1xQGMqwV6zjZM7D2YC13IOE5QfP3z/9Ii5QbS8zek206JfSgguo
-	u0Z5BDcNgARTg1EBC5I5+FaHo3dlsFjSQMn5jrOZJd1nP84twUG+3yDjkzQjDQ==
-Date: Sun, 28 Jun 2026 22:17:30 +0200
-Subject: [PATCH v3 2/2] pwm: th1520: Lock clock rate with
- clk_rate_exclusive_get
+	bh=5HOFKh4PR2wybtyQprzVFoqSkRuBhet8B4vwHYABWVM=;
+	b=v6DgoObrYvyLWvtYtCcWS/hNjenTQ8GcAN/0OzrNlj9m42/HLLfDippnt7w6Ax+USjpT2A
+	D2wTFNy7BpFQM2CiWOXMkxgMwvOEQR0tI3zHBc7LzOAoKbj9epCXojMR0RMybsdpisA+M6
+	WwglmZZhdceePphzdIldPM9g+EKIc7lRdeJbplwJ79VRLnzOUrPb2nVBfBYpMaz1aT9Qlu
+	3qtWoqIVaWOwzHhXHhSVmm6MddrQxR/ZJ3M7iZOLfTSatild5/vX0kJABK1wpdAOWiBohL
+	Zb/sMY3+6hO0yjzjeIY7R52BzmTMHToA49naGlB1hRh+TgjDLde2pD6Y4X6Kmw==
+Date: Sun, 28 Jun 2026 22:17:29 +0200
+Subject: [PATCH v3 1/2] rust: clk: Add `ExclusiveClk` wrapper for
+ `clk_rate_exclusive_get`
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -62,7 +62,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260628-rate-exclusive-get-th1520-v3-2-c7ca3ebcf60f@mailbox.org>
+Message-Id: <20260628-rate-exclusive-get-th1520-v3-1-c7ca3ebcf60f@mailbox.org>
 References: <20260628-rate-exclusive-get-th1520-v3-0-c7ca3ebcf60f@mailbox.org>
 In-Reply-To: <20260628-rate-exclusive-get-th1520-v3-0-c7ca3ebcf60f@mailbox.org>
 To: Michael Turquette <mturquette@baylibre.com>, 
@@ -80,73 +80,123 @@ Cc: Daniel Almeida <daniel.almeida@collabora.com>,
  linux-clk@vger.kernel.org, rust-for-linux@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
  linux-pwm@vger.kernel.org, Maurice Hieronymus <mhi@mailbox.org>
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782677860; l=1864;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782677860; l=3880;
  i=mhi@mailbox.org; s=20260525; h=from:subject:message-id;
- bh=XTt9Wb3t8dMkZzuvXmoKi5n+eeWfIrk4FFd5V+XRvs8=;
- b=w5HEi6rilfUCETusSD51fB8jWGnN9098rDsP3lrQyWJzNupIqTBA+PY88VZmgt21lBjME+2K7
- 32EsHv5Uxi1C122ip+EZkgnvYzI6pUIrzeiK7eAdGYUtTI/ohaIOw/F
+ bh=Y4wbuB2Q7UtRfee4Zl34eyEe9jsKHEIS7Gdb8j429aY=;
+ b=xKwZuEATbxSwMsq/BqTX+EV73z4sJzVlYz5zbkRq7NQtOVxWxmhVAcEF+6MtVdkG7uJXRBEwl
+ cV59Xj0xUg5A8PA+QvTAL3AoFq/Img4YHwS/oxOb/QUu3pL9GK34fyA
 X-Developer-Key: i=mhi@mailbox.org; a=ed25519;
  pk=AHlEkGG3hpXZHntlEzF42Ip/LFyXWOgsNUvaHqAnV80=
-X-MBO-RS-ID: b30f71789f64a967c2b
-X-MBO-RS-META: 6p3fhh7ejax8dtf73i364e4ahzjzwsut
-X-Rspamd-Queue-Id: 4gpLLx2G9bz9tSc
+X-MBO-RS-META: f4sdaq5bogyhktsjn8wgg5nx78msc1t4
+X-MBO-RS-ID: 79f967012ba1555c077
+X-Rspamd-Queue-Id: 4gpLLr2ypfz9tq3
 
-The driver derives period and duty cycle from the clock rate read at
-probe, so a later rate change would silently miscompute waveforms.
-Switch to the new ExclusiveClk wrapper to hold the rate for the lifetime
-of the driver data and drop the corresponding TODO.
+Add Rust bindings for `clk_rate_exclusive_get()` and
+`clk_rate_exclusive_put()`.
+
+`Clk::rate_exclusive_get()` consumes the `Clk<Enabled>` and returns an
+`ExclusiveClk`. The matching put is issued from its Drop impl.
+`ExclusiveClk` derefs to `Clk<Enabled>` so existing APIs remain
+available on the locked handle.
 
 Reviewed-by: Alice Ryhl <aliceryhl@google.com>
-Reviewed-by: Michal Wilczynski <m.wilczynski@samsung.com>
 Signed-off-by: Maurice Hieronymus <mhi@mailbox.org>
 ---
- drivers/pwm/pwm_th1520.rs | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ rust/kernel/clk.rs | 67 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 67 insertions(+)
 
-diff --git a/drivers/pwm/pwm_th1520.rs b/drivers/pwm/pwm_th1520.rs
-index 343a1178c5e7..8f9d3fa39200 100644
---- a/drivers/pwm/pwm_th1520.rs
-+++ b/drivers/pwm/pwm_th1520.rs
-@@ -22,8 +22,16 @@
+diff --git a/rust/kernel/clk.rs b/rust/kernel/clk.rs
+index 1412a2f0aedf..89f662b67b95 100644
+--- a/rust/kernel/clk.rs
++++ b/rust/kernel/clk.rs
+@@ -95,6 +95,7 @@ mod common_clk {
+     use core::{
+         marker::PhantomData,
+         mem::ManuallyDrop,
++        ops::Deref,
+         ptr, //
+     };
  
- use core::ops::Deref;
- use kernel::{
--    clk::{Clk, Enabled},
--    device::{Bound, Core, Device},
-+    clk::{
-+        Clk,
-+        Enabled,
-+        ExclusiveClk, //
-+    },
-+    device::{
-+        Bound,
-+        Core,
-+        Device, //
-+    },
-     devres,
-     io::{
-         mem::IoMem,
-@@ -93,7 +101,7 @@ struct Th1520WfHw {
- struct Th1520PwmDriverData {
-     #[pin]
-     iomem: devres::Devres<IoMem<TH1520_PWM_REG_SIZE>>,
--    clk: Clk<Enabled>,
-+    clk: ExclusiveClk,
+@@ -621,6 +622,23 @@ pub fn set_rate(&self, rate: Hertz) -> Result {
+             // [`clk_set_rate`].
+             to_result(unsafe { bindings::clk_set_rate(self.as_raw(), rate.as_hz()) })
+         }
++
++        /// Acquire exclusive control over the clock's rate.
++        ///
++        /// Consumes the [`Clk<Enabled>`] and returns an [`ExclusiveClk`] that releases
++        /// the exclusivity when dropped. While held, no other consumer may change the clock's rate.
++        ///
++        /// Equivalent to the kernel's [`clk_rate_exclusive_get`] API. Must not be called from
++        /// atomic context.
++        ///
++        /// [`clk_rate_exclusive_get`]: https://docs.kernel.org/core-api/kernel-api.html#c.clk_rate_exclusive_get
++        #[inline]
++        pub fn rate_exclusive_get(self) -> Result<ExclusiveClk> {
++            // SAFETY: By the type invariants, self.as_raw() is a valid argument for
++            // clk_rate_exclusive_get.
++            to_result(unsafe { bindings::clk_rate_exclusive_get(self.as_raw()) })?;
++            Ok(ExclusiveClk(self))
++        }
+     }
+ 
+     impl<T: ClkState> Clk<T> {
+@@ -650,6 +668,55 @@ fn drop(&mut self) {
+             unsafe { bindings::clk_put(self.as_raw()) };
+         }
+     }
++
++    /// A [`Clk<Enabled>`] with exclusive control over its rate.
++    ///
++    /// While an [`ExclusiveClk`] exists, no other consumer of the same clock may change its rate.
++    /// Obtained by calling [`Clk::rate_exclusive_get`]; the exclusivity is released automatically
++    /// when the value is dropped, after which the inner [`Clk<Enabled>`] is dropped as usual.
++    ///
++    /// # Invariants
++    ///
++    /// An [`ExclusiveClk`] instance owns a [`Clk<Enabled>`] for which `clk_rate_exclusive_get` has
++    /// been called and the matching `clk_rate_exclusive_put` has not yet been called.
++    ///
++    /// # Examples
++    ///
++    /// ```
++    /// use kernel::clk::{
++    ///     Clk,
++    ///     ExclusiveClk,
++    ///     Enabled //
++    /// };
++    /// use kernel::device::{
++    ///     Bound,
++    ///     Device, //
++    /// };
++    /// use kernel::error::Result;
++    ///
++    /// fn lock_rate(dev: &Device<Bound>) -> Result<ExclusiveClk> {
++    ///     let clk = Clk::<Enabled>::get(dev, None)?;
++    ///     clk.rate_exclusive_get()
++    /// }
++    /// ```
++    pub struct ExclusiveClk(Clk<Enabled>);
++
++    impl Deref for ExclusiveClk {
++        type Target = Clk<Enabled>;
++
++        fn deref(&self) -> &Clk<Enabled> {
++            &self.0
++        }
++    }
++
++    impl Drop for ExclusiveClk {
++        fn drop(&mut self) {
++            // SAFETY: By the type invariants, self.as_raw() is a valid argument for
++            // clk_rate_exclusive_put and balances the clk_rate_exclusive_get call from
++            // Clk::rate_exclusive_get.
++            unsafe { bindings::clk_rate_exclusive_put(self.as_raw()) };
++        }
++    }
  }
  
- impl pwm::PwmOps for Th1520PwmDriverData {
-@@ -319,10 +327,8 @@ fn probe(
-         let request = pdev.io_request_by_index(0).ok_or(ENODEV)?;
- 
-         let clk = Clk::<Enabled>::get(dev, None)?;
-+        let clk = clk.rate_exclusive_get()?;
- 
--        // TODO: Get exclusive ownership of the clock to prevent rate changes.
--        // The Rust equivalent of `clk_rate_exclusive_get()` is not yet available.
--        // This should be updated once it is implemented.
-         let rate_hz = clk.rate().as_hz();
-         if rate_hz == 0 {
-             dev_err!(dev, "Clock rate is zero\n");
+ #[cfg(CONFIG_COMMON_CLK)]
 
 -- 
 2.51.2
