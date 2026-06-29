@@ -1,213 +1,272 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45E89403AE8
-	for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2026 12:43:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E4F9380FDD
+	for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2026 13:13:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782737022; cv=none; b=j52bk4MptrxwNjlTIxwIDl4r1CZg+sf0kdZNX6Q9WpYrGo+LwgSSjx/qjB/Ac0PrwSAKNQtTKXlaDpyBhF8t6d7bJrOpqWnYY8aO3SJa6yn9Kqfa2Ea/OPHuJ6hVt1P5TXAH77Ihy4nuYkchHBX58QFJp39mByZEjFwlScCv+hA=
+	t=1782738825; cv=none; b=SHZtD3tLAljp58nLuFd+mqNxRaQRcZI654wQqqDfn4KsH+WGRFuC/jryKVqQPP5Mb80qWRmnFGqO6XIjLLtmONkwRPsXD2xO69hFbHsAYC5CNeeb00bVGiL/ZYqrb7bciQQ6DIV0u278cDSO9a5ipVaLRhYn+caLAEVZPmZ2F7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782737022; c=relaxed/simple;
-	bh=iL8eQCnQSbG2ojygIK5P3cXtGszj1MWC/yVH3lFhswM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ue+xPKFxcEgsUmpydJbPlPv5XRpYcen8f87xvJ9BZKXdWncEKk1oUTsqGU5Z84RPBdulr9zfnWKRSG5kaTuWSydDiQY9cAR6mXgRkyo/orW618Rq5tq2pqvXzNTTzNR1pg7BBcSCWTN+q/YICRfbmOzCs6irUI/3dU68GqNddWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=NMdpH6YD; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ZWBBhSBp; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1782738825; c=relaxed/simple;
+	bh=uqWUiWxqoK1z4suv25KsMeSJmhIYeFSFGYemREkDadc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ik7e/KFTFoWiQFzcYfPc8CPQbQD3VdOHyNVQI7a9mp87jcQBsYSphce9gfMKygiowx1BQAAHE8Yhqllv+i0nRl99N00Bm5+6jomiqnhNQvrY5mIaCOl89G/I7bYqqrtQO0wLuJTwwhbw7GTltQUtNc4wcQaBzMph5r6PUhPy5u8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G570oWgW; arc=none smtp.client-ip=74.125.82.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="NMdpH6YD";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ZWBBhSBp"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65TB5ODA2728927
-	for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2026 12:43:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	CpHcwEms8mZxbI2w+Md5BrpKxIEKLFyT45Gg2vM0YiY=; b=NMdpH6YDeqCM6Ng2
-	6l+u1JT4xPqzvjoTIliP40I8uS1vyj+L87A0s/qye2JFugwtFubIXUyRV7TGDunu
-	R6AT7ytIJgsoT9qLUDl4wVFliJkW4IuqsH8CbCK3KeaS2RCkVYPYUJb3E2XmVf/n
-	n3hDCcBxNJlzKeVUAMJaWhtjvocMm4xmBllzsNmFZBHpLfh9MoNKpAQANg8pAcNm
-	TXF0zOy0GX+9LwYTaSDruBciQSlEcjcnL39ePRYOwyzIFsHATrj9EfyXaS+7TQfj
-	LXtLZZhSE0HawuL0/q6HT7LO9lTXKMaK7kYXAJnJbjWc2xRjybwKZ0RF9NkF8Rk6
-	8fCEwA==
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f3qha8bb9-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2026 12:43:40 +0000 (GMT)
-Received: by mail-pj1-f72.google.com with SMTP id 98e67ed59e1d1-37fec599568so1562893a91.2
-        for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2026 05:43:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G570oWgW"
+Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-30bf8b2bd20so6575142eec.0
+        for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2026 06:13:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1782737019; x=1783341819; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CpHcwEms8mZxbI2w+Md5BrpKxIEKLFyT45Gg2vM0YiY=;
-        b=ZWBBhSBpkN7U1a4i9A+0lyZi37P59NHUTaHRxPctYZd7M5PKOhhxHhsrbRHlyXSPaA
-         7g2pTDiUT2cMwStL6aFYlTt9xcXUfjFg6PZm5M5A08PV+ZQczYWLkl3msHBYC6pcA+I/
-         xeBlQHDX37KX/jltvdN/s6XCJWMH7mio4NbpE4Oszi90X2bmxyZ4jvTriu9et3RJXb4b
-         dq/GtcOY/W4kwIz9Oee0eg1jZfqMkEWl+CoyAUIeO54TRy4aReXE6b9EAdkZXkK0FsQZ
-         oVdtRw+Kfe0GzbER2JtWZG0NcZBAHeFE4T36yW1KOWu+n1fZmsWkmVbdQ0gNI3z7MrEv
-         /aeQ==
+        d=gmail.com; s=20251104; t=1782738824; x=1783343624; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ag7rMygxbcOcB4P3e3XBrLKcZ4BXMFcVbEIShzaDpgU=;
+        b=G570oWgWLMNssA1eAouLvtU6M2Os3Sl/nBh/j670e9zc7X1djenc8sOoYh5ZrL/Pqm
+         MWRrp4dzw5W63JfkhR0bPYxPVHP6Y+7wZJrj5qKrIi3+dxbRV1X8MQXMJtBBLCBjawrw
+         aD1Wp9O4wfJubmab50DpVBXL5J/8VZM3aXpv4CLlx+VX66zrUL1n4I9rS0cbd1LmOAPa
+         wOz8IivHV2vkSyYdCxlSvCzQIersA9y+8HKa+qR8zip4QmQ21rhTh/Fnj4wq8D6oLS4S
+         sgKCRNymuOvG7JgPffQ/+2Q5QMLsKAi1U1BAmJcGyJ9kgN7BC+NqYNnDDddDzP7ZCoaS
+         5row==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782737019; x=1783341819;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CpHcwEms8mZxbI2w+Md5BrpKxIEKLFyT45Gg2vM0YiY=;
-        b=eGrrpyagvdkOssid1HC76GGdlHorfH3hNlpg+Utd2U7Xqt1n+21nJpKq72nbnvJ2CO
-         oknYY5tS6kYkvwBSOcVNse6nWHYkoDklwthceZjd4gXbXxZw1wjfKpP+UtY/XJhqBejc
-         EtoDiCqoAMMLQhLrGJvw3XTQ9wVZROlbyQFQmUrBnPknnC6+3hfIxMJH/1MOO8mhJFHu
-         UN+DQaZmjD9s/C41TJJc1ClZ8HBxgQ0ugq+S8bFYu78fEauOpp0XP1RF/LBscny47N/b
-         dgF6DEu+tuVQ3LwqWfdEvsXejtJpBKrJpidataMyLUW+9yvJ6A7jxCMP0SYDNsnh7/iz
-         mThg==
-X-Forwarded-Encrypted: i=1; AHgh+Ro322epnKimTyZtNJWp/7p/Af3c0vlvy58ae8VAiwIwKkJ4rZVdlGOvaL3ssETaBjaS0DdMh9pphzk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwP5JJF7vPybd83d6/NevpTVwrsx2kBL0ZanLm+36KsNGdBGjAA
-	2IjI/S8IdyFrFc6JNnJU8ZAKaznVXbv1nwD+B1NKIroQhkYyw3eAHosLqfPwI3+PCRP8JMzqDNG
-	pqKJGfjieT6CTjWvytJEdzlNHjuaVAsprC+MDMTyevSdYVzUxgneXLmMm/+FoZFw=
-X-Gm-Gg: AfdE7cnufbctgmW8fD9FfZlfD67on1LM+MRFhFxF8MGhbcjHuMizESMl0lFVo5Qjkp5
-	6ebfoqZ/WNynXQd8737BiKBFjs9YQWF4gUHUQLjwVvh7eQLuwQWh8xqlTvcyG1B/GKhT4YE6gkZ
-	4+ZLzvtHYGQFY46K3UxZ5sPaZJ2WCdWLwzv/GcqeExUnChj1LmzuOl8qgwtrd72Na3img6unBKt
-	hnLu+7IuL9/pbGLd7JFDq1PvX/cpMIzhB8WZNkdqvybSpuveM9ea1rKLBPUG2sMckV1QvE0cloQ
-	35RIyaRowMhWRJMJpqaIqvxhRqQNWBE/ACWTBiNfxiCF8dpjCRAprnHDLUNkgdozn2sZeSLrvbG
-	eDSvestA7LsbVSpL34FAHw1XfkDeGmJ6S/dNfErCOxjwyV55kKN/fTAbMGXtAM7xlKG2EgtrMkM
-	h3ZvtwLA==
-X-Received: by 2002:a17:90b:4ecd:b0:37f:9ce1:cdb0 with SMTP id 98e67ed59e1d1-37f9ce2229dmr7491049a91.30.1782737019089;
-        Mon, 29 Jun 2026 05:43:39 -0700 (PDT)
-X-Received: by 2002:a17:90b:4ecd:b0:37f:9ce1:cdb0 with SMTP id 98e67ed59e1d1-37f9ce2229dmr7491002a91.30.1782737018606;
-        Mon, 29 Jun 2026 05:43:38 -0700 (PDT)
-Received: from [10.133.33.246] (tpe-colo-wan-fw-bordernet.qualcomm.com. [103.229.16.4])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37eaff87f61sm5602580a91.17.2026.06.29.05.43.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2026 05:43:38 -0700 (PDT)
-Message-ID: <f0ed588a-6cfb-4079-a2fe-7c14f1b42727@oss.qualcomm.com>
-Date: Mon, 29 Jun 2026 20:43:25 +0800
+        d=1e100.net; s=20251104; t=1782738824; x=1783343624;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ag7rMygxbcOcB4P3e3XBrLKcZ4BXMFcVbEIShzaDpgU=;
+        b=EGfozG+9XiGKdLhkq1bTAzFBcBiKVMuEDC3gnvg7qsO6B2m9mg4otsrpDhVgrPV1Aq
+         TZpVqH+f/ncJ/ETrZQVUFgxm6e37fidaKy4VKeGxEk8UKe9yfPjrlAh2YfpdvWm0UWcy
+         66b6uTC0XXhHsugGQyahI26obDnAvosqTRn0domqbr254qsJ7BMy4+ajdpO7lKbp39dg
+         +stBMIZcgjhahYeVa+QY1p5Njak86FFXF+2aYHRfKbHgSw2ORnTkFJLe7UFoJFyk50E4
+         bdigkdpLuD4tb1GLjz+AaQOmSBSUSRepE/QPwE/ZzMM/4T6yTop3SlXZIEmIeJj0NGpV
+         0KNA==
+X-Gm-Message-State: AOJu0YyKE8EzfOizcyo+HusnuIZWLKxkcO5ARMQPBWwcagqlrsZ4+2FF
+	8uiboca9uS0PlGbEMqRsmPvgHYN5Gfbqz3uJiIXCtJ6TD7SQXiM0FO9TDR3uJg==
+X-Gm-Gg: AfdE7cmYGEgfEGVYWMyXPJvIFhaxDqh6RNRipb44M39BetOP6/jrFVOdCi6w5rllbG6
+	gnhofR1IJxNi4yszyDW83GXpH9e7C+u7QAiionsmoDaaZUGGGIkkoj4f2qi6xdH0pw8+I8XG3Pb
+	njK1FIFm3SOwTj7aKXNKo/RkhycCCxyNpzGYWXSO1EvGV2Ww3KkxjXvO0pOSyYotV1pCFxIBrL6
+	qPpoUDBtjJnNuoXI9u3alefU69GpDmafiLuu8Uv/HwB0ZyC22V69xIW2myuIWHaN94pApsnkLMO
+	K/E1PHKruzrapgl8bSOQ9a+/o8vYFmTaQv/BPCaO77IhPFphB3INqHczO6rOkzQQD1G9nXLWClf
+	7RDxl/gC8UAB8vb5ohH6XOqr7gIyK/W4C74l2Xpx/xmTGUBczNPlCQslm7YnHJgmfbsDjlYyoY5
+	EWIPqgWTs3QHo2qL3EG00Q97aN5HRV9ffpig8=
+X-Received: by 2002:a05:7300:8bab:b0:30c:56a0:ce3f with SMTP id 5a478bee46e88-30caae2f116mr11362069eec.2.1782738823488;
+        Mon, 29 Jun 2026 06:13:43 -0700 (PDT)
+Received: from Black-Pearl.localdomain ([49.207.62.174])
+        by smtp.googlemail.com with ESMTPSA id 5a478bee46e88-30c7c52eed6sm43883676eec.9.2026.06.29.06.13.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Jun 2026 06:13:42 -0700 (PDT)
+From: Charan Pedumuru <charan.pedumuru@gmail.com>
+Date: Mon, 29 Jun 2026 12:58:37 +0000
+Subject: [PATCH v5] dt-bindings: pwm: st,sti-pwm: convert to DT schema
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/7] cpufreq: rcpufreq_dt: use vertical import style
-To: Guru Das Srinagesh <linux@gurudas.dev>, Miguel Ojeda <ojeda@kernel.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Danilo Krummrich <dakr@kernel.org>,
-        Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andreas Hindborg
- <a.hindborg@kernel.org>,
-        Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
-        =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>,
-        Benno Lossin <lossin@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
-        Trevor Gross <tmgross@umich.edu>, Tamir Duberstein <tamird@kernel.org>,
-        Alexandre Courbot
- <acourbot@nvidia.com>,
-        =?UTF-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
-        Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Fu Wei <wefu@redhat.com>, Michal Wilczynski <m.wilczynski@samsung.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>, Jens Axboe <axboe@kernel.dk>,
-        FUJITA Tomonori <fujita.tomonori@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King
- <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, David Airlie <airlied@gmail.com>,
-        Simona Vetter <simona@ffwll.ch>, driver-core@lists.linux.dev,
-        linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, nova-gpu@lists.linux.dev,
-        dri-devel@lists.freedesktop.org, zhongqiu.han@oss.qualcomm.com
-References: <20260628-b4-rust-vertical-imports-v1-0-98bc71d4810b@gurudas.dev>
- <20260628-b4-rust-vertical-imports-v1-3-98bc71d4810b@gurudas.dev>
-Content-Language: en-US
-From: Zhongqiu Han <zhongqiu.han@oss.qualcomm.com>
-In-Reply-To: <20260628-b4-rust-vertical-imports-v1-3-98bc71d4810b@gurudas.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: lhyehFjcZg3hjA-72aHPgCGDqAQ_Iatl
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjI5MDEwNSBTYWx0ZWRfXx5mGokQU5o1+
- sbvbQ4necOv7RClWATTRABapebxVMx68iMjUlvmr5yQ6D/c6QkY1lK5Sb3j57BuazKjGmPmy+uK
- 4nnTPiZQskzF+HEm4XzfMu3QvpJjPKbag+1uUAEN640F2BloDIYadMscobCdXr29z2HAl3JkRfI
- 9lGNtEoxMwZczmRN9aQwMjFaNtZyPGbOoD7ItINrmBfjAKh+jbHipINXD/QOufUYrltqO3/wxmv
- /bUZbSmwA5x058Q/zARwpDEeR88KsTbuzS6iDvtAechlh61kjsepGRQ0OxX5DL97iUHRkAFuVnA
- UERUli6LqMZuV3BqmIUTLV/XFuWF26qszRUuIEJdARaqwg8oq1eFNMSEmpFtMtPRzoonLz+prgu
- C59/F8K/5wuhKYne/R1OcfT4I/cxAAx9wAIw3FEp0V12vQ18Kmwy7+DBX+pAtJyRfLe/RHr+/DT
- yC2XLs6gNzex6JRhbaQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjI5MDEwNSBTYWx0ZWRfX+Eeldm2RnXw/
- FHofCRprf6BlWLhnnKcWVyFPk2UxwvN8Ce2poVfFpRgt1qxOCiraL/frsMfPYQ+SmqI3QJme7pw
- tb3NgJ8Di6Yqc+ryZS5eSHgxF6vitGQ=
-X-Authority-Analysis: v=2.4 cv=O9UJeh9W c=1 sm=1 tr=0 ts=6a42687c cx=c_pps
- a=RP+M6JBNLl+fLTcSJhASfg==:117 a=nuhDOHQX5FNHPW3J6Bj6AA==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=VwQbUJbxAAAA:8 a=ecjbvcZnrCEMvoAzKiMA:9 a=QEXdDO2ut3YA:10
- a=iS9zxrgQBfv6-_F4QbHw:22
-X-Proofpoint-ORIG-GUID: lhyehFjcZg3hjA-72aHPgCGDqAQ_Iatl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-29_03,2026-06-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 bulkscore=0 adultscore=0 impostorscore=0 lowpriorityscore=0
- phishscore=0 malwarescore=0 priorityscore=1501 clxscore=1011 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606290105
+Message-Id: <20260629-st-pwm-v5-1-a93f2bfec38c@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAP1rQmoC/23NTQ6CMBAF4KuYrq2hUwqtK+9hXJTpVGsEDEXUG
+ O5u0cT4t5q85H1vbixSFyiy5ezGOhpCDG2TgprPGO5ssyUeXMoMMiiyQkgee34811x4so4KTEe
+ yVD525MPlMbTePHM8VXvCftJTYxdi33bXx6dBTL2f0UFwwXOlEVCbMjN2ta1tOCywrdk0OsA70
+ y8GiWFpwKnSKCT4ZvKNgXoxmZhFMpX3Wisw3yz/z/LEjNKudEXlvPxg4zjeAbM5W1NTAQAA
+X-Change-ID: 20260613-st-pwm-1feade6cfea3
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Charan Pedumuru <charan.pedumuru@gmail.com>
+X-Mailer: b4 0.15.2
 
-On 6/29/2026 11:38 AM, Guru Das Srinagesh wrote:
-> Convert `use` imports to vertical layout for better readability and
-> maintainability.
-> 
-> Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
-> ---
->   drivers/cpufreq/rcpufreq_dt.rs | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
-> 
+Convert STMicroelectronics STiH41x PWM/Capture controller binding
+to DT schema.
+Changes during conversion:
+- Fix compatible string from "st,pwm" to "st,sti-pwm" to match the
+  actual hardware variant naming convention used across STi bindings.
+- Drop pinctrl-names from the required list as pinctrl properties are
+  inherited and validated by the pinctrl schema.
 
-Hi Guru Das,
+Signed-off-by: Charan Pedumuru <charan.pedumuru@gmail.com>
+---
+Changes in v5:
+- Enforce stricter validation of the clock-names property.
+- Link to v4: https://patch.msgid.link/20260625-st-pwm-v4-1-958d7d6bdf39@gmail.com
 
-> diff --git a/drivers/cpufreq/rcpufreq_dt.rs b/drivers/cpufreq/rcpufreq_dt.rs
-> index 10106fa13095..6f83cf8955a6 100644
-> --- a/drivers/cpufreq/rcpufreq_dt.rs
-> +++ b/drivers/cpufreq/rcpufreq_dt.rs
-> @@ -6,7 +6,10 @@
->       clk::Clk,
->       cpu, cpufreq,
+Changes in v4:
+- Fix compatible to "st,sti-pwm" in examples.
+- Modify subject line to point to the correct YAML file.
+- Link to v3: https://patch.msgid.link/20260625-st-pwm-v3-1-ace9bff88529@gmail.com
 
-The change seems reasonable according to the Rust coding guidelines:
+Changes in v3:
+- Fix compatible to "st,sti-pwm".
+- Drop pinctrl-names from required.
+- Modify the commit message to explain the changes made.
+- Change maintainer to "Lee Jones <lee.jones@linaro.org>".
+- Link to v2: https://patch.msgid.link/20260618-st-pwm-v2-1-c792d5795ce2@gmail.com
 
-https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/tree/Documentation/rust/coding-guidelines.rst#n44
+Changes in v2:
+- Add the missing interrupts to the required following the old binding.
+- Modify the commit message to explain the changes made.
+- Link to v1: https://patch.msgid.link/20260613-st-pwm-v1-1-458c2c89709a@gmail.com
+---
+ Documentation/devicetree/bindings/pwm/pwm-st.txt   | 43 ----------
+ .../devicetree/bindings/pwm/st,sti-pwm.yaml        | 92 ++++++++++++++++++++++
+ 2 files changed, 92 insertions(+), 43 deletions(-)
 
-     "each item goes into its own line, and braces are used as soon as
-      there is more than one item in a list."
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-st.txt b/Documentation/devicetree/bindings/pwm/pwm-st.txt
+deleted file mode 100644
+index 19fce774cafa..000000000000
+--- a/Documentation/devicetree/bindings/pwm/pwm-st.txt
++++ /dev/null
+@@ -1,43 +0,0 @@
+-STMicroelectronics PWM driver bindings
+---------------------------------------
+-
+-Required parameters:
+-- compatible :		"st,pwm"
+-- #pwm-cells : 		Number of cells used to specify a PWM. First cell
+-			specifies the per-chip index of the PWM to use and the
+-			second cell is the period in nanoseconds - fixed to 2
+-			for STiH41x.
+-- reg :			Physical base address and length of the controller's
+-			registers.
+-- pinctrl-names: 	Set to "default".
+-- pinctrl-0: 		List of phandles pointing to pin configuration nodes
+-			for PWM module.
+-			For Pinctrl properties, please refer to [1].
+-- clock-names: 		Valid entries are "pwm" and/or "capture".
+-- clocks: 		phandle of the clock used by the PWM module.
+-			For Clk properties, please refer to [2].
+-- interrupts:		IRQ for the Capture device
+-
+-Optional properties:
+-- st,pwm-num-chan:	Number of available PWM channels.  Default is 0.
+-- st,capture-num-chan:	Number of available Capture channels.  Default is 0.
+-
+-[1] Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
+-[2] Documentation/devicetree/bindings/clock/clock-bindings.txt
+-
+-Example:
+-
+-pwm1: pwm@fe510000 {
+-	compatible = "st,pwm";
+-	reg = <0xfe510000 0x68>;
+-	#pwm-cells = <2>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_pwm1_chan0_default
+-		     &pinctrl_pwm1_chan1_default
+-		     &pinctrl_pwm1_chan2_default
+-		     &pinctrl_pwm1_chan3_default>;
+-	clocks = <&clk_sysin>;
+-	clock-names = "pwm";
+-	st,pwm-num-chan = <4>;
+-	st,capture-num-chan = <2>;
+-};
+diff --git a/Documentation/devicetree/bindings/pwm/st,sti-pwm.yaml b/Documentation/devicetree/bindings/pwm/st,sti-pwm.yaml
+new file mode 100644
+index 000000000000..39f96596c1ef
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/st,sti-pwm.yaml
+@@ -0,0 +1,92 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/st,sti-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: STMicroelectronics STiH41x PWM/Capture controller
++
++maintainers:
++  - Lee Jones <lee.jones@linaro.org>
++
++description:
++  The STiH41x PWM controller supports both PWM output and input capture
++  functionality. It provides multiple PWM output channels for generating
++  variable duty-cycle waveforms, and multiple input capture channels for
++  measuring external signal periods and pulse widths. PWM output channels
++  and input capture channels are configured independently via
++  st,pwm-num-chan and st,capture-num-chan respectively.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    const: st,sti-pwm
++
++  reg:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++  pinctrl-names:
++    const: default
++
++  clock-names:
++    minItems: 1
++    items:
++      - const: pwm
++      - const: capture
++
++  clocks:
++    minItems: 1
++    maxItems: 2
++
++  interrupts:
++    description: IRQ line for the capture device.
++    maxItems: 1
++
++  st,pwm-num-chan:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Number of available PWM output channels.
++    minimum: 0
++    maximum: 4
++    default: 0
++
++  st,capture-num-chan:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Number of available input capture channels.
++    minimum: 0
++    maximum: 4
++    default: 0
++
++required:
++  - reg
++  - compatible
++  - "#pwm-cells"
++  - clock-names
++  - clocks
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    pwm@fe510000 {
++        compatible = "st,sti-pwm";
++        reg = <0xfe510000 0x68>;
++        interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
++        #pwm-cells = <2>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_pwm1_chan0_default
++                     &pinctrl_pwm1_chan1_default
++                     &pinctrl_pwm1_chan2_default
++                     &pinctrl_pwm1_chan3_default>;
++        clocks = <&clk_sysin>;
++        clock-names = "pwm";
++        st,pwm-num-chan = <4>;
++        st,capture-num-chan = <2>;
++    };
++...
 
-If the preferred style is to place each imported item on its own line,
-shouldn't imports such as
+---
+base-commit: c425609d6ac4012c8bbf01ec2e10e801b1923a7b
+change-id: 20260613-st-pwm-1feade6cfea3
 
-     cpu, cpufreq,
+Best regards,
+--  
+Charan Pedumuru <charan.pedumuru@gmail.com>
 
-be formatted similarly as well? Have you run: "make LLVM=1 rustfmtcheck" 
-on this change?
-
->       cpumask::CpumaskVar,
-> -    device::{Core, Device},
-> +    device::{
-> +        Core,
-> +        Device, //
-> +    },
->       error::code::*,
->       macros::vtable,
->       module_platform_driver, of, opp, platform,
-
-Likewise?
-
-> 
-
-
--- 
-Thx and BRs,
-Zhongqiu Han
