@@ -1,69 +1,69 @@
 Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26DB8389DE0
-	for <linux-pwm@vger.kernel.org>; Sun,  5 Jul 2026 15:14:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19A73812EC
+	for <linux-pwm@vger.kernel.org>; Sun,  5 Jul 2026 15:14:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783264487; cv=none; b=Yh4vNIO8ywiVFLB2hRPQ0l9uPnEWQ7EDvYt7S/rLKv9YU4oE0Q4Qik03/vjyNbIEz1ApHQO6/IJBYixk6wagxdYfHWye75I571HqdCavKeK5wz7xNDTpZJNrJZqeBpsW0ufMorXy2/PLMz45LDImsKZ0/MuYI4jxNJwOIr2DItk=
+	t=1783264487; cv=none; b=ffQkcYIA3zJHtQxNyFsAGV4V58PKX0rb5S0yFTZjgDGFAY9ub+ECm0mASuEd7pBJpEn7AH9jXU60mkSaErHxCDXe0aRSyz7L5YDrNXz77PCs9uu/uATM+fC/loA4TtO4NG2EqQRjzyHqlcoqpmsZ8mgJ11/JXzV4tgOsZ9txMME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783264487; c=relaxed/simple;
-	bh=DpyejrDsvcPcaRnwy14yP9N6Ja2CpaXRdZysc/KIjBs=;
+	bh=nQg1zr12uErvKfv4CjdDXREaeCl7UBYzwGESaPAzRn4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ao/NyPN4fQyb5tc+tQBYrX3yszFOilIhhoB15DMOTvj6ANGrP1DWiTSBclxK2AQZXyQ7Moa0dMoMyhsZjUyPsx73GLf3JpAT/s8jo+AqSE83WTdgwP3xRygxwY6QbjfZEeAO8siqF1jO5UVmHVUKFb2TcoLWR1OyvviYtJCJNAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=OkLoRLu/; arc=none smtp.client-ip=209.85.128.41
+	 MIME-Version:Content-Type; b=UqFMQpJf3m2ShaFkC6ejWksvh79Kf/ZSOzgl0867bIHVj1WuSIGkyRlpTxQAZ9b4Hy+Zooh4iZ08bvQnAORbEzVCFqnh9WzTHLmc0TTDiy2njG+UroYCfeyOAOO5eD2VfhFweaMk5So/RRgFHSxXb8t+8sgDtitJJ1S1C4wJytg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ogDYoaBk; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="OkLoRLu/"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-493b27c7451so28430295e9.0
-        for <linux-pwm@vger.kernel.org>; Sun, 05 Jul 2026 08:14:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ogDYoaBk"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-493c2b3dc8bso14800005e9.2
+        for <linux-pwm@vger.kernel.org>; Sun, 05 Jul 2026 08:14:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783264481; x=1783869281; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1783264484; x=1783869284; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Xhl+UnQBSClzrRs4eIqybEraL4edLN+OioubeLMQzQo=;
-        b=OkLoRLu/X+JLhm752i+S+0JNMt5MKSznLSPi/pxV1HwyQABLz+gKIrZd7GSWV5x7+d
-         5jK+LxnpS5+BRpe4tdfBhiPkOYQKB1Qmw11tqs1m3QySptS1C/uVBMkCLuD8KmmrTBSa
-         whmncQYrKohW9r+nL/FuhC3tAFjLTHgMNyoPpZDGID3AweJQ9UzYpVNKBjSE+CQSlZk7
-         Y0EOwOiE7rdcwzwVRh/IaadB2zPnEyqmCv7ZkGTh7lTiT5l/MUs10SY5ReAacMKZoTDE
-         I7Hp+0AazNRf3DLn36fCFz6tO+mGn9WuCvOZrTV9HtbvidXUkEsyWrAv4o77uglbqNlM
-         i6Ug==
+        bh=ZR+FvhpeFlO5SaKYOf2iYX9QVp9scXDqtxu7Lek4dW8=;
+        b=ogDYoaBkra1XwFG9xrZbxININzyBH1zkWJqQVzZtJBvvO4j6+8WO93hTE308rYm8JH
+         OCBgtNdE4PSt37uwpp/PRbdmE6MjuypXDHS51ZPRTQ5CKTKYvsXN2mysXO3LoaY/x4H7
+         +lWXKwFg2QnZXQe//yFAy8V2ZaADI1OAK6PaW9ZBZvTmxCfpC9K6BSiwx8v781cJS7Xh
+         bBxbOY8DME+clRHZ7C9z19Xs5qLpkThBdc0LS8aGd7Ca8NhDU1Bgzld2nTdtruUgOqLH
+         synr/mRZPhfDpg9/O+webiS+Mtck5OEFsprztGdfadinqgDeNqCpzzChi2ynP9Yjmz92
+         pcYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783264481; x=1783869281;
+        d=1e100.net; s=20251104; t=1783264484; x=1783869284;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Xhl+UnQBSClzrRs4eIqybEraL4edLN+OioubeLMQzQo=;
-        b=Jo49xlqPOrcwAUXuHHALOWF6mkop+8KMKEOx9lT+wcQxosFhuFOGmFpgZMN5VmSGSC
-         kbMGLTQGPB5kDvfiY3pRwk/4OfyYVcwaMBVbyekfysAkJ8GTfih6OVbl/Nuu6RICiYQB
-         hvcpONZkrg2anuMnm4OzseGUb5r+Bs9qAC6d0aQgyF3WaaVaZ9TewW0AI3QnEb+QcDE2
-         GkasLWXXXLyot13+u96aTtEFofVxvAapaO1RppqlP0Aulr/13RDZ3dDffiThKiupdIMn
-         ixmdt2UCUKkyi76D8DPFrVv9zCktXtPtoeg4+xLojdTATqEEcLLG9k5ggUBAZNBjxs8i
-         pURw==
-X-Gm-Message-State: AOJu0YwUbupBbZ2a4Q7DMSGuRZFN9nUBoIELZgqQiWJ45Wi1bVFdLXQJ
-	l6BXbvJS3ly8ULtzS6h34CbMOkUxcD+pJzEr+TV3HcBBr5CTpbAjqUOmGceBsV4bhkVowHfUAwr
-	OLw3Y
-X-Gm-Gg: AfdE7cn0peN0By+1gs/5fl7UIOn7tvDGDKLdjrj2v8g5OE1Wez8fwK2lEg6PYhntFwg
-	7CYI9GXUvcZawPedP9lA216wz5NMHnOONjsP9PzuycCT0zzXPODfbegc6gPflqaAzAvEy2ZtL4U
-	Ix/Rfg/k4UKxQKGW6xo2PsPLzq5XjDVfIKqF+xFWQLWVhN5dr4Il4tWF9x9ZiypFk00n1FAHxDo
-	Gf9iNDobXSwhY9sqDEJjOO3RqnAJpHV+SgKIJZ7171ty6WBelpumpfbxU64Ci0GPTf0Q2voeQFx
-	Aq5xzKaY35TbUFAQROXmP1PzANF0Bz8y74YYngWcWvqrtoMg/WaJ6k8Ec1R4r5wUif2W+o5sBa1
-	VQ6COI32sY8iwenOwYnlYoVnfCkcGE+oFP4h65dKLmfRYwwv6ruKKBLYSB2DftvCTe2YpOpJknT
-	RJ/+5uL1tSaJlDmgbHGg==
-X-Received: by 2002:a05:600d:8444:10b0:493:c566:7bd6 with SMTP id 5b1f17b1804b1-493d159bae7mr47758635e9.18.1783264480733;
-        Sun, 05 Jul 2026 08:14:40 -0700 (PDT)
+        bh=ZR+FvhpeFlO5SaKYOf2iYX9QVp9scXDqtxu7Lek4dW8=;
+        b=XjtPKULav9j/HuhL8ytbO/fngK26Bwq9bKWNkk8fAWcKwpKuaXKAGkrz2EqleNk7D3
+         Gp46goa6H+9ipupdzP6WT4sTOcQ2SGWOJb2TQGLVQoc9Q508BWoSrL2RDI7PcnqWqFoO
+         74HK9aOtmUxfkeRhOxbAHyBwVPbByxtqOi3r73vqz61g2s/pgjVZtIS/XbytPSvel/ii
+         cQkbc24KC8Oqn2Qq+7bs2PsB0EwE+3T3at8lp9zW+BQjlb5BpJr+lQd46vkoOmaFg6Hb
+         Xeviv0skAU+9wB5B7w/hDNlpbQbqUuSW9QnBGv9jCINsEjrTY6an34ushwPLa2Qm5A5l
+         +dow==
+X-Gm-Message-State: AOJu0YzLy9j6wRfixaSlLutjVEChfWje68THYRAmLn0n+vFzPaEJ4VGH
+	nv2xKMVHtrntN5k4XJ7otmKwxanS4FJYU5KVibo3sjxqrxT2skrSYvtwfm3BI4hZftqFGRNRImL
+	blkWl
+X-Gm-Gg: AfdE7cmrTW4dJiio841gA+UN01IpqSGZTpiyKS8uBFFkSNSpkgrxv3t7AnnyZ88zR3a
+	HFE6cTFy/zoGchrrEcOc5G27FqTfM3wEBvNZZ0cTWIl93S+9LSR/R7CiVR5pRdOncibjKVu01W+
+	l9KavZl6nLkDZqT3EGTksvS3AnpXocclp9GfwtVRguNuBoH8Ry0k0LEVaicGFDg9epGUq+sKXEn
+	CgV720ntFDhpjRl3s6Mg2ve1qXHjsEPFir8JhnCpeqQWlp9xeVFYLqpgzhx8Ew6JGilfU86RH3Q
+	NqOGTckL3Lc234cl+rNr43QzQwDeTMf/qqZNwksPR8UO5eKGe30Q5QjiXKvJTvIFBSRj0rcIIqQ
+	vmYR+K++uOj81joouis0YTK1HvH6iPcBVCO26/nP1C8BPU04zStzpM8/UixgeE6BEsNWHhBMWpu
+	8+4OTsBY5Ei3FDpocJXg==
+X-Received: by 2002:a05:600c:3f0a:b0:492:4a50:41fe with SMTP id 5b1f17b1804b1-493d11f05a3mr78159155e9.22.1783264484228;
+        Sun, 05 Jul 2026 08:14:44 -0700 (PDT)
 Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-493c63ba97csm288187905e9.12.2026.07.05.08.14.38
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-493c6375764sm261922565e9.5.2026.07.05.08.14.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2026 08:14:39 -0700 (PDT)
+        Sun, 05 Jul 2026 08:14:43 -0700 (PDT)
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
 To: linux-pwm@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
-Subject: [PATCH v1 3/5] pwm: Unify coding style of acpi_device_id arrays
-Date: Sun,  5 Jul 2026 17:14:15 +0200
-Message-ID:  <7a4d998e12ac6fa084d1ee29ecb29d51ab7a5e5c.1783263835.git.ukleinek@kernel.org>
+Subject: [PATCH v1 5/5] pwm: lpss-pci: Unify coding style of pci_device_id array
+Date: Sun,  5 Jul 2026 17:14:17 +0200
+Message-ID:  <235336ce4e90ca7568303119b6f09fb77adca45c.1783263835.git.ukleinek@kernel.org>
 X-Mailer: git-send-email 2.55.0.11.g153666a7d9bb
 In-Reply-To: <cover.1783263835.git.ukleinek@kernel.org>
 References: <cover.1783263835.git.ukleinek@kernel.org>
@@ -74,43 +74,29 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1295; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=DpyejrDsvcPcaRnwy14yP9N6Ja2CpaXRdZysc/KIjBs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqSnTM072R4WujE0yPWH1GzVtQJXwSUV+mCkUo2 Y5bsBvRkvSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCakp0zAAKCRCPgPtYfRL+ To2LCACgI5zfV6rUmKGWPx63X1CoDByPYQViPppBhiA92rlxksBS/hatCkjdv4MtVZuNszxp1Fd H+LqV5guDQuzY7LFyfoD+pZC9kfnuHkQgPeam9+9EYIpe2BKit1qvW6b8d8M13/x+K+3IBvI1kP PuTjW6bY1kUC4AfKdcIyG57Q8FVmQtRF6riN/GJ2moHtqQZE+o1hhU7ye0qjejVF+U4lTnSPGGI ggzRrZUG4WUs8tB4ER3gnBVuLkNRH5aEgAsWb67fC/V7z18N6XomsnBD3SlyTtmgy4KrBndG3DL SHmaMFvcBlfyPwI3JSAirIOiRfg0wo6+H9WFiRpvd491XHPv
+X-Developer-Signature: v=1; a=openpgp-sha256; l=831; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=nQg1zr12uErvKfv4CjdDXREaeCl7UBYzwGESaPAzRn4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqSnTQLaAQ+HEQsKe6Q9v7PL5+x9pFoh1nC1A39 ouGGGlZcNuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCakp00AAKCRCPgPtYfRL+ TjftB/9s37AzFwHzRAqPwyPcZJ78oUkQOpe5Dx0egx8NuexeN7ZqK1N8fODflFWr6LkI8QHfGqC YdLKySy4ba6aZlK4IZTNEP3Su2L7M2LAqZ4v9VGb9rtiAEvVvgiVGZ0y9kHvLO/vPd56M1XmVuz 5HLuzfgEdg+QJeHvszuyjJAvk5so+a4GXa4DzaWM46x+ogvxbj7H7IuWSvtVhq0tNFJba0+Hyqe LUMOWibUc7h5eSCk/NZ0uhEcHUxPwL4jphQT0+jirQR4aoQAJniGebgcU32dQS6baCo+ydL+bTy ndx8jiDkAyMBoNUV6QGd6up+ELxZxA1VCrAijJqGNONgU3Cw
 X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-Use no comma after the array terminator.
+Don't use a comma after an array terminator.
 
 Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
 ---
- drivers/pwm/pwm-lpss-platform.c | 2 +-
- drivers/pwm/pwm-pca9685.c       | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-lpss-pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index 0d4f8bf04e9f..529daec1cd3f 100644
---- a/drivers/pwm/pwm-lpss-platform.c
-+++ b/drivers/pwm/pwm-lpss-platform.c
-@@ -63,7 +63,7 @@ static const struct acpi_device_id pwm_lpss_acpi_match[] = {
- 	{ .id = "80862288", .driver_data = (unsigned long)&pwm_lpss_bsw_info },
- 	{ .id = "80862289", .driver_data = (unsigned long)&pwm_lpss_bsw_info },
- 	{ .id = "80865AC8", .driver_data = (unsigned long)&pwm_lpss_bxt_info },
+diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
+index 3a0fd6593520..bcbfda1a6624 100644
+--- a/drivers/pwm/pwm-lpss-pci.c
++++ b/drivers/pwm/pwm-lpss-pci.c
+@@ -57,7 +57,7 @@ static const struct pci_device_id pwm_lpss_pci_ids[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x2289), .driver_data = (unsigned long)&pwm_lpss_bsw_info },
+ 	{ PCI_VDEVICE(INTEL, 0x31c8), .driver_data = (unsigned long)&pwm_lpss_bxt_info },
+ 	{ PCI_VDEVICE(INTEL, 0x5ac8), .driver_data = (unsigned long)&pwm_lpss_bxt_info },
 -	{ },
 +	{ }
  };
- MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
- 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 0982ba4f566c..8babd29f161c 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -545,7 +545,7 @@ MODULE_DEVICE_TABLE(i2c, pca9685_id);
- 
- static const struct acpi_device_id pca9685_acpi_ids[] = {
- 	{ .id = "INT3492" },
--	{ /* sentinel */ },
-+	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(acpi, pca9685_acpi_ids);
+ MODULE_DEVICE_TABLE(pci, pwm_lpss_pci_ids);
  
 -- 
 2.55.0.11.g153666a7d9bb
