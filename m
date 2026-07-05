@@ -1,94 +1,161 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from out-12.smtp.spacemail.com (out-12.smtp.spacemail.com [198.54.127.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90547367B6F;
-	Fri,  3 Jul 2026 21:28:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9ACB18DB1A;
+	Sun,  5 Jul 2026 00:38:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.83
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783114114; cv=none; b=reLQbIt4/eH6ISLMJVljZfVyxNfSYqvx7myQom0jDsCigUiiMkQwP7ga0LAvPFER9MLak0QbNJkIF/Q7KAdaiF1WfGPag7518DL0I/9zHj+0UWfLubNuKa0G0m/IpCgxbqAMBN4uMNKfN3SHHIBDCg5tpncP1F420TvGCm+R16A=
+	t=1783211925; cv=none; b=pEUsoh9k8nDpcccw9eJlG/qCfiIKz1hIp4rptKVm+tTCoSYXSttDdICY9r9bVRrSz2o5SZqpNSLSCbJvqnXSqjGdNKlFxWjWcywWhlDq0hpwjPuhY4Zr/nEQlX+C3aCH7gW0TUyoUGpYfv9KKxzs8oljVyZxRBXL/bqD++SdH7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783114114; c=relaxed/simple;
-	bh=RuTC3mNSYKGmnhJjG2Zp2sDRf6wakXblt2A6yEH4/TA=;
+	s=arc-20240116; t=1783211925; c=relaxed/simple;
+	bh=7SA06ppJXAjnwTFQhfShgMBi+M6CQvRcfOhns8TQ+vI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LPA4u99IRFI6ijjK87FvfKVdAyfCbWo5BjWxgs20CJcYhgBNYUfLGkCCJfbgdDTXoG3BdC+LwnqdnQ6SIlCshZUHm1C0qRsvz+Jz9jfJVNEbbZ0MbEanf4nq8mo/PTRGiWhA1ICFRiZrSDHWeUxZJM9ImBK35oiEBqnhzBWQ62w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j28NUzn8; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=sn5A0pQ254s9MVg9JBMTJoctZak/sABmEgPpJFFWgIMbKHMatQwzG6xYGTxQVdYWpKUydq55FvV1HdFnf3x3m2cQ/sdVixYtpk9Hn0U+gAXhUPjl4OwOrB1z9kw8jbe3HCXiPQ9hHFcy2M+MlPdxxi4ev5mxcnuTMwIYWBpn9wo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev; spf=pass smtp.mailfrom=gurudas.dev; dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b=NSAOyNTL; arc=none smtp.client-ip=198.54.127.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gurudas.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j28NUzn8"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9F16D1F000E9;
-	Fri,  3 Jul 2026 21:28:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783114113;
-	bh=RuTC3mNSYKGmnhJjG2Zp2sDRf6wakXblt2A6yEH4/TA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=j28NUzn80G9T70umEMpoP2e/A6AakmpQN0QB0ImFbgMCHLCkhbmzDhQgbLX8r2lTW
-	 8M3uItjP/yRK9IV1dfJdQBMUl7gAXY3G74JoINSW/FJ2K0YeU9jdFOoZrrYfEjXJX9
-	 SS2LzprSdbFe588SIM2tVJbHXGNL5v/4RQc1SYkJWL5jyrfANx5C8xLCA0w3erKPoy
-	 tusDTanrFn7PUPXeA+rHS/5gy9HVmfjvIdOKDG1m2ZM/E2nDynqHlQeejpoksp5ipS
-	 mFxr00M5S5unFI0BkhKLwy2lHtuH8HP8L3EXhwf/ySQ+JSjZZM1RG4xYvHgAI+ewKU
-	 yLltTcx7wlQ0w==
-Date: Fri, 3 Jul 2026 23:28:29 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: linux-pwm@vger.kernel.org
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
-	linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] pwm: Use named initializers for platform_device_id
- arrays
-Message-ID: <akgpIQp7QJQQ1yUv@monoceros>
-References: <b515eb1644e793d019163fd2a717d3fccef857f5.1781689255.git.u.kleine-koenig@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b="NSAOyNTL"
+Received: from gurudas.dev (107-194-158-19.lightspeed.sntcca.sbcglobal.net [107.194.158.19])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.spacemail.com (Postfix) with ESMTPSA id 4gt7rn4SRMz2x99;
+	Sun, 05 Jul 2026 00:38:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gurudas.dev;
+	s=spacemail; t=1783211915;
+	bh=M633SL93BCN0PrL2e/cwx2xlbDs4y1U/AlCmHMhb3AI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=NSAOyNTLPtXZ/k1vM23d4mp6kcF0MfY7hjEozE9ESHWUStbSSsqzbmiiD9bT9KmME
+	 xnAufNEJYHbKrfK7MERrVnvmbFeMgkIx6GxHLHSyiCFyy3RCzqYObOgb2IM2gkSkEl
+	 n5ETauFMijv8KmS/jXdluLdYQvgxUilcbOPVqAPT8FXUj6yRzgydyIO9gJ4MdAtdnt
+	 cxQgrF191paqd10Z5zniDfAmO76GJCGEoWxy3mQV3UO+ca0IHbz6G7bc9o/6KLFbTN
+	 eEaQWUGbFQiNK5sG4hbYbqVp7dDxT5pfkoyvnPCLpGPi6eDF8GCzqSTJ/ZeBQ4F+xV
+	 T2FbStM6b4UEQ==
+Date: Sat, 4 Jul 2026 17:38:31 -0700
+From: Guru Das Srinagesh <linux@gurudas.dev>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Miguel Ojeda <ojeda@kernel.org>, rust-for-linux@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Danilo Krummrich <dakr@kernel.org>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>,
+	Fu Wei <wefu@redhat.com>,
+	Michal Wilczynski <m.wilczynski@samsung.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	FUJITA Tomonori <fujita.tomonori@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	driver-core@lists.linux.dev, linux-riscv@lists.infradead.org,
+	linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-block@vger.kernel.org, netdev@vger.kernel.org,
+	nova-gpu@lists.linux.dev, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH 0/7] rust: Use kernel style vertical imports in various
+ drivers
+Message-ID: <akmnh0AKFfu9-OYn@gurudas.dev>
+Mail-Followup-To: Andrew Lunn <andrew@lunn.ch>,
+	Miguel Ojeda <ojeda@kernel.org>, rust-for-linux@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Danilo Krummrich <dakr@kernel.org>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>,
+	Fu Wei <wefu@redhat.com>,
+	Michal Wilczynski <m.wilczynski@samsung.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	FUJITA Tomonori <fujita.tomonori@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	driver-core@lists.linux.dev, linux-riscv@lists.infradead.org,
+	linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-block@vger.kernel.org, netdev@vger.kernel.org,
+	nova-gpu@lists.linux.dev, dri-devel@lists.freedesktop.org
+References: <20260628-b4-rust-vertical-imports-v1-0-98bc71d4810b@gurudas.dev>
+ <c89a1bc8-6cc1-4e16-ac95-add389e45a2b@lunn.ch>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="pzxgbsidxo7x6grs"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b515eb1644e793d019163fd2a717d3fccef857f5.1781689255.git.u.kleine-koenig@baylibre.com>
+In-Reply-To: <c89a1bc8-6cc1-4e16-ac95-add389e45a2b@lunn.ch>
+X-Envelope-From: linux@gurudas.dev
 
+On Mon, Jun 29, 2026 at 04:06:36PM +0200, Andrew Lunn wrote:
+> On Sun, Jun 28, 2026 at 08:38:14PM -0700, Guru Das Srinagesh wrote:
+> > Came across a recent commit bc58905eb07 ("samples: rust_misc_device: use
+> > vertical import style") and found a few more locations that could
+> > benefit from this cleanup. No functional changes.
+> > 
+> > Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
+> > ---
+> > Guru Das Srinagesh (7):
+> >       samples: rust_dma: use vertical import style
+> >       pwm: th1520: use vertical import style
+> >       cpufreq: rcpufreq_dt: use vertical import style
+> >       block: rnull: use vertical import style
+> >       net: phy: ax88796b: use vertical import style
+> >       net: phy: qt2025: use vertical import style
+> >       drm/nova: use vertical import style
+> 
+> You have multiple subsystems here, so you need to split this patch
+> setup, per subsystem, and submit them separately. Maintainers only
+> accept patchsets for their own subsystems.
+> 
+> For netdev, please take a read of:
+> 
+> https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
+> 
+> You need to get the correct tree, and set the Subject: line correctly.
+> 
+>     Andrew
 
---pzxgbsidxo7x6grs
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v1] pwm: Use named initializers for platform_device_id
- arrays
-MIME-Version: 1.0
+Hi Andrew,
 
-Hello,
+Thanks for the feedback.
 
-On Wed, Jun 17, 2026 at 11:41:50AM +0200, Uwe Kleine-K=F6nig (The Capable H=
-ub) wrote:
-> Named initializers are better readable and more robust to changes of the
-> struct definition. This robustness is relevant for a planned change to
-> struct platform_device_id replacing .driver_data by an anonymous union.
->=20
-> While touching these arrays drop a comma after a list terminator.
->=20
-> Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@bayl=
-ibre.com>
+I was aware of the per-subsystem rule, but reasoned that since these changes are
+purely about Rust import formatting coding style with no functional impact on any
+subsystem, they might go through the rust-for-linux tree with acks from the
+respective subsystem maintainers. The Rust coding style is independent of any
+subsystem-specific guidelines.
 
-Applied to
+Is that reasoning off-base, or is the right path to split these out per subsystem
+regardless?
 
-https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-=
-next
+Miguel, could you please indicate if you have a preference here?
 
-Best regards
-Uwe
-
---pzxgbsidxo7x6grs
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpIKXsACgkQj4D7WH0S
-/k649Qf/ZMspAQd8n9bWTBQtzrOhW3oJlDoo2L6GDITnCVEzsztTPRhV//AZUkbc
-r0BkxW/TnsJD0DhOA40sOzfCLPnFssF7FWxkNzA58FVnkFkTnMxq7LE/7Lj9hi6c
-jTZ8QGFhKao68ygZCb1z3Iwsuc0erT8PVu8oCotKR7Q71DMfJTtlxWAP1f6twWEI
-ehzXe0zVnX5ZAIbHYKghNHBxhYYPv/1xZQFhcRrbpKZXkQbOqbCJZly6U+TINv0Q
-gENRe1EBRvS1+kejI313LuuGvnJBQ1ipoU5BtWfNZdSwfkUVHIx4r5wzXX2pYZJ5
-FvMFmIShgZbEoa3JqE5UV0Iv0Hxz2A==
-=0lBf
------END PGP SIGNATURE-----
-
---pzxgbsidxo7x6grs--
+Thank you.
