@@ -1,135 +1,94 @@
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 023013DC856
-	for <linux-pwm@vger.kernel.org>; Mon,  6 Jul 2026 08:01:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D38F23D6CA3;
+	Mon,  6 Jul 2026 08:03:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783324866; cv=none; b=ErsWNRV3OslxyoFc/b5T0dCiPKpRTkMdlNP6aa+1ruVAt8YyTZizEU8RepPPCAnLY/yKGMB7n1BQMdG5K5c08feKjsbb/xh9BZWuFQTubXKKr5R5NEEE2trqUptxIp+YYNGpiQmUTjW6q8eBhtxXods2KGXLp6fmD3j++8VWr6Q=
+	t=1783324988; cv=none; b=gtqzzOWvSB8ELQjQacbGAm18xtRXF9x56o87jU/xCsprUQHwKJ/F4BhH83tLu1HI3hf+sfq/tsiSV0UIy7rBddSNPAlFsZpvKixYFLdLohSIKzACbt0XEJh5xp1EN+yn31XYQGERW+mI8nsx8wvCTSu0TnfyWOdD+eNwuKx7Sqk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783324866; c=relaxed/simple;
-	bh=6FRXXocn1lfRgJnxiPkpYYSBB5w4wnBEBhNnIuipX2o=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=StQovcoJC0f2reOQG5rPVnCi5vXL0F3wjhfoEqX5S8VVprLQ7riWp4vuMc/swzH3XE+V9MxRs4kcisIHf98UkVt30luCIziG0gCqOTNv8PsFZi93vK4g05rcI3q8Oo7WRXxRx3yurHG8LjJgWALSwNuOpnC/bosKvmU2i7DtwA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-59c9b666822so2316916e0c.3
-        for <linux-pwm@vger.kernel.org>; Mon, 06 Jul 2026 01:01:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783324858; x=1783929658;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=xlcdnSGCAGaaD3Qtz41jPpd7wkV1TEYjW94sOKYd3zY=;
-        b=af4C1WZNkjwV4hKgglxvBVmqe4sRyXT2ZayyiEKJLcDnaoyNBAsNubVA6KE7NT8nGH
-         +KH9ndFdul6rxhFerVeMm2IMhClgpzNI1XSECTvDzye/MiDoBjkY8PUrfPMxAOqCW0/I
-         ZUYcPo3OgqwW8df9OeQoGM8i8QKDOgkUPvgBPo82qJIxt3xy3lfFhiBwSZQPolKkKgy2
-         RniptArZkFlF9ZE2Z3PeGGkHZhLy6IH8TdMWvjRj+ZNoUHaCjyFmki7VGkO9ICNJHOOW
-         8E5x4x6RVhTBEAB/d3dlXRvM58MfYDEC/zZBZSM/62eys1pRxVnzx9/oG5v3b4WVReuZ
-         aBjw==
-X-Gm-Message-State: AOJu0Yx92lX3WD/9eCSUp3NkF3QWhQyPPRsklWvP0wMdNnLkPbO5hAaI
-	sXAQd2aR77Pvi6QB3HIC6rnuI4TPYZZ3vm4CFcuAmf6xMA0AGXnaBnWcdYjcBNJs
-X-Gm-Gg: AfdE7cmMQSITH4l1MuZEfW4eVDtGcI3nusR5FWAamGj3foL8Xs4U/5RQEYkGn8nSBCJ
-	Z84dV9NqCMwSq62EEpOX7kOJhhm0K3K4JGQwCM5jtIg6bbkp0Exdc3kcf/UFDFDQ8AS3l2DXPlP
-	lDVfrWaz6HZwLdQEX6CNGUxgTSordPTaB0mBoB+RmjupY9LaUz/d7wW03TO6qUR1ZEl2b8CnF/u
-	wVRdsih3SK8ViTs9hbamMkgBIJGaIiqfgarffg5D0/WSqqU2dxKHeegzC4NYIomT2m1CCOedmrw
-	UYoc6aF9mW3h5/9Ec8P3D89EVdAUlbHulQZba+bMgvKodaeUem6G2LH/XVHG9L1VU+I+e9RlT4b
-	pnsQcbvb08UoKq7m6r01Tl2HHM5XkzaVgZv2MVv++jstdfbpd3gz4UTG/m5I7g+dltyZB8/+Y3G
-	g5bLpQRE/ZfjqYvD1dpRItd9oT3UiQmPdYHWA6yGhEo4ly41UZaA==
-X-Received: by 2002:a05:6122:6610:b0:56b:9b7b:83e7 with SMTP id 71dfb90a1353d-5be101fdf17mr3378210e0c.7.1783324858384;
-        Mon, 06 Jul 2026 01:00:58 -0700 (PDT)
-Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5be02c0b1aesm4447659e0c.11.2026.07.06.01.00.57
-        for <linux-pwm@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jul 2026 01:00:58 -0700 (PDT)
-Received: by mail-vs1-f54.google.com with SMTP id ada2fe7eead31-7383cdb7800so2039039137.1
-        for <linux-pwm@vger.kernel.org>; Mon, 06 Jul 2026 01:00:57 -0700 (PDT)
-X-Received: by 2002:a05:6102:800d:b0:722:826e:1423 with SMTP id
- ada2fe7eead31-7427f0478a0mr3286706137.20.1783324855096; Mon, 06 Jul 2026
- 01:00:55 -0700 (PDT)
+	s=arc-20240116; t=1783324988; c=relaxed/simple;
+	bh=e9Dm59CDTA6yf/bcHxclRwyYc4sWmfXsgmQgZ95zxnw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ie+uZg6tn1o5MKwaTE+imBZqpjr2MD0SxeU7K8JUqdsf6Id2+CQNiRDJ+tTiuioM13xnshyfvrhKzXNapKnicpwhngZ+6Dj8QVpdjkddfAw3TC5DM+sbspiHiRhmODlWWu3aw0mZtacm5+gVpFujIwC9l7DpMFsEbbEQI6zbR8U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZJdsrFQu; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZJdsrFQu"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BB3131F00A3A;
+	Mon,  6 Jul 2026 08:03:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783324983;
+	bh=e9Dm59CDTA6yf/bcHxclRwyYc4sWmfXsgmQgZ95zxnw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ZJdsrFQu9Q8KbeksaE9BPtjKNu57dhgLgYupko35SFhXlZJFQS4vnzSq2PR9deplB
+	 grrCLZ0dPCZGueDY+8sck1Yt4f8vCke3rgTSbBG6Csug9mBwjhU84HVVXjsQcLbHmt
+	 t5Yzvpo6Y7sdjhweeuEpfHpb8mulQ01OTtc5Eb5PUecSmOV+TWev+34F63SGwFmZir
+	 0tSVxXkPCLEHXqzFa5KbwWxx3YqvbcHmMx73YpNOG+aKCnJDxLwFCBOLlDYaTPlDCr
+	 TPV2UC3cAamavOKV6RjG3mJLaIWmLSF5/yZSDo7mcqM691pWg7kuB3dVV0Ez4YYX8+
+	 HP3ubw4dfQKNQ==
+Date: Mon, 6 Jul 2026 10:03:01 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: keguang.zhang@gmail.com
+Cc: Binbin Zhou <zhoubinbin@loongson.cn>, linux-pwm@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] pwm: loongson: Reload PWM configuration through
+ counter reset
+Message-ID: <aktgrGb4CAO3_qFU@monoceros>
+References: <20260626-pwm-loongson-fix-v2-0-5492db953879@gmail.com>
+ <20260626-pwm-loongson-fix-v2-2-5492db953879@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1783263835.git.ukleinek@kernel.org> <20de6cd60c2938aad2d21397b92742849418ab1b.1783263835.git.ukleinek@kernel.org>
-In-Reply-To: <20de6cd60c2938aad2d21397b92742849418ab1b.1783263835.git.ukleinek@kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 6 Jul 2026 10:00:43 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXKyFJ20N6qKafvMZ_0sVj5+XTxcod_6wGkwTsokn7dvw@mail.gmail.com>
-X-Gm-Features: AVVi8CfQACxAMot5VlqKHI6FXvkOZpEWhTZp1dlkgWSruFHOk1f-I-dS5kVo31s
-Message-ID: <CAMuHMdXKyFJ20N6qKafvMZ_0sVj5+XTxcod_6wGkwTsokn7dvw@mail.gmail.com>
-Subject: Re: [PATCH v1 4/5] pwm: Unify coding style of of_device_id arrays
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
-Cc: linux-pwm@vger.kernel.org, Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
-	Neal Gompa <neal@gompa.dev>, Nicolas Ferre <nicolas.ferre@microchip.com>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>, 
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, 
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
-	Florian Fainelli <florian.fainelli@broadcom.com>, Benson Leung <bleung@chromium.org>, 
-	Guenter Roeck <groeck@chromium.org>, Frank Li <Frank.Li@nxp.com>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Fabio Estevam <festevam@gmail.com>, Paul Cercueil <paul@crapouillou.net>, 
-	Vladimir Zapolskiy <vz@mleia.com>, Piotr Wojtaszczyk <piotr.wojtaszczyk@timesys.com>, 
-	Neil Armstrong <neil.armstrong@linaro.org>, Kevin Hilman <khilman@baylibre.com>, 
-	Jerome Brunet <jbrunet@baylibre.com>, 
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
-	Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
-	Heiko Stuebner <heiko@sntech.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
-	Peter Griffin <peter.griffin@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
-	Paul Walmsley <pjw@kernel.org>, Samuel Holland <samuel.holland@sifive.com>, 
-	Michael Walle <mwalle@kernel.org>, Chen Wang <chen.wang@linux.dev>, 
-	Inochi Amaoto <inochiama@gmail.com>, Orson Zhai <orsonzhai@gmail.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>, 
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
-	Alexandre Torgue <alexandre.torgue@foss.st.com>, Chen-Yu Tsai <wens@kernel.org>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Hammer Hsieh <hammerh0314@gmail.com>, 
-	Nobuhiro Iwamatsu <nobuhiro.iwamatsu.x90@mail.toshiba>, Alexey Charkov <alchark@gmail.com>, 
-	Sean Anderson <sean.anderson@linux.dev>, Michal Simek <michal.simek@amd.com>, asahi@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linux-rpi-kernel@lists.infradead.org, chrome-platform@lists.linux.dev, 
-	imx@lists.linux.dev, linux-mips@vger.kernel.org, 
-	linux-amlogic@lists.infradead.org, linux-mediatek@lists.infradead.org, 
-	linux-renesas-soc@vger.kernel.org, linux-rockchip@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	sophgo@lists.linux.dev, linux-stm32@st-md-mailman.stormreply.com, 
-	linux-sunxi@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="4i5najdrrdj775kd"
+Content-Disposition: inline
+In-Reply-To: <20260626-pwm-loongson-fix-v2-2-5492db953879@gmail.com>
+
+
+--4i5najdrrdj775kd
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v2 2/2] pwm: loongson: Reload PWM configuration through
+ counter reset
+MIME-Version: 1.0
 
-On Sun, 5 Jul 2026 at 17:14, Uwe Kleine-K=C3=B6nig (The Capable Hub)
-<u.kleine-koenig@baylibre.com> wrote:
->  - Use a single space in a of_device_id array terminator; A single space
->    after the opening { and before the closing } in non-empty
->    initializers;
->  - No comma after an array terminator;
->  - Also no trailing comma after a named initializer iff the
->    closing } is on the same line;
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
-aylibre.com>
+On Fri, Jun 26, 2026 at 08:24:23PM +0800, Keguang Zhang via B4 Relay wrote:
+> From: Keguang Zhang <keguang.zhang@gmail.com>
+>=20
+> The Loongson PWM controller latches the LOW and PERIOD registers only at
+> the start of each PWM period. After disabling and re-enabling the PWM,
+> the controller resumes from the previous counter value and completes the
+> current period before re-latching the updated LOW and PERIOD values.
+>=20
+> Reset the PWM counter when disabling the PWM and release it when
+> enabling the PWM so that the updated LOW and PERIOD values are latched
+> before the PWM starts running again.
+>=20
+> Signed-off-by: Keguang Zhang <keguang.zhang@gmail.com>
 
->  drivers/pwm/pwm-rcar.c            |  4 ++--
->  drivers/pwm/pwm-renesas-tpu.c     | 10 +++++-----
->  drivers/pwm/pwm-rzg2l-gpt.c       |  2 +-
+This also needs a Fixes: line, referencing 2b62c89448dd ("pwm: Add
+Loongson PWM controller support"), too, right?
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be> # renesas
+Best regards
+Uwe
 
-Gr{oetje,eeting}s,
+--4i5najdrrdj775kd
+Content-Type: application/pgp-signature; name="signature.asc"
 
-                        Geert
+-----BEGIN PGP SIGNATURE-----
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpLYTIACgkQj4D7WH0S
+/k7RUwf9HbfEvpZHJvIcHytJJPia8pv9vN5kx+QzLjSthWmsV2lvMW9+7NlzLMHz
+ur9HssFYrXRpuV+4Cyz8288ZqIyyUNiJWTIkplDXgDpN33/mpjou2vz69dZZskaS
+8HVZi5pSgjBHHYcWt3IFXtDlkA7VsvFarF0oPPq1DflGrnR2dIbedk10E3EudtTv
+5bPSRYyHJQ9wrcriFdDQXT1DUdWrUBrEAQZaXhXyjWBFb6gVJDwrxxwMJFZZH0zr
+l+vDDJuyMh6e6zfaDXrj1PegQ6dZe3COin7B29nAbIchKUZHKv3vfw+hlJy8HrKh
+rhlheCF7n7hFiVRywMEuOoQW/1zxUw==
+=eqYU
+-----END PGP SIGNATURE-----
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+--4i5najdrrdj775kd--
