@@ -1,125 +1,71 @@
-Received: from luna.linkmauve.fr (82-65-109-163.subs.proxad.net [82.65.109.163])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B7B73F54B0;
-	Wed,  8 Jul 2026 07:39:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.65.109.163
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 143DC3FE369;
+	Wed,  8 Jul 2026 08:35:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783496385; cv=none; b=P+BfUAl2ZUh+dd9M1Oio0zn3IH98rIlGD51HqFvHKELrAMPPS7hyTK7CKAoylurN8wWGQ6qRTtTNhQWUQt2gB+SX6ktDXnBdoPaoFRcez0LcZAeXfQchtP+aBL0KyopdvZwfkhMNaD2uAyyHxu/2dgPwImO1v85ZprAXu/MW7hE=
+	t=1783499732; cv=none; b=KD3e2mqKxl8vBkQaOxoP85vpisxHShEHncsslWYOCs8D7QERx6CF4AAWzU3n/p8Yw2pBL96ALu+FxWmIa8/DQjPct6yJsbFoXefnitoIcOFFFTz/KaTVw3UXwlE3MlIagBRe1PaQEyZX+812DD40BirAeyCxi+98ohx/fVVBFiQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783496385; c=relaxed/simple;
-	bh=hE80zLMucVCYhHzwDByDl4nPpyiOoITY4WrX5mG/B9k=;
+	s=arc-20240116; t=1783499732; c=relaxed/simple;
+	bh=cdMZlEKgaBkmZ7as1tEhqS76PekiIrVy5DSTeC4EliE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=E4h1KJ/j5RjjxHVltfMsSgwOZx+bf6AqRJqg/iLrHct1XQ5vTavC+7BTOXOoizFVKmQMUBBKrm7JqtkkRd5qEmjpHCJUNPa77aQYaFY0IodrHurwmBa0D9Cx/qgAQ71XuFczFDW4+df49GPJZJOseOPkv5qUVTgxSlL/6rWmETY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr; spf=pass smtp.mailfrom=linkmauve.fr; arc=none smtp.client-ip=82.65.109.163
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linkmauve.fr
-Received: by luna.linkmauve.fr (Postfix, from userid 1000)
-	id 1183CF40CC8; Wed, 08 Jul 2026 09:39:25 +0200 (CEST)
-Date: Wed, 8 Jul 2026 09:39:25 +0200
-From: Link Mauve <linkmauve@linkmauve.fr>
-To: Guru Das Srinagesh <linux@gurudas.dev>
-Cc: Michal Wilczynski <m.wilczynski@samsung.com>,
-	Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>,
-	Fu Wei <wefu@redhat.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>,
-	Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>,
-	linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
-	llvm@lists.linux.dev
-Subject: Re: [PATCH] pwm: th1520: use vertical import style
-Message-ID: <ak3-rU3IRYaLTCC5@luna>
-References: <20260705-pwm-rust-vert-imp-v1-1-753dbbfc6061@gurudas.dev>
+	 Content-Type:Content-Disposition:In-Reply-To; b=a5gobDMyYJdrwYn3PW8Oo/sCo+CCxixqmAAx1VY09mRPIHZQmolJsn5C2MxmKm1ld5troFUDXyB+zPBdTYpJitAoS8xEiYAR5gYYf24PHIY/I0KfEvN64LzzNavS6joRncOZ6DIA0vh0uEsoPfjV/zpLMDdowtqzj9HVzX99aFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SwYQ5wlG; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SwYQ5wlG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B42561F000E9;
+	Wed,  8 Jul 2026 08:35:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783499730;
+	bh=OKsbeaL/EYCCjslIHscKdnfqt9TnC3LQo/o4fxsqdJg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=SwYQ5wlGAgqRjGWeZC+QJ2+/Lf4qkCA9L/NkByYOA6tyKvNukd/wH4AblpspyMfa6
+	 ohztbXxM5V7q1DJid4+qC00xO6YK91jiFwvru0NG7+owxsPXFlZmTKVLWoFtyoF4Zg
+	 6CfORrAihXEK6Sd7LW+TOwg2XyXc1h9NpUedmnXP/s/0AIKl+VNWphsts/mz6EGpf/
+	 RIhZnn0pYAPqg3HrVwtETrjMeDkjY6ju+/kPYMQ4XKmzjnjUX7uvLKD8Jk1oPQ3IEa
+	 jcfraojWbW8yc8K5bEFnrq/KOpSaIp/A3jZXvgul/W57DyWfK6JjOppgkLKwGztv7C
+	 1/4ijKu+4HqXA==
+Date: Wed, 8 Jul 2026 10:35:26 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Yureka Lilian <yureka@cyberchaos.dev>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
+	Neal Gompa <neal@gompa.dev>, Thomas Gleixner <tglx@kernel.org>, 
+	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Hector Martin <marcan@marcan.st>, Linus Walleij <linusw@kernel.org>, 
+	Mark Kettenis <kettenis@openbsd.org>, Andi Shyti <andi.shyti@kernel.org>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Sasha Finkelstein <k@chaosmail.tech>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 02/10] dt-bindings: interrupt-controller: apple,aic2: Add
+ apple,t8132 compatible
+Message-ID: <20260708-hospitable-impressive-ibis-3db61a@quoll>
+References: <20260705-apple-m4-initial-devicetrees-v1-0-e5655ee56523@cyberchaos.dev>
+ <20260705-apple-m4-initial-devicetrees-v1-2-e5655ee56523@cyberchaos.dev>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260705-pwm-rust-vert-imp-v1-1-753dbbfc6061@gurudas.dev>
-Jabber-ID: linkmauve@linkmauve.fr
+In-Reply-To: <20260705-apple-m4-initial-devicetrees-v1-2-e5655ee56523@cyberchaos.dev>
 
-On Sun, Jul 05, 2026 at 07:52:05PM -0700, Guru Das Srinagesh wrote:
-> Convert `use` imports to vertical layout for better readability and
-> maintainability.
+On Sun, Jul 05, 2026 at 03:17:21PM +0200, Yureka Lilian wrote:
+> The Apple t8132 (M4) SoC uses an AIC3 as interrupt controller, same as
+> the M3 predecessor.
 > 
-> Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
+> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
 > ---
-> Came across a recent commit bc58905eb07 ("samples: rust_misc_device: use
-> vertical import style") and found a few more locations that could
-> benefit from this cleanup. No functional changes.
-> 
-> Separating out patches per-subsystem as per the review feedback in [0].
-> 
-> Tested via:
-> 
->     $ make LLVM=1 rustfmtcheck || echo "fail"
->     $
-> 
-> [0]: https://lore.kernel.org/lkml/20260628-b4-rust-vertical-imports-v1-0-98bc71d4810b@gurudas.dev/
-> ---
->  drivers/pwm/pwm_th1520.rs | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm_th1520.rs b/drivers/pwm/pwm_th1520.rs
-> index 3e3fa51ccef9..2a3b107157ac 100644
-> --- a/drivers/pwm/pwm_th1520.rs
-> +++ b/drivers/pwm/pwm_th1520.rs
-> @@ -23,15 +23,21 @@
->  use core::ops::Deref;
->  use kernel::{
->      clk::Clk,
-> -    device::{Bound, Core, Device},
-> +    device::{
-> +        Bound,
-> +        Core,
-> +        Device, //
-> +    },
->      devres,
->      io::{
->          mem::IoMem,
->          Io, //
->      },
-> -    of, platform,
-> +    of,
-> +    platform, //
+>  Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-Same here, you just need the empty comment after time, not the one after
-platform.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
->      prelude::*,
-> -    pwm, time,
-> +    pwm,
-> +    time, //
->  };
->  
->  const TH1520_MAX_PWM_NUM: u32 = 6;
-> 
-> ---
-> base-commit: 1a4920940ebfd8d907858abd8f8dd09b13752946
-> change-id: 20260705-pwm-rust-vert-imp-59a3d18bd0cf
-> 
-> Best regards,
-> --  
-> Guru Das Srinagesh <linux@gurudas.dev>
-> 
-> 
+Best regards,
+Krzysztof
 
--- 
-Link Mauve
