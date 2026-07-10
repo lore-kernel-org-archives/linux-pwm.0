@@ -1,138 +1,79 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D131E400DF6
-	for <linux-pwm@vger.kernel.org>; Fri, 10 Jul 2026 11:47:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783684049; cv=pass; b=Q7/28hl3vVU1DDoC5RKSvs/RDgniMkRWzuU2j6vBiylkitl9jfz4YYZsOOK7UicH9D6oD4pXrfBKpaLhzaV70JI9f8zvfOCKlcbtt7GYQzJbfF3pNvipqX4e1/uZ1x+yfM4lvYRi+xvjdjcL/c5hehQp9JRnU618Qov6wwCMMkY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783684049; c=relaxed/simple;
-	bh=Yz51h6ZFZp0eaO5wOQ0hjXGgJ1wSDILNIZsGWGdqINc=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 870C934DB72
+	for <linux-pwm@vger.kernel.org>; Fri, 10 Jul 2026 19:48:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783712906; cv=none; b=Ps2ZAXabRmHMcHajUt3vaca2ILay82bT+Y/syFhrGnwCmZ68mioBJflEfVbpUqApYrCRgWaLXC0JKZSgfP7XKpmiwFFfhtorB7wfuHxskrhddErC5ssG+VFrzmMOKDCj4sj4DfBjVfkMpgbw2x9w0BUx0qSuKOGJ8Kx3/go0EhE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783712906; c=relaxed/simple;
+	bh=r1Zf4djkyVsGdqHiqgT2yCHA+1xehfGqV1emcYl1I6A=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dd55UkipV0Zc680c5OeyCJhHk2kP3cgJwYpAWea0XmBX74jS47fJgzUDkVx8ewkKnh5m9WWbikjJf3ID6nStLcXmhpXdfaL3gus5aAsUHnOB2I3ymg1/tRPF54lK7dzO8QPdIP2Lk0qXITcUzqxkrSfXT94zMEjWsJJX0DWrKys=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UODODA5D; arc=pass smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=V36tZXXKue5vnTWC11tKjUU272K3F1GeSoBkyLramgpmXJV55W/SXpStewjALGMB9l9Iv80geUtsz8vf8ezAAZjeA+piRydWj2r41Ib2b9vMIKGnfCyfS9A4cbaerIkI2clbTodA3sBy6OziwYQwaZxo0lDvyc8Ix/Wflx/Repc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KHubEODI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UODODA5D"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5aeae350e0aso969664e87.1
-        for <linux-pwm@vger.kernel.org>; Fri, 10 Jul 2026 04:47:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783684036; cv=none;
-        d=google.com; s=arc-20260327;
-        b=BMHgGaFrOyHpq8GK143KebeZm71yKKkf6syfcm3WAQJwKtTlihsERv/sXczaIDM8xp
-         beyfTfaOFAGv61KNGP4grFWE8tjzKCGtcfHGYgUrEo0oVPSwUyPwmrDhLUdHn1ZShHIy
-         2QHTJ5jWUHffyVJwxR8/GEP8lswRpPgAUDGO2efAEn2y0DbA1vniWnGRbccSxwjcWNZj
-         FIGkv8uZycQ53iEBWGx0ay67j8jdVhNn2t9L+QYdZl+fdmBytjTuXjtk//WdxjaFZJ0f
-         IIesms7iJsWLHuz0ByKqdBydEepEn8fCUmO8+qRnZc/zj6ICwx+lANnNzf2NiWgvs+TL
-         Q9Hg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=WfAD44X1BzculJPRKgkBzDtXvs53Y6udmLphUq85RKM=;
-        fh=ct204Mk0nXAExnklDBIo3LYHhJb2hwpNZDZ4tviQpqA=;
-        b=RlpqbhMaXhyn6oxqmEJ3AfUhHponuRd3BTFSLt+JPs6OaAvEpBVPp2fhTWRdTzEM1Q
-         AC6c+YmBYoFRWC5u+Kmu3DJrE5JIjj0gUKV1F+ZqGPRPM2O0Moc2l+xCaOeI8NN7N5vh
-         qcSc+23KuAnmwrJZBZNmerBt2AfyER7bezbXlwq+3R/ZJCHuHCzVD0AtVkuGtlEVjM2g
-         wdIt1XCaC2PYuLvL6ProxfK/NqTOLQ78U0UlshgiZrgcIntF5REahRL0+tO933cmnMMB
-         GaFNVo/6uspupgeVJWK2HjGLfnCnnqIZKfIw/M7+u3xVgthJsiiLjwHEflXLRFoFr0Wi
-         GLsQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783684036; x=1784288836; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=WfAD44X1BzculJPRKgkBzDtXvs53Y6udmLphUq85RKM=;
-        b=UODODA5DKC4lml4cIcTDcNp3+I37NijZ2IGkJIdlwSOPrkbAQprAkp888XJdGVNbsN
-         vM01jAYIeiXxva2BleXJsgiTLrFDyeKh7WxkOyQ7on0v7MHLuadTGwVLgJjL5j39yIB6
-         XpEeg0VsrQdRIITEXibaG9KjtDFdyX3owx9z1+cwJIds81WRW2Yk8LINyM6/ZK9TlQaq
-         QUQAL5PNtKIUlTrvmWV4y0a4/NHKBbIti3ZQfiqnIHhl9uFfphWl29gpHAaSLIVx4nx2
-         VQyL9WmPjBGLGUIo51Cj1zCIvpCAYumTv9H3CLOC7LFDZNUGT/W7AFFJYI6tRtpRSu1w
-         G8TA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783684036; x=1784288836;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=WfAD44X1BzculJPRKgkBzDtXvs53Y6udmLphUq85RKM=;
-        b=A9pXSprZQriY2q1G2FpAqkyblu6dUsBWlYpmuVdO4GwcYDFeDFJQ5meuH1AkGTSu1z
-         z9CvJqHN4RVRb9pqS0p308QD7cJqWx63Xc5fLnJlUEI71tCt+ZmzAM89iriYrU0Pnc2Y
-         odWwgVfXE6keMBbwW0JhPex1XGk/EQEejWDKsj87/YmgW57jk10eXJ5S4F4Rdk8LyLy1
-         56MPmySRv6YSZcGEleIQCMAm0/VqkaxdVKhyBY5cTYp6msIyJAQRaKzVy1mzkoVIFNh8
-         p0VEM2HcY/JyzYtZSPXeFX28JW+yF32Ewo3710a+DMYxttGrIpzfpeVeSx4uvzQqcUW6
-         D6Lg==
-X-Forwarded-Encrypted: i=1; AHgh+Rot7VEGC+o/aeZnDWPFF8Gffyv+uMeEfrarJn3+sKj8x3CO6kBzwF7NyRSssyRsMsmQTGnrOSxhOrk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxjWkMRKNYTGSookBIkzxVv2yQT9VtRMyY9pmhOvLWCFlLi0Bni
-	FM45JwAbZr8j2PUwYJiiahRkAm59vi+GKu3iSPq8Zu5BRmi/lXwqr/WVrMcJPJSlI8YclRldt3H
-	lPCriBOmGlDgWOwhDC0k2RASCHdKABAI=
-X-Gm-Gg: AfdE7ckFUIz2PuHWp6SKAxO0iE4GoTm+CXZuexH4QydeI4lPdy5RPBXMyLsp3aAJMNj
-	DY2zci6AJiuWtzNt6ilA5EioFWg5DtDInXFP+6AEimZiN/SM4pKPnAoGDwKz6U7qmVrbAuvpVGO
-	e6HnDWhpcOARXrt7BYCN6QyWE/QODK1hmVrXAuo9axWLjnt6Jr7nykCcBqWEO6jtGn8wagaRHNv
-	cmz8S/PzsTnsa9Qj7go2v/bnKYNtCiMJPFPu9gZHuvC5EE/WqA2c5T5/wQz8YPsoKijxAxnkGen
-	/zSgMjwPdytG5bdyi6FuFmYGgPoJpE538yd/kJKhMIPp+fFyW/sx/8ys0OajB2I4+wXsJQ==
-X-Received: by 2002:a05:6512:10cf:b0:5ae:b130:1e1 with SMTP id
- 2adb3069b0e04-5b011444080mr2821194e87.28.1783684036068; Fri, 10 Jul 2026
- 04:47:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KHubEODI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5242A1F00ACA
+	for <linux-pwm@vger.kernel.org>; Fri, 10 Jul 2026 19:48:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783712905;
+	bh=r1Zf4djkyVsGdqHiqgT2yCHA+1xehfGqV1emcYl1I6A=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=KHubEODI5OK2JjTzLoacd+Xr01Bdn2djdhyaYl/074SiQhy7GiltXk3uOVmqYK+Jx
+	 gaIBB4JvCVLuVWPwYbajMX4wyLMe20zpe2yvO2E3Zf+M/jCxYCtOb96KZAZxJygLu6
+	 LdIjuylf2OpzLru6fOiYnIeUqX4b1688vkKDiuc/Clwpgiu9XPvMV7U6eLhfHANeUj
+	 svnCfvd5/BhdvmEos+dlaiaungyCXAz4FGHwtAWGlWWynv1es0W6tunrIph+PFAp1c
+	 dy4llZLsfp/AE70Xrsxq5ev2pLwZe9Z+2hWF2+joPs1FeVyde3GT8lRFUGCmZxJcjx
+	 plVtsxTqbfDZA==
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5aeb5829fd5so1189603e87.1
+        for <linux-pwm@vger.kernel.org>; Fri, 10 Jul 2026 12:48:25 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+Rotd2N3FWRTKceW5AFnLP890zTVVaDXzTPxbXd/PJo1TKvC5WYwRihZzMneyuUseucRNAJg3U+62mY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyM93hwgtcp/fjSFJieu4TYDNzzh5qPIeqJ/NDK81BdYFvduBJ6
+	2avrHM4sSQlVt54X9KZc8ET7Hws1dFs+QygxgetahkdzcLl2xt5Nx7JC3YtROCPrWjJvgsSDv8J
+	SsMNbW8zRmpziJNTxDloP15XGTNDSrPg=
+X-Received: by 2002:a05:6512:2c0e:b0:5ae:aeaa:140b with SMTP id
+ 2adb3069b0e04-5b0236a5c9fmr98033e87.43.1783712904103; Fri, 10 Jul 2026
+ 12:48:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260626-pwm-loongson-fix-v2-0-5492db953879@gmail.com>
- <20260626-pwm-loongson-fix-v2-1-5492db953879@gmail.com> <aktdkn-NcQt7J1YS@monoceros>
- <CAJhJPsVffZLTzXyA41rxm=A54sZhROVg-+K-gWo1KEzuKGv15w@mail.gmail.com> <alCIB5nGfYlEZsMg@monoceros>
-In-Reply-To: <alCIB5nGfYlEZsMg@monoceros>
-From: Keguang Zhang <keguang.zhang@gmail.com>
-Date: Fri, 10 Jul 2026 19:46:38 +0800
-X-Gm-Features: AUfX_mxXwG-AqhIKVwFzB91HdQlthD3Wluqyqdx-fOUZeZ9hdjf8BWYvKbGC-cY
-Message-ID: <CAJhJPsXf+XoKhMZSjwziRmpj+_BKKqJhsbACd6ViYJPUXw45Kg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] pwm: loongson: Fix low pulse buffer register handling
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>
-Cc: Binbin Zhou <zhoubinbin@loongson.cn>, linux-pwm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
+References: <20260709-apple-t603x-initial-devices-v1-0-55b305833123@jannau.net>
+ <20260709-apple-t603x-initial-devices-v1-7-55b305833123@jannau.net>
+In-Reply-To: <20260709-apple-t603x-initial-devices-v1-7-55b305833123@jannau.net>
+From: Linus Walleij <linusw@kernel.org>
+Date: Fri, 10 Jul 2026 21:48:12 +0200
+X-Gmail-Original-Message-ID: <CAD++jLnKYrW3LzEWj47Mmi7DYL=cGZNLRzbF3w91GTs7FBCsjA@mail.gmail.com>
+X-Gm-Features: AUfX_mwDu5nHkfrpKW31EzIHDBbQz-W_XVTsCEkvJgwgFKC10BW3wqwVZ3eoWUg
+Message-ID: <CAD++jLnKYrW3LzEWj47Mmi7DYL=cGZNLRzbF3w91GTs7FBCsjA@mail.gmail.com>
+Subject: Re: [PATCH 07/11] dt-bindings: pinctrl: apple,pinctrl: Add t6030 and
+ t6031 compatibles
+To: Janne Grunau <j@jannau.net>
+Cc: Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Thomas Gleixner <tglx@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
+	Guenter Roeck <linux@roeck-us.net>, Mark Kettenis <kettenis@openbsd.org>, 
+	Andi Shyti <andi.shyti@kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
+	Sasha Finkelstein <k@chaosmail.tech>, asahi@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-pwm@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 10, 2026 at 1:52=E2=80=AFPM Uwe Kleine-K=C3=B6nig <ukleinek@ker=
-nel.org> wrote:
+On Thu, Jul 9, 2026 at 9:31=E2=80=AFAM Janne Grunau <j@jannau.net> wrote:
+
+> The pin controller on Apple silicon M3 Pro, Max and Ultra SoCs is
+> compatible with the t8103 (M1) one. Add "apple,t6030-pinctrl" for M3 Pro
+> and "apple,t6031-pinctrl" for M3 Max and Ultra as per-SoC compatibles.
 >
-> Hello,
->
-> On Thu, Jul 09, 2026 at 03:25:38PM +0800, Keguang Zhang wrote:
-> > On Mon, Jul 6, 2026 at 4:00=E2=80=AFPM Uwe Kleine-K=C3=B6nig <ukleinek@=
-kernel.org> wrote:
-> > > > -     /* duty & period have a max of 2^32, so we can't overflow */
-> > > > -     state->duty_cycle =3D DIV64_U64_ROUND_UP((u64)duty * NSEC_PER=
-_SEC, ddata->clk_rate);
-> > > > +     /* low & period have a max of 2^32, so we can't overflow */
-> > > > +     state->duty_cycle =3D DIV64_U64_ROUND_UP((u64)(period - low) =
-* NSEC_PER_SEC, ddata->clk_rate);
-> > >
-> > > What happens if low > period?
-> >
-> > pwm_state_valid() in drivers/pwm/core.c ensures that duty_cycle <=3D
-> > period before the framework calls the driver's .apply(). Since this
-> > driver always programs low =3D period - duty, low cannot exceed period
-> > when configured through the PWM framework.
->
-> But this is only the case when .get_state() is called after the hardware
-> was programmed by Linux. The function should also work for the state the
-> bootloader left the hardware in.
->
+> Signed-off-by: Janne Grunau <j@jannau.net>
 
-Thanks for the clarification. I'll handle the low > period case in the
-next version.
+This patch 7 applied to the pinctrl tree.
 
-> Best regards
-> Uwe
-
-
-
---=20
-Best regards,
-
-Keguang Zhang
+Yours,
+Linus Walleij
