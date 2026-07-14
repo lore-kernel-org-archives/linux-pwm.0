@@ -1,40 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03204385D61;
-	Tue, 14 Jul 2026 12:03:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 855D438F25C;
+	Tue, 14 Jul 2026 12:03:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784030589; cv=none; b=Dm/TfK3Vc8k9wFSscRM+eSWCQE4AToVRP+Sr83hPSw8HqworQFNQN+JBhHpost8mKv4DWrpkiqgqqzDpAwi5YrXhgfmX2HLjDV0EFcHv9f1EDxvgUFRLIjm9JxR5UBMp2cYOaMLX+BVwokauOxtibf44odcAn6a2DvPyoIwAyiI=
+	t=1784030595; cv=none; b=NGr/GuLPanbU3MNOoMDDBeFvq9I4XtOdP4Y1nMuW3wkKpA1G0aN15VLxLGilIh7QdS2Wuup8LrXJWNxAgNaQ8Iwv8d/GAO4zTjbWaMsMV3d8m3NulUp/kvyeXuUS3hXLjaiaAYxKwzhfoNfNpSMRRd1rDf7C1sTr6sfHXyT5Ma0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784030589; c=relaxed/simple;
-	bh=Gj5+4hK1pPdkl7yC+UcqD4xbqw/C859vfjKUcVtisnE=;
+	s=arc-20240116; t=1784030595; c=relaxed/simple;
+	bh=fj23r9gIfbeGXUEdSLW9RhxkzUDooevksRNwnYq2aUU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=svpTu2PsvZH5yURG5rKa3f/UiOGDmnaFMms2pFexrlwuGyyN7myg+/7KSr8lgS4S/sY0V2DJVbuxohhOjEfEi+SiStRB03joebYqROfp9VUOlkw7eXVKr+eKVqLQZF/U+ChELbrb9ljzb6bU2wHoCS10pTlAh/MplM1yPlPj2JU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kVOtuIEE; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=nFyEPYvVmKbW2f48vpDmoqAH7XjPafikG1fDIPtkeFy4StNI27u9f4POgr+6nVm+Wx6l2p3xZrUSGTKsnL3YibAgXqoAz80b7/E7ps62A14XDf/DgGHd5UKFXF5tfaJV87VWRw0r0zCO8RfCBqHkxNXbK1g1QZVQDZ3ddbBKoF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VBWRiRGq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kVOtuIEE"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 221E91F000E9;
-	Tue, 14 Jul 2026 12:03:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VBWRiRGq"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4A9691F00A3D;
+	Tue, 14 Jul 2026 12:03:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784030587;
-	bh=8tlPOy0FWEgWcDgALaYiTKUyh5LaC5T3gGla6QpgZFw=;
+	s=k20260515; t=1784030592;
+	bh=8VS6wx3pw05otFZiOirQ1wCOKDNWKVFipfZpWUEKOf8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=kVOtuIEE6QkT+Wix47aVta/K8CrOvgz9PupByAsP5oVyDGgm6lgvhRQJPjuCVbX0r
-	 Csc8QdpMRK4wdLwJxMqLG5G14q8y16SeQ9GZRRzUmLlf8IoOoz5DF3P/FWvF1aWuI4
-	 GBrtEzwuHyNe+2+/pVpD+Xem86RPonbxessDEnam/J4f4nCGJmJ2DY0Ag6p6c1JdJK
-	 p6iVQtGX6rHB9RQW9YMprRDXJIVZSjx1tlnEwoNNEXSByYKXjPd73Q9WtwhCjArf2Y
-	 G4vNB0kwlWaF5ziA12m0i9ijiNlbrmW3Tg6XMLGJE9F6Zggizd2AryRsBvKPAuB/zL
-	 s/DtwWWtq1Qpw==
+	b=VBWRiRGqW7p2h34aJRoLTKks56zHYWLYJvStErZURAXZFGwJRbI5iQlBYcUYGcWMH
+	 pu6RBpUKTEbNsqoAJ1GeEXXn5kPaP5YcOfFyEORs6jkOU5tQQTYSEdBmEYdkTqfbIi
+	 nGpGdBZJj4wUteD1d5tZ+BvEvdyarU6tX3zov+nMEsDHsDIMs7Q8Zbm+rws3CSItdB
+	 ylCFc2u0Aqlorb76nfBIENR8qEm9fGsnBtqPiHAvnILg89tzhSDhOYwc80HN5VbzVQ
+	 dikenmKaTbfrEwSSY46B5SLwfXR90xWOJZDksMKk0iCfNytOsAH07/fGyEtIV8jJJP
+	 E8uNpnVPplKBA==
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 To: Thierry Reding <thierry.reding@kernel.org>,
 	Jonathan Hunter <jonathanh@nvidia.com>,
 	Mikko Perttunen <mperttunen@nvidia.com>
 Cc: linux-pwm@vger.kernel.org,
 	linux-tegra@vger.kernel.org
-Subject: [PATCH v1 3/6] pwm: tegra: Use devm function for pm_runtime_enable()
-Date: Tue, 14 Jul 2026 14:02:37 +0200
-Message-ID:  <a7b7386ee7705b25cc1cd345c188e14978ab2e9d.1784030076.git.ukleinek@kernel.org>
+Subject: [PATCH v1 5/6] pwm: tegra: Simplify using devm_pwmchip_add()
+Date: Tue, 14 Jul 2026 14:02:39 +0200
+Message-ID:  <35d681bb988de9eb14c6e3e0b6d3cde7a0d6ef08.1784030076.git.ukleinek@kernel.org>
 X-Mailer: git-send-email 2.55.0.11.g153666a7d9bb
 In-Reply-To: <cover.1784030076.git.ukleinek@kernel.org>
 References: <cover.1784030076.git.ukleinek@kernel.org>
@@ -45,55 +45,54 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1486; i=ukleinek@kernel.org; h=from:subject:message-id; bh=Gj5+4hK1pPdkl7yC+UcqD4xbqw/C859vfjKUcVtisnE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqViVj06LtliWZTO7+ZtA0/CppiNNeTwN0o/MW2 gxDJQSee3mJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCalYlYwAKCRCPgPtYfRL+ TpOlCACYtG73dgO59oECrO0WwsAwLEMdD6cNCoAy0o04Zekq1csx9JEyAvZ3oaY+WGo9i0N5Kq8 oYoZLjxyF7sIkjeRcNpcNwaC89/U30peEugR69PuoGwKUlut+OA7NRT158yGQuerKxn5EBZcmRr yvItds/Q8g6QpQW+wOPDQ4eDkAfmptIFv3gWm6gY3DXC7ISl4SLEeep2vl5us4f9yOwAOqcr4dQ kil3ZMT3ziB2msLiqv35R62Zc8umg2ZZGHaMtuBjXYOXwTamxKnrMmSmD9XGC8wDBI5HWWV68Y9 V/ASyuKRRrd/OLPd7ZcvnzCfBPk5enNEm82PfkAfPdaMU3E3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1384; i=ukleinek@kernel.org; h=from:subject:message-id; bh=fj23r9gIfbeGXUEdSLW9RhxkzUDooevksRNwnYq2aUU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqViVo8TovuoJ+zTTsuYpCiJ7t/MUFEK9aHDy+C EavZH717/2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCalYlaAAKCRCPgPtYfRL+ TqgSB/0aWt6yIo/pbgxM82Hyp5rYhmrSjziKfmhH0EMmfaQ483UmiiPy4AvfsLaOt6mrl7bbLuQ U4d3oGgkRt7PK1TUFic4VVTk7+3RJsliqnXbn3a+e3Dzx/PQa3ztGGxoqUivMXUzwhUFa+UJ1wH vHVQzjn6iYpfRPBUciSQMH6Iq1xtA34DIoGYYGHKk3LFn9GOD7psMJupsP5xu+NsD6oMvgOj0xE pL5PurjfgoHn8ffsSDrRXHb5F+c4SZtGbMxAy09pPzEV6xIl54Gh+mi4mMj3RfdPZDAay2FgI6l ZBKOy6G40gvRNdkiqpyw4MusX1pcb+njE/e9TecVfz0w+hd+
 X-Developer-Key: i=ukleinek@kernel.org; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-This simplifies the error paths as pwm_runtime_disable() is called
-automatatically by the driver core.
-
-Note that pwm_runtime_disable() is the right function to undo
-pm_runtime_enable(); pm_runtime_force_suspend() "should only be used
-during system-wide PM transitions to sleep states".
+devm_pwmchip_add() makes the device core cope for calling
+pwmchip_remove() at unbind time. This way the remove callback becomes
+empty and can be dropped.
 
 Signed-off-by: Uwe Kleine-König <ukleinek@kernel.org>
 ---
- drivers/pwm/pwm-tegra.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-tegra.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
 diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index dba9a05675e3..e99e1c5b18c3 100644
+index d7f4baa4cd9b..8e5e7e37f4ff 100644
 --- a/drivers/pwm/pwm-tegra.c
 +++ b/drivers/pwm/pwm-tegra.c
-@@ -361,7 +361,10 @@ static int tegra_pwm_probe(struct platform_device *pdev)
- 		 */
- 		return ret;
+@@ -399,7 +399,7 @@ static int tegra_pwm_probe(struct platform_device *pdev)
  
--	pm_runtime_enable(dev);
-+	ret = devm_pm_runtime_enable(dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable runtime PM\n");
-+
- 	ret = pm_runtime_resume_and_get(dev);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to runtime resume device\n");
-@@ -410,7 +413,6 @@ static int tegra_pwm_probe(struct platform_device *pdev)
- 	return 0;
- put_pm:
- 	pm_runtime_put_sync_suspend(dev);
--	pm_runtime_force_suspend(dev);
+ 	chip->ops = &tegra_pwm_ops;
+ 
+-	ret = pwmchip_add(chip);
++	ret = devm_pwmchip_add(dev, chip);
+ 	if (ret < 0) {
+ 		dev_err_probe(dev, ret, "Adding pwmchip failed\n");
+ 		goto put_pm;
+@@ -413,13 +413,6 @@ static int tegra_pwm_probe(struct platform_device *pdev)
  	return ret;
  }
  
-@@ -422,8 +424,6 @@ static void tegra_pwm_remove(struct platform_device *pdev)
- 	pwmchip_remove(chip);
- 
- 	reset_control_assert(pc->rst);
+-static void tegra_pwm_remove(struct platform_device *pdev)
+-{
+-	struct pwm_chip *chip = platform_get_drvdata(pdev);
 -
--	pm_runtime_force_suspend(&pdev->dev);
- }
- 
+-	pwmchip_remove(chip);
+-}
+-
  static int __maybe_unused tegra_pwm_runtime_suspend(struct device *dev)
+ {
+ 	struct pwm_chip *chip = dev_get_drvdata(dev);
+@@ -497,7 +490,6 @@ static struct platform_driver tegra_pwm_driver = {
+ 		.pm = &tegra_pwm_pm_ops,
+ 	},
+ 	.probe = tegra_pwm_probe,
+-	.remove = tegra_pwm_remove,
+ };
+ 
+ module_platform_driver(tegra_pwm_driver);
 -- 
 2.55.0.11.g153666a7d9bb
 
