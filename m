@@ -1,172 +1,170 @@
-Received: from CHN02-SH0-obe.outbound.protection.partner.outlook.cn (mail-sh0chn02on2134.outbound.protection.partner.outlook.cn [139.219.146.134])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033F72D8DCA;
-	Tue, 14 Jul 2026 05:05:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.146.134
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784005561; cv=fail; b=uTT1ghiw4Gs8xAKosAU8sJy5R3xhH/25WfGR6mw01L5aX+hA6DpFP+/NUiC7shtJy+/uNT8dwPNzyQh7nhYP2gwHUN0m9RdMjgKkht+0JzsPC4fM/soKLG0VUNzI/enUvJypWY4UZwWSBlXYwamiB6PMubBAOts+FL63hHaPRR0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784005561; c=relaxed/simple;
-	bh=11LLsd8v/iKCSo4bV2NQM8dnGyS+MLkzJp81qnhMwdI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=CQjqyoNiXaxlsj6b5IsAKLxQdz7Ddaiy6rMFixOY8blnbDg5o4lOuZdO0shNFQzrX0uywUw5rDAiWlnPrmVbSN6RAkQmFVMXps1fRjRgcxAZJdyIJ78yeoXBOhppS17Eb1tuzFNKH6Nk71mPA859uEKXUwzbSuX7i8+tDOJyZ5U=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.146.134
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=starfivetech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=starfivetech.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BLPmgrDGplrZd45yd/Mcopx7+PeZWTGSDZsmK8q7dm+6g0seKFEXFL9QhDBpflUrTX/vUnu2wbwsXOus168kmTJfxioKBU1a6++6/JOUcd3kGXCv3R4Jqw6Dv8i8k0XoOacRSdTS9oHRMx/B0+6nhKg+m3MYuEzYeyJt3mwn4uvRBfR7Uaizy8m7by4qEKqhkbwULQSdLqYPUhJRgT71UTqvzMp9S6Xz5xv2jyZWfL+eO8a9c/dhS5OlmhZbsmWahMTvEuldP/Gjxx2ILQWPGdfHGLQikDcZFcz7YkINnoyfJMq6dev0CKd2zoL7W9uv8+n1O8yl7cvDWwBkV0FFqA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8YBV86v3nflUO674Q+hvLcTmmy+Ukq1Nv/1bEE7q5W8=;
- b=F/7GCyrjqRqacCzBcKGU80I5NIa3QxPlGkNWTRWwqDdGx7hytOHDvhGkcJhew5ervT/hUmEXkCddCc7wSapFl5/CDa1NmqEF/tDc/aQZP+0mz8h8ItTtKxtAq2uVmYKZ+7UMcvShl+KPvThQJ4337P/WqGQXBWiwU3W/URDnvgLcNXE9r4Dcecq/QX9RS8STOXEX9JJc3rbMkVOEf1L5w6rG4VLpz3f29J2e3sTmAflkHmi6U/cv7jZR1h9KUt7W3pHyIzMexkcAMyPcXmDN8L7TFJsmP8+NpeaGO4d+wloGVJbuD1ov9Yk6WWCMkTYCT7pfXMNZYDRjpvkiEZj5Tw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=starfivetech.com; dmarc=pass action=none
- header.from=starfivetech.com; dkim=pass header.d=starfivetech.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=starfivetech.com;
-Received: from ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c550:7::14) by ZQ2PR01MB1324.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c550:12::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.23; Tue, 14 Jul
- 2026 03:30:59 +0000
-Received: from ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn
- ([fe80::4386:5cc4:3bc4:4795]) by
- ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn ([fe80::4386:5cc4:3bc4:4795%3])
- with mapi id 15.21.0139.024; Tue, 14 Jul 2026 03:30:59 +0000
-From: Hal Feng <hal.feng@starfivetech.com>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor@kernel.org>,
-	Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <pjw@kernel.org>,
-	Albert Ou <aou@eecs.berkeley.edu>
-Cc: Hal Feng <hal.feng@starfivetech.com>,
-	linux-pwm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v22 1/3] dt-bindings: pwm: opencores: Update compatibles, examples and maintainers
-Date: Tue, 14 Jul 2026 11:30:48 +0800
-Message-ID: <20260714033050.44952-2-hal.feng@starfivetech.com>
-X-Mailer: git-send-email 2.43.2
-In-Reply-To: <20260714033050.44952-1-hal.feng@starfivetech.com>
-References: <20260714033050.44952-1-hal.feng@starfivetech.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SH0PR01CA0023.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c311:5::35) To ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c550:7::14)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75C0543CED2;
+	Tue, 14 Jul 2026 09:14:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784020499; cv=none; b=s2VU58HhdELrb9MWw1HdwRaPG3t4iqKgnNEMRfyHLpNGAGC0GbNdKJgbSPcWefD0NImJZ8zsi3b6cxCyERioy4pTZsh7Qth5ZacdV1/8xdMZzgC5Dy2ZVFtavYP2erpZEaxnInEMvObaoCVPDTM7LNR6fIxVu91TAU+hkTdDCgs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784020499; c=relaxed/simple;
+	bh=ntaX10T+l7fqMbR+dGbqfrjrfCYGygcO5GmmObgI3Dw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CUm7FfEchFSpNYRZZ0UQo9ODKVxZZzkXMy8saqstzE9INr++9X4Dz1LvK2v0BuftnoprLELKNtDLK2/lCZqPHUp7XCUPinYmOK2AitVaWVz4hxpZzRlqTCYZiv3m8zf0DbBjJnya56tx4IgQWEpp0kLYeYOuzwzOlii+eaaHcPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SVLt9lGm; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SVLt9lGm"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8F11B1F000E9;
+	Tue, 14 Jul 2026 09:14:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784020498;
+	bh=brxNjFFy9om48qRoAb792mhLDXah3EnrFZs6Q+OXfKE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=SVLt9lGmBSR2mBzo8KlRtisylJEmyNQ5oOB347SIQKvIbNFCXpFSRHrl1xBph4bEd
+	 kgYLOvxgUcIQV92rlaIlb1a+8f7Spvnf/4myRjFr+7gIlLHAePxY10ifDxL6OKdoNB
+	 BHUf6vwq332+M7OC+I0/rCuE4vaTyeeKr3TQ3jXdnmwOtSiAGalNWXDYA2EmynZN+M
+	 WGd4fjOg1w/oRz61AG9wXjKlm67u8h1XLJOPphLH1o7W49W9egMtg7YuzOXjnjsD5Y
+	 3MpBCrNZ4/75KwnHp+SNy52OczI3eq6qfo8GTje5oqv8u2tll6HxA9qlD45gwqhuF9
+	 7HxUPlN4xk77g==
+Date: Tue, 14 Jul 2026 11:14:55 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: "Ola Chr. Vaage" <o.c.vage@gmail.com>
+Cc: Thierry Reding <thierry.reding@kernel.org>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, "Ola Chr. Vaage" <ola.christoffer.vage@scoutdi.com>
+Subject: Re: [PATCH] pwm: tegra: fix doubled output frequency due to divider
+ truncation
+Message-ID: <alX5fmfHs1CW_bps@monoceros>
+References: <20260713111541.473547-1-o.c.vage@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: ZQ2PR01MB1307:EE_|ZQ2PR01MB1324:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0abcb16a-01ff-4a7f-e9b4-08dee15852bd
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|7416014|52116014|376014|1800799024|366016|56012099006|38350700014|18002099003|3023799007|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	WYKJyw/80O4GuZvZKFWuQSjoOwTcJG4pXILX6FD5C2t7L9JfEoE146eLmF3vUlhLGLfP0UVf1m5oDor3iEc2O02SzzVDsSk9n4P/Uk+f4Ux8nlpBa1LFDTin6g/+CbAJMWFn8RK9Gr4GyjiFyr7eTNXUUZ66yYlVnF7Ag3T1w7Hbe+5ZhCc80ReO1tjWnx6IwGDBi8EgMb3ylt2QPh66bmC3F0k+j1EDM9c1ghZfKfGTfsnyAfCVo/Q+L1Y83Xf8FZi6NRPREeQ24TTbDE7neXghcQn15AlOgfcdH4Jsit7FQJkIg8+K+i07u10alUl649/4p3DUA9lNJFFO76PtxQgjODgnImDOTDDbRFCWlR5sO0PRdfHZwYMtUFP/XEkzWn1FHaqrpq1GHiP58We4SBqrfG2Mnblk1NeNtD4ocvNPWieSrMQxLyJPBDObOEOaWTupkkhBCtQouxI2pnB6EF0J4aJXsM99+F9bhRy98SWQPqOuvj/dcVWCD1vj7eaIJUTCgRpHVSLzyjoWpIbxhaWwoQHGKzWCVJjQeZ8gk3HrK6X6rfA9ctOLKDmDGgEw
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(52116014)(376014)(1800799024)(366016)(56012099006)(38350700014)(18002099003)(3023799007)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?mxlG+hbSVbypQzHdsCkTRjw3YjpGf5RKZtijerFz2Ts63pI1VGTTFaloUPqq?=
- =?us-ascii?Q?ApbV+GSCPIf0nwpNWauYHLVBhHI6BiRp3I3BmfRNOElSEN+VYvrA0bAX4zqs?=
- =?us-ascii?Q?1XePzQAtHIia5nDYJoR1u3nSv7pJSa/eB8Ajlyla51q0svWkqILbIgFb/aRL?=
- =?us-ascii?Q?a0WVQjDiKhA0/lORqoWsMVTAVa8FSMiCZm5xoyYheu0Rb8OtP8YJuRLp7V4D?=
- =?us-ascii?Q?0co9mecenOmgjTtg7nTGDj6Et9rGOL3dIed/hk/cQGRsRQLV2M4YCMQMu7w5?=
- =?us-ascii?Q?mBciFEbK48z9rEbnkfK0Aqz1JWaCeuFnMdyIU707mwi/frS+WLboI303F0cv?=
- =?us-ascii?Q?UeMLtVQZRD2T4j51fqDz5Q9HZThrHQBGY5gq0npij6ZbPvkjAc98EasN8RsA?=
- =?us-ascii?Q?bNWGS/GEazKOVEfvFt1s9FFhZxnKPK5/7/wv8kkv1yFrG9XmnUEKtq1gb1RY?=
- =?us-ascii?Q?IbMWUQnR1NRXPTaLb9W+pqrJvklisH0OfYu5iJgVGaozfkjfvP3RoCQtc4V7?=
- =?us-ascii?Q?PRt6ro81zdnudSyltc313habxzh5rNzV8TrKw5jAh5NHe0ZHLbE5KYev0bzC?=
- =?us-ascii?Q?01kQBIjjswXrdLq18sKooW0RsSbxoHTh5AmpmIoiPz8I3SMGEftVRGcaE9H5?=
- =?us-ascii?Q?dc2Qhyn4K72DRaiBEc48thAsTet7KaQp981EtJ2zqgqVPwLKyfTBS0Dgjsuh?=
- =?us-ascii?Q?mnsKGz4x36uFHCrgdUvB3WBkP1P/aZOmOb+mx6+PusiyJ3UVQB/9UrhtUuu7?=
- =?us-ascii?Q?ivzxLg3W6pVQY1W2V5LKSl3mknVzlVtfHdNpMpy7+tdUDeKPyEE8eXU7WvF0?=
- =?us-ascii?Q?Pa1rFFjHMt7/jS8vM9HoIlMLPvMpk41TUBqOnh0rSGhafDoMMQhGq+cE/KP1?=
- =?us-ascii?Q?go0FlM92z8mjbbRB/761ksJnuF+hqVG/eXWRKkbW2bMvTbVEARK0N111CvXM?=
- =?us-ascii?Q?7b0CNuatHrB171GjLpsAI/yIA2+jt5drWUF1G8HXSeTzFXc+nzgkY0tHCbgE?=
- =?us-ascii?Q?7eOxX+uhfwnCbcm9kDw0F/w8WXLOtye1RpP/3SIhs0pMMKbKSWC7Gw8MTcx0?=
- =?us-ascii?Q?GZO3bPweOh8J/dH7nCqgWNDGuNIWBC9FgL4A+zCVSkQEQtB4KQWyklnGbz1v?=
- =?us-ascii?Q?GHqVcbQtw14wfjH7wWf0Xynkp9mBfY57279wtZcdFAG+0fXyhTYsqFO4KrOl?=
- =?us-ascii?Q?mAblqpk9B2RjjpmdBkfudAjf2I9gth4l6b64h8Yiiaf39TKe/4OB5YJYeFfU?=
- =?us-ascii?Q?KQ79AIevKrTBcaCs5m6SdetuBtCZksjlStMS5/G9cUvvqj4PaSByXuxQEcgs?=
- =?us-ascii?Q?x64+NWu2uVXRhUYNl1ISauQ+0MKvuI73JQXD4G0CwvcpilzS+VmWwNt/8/eL?=
- =?us-ascii?Q?YgZE2cdkyMH299ank9tcqu9veJMetM3AlF003ejlgbPgY9kCcmf1M3t4Tud7?=
- =?us-ascii?Q?Nre/yYgy+3l0xdoifqwZyuXAsjNdogHGkdPV8ksRkgte25L/keIZ9GTMyzqY?=
- =?us-ascii?Q?Ft2gr3toQzTNKF8itavow1iAL1Xb6jrdMRbDDhptM2MiWXoMsij7hBvJ+wOB?=
- =?us-ascii?Q?VXNdtNqpF8l9ZyebwVX58hTJH321MJUDn1sJDx0f0hRE58DKilj63QEuR61I?=
- =?us-ascii?Q?IGTJWfsKnsh5E+SnHvDrESWMrmojC7Wxpa2Af+wHhg7+BkJ+GjdVGjollGJ1?=
- =?us-ascii?Q?JK+sGvX/36/yr59INMAWakvo2b2aGRxUfbyLpkp7dRFhgazc1Q743VmPkmf5?=
- =?us-ascii?Q?JotVGIFZE7KExjxNv5uUhVjW8vxxCXc=3D?=
-X-OriginatorOrg: starfivetech.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0abcb16a-01ff-4a7f-e9b4-08dee15852bd
-X-MS-Exchange-CrossTenant-AuthSource: ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2026 03:30:59.5648
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 06fe3fa3-1221-43d3-861b-5a4ee687a85c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bBoOOjzl+NkMz33Ya1kBkmNK66HImR9D2Ni5Ur4HXfw6ap/E8BIOs1XyODncnPi6JpQ01uE5fXIgZhAjDPO9AMzxkX7aRuLBu80Pt/nqZ00=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZQ2PR01MB1324
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="3lqlu3v5zgu43npu"
+Content-Disposition: inline
+In-Reply-To: <20260713111541.473547-1-o.c.vage@gmail.com>
 
-Remove the jh8100 compatible since the JH8100 SoC has been canceled and
-will not be released. Add the jhb100 compatible to replace it.
 
-Change the register size in examples to 0x10, since an OpenCores PTC IP
-has only 4 32-bit registers: CNTR, HRC, LRC and CTRL.
+--3lqlu3v5zgu43npu
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] pwm: tegra: fix doubled output frequency due to divider
+ truncation
+MIME-Version: 1.0
 
-I will maintain this pwm module in place of William.
+Hello Ola,
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-Fixes: 2529085831b0 ("dt-bindings: pwm: Add bindings for OpenCores PWM Controller")
-Signed-off-by: Hal Feng <hal.feng@starfivetech.com>
----
- Documentation/devicetree/bindings/pwm/opencores,pwm.yaml | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On Mon, Jul 13, 2026 at 01:15:41PM +0200, Ola Chr. Vaage wrote:
+> From: "Ola Chr. Vaage" <ola.christoffer.vage@scoutdi.com>
+>=20
+> The PWM_SCALE frequency divider is computed by rounding down
+>=20
+> 	clk_rate * period_ns / (NSEC_PER_SEC << PWM_DUTY_WIDTH)
+>=20
+> With dynamic clock scaling (Tegra186 and later), the driver doubles its
+> clock-rate request when the provider cannot meet it. The provider then
+> typically grants slightly less than the doubled request, the exact
+> divider lands just below 2, and the round-down truncates it to 1: the
+> output runs at double the requested frequency. On Tegra234 the BPMP
+> grants PWM clock rates as 408 MHz / N, so nearly every requested period
+> is affected: requesting 40000 ns produces 20078 ns, 100000 ns produces
+> 50195 ns. The duty ratio is computed independently and stays correct,
+> which hides the problem from duty-only consumers such as backlights;
+> frequency-sensitive loads break.
+>=20
+> Measured on a Jetson Orin NX board with the 45334 ns fan period used in
+> NVIDIA device trees:
+>=20
+> 	required_clk_rate =3D ceil((1e9 << 8) / 45334) =3D 5646977
+> 	clk_round_rate() =3D 5589041 (408 MHz / 73) -> request doubled
+> 	dev_pm_opp_set_rate(11293954) grants 11027028 (408 MHz / 37)
+> 	divider =3D trunc(1.953) =3D 1 -> output period 23217 ns, 43.07 kHz
+>=20
+> 43 kHz is outside the 21-28 kHz band that 4-wire fan PWM inputs are
+> designed for. The fan on this board cannot start below duty 110/255 and
+> stalls below 88/255, so closed-loop fan control oscillates between a
+> stalled fan and full speed.
+>=20
+> Round the divider to the closest integer instead. This bounds the
+> period error to half a divider step rather than a full one, and
+> restores what this configuration did before commit 8c193f4714df
+> ("pwm: tegra: Optimize period calculation") switched the rounding from
+> closest to down: divider round(0.99) =3D 1 on the undoubled 5589041 Hz
+> grant, period 45802 ns, +1.0%. Between that commit and commit
+> 5eccd0d9fabc ("pwm: tegra: Ensure the clock rate is not less than
+> needed") the same request failed with -EINVAL instead. Verified on the
+> Orin NX with this patch applied: PWM_SCALE reads 1 (21.54 kHz, +2.4%
+> period), the fan starts at duty <=3D 50/255 and sustains 80/255, and
+> closed-loop control is stable. There is no round-closest variant of
+> mul_u64_u64_div_u64(), so compute twice the quotient and round up the
+> halving.
+>=20
+> Fixes: 5eccd0d9fabc ("pwm: tegra: Ensure the clock rate is not less than =
+needed")
+> Signed-off-by: Ola Chr. Vaage <ola.christoffer.vage@scoutdi.com>
+> ---
+>  drivers/pwm/pwm-tegra.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+> index 172063b51d4..a5adc4f3ce6 100644
+> --- a/drivers/pwm/pwm-tegra.c
+> +++ b/drivers/pwm/pwm-tegra.c
+> @@ -163,9 +163,15 @@ static int tegra_pwm_config(struct pwm_chip *chip, s=
+truct pwm_device *pwm,
+>  		pc->clk_rate =3D clk_get_rate(pc->clk);
+>  	}
+> =20
+> -	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
+> -	rate =3D mul_u64_u64_div_u64(pc->clk_rate, period_ns,
+> +	/*
+> +	 * Consider precision in PWM_SCALE_WIDTH rate calculation. Round to
+> +	 * the closest integer: there is no round-closest variant of
+> +	 * mul_u64_u64_div_u64(), so compute twice the quotient and round up
+> +	 * the halving.
+> +	 */
+> +	rate =3D mul_u64_u64_div_u64(pc->clk_rate, 2 * (u64)period_ns,
+>  				   (u64)NSEC_PER_SEC << PWM_DUTY_WIDTH);
+> +	rate =3D DIV_ROUND_UP_ULL(rate, 2);
+> =20
+>  	/*
+>  	 * Since the actual PWM divider is the register's frequency divider
 
-diff --git a/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml b/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
-index 52a59d245cdb..42c5d2b6326d 100644
---- a/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/opencores,pwm.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: OpenCores PWM controller
- 
- maintainers:
--  - William Qiu <william.qiu@starfivetech.com>
-+  - Hal Feng <hal.feng@starfivetech.com>
- 
- description:
-   The OpenCores PTC ip core contains a PWM controller. When operating in PWM
-@@ -23,7 +23,7 @@ properties:
-       - enum:
-           - starfive,jh7100-pwm
-           - starfive,jh7110-pwm
--          - starfive,jh8100-pwm
-+          - starfive,jhb100-pwm
-       - const: opencores,pwm-v1
- 
-   reg:
-@@ -49,7 +49,7 @@ examples:
-   - |
-     pwm@12490000 {
-         compatible = "starfive,jh7110-pwm", "opencores,pwm-v1";
--        reg = <0x12490000 0x10000>;
-+        reg = <0x12490000 0x10>;
-         clocks = <&clkgen 181>;
-         resets = <&rstgen 109>;
-         #pwm-cells = <3>;
--- 
-2.43.2
+The usual behaviour for .apply() is to pick the largest possible period
+not larger than the requested period (and similar for duty_cycle). The
+tegra PWM driver doesn't do that and instead trys to pick a nearest
+match. If you change how the configuration happens, the only acceptable
+way is to migrate to the usual behaviour, still better, convert to the
+waveform callbacks.
 
+The driver also lacks a .get_state() callback and should not use
+pwm_is_enabled(). Also calling tegra_pwm_config() discards bits from
+state->duty_cycle and state->period if they are bigger than INT_MAX.
+
+So there are some things to work on in that driver, but don't make the
+clock selection not more complicated as it already is and as is
+necessary.
+
+Best regards
+Uwe
+
+--3lqlu3v5zgu43npu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpV/g0ACgkQj4D7WH0S
+/k6WQgf7Bk37pb5NU5Yvl9/heLHuSrI+edhIGSqQlVsHuG6XbLJgC5IUbvDM6427
+4B76RKd81FNuPXO9QQBO5PS/5CGH1Gtew/TAaoc61sPTAdcqpyGtyd/rQFT9WRbX
+UGp3AG13ErlZftyUYJa4C3bs66RIPahC9PVfHnZ4QiQvA+IKHaBgtHaGG2wLoF2n
+zdLvPpSVAsurHqPW27xRozZZaLPj3bWKs0G0XTyUWOaO1FvRrwA/hdRrFDVdlnh8
+yAdhtQwXTHHv/JmysayXzVqKC86kxVepnqAa8qXx9omqNK/WVlOjSFzmgiyL95x9
+xhIUkrSzWoNxqDnzWxTGmSImuebZVQ==
+=6u4x
+-----END PGP SIGNATURE-----
+
+--3lqlu3v5zgu43npu--
