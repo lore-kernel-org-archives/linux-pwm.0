@@ -1,104 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98FFD41D63E;
-	Wed, 15 Jul 2026 11:05:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 763FB446829
+	for <linux-pwm@vger.kernel.org>; Wed, 15 Jul 2026 12:29:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784113529; cv=none; b=q72cQZBfhfHb8BZk8MqpFfgElnHIRv6tYvRJubSncP02EVUk9P2uw+m3SWm8amcib3o06HkTPcEpzvmkTKe4Ynn7k+fLtDztScHEa+LgnC1yQ9TNkGnjHHyn6q1j4pXSX/iORyU7Cl7nE0zstGRd1KuBQspOIj3e967p1AFuq1I=
+	t=1784118563; cv=none; b=aT6rAV3Ed3rWYQ3z3xYmInEgSgFIU5xxCGGo6ssdqbyEw4lgJ1efLe/6u68lD6ISA/uNvduJ9p5XFjDOoDWY8kNO+q2T3tCMHjiaOCqbRyeIKRxjVyLuvcEUhmlJ82ymvYz7o4jpC74icTOFDGJlp9O0AiZA1/Hwl793zQ9vwaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784113529; c=relaxed/simple;
-	bh=l/qhZrympsE5KEgXEO5QvluKCO3+AiZ430txFKLvYOc=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=bI9Pui9ICVFcXIk1x/BEux4ErpqmqdOEntgFiBk8/rdv97HNgAzOwCAe40T/6cR3WUCGzKQpmNsjuRirpEkyxclV6h++czxDYtAOC4vZj62TR0w5trj0lVzVjGPiw7OVFMpC+MRBHFKMXUFNUdV2RdMlmga+5Q76j/MIQXXg83M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UhOaT7Ad; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1784118563; c=relaxed/simple;
+	bh=nrTsPQFoCtfwAFu3v09MuG+OELfRHAvPanIJna/kovM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=D9HWXINpjoUL2VTRagEEGtAAjezqO5qRmc2ct10FSuumCy4vCGxirq1RFwtT/+/pABPJRr/gDbCAcYTJPCROI1k/nMtZpMHG/ux0auvdAuvZ/ts7Sk6dycdLMj34LKh75d1McKkYE5HA+yh6qjJ84/vqTTgYzEUvqvMLzq/+VRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i/6T1AuL; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UhOaT7Ad"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3E0EBC2BCB7;
-	Wed, 15 Jul 2026 11:05:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1784113529;
-	bh=l/qhZrympsE5KEgXEO5QvluKCO3+AiZ430txFKLvYOc=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=UhOaT7Ad5w6qHQ3wzVq5nS2AKh10RanDS4WUoF/VQ3KQhrJzGyp/ACUG7ew9aOug5
-	 LthjuNow/lgrmMMlobiVO15h0NI2NFRKH9RKbWJiEzXeEr6xRZcljD8ecGKJedKK6H
-	 +GuiJKgpyz3p7mk2oxxDd92nWSyhHI5jM+ACz9LbLxDaob6FoqyvMf6SogEsSPLlHQ
-	 0a60+l1rlT3olmi0kcXf0y8R8X3lWzek8IX+DCGYJvJHy5/hbHxlrkuSa95IBcUGa8
-	 w4PfELP+o+nontgkWdChhUX7tIBR5u1QHhl76iUby9W1+UcsMwM/kA8Lx1swpevnSI
-	 +j/nDcUowmR3Q==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC6AC44508;
-	Wed, 15 Jul 2026 11:05:29 +0000 (UTC)
-From: Keguang Zhang via B4 Relay <devnull+keguang.zhang.gmail.com@kernel.org>
-Subject: [PATCH v3 0/2] pwm: loongson: Fix PWM configuration handling
-Date: Wed, 15 Jul 2026 19:05:22 +0800
-Message-Id: <20260715-pwm-loongson-fix-v3-0-0aab2847eaa7@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i/6T1AuL"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5b00d1e7082so4082336e87.1
+        for <linux-pwm@vger.kernel.org>; Wed, 15 Jul 2026 05:29:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784118559; x=1784723359; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=f3K5awkNoDHIG61b2HSqKFDBT2vo7+SdZ5eSrGUkQm0=;
+        b=i/6T1AuL4+7M4wD05OtMljRLwCWvUp5SZ7B/UgFvSGHr8QqrireX4013n5n9GUbBu7
+         5I5/j1594E9/XkerJpl5hV8WMW74LLzSDNby/hnMj8+NoOKxgSJZ6M050MRSJFumNjyB
+         f7xzRK8mR+6eVpaN7sfOietGBqNTTESrmjyDtnyuY7UWLv0VaZP8/pbErklUKUsEAIsT
+         QW/+3IgRHmSQ28clL3VEOVvqLoVQ/KSEaSs/QH2+jTozdJbBDhG3LeiahiaMVgSjqMN5
+         84Rxr5vj3m9C/JUcjXWC5wWL+eRomFrN+V9gWxAdyYTgUn2tcyIvxfHhuxGFhIi2ckGB
+         c2rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784118559; x=1784723359;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=f3K5awkNoDHIG61b2HSqKFDBT2vo7+SdZ5eSrGUkQm0=;
+        b=GtzcUHHUM1IA7xv10QlO89buHi66YyX9XinxdtLUr8Wz1bJ9gi1gCeSIyValbeAZRr
+         k+UwWcMzoHDGmzLYx72kopCQ685EBF99uabu6b94oxtTt9/mrooalclTvGJ8YlA8AE7O
+         ABs6NgI4IsDf0+cOvsfenYwWnhhwSiuYNzgmy8Y0a7kSx44whMlNzCRsAs0iFJVjUcSM
+         7L24kVixgR/Wg4oG/1S1Dr/WAQSkcSCPtigO/3hHG6xKiEuVaZHEzI44FY4foOPg6rfg
+         0YyNMEJWLqrvPeEQECc2NohQo6Il628xRk95+9/iQbCWpbeGfDAMkEDJNoFFIiyHBL2Y
+         DOhw==
+X-Forwarded-Encrypted: i=1; AHgh+RoMVEPbvWjJX1Pco2rXW2gcnGi3jQkVdVGVqKo+kr2u8Y0upSzc6027gbaSSpLcdoe/ecpUUuPvVsQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxM5AOz/Zjx5UIPh418GxcpGbxnloP6r3Br5V7pNjzwfS2BAzHr
+	s2i4qugO9Dj9xWV8+/tZ3RQ8MASHekW5TxBSN5tTOQfDcVQCLU2AVmd+
+X-Gm-Gg: AfdE7cnqG/iLg14FSgS5z1xIsQXmTg/f2ExfJoECqdh9dsSOsgkp5S3NF+9i4ez+Ar7
+	dTvxL4Tg/hOqV0n92xPLwGwSVC4uuYCKMncPtDVHH/peVX/gp4cowp+JL7YuaYim3bZa9ZJvQsR
+	H+A+nCYQtkZjHp+2pC6AMIK47lvM1vRD8avHgSrSbD5bBmypsk0CmERFDqBBkbWb7/C3FbrZr34
+	Dn4ZPPs1/AKwuP/F+yWqgwfO/AYYSEGXXIpaNIHpgbY4IOPs0MEIzlDHxHBVZiXARhUyZoEigTe
+	37UySZJn9bVg68madehClaRXBIfLU0v177WSFf+1E9K+RaiE9chUjEaA69YU92Zs9FS+qgAUj30
+	0TYHx+dQtWO2j0nMFqgEG75Lxli4+1e8HfAjaXXiNxWde6KCBLM7dwdTx8czMIZfNyyx7xgH6Z1
+	y7DWkVAVNBJInTLBFHNacZLdeegW4075+5WLijZVCqNsDVAdM4McHGysKt+tLNQQjyz5KNiqBeU
+	Bu7p3fUoX7Md+qrSPxbilxBe2OBbJh0DCztZfNDraxhmjYNgpsBFITf0nLfM0SorD91Qrh+f2aV
+	zY/98arrBAu0
+X-Received: by 2002:a05:6512:3b88:b0:5ae:bba1:f231 with SMTP id 2adb3069b0e04-5b159b6fe60mr1524076e87.17.1784118559013;
+        Wed, 15 Jul 2026 05:29:19 -0700 (PDT)
+Received: from ola-desktop.tail7f4623.ts.net (184.89-11-176.customer.lyse.net. [89.11.176.184])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b01cab1888sm4161884e87.83.2026.07.15.05.29.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2026 05:29:18 -0700 (PDT)
+From: "Ola Chr. Vaage" <o.c.vage@gmail.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Thierry Reding <thierry.reding@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	linux-pwm@vger.kernel.org,
+	linux-tegra@vger.kernel.org,
+	"Ola Chr . Vaage" <o.c.vage@gmail.com>,
+	"Ola Chr. Vaage" <ola.christoffer.vage@scoutdi.com>
+Subject: Re: [PATCH v1 6/6] pwm: tegra: Implement .get_state()
+Date: Wed, 15 Jul 2026 14:28:48 +0200
+Message-ID: <20260715122914.2815081-1-o.c.vage@gmail.com>
+X-Mailer: git-send-email 2.54.0
+In-Reply-To: <33b13f17d7135923d08e2ff40c867803e19609b9.1784030076.git.ukleinek@kernel.org>
+References: <33b13f17d7135923d08e2ff40c867803e19609b9.1784030076.git.ukleinek@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAHJpV2oC/23NTQqDMBAF4KtI1p1iEo2mq96jdOFP1AFNJClpi
- 3j3jkJBaJfvMe+bhQXj0QR2SRbmTcSAzlKQp4Q1Q2V7A9hSZiIVKlVcwPycYHTO9sFZ6PAFvJS
- FklnOjZaMZrM3VO/k7U55wPBw/r1/iHxrv5j6xSKHFDLN27qjk6rorv1U4Xhu3MQ2LIoDIP4Bg
- oA806KtdS7LQh+BdV0/yGReUvEAAAA=
-To: Binbin Zhou <zhoubinbin@loongson.cn>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Keguang Zhang <keguang.zhang@gmail.com>
-X-Mailer: b4 0.14.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784113526; l=1512;
- i=keguang.zhang@gmail.com; s=20231129; h=from:subject:message-id;
- bh=l/qhZrympsE5KEgXEO5QvluKCO3+AiZ430txFKLvYOc=;
- b=pEOLPflSQeame2lfhTLdd//re8Wcx7yxsM+TMcZKaoDxNz7+eSNUqCh0bT7uJrqJD+gl30ZAc
- +zEP1fpAQQjAITDpavMJ6mBUX+z8dpF9mBZGuTZ2vGJW4Bx4hmOdUbf
-X-Developer-Key: i=keguang.zhang@gmail.com; a=ed25519;
- pk=FMKGj/JgKll/MgClpNZ3frIIogsh5e5r8CeW2mr+WLs=
-X-Endpoint-Received: by B4 Relay for keguang.zhang@gmail.com/20231129 with
- auth_id=102
-X-Original-From: Keguang Zhang <keguang.zhang@gmail.com>
-Reply-To: keguang.zhang@gmail.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-This series fixes two issues in the Loongson PWM driver:
+Hello Uwe,
 
-- Fix the handling of the Low Pulse Buffer Register, which was
-  incorrectly treated as a duty-cycle register.
+On Tue, Jul 14, 2026 at 02:02:40PM +0200, Uwe Kleine-König wrote:
+> Subject: [PATCH v1 6/6] pwm: tegra: Implement .get_state()
 
-- Reset the PWM counter when disabling the PWM and release it when
-  enabling the PWM so that updated LOW and PERIOD values are latched
-  before the PWM starts running again.
+I tested this on a Jetson Orin NX (Tegra234), the board from my
+divider truncation report, driving a fan on the 32a0000 PWM instance.
 
-The fixes were verified on LS1B, LS1C, and LS2K0300 boards.
+The board runs NVIDIA's L4T 5.15 kernel, so I backported the patch
+onto that tree: .get_state() returns void there, pwmchip_parent(chip)
+becomes the driver's device pointer, and the per-SoC enable_reg /
+scale_width indirection collapses to the fixed CSR layout (that tree
+predates the Tegra264 restructure). The decode logic is unchanged from
+your patch. The tree also carries my divider change from the other
+thread, which is why the achieved periods in the table differ from
+what your base would program.
 
-Signed-off-by: Keguang Zhang <keguang.zhang@gmail.com>
----
-Changes in v3:
-- Calculate the low pulse as period - duty after rounding the duty cycle.
-- Handle LOW > PERIOD in pwm_loongson_get_state().
-- Add a Fixes tag to the second patch.
-- Link to v2: https://lore.kernel.org/r/20260626-pwm-loongson-fix-v2-0-5492db953879@gmail.com
+Procedure: apply a state through the pwm sysfs interface, read the CSR
+register and the clock rate independently (/dev/mem and clk_summary),
+then unexport/re-export the channel so pwm_device_request() invokes
+.get_state(), and compare the reported state against values computed
+from the raw register:
 
-Changes in v2:
-- Drop the -ERANGE return change and restore the original behavior.
-- Use mul_u64_u64_div_u64_roundup() to calculate the low pulse width.
-- Update the commit message accordingly.
-- Link to v1: https://lore.kernel.org/r/20260616-pwm-loongson-fix-v1-0-491dbf260a7f@gmail.com
+  applied period/duty/enabled  readback         computed from CSR+clk
+  45334/20000/1                46432/20496/1    46432/20496/1
+  500000/250000/1              481883/240942/1  481883/240942/1
+  5000/2500/1                  5020/2510/1      5020/2510/1
+  45334/45334/1 (100% duty)    46432/46432/1    46432/46432/1
+  45334/20000/0                enabled=0        enabled=0
 
----
-Keguang Zhang (2):
-      pwm: loongson: Fix low pulse buffer register handling
-      pwm: loongson: Reload PWM configuration through counter reset
+The clock rate varied across the cases (3.19, 11.03 and 102 MHz), so
+the scale field was exercised at several values, and the 100% duty
+case reads the full 9-bit duty field (pwm0 = 256). The readback
+consistently reports the achieved hardware state rather than the
+requested one.
 
- drivers/pwm/pwm-loongson.c | 40 ++++++++++++++++++++++++++--------------
- 1 file changed, 26 insertions(+), 14 deletions(-)
----
-base-commit: cc2b5f627e8ccbae1188ef2d8be3e451d7f933a5
-change-id: 20260612-pwm-loongson-fix-183763451e93
+One limitation of my backport, not your code: in the disabled case I
+only set state->enabled = false instead of zeroing the whole struct,
+so I did not verify the period/duty values your version reports for a
+disabled channel.
 
-Best regards,
--- 
-Keguang Zhang <keguang.zhang@gmail.com>
+Tested-by: Ola Chr. Vaage <ola.christoffer.vage@scoutdi.com>
 
-
+Best regards
+Ola
