@@ -1,41 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82D0A3F410E;
-	Thu, 16 Jul 2026 08:47:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CBC73D969D;
+	Thu, 16 Jul 2026 09:18:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784191627; cv=none; b=N5MaRzRbXkwWbDE5EwsG/MY6R4lnkmBUS07AjL+sQFYVpoTd/gvyw1V+rb/FJ/ZIxAzMhE1o4bgN6ras81IsUkt37KGOwdqcXxLp6gxnyhLNO47WpkSEX1ONHE3WzosJF8chd4d2hAZa17RCMFnB2XLe/E5O7L5Ov8kSWy5ee0I=
+	t=1784193525; cv=none; b=FlY9g+cw4L6SdzuqodZBIJMl+Jw7W31Bm2O5LMv2dwZbBgr+h+gqzg+/AjXXX/nZX3jzzCCru5yOydS/DyED7FzxveFj6YmLCegXTCsXT1A8gxtd3FSLxi9FJILFaZuCrccTTFHZua7YGBEw9TVKbNTjN3roBGxyMNkM1DXZmNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784191627; c=relaxed/simple;
-	bh=V96eveXXw/8w7eMXoIuqEjUFOxnN4jPAoMCDMigAfDk=;
+	s=arc-20240116; t=1784193525; c=relaxed/simple;
+	bh=EDz8kRCG2Lua5q4CXzDibq15TpC2uW5IWpqbrXH1u+M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G+HDEfPv5AhECUOlSnEUFOYQVFIuaeaOOszEcVXR6VpZkOMbcdm1wFzXyQjuC218z5sT3w2pXdBki64l41gxIqc8pzJFh9a07n/SCWZuqSli5fFQxliMgheU9OQGHMpPzv0Lpm0UNctNg/ohu9f4V6yO5lzP8peq3V/B0JgglV0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l3DVOSGj; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=SCrCa42BhQhVCUhfros3OODvwtiIlSnty633xHI4A/xgZvTRllOfiPTzQaG3TpWvt4LvkPZKthxe3N53+96vfsJWVpcAsBbccJQrOUo3SVrL7Bt7QWaF30CEpd1VKqyEKcCN16FWeMRngg01FtJqMBkdCoqgPipa7IHRr4+HHMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nv3cAleC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l3DVOSGj"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6111E1F000E9;
-	Thu, 16 Jul 2026 08:47:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nv3cAleC"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 34DD01F000E9;
+	Thu, 16 Jul 2026 09:18:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784191623;
-	bh=wrVyxsM07pG4Xh/tm9vRspS1NEmiJQzntn8rJKinX3M=;
+	s=k20260515; t=1784193523;
+	bh=PufDVCHDfk+K2XGfK3RL33FCeDZYB4LV2HI5pP5tT8A=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=l3DVOSGjsmFVFIxw+2SpYPYpYqUiWjz5QeCoiMtOX+QiQEI+vEd7olQRF4f9z/dCJ
-	 1raVb3uMbuXPr6n24iK7i8SdSULfTCmnZMlz6SQnspSrpKQJ0JFDwImPH1u8WQxsKT
-	 ENIEsB2zFeVriRgHGpkdkpBVt7z9Qxf9JmMcwLooEN3njKHZN4IlC9XLgq7G8kaGaO
-	 +J/MPvSQRwkAHKeQCKIns0u1C8OCfLEL2hdoGYpsWrbVse1tRYo1+94vKgwEHUeIQO
-	 maNB8/GsNHxwRy1lqn+w+8FLRJienVyqmugZqb6KW9WQbGDxRT7SyjXuZRQoGhPRFi
-	 NrLxVXddRC9ng==
-Date: Thu, 16 Jul 2026 10:47:01 +0200
+	b=Nv3cAleCx3IDxvdag8QA1Z2zrUSvBPmi0uKvEtaOpcqBsze7ySsz0Jl43z9pwWZDq
+	 LYdH8yRyYO9Vs4RM6ZtHm0rlHClP1nmSMBAlZcViYagwAuqrQqF7KwIY0wGaoJAED4
+	 h+J3sIajho+9TyRKa+OrZIJtJVoS/liO0MuNiFXeN50IidhMCC5IryS/erOQH6rDHE
+	 ilYerjy+f2rXQUleXUttyCPUkZIaQD+hckikDfAxoIwL3QL308zrXJjBc5rjSl6sQw
+	 PlRzoN4S9O+VZSs5aSSWNcXdxvbpBTS0zsgQ0Q6f9ZQ/jCiGNqenKsYtgaRvqChu8O
+	 Kng61h6AT4puA==
+Date: Thu, 16 Jul 2026 11:18:41 +0200
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Biju <biju.das.au@gmail.com>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>, linux-pwm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, 
-	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v6 06/11] pwm: rzg2l-gpt: Convert to waveform callbacks
-Message-ID: <aliXW2JWc6OoY9FG@monoceros>
-References: <20260604095647.108654-1-biju.das.jz@bp.renesas.com>
- <20260604095647.108654-7-biju.das.jz@bp.renesas.com>
+To: Andrea della Porta <andrea.porta@suse.com>
+Cc: linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	Naushir Patuck <naush@raspberrypi.com>, Stanimir Varbanov <svarbanov@suse.de>, mbrugger@suse.com, 
+	Sean Young <sean@mess.org>, Julian Braha <julianbraha@gmail.com>
+Subject: Re: [PATCH v6 2/3] pwm: rp1: Add RP1 PWM controller driver
+Message-ID: <alibzwe9Mjf3GxJo@monoceros>
+References: <cover.1783097764.git.andrea.porta@suse.com>
+ <5171610d8bebdd10eea44bff5236502d765b5918.1783097764.git.andrea.porta@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -43,94 +47,244 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="cfe2gi5zq5zuhfln"
+	protocol="application/pgp-signature"; boundary="zxlx2zmpzeyxgeid"
 Content-Disposition: inline
-In-Reply-To: <20260604095647.108654-7-biju.das.jz@bp.renesas.com>
+In-Reply-To: <5171610d8bebdd10eea44bff5236502d765b5918.1783097764.git.andrea.porta@suse.com>
 
 
---cfe2gi5zq5zuhfln
+--zxlx2zmpzeyxgeid
 Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v6 06/11] pwm: rzg2l-gpt: Convert to waveform callbacks
+Subject: Re: [PATCH v6 2/3] pwm: rp1: Add RP1 PWM controller driver
 MIME-Version: 1.0
 
-Hello Biju,
+Hello,
 
-On Thu, Jun 04, 2026 at 10:56:36AM +0100, Biju wrote:
-> @@ -291,29 +285,84 @@ static int rzg2l_gpt_config(struct pwm_chip *chip, =
-struct pwm_device *pwm,
->  	if (rzg2l_gpt->channel_request_count[ch] > 1) {
->  		u8 sibling_ch =3D rzg2l_gpt_sibling(pwm->hwpwm);
-> =20
-> -		if (rzg2l_gpt_is_ch_enabled(rzg2l_gpt, sibling_ch)) {
-> +		if (rzg2l_gpt_is_ch_enabled(rzg2l_gpt, sibling_ch, NULL)) {
->  			if (period_ticks < rzg2l_gpt->period_ticks[ch])
-> -				return -EBUSY;
-> +				is_small_second_period =3D true;
-> =20
->  			period_ticks =3D rzg2l_gpt->period_ticks[ch];
->  		}
->  	}
-> =20
-> -	prescale =3D rzg2l_gpt_calculate_prescale(period_ticks);
-> -	pv =3D rzg2l_gpt_calculate_pv_or_dc(period_ticks, prescale);
-> +	wfhw->prescale =3D rzg2l_gpt_calculate_prescale(period_ticks);
-> +	wfhw->gtpr =3D rzg2l_gpt_calculate_pv_or_dc(period_ticks, wfhw->prescal=
-e);
-> +	wfhw->gtccr =3D 0;
-> +	if (is_small_second_period)
+On Fri, Jul 03, 2026 at 07:05:25PM +0200, Andrea della Porta wrote:
+> +static int rp1_pwm_round_waveform_tohw(struct pwm_chip *chip,
+> +				       struct pwm_device *pwm,
+> +				       const struct pwm_waveform *wf,
+> +				       void *_wfhw)
+> +{
+> +	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
+> +	u64 period_ticks, duty_ticks, offset_ticks;
+> +	struct rp1_pwm_waveform *wfhw = _wfhw;
+> +	u64 clk_rate = rp1->clk_rate;
+> +	int ret = 0;
+> +
+> +	if (!wf->period_length_ns) {
+> +		wfhw->enabled = false;
+> +		wfhw->inverted_polarity = (pwm_get_polarity(pwm) == PWM_POLARITY_INVERSED);
 
-If is_small_second_period =3D=3D true, the prescale doesn't need to be
-recalculated as the other twin already has this configured? But not sure
-that reading the value (or storing it in drvdata) is better/faster than
-recalculating. So judge yourself.
-Also moving
-`wfhw->gtccr =3D 0` into the if block reduces (my) confusion a bit.
+pwm_get_polarity(pwm) looks wrong here for several reasons. 1st the
+polarity is defined in *wf and should not depend on the current state,
+2nd for a disabled hardware the polarity doesn't matter anyhow, and 3rd
+you should not call pwm API functions from the lowlevel driver (which
+might interfere with subsystem locking).
 
-> +		return 1;
-> =20
-> -	duty_ticks =3D mul_u64_u64_div_u64(state->duty_cycle, rzg2l_gpt->rate_k=
-hz, USEC_PER_SEC);
-> +	duty_ticks =3D mul_u64_u64_div_u64(wf->duty_length_ns, rzg2l_gpt->rate_=
-khz, USEC_PER_SEC);
+Also please initialize the whole structure, best done using:
 
-NSEC_PER_MSEC would be more logically sound here. (But this is a
-pre-existing mini issue.)
+	*wfhw = (typeof(*wfhw)){
+		.enabled = false,
+	}
 
->  	if (duty_ticks > period_ticks)
->  		duty_ticks =3D period_ticks;
-> -	dc =3D rzg2l_gpt_calculate_pv_or_dc(duty_ticks, prescale);
-> +	wfhw->gtccr =3D rzg2l_gpt_calculate_pv_or_dc(duty_ticks, wfhw->prescale=
-);
-> =20
-> -	/*
-> -	 * GPT counter is shared by multiple channels, we cache the period ticks
-> -	 * from the first enabled channel and use the same value for both
-> -	 * channels.
-> -	 */
-> -	rzg2l_gpt->period_ticks[ch] =3D period_ticks;
+> +		return 0;
+> +	}
+> +
+> +	period_ticks = mul_u64_u64_div_u64(wf->period_length_ns, clk_rate, NSEC_PER_SEC);
+> +
+> +	/*
+> +	 * The period is limited to U32_MAX, and it will be decremented by one later
+> +	 * to allow 100% duty cycle.
+> +	 */
+> +	if (period_ticks > U32_MAX) {
+> +		period_ticks = U32_MAX;
+> +	} else if (period_ticks < 2) {
+> +		period_ticks = 2;
+> +		ret = 1;
+> +	}
+> +
+> +	duty_ticks = mul_u64_u64_div_u64(wf->duty_length_ns, clk_rate, NSEC_PER_SEC);
+> +	duty_ticks = min(duty_ticks, period_ticks);
+> +	offset_ticks = mul_u64_u64_div_u64(wf->duty_offset_ns, clk_rate, NSEC_PER_SEC);
+> +	if (offset_ticks >= period_ticks) {
+> +		u64 remainder;
+> +
+> +		div64_u64_rem(offset_ticks, period_ticks, &remainder);
+> +		offset_ticks = remainder;
+
+		offset_ticks = period_ticks - 1;
+
+> +	}
+> +	if (duty_ticks && offset_ticks &&
+> +	    duty_ticks + offset_ticks >= period_ticks) {
+> +		wfhw->duty_ticks = period_ticks - duty_ticks;
+> +		wfhw->inverted_polarity = true;
+> +	} else {
+> +		wfhw->duty_ticks = duty_ticks;
+> +		wfhw->inverted_polarity = false;
+> +	}
+> +	/* Account for the extra tick at the end of the period */
+> +	wfhw->period_ticks = period_ticks - 1;
+> +
+> +	wfhw->enabled = true;
+> +
+> +	return ret;
+> +}
+> +
+> +static int rp1_pwm_round_waveform_fromhw(struct pwm_chip *chip,
+> +					 struct pwm_device *pwm,
+> +					 const void *_wfhw,
+> +					 struct pwm_waveform *wf)
+> +{
+> +	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
+> +	const struct rp1_pwm_waveform *wfhw = _wfhw;
+> +	u64 clk_rate = rp1->clk_rate;
+> +	u64 ticks;
+> +
+> +	*wf = (struct pwm_waveform){ };
+> +
+> +	if (!wfhw->enabled)
+> +		return 0;
+> +
+> +	wf->period_length_ns = DIV_ROUND_UP_ULL(((u64)wfhw->period_ticks + 1) * NSEC_PER_SEC,
+> +						clk_rate);
+> +
+> +	if (!wfhw->inverted_polarity) {
+> +		wf->duty_length_ns = DIV_ROUND_UP_ULL((u64)wfhw->duty_ticks * NSEC_PER_SEC,
+> +						      (u32)clk_rate);
+> +	} else {
+> +		if (wfhw->duty_ticks > (u64)wfhw->period_ticks + 1) {
+> +			/* 100% duty cycle case */
+> +			ticks = 0;
+> +		} else {
+> +			ticks = (u64)wfhw->period_ticks + 1 - wfhw->duty_ticks;
+> +		}
+> +		wf->duty_length_ns = DIV_ROUND_UP_ULL(ticks * NSEC_PER_SEC, clk_rate);
+> +		wf->duty_offset_ns = wf->period_length_ns - wf->duty_length_ns;
+
+The duty_offset_ns calculation is wrong.
+
+Consider clk_rate = 3000000, period_ticks = 8, inverted_polarity = true and
+duty_ticks = 4.
+
+Then you have:
+
+	.period_length_ns = 2666.6666666666666 ns ~> 2667
+	.duty_length_ns = 1333.3333333333333 ns -> 1334
+	.duty_offset_ns = 1333.3333333333333 ns -> 1334
+
+but .period_length_ns - .duty_length_ns is 1333.
+
+To get this right, you have to calculate
+
+	wf->duty_offset_ns = DIV_ROUND_UP_ULL((u64)(wfhw->period_ticks + 1 - ticks) * NSEC_PER_SEC, clk_rate);
+
+> +	}
+> +
 > +	return 0;
 > +}
+> +
+> +static int rp1_pwm_write_waveform(struct pwm_chip *chip,
+> +				  struct pwm_device *pwm,
+> +				  const void *_wfhw)
+> +{
+> +	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
+> +	const struct rp1_pwm_waveform *wfhw = _wfhw;
+> +	u32 value, ctrl;
+> +
+> +	/* set polarity */
+> +	regmap_read(rp1->regmap, RP1_PWM_CHAN_CTRL(pwm->hwpwm), &value);
+> +	if (!wfhw->inverted_polarity)
+> +		value &= ~RP1_PWM_CHAN_CTRL_POLARITY;
+> +	else
+> +		value |= RP1_PWM_CHAN_CTRL_POLARITY;
+> +	regmap_write(rp1->regmap, RP1_PWM_CHAN_CTRL(pwm->hwpwm), value);
+> +
+> +	/* early exit if disabled */
+> +	regmap_read(rp1->regmap, RP1_PWM_GLB_CTRL, &ctrl);
+> +	if (!wfhw->enabled) {
+> +		ctrl &= ~RP1_PWM_GLB_CTRL_CHANNEL_ENABLE(pwm->hwpwm);
+> +		goto exit_disable;
 
-Remainder looks good.
+Please don't use goto unless for error handling.
+
+> +	}
+> +
+> +	/* set period and duty cycle */
+> +	regmap_write(rp1->regmap,
+> +		     RP1_PWM_RANGE(pwm->hwpwm), wfhw->period_ticks);
+> +	regmap_write(rp1->regmap,
+> +		     RP1_PWM_DUTY(pwm->hwpwm), wfhw->duty_ticks);
+> +
+> +	/* enable the channel */
+> +	ctrl |= RP1_PWM_GLB_CTRL_CHANNEL_ENABLE(pwm->hwpwm);
+> +exit_disable:
+> +	regmap_write(rp1->regmap, RP1_PWM_GLB_CTRL, ctrl);
+> +
+> +	rp1_pwm_apply_config(chip, pwm);
+> +
+> +	return 0;
+> +}
+> +
+> +static int rp1_pwm_read_waveform(struct pwm_chip *chip,
+> +				 struct pwm_device *pwm,
+> +				 void *_wfhw)
+> +{
+> +	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
+> +	struct rp1_pwm_waveform *wfhw = _wfhw;
+> +	u32 value;
+> +
+> +	regmap_read(rp1->regmap, RP1_PWM_GLB_CTRL, &value);
+> +	wfhw->enabled = !!(value & RP1_PWM_GLB_CTRL_CHANNEL_ENABLE(pwm->hwpwm));
+> +
+> +	regmap_read(rp1->regmap, RP1_PWM_CHAN_CTRL(pwm->hwpwm), &value);
+> +	wfhw->inverted_polarity = !!(value & RP1_PWM_CHAN_CTRL_POLARITY);
+> +
+> +	if (wfhw->enabled) {
+> +		regmap_read(rp1->regmap, RP1_PWM_RANGE(pwm->hwpwm), &wfhw->period_ticks);
+> +		regmap_read(rp1->regmap, RP1_PWM_DUTY(pwm->hwpwm), &wfhw->duty_ticks);
+> +	} else {
+> +		wfhw->period_ticks = 0;
+> +		wfhw->duty_ticks = 0;
+> +	}
+
+Ideally use *wfhw = (typeof(*wfhw)){ ... } here, too, to make it obvious
+that the complete struct is initialized.
+
+> +
+> +	return 0;
+> +}
+> [...]
+> +static struct platform_driver rp1_pwm_driver = {
+> +	.probe = rp1_pwm_probe,
+> +	.remove = rp1_pwm_remove,
+> +	.driver = {
+> +		.name = "rp1-pwm",
+> +		.of_match_table = rp1_pwm_of_match,
+> +		.pm = pm_ptr(&rp1_pwm_pm_ops),
+> +		.suppress_bind_attrs = true,
+
+If the driver cannot be removed, .remove() is just dead code. Drop it
+and note in a comment that this is needed because a syscon cannot be
+removed.
 
 Best regards
 Uwe
 
---cfe2gi5zq5zuhfln
+--zxlx2zmpzeyxgeid
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpYmoIACgkQj4D7WH0S
-/k4hGQf/V3x/BZOhbaQzGZFn68WzkULf7IOtq93kKFBNxcEUnaH6T60ZnGbk9J5W
-DhGYXA8vnWaVXO9infIeRg70xlsfYL62tyOvY2Ffw/iIfoF0UUOxgtvKNRMVk2u4
-0LjoDgGlBk6ZVgrqxR6sU03nmkVlZqft0nBcNi7sRx2Mg3mQnUdlZsWSS+TZJvzm
-B3GWb8mkMmShoIUA50/mVZhtT4gfYIVf5kO/H+A8drmw3Q4RsVseYjwef1ALfK0O
-kSuSgf6PGGHz2MrUHhTkmGwv+YlI+bOW/xiULZnbggr5ORglsgx2VC+sV8XTqTzx
-6hs0RTV4+C6F1TFslJUSNrIZvUPyWA==
-=38Bt
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpYoe4ACgkQj4D7WH0S
+/k50FQf/QwRdC9Xs5xWKlewjS+C+Q1ErIf4QMfE3jUVIH3RvwgpNeuZEX2XdGVzq
+TCPID7ykFKhk9QEw0fSa5wZozhBU57L9RVTtiBcq61WNwGykd7230xF4G7nr0PDn
+1MU+bRA2qMAYcZd8aplWPtnI8aqb6LrlFVVuSd9vfxjqq5YIi5wA6NDcpbnGYNYg
+oeqe2gsh8/qn5571U7qtq0VMdaEhUfhxn1ihGhUiiy/NC9m5TQMPtgNjqXM0lV+3
+fY9B13NzhzdtCfR81x/zCr67w6s6f+EXJ8Iodzx5Un2XzXdp84MCqhkir53ZsEiS
+Mrp8wr7vpEaeHyHIMIV3PUAWYuwvBg==
+=Bc65
 -----END PGP SIGNATURE-----
 
---cfe2gi5zq5zuhfln--
+--zxlx2zmpzeyxgeid--
