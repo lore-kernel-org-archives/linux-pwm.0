@@ -1,47 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18F0938AC90;
-	Thu, 16 Jul 2026 07:26:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB75B43F083;
+	Thu, 16 Jul 2026 07:45:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784186781; cv=none; b=LjeoHkdBypDiYFyB45bB/mcS/qDHXLoRj+svtf+QHCqBcotxEWsjjrVACHItvnhqPTAB6hDUS6qyAcJHD17SuAPX24aY/HR/TTGTij7can2c61hut/ux2Ulpz06Q0/paGVH9xnCcMTDrPn60atawBAe2D2zwq0QyXsxSLNFgOhU=
+	t=1784187960; cv=none; b=K2gjBlqtweVi2LIk2goKczJjqsY7QeNFIpkOIK+chsyuNsTpgJ6ZYvf1ugSc0m0wPi1PwGzvV6Y6i738+FT3HTkzHlPmFtvR3/mcRi1QA1qtCP2ElQKK1LHZLd9qRnrH7mw2T81rxOKCrFCVTd/0wgUdNELA+2HJ45cl1GVmkK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784186781; c=relaxed/simple;
-	bh=rSMky4NBMz4mCwwkSBWrp24PhKUMutXTZKuowSHmBVg=;
+	s=arc-20240116; t=1784187960; c=relaxed/simple;
+	bh=/AqOgNXNza8/XmAmZZAWo1E+dk6FfEye0NlEPCg0GpM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jzrNYngu/g3Nt2Ec7ODd2TIIwjeY/NQCWubc0xF1zXVKGpOY96RE9+fresdk7De+s2esS3S4k/47JOugpy/lNCaow3QebajfXluMHHYCAzYBGS/VKNlcAAFB1a43dWbyY8TCRr8Ns2Vk4k3+wAfpHXW32tZqYjN8tL1JtLewrIk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z4K9jQ8d; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=FGqJaVp0ZLJaUFjl1t8IwuWmjjcmrMHs+Nig9J+ep5KM/sMZ+zGEYC93rpYughFB0LkTHxixchGTX4e4SaDcHSnQnIJ9c0QnZPZIfxYHuK6iXoEOT2UIYfMj4RJymPnQCwUNd7hjTV0JFt2nH6aTETG5L8gYdpM/b9sH2RU1eWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bb70/WIv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z4K9jQ8d"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id EC2B51F000E9;
-	Thu, 16 Jul 2026 07:26:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bb70/WIv"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2BF151F000E9;
+	Thu, 16 Jul 2026 07:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784186775;
-	bh=rSMky4NBMz4mCwwkSBWrp24PhKUMutXTZKuowSHmBVg=;
+	s=k20260515; t=1784187959;
+	bh=v5I9vyHgDl9lu88KkLOptS5YYWx8iQBQzUDlM1kZ8gM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Z4K9jQ8dZgB/nOZ3nEahhDL5jTD0H1CZ2VxGlWej1lstUdkYAtrl309g5ixYgiGm8
-	 +CrFbz2hwP+ZrZ3RnZThMzte/JhYmoGkTbB//d3A9fpHeytmb9XpMrEd8RGfK0mkEf
-	 XIW7/uNn2waLekYgKSPiE5bMsPIOI39zkBZJn5KLvUutShFiOTBdNhT1udXcpJyXBP
-	 /KqXHWhwvCqrf1LKrEA+EA/yOwS7VPAlwgFsAq519GVXVpbqXquWAyXMLAfWWj/lKM
-	 nmlCtBwa1aNafoC2TLEVCLPVUQg38RwYPN7H1f+z7SH7HR59v6HrDTgIE5ZLy1WDM7
-	 R3efJpG4DCznw==
-Date: Thu, 16 Jul 2026 09:26:12 +0200
+	b=bb70/WIvnIVqOeCbx8t7DdvU0sIQKc6bEBrF7/fZSj7XGAV7uvt/2/xFVEEBXE/P7
+	 n66etQFY4lAdtsg+lBrlJNinMLp5+h2VYc9YWxz/ss0K5OM6mBhrrspY+8nnwhytGT
+	 r+sCMYaEqxCum7qFKpD/T6bpmvqAqBiHwn6xBoM2Ef1C7Kz4QOAbPL76Zmm2XUyZCf
+	 ip4w0rSYST/I/SvYjYJ0aB0HHgVfsm/z3wUQftdzvcVOfn++3RorswMW6e/vgVFLg1
+	 zlEvVb/5MpQXj8b4ZAmM5rTGRUi45xShI22SJukEYNB5oRXcpzJFtln0T1UIV9u0we
+	 rEaHGg3qHU1Zw==
+Date: Thu, 16 Jul 2026 09:45:57 +0200
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Janne Grunau <j@jannau.net>
-Cc: Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
-	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Andi Shyti <andi.shyti@kernel.org>, Sasha Finkelstein <k@chaosmail.tech>, asahi@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-watchdog@vger.kernel.org, linux-i2c@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v2 08/10] dt-bindings: pwm: apple,s5l-fpwm: Add t6030 and
- t6031 compatibles
-Message-ID: <aliHVGRlJPHJCr0H@monoceros>
-References: <20260715-apple-t603x-initial-devices-v2-0-df65b2485710@jannau.net>
- <20260715-apple-t603x-initial-devices-v2-8-df65b2485710@jannau.net>
+To: Markus Elfring <Markus.Elfring@web.de>
+Cc: linux-pwm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, 
+	kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH 0/2] pwm: More efficient data output in pwm_dbg_show()
+Message-ID: <aliLpfmKkkwlZhzF@monoceros>
+References: <3e9f9238-a0e4-4a29-8a5b-27e4a5a0e1e2@web.de>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -49,52 +41,51 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="lnle4boaomlspvdf"
+	protocol="application/pgp-signature"; boundary="xvhehlg3kc7idy5u"
 Content-Disposition: inline
-In-Reply-To: <20260715-apple-t603x-initial-devices-v2-8-df65b2485710@jannau.net>
+In-Reply-To: <3e9f9238-a0e4-4a29-8a5b-27e4a5a0e1e2@web.de>
 
 
---lnle4boaomlspvdf
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+--xvhehlg3kc7idy5u
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 08/10] dt-bindings: pwm: apple,s5l-fpwm: Add t6030 and
- t6031 compatibles
+Subject: Re: [PATCH 0/2] pwm: More efficient data output in pwm_dbg_show()
 MIME-Version: 1.0
 
 Hello,
 
-On Wed, Jul 15, 2026 at 11:11:55AM +0200, Janne Grunau wrote:
-> The PWM controller on Apple silicon M3 Pro, Max and Ultra SoCs is
-> compatible with the t8103 (M1) one. Add "apple,t6030-fpwm" for M3 Pro
-> and "apple,t6031-fpwm" for M3 Max and Ultra as per-SoC compatibles.
+On Fri, Jun 05, 2026 at 04:22:39PM +0200, Markus Elfring wrote:
+> From: Markus Elfring <elfring@users.sourceforge.net>
+> Date: Fri, 5 Jun 2026 16:18:19 +0200
 >=20
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: Janne Grunau <j@jannau.net>
+> A few update suggestions were taken into account
+> from static source code analysis.
+>=20
+> Markus Elfring (2):
+>   Simplify data output
+>   Use seq_putc() calls
 
-The cover letter states that merging through arm-soc is preferred,
-that's fine for me. So take my
-
-Acked-by: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
-
-for this pwm patch.
+I applied the 2nd patch. I don't consider the first an improvement as
+the output isn't on a fast path and having the end-of-line separated
+=66rom the next is logically sound.
 
 Best regards
 Uwe
 
---lnle4boaomlspvdf
+--xvhehlg3kc7idy5u
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpYh5IACgkQj4D7WH0S
-/k4tSwf+Kn4gjN7dijDNgaApRD1Ut9S5RvHfCZ1SrrfJb1+Oset4/sHjEFTtfzAE
-+Ll6NBv7n3FBw268v/PeOo9+alPGYh5yXTLvJc4+Pz4w7xuBX+ijXwqQMWKPGMBn
-ntKKIVPNadlNG5oxqVHP9Kt083VUiEo+Ckeo6vx8TI+Ryd/o0/AEAlAeuTa3D7Wi
-seZhURBdkPzrS6MtqHSnJo9b79kqlB0BWt9Gtz13ZyLi3YqqhUsCsDpUwMdSO7SJ
-MjOdZRzvgiDiszs2X7bTYqzlspZl6/WHv31lLW8flKyq1YeZRWm04eVVYSGMMiIS
-GdPo3nkUTu+eZgfWTHzEl7df017HnQ==
-=7vJI
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpYjDEACgkQj4D7WH0S
+/k4ohwgAqthCEmsDIQJJAExDDhA7dfycWH+z4APfUgmjsEVthcbFTg7UDSffFFa+
+rgElAb+XeA9jrHZENJ6fiRUj3TewV/4OYbCcLLRf04GNLDel+fLUXzonocvKRvnR
+0A7UxdXdG9TJai8tuvKeQArKXxJ3q0vm6LQfhAp4YlnhDnvhrqYOM3La9RJuBp0O
+tUUU/iNPtqZXx7BooG2/dmSSxN9EapKabUmRTtLQ/qKu6GFbUssfgNuVGDaikVi0
+PUKXOObblPtB80cfNarM4qqrUmpsf0RR3BDBxI22qEFvaErqBubIiB80MMQ+jzms
+coDp9adZonUSmgeSCZnG0Mx7diznkA==
+=7An9
 -----END PGP SIGNATURE-----
 
---lnle4boaomlspvdf--
+--xvhehlg3kc7idy5u--
