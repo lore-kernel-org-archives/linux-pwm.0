@@ -1,156 +1,110 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC9113FBEBC;
-	Thu, 16 Jul 2026 15:29:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76A9B3016E1;
+	Thu, 16 Jul 2026 19:18:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784215780; cv=none; b=pEekFjq48+PahOoNpZCYMA9iv/OtYToUDk+01P6UwaIH9OiZ/6Iu2xmJ3Ru1l4kUcpiopU+je3YgBcobLUd41i6BoCRNAsP4CESQlLgE7geV0N62efBjOsnVLSAaAALzBSg2e80ZePhUG9CumabfUleQguPzEnTkj+APlFPO2Ro=
+	t=1784229497; cv=none; b=RRid2NcTZskay+JLyRXzpwySKT4so/okrMVNd8rH4qna1pqY0NeScBYTcst3wctIXy+q67eY9qw8kbv9bugKV/ipQsWBsv4RwZtxyWV82mWtuQrzGCj2PaCzGUX71buH33BVeTubaGe5yWtDheMOqcNBjW4seaPiE8gTRIXZ8EI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784215780; c=relaxed/simple;
-	bh=Tt7J5EbIB5pJt9YrW20EHTycHCeF5+1iZaVfF3urwRA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A0YB/PFD2jytbfqN9Sk6nCirj6b4UAZZNegLgYTOXE6XJnWKFWuPaJ2p1r2NdpH39d5a+wzY4mEpY234DZDb0CvKnVlGUQWWSUzkEjEX6NQ7aYGIBSLf8xnvWKOjitwbbV5Qz3ohCHhwXEmxxqyPtz8SvLHRj2WsvtyAnzVj1sU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TzEcp0g4; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784229497; c=relaxed/simple;
+	bh=9hGdsbCTkZ7KSRTrLF/K6PtcT7p+1U1ItNmWf+JSwc0=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:To:From:Subject:
+	 References:In-Reply-To; b=jpFZO9/MNm8WGFnsk7epNf+sV3ul6xa9u/7sqjW5tXVed3E3XRfw17V9PY1X1g8ZgictU0WdjXjq60jJ6TN2Mp3GZh34KCTXh5oydFPhsaZd5EMiu/X7dMaE/Px7V7qS9R/DxSdMxBmH0BVBP4RQI6g/6AIXTMIyUZ9tp1Orkp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I3GQPr0k; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TzEcp0g4"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D48871F000E9;
-	Thu, 16 Jul 2026 15:29:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I3GQPr0k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 190FA1F000E9;
+	Thu, 16 Jul 2026 19:18:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784215779;
-	bh=kyrnJ2HVNlROAH9IfoAcIDk9irdu02X3VrWYVuptvgM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=TzEcp0g4579s4xbXT2Rx/tV0OU5tUuMTvLn/8CYkJtvCTa6RRp5KkMNKul2lX9T6u
-	 lKA42fE6/hN7AJ6KxvWcgl7kr0dNbXmIEiZVyp8vr6gKzZwWglICVXvcuZ5q4LdDRt
-	 x6dtBYKBQhrqQvqs0CHWyeOqIoH459G3IBFjmmJge5mflzXtT9GKJxJSzbrjpPz3Xz
-	 vF00+v3WJNn8E0j72TGIkGxedS8BlXuo9DmGO/RO5Bvhe9J/ZTNvupzN/OvDHBRghx
-	 2xnHRtZt4LmeofU8LT1l30VuYy5OMwlIY1uvnjhdhCL3Mxb/8QKRHSTPGxLy/3DOCS
-	 JvOWgqpkNzp+g==
-Date: Thu, 16 Jul 2026 17:29:37 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Chi-Wen Weng <cwweng.linux@gmail.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, cwweng@nuvoton.com, Trevor Gamblin <tgamblin@baylibre.com>
-Subject: Re: [PATCH v4 2/2] pwm: Add Nuvoton MA35D1 PWM controller support
-Message-ID: <alj1UapHAq9f_MiF@monoceros>
-References: <20260617025925.2539334-1-cwweng.linux@gmail.com>
- <20260617025925.2539334-3-cwweng.linux@gmail.com>
+	s=k20260515; t=1784229496;
+	bh=mm3gd88M8vHvfDbkay5kKqa4Pt+DlNaxfY+bDClihtg=;
+	h=Date:Cc:To:From:Subject:References:In-Reply-To;
+	b=I3GQPr0kiybSyrJWe6zFu1hn/2Oi7ybH+Xllp0AZgCxCxtguf99L5TtUBCO7GqeGC
+	 oPQow+GJffWyt0RQ3HflSGICSMR/H6eSgmfxcTLBFGV2wH3Z4WKK3FuLIbwImGvV/l
+	 567+2xoZleLdCeeErvz7topxq9fo+m2NFlp+moZK8Qz1sKQVlxnOIuQtezVSdQvJs8
+	 QBgtsZcgmOXEfkPpllJ0h+62qI61Vn0tzV5bGj2Vt6nmD0+dxOdKB6zYVOf/vl24Co
+	 VhoGT5cKW/TorfHex+N4kkyQTcShb+vZibcozlgaxBBTdFsSlxoQ52xkgrqCfRuexM
+	 mkXK6GvaHXY4A==
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="vnwt4hsu7dtmhebl"
-Content-Disposition: inline
-In-Reply-To: <20260617025925.2539334-3-cwweng.linux@gmail.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Thu, 16 Jul 2026 21:18:05 +0200
+Message-Id: <DK08KE2A3M7K.3OQDFZB94SMFC@kernel.org>
+Cc: "Miguel Ojeda" <ojeda@kernel.org>, "Boqun Feng" <boqun@kernel.org>,
+ =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
+ <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Alice
+ Ryhl" <aliceryhl@google.com>, "Trevor Gross" <tmgross@umich.edu>, "Daniel
+ Almeida" <daniel.almeida@collabora.com>, "Tamir Duberstein"
+ <tamird@kernel.org>, "Alexandre Courbot" <acourbot@nvidia.com>,
+ =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>, "FUJITA Tomonori"
+ <fujita.tomonori@gmail.com>, "David Airlie" <airlied@gmail.com>, "Simona
+ Vetter" <simona@ffwll.ch>, "Bjorn Helgaas" <bhelgaas@google.com>,
+ =?utf-8?q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>, "Abdiel
+ Janulgue" <abdiel.janulgue@gmail.com>, "Robin Murphy"
+ <robin.murphy@arm.com>, "Dave Ertman" <david.m.ertman@intel.com>, "Ira
+ Weiny" <iweiny@kernel.org>, "Leon Romanovsky" <leon@kernel.org>, "Len
+ Brown" <lenb@kernel.org>, "Saravana Kannan" <saravanak@kernel.org>, "Drew
+ Fustini" <fustini@kernel.org>, "Guo Ren" <guoren@kernel.org>, "Fu Wei"
+ <wefu@redhat.com>, <driver-core@lists.linux.dev>,
+ <rust-for-linux@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <netdev@vger.kernel.org>, <nova-gpu@lists.linux.dev>,
+ <dri-devel@lists.freedesktop.org>, <linux-pci@vger.kernel.org>,
+ <linux-acpi@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-pm@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+ <linux-usb@vger.kernel.org>
+To: "Gary Guo" <gary@garyguo.net>, "Greg Kroah-Hartman"
+ <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ "Viresh Kumar" <viresh.kumar@linaro.org>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, "Michal Wilczynski" <m.wilczynski@samsung.com>,
+ "Igor Korotin" <igor.korotin@linux.dev>, "Rob Herring" <robh@kernel.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+Subject: Re: [PATCH v2 00/11] rust: driver: use pointers instead of indices
+ for ID info
+References: <20260629-id_info-v2-0-56fccbe9c5ef@garyguo.net>
+In-Reply-To: <20260629-id_info-v2-0-56fccbe9c5ef@garyguo.net>
 
+On Mon Jun 29, 2026 at 2:39 PM CEST, Gary Guo wrote:
+>  MAINTAINERS                           |   1 -
+>  drivers/acpi/bus.c                    |   6 +-
+>  drivers/cpufreq/rcpufreq_dt.rs        |   1 -
+>  drivers/gpu/drm/nova/driver.rs        |   1 -
+>  drivers/gpu/drm/tyr/driver.rs         |   1 -
+>  drivers/gpu/nova-core/driver.rs       |   3 +-
+>  drivers/pwm/pwm_th1520.rs             |   1 -
+>  include/acpi/acpi_bus.h               |  11 --
+>  rust/helpers/acpi.c                   |  16 ---
+>  rust/helpers/helpers.c                |   1 -
+>  rust/kernel/acpi.rs                   |  14 +--
+>  rust/kernel/auxiliary.rs              |  18 +--
+>  rust/kernel/device_id.rs              | 207 +++++++++++++++++++---------=
+------
+>  rust/kernel/driver.rs                 | 137 ++--------------------
+>  rust/kernel/i2c.rs                    |  26 ++---
+>  rust/kernel/net/phy.rs                |  66 +----------
+>  rust/kernel/of.rs                     |  14 +--
+>  rust/kernel/pci.rs                    |  25 ++--
+>  rust/kernel/platform.rs               |   5 +-
+>  rust/kernel/usb.rs                    |  24 ++--
+>  samples/rust/rust_debugfs.rs          |   1 -
+>  samples/rust/rust_dma.rs              |   3 +-
+>  samples/rust/rust_driver_auxiliary.rs |   4 +-
+>  samples/rust/rust_driver_i2c.rs       |   3 -
+>  samples/rust/rust_driver_pci.rs       |  11 +-
+>  samples/rust/rust_driver_platform.rs  |   2 -
+>  samples/rust/rust_driver_usb.rs       |   3 +-
+>  samples/rust/rust_i2c_client.rs       |   2 -
+>  samples/rust/rust_soc.rs              |   2 -
+>  29 files changed, 178 insertions(+), 431 deletions(-)
 
---vnwt4hsu7dtmhebl
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH v4 2/2] pwm: Add Nuvoton MA35D1 PWM controller support
-MIME-Version: 1.0
+I plan to pick this up soon. Please let me know in case there are any conce=
+rns
+from the acpi, i2c, of, net or usb side of things.
 
-Hello,
-
-On Wed, Jun 17, 2026 at 10:59:25AM +0800, Chi-Wen Weng wrote:
-> +#include <linux/bits.h>
-> +#include <linux/clk.h>
-> +#include <linux/io.h>
-> +#include <linux/math64.h>
-> +#include <linux/mod_devicetable.h>
-
-Please don't include that file, <linux/platform_device.h> should pull in
-the things you need from that file.
-
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +
-> +#define MA35D1_REG_PWM_CTL0			0x00
-> +#define MA35D1_REG_PWM_CTL1			0x04
-> +#define MA35D1_REG_PWM_CNTEN			0x20
-> +#define MA35D1_REG_PWM_PERIOD(ch)		(0x30 + 4 * (ch))
-> +#define MA35D1_REG_PWM_CMPDAT(ch)		(0x50 + 4 * (ch))
-> +#define MA35D1_REG_PWM_WGCTL0			0xb0
-> +#define MA35D1_REG_PWM_WGCTL1			0xb4
-> +#define MA35D1_REG_PWM_POLCTL			0xd4
-> +#define MA35D1_REG_PWM_POEN			0xd8
-> +
-> +#define MA35D1_PWM_CTL1_CNTMODE_MASK(ch)	BIT(16 + (ch))
-> +#define MA35D1_PWM_CTL1_OUTMODE_MASK(ch)	BIT(24 + ((ch) / 2))
-> +
-> +#define MA35D1_PWM_WGCTL_ACTION_MASK		0x3
-> +#define MA35D1_PWM_WGCTL_ACTION_LOW		1
-> +#define MA35D1_PWM_WGCTL_ACTION_HIGH		2
-
-If you make this:
-
-	#define MA35D1_PWM_WGCTL_ACTION(ch)		GENMASK(2 * (ch) + 2, 2 * (ch))
-	#define MA35D1_PWM_WGCTL_ACTION_LOW		1
-	#define MA35D1_PWM_WGCTL_ACTION_HIGH		2
-
-you can drop the static inlines below.
-
-> +
-> +#define MA35D1_PWM_WGCTL_ZERO_HIGH(ch)		\
-> +	(MA35D1_PWM_WGCTL_ACTION_HIGH << (2 * (ch)))
-> +#define MA35D1_PWM_WGCTL_CMP_UP_LOW(ch)		\
-> +	(MA35D1_PWM_WGCTL_ACTION_LOW << (2 * (ch)))
-> +
-> +#define MA35D1_PWM_CNTEN_EN(ch)			BIT(ch)
-> +#define MA35D1_PWM_POEN_EN(ch)			BIT(ch)
-> +#define MA35D1_PWM_POLCTL_INV(ch)		BIT(ch)
-> +
-> +#define MA35D1_PWM_MAX_CMPDAT			0xffff
-> +#define MA35D1_PWM_MAX_PERIOD			0xfffe
-> +#define MA35D1_PWM_MAX_PERIOD_CYCLES		(MA35D1_PWM_MAX_PERIOD + 1)
-
-This is irritating with similar names and different values/semantic.
-
-> +#define MA35D1_PWM_NUM_CHANNELS			6
-> +
-> [...]
-> +static int nuvoton_pwm_probe(struct platform_device *pdev)
-> +{
-> [...]
-> +	nuvoton_pwm_init(nvtpwm);
-
-This clobbers what the hardware is doing. The idea here is to not modify
-the hardware settings at probe time to keep e.g. a backlight configured
-as it was setup by the bootloader and only modify on explicit calls to
-.apply().
-
-> +
-> +	chip->ops = &nuvoton_pwm_ops;
-> +	chip->atomic = true;
-> +
-> +	ret = devm_pwmchip_add(dev, chip);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Unable to add PWM chip\n");
-> +
-> +	return 0;
-> +}
-
-Best regards
-Uwe
-
---vnwt4hsu7dtmhebl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpY+N4ACgkQj4D7WH0S
-/k6t2ggAheUc/ihnKZtwZNGhIC3uzj83mpSYNAZepbhHbkXa31Mzdnt+h/tT4sn1
-mpELBZ65mL0V6g2fFCU7ADnE4B08y6LY0Joa7gnhwJvomVpCHGaxuUz9xrz2n8Be
-77CF/uiA1qFQIJPNOSitR4XR1kUwRTJPdBCQhHbBL36a+RnLlV5+bTTQ5AEYwq5k
-ELPBKwALXAnGQE1djJ9B0o/mTAeDHtuBJTN7UTp6bOcw23cq76rjPV/PfwhhTDg8
-c63oZ/aobLfuqE/7FuSibebXh/fdI/J+IJVk5YhN7RZlwK0cLlW95CFY5zT7PtT5
-QdlmEEpZ3RU6ip0h1KUyJNiu3J4Qjg==
-=nrGB
------END PGP SIGNATURE-----
-
---vnwt4hsu7dtmhebl--
+Thanks,
+Danilo
