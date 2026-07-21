@@ -1,102 +1,95 @@
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [40.65.178.148])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6AA5348C3FA;
-	Tue, 21 Jul 2026 12:09:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=40.65.178.148
+Received: from mx1.white.stw.pengutronix.de (mx1.white.stw.pengutronix.de [185.203.200.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9F312D9EDB;
+	Tue, 21 Jul 2026 12:50:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.200.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784635789; cv=none; b=MGHOsO3MrQ9l5D+UxFaWfeXDTpvOXcT9g/LLFYBWGoIfWsfE0SEo+bTRJxM3vnU4+E5oCMGtC5mUX0cK87/tANQfUzjJUjQrTiUHAegOxx2hpqVxh8H/iXYICW9UMaPwKoXM3zygaueeavQu1OX2WkSPg3CBpFolxevms75H0Jc=
+	t=1784638239; cv=none; b=LY+03FkYGrEe1yl9U0rPe1glx48nA5XOWwpMkC3MJozTacrE8jbVcXWz0x3S/LHcfYK3kLBLd4Eg6LKvub2kFC9u2DjgGYeDgr0MNblmkeztkaQGrlfWvs4jyzV4lF6rpiLrgX8aMDUlg9EcdyvEV/ZyXVOcag6RUxOOJAQ1rAk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784635789; c=relaxed/simple;
-	bh=VU9wcl5bgqkfXzgirnXI1pGLiRirCYhJQWUHWdhnM50=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=aTS20HVIPolppLpNnlLSTNED6D9UQtDce8Cd++1oYQx9XSyT5WzAnjUuGJxG0hxPe7J0iQGbgwzqHPHN4HHr6C45RgBeQRnXyZ0aRF2l4wuTTkLD+xIwj9fEdGNk6BO+x3Ng9OJz8ng+Cgw187QBeT8dNOOhhWYn9KKcoRaCylI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=40.65.178.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eswincomputing.com
-Received: from E0005152DT.eswin.cn (unknown [10.12.96.41])
-	by app2 (Coremail) with SMTP id TQJkCgBXXZuBYV9q+1M2AA--.2768S2;
-	Tue, 21 Jul 2026 20:09:38 +0800 (CST)
-From: dongxuyang@eswincomputing.com
-To: ukleinek@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	ben-linux@fluff.org,
-	ben.dooks@codethink.co.uk,
-	linux-pwm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	p.zabel@pengutronix.de,
-	daniel.lezcano@kernel.org,
-	tglx@kernel.org
-Cc: ningyu@eswincomputing.com,
-	linmin@eswincomputing.com,
-	xuxiang@eswincomputing.com,
-	wangguosheng@eswincomputing.com,
-	pinkesh.vaghela@einfochips.com,
-	Xuyang Dong <dongxuyang@eswincomputing.com>
-Subject: [PATCH v12 4/4] dt-bindings: timer: dwc: Update resets property items
-Date: Tue, 21 Jul 2026 20:09:35 +0800
-Message-Id: <20260721120935.1359-1-dongxuyang@eswincomputing.com>
-X-Mailer: git-send-email 2.31.1.windows.1
-In-Reply-To: <20260721120757.1134-1-dongxuyang@eswincomputing.com>
+	s=arc-20240116; t=1784638239; c=relaxed/simple;
+	bh=BwwIV+5r/65HpKpyxSowPtoXfYNPnuISEkkQrDHI6NE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=dgVXSFJnXjg/xvZcY3URk7YZC4HvMCBZNTNr2IZXdjoPwuLcSBAbVY3V7rTOKkJ0fEWXHngRke+bAxCcKX63t2yZgo8WT304N8exUn+3asGuMTmumsXS7r+lnOL6FHmJ2XTr0q6f7FgYRmCmlUqjc+fUYaWWSYv6PmPMhMjzHJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.200.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de (drehscheibe.grey.stw.pengutronix.de [IPv6:2a0a:edc0:0:c01:1d::a2])
+	(Authenticated sender: relay-from-drehscheibe.grey.stw.pengutronix.de)
+	by mx1.white.stw.pengutronix.de (Postfix) with ESMTPSA id 8A0AA2017D4;
+	Tue, 21 Jul 2026 14:50:33 +0200 (CEST)
+Received: from lupine.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::4e] helo=lupine)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1wm9vd-000ZdV-1Y;
+	Tue, 21 Jul 2026 14:50:33 +0200
+Received: from pza by lupine with local (Exim 4.98.2)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1wm9vd-00000000Cjb-1cAJ;
+	Tue, 21 Jul 2026 14:50:33 +0200
+Message-ID: <08d7d89c6b373365555571d29a97b132aeb4fc0a.camel@pengutronix.de>
+Subject: Re: [PATCH v12 1/4] dt-bindings: pwm: dwc: Document optional resets
+ property
+From: Philipp Zabel <p.zabel@pengutronix.de>
+To: dongxuyang@eswincomputing.com, ukleinek@kernel.org, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, ben-linux@fluff.org, 
+	ben.dooks@codethink.co.uk, linux-pwm@vger.kernel.org,
+ devicetree@vger.kernel.org, 	linux-kernel@vger.kernel.org,
+ daniel.lezcano@kernel.org, tglx@kernel.org
+Cc: ningyu@eswincomputing.com, linmin@eswincomputing.com, 
+	xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com, 
+	pinkesh.vaghela@einfochips.com, Conor Dooley <conor.dooley@microchip.com>
+Date: Tue, 21 Jul 2026 14:50:33 +0200
+In-Reply-To: <20260721120833.1192-1-dongxuyang@eswincomputing.com>
 References: <20260721120757.1134-1-dongxuyang@eswincomputing.com>
+	 <20260721120833.1192-1-dongxuyang@eswincomputing.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2-0+deb13u1 
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:TQJkCgBXXZuBYV9q+1M2AA--.2768S2
-X-Coremail-Antispam: 1UD129KBjvJXoWruF1kZFy3Jr43ZF1fCF47CFg_yoW8JF13pF
-	WxCFs2qr93XF13X3ykJF1vka4UZF98Ar4IkF1IgwsFyFy7Ja1YqF4akryjqF43Ar4I9rW3
-	WF4xuw4Yya40yw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUBm14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-	JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-	CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-	Y2ka0xkIwI1lw4CEc2x0rVAKj4xxMxkF7I0En4kS14v26r4a6rW5MxkIecxEwVCm-wCF04
-	k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18
-	MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr4
-	1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1U
-	MIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I
-	8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjTRKtCzDUUUU
-X-CM-SenderInfo: pgrqw5xx1d0w46hv4xpqfrz1xxwl0woofrz/
 
-From: Xuyang Dong <dongxuyang@eswincomputing.com>
+On Di, 2026-07-21 at 20:08 +0800, dongxuyang@eswincomputing.com wrote:
+> From: Xuyang Dong <dongxuyang@eswincomputing.com>
+>=20
+> The DesignWare PWM IP has two active-low reset inputs: presetn resets
+> the register interface logic in the pclk (bus) domain, and
+> timer_N_resetn resets the counter/timer logic in the timer_N_clk
+> domain. The existing snps,dw-apb-timers-pwm2 binding does not
+> describe either of these lines.
+>=20
+> Add the resets property and describe the function of each reset to
+> support future use of resets.
+>=20
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Xuyang Dong <dongxuyang@eswincomputing.com>
+> ---
+>  .../devicetree/bindings/pwm/snps,dw-apb-timers-pwm2.yaml     | 5 +++++
+>  1 file changed, 5 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/snps,dw-apb-timers-pwm=
+2.yaml b/Documentation/devicetree/bindings/pwm/snps,dw-apb-timers-pwm2.yaml
+> index 7523a89a1773..213fdaef25d9 100644
+> --- a/Documentation/devicetree/bindings/pwm/snps,dw-apb-timers-pwm2.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/snps,dw-apb-timers-pwm2.yaml
+> @@ -43,6 +43,11 @@ properties:
+>        - const: bus
+>        - const: timer
+> =20
+> +  resets:
+> +    items:
+> +      - description: Interface bus (presetn) reset
+> +      - description: PWM timer logic (timer_N_resetn) reset
+> +
 
-The DesignWare DW_apb_timers IP has two active-low reset inputs:
-presetn resets the register interface logic in the pclk (bus) domain,
-and timer_N_resetn resets the counter/timer logic in the timer_N_clk
-domain. The existing snps,dw-apb-timer binding only describes one.
+I suggest adding a reset-names property. Without that the descriptions
+are useless, as driver code will not be able to control the resets
+individually.
 
-Update snps,dw-apb-timer binding to allow up to two reset lines,
-matching the hardware capabilities of the DesignWare IP family.
-
-Signed-off-by: Xuyang Dong <dongxuyang@eswincomputing.com>
----
- .../devicetree/bindings/timer/snps,dw-apb-timer.yaml         | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml b/Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml
-index d33c9205a909..4d30cd01ac65 100644
---- a/Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml
-+++ b/Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml
-@@ -25,7 +25,10 @@ properties:
-     maxItems: 1
- 
-   resets:
--    maxItems: 1
-+    minItems: 1
-+    items:
-+      - description: Timer ticks reference (timer_N_resetn) reset
-+      - description: APB interface (presetn) reset
- 
-   clocks:
-     minItems: 1
--- 
-2.34.1
-
+regards
+Philipp
