@@ -1,171 +1,87 @@
-Received: from mx1.white.stw.pengutronix.de (mx1.white.stw.pengutronix.de [185.203.200.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34CF13403F7;
-	Tue, 21 Jul 2026 13:10:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.200.13
+Received: from zg8tmja2lje4os43os4xodqa.icoremail.net (zg8tmja2lje4os43os4xodqa.icoremail.net [206.189.79.184])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE5F534BA20;
+	Wed, 22 Jul 2026 07:41:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.79.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784639419; cv=none; b=DfZagHviVBO5Y3FnrnEe3fxW6Xtb4bwV+Ywy/xKS6yXlpQPSknO2WRRzAoceEi6CA2H/g1k2k9oq54yMgbwLtg1LP2s1GJG6H9eEeVoBncSHc6gxSDYwehEVWHjXTHdLSOiPB6JJ3M7C9S+V/V/4RwVVajnXP9RJcIy/aXf+vUs=
+	t=1784706092; cv=none; b=uA8grHVJBJN1sa8z1H8kkoYycuKr3fKo7Fe06HMdByH9L5/VoJfbkEhsqm53sDVVEt9OxJMsSxOpyv0bdHFfgJ1GuNANnNX/pIH1Vyh5P6gVbjN0yRPWlwwSv5pDxeLOTWhoc68zsap6QBOuox9NgrYu+cNvaGXlz9+XHEZ+fus=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784639419; c=relaxed/simple;
-	bh=BgeAh41OqiCsVguxtZEAIFYRp1KTccsXSeYMGSINdfA=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Z2ObwxqCpl50n2507C/4xcjM5es+X5X/0WtaiApdeOK2ycyVkDdoeR8IKgqA9jJf62P2w8DTLNdMcZDrvkswE4Z5J72jsYM88dGUmKykTVQG5n6pCeO7ZO22WikW83W1MkYakTeuAeGUk3CClT2R2SOGVO3Cu8jGZADw4KEjsck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.200.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de (drehscheibe.grey.stw.pengutronix.de [IPv6:2a0a:edc0:0:c01:1d::a2])
-	(Authenticated sender: relay-from-drehscheibe.grey.stw.pengutronix.de)
-	by mx1.white.stw.pengutronix.de (Postfix) with ESMTPSA id 1644A202994;
-	Tue, 21 Jul 2026 15:10:13 +0200 (CEST)
-Received: from lupine.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::4e] helo=lupine)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <p.zabel@pengutronix.de>)
-	id 1wmAEe-000Zxz-3C;
-	Tue, 21 Jul 2026 15:10:13 +0200
-Received: from pza by lupine with local (Exim 4.98.2)
-	(envelope-from <p.zabel@pengutronix.de>)
-	id 1wmAEe-00000000DgW-3fDo;
-	Tue, 21 Jul 2026 15:10:12 +0200
-Message-ID: <f7b1c5f1594c99e662d0033dc002ff1a46f17107.camel@pengutronix.de>
-Subject: Re: [PATCH v12 3/4] pwm: dwc: add of/platform support
-From: Philipp Zabel <p.zabel@pengutronix.de>
-To: dongxuyang@eswincomputing.com, ukleinek@kernel.org, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org, ben-linux@fluff.org, 
-	ben.dooks@codethink.co.uk, linux-pwm@vger.kernel.org,
- devicetree@vger.kernel.org, 	linux-kernel@vger.kernel.org,
- daniel.lezcano@kernel.org, tglx@kernel.org
-Cc: ningyu@eswincomputing.com, linmin@eswincomputing.com, 
-	xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com, 
-	pinkesh.vaghela@einfochips.com
-Date: Tue, 21 Jul 2026 15:10:12 +0200
-In-Reply-To: <20260721120905.1302-1-dongxuyang@eswincomputing.com>
+	s=arc-20240116; t=1784706092; c=relaxed/simple;
+	bh=72bcOySU+qcp0rVUzo5OLqZ5guS5TZ3U+1yM97Ebweo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=Ty/BR9NCoUuqPNXBkEnPvuO8W+NFAzPsU2pGRwdw/OYEMaucKKGBBD8L7q3aajUB3naxRU0lugpQSrTDAqpGq33GFDxyMJ6UBC4kOl1Nz+fVJIAf53xZKJ/EZ2btwOS0M7Y7c4zRpNBaeaohKhpTXpUKlnFROu233GEdyi/pTJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=206.189.79.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eswincomputing.com
+Received: from dongxuyang$eswincomputing.com ( [10.12.96.41] ) by
+ ajax-webmail-app2 (Coremail) ; Wed, 22 Jul 2026 15:41:12 +0800 (GMT+08:00)
+Date: Wed, 22 Jul 2026 15:41:12 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From: "Xuyang Dong" <dongxuyang@eswincomputing.com>
+To: "Philipp Zabel" <p.zabel@pengutronix.de>, ukleinek@kernel.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	ben-linux@fluff.org, ben.dooks@codethink.co.uk,
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, daniel.lezcano@kernel.org,
+	tglx@kernel.org
+Cc: ningyu@eswincomputing.com, linmin@eswincomputing.com,
+	xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com,
+	pinkesh.vaghela@einfochips.com,
+	"Conor Dooley" <conor.dooley@microchip.com>
+Subject: Re: Re: [PATCH v12 1/4] dt-bindings: pwm: dwc: Document optional
+ resets property
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2024.2-cmXT6 build
+ 20241203(6b039d88) Copyright (c) 2002-2026 www.mailtech.cn
+ mispb-72143050-eaf5-4703-89e0-86624513b4ce-eswincomputing.com
+In-Reply-To: <08d7d89c6b373365555571d29a97b132aeb4fc0a.camel@pengutronix.de>
 References: <20260721120757.1134-1-dongxuyang@eswincomputing.com>
-	 <20260721120905.1302-1-dongxuyang@eswincomputing.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2-0+deb13u1 
+ <20260721120833.1192-1-dongxuyang@eswincomputing.com>
+ <08d7d89c6b373365555571d29a97b132aeb4fc0a.camel@pengutronix.de>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Message-ID: <74db8e52.8900.19f88c57dd0.Coremail.dongxuyang@eswincomputing.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:TQJkCgA3TJ8YdGBqOII2AA--.7724W
+X-CM-SenderInfo: pgrqw5xx1d0w46hv4xpqfrz1xxwl0woofrz/1tbiAQEQAmpfnycZA
+	wACsH
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
+	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+	daVFxhVjvjDU=
 
-On Di, 2026-07-21 at 20:09 +0800, dongxuyang@eswincomputing.com wrote:
-> From: Xuyang Dong <dongxuyang@eswincomputing.com>
->=20
-> The dwc pwm controller can be used in non-PCI systems, so allow
-> either platform or OF based probing.
->=20
-> The controller is reset only when no PWM channel is enabled.
-> Otherwise, clocks are enabled and the runtime PM state is updated
-> to reflect the active hardware configuration.
->=20
-> The DWC PWM controller does not provide a hardware polarity bit.
-> Currently, the driver only supports active-low output, which is
-> incompatible with devices requiring active-high waveforms (e.g.,
-> backlight controllers, fan speed regulators).
->=20
-> Implement polarity control by exploiting the timer's dual load
-> registers. The hardware uses:
-> - LD_CNT:  LOW period count
-> - LD_CNT2: HIGH period count
->=20
-> The total period is defined as (LD_CNT + LD_CNT2). By swapping the
-> duty cycle between these registers, we invert the polarity while
-> keeping the period unchanged:
-> - PWM_POLARITY_NORMAL:  write duty_cycle to LD_CNT2 (HIGH period)
-> - PWM_POLARITY_INVERSED: write duty_cycle to LD_CNT  (LOW period)
->=20
-> Implementation:
-> Update both apply() and get_state() to handle state->polarity
-> consistently. Since the hardware does not store polarity, get_state()
-> returns the last successfully applied software state, ensuring that
-> read-back matches what was originally set.
->=20
-> Co-developed-by: Ben Dooks <ben.dooks@codethink.co.uk>
-> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
-> Signed-off-by: Xiang Xu <xuxiang@eswincomputing.com>
-> Signed-off-by: Guosheng Wang <wangguosheng@eswincomputing.com>
-> Signed-off-by: Xuyang Dong <dongxuyang@eswincomputing.com>
-> ---
->  drivers/pwm/Kconfig        |  10 ++
->  drivers/pwm/Makefile       |   1 +
->  drivers/pwm/pwm-dwc-core.c | 172 ++++++++++++++++----
->  drivers/pwm/pwm-dwc-of.c   | 312 +++++++++++++++++++++++++++++++++++++
->  drivers/pwm/pwm-dwc.h      |  25 ++-
->  5 files changed, 481 insertions(+), 39 deletions(-)
->  create mode 100644 drivers/pwm/pwm-dwc-of.c
->=20
-[...]
-> diff --git a/drivers/pwm/pwm-dwc-of.c b/drivers/pwm/pwm-dwc-of.c
-> new file mode 100644
-> index 000000000000..460863549274
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-dwc-of.c
-> @@ -0,0 +1,312 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * DesignWare PWM Controller driver OF
-> + *
-> + * Copyright (C) 2026 SiFive, Inc.
-> + */
-> +
-> +#define DEFAULT_SYMBOL_NAMESPACE "dwc_pwm_of"
-> +
-> +#include <linux/clk.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/pwm.h>
-> +#include <linux/reset.h>
-> +
-> +#include "pwm-dwc.h"
-> +
-> +struct dwc_pwm_plat_data {
-> +	bool reset_required;
-
-This is not needed.
-
-> +};
-> +
-> +static int dwc_pwm_plat_probe(struct platform_device *pdev)
-> +{
-[...]
-> +	pdata =3D device_get_match_data(dev);
-> +	if (pdata && pdata->reset_required)
-> +		dwc->rst =3D devm_reset_control_get_exclusive(dev, NULL);
-> +	else
-> +		dwc->rst =3D devm_reset_control_array_get_optional_exclusive(dev);
-
-Please drop reset_required from pdata and just use
-
-	dwc->rst =3D devm_reset_control_array_get_optional_exclusive(dev);
-
-That works for a single reset as well.
-
-Device tree validation already makes sure required reset controls are
-present. There is no need handle this in the driver as a special case.
-
-> +
-> +	if (IS_ERR(dwc->rst))
-> +		return dev_err_probe(dev, PTR_ERR(dwc->rst),
-> +				     "failed to get reset control\n");
-> +
-> +	ret =3D clk_prepare_enable(dwc->bus_clk);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +				     "failed to enable bus clock\n");
-> +
-> +	ret =3D clk_prepare_enable(dwc->clk);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable timer clock\n");
-
-		dev_err_probe(dev, "failed to enable timer clock\n");
-
-prints the actual error. Same for other dev_err()s in the probe
-function.
-
-regards
-Philipp
+PiAKPiBPbiBEaSwgMjAyNi0wNy0yMSBhdCAyMDowOCArMDgwMCwgZG9uZ3h1eWFuZ0Blc3dpbmNv
+bXB1dGluZy5jb20gd3JvdGU6Cj4gPiBGcm9tOiBYdXlhbmcgRG9uZyA8ZG9uZ3h1eWFuZ0Blc3dp
+bmNvbXB1dGluZy5jb20+Cj4gPiAKPiA+IFRoZSBEZXNpZ25XYXJlIFBXTSBJUCBoYXMgdHdvIGFj
+dGl2ZS1sb3cgcmVzZXQgaW5wdXRzOiBwcmVzZXRuIHJlc2V0cwo+ID4gdGhlIHJlZ2lzdGVyIGlu
+dGVyZmFjZSBsb2dpYyBpbiB0aGUgcGNsayAoYnVzKSBkb21haW4sIGFuZAo+ID4gdGltZXJfTl9y
+ZXNldG4gcmVzZXRzIHRoZSBjb3VudGVyL3RpbWVyIGxvZ2ljIGluIHRoZSB0aW1lcl9OX2Nsawo+
+ID4gZG9tYWluLiBUaGUgZXhpc3Rpbmcgc25wcyxkdy1hcGItdGltZXJzLXB3bTIgYmluZGluZyBk
+b2VzIG5vdAo+ID4gZGVzY3JpYmUgZWl0aGVyIG9mIHRoZXNlIGxpbmVzLgo+ID4gCj4gPiBBZGQg
+dGhlIHJlc2V0cyBwcm9wZXJ0eSBhbmQgZGVzY3JpYmUgdGhlIGZ1bmN0aW9uIG9mIGVhY2ggcmVz
+ZXQgdG8KPiA+IHN1cHBvcnQgZnV0dXJlIHVzZSBvZiByZXNldHMuCj4gPiAKPiA+IEFja2VkLWJ5
+OiBDb25vciBEb29sZXkgPGNvbm9yLmRvb2xleUBtaWNyb2NoaXAuY29tPgo+ID4gU2lnbmVkLW9m
+Zi1ieTogWHV5YW5nIERvbmcgPGRvbmd4dXlhbmdAZXN3aW5jb21wdXRpbmcuY29tPgo+ID4gLS0t
+Cj4gPiAgLi4uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL3NucHMsZHctYXBiLXRpbWVycy1wd20y
+LnlhbWwgICAgIHwgNSArKysrKwo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKykK
+PiA+IAo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9w
+d20vc25wcyxkdy1hcGItdGltZXJzLXB3bTIueWFtbCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9wd20vc25wcyxkdy1hcGItdGltZXJzLXB3bTIueWFtbAo+ID4gaW5kZXggNzUy
+M2E4OWExNzczLi4yMTNmZGFlZjI1ZDkgMTAwNjQ0Cj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2Rl
+dmljZXRyZWUvYmluZGluZ3MvcHdtL3NucHMsZHctYXBiLXRpbWVycy1wd20yLnlhbWwKPiA+ICsr
+KyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vc25wcyxkdy1hcGItdGlt
+ZXJzLXB3bTIueWFtbAo+ID4gQEAgLTQzLDYgKzQzLDExIEBAIHByb3BlcnRpZXM6Cj4gPiAgICAg
+ICAgLSBjb25zdDogYnVzCj4gPiAgICAgICAgLSBjb25zdDogdGltZXIKPiA+ICAKPiA+ICsgIHJl
+c2V0czoKPiA+ICsgICAgaXRlbXM6Cj4gPiArICAgICAgLSBkZXNjcmlwdGlvbjogSW50ZXJmYWNl
+IGJ1cyAocHJlc2V0bikgcmVzZXQKPiA+ICsgICAgICAtIGRlc2NyaXB0aW9uOiBQV00gdGltZXIg
+bG9naWMgKHRpbWVyX05fcmVzZXRuKSByZXNldAo+ID4gKwo+IAo+IEkgc3VnZ2VzdCBhZGRpbmcg
+YSByZXNldC1uYW1lcyBwcm9wZXJ0eS4gV2l0aG91dCB0aGF0IHRoZSBkZXNjcmlwdGlvbnMKPiBh
+cmUgdXNlbGVzcywgYXMgZHJpdmVyIGNvZGUgd2lsbCBub3QgYmUgYWJsZSB0byBjb250cm9sIHRo
+ZSByZXNldHMKPiBpbmRpdmlkdWFsbHkuCj4gCgpIaSBQaGlsaXBwLAoKV2Ugd2lsbCBhZGQgYSBy
+ZXNldC1uYW1lcyBwcm9wZXJ0eSBhcyBmb2xsb3dzOgogIHJlc2V0LW5hbWVzOgogICAgaXRlbXM6
+CiAgICAgIC0gY29uc3Q6IGJ1cwogICAgICAtIGNvbnN0OiB0aW1lcgoKSXMgdGhpcyBhY2NlcHRh
+YmxlIGluIHlvdXIgb3Bpbmlvbj8KCkJlc3QgcmVnYXJkcywKWHV5YW5nIERvbmcKCg==
