@@ -1,98 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70EB03A4F51;
-	Thu, 23 Jul 2026 06:10:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3887C3E638E;
+	Thu, 23 Jul 2026 07:19:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.237.72.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784787011; cv=none; b=MHU0gCjvvoOzthBx9Unut4X2QbL93zPFzZJ5vGscWQTRh0j7sqxyd29CxxVWG+0SAZNg6Nz6CQzRHEwVZowxxQIOTpDR8m073ZvFLqSaTN80HohBNhPusivn9RPxIvcr7Qo3H97ND03tnHB496C6QYSQ7mq4zyPjVlYdARR8R9U=
+	t=1784791150; cv=none; b=Ih84C+6MGif5eG4NW/RYzZySsUl2bj+4R3uS8m0Zjoio94sMQvBOJTLVxMnLc9HG+ab3ob0KRwHH9pc7UEhnTsToL9Rqn7rCEAPjdMDruN2cLxf/LBfQu5NJ2flPkjfjPxE6I6lRlCLRYTJ1nvGbvIuWMJglClF6BJyrAHUuA+E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784787011; c=relaxed/simple;
-	bh=WhdBv1DD+mg8/k0SjVnmTU+YiCvCDK2j13HmKpzYk4M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ORw8XovwQOU4bW3ZGudb7dAB7K6/EfNms0bdui8dc3O/T7oRia7KzgRJpm5uVBX6iOh0cAA9/A7sq2ofF21R6gSsk5dZqFr7FltYtidJAwDveCw0T4kKcrgnwLCqvHiTLQaV8VjKr/c39jEXVEaOJvLhX8ld0z2WCT1eg4BYgVw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RerGSwqV; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RerGSwqV"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4A4D21F000E9;
-	Thu, 23 Jul 2026 06:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784787009;
-	bh=WhdBv1DD+mg8/k0SjVnmTU+YiCvCDK2j13HmKpzYk4M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=RerGSwqV8+JnsPhEugS7MoSqBzg2xH4sSz1Uw3XCOePOpKaGvz/lP4t+ZXHPC93SA
-	 7D+BGiD56Hgf/sCPeZOVQ5MzihhBo2/Tcb0KKZ5rTly91FqNLUJ4shWH+lcVSTC46w
-	 KBfZ7q+qGMrJeGJyhBoKRNbdFdmKxTPqNLxMGg1mNrPw3SSPvFchdpDysmnPfmqqyd
-	 9PZ6CEywwF+4WBCyhjAVsKiZWW/oputlml4M15qUg7Ba0287qu8UW8K/j6XSYU2zY0
-	 q/fq308ylzykregTrmKcOaLiJUu5XRK5ilvMh0PFquXhZQ/nU/nOpN3SWFkXlIpbiv
-	 ONyeT0lcrv0rA==
-Date: Thu, 23 Jul 2026 08:10:07 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc: Guenter Roeck <linux@roeck-us.net>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Chris Packham <chris.packham@alliedtelesis.co.nz>, Andrew Morton <akpm@linux-foundation.org>, 
-	"Darrick J. Wong" <djwong@us.ibm.com>, linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v2 1/6] dt-bindings: hwmon: add binding for adi,adt7470
-Message-ID: <amGvR3VwfDN1Gi0Q@monoceros>
-References: <20260717-adt7470_thermalzone-v2-0-a55147958fad@gmail.com>
- <20260717-adt7470_thermalzone-v2-1-a55147958fad@gmail.com>
- <20260720-placid-fanatic-shrimp-d2bcd2@quoll>
- <a8fba49c-bb72-4b3b-b598-4972304e0b4c@roeck-us.net>
- <CAJq09z6qQnKXgBnQKCey4u47hsJTjpYXPDvDZj76sXHZuj2emQ@mail.gmail.com>
+	s=arc-20240116; t=1784791150; c=relaxed/simple;
+	bh=dMAdzToKFPGD/OmPpVg55Al3PdlH1mGRE5jm6xVqqvM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=P0WELNP7LzR/CT6aTM/JSs4mUGkFqMcJL9xn+3o+EGvzlGgcFvzdm0SU+Vdn/pFOqLW58kgPrM83WtXaX4eEGD2tdFN3NCy8mIQa15LCUzwhVBn27DHQs4T5AbsfM0AywtawG7v9IdMIEwk/Q0MSchrZvhYjFPOrimsfkE0ZHRk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=52.237.72.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eswincomputing.com
+Received: from dongxuyang$eswincomputing.com ( [10.12.96.41] ) by
+ ajax-webmail-app2 (Coremail) ; Thu, 23 Jul 2026 15:18:31 +0800 (GMT+08:00)
+Date: Thu, 23 Jul 2026 15:18:31 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From: "Xuyang Dong" <dongxuyang@eswincomputing.com>
+To: sashiko-reviews@lists.linux.dev
+Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, ben-linux@fluff.org, ben.dooks@codethink.co.uk,
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+	daniel.lezcano@kernel.org, tglx@kernel.org,
+	ningyu@eswincomputing.com, linmin@eswincomputing.com,
+	xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com,
+	pinkesh.vaghela@einfochips.com,
+	"Xuyang Dong" <dongxuyang@eswincomputing.com>
+Subject: Re: Re: [PATCH v12 4/4] dt-bindings: timer: dwc: Update resets
+ property items
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2024.2-cmXT6 build
+ 20241203(6b039d88) Copyright (c) 2002-2026 www.mailtech.cn
+ mispb-72143050-eaf5-4703-89e0-86624513b4ce-eswincomputing.com
+In-Reply-To: <20260721122141.D3A9C1F00A3D@smtp.kernel.org>
+References: <20260721120757.1134-1-dongxuyang@eswincomputing.com>
+ <20260721120935.1359-1-dongxuyang@eswincomputing.com>
+ <20260721122141.D3A9C1F00A3D@smtp.kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="cll6tmmlhnoabstr"
-Content-Disposition: inline
-In-Reply-To: <CAJq09z6qQnKXgBnQKCey4u47hsJTjpYXPDvDZj76sXHZuj2emQ@mail.gmail.com>
+Message-ID: <26588538.89e6.19f8dd71564.Coremail.dongxuyang@eswincomputing.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:TQJkCgAnPJ9HwGFq+6w2AA--.7857W
+X-CM-SenderInfo: pgrqw5xx1d0w46hv4xpqfrz1xxwl0woofrz/1tbiAgERAmpg8RwXw
+	QAAsh
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+	daVFxhVjvjDU=
 
-
---cll6tmmlhnoabstr
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH v2 1/6] dt-bindings: hwmon: add binding for adi,adt7470
-MIME-Version: 1.0
-
-Hi Luiz,
-
-On Mon, Jul 20, 2026 at 11:12:49PM -0300, Luiz Angelo Daros de Luca wrote:
-> Initially, I modeled the driver purely as a cooling device. However,
-> following Sashiko-dev's suggestion in a previous review, I converted
-> it to expose PWM channels so it could be used with the generic pwm-fan
-> driver (which indeed makes the code cleaner). My primary experience is
-> with DSA switches, so hwmon is a new area for me.
-
-I like the driver exposing a generic PWM. For me it's quite in line with
-the "Linux spirit" to do things with devices that are possible even if
-that doesn't figure in the vendor's scheme.
-
-> Whatever you and the DT maintainers agree on, I will gladly adjust for v3.
-
-But my opinion doesn't count ... :-)
-
-Best regards
-Uwe
-
---cll6tmmlhnoabstr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmphsDwACgkQj4D7WH0S
-/k7lqwf/Xq1hrcclNjopIUHYjq/ZmsRHMQe7JInwuovR5K1IvCOWdwrNpO1kvf34
-MBP6lKRJPnSHpti2MrCXjqjaapLM2p55UQkLv2VYa4tYPHYnFYo4XAMFIYlSFJJI
-9Im1yTxJmDM/jdk/taH6fimsu2ZOa9WLbz/2odo0XPVp/CeZqDyNofFGBDj8vmHC
-Du66lLvLGRfbSUwv5flPopsJwL83jgiDzx/wDWadW6+M3oUVKh2LUIkjOjz6tthH
-Wv2rEHQWRWZmf4cKJTOk69/VDovOtpelthr+1mZhkBmd/LYXID4O/ULmeUPg/GcP
-ob+Uxidpj3bmhTls6SZK4u0gs5lZgg==
-=PJzl
------END PGP SIGNATURE-----
-
---cll6tmmlhnoabstr--
+PiAKPiBUaGFuayB5b3UgZm9yIHlvdXIgY29udHJpYnV0aW9uISBTYXNoaWtvIEFJIHJldmlldyBm
+b3VuZCAxIHBvdGVudGlhbCBpc3N1ZShzKSB0byBjb25zaWRlcjoKPiAtIFtIaWdoXSBUaGUgdGlt
+ZXIgZHJpdmVyIGlnbm9yZXMgdGhlIG5ld2x5IGRvY3VtZW50ZWQgQVBCIGludGVyZmFjZSByZXNl
+dCAoYHByZXNldG5gKSwgbGVhZGluZyB0byBzeXN0ZW0gaGFuZ3MgaWYgc3BlY2lmaWVkLgo+IC0t
+Cj4gCj4gLS0tIFBhdGNoIFs0XTogW1BBVENIIHYxMiA0LzRdIGR0LWJpbmRpbmdzOiB0aW1lcjog
+ZHdjOiBVcGRhdGUgcmVzZXRzIHByb3BlcnR5IGl0ZW1zIC0tLQo+IGNvbW1pdCAwMjk4YWZjYzA4
+ZmNlZGM4OTk5NjE5MzU2ZTAwMDE3ZmY0NTAyMDNkCj4gQXV0aG9yOiBYdXlhbmcgRG9uZyA8ZG9u
+Z3h1eWFuZ0Blc3dpbmNvbXB1dGluZy5jb20+Cj4gCj4gZHQtYmluZGluZ3M6IHRpbWVyOiBkd2M6
+IFVwZGF0ZSByZXNldHMgcHJvcGVydHkgaXRlbXMKPiAKPiBUaGlzIGNvbW1pdCB1cGRhdGVzIHRo
+ZSBzbnBzLGR3LWFwYi10aW1lciBiaW5kaW5nIHRvIGFsbG93IHVwIHRvIHR3byByZXNldAo+IGxp
+bmVzLiBJdCBzcGVjaWZpY2FsbHkgZG9jdW1lbnRzIHRoZSB0aW1lcl9OX3Jlc2V0biBhbmQgcHJl
+c2V0biByZXNldCBpbnB1dHMKPiB0byBtYXRjaCB0aGUgaGFyZHdhcmUgY2FwYWJpbGl0aWVzIG9m
+IHRoZSBEZXNpZ25XYXJlIElQIGZhbWlseS4KPiAKPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0
+aW9uL2RldmljZXRyZWUvYmluZGluZ3MvdGltZXIvc25wcyxkdy1hcGItdGltZXIueWFtbCBiL0Rv
+Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy90aW1lci9zbnBzLGR3LWFwYi10aW1lci55
+YW1sCj4gPiBpbmRleCBkMzNjOTIwNWE5MDkzLi40ZDMwY2QwMWFjNjVmIDEwMDY0NAo+ID4gLS0t
+IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3RpbWVyL3NucHMsZHctYXBiLXRp
+bWVyLnlhbWwKPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy90aW1l
+ci9zbnBzLGR3LWFwYi10aW1lci55YW1sCj4gPiBAQCAtMjUsNyArMjUsMTAgQEAgcHJvcGVydGll
+czoKPiA+ICAgICAgbWF4SXRlbXM6IDEKPiA+ICAKPiA+ICAgIHJlc2V0czoKPiA+IC0gICAgbWF4
+SXRlbXM6IDEKPiA+ICsgICAgbWluSXRlbXM6IDEKPiA+ICsgICAgaXRlbXM6Cj4gPiArICAgICAg
+LSBkZXNjcmlwdGlvbjogVGltZXIgdGlja3MgcmVmZXJlbmNlICh0aW1lcl9OX3Jlc2V0bikgcmVz
+ZXQKPiA+ICsgICAgICAtIGRlc2NyaXB0aW9uOiBBUEIgaW50ZXJmYWNlIChwcmVzZXRuKSByZXNl
+dAo+IAo+IFtTZXZlcml0eTogSGlnaF0KPiBXaWxsIHRoaXMgY2F1c2UgYSBzeXN0ZW0gYnVzIGhh
+bmcgaWYgYSBkZXZpY2UgdHJlZSBpcyB1cGRhdGVkIHRvIHNwZWNpZnkKPiBib3RoIHJlc2V0cz8K
+PiAKPiBMb29raW5nIGF0IHRpbWVyX2dldF9iYXNlX2FuZF9yYXRlKCkgaW4KPiBkcml2ZXJzL2Ns
+b2Nrc291cmNlL2R3X2FwYl90aW1lcl9vZi5jLCB0aGUgZHJpdmVyIHVuY29uZGl0aW9uYWxseSBm
+ZXRjaGVzCj4gYW5kIGRlYXNzZXJ0cyBvbmx5IHRoZSBmaXJzdCByZXNldCBieSBwYXNzaW5nIE5V
+TEwgYXMgdGhlIGlkOgo+IAo+IGRyaXZlcnMvY2xvY2tzb3VyY2UvZHdfYXBiX3RpbWVyX29mLmM6
+dGltZXJfZ2V0X2Jhc2VfYW5kX3JhdGUoKSB7Cj4gICAgIC4uLgo+IAkvKgo+IAkgKiBSZXNldCB0
+aGUgdGltZXIgaWYgdGhlIHJlc2V0IGNvbnRyb2wgaXMgYXZhaWxhYmxlLCB3aXBpbmcKPiAJICog
+b3V0IHRoZSBzdGF0ZSB0aGUgZmlybXdhcmUgbWF5IGhhdmUgbGVmdCBpdAo+IAkgKi8KPiAJcnN0
+YyA9IG9mX3Jlc2V0X2NvbnRyb2xfZ2V0KG5wLCBOVUxMKTsKPiAJaWYgKCFJU19FUlIocnN0Yykp
+IHsKPiAJCXJlc2V0X2NvbnRyb2xfYXNzZXJ0KHJzdGMpOwo+IAkJcmVzZXRfY29udHJvbF9kZWFz
+c2VydChyc3RjKTsKPiAJfQo+ICAgICAuLi4KPiB9Cj4gCj4gSWYgdGhlIGRldmljZSB0cmVlIHNw
+ZWNpZmllcyBib3RoIHJlc2V0cyB0byBtYXRjaCB0aGlzIG5ld2x5IGFkZGVkIHNjaGVtYQo+IGNh
+cGFiaWxpdHksIHRoZSBzZWNvbmQgcmVzZXQgKHByZXNldG4sIHdoaWNoIGNvbnRyb2xzIHRoZSBB
+UEIgYnVzIGludGVyZmFjZSkKPiB3aWxsIGJlIGNvbXBsZXRlbHkgaWdub3JlZCBhbmQgbGVmdCBh
+c3NlcnRlZC4KPiAKPiBTaG91bGQgdGhlIGRyaXZlciBiZSB1cGRhdGVkIHRvIGV4cGxpY2l0bHkg
+ZmV0Y2ggYW5kIGRlYXNzZXJ0IGJvdGggcmVzZXRzCj4gKGUuZy4sIHZpYSByZXNldF9jb250cm9s
+X2J1bGtfZ2V0KSBiZWZvcmUgZXh0ZW5kaW5nIHRoZSBiaW5kaW5nLCB0byBhdm9pZAo+IHN5c3Rl
+bSBoYW5ncyB3aGVuIG1lbW9yeS1tYXBwZWQgcmVnaXN0ZXJzIGFyZSBhY2Nlc3NlZD8KPiAKCkhp
+IFNhc2hpa28sCgpJbiB0aGUgbmV4dCB2ZXJzaW9uLCByZXBsYWNlIG9mX3Jlc2V0X2NvbnRyb2xf
+Z2V0KCkgd2l0aMKgCm9mX3Jlc2V0X2NvbnRyb2xfYXJyYXlfZ2V0X29wdGlvbmFsX2V4Y2x1c2l2
+ZSgpIHRvIGVuc3VyZSBhbGwgcmVzZXRzwqAKY2FuIGJlIGRlYXNzZXJ0ZWQuCgpCZXN0IHJlZ2Fy
+ZHMsClh1eWFuZyBEb25nCgo+ID4gIAo+ID4gICAgY2xvY2tzOgo+ID4gICAgICBtaW5JdGVtczog
+MQo+IAo+IC0tIAo+IFNhc2hpa28gQUkgcmV2aWV3IMK3IGh0dHBzOi8vc2FzaGlrby5kZXYvIy9w
+YXRjaHNldC8yMDI2MDcyMTEyMDc1Ny4xMTM0LTEtZG9uZ3h1eWFuZ0Blc3dpbmNvbXB1dGluZy5j
+b20/cGFydD00Cg==
