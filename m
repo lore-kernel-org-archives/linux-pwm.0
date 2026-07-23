@@ -1,130 +1,148 @@
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [4.193.249.245])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA77F470130;
-	Wed, 22 Jul 2026 07:41:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=4.193.249.245
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784706114; cv=none; b=OeJXnwUaDsOsgEEospd85xT4ThpG/7/jzYmozRYcUiE5wf3BBsGiL5IM7wglHR3BVwVXpQhy1g17WBZOayxG5vWdPFWusL252GWl7fyynQ7facJyZOsRLV5jkgjct/oVFJ31JoMabI3VSrTz+IW+vOHcMyjYCen8yCzZSKT8lfE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784706114; c=relaxed/simple;
-	bh=W5k8AX3lC4gT5LlgfgfgGE9RF1oCLsrKvFkAMlSTIEI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=Ur8FLKbn/yhvAJS/2d+Cn8La/v2JRbK6D5B05Y2bdrRbDtWj1sre+b+U6pT/id235QPM7R25xCMjucZDnAIrvBOSHowGJ6bYpJOPaVDLmQUrSyXqN+FkB41xgV5LLSasW9pjxWuFy3ROcB3N9TW9wyogd3mymkA3kx9cPl+NeXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=4.193.249.245
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eswincomputing.com
-Received: from dongxuyang$eswincomputing.com ( [10.12.96.41] ) by
- ajax-webmail-app2 (Coremail) ; Wed, 22 Jul 2026 15:41:35 +0800 (GMT+08:00)
-Date: Wed, 22 Jul 2026 15:41:35 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From: "Xuyang Dong" <dongxuyang@eswincomputing.com>
-To: "Philipp Zabel" <p.zabel@pengutronix.de>, ukleinek@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	ben-linux@fluff.org, ben.dooks@codethink.co.uk,
-	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, daniel.lezcano@kernel.org,
-	tglx@kernel.org
-Cc: ningyu@eswincomputing.com, linmin@eswincomputing.com,
-	xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com,
-	pinkesh.vaghela@einfochips.com
-Subject: Re: Re: [PATCH v12 3/4] pwm: dwc: add of/platform support
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2024.2-cmXT6 build
- 20241203(6b039d88) Copyright (c) 2002-2026 www.mailtech.cn
- mispb-72143050-eaf5-4703-89e0-86624513b4ce-eswincomputing.com
-In-Reply-To: <f7b1c5f1594c99e662d0033dc002ff1a46f17107.camel@pengutronix.de>
-References: <20260721120757.1134-1-dongxuyang@eswincomputing.com>
- <20260721120905.1302-1-dongxuyang@eswincomputing.com>
- <f7b1c5f1594c99e662d0033dc002ff1a46f17107.camel@pengutronix.de>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42EF242A96
+	for <linux-pwm@vger.kernel.org>; Thu, 23 Jul 2026 02:48:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784774914; cv=pass; b=CzhxbXNuhHjAduTlc3r7TyFf5EhFhXa7hmccK1+BP2dlpa8IYvMzqYNfdUB58NGPieCH2+M9nkF/iyVUwEdeNbLb/aIeb85hDLTwi9RejGTZoS7NVl+I+IZrMxl9U7uM0xhrn2wDHvOwavQE/wnGiOSW88+0MTrtE9kyjg0J4Uc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784774914; c=relaxed/simple;
+	bh=ke7GuAFVu437cGSyxYRHXKBdtjCTY1U8R29Cxj1Ke88=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CgG6Kff48QO2m1yId3ZuHNRTKbhuIHhSJXvExicet9oLgVPSDxr5xwWtFrHlMpxxSOUUFox+R77baZfuJ09AHXENiF3X6ljXKbCtT7UmdAEJNfSezh1HrFgiIbNPkC5qZtgx74gZ1FUEAeC9i65/2bIEXDUUWwR9Of+SwhqdYWI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g/naGK3a; arc=pass smtp.client-ip=209.85.218.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g/naGK3a"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-c1670dad7a8so28937866b.3
+        for <linux-pwm@vger.kernel.org>; Wed, 22 Jul 2026 19:48:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784774911; cv=none;
+        d=google.com; s=arc-20260327;
+        b=D7G4CjOeFLXXR0+D4rF60ICeHRrHe8jaMrxC5uSJAeVZomrN5PbIZrOSfZ1b7JIAl7
+         0X4LCzzOU0MIF/pxpkmWoRDLFY8cmSvo5GPMnHlkEwiGm0w2nj9EdFURsgjLOPoaIRrM
+         qdCeKHwJPwtxMf54xIgm3FOMRSEM/olxjV4Q+koBV/4+qa7Li/vBjdEoHkYVcDwOIE7l
+         FNjgtmiTU9UhCS+rkPgeJrJcX8qhe2k7tYYNan1/FE9n/pigVYLzkdkqeoJi+Mcbq/sw
+         VFOCKES5j5HdMR9ETQAVh54rVm3Gb/tYZDASZsHHKA5qWbmvOGprYzcCGrEh2RqXpc3v
+         qqhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=YXTUY4hlZVOZQ6Ng/x5Zh4USeJPKiqRMjOwBWZGBJKI=;
+        fh=lqMocv5bwHIvqJW7T9ftq8wOrWcAWN7uuqt+odVl3ho=;
+        b=AixDMjNdw/ucEeirwnNk3ys0ahmb3/GL+YQRd6dIxBpBXPCPT4ohqfDut7zOZxr8+Q
+         hZstJ4zz+cMblHMhpO6hVVPybK4f8+xjpF6Ao/UE6WztyTbsZ0TjGk5M0qWXWNM84xOa
+         aEEZZJfsXX0DdTtNw4xW1HJfE9IFCfkvxVSK98JsGuWt0G8p8YzCm1UgeHpxf78lkgW5
+         gCkmV6QItJvwuFQgnS6BfmqqaGKGP0syUJDeyBIStcFArMwxg8xHMBkMdJzOeHZJm1cQ
+         Zpw/ViUYKOEokjritJLnkZrsNF3+8exS6qatl/+wZGiDO+77K7XfPLUQDUR2QpVscXli
+         FZ4g==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784774911; x=1785379711; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YXTUY4hlZVOZQ6Ng/x5Zh4USeJPKiqRMjOwBWZGBJKI=;
+        b=g/naGK3avTabE5114tTgCShzUmBWRcbzEf+vhG+zFbs3JPuqAPtNOvwKI60HCMrU0O
+         vNjPm7lomimMBIFMTWQV3VxKgJDGOQBOu4Q+IIANY7VlQ5LTyDdl6uk9qW0vRVGnsIVb
+         bQM7vZVKfcvmatIYoQXBWwl81u77XEMyY0oFnt02WS6r49b8sH77X183w0xiHx17CxBs
+         IQZCi6cWSR1GbxTac28wbhvutGyVblXecNe+vaJ4IDizddNdYR8RllEWdJgPamIVk7QY
+         EImkhuA/5rVbHoXpNtOCXXJXb21kCuTCh9UKH5JrS+ub9GN8ReOl8HjWpRPqkK5Mk09c
+         iPXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784774911; x=1785379711;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=YXTUY4hlZVOZQ6Ng/x5Zh4USeJPKiqRMjOwBWZGBJKI=;
+        b=j1HzI+SC1ONmRB33TB+z823UK3Jvr6Lr/581G4KO8K24p7jrutpEmnAOomxydtAnbN
+         IC1fK5yJtWiYD9ezu1XNjkzGIM326LUQs0pwuUZRVRZLbCWlCon9ItcO7itDtkeQqiRS
+         M8Tet4IFRJ+XhavpIJW8vp/fP7mqJjm2ZNlr9thuvwxPr5RzcNAjPM2MXTqivbqk4OUf
+         oWc37IfhsE5j3Peib3l2rCX1eX++AVAibjeNgRw0rtgP2F//n2bgrOxbe/Xjsiv6cG6+
+         lETCB5E+rrV3LhenrOWqDC9Ic3CaoWKZvHAdOb+/oWV2MhAh5YibgtcW/TMlghkglH84
+         TkTw==
+X-Forwarded-Encrypted: i=1; AHgh+RozOVWxU2Eeb3tQSEBU4uCnlk+6D6zZB/XEhf2CDKaBydjQC/beN5mW+Tb8lmeGVmTosoSqIIY6QMo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxYnzpG0WYP8PwAhjvzfN799Qkt96yhVwp17CszmyPNZJ4sfNHL
+	HLMfzLP7A56OD9eitION7hi2VpDai9HQZNqgFYwBW3g/elYFcOBMDd6UiqozyTDp9a9oqa1PxC5
+	OLX5/QK5NABqpfFGJFZ7FxuhIxHuu7ew=
+X-Gm-Gg: AR+sD10aWzwTPPZe+cOpMR4WQzgBb6oHfZyXqCwqSBwSHywHViF5MfMSeoyeaCPTu+Q
+	1VaZo3DvnBzLxniZvzLpjmGqBbxYkZkvuNaTkGOjhQUFHjM5PuOfSbzdxA3Fpt1lwR86YXW3o/Z
+	jnRWN+ctOknLOsf4jEZKaiwBKueR1b6f+4ZvYXD+rjqVAj+l7hr1s8wtveucEX/tUgtSGTNVrMB
+	tY/ReVdZcZ2lxfwaPuNx0btHNFpM8fbfh4qyP9WBlJKvGyeAYgLHvtrQ0Nd8wueS2RRn2zw4Yi9
+	685Q2/qKKEd3UIYtlYv4
+X-Received: by 2002:a17:907:a4d:b0:c16:2dc0:e1ed with SMTP id
+ a640c23a62f3a-c1c5092a1e9mr61858566b.4.1784774911324; Wed, 22 Jul 2026
+ 19:48:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <702dd081.8902.19f88c5db00.Coremail.dongxuyang@eswincomputing.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:TQJkCgAnPqEvdGBqPoI2AA--.9805W
-X-CM-SenderInfo: pgrqw5xx1d0w46hv4xpqfrz1xxwl0woofrz/1tbiAQEQAmpfnycZG
-	AAAse
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-	daVFxhVjvjDU=
+References: <20260717-adt7470_thermalzone-v2-0-a55147958fad@gmail.com>
+ <20260717-adt7470_thermalzone-v2-1-a55147958fad@gmail.com> <al3yFHvlzQuIywEj@monoceros>
+In-Reply-To: <al3yFHvlzQuIywEj@monoceros>
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date: Wed, 22 Jul 2026 23:48:19 -0300
+X-Gm-Features: AUfX_mzkrTPcnkr7ItIXKDS6UZlJkREqRBtsmkpKmefnqjNZVsCZyHSowWgwH7Q
+Message-ID: <CAJq09z7z13hO33xpfQNYc=eHec3yN3H2yVy=oqXhuvhRZhvX3g@mail.gmail.com>
+Subject: Re: [PATCH v2 1/6] dt-bindings: hwmon: add binding for adi,adt7470
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Guenter Roeck <linux@roeck-us.net>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Chris Packham <chris.packham@alliedtelesis.co.nz>, 
+	Andrew Morton <akpm@linux-foundation.org>, "Darrick J. Wong" <djwong@us.ibm.com>, 
+	linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-PiAKPiBPbiBEaSwgMjAyNi0wNy0yMSBhdCAyMDowOSArMDgwMCwgZG9uZ3h1eWFuZ0Blc3dpbmNv
-bXB1dGluZy5jb20gd3JvdGU6Cj4gPiBGcm9tOiBYdXlhbmcgRG9uZyA8ZG9uZ3h1eWFuZ0Blc3dp
-bmNvbXB1dGluZy5jb20+Cj4gPiAKPiA+IFRoZSBkd2MgcHdtIGNvbnRyb2xsZXIgY2FuIGJlIHVz
-ZWQgaW4gbm9uLVBDSSBzeXN0ZW1zLCBzbyBhbGxvdwo+ID4gZWl0aGVyIHBsYXRmb3JtIG9yIE9G
-IGJhc2VkIHByb2JpbmcuCj4gPiAKPiA+IFRoZSBjb250cm9sbGVyIGlzIHJlc2V0IG9ubHkgd2hl
-biBubyBQV00gY2hhbm5lbCBpcyBlbmFibGVkLgo+ID4gT3RoZXJ3aXNlLCBjbG9ja3MgYXJlIGVu
-YWJsZWQgYW5kIHRoZSBydW50aW1lIFBNIHN0YXRlIGlzIHVwZGF0ZWQKPiA+IHRvIHJlZmxlY3Qg
-dGhlIGFjdGl2ZSBoYXJkd2FyZSBjb25maWd1cmF0aW9uLgo+ID4gCj4gPiBUaGUgRFdDIFBXTSBj
-b250cm9sbGVyIGRvZXMgbm90IHByb3ZpZGUgYSBoYXJkd2FyZSBwb2xhcml0eSBiaXQuCj4gPiBD
-dXJyZW50bHksIHRoZSBkcml2ZXIgb25seSBzdXBwb3J0cyBhY3RpdmUtbG93IG91dHB1dCwgd2hp
-Y2ggaXMKPiA+IGluY29tcGF0aWJsZSB3aXRoIGRldmljZXMgcmVxdWlyaW5nIGFjdGl2ZS1oaWdo
-IHdhdmVmb3JtcyAoZS5nLiwKPiA+IGJhY2tsaWdodCBjb250cm9sbGVycywgZmFuIHNwZWVkIHJl
-Z3VsYXRvcnMpLgo+ID4gCj4gPiBJbXBsZW1lbnQgcG9sYXJpdHkgY29udHJvbCBieSBleHBsb2l0
-aW5nIHRoZSB0aW1lcidzIGR1YWwgbG9hZAo+ID4gcmVnaXN0ZXJzLiBUaGUgaGFyZHdhcmUgdXNl
-czoKPiA+IC0gTERfQ05UOiAgTE9XIHBlcmlvZCBjb3VudAo+ID4gLSBMRF9DTlQyOiBISUdIIHBl
-cmlvZCBjb3VudAo+ID4gCj4gPiBUaGUgdG90YWwgcGVyaW9kIGlzIGRlZmluZWQgYXMgKExEX0NO
-VCArIExEX0NOVDIpLiBCeSBzd2FwcGluZyB0aGUKPiA+IGR1dHkgY3ljbGUgYmV0d2VlbiB0aGVz
-ZSByZWdpc3RlcnMsIHdlIGludmVydCB0aGUgcG9sYXJpdHkgd2hpbGUKPiA+IGtlZXBpbmcgdGhl
-IHBlcmlvZCB1bmNoYW5nZWQ6Cj4gPiAtIFBXTV9QT0xBUklUWV9OT1JNQUw6ICB3cml0ZSBkdXR5
-X2N5Y2xlIHRvIExEX0NOVDIgKEhJR0ggcGVyaW9kKQo+ID4gLSBQV01fUE9MQVJJVFlfSU5WRVJT
-RUQ6IHdyaXRlIGR1dHlfY3ljbGUgdG8gTERfQ05UICAoTE9XIHBlcmlvZCkKPiA+IAo+ID4gSW1w
-bGVtZW50YXRpb246Cj4gPiBVcGRhdGUgYm90aCBhcHBseSgpIGFuZCBnZXRfc3RhdGUoKSB0byBo
-YW5kbGUgc3RhdGUtPnBvbGFyaXR5Cj4gPiBjb25zaXN0ZW50bHkuIFNpbmNlIHRoZSBoYXJkd2Fy
-ZSBkb2VzIG5vdCBzdG9yZSBwb2xhcml0eSwgZ2V0X3N0YXRlKCkKPiA+IHJldHVybnMgdGhlIGxh
-c3Qgc3VjY2Vzc2Z1bGx5IGFwcGxpZWQgc29mdHdhcmUgc3RhdGUsIGVuc3VyaW5nIHRoYXQKPiA+
-IHJlYWQtYmFjayBtYXRjaGVzIHdoYXQgd2FzIG9yaWdpbmFsbHkgc2V0Lgo+ID4gCj4gPiBDby1k
-ZXZlbG9wZWQtYnk6IEJlbiBEb29rcyA8YmVuLmRvb2tzQGNvZGV0aGluay5jby51az4KPiA+IFNp
-Z25lZC1vZmYtYnk6IEJlbiBEb29rcyA8YmVuLmRvb2tzQGNvZGV0aGluay5jby51az4KPiA+IFNp
-Z25lZC1vZmYtYnk6IFhpYW5nIFh1IDx4dXhpYW5nQGVzd2luY29tcHV0aW5nLmNvbT4KPiA+IFNp
-Z25lZC1vZmYtYnk6IEd1b3NoZW5nIFdhbmcgPHdhbmdndW9zaGVuZ0Blc3dpbmNvbXB1dGluZy5j
-b20+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBYdXlhbmcgRG9uZyA8ZG9uZ3h1eWFuZ0Blc3dpbmNvbXB1
-dGluZy5jb20+Cj4gPiAtLS0KPiA+ICBkcml2ZXJzL3B3bS9LY29uZmlnICAgICAgICB8ICAxMCAr
-Kwo+ID4gIGRyaXZlcnMvcHdtL01ha2VmaWxlICAgICAgIHwgICAxICsKPiA+ICBkcml2ZXJzL3B3
-bS9wd20tZHdjLWNvcmUuYyB8IDE3MiArKysrKysrKysrKysrKysrLS0tLQo+ID4gIGRyaXZlcnMv
-cHdtL3B3bS1kd2Mtb2YuYyAgIHwgMzEyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysKPiA+ICBkcml2ZXJzL3B3bS9wd20tZHdjLmggICAgICB8ICAyNSArKy0KPiA+ICA1IGZp
-bGVzIGNoYW5nZWQsIDQ4MSBpbnNlcnRpb25zKCspLCAzOSBkZWxldGlvbnMoLSkKPiA+ICBjcmVh
-dGUgbW9kZSAxMDA2NDQgZHJpdmVycy9wd20vcHdtLWR3Yy1vZi5jCj4gPiAKPiBbLi4uXQo+ID4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1kd2Mtb2YuYyBiL2RyaXZlcnMvcHdtL3B3bS1k
-d2Mtb2YuYwo+ID4gbmV3IGZpbGUgbW9kZSAxMDA2NDQKPiA+IGluZGV4IDAwMDAwMDAwMDAwMC4u
-NDYwODYzNTQ5Mjc0Cj4gPiAtLS0gL2Rldi9udWxsCj4gPiArKysgYi9kcml2ZXJzL3B3bS9wd20t
-ZHdjLW9mLmMKPiA+IEBAIC0wLDAgKzEsMzEyIEBACj4gPiArLy8gU1BEWC1MaWNlbnNlLUlkZW50
-aWZpZXI6IEdQTC0yLjAKPiA+ICsvKgo+ID4gKyAqIERlc2lnbldhcmUgUFdNIENvbnRyb2xsZXIg
-ZHJpdmVyIE9GCj4gPiArICoKPiA+ICsgKiBDb3B5cmlnaHQgKEMpIDIwMjYgU2lGaXZlLCBJbmMu
-Cj4gPiArICovCj4gPiArCj4gPiArI2RlZmluZSBERUZBVUxUX1NZTUJPTF9OQU1FU1BBQ0UgImR3
-Y19wd21fb2YiCj4gPiArCj4gPiArI2luY2x1ZGUgPGxpbnV4L2Nsay5oPgo+ID4gKyNpbmNsdWRl
-IDxsaW51eC9wbGF0Zm9ybV9kZXZpY2UuaD4KPiA+ICsjaW5jbHVkZSA8bGludXgvcG1fcnVudGlt
-ZS5oPgo+ID4gKyNpbmNsdWRlIDxsaW51eC9wd20uaD4KPiA+ICsjaW5jbHVkZSA8bGludXgvcmVz
-ZXQuaD4KPiA+ICsKPiA+ICsjaW5jbHVkZSAicHdtLWR3Yy5oIgo+ID4gKwo+ID4gK3N0cnVjdCBk
-d2NfcHdtX3BsYXRfZGF0YSB7Cj4gPiArCWJvb2wgcmVzZXRfcmVxdWlyZWQ7Cj4gCj4gVGhpcyBp
-cyBub3QgbmVlZGVkLgo+IAoKSGkgUGhpbGlwcCwKCldlIHdpbGwgZHJvcCBpdCBpbiB0aGUgbmV4
-dCB2ZXJzaW9uLgoKPiA+ICt9Owo+ID4gKwo+ID4gK3N0YXRpYyBpbnQgZHdjX3B3bV9wbGF0X3By
-b2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gPiArewo+IFsuLi5dCj4gPiArCXBk
-YXRhID0gZGV2aWNlX2dldF9tYXRjaF9kYXRhKGRldik7Cj4gPiArCWlmIChwZGF0YSAmJiBwZGF0
-YS0+cmVzZXRfcmVxdWlyZWQpCj4gPiArCQlkd2MtPnJzdCA9IGRldm1fcmVzZXRfY29udHJvbF9n
-ZXRfZXhjbHVzaXZlKGRldiwgTlVMTCk7Cj4gPiArCWVsc2UKPiA+ICsJCWR3Yy0+cnN0ID0gZGV2
-bV9yZXNldF9jb250cm9sX2FycmF5X2dldF9vcHRpb25hbF9leGNsdXNpdmUoZGV2KTsKPiAKPiBQ
-bGVhc2UgZHJvcCByZXNldF9yZXF1aXJlZCBmcm9tIHBkYXRhIGFuZCBqdXN0IHVzZQo+IAo+IAlk
-d2MtPnJzdCA9IGRldm1fcmVzZXRfY29udHJvbF9hcnJheV9nZXRfb3B0aW9uYWxfZXhjbHVzaXZl
-KGRldik7Cj4gCj4gVGhhdCB3b3JrcyBmb3IgYSBzaW5nbGUgcmVzZXQgYXMgd2VsbC4KPiAKPiBE
-ZXZpY2UgdHJlZSB2YWxpZGF0aW9uIGFscmVhZHkgbWFrZXMgc3VyZSByZXF1aXJlZCByZXNldCBj
-b250cm9scyBhcmUKPiBwcmVzZW50LiBUaGVyZSBpcyBubyBuZWVkIGhhbmRsZSB0aGlzIGluIHRo
-ZSBkcml2ZXIgYXMgYSBzcGVjaWFsIGNhc2UuCj4gCgpVc2UgZHdjLT5yc3QgPSBkZXZtX3Jlc2V0
-X2NvbnRyb2xfYXJyYXlfZ2V0X29wdGlvbmFsX2V4Y2x1c2l2ZShkZXYpOwoKPiA+ICsKPiA+ICsJ
-aWYgKElTX0VSUihkd2MtPnJzdCkpCj4gPiArCQlyZXR1cm4gZGV2X2Vycl9wcm9iZShkZXYsIFBU
-Ul9FUlIoZHdjLT5yc3QpLAo+ID4gKwkJCQkgICAgICJmYWlsZWQgdG8gZ2V0IHJlc2V0IGNvbnRy
-b2xcbiIpOwo+ID4gKwo+ID4gKwlyZXQgPSBjbGtfcHJlcGFyZV9lbmFibGUoZHdjLT5idXNfY2xr
-KTsKPiA+ICsJaWYgKHJldCkKPiA+ICsJCXJldHVybiBkZXZfZXJyX3Byb2JlKGRldiwgcmV0LAo+
-ID4gKwkJCQkgICAgICJmYWlsZWQgdG8gZW5hYmxlIGJ1cyBjbG9ja1xuIik7Cj4gPiArCj4gPiAr
-CXJldCA9IGNsa19wcmVwYXJlX2VuYWJsZShkd2MtPmNsayk7Cj4gPiArCWlmIChyZXQpIHsKPiA+
-ICsJCWRldl9lcnIoZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSB0aW1lciBjbG9ja1xuIik7Cj4gCj4g
-CQlkZXZfZXJyX3Byb2JlKGRldiwgImZhaWxlZCB0byBlbmFibGUgdGltZXIgY2xvY2tcbiIpOwo+
-IAo+IHByaW50cyB0aGUgYWN0dWFsIGVycm9yLiBTYW1lIGZvciBvdGhlciBkZXZfZXJyKClzIGlu
-IHRoZSBwcm9iZQo+IGZ1bmN0aW9uLgo+IAoKVXNlIGRldl9lcnJfcHJvYmUoKSBpbnN0ZWFkIG9m
-IGRldl9lcnIoKSBpbiB0aGUgcHJvYmUgZnVuY3Rpb24uCgpCZXN0IHJlZ2FyZHMsClh1eWFuZyBE
-b25nCg==
+Hi Uwe,
+
+> On Fri, Jul 17, 2026 at 05:59:14PM -0300, Luiz Angelo Daros de Luca wrote:
+> > +  "#pwm-cells":
+> > +    const: 2
+> > +    description: |
+> > +      Number of cells in a PWM specifier.
+> > +      - The first cell is the PWM channel (0 to 3).
+> > +      - The second cell is the PWM period in nanoseconds.
+>
+> Please use #pwm-cells = <3> and $ref: pwm.yaml#
+
+Thanks for the review. I already switched to #pwm-cells = <3> for
+the next version, so that part is settled.
+
+Regarding $ref: /schemas/pwm/pwm.yaml#, it doesn't quite work here.
+When I added it and ran
+dt_binding_check, it started rejecting the example node:
+
+hwmon@2f (adi,adt7470): $nodename:0: 'hwmon@2f' does not match
+'^pwm(@.*|-([0-9]|[1-9][0-9]+))?$'
+
+It turns out pwm.yaml also constrains $nodename as part of the
+allOf, so referencing it forces the node name into the pwm@...
+pattern. That's not right for this device: the ADT7470 is primarily a
+hwmon chip (10 temperature inputs, 4 fan/PWM outputs), and the PWM
+channels are just one of the interfaces it exposes, so hwmon@2f is
+the correct node name here, not pwm@2f.
+
+So, for the next version, I'm declaring #pwm-cells and
+#thermal-sensor-cells directly in the binding instead of pulling in
+pwm.yaml via $ref, and pointing to pwm.yaml only in the description
+for context:
+
+"#pwm-cells":
+const: 3
+description:
+See Documentation/devicetree/bindings/pwm/pwm.yaml for the
+generic PWM binding description.
+
+Let me know if you'd rather see this handled differently (e.g. keeping
+the $ref and accepting the pwm@ node name), but I think keeping the
+node name aligned with the device's primary function is the more
+correct approach.
+
+Regards,
+
+Luiz
