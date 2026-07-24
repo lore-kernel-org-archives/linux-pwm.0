@@ -1,73 +1,175 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8863C26738B;
-	Fri, 24 Jul 2026 05:54:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365133AEF35
+	for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 07:45:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784872453; cv=none; b=qWv99b8vQzlVLcp9XD32PUvKG0bHJw9HBs7EZrgPaGiF4lW44MpFh15ReFNzu+8/5OAi0On2WUIAxrnFHIrFc9o67c7Wo3TrVmkfNsOMnVUTHJyoVfl6ohGI4dGhA67n5hhEArp0gIKz9sZe/9qSivC3tdTCvhjDR2NwMDIqvxo=
+	t=1784879138; cv=none; b=dwv2JvGpfpjv12PeeXlP8ccaDcZlF1aM7Rvne7s5D2ZYtXSFa7Gn2kaJgFqVAN6EL90JoRhrjr9EN1IXMxmXqHgY64JDY/Q5FyqQ0P5/UvNWadbvZqbce6LF+lLy2lBeqTZmBXQrGT9+h5hXgziWDNeQT4FfsB+3y7/F4vNyDWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784872453; c=relaxed/simple;
-	bh=5uFKbjYLPGMnxopGejynFGIJwGOv+X1uFM1HEiJBLtI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Xi40HLXNnEt8vHMK0WaN/rwqVVvkW2HL6xxzkATE6DDeV6AyCh42/f51ZeF8JuCps644fTSTc46mai7op2TFo1qKQ7ocSmWxZPi278mDTUiXYgyfT5ngbeflkapR27I/832oBYq9kyCfeRbodtv+jQgExxWesdZUm1IEn6K9YAM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q89+jzy6; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784879138; c=relaxed/simple;
+	bh=Ga5EKR4S/Vz92tUd1yWNaId5dCO8C7LhZwYgnvT+zk8=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lsadWzo3BFo8vjHzac+FRlBvSDkntOMFxYCe7Y6tTd4Yn5lBp2IiHG7aMc9rJ4VMtE7aPANKGWm2o/KDCqt/DP5EiBR5YzNQLDgUsn9tiscI2QrHJERRSfnzU1xr1VrXTAXDwKm4vTn3IqTD79GqviLm/FzWtBcZRQjLKKy8dyA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QFTGtRPi; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q89+jzy6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15D5E1F000E9;
-	Fri, 24 Jul 2026 05:54:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QFTGtRPi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 745901F01562
+	for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 07:45:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784872452;
-	bh=/L46xMxoWACdqxzcmYoJRkVKy8W/y1heSaNO+vsvtbc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Q89+jzy6YEGNHY2YNQ9Q+P84ElahNmkv4LqNRTB7a9mPGYHyXwf27EncMZ9u+0fwf
-	 Xw5z3fIPDwuAOZyT58NLKbL7EtMn911bnRLoRmO+CBCMYZWfkxGKkM+GnTc7YDqRbX
-	 f3Ns4kavCKKCfSx5HjzS7aLm+c3DMMRux3IOGP4v639/icwlK0Lz8BxNAPKK7nOV11
-	 f1znUNgvx20J2poCOhM/icOhwRpu01WafhC44/fhC6sTuxCkwmjytyMgq9e7PGwHo9
-	 Cv7OwLt/3y5xaovIoUYr39ydMTLmTYWqa3+jCSrOgLzZrev3nxn7LXrSzjvt0x+G2i
-	 +rqdizTAv51RA==
-Date: Fri, 24 Jul 2026 07:54:08 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: dongxuyang@eswincomputing.com
-Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, ben-linux@fluff.org, ben.dooks@codethink.co.uk, 
-	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	p.zabel@pengutronix.de, daniel.lezcano@kernel.org, tglx@kernel.org, 
-	ningyu@eswincomputing.com, linmin@eswincomputing.com, xuxiang@eswincomputing.com, 
-	wangguosheng@eswincomputing.com, pinkesh.vaghela@einfochips.com
-Subject: Re: [PATCH v12 4/4] dt-bindings: timer: dwc: Update resets property
- items
-Message-ID: <20260724-ambrosial-groovy-anteater-c2b349@quoll>
-References: <20260721120757.1134-1-dongxuyang@eswincomputing.com>
- <20260721120935.1359-1-dongxuyang@eswincomputing.com>
+	s=k20260515; t=1784879135;
+	bh=GrrnEVjLeDYohAytxd9LGHL0XtaF/3QpIP+vjIXf7kY=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=QFTGtRPiljZBiO3q7FgTkHoETpqGXso5vKPegYuHLZmgv2Duzuk3mbNV2nfqUnvkm
+	 PDBjWMh8zLZdOunZGKGtIjoIvxd8HHpCTxfuiNMfyIjIcaWrsL/x/DO2IB5nqIj2ZS
+	 v/lqV3N9C4+EvEc+XIonse6p7T/r0+aL/XXVTB2Tt2jlcbNGuqQUptKFocEoP+LxQm
+	 V9H6Ze/8gJ6BR1qUo6aqPO1e+W3jT2AFI3lppwWGbXmNOHJKwvXS/DLvzrzpHmuaIZ
+	 Hq68lo1n2IwKrQ5nly3a3NmLvMbNdXC4cgUi22r7kQ3BsF8Dv1hYHeVtt6NrjWYqyq
+	 FjNohO9xi377A==
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-39c8e65e3f5so1023941fa.0
+        for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 00:45:35 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RqNe59Dlu7QMRJXs76zdFduXspJ1kc6oUajd9ntOvfP5xswBmds1ni4b7jVgylOuj0BxvgaG1cjx+E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzzvZZJQVOoWNBZYczAR+x69EOCXflsltD6P4bBPyjV4NyMvW+2
+	QuxvXcgUsD8wKu5bEW+xbewvnulUeD0WxorrdY22wTqsx6ySn4mxK7BbB9lzcPfNlVQIf08ch2N
+	dbH+hwT+MlH0FA9/4DnWRsvU8oE0a2V0Wga8HUayMaw==
+X-Received: by 2002:a2e:9193:0:b0:39b:2df2:9014 with SMTP id
+ 38308e7fff4ca-39f07c63c72mr10175241fa.7.1784879133867; Fri, 24 Jul 2026
+ 00:45:33 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 24 Jul 2026 00:45:31 -0700
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 24 Jul 2026 00:45:31 -0700
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <20260723175325.37397-2-farbere@amazon.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260721120935.1359-1-dongxuyang@eswincomputing.com>
+References: <20260723175325.37397-1-farbere@amazon.com> <20260723175325.37397-2-farbere@amazon.com>
+Date: Fri, 24 Jul 2026 00:45:31 -0700
+X-Gmail-Original-Message-ID: <CAMRc=MeE_FdDMpXzzBB2dwH18DWmmT9B=CeouoaG1tV=y6-fXQ@mail.gmail.com>
+X-Gm-Features: AUfX_mxqAq5L_5_Kqqzi2lfcFgjsyeDKqIXC9pdA6t902qhg92eJpMfCKmh9flc
+Message-ID: <CAMRc=MeE_FdDMpXzzBB2dwH18DWmmT9B=CeouoaG1tV=y6-fXQ@mail.gmail.com>
+Subject: Re: [PATCH 01/12] notifier: add device-managed registration APIs
+To: Eliav Farber <farbere@amazon.com>
+Cc: rafael@kernel.org, tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com, 
+	mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org, 
+	laurent.pinchart@ideasonboard.com, linusw@kernel.org, brgl@kernel.org, 
+	orsonzhai@gmail.com, baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com, 
+	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	dmitry.torokhov@gmail.com, hansg@kernel.org, ilpo.jarvinen@linux.intel.com, 
+	W_Armin@gmx.de, ukleinek@kernel.org, fabio.m.de.francesco@linux.intel.com, 
+	kaihengf@nvidia.com, ankita@nvidia.com, leitao@debian.org, 
+	jason@os.amperecomputing.com, pedro.pbg@usp.br, paulmck@kernel.org, 
+	frederic@kernel.org, kees@kernel.org, linux-acpi@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Jul 21, 2026 at 08:09:35PM +0800, dongxuyang@eswincomputing.com wrote:
-> From: Xuyang Dong <dongxuyang@eswincomputing.com>
-> 
-> The DesignWare DW_apb_timers IP has two active-low reset inputs:
-> presetn resets the register interface logic in the pclk (bus) domain,
-> and timer_N_resetn resets the counter/timer logic in the timer_N_clk
-> domain. The existing snps,dw-apb-timer binding only describes one.
-> 
-> Update snps,dw-apb-timer binding to allow up to two reset lines,
-> matching the hardware capabilities of the DesignWare IP family.
-> 
-> Signed-off-by: Xuyang Dong <dongxuyang@eswincomputing.com>
+On Thu, 23 Jul 2026 19:53:14 +0200, Eliav Farber <farbere@amazon.com> said:
+> Add devm_atomic_notifier_chain_register(),
+> devm_blocking_notifier_chain_register(), and
+> devm_raw_notifier_chain_register() that automatically unregister the
+> notifier when the device is unbound.
+>
+> Many drivers repeat the same boilerplate pattern:
+>
+>   1. Register the notifier with *_notifier_chain_register()
+>   2. Check for error
+>   3. Register a devm action to unregister on teardown
+>   4. Implement a per-driver static unregister callback
+>
+> With the new devm_*_notifier_chain_register() APIs, this reduces to a
+> single call with one error path, eliminating per-driver unregister
+> callbacks entirely.
+>
+> The implementation follows the established devres pattern used by other
+> device-managed kernel APIs.
+>
+> Signed-off-by: Eliav Farber <farbere@amazon.com>
 > ---
->  .../devicetree/bindings/timer/snps,dw-apb-timer.yaml         | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+>  include/linux/notifier.h |  10 +++
+>  kernel/notifier.c        | 151 +++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 161 insertions(+)
+>
+> diff --git a/include/linux/notifier.h b/include/linux/notifier.h
+> index 01b6c9d9956f..aa3745d7459b 100644
+> --- a/include/linux/notifier.h
+> +++ b/include/linux/notifier.h
+> @@ -46,6 +46,7 @@
+>   * often but notifier_blocks will seldom be removed.
+>   */
+>
+> +struct device;
+>  struct notifier_block;
+>
+>  typedef	int (*notifier_fn_t)(struct notifier_block *nb,
+> @@ -145,10 +146,19 @@ extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
+>
+>  extern int atomic_notifier_chain_register(struct atomic_notifier_head *nh,
+>  		struct notifier_block *nb);
+> +extern int devm_atomic_notifier_chain_register(struct device *dev,
+> +		struct atomic_notifier_head *nh,
+> +		struct notifier_block *nb);
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Please don't use extern with function prototypes in new code.
 
-Best regards,
-Krzysztof
+>  extern int blocking_notifier_chain_register(struct blocking_notifier_head *nh,
+>  		struct notifier_block *nb);
+> +extern int devm_blocking_notifier_chain_register(struct device *dev,
+> +		struct blocking_notifier_head *nh,
+> +		struct notifier_block *nb);
+>  extern int raw_notifier_chain_register(struct raw_notifier_head *nh,
+>  		struct notifier_block *nb);
+> +extern int devm_raw_notifier_chain_register(struct device *dev,
+> +		struct raw_notifier_head *nh,
+> +		struct notifier_block *nb);
+>  extern int srcu_notifier_chain_register(struct srcu_notifier_head *nh,
+>  		struct notifier_block *nb);
+>
+> diff --git a/kernel/notifier.c b/kernel/notifier.c
+> index 2f9fe7c30287..b811638aa878 100644
+> --- a/kernel/notifier.c
+> +++ b/kernel/notifier.c
+> @@ -1,4 +1,5 @@
+>  // SPDX-License-Identifier: GPL-2.0-only
+> +#include <linux/device.h>
+>  #include <linux/kdebug.h>
+>  #include <linux/kprobes.h>
+>  #include <linux/export.h>
+> @@ -197,6 +198,55 @@ int atomic_notifier_chain_unregister(struct atomic_notifier_head *nh,
+>  }
+>  EXPORT_SYMBOL_GPL(atomic_notifier_chain_unregister);
+>
+> +struct atomic_notifier_chain_devres {
+> +	struct atomic_notifier_head *nh;
+> +	struct notifier_block *nb;
+> +};
+> +
+> +static void devm_atomic_notifier_chain_unregister(struct device *dev, void *res)
+> +{
+> +	struct atomic_notifier_chain_devres *dr = res;
+> +
+> +	atomic_notifier_chain_unregister(dr->nh, dr->nb);
+> +}
+> +
+> +/**
+> + *	devm_atomic_notifier_chain_register - Device-managed atomic notifier registration
+> + *	@dev: Device to tie the notifier lifetime to
+> + *	@nh: Pointer to head of the atomic notifier chain
+> + *	@n: New entry in notifier chain
+> + *
+> + *	Adds a notifier to an atomic notifier chain and registers a cleanup
+> + *	action to automatically unregister it when @dev is unbound.
+> + *
+> + *	Returns 0 on success, negative errno on error.
 
+Should be:
+
+Returns:
+0 on success...
+
+Bart
