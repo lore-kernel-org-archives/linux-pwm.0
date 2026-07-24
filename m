@@ -1,116 +1,73 @@
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9975929D26E
-	for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 04:49:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8863C26738B;
+	Fri, 24 Jul 2026 05:54:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784868545; cv=none; b=k2ympgBDz83KFdGO742Ij1sD/9WI/n4pTPfEOQUjiixfdmvm9x/vXS0bappiXwQjRDMxrLc9HNEjdAtK1F5U6fblB8eaPZHyNqLTC+YAoZd6QzxsB1aogi445WZ7ylyNiqo9PeSJ8KuU2lK/W2fTRm6zUER/XxWGIZ5sVLJE09w=
+	t=1784872453; cv=none; b=qWv99b8vQzlVLcp9XD32PUvKG0bHJw9HBs7EZrgPaGiF4lW44MpFh15ReFNzu+8/5OAi0On2WUIAxrnFHIrFc9o67c7Wo3TrVmkfNsOMnVUTHJyoVfl6ohGI4dGhA67n5hhEArp0gIKz9sZe/9qSivC3tdTCvhjDR2NwMDIqvxo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784868545; c=relaxed/simple;
-	bh=jmxbrwT0ACsQ5mOq/PoKuhVXWl4DvzOqPCq0ZqbjROM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RT15GUGF0QHbK/2iVvkVSQNVT2Jh4BH1oUzNSPnlWJ7CoXkKbNieTLUKZnsprle7HJ/geCu+rjkWkid9a6PVkKX4gSRppKLzczLxFyh3JFZ0EgS9ngahjewOmLmia4z1O7PXJTzafRpdTXYJEZuM5LsqFxcvyiFtSPgFqlpQhAM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=loG6h9mx; arc=none smtp.client-ip=209.85.210.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784872453; c=relaxed/simple;
+	bh=5uFKbjYLPGMnxopGejynFGIJwGOv+X1uFM1HEiJBLtI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Xi40HLXNnEt8vHMK0WaN/rwqVVvkW2HL6xxzkATE6DDeV6AyCh42/f51ZeF8JuCps644fTSTc46mai7op2TFo1qKQ7ocSmWxZPi278mDTUiXYgyfT5ngbeflkapR27I/832oBYq9kyCfeRbodtv+jQgExxWesdZUm1IEn6K9YAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q89+jzy6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="loG6h9mx"
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-848d21bbaffso947b3a.0
-        for <linux-pwm@vger.kernel.org>; Thu, 23 Jul 2026 21:49:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784868544; x=1785473344; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=t4o8yWR70SV8gvAgkdxuV0aAhEqNnVvORCWUZx0xUnU=;
-        b=loG6h9mxow+qBNioQXkgpKr1gTkKojfsbnQvcmW6tWtWiFUKMBU0GQzsqljt64fDnt
-         fTCCc0Qc/mZrm1X9AyvqmfIbePZr01ck6ywQdfUgWLlQ/KncwZ07fmgPfKj4J9GHxmoQ
-         3u/UBVUJxZfinG2NFQFCx3DvOEiPMAiU3LrGGgIdXIzTkx3OQ3naHqJ22WdGDfqmJE2E
-         +UgySEQmrDho0O6R4U/sq+NV7UQa0d6Z6Jg4ZF9OPG+Pgf0mk2ha6dHVXXJbkXesOU7x
-         I9hXBMDKn7Vi2BYxqIfFoGB70O1azo/s/+jwNrip4tAXAY6tcdq1x+ot726jFuOEdA1u
-         xyEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784868544; x=1785473344;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=t4o8yWR70SV8gvAgkdxuV0aAhEqNnVvORCWUZx0xUnU=;
-        b=bfX97mX5qWepyugJNvAjRgGClkQ2ymzl3tqc+M7MZxF14GSNJU9PppFlCaJBEUVfoG
-         xJRwyqAO73YYIptTGHMvdG8JNz3zemiUYuxS2rGVbOTovOv+6fYEPfpCOSw7x5A87A90
-         tnbZU8xe8BsHoOJHaWv6mF5CgRBI4P9TblJ78q7ZdVTkgoc8BRHbm7OzE7i+ZLHNymiX
-         +NM3idO6TDao9MJoJY+nP6x4peBEarEjSBTUHpLSJwQp6kzhj6P0LRHWRNS9XDSezfNu
-         4P0052sAF8lGYV4SfPlkveulOkzVNDAASwLVhqCuQWUszHGwMEiJmoGSTDfRjQgjs6Vo
-         pxiw==
-X-Forwarded-Encrypted: i=1; AHgh+Rp91XwpUtUOGV8dPf8+L7EJqvi+c4m2ZUuLck6fRUkiyaAqTChjgeRijxizZTd55ex9kVbg9/9H8IM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yziuvzs4hnrC+p2YMzLFw86RED3yI5Ij/SfyN7+4HxWSsA4tZq+
-	mvaKour322fbIlJy1pgs4dUfvUHXdT3D4E88+CqCjbjy9qPZQRyl/uw=
-X-Gm-Gg: AR+sD13Ukva8UH1yb1hY42LcARN1WrppxiDmeFez94I3eIl/waz1wP1UK2VRXD+cOpK
-	lUsRRIc1SWm130+coXEMmbVvOjGIG3MZAp8oGC10pQX51kP07YLTFZOCYWAeucUWWrcHw0/clfT
-	dMexU6ZPn2Q71Fzfo+20K766SLNahLGNNv1QuqGGJoHZ6bfowsamI4+lcjkw9B48yKxPHJZioz3
-	G/COQ24jko1Fp8XHhlCV9MpqDow5ELcGT9ZqecTGwCNN0T5q3BJQj4C6IXdfi2LcTJD+lrs0+jH
-	OqnR2086cc1YveLnGP/HBdgoH8jcZQIh/9f3W0Bvh1XVVdz4GKK8BMpJcFx4HUwYtSPDFNnpXdg
-	yZFGhQ+h1yK7WDdCNTnLpOgUSFrkg9SZ56eE+b/2RWWEUinsQJybcPbGzKUBtvAqR9F3M9onIZ3
-	ZdIHH8MBvsevtEB0gdF2UmcsgjTwk=
-X-Received: by 2002:a05:6a20:b08d:b0:3c3:bbe6:95c9 with SMTP id adf61e73a8af0-3c44afccc22mr6236342637.16.1784868543731;
-        Thu, 23 Jul 2026 21:49:03 -0700 (PDT)
-Received: from t-rex ([2401:4900:7b3a:ad08:5f07:2836:b3b8:b712])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3147dc9f2f0sm26926887eec.13.2026.07.23.21.49.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jul 2026 21:49:03 -0700 (PDT)
-From: kr494167@gmail.com
-To: ukleinek@kernel.org
-Cc: george.moussalem@outlook.com,
-	quic_devipriy@quicinc.com,
-	andersson@kernel.org,
-	baruch.siach@siklu.com,
-	linux-pwm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Surendra Singh Chouhan <kr494167@gmail.com>
-Subject: [PATCH] pwm: ipq: prevent potential 32-bit integer overflow in hi_div calculation
-Date: Fri, 24 Jul 2026 10:18:54 +0530
-Message-ID: <20260724044854.33274-1-kr494167@gmail.com>
-X-Mailer: git-send-email 2.55.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q89+jzy6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15D5E1F000E9;
+	Fri, 24 Jul 2026 05:54:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784872452;
+	bh=/L46xMxoWACdqxzcmYoJRkVKy8W/y1heSaNO+vsvtbc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Q89+jzy6YEGNHY2YNQ9Q+P84ElahNmkv4LqNRTB7a9mPGYHyXwf27EncMZ9u+0fwf
+	 Xw5z3fIPDwuAOZyT58NLKbL7EtMn911bnRLoRmO+CBCMYZWfkxGKkM+GnTc7YDqRbX
+	 f3Ns4kavCKKCfSx5HjzS7aLm+c3DMMRux3IOGP4v639/icwlK0Lz8BxNAPKK7nOV11
+	 f1znUNgvx20J2poCOhM/icOhwRpu01WafhC44/fhC6sTuxCkwmjytyMgq9e7PGwHo9
+	 Cv7OwLt/3y5xaovIoUYr39ydMTLmTYWqa3+jCSrOgLzZrev3nxn7LXrSzjvt0x+G2i
+	 +rqdizTAv51RA==
+Date: Fri, 24 Jul 2026 07:54:08 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: dongxuyang@eswincomputing.com
+Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, ben-linux@fluff.org, ben.dooks@codethink.co.uk, 
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	p.zabel@pengutronix.de, daniel.lezcano@kernel.org, tglx@kernel.org, 
+	ningyu@eswincomputing.com, linmin@eswincomputing.com, xuxiang@eswincomputing.com, 
+	wangguosheng@eswincomputing.com, pinkesh.vaghela@einfochips.com
+Subject: Re: [PATCH v12 4/4] dt-bindings: timer: dwc: Update resets property
+ items
+Message-ID: <20260724-ambrosial-groovy-anteater-c2b349@quoll>
+References: <20260721120757.1134-1-dongxuyang@eswincomputing.com>
+ <20260721120935.1359-1-dongxuyang@eswincomputing.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260721120935.1359-1-dongxuyang@eswincomputing.com>
 
-From: Surendra Singh Chouhan <kr494167@gmail.com>
+On Tue, Jul 21, 2026 at 08:09:35PM +0800, dongxuyang@eswincomputing.com wrote:
+> From: Xuyang Dong <dongxuyang@eswincomputing.com>
+> 
+> The DesignWare DW_apb_timers IP has two active-low reset inputs:
+> presetn resets the register interface logic in the pclk (bus) domain,
+> and timer_N_resetn resets the counter/timer logic in the timer_N_clk
+> domain. The existing snps,dw-apb-timer binding only describes one.
+> 
+> Update snps,dw-apb-timer binding to allow up to two reset lines,
+> matching the hardware capabilities of the DesignWare IP family.
+> 
+> Signed-off-by: Xuyang Dong <dongxuyang@eswincomputing.com>
+> ---
+>  .../devicetree/bindings/timer/snps,dw-apb-timer.yaml         | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 
-In ipq_pwm_get_state(), hi_div was calculated as:
-  hi_div = hi_dur * (pre_div + 1);
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-hi_dur and (pre_div + 1) are both unsigned int (32-bit) values.
-Evaluating their multiplication using 32-bit arithmetic before assigning to
-the 64-bit u64 hi_div variable can overflow 32-bit unsigned math.
-
-While effective_div explicitly uses (u64)(pwm_div + 1) * (pre_div + 1) to
-prevent overflow, hi_div was missing the (u64) cast.
-
-Fix this by casting hi_dur to (u64) before multiplication, matching the
-precision used for effective_div.
-
-Fixes: c436e3e9c265 ("pwm: Driver for qualcomm ipq6018 pwm block")
-Signed-off-by: Surendra Singh Chouhan <kr494167@gmail.com>
----
- drivers/pwm/pwm-ipq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/pwm/pwm-ipq.c b/drivers/pwm/pwm-ipq.c
-index c53373948136..e27ddc8e9fea 100644
---- a/drivers/pwm/pwm-ipq.c
-+++ b/drivers/pwm/pwm-ipq.c
-@@ -186,7 +186,7 @@ static int ipq_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	state->period = DIV64_U64_ROUND_UP(effective_div * NSEC_PER_SEC,
- 					   ipq_chip->clk_rate);
- 
--	hi_div = hi_dur * (pre_div + 1);
-+	hi_div = (u64)hi_dur * (pre_div + 1);
- 	state->duty_cycle = DIV64_U64_ROUND_UP(hi_div * NSEC_PER_SEC,
- 					       ipq_chip->clk_rate);
- 
--- 
-2.55.0
+Best regards,
+Krzysztof
 
