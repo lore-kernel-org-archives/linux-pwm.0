@@ -1,77 +1,77 @@
 Received: from fout-b1-smtp.messagingengine.com (fout-b1-smtp.messagingengine.com [202.12.124.144])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 340694156D1;
-	Fri, 24 Jul 2026 18:16:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41AC41B36A;
+	Fri, 24 Jul 2026 18:16:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.144
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784917018; cv=none; b=VMGso9/k0jHZ7qqchnf8fJ/wB+dzQbhTnnUfzjRvhGS//ontD4eJ6TinXR5JgmnrLES9NuxpCG36QV5t7hR25WicTmntKpE6/51WifuPXpGPXA6GUwOgKVaVwoNm2PVfXQYy9ZHpd1txUWdBc9/QFPSDYRVMotIJaFVQlxLMbHE=
+	t=1784917021; cv=none; b=mM+rNNUpxv/AaZdfkGIojRQWylui3vi3Qf28LNWG2ynDErhGitYIu2tu6WaXYMgXjhI37yNjojzIPR/khBrZcip/4p0W+9NIvdVGLBryQrLBf13N1J6bktAo7UbtUMQt3Cstrc6RNcRdKoFEK3ic+Yv3eNnp2m2uLg7pZwLoRw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784917018; c=relaxed/simple;
-	bh=3DLK4uSPqvhbiYOir4MraNLTj5Fo4Xhdu2DX7dKgAz4=;
+	s=arc-20240116; t=1784917021; c=relaxed/simple;
+	bh=AKZYad8jBRwy8Pq5GWuDAVzKic6oS+V16a1/1LfrzSg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=WxrIpzbW6Y8HEl2zrwHGtdg944Xqx3RvEK7SIBZx1ybDeUCfjGhtqkSiKSIHDrHVV9vf4OGni74wS7UDEzFG1zpKY1lAgw9oq29JbVMjuPKMzyT0GcLgVvzXEPQqwQX+7upstBayp5BbEYxx0s8hcdUzp4XnpPcNcgAOJ9yarAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=ZEzYM//J; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=fAuPlDv3; arc=none smtp.client-ip=202.12.124.144
+	 In-Reply-To:To:Cc; b=ke4QOXJUFVzyT7KejCovjBujHKfENBHadmpN/qyi+42jK3mBZE88ji+jy/xiv8dUXNdll4pHcB0W6p604i++A1yXzOvhUjzhhi1SH0O7lmCCOXWUdT6ueDkVMIX2WOl7UmD5i3rnohEJVEAFeNOj62p8peB3OH+jbbkVTPujixc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=E1R+nsBi; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=ZA6N9iCR; arc=none smtp.client-ip=202.12.124.144
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="ZEzYM//J";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="fAuPlDv3"
-Received: from phl-compute-09.internal (phl-compute-09.internal [10.202.2.49])
-	by mailfout.stl.internal (Postfix) with ESMTP id 2BBF11D00438;
-	Fri, 24 Jul 2026 14:16:55 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-09.internal (MEProxy); Fri, 24 Jul 2026 14:16:55 -0400
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="E1R+nsBi";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="ZA6N9iCR"
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfout.stl.internal (Postfix) with ESMTP id A932C1D0041D;
+	Fri, 24 Jul 2026 14:16:57 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-05.internal (MEProxy); Fri, 24 Jul 2026 14:16:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
 	:cc:content-transfer-encoding:content-type:content-type:date
 	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1784917015;
-	 x=1785003415; bh=UDlO6Gi7qF5CXtIcJFqInv4nIAbylvf/vs3KRc2U0fA=; b=
-	ZEzYM//JSzU31t+uKkwIXn82+gKUjJSVG79N+TQ7goeZ3X+sypfW1KLVlOT7l+eo
-	/djRZLNRBoDr3iLybI+tF+fsajJ3T1NmZVoq6OU4nVO4Qc9BHMGg0w6toSuF3tXV
-	zb95G8/HUxHVActXqmWw21N5BoHcUnu5G7vJGv0nvM6a3e5eYOc9H+OlVft9Mw7t
-	KRHvZK2+7+W7Ft3Y0IlgFeHqAcr7FdhJpcxI7Eo56+mO8gMJTiEGI393/sWjn9Se
-	P7er0tLXAXFNvoilw43VqZ2i6wjWbackaP5owtCpPde8CdfTl4s2qDPwbChGp2Ki
-	iBqtTW/Pna7XRuNuxwATtQ==
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1784917017;
+	 x=1785003417; bh=rvhLOY3hzP177IpyHpIG/dUjluPVFDcaiQFyb3NdBmY=; b=
+	E1R+nsBicOnlgJVuFZ3X7ZFdamrT90fs4G8m0Uzcb5zzdHfLJupQOoG1UKzhZ8qQ
+	YeVga51q1CKdsu4aSWycnl0C5iASo2VFQ47Les5UsMaH9/WCyHgftIoApzNKB/LO
+	dFcbCyLoes9tmC2BLBJHxYhxYhMPC2AgIYUf/tgmlqaJclwIi+5uKi61SE5YuN24
+	4ZaFtTl0HgdH7pO90Q/NehS6ICsPfBLJB9PI5rUHKqi+rwwYZoOZO2XD/J2M3mlQ
+	Yak4LqPik9SBgqhTeMFLYyPROSdmHP+y2WniPkuP+WTQdV04SjYMTyQ5XlhADcQO
+	lOl3Z72pk49+gQAJ+wfLLQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
 	:from:from:in-reply-to:in-reply-to:message-id:mime-version
 	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1784917015; x=
-	1785003415; bh=UDlO6Gi7qF5CXtIcJFqInv4nIAbylvf/vs3KRc2U0fA=; b=f
-	AuPlDv3hBSZ6jNQaFeNuCHEIBdD9SvT5VzfOyFEyY4MtLGjfjxq49exats40qZVy
-	kzn3Z4nsb3RrdDApUM4idpNQY8Lb7e9+JxH2r4pKuHBGEAEB9HctqQkFLztrpDUC
-	tGD40HXu48m6qHxjz6l629hvKOj4EIkAiVUnbhnVp/GZQd/lVhLRDLdBWf00RvjI
-	ss2UEnAKJxA0Ix9LEH5hkQtsWDaz8gs+7sHkDDk60yItz+e+3/DgwErDKaPamtq+
-	3pLPlwK5W9QdSmGqnLwQG6OxOXNjsMBvQkT2huHQRWTvjVAGePkVa0HFIFGdZrN7
-	AU3bsRB1Pt6nyEFRjMACg==
-X-ME-Sender: <xms:FqxjaqYyGjuT3qGihuudo50-AzwluUp39JqBq0n-TXzvSaiLhiOZQA>
-    <xme:FqxjaoGNVnsbqV7k4CaemYjtzQNYU9RzVhholeiNASkHtfSqR5KUVyacW7HcVLccy
-    p9f9FntPVdCKlWk_Ufm8L8LYnRQVnQPLI6QVWmIoGcrMY9TE7Ir>
-X-ME-Received: <xmr:FqxjarnYp6R1lSxSWeFcXlgm-3z0FtzmcUDSqDv1inW-tiw15-dmYX8U_SabH-ADh6Y4pdiiLjMJHQiRfN1ixoHHpqdRLncLO_s>
-X-ME-Proxy-Cause: dmFkZTEaGIGjg9jXKEIGGPLYFvRYQU0VQsC7qLhjOSBJNVHUrdUsiPzrtQS/yPC+kKdiVX
-    rzflqqmlQFBsRoTEiM8QVPe3z/16MR5ekxtTgwPwa3Vk0GsAgERpIP2xj5NmZ/vtsm7xkv
-    +EJq9B4I8DEkgSeGV4cZ9As+msKIjuyu8Q/19/oNfOE9v2cRt2poYm1I4ISUntcn4xpqT2
-    rKR1CEainIO3MPDT64J4J5K/f03rqN4y5mIY+Ui1yqxO66s9nRpBS22JOnCEI5WyrGQYZ0
-    TZqXJfIDwNtSdlbystMBKp0t0U78zfnJn4tH5wu8zc8fHTmmdNv6tCAZfp6w7LPkXW30Wd
-    MQYOGCoT7F3Z7V9WMQZVcRfA6n4Hc4MJ7qJVFQaMN0uezogzF4EeBQf3b0Brjaq8MZks7G
-    EX21a9OQSlRw8zVcuvJzo1QTZcxJNaj8r2nEzEQPx7zli3MRzJjFLLBDc+rZMrf8dA4rQq
-    4bC5E5qgf7lc2wwXSs11ArVigUBVXhnE4xOBObGJ8F16VmEVKR7EsRi1yMrUspnTzKxGRZ
-    EZ9iUXgdZsWRq3HFACm1Q5FJfsMOfCyu3Cr9qtLn4mrkB8cgXxxsHsJg9exxtAfxcHh3X5
-    Bc4UPVQkO0XRisfzxlCc7D2/xlWtxI/eMqKo9x2pvNmNRpsKyk2XwLPZVGPA
-X-ME-Proxy: <xmx:FqxjankY4r3N4RRYZE253ycRMzIvm9sYgnE6q8O4aWF1kVl3baWsWw>
-    <xmx:FqxjagVBbMN1MBV2RFJsaT1oGAPEE7JEixsh_klqKrvfB3oy5wicMw>
-    <xmx:Fqxjal_EOCCOmQcJJld8BUQFOh8ku5LDipJAwn4ykVrndTTcIJaR6w>
-    <xmx:Fqxjatq1470StwKEaTwYE4_-scpz1Z1xWZMuJTDmIYFHt4-NfKpd4g>
-    <xmx:F6xjaoe0l1g1AVzhscqBS8HifiWTseDlDXTPOVqVWv2CC_TKUOcyujIt>
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1784917017; x=
+	1785003417; bh=rvhLOY3hzP177IpyHpIG/dUjluPVFDcaiQFyb3NdBmY=; b=Z
+	A6N9iCR9upJtfeKu7LCIg16pat2B377V+tlNgKIYkr5rFzgecHuaI/HFpyLAse6P
+	PaLNOEyD8iuyobLttv8z/rkKx4MGifa8Qji3Z04RjyvGVrmwvSlVyDYZggU23WW/
+	kzvF6TLHZZLFEA40mt+OjKZXPds/kHuGcynFflzoes0NRSaTW1hvDU5hPG5ishc4
+	GENbumW1T3f89YfOCN/sEcS/LZVPsMCFwxZf2KiwNUq2KtKno7o8vv3RojlaDNrv
+	a+DRsbjJFs0g6MmJmnEZ9mz9LarjlW3sYNFF8OC8JPtGtgcGmR1+PHoCYuoVTpDD
+	I3Xd2BePlFfag/TpG+2Pw==
+X-ME-Sender: <xms:GaxjavNr6gHovjeH9RmZlhxKFJPOLNm9gKqOIJh8Efsa7qDAuJFcKQ>
+    <xme:GaxjakP7j7hJCEDPpvzLlW9oIUt216whOjBC532efnZHt6zjicTvioJBOdi7WU-Fa
+    Ky8PVArOfqfU2g-d5Bz1UVvlrpNl-MFvYpjpZUrjw1ve2h2Y0TVX-o>
+X-ME-Received: <xmr:GaxjajvJ-EmKlFi97E6qyKHTCgNLGI_FEmNlXCo1rxTX-OBmLl5tma8viWH3R2XnpUoiHosob4VKI_0bwLMvKj39XM4DGhyER-8>
+X-ME-Proxy-Cause: dmFkZTFn77SKaNLLHGcFk79AmrIEXiPUsMLPyGOV3ahYqRy1TcCvAaQADXiJqRyDKXSPrq
+    c+8fcCpPqn8ifNT/ny0r7+7GKFQ3KMiXAR6ugGIJ02AfZphYt41WuA85SGpwtlUzOLuqSs
+    HQLBO8pXHo4NcdJHw9ExsaYk9J6E35Yw0x9hu3xHQYx0SIDgX4OG7nOhe4wLlfiqbXWJfS
+    7xor45FXZMEpQN7lb25MUCWcZkuhFnuBnqiMPO4ZsbvF7ENQj5Yiz7f874C+2CKt7V8MQ1
+    /yaLRi2baR1tPugR859S9x8ReVhk0tPAwe7q+vt6UvNihLV/OcSkYrzlA6e51p+WVnX8mL
+    apRv/J3NpDSYYYP4pLpsZNdsdmjeMfFUGYHV8hyEnxrL0pXEyyETg9LjegIADElQihAc6v
+    rUrXgcX/kH1O3/cTvwHgpXBif9v90RPLaGpWIxDFz2fts1sZA5RdmMhfTT1s0ghirMRQcq
+    tyWVJGuggH8IcWg3c08scBIC9uPa2UxXXvQP+mdQgS+xjOZUmGGLHR7hjm0AYrFP7ic7HK
+    LMbjII2BYxkDhpkixFAZgWGfqyEx3fBKNujmLWNbD8eIGSXEeZWXVWwFL97tcPq+z4A1/K
+    W0FiE2/avPHLz0ykCndqQBesGK4hJ4CyJxovw8PcGKNU1aJy1dhJxt9FlDxA
+X-ME-Proxy: <xmx:Gaxjap_Pu_qjabkh-tZu934CfXt2tC0HhrWtlzSPekm5ePP2rb0a9g>
+    <xmx:GaxjavHXLinRHuULbr-9CSyoT--o0RXflfXz80HAhA3YxXL8riaXDw>
+    <xmx:GaxjagQ310rocV1tV_TNpqJxrAcDL6WJOYrYVi0OdnMA2E94j-eolw>
+    <xmx:Gaxjalu7tmzQtBdpsIU168EqQHeaSFvcTbSUPMzULG_laQspxqkdxQ>
+    <xmx:GaxjaoVmFtSDqMcE3PycNZRtiQCQK9LawyNA4OffYu_aZWUeYaXM_ZIe>
 Feedback-ID: i47b949f6:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 24 Jul 2026 14:16:54 -0400 (EDT)
+ 24 Jul 2026 14:16:56 -0400 (EDT)
 From: Janne Grunau <j@jannau.net>
-Date: Fri, 24 Jul 2026 20:16:41 +0200
-Subject: [PATCH v3 1/9] dt-bindings: arm: apple: Add M3 Pro/Max/Ultra
- devices (T603x)
+Date: Fri, 24 Jul 2026 20:16:42 +0200
+Subject: [PATCH v3 2/9] dt-bindings: interrupt-controller: apple,aic2:
+ Invert #interrupt-cells condition
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -80,7 +80,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260724-apple-t603x-initial-devices-v3-1-bbeba0420603@jannau.net>
+Message-Id: <20260724-apple-t603x-initial-devices-v3-2-bbeba0420603@jannau.net>
 References: <20260724-apple-t603x-initial-devices-v3-0-bbeba0420603@jannau.net>
 In-Reply-To: <20260724-apple-t603x-initial-devices-v3-0-bbeba0420603@jannau.net>
 To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
@@ -95,93 +95,55 @@ Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  linux-i2c@vger.kernel.org, linux-pwm@vger.kernel.org, 
  Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3346; i=j@jannau.net;
- h=from:subject:message-id; bh=3DLK4uSPqvhbiYOir4MraNLTj5Fo4Xhdu2DX7dKgAz4=;
- b=owGbwMvMwCW2UNrmdq9+ahrjabUkhqzkNbzHF93/bv332qaiiRt+5Nze2F1zPvvq8YhTF9iv1
- apqnLn4pWMiC4MYF4OlmCJLkvbLDobVNYoxtQ/CYOawMoEMkRZpYAACFga+3MS8UiMdIz1TbUM9
- QyMdYx0jBi5OAZjqFZ0M/7T/eHiWvWbKFZ76QqPUZ/fmxqRqhpkqr8N9mDnn9nAa3mBkeBl9rjp
- o9bqZLuFOuWEH3d5O09Sa8fL2zs+MbRNd1MwSGQE=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1552; i=j@jannau.net;
+ h=from:subject:message-id; bh=AKZYad8jBRwy8Pq5GWuDAVzKic6oS+V16a1/1LfrzSg=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhqzkNbwWPLGcy7dN7FH+lXsmalZ86/pNJQy54kleew/17
+ t+lnmffMYGFQYyLwVJMkSVJ+2UHw+oaxZjaB2Ewc1iZQIZIizQwAAELA19uYl6pkY6Rnqm2oZ6h
+ kY6xjhEDF6cATPXM3ww/5p25m9mteK7OlfnG7OzuPZK5xWkik6W6/k1UzgxesmstI0PXpN9nLWx
+ EOB+YTJT5suaXquVd030nkgS6fKfemli//S47AA==
 X-Developer-Key: i=j@jannau.net; a=openpgp;
  fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-The M3 Pro, Max and Ultra Apple silicon SoC family (T6030, T6031, T6032
-and T6034) differs from its M1 and M2 predecessors. Most notable is that
-T6030 (M3 Pro) appears to be a separately designed SoC. MMIO address
-spaces, interrupt and pin numbers do not match. It has two CPU clusters
-with 6 efficiency or performance cores. T6031 (M3 Max) as one cluster
-with 4 effciency cores and two clusters with 6 performance cores each.
-T6032 (M3 Ultra) is like in the previous generations two T6031 dies
-connected with an high speed interface and appears from operation system
-perspective as a single SoC.
-T6034 is a separate identifier for smaller M3 Max variant. It has fewer
-performance CPU cores (10 instead of 12), fewer GPU cores (30 instead of
-40) and less memory controllers (384-bit instead of 512-bit combined
-width).
-Apple has only released 14- and 16-inch Macbook Pros with T6030, T6031
-and T6034 (M3 Pro and Max) and as only desktop device the Mac Studio
-with T6032 (M3 Ultra).
+The condition for 3 or 4 #interrupt-cells list compatibles for the 3
+cells variant (not used in SoCs consisting out of multiple dies). This
+includes the AICv3 base compatible "apple,t8122-aic3". This will match
+    compatible = "apple,t6031-aic3", "apple,t8122-aic3";
+shared for M3 Max and Ultra based devices which require the additional
+interrupt cell for the die number.
+Instead list the compatibles used for multi-die SoCs explicitly and use
+4 #interrupt-cells for them.
 
 Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Janne Grunau <j@jannau.net>
 ---
- Documentation/devicetree/bindings/arm/apple.yaml | 37 ++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+ .../devicetree/bindings/interrupt-controller/apple,aic2.yaml      | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/apple.yaml b/Documentation/devicetree/bindings/arm/apple.yaml
-index e49403c73f9d..fb277c96f341 100644
---- a/Documentation/devicetree/bindings/arm/apple.yaml
-+++ b/Documentation/devicetree/bindings/arm/apple.yaml
-@@ -123,6 +123,14 @@ description: |
-   - Mac Studio (M2 Ultra, 2023)
-   - Mac Pro (M2 Ultra, 2023)
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml b/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
+index d0d9a90e96e7..a94787939d34 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
+@@ -128,16 +128,16 @@ allOf:
+         compatible:
+           contains:
+             enum:
+-              - apple,t8112-aic
+-              - apple,t8122-aic3
++              - apple,t6000-aic
++              - apple,t6020-aic
+     then:
+       properties:
+         '#interrupt-cells':
+-          const: 3
++          const: 4
+     else:
+       properties:
+         '#interrupt-cells':
+-          const: 4
++          const: 3
  
-+  Devices based on the "M3 Pro", "M3 Max" and "M3 Ultra" SoCs:
-+
-+  - MacBook Pro (14-inch, M3 Pro, 2023)
-+  - MacBook Pro (14-inch, M3 Max, 2023)
-+  - MacBook Pro (16-inch, M3 Pro, 2023)
-+  - MacBook Pro (16-inch, M3 Max, 2023)
-+  - Mac Studio (M3 Ultra, 2025)
-+
-   The compatible property should follow this format:
- 
-   compatible = "apple,<targettype>", "apple,<socid>", "apple,arm-platform";
-@@ -365,6 +373,35 @@ properties:
-           - const: apple,t6022
-           - const: apple,arm-platform
- 
-+      - description: Apple M3 Pro SoC based platforms
-+        items:
-+          - enum:
-+              - apple,j514s  # MacBook Pro (14-inch, M3 Pro, 2023)
-+              - apple,j516s  # MacBook Pro (16-inch, M3 Pro, 2023)
-+          - const: apple,t6030
-+          - const: apple,arm-platform
-+
-+      - description: Apple M3 Max SoC based platforms
-+        oneOf:
-+          - items:
-+              - enum:
-+                  - apple,j514c  # MacBook Pro (14-inch, M3 Max, 16 cores, 2023)
-+                  - apple,j516c  # MacBook Pro (16-inch, M3 Max, 16 cores, 2023)
-+              - const: apple,t6031
-+              - const: apple,arm-platform
-+          - items:
-+              - enum:
-+                  - apple,j514m  # MacBook Pro (14-inch, M3 Max, 14 cores, 2023)
-+                  - apple,j516m  # MacBook Pro (16-inch, M3 Max, 14 cores, 2023)
-+              - const: apple,t6034
-+              - const: apple,arm-platform
-+
-+      - description: Apple M3 Ultra SoC based platforms
-+        items:
-+          - const: apple,j575d  # Mac Studio (M3 Ultra, 2025)
-+          - const: apple,t6032
-+          - const: apple,arm-platform
-+
- additionalProperties: true
- 
- ...
+ examples:
+   - |
 
 -- 
 2.55.0
