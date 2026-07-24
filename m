@@ -1,59 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C24D3ACA64
-	for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 07:46:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2228C3AEF4A
+	for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 07:46:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784879178; cv=none; b=SB+nOWRgiVRP636aA+Aolweoi7fTUAx7YSRcbHbg72Bt4LvDZtxS16KQcoYoTH9+noIG4p5tcv31coF/zCfHuPurf0n0TX1M6sJYttG/9/WpWetIQz391J8uaUwKkVI08E+Arm4a6WX/DQetio0mBA6/kPV8Njcc3mSzIEcz5uM=
+	t=1784879193; cv=none; b=AjybNGsx+JYuYJU3gjJJK+jFuDQ6GdboLRXgjHS+pos6ay881oh68MsXGAcSwNCqExJcLxuP49QcZmtqU4LZlGFWaojmkjaTKI6xW0uSmGSovW1bCfrzmzPDpS8op+x2XAM350YznXgw1pTfHKgktc1P5j5GtY3CCymTyig+vSo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784879178; c=relaxed/simple;
-	bh=j6/fHiKSlowXTIF7ftKZpJh31EB2s4w6tFTulHJrrLY=;
+	s=arc-20240116; t=1784879193; c=relaxed/simple;
+	bh=q+SoAChfHihj2C1OY6mAEkJV8Ndl18NofL/2g0AVns8=;
 	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=I8vC57kYW/Pr+RfO/keK6gfHHEKJShHoECEJp2xlhbVPvgCbGRyNqrkQzjxPXyhuaz4K7+Ih9hBvdCzCRX1QPAkH8NzXE/BpN+ypJ5FwsSuWd5T4XYLr+viBc9Z+CWQdA5/3qhvXbmKFO82O0zOAi2zQ6BsJyjgQ25dnDX0s3fg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F9gC0Ih3; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=CGUBpM4GO/tZSePyOBr8Frl07B8KWzEoe62DpI2ffJnx8O0FA2ZaGhBYkENSno+R4rJzYMMWFsx/aRmnq9gr3G2NXMcepFvgPCXkiHbu9J5p1J74K3uN7uNSCXaRAYN1FhfCZw02kA04jA1t0EPFH89kTxYQcYUhKbm9EgpXMlw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TRV0nOdf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F9gC0Ih3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60C151F00ACF
-	for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 07:46:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TRV0nOdf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 266DB1F00ACF
+	for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 07:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784879177;
-	bh=5WZbUGleVOSpBn4ZbRf07IEslchh3FUMGtTBiKonZI4=;
+	s=k20260515; t=1784879190;
+	bh=q+SoAChfHihj2C1OY6mAEkJV8Ndl18NofL/2g0AVns8=;
 	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=F9gC0Ih3uso9K+BAgneoM8/i0E2gNCbRw2vhrBcx0+p73hOAQ5c5RVwapUtWxz1IX
-	 zhwtkluKWNgk8mAFjcWtY6Ig3at1MVIf5/LAAu11kYO+8O1McBxgs1R/abRlypiJq7
-	 e+f8WjUMoCbjLIuhh5k+tyMtOBAPF3etShNz9uVpZ/vH44m+TksFwls/BQnKtLhTn3
-	 +axbIP+Q5S95nnR+movpEvYr+mBDh/g17LVQlx5ySTDcfkqmxHEvo2S5r33JCge/cU
-	 c3uuwuHyB/8ounaWJwmAbKOxcDf40r/kdU7Bpq5nLbt1CWGaX6WcMKrdPXXphcfkLI
-	 pUM4MErClGQ9w==
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-39c9452244aso1220081fa.3
-        for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 00:46:17 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RrYsbpF/1I/GLgDA66DqU+zTPeLNU5lER0b8T4T+/ReMVzbjVeS0llAzrS+eW6fbuhLDfzQPM76tNU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxXrnYB87ew3582Lo0PrTuz+docgj9h853yqkV9ledPJv4+vq0E
-	iI5By5gs5XVKiiTjg5yOi4efSlwzqpZwMNCMOWtbiC77SbHGjByMc0/V/mA/4RSc/qhvW1eZT+l
-	4ynzvv4G13yySCb51XUHEjYy3Ua9GFZmR9IlbNWlKiw==
-X-Received: by 2002:a05:651c:2cb:b0:39c:9241:af75 with SMTP id
- 38308e7fff4ca-39f07c8c174mr9612131fa.5.1784879176135; Fri, 24 Jul 2026
- 00:46:16 -0700 (PDT)
+	b=TRV0nOdfcybaTzF2XN+uSDKG/q0YmUw+TY/hMce1fU9c9WVx8GLRSern/xD9hiNl8
+	 s43vmxoCYlnzJQSanNSWTLCXmZBcvulJqItHzF+Bjw7gKySb+nj9RU4yH0Xf4utZkh
+	 fqHWMvULRIntJwY2CszZB9x+3t/Z8FLuFBiXUUFbYyEddsdGTxexvPpDD6oQ//2V78
+	 wZ4pm2kO4BgCYwWeID0w9C7N2rgGrfIYcICojGvOa+KGNdEMuLpgUuRqfPVLHkjRuM
+	 zO4HiCMoTCI2YnyYgXD0UgQc7HkoMg6zhe3zRRBMYjzTuttKfz0amGC/OHtkSclSxR
+	 VB8IWN63Xq+ZA==
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-39c8dbf4f38so1148691fa.3
+        for <linux-pwm@vger.kernel.org>; Fri, 24 Jul 2026 00:46:30 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RrgW6vzYBNGS8RBozKuK7sJDE1ZUREwDmQUCTLaW424TuZURGDCgZiKYPmlxqV2r+aIo9KL8b/qbeU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyx2Y90du5ruhOKVUK+AB975IHwjkpXW7CJ+xZgRqbzrP8ajjMX
+	/TIeitQHIOq1I4cRDK8dvddEl7EQU0RgSPACSICjSLRU8+xFxttgokVOEXZajBFNDo3dSZhgDpU
+	3bnjr9JyZYBto32OOHbH2lhJ8E51bjgBUW0P0R92GQw==
+X-Received: by 2002:a05:6512:1518:20b0:5b1:5351:712 with SMTP id
+ 2adb3069b0e04-5b2b2e59542mr980925e87.28.1784879188912; Fri, 24 Jul 2026
+ 00:46:28 -0700 (PDT)
 Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 24 Jul 2026 00:46:15 -0700
+ HTTPREST; Fri, 24 Jul 2026 00:46:27 -0700
 Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 24 Jul 2026 00:46:14 -0700
+ HTTPREST; Fri, 24 Jul 2026 00:46:27 -0700
 From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260723175325.37397-1-farbere@amazon.com>
+In-Reply-To: <20260723175632.44812-1-farbere@amazon.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260723175325.37397-1-farbere@amazon.com>
-Date: Fri, 24 Jul 2026 00:46:14 -0700
-X-Gmail-Original-Message-ID: <CAMRc=Mfw0OXWF_1yU=5mBuXJscDv2H+JP1n4YicDUeMLwfjibg@mail.gmail.com>
-X-Gm-Features: AUfX_myaS5o5pZ_K1kZfydIbb_RAyDJwRVdT4TDBui6jxs8IutTlBmRloNm5ZKw
-Message-ID: <CAMRc=Mfw0OXWF_1yU=5mBuXJscDv2H+JP1n4YicDUeMLwfjibg@mail.gmail.com>
-Subject: Re: [PATCH 00/12] notifier: add device-managed registration APIs and
- convert drivers
+References: <20260723175632.44812-1-farbere@amazon.com>
+Date: Fri, 24 Jul 2026 00:46:27 -0700
+X-Gmail-Original-Message-ID: <CAMRc=MfmFwx4U4D_FXMUyf-jVh7r8nWvyxJE2yi1LEkUh9ik8g@mail.gmail.com>
+X-Gm-Features: AUfX_mxVD-CwkTGspLVy2DW1kerTLycxmmZGgKBMf7USBKBu13VE2iFPbK51l48
+Message-ID: <CAMRc=MfmFwx4U4D_FXMUyf-jVh7r8nWvyxJE2yi1LEkUh9ik8g@mail.gmail.com>
+Subject: Re: [PATCH 10/12] gpio: eic-sprd: use devm_atomic_notifier_chain_register()
 To: Eliav Farber <farbere@amazon.com>
 Cc: rafael@kernel.org, tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com, 
 	mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org, 
@@ -70,36 +69,13 @@ Cc: rafael@kernel.org, tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com,
 	linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 23 Jul 2026 19:53:13 +0200, Eliav Farber <farbere@amazon.com> said:
-> Many drivers repeat the same boilerplate when registering notifiers with
-> device lifetime:
+On Thu, 23 Jul 2026 19:56:30 +0200, Eliav Farber <farbere@amazon.com> said:
+> Replace the atomic_notifier_chain_register() +
+> devm_add_action_or_reset() pattern with a single call to
+> devm_atomic_notifier_chain_register(), removing the
+> sprd_eic_unregister_notifier() callback.
 >
->   1. Register the notifier with *_notifier_chain_register()
->   2. Check for error
->   3. Register a devm action to unregister on teardown
->   4. Implement a per-driver static unregister callback
->
-> This series adds devm_atomic_notifier_chain_register(),
-> devm_blocking_notifier_chain_register(), and
-> devm_raw_notifier_chain_register() that automatically unregister the
-> notifier when the device is unbound, then converts 11 drivers to use
-> them.
->
-> Each conversion eliminates a per-driver unregister callback and the
-> associated devm_add_action_or_reset() call, reducing code by ~15 lines
-> per driver.
->
-> The implementation follows the established devres pattern used by other
-> device-managed kernel APIs.
->
-> Checkpatch reports 6 CHECKs (0 errors, 0 warnings) on patch 1:
-> - "extern prototypes should be avoided in .h files"
-> - "Alignment should match open parenthesis"
->
-> Both are intentional to match the existing coding style in notifier.h,
-> where all declarations use 'extern' and tab-indented continuation lines.
->
+> Signed-off-by: Eliav Farber <farbere@amazon.com>
+> ---
 
-What is the merging strategy? Acks and all patches go through driver core?
-
-Bartosz
+Acked-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
