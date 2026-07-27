@@ -1,106 +1,94 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C6B93DEFFA
-	for <linux-pwm@vger.kernel.org>; Mon, 27 Jul 2026 07:47:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1EB171E5201;
+	Mon, 27 Jul 2026 09:25:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.237.72.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785138467; cv=none; b=EK305Gs9Ik8oah0cxO5CzY7gfReGU0uEr3vWRA3Ck5V+ahFcl9cNiFUN2ImuNQoleGrGiCIsJYuVis9+N1d3/3MXpb7oHEQv8NVooALGF1Wnp/SPxOpNR50Gpwq7nYxP7AZ5Tmt80Lqvn0IaNb64ccWWFKI+szQN1TOQ9APz8dk=
+	t=1785144344; cv=none; b=kmL36b/mfjL8IUsyr9LbvGGh+gvuLREj8E44YEC8W6xwGUz0W5P+WUC9ZVJgvZ+EFZZNywgyOB39eJ52GBpwW6l0kDtX04CwKhgSKiw55vKgEc4gOIw7Z8G2wLyuNYhwWP/DpEByaPPYhX/FCw8JWr1uJUy5ZfWHgFxJdmvhkZ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785138467; c=relaxed/simple;
-	bh=JvxUq/iYUDkBFhAJpNpfuCTuKCodr+3K1ReumsuOTW0=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kwbkoJr1O7PXKMbZ+K6d63CJp/DzW9OAbMM8GO6x8oEcTeeEAIjnAir4hFOfZ9+22e0v9YFrJEt81n8mnTx4Ak/qpsmRL9VKJ4MIf9pi6eHZdmpIxeMfaWpv6dMYZUoUk+2rTxdlWKzZSJTpLsP0NzyIB3fwyHSLu+prMTC7fiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Us/mk17p; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Us/mk17p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54EDD1F00ACF
-	for <linux-pwm@vger.kernel.org>; Mon, 27 Jul 2026 07:47:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785138466;
-	bh=LMdxTbEBC7qZA8RQ+1HVgfF515tY7oL1xF/DhlIoUos=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=Us/mk17pVkhDMx0imCnsR1/FdtpGBdBr5EmUo+4q/epDMSC7W/btrpK9pjt8V9aST
-	 p7WukUWMZvs0i3uErF8fp85fRYDt+Bw2RTch+g50/U3EvoFsGLFQa+ngHhBauHZDnM
-	 9hXmKph8cFZcqF14pCY8lqoaXj5XFOBkh0J1aD+PVOx2SpwM/OYtWvSLcgVtiX2byY
-	 HUvqZcg0cBbNBuNRdd85ez67E+mDKUuzzlIltzw2zHw4h2ElwVLxO0wGdc4sLcjdef
-	 yWexROKJuXWE74MNxbukUV9VLryzaYWhpjxs8lqMKAoKcFb+355pbUrfBAjFJJJURs
-	 OP2OSaucWDKEg==
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5b0231a3e86so2141754e87.0
-        for <linux-pwm@vger.kernel.org>; Mon, 27 Jul 2026 00:47:46 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RrQu6hs5MqXuhnc1xN8r22AfwHFDQuQ1E/CtK7uQcS7aQjg1jundfeN6+tujiw/cm6E4cnP3T2h++s=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwcHhtFtvfg02VmQ0D082sa/5IIXMNi8VDEFtgdsalSVD2+J1v7
-	IaceGD9OjK3CsmakFWFh6Clad3ZrL4VItL3Rv9Y6jLW2ZK+0zbQbPAQXzjdvCWPqcmIf6cZ97xW
-	eXUwOgW8JxO7P4CdN05NZ81ZvaTnIHWk0RzXCwbTcDA==
-X-Received: by 2002:a05:6512:1191:b0:5b2:8a6a:1dca with SMTP id
- 2adb3069b0e04-5b2c1b297b1mr1336942e87.36.1785138464623; Mon, 27 Jul 2026
- 00:47:44 -0700 (PDT)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 27 Jul 2026 00:47:42 -0700
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 27 Jul 2026 00:47:42 -0700
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260726141029.GAamYVVeVnJfH5ebH5@fat_crate.local>
+	s=arc-20240116; t=1785144344; c=relaxed/simple;
+	bh=fV2JsDwf38hqN8P8ne6MErsPoqTydXKrHauT6xdoXC4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=f2wPrJGTJ+2mJUgcMdq6StkEi8EPwzZPVuQHvlpPHTKZMl/+B01PXPnDPLKSI76lBw5BSDmntm3AruOW621csnwnzr+ooNOfhm361KrvcbPw1KeaYAwakJIYvC4i3ME4FnRCX53/SIUtjG6EPj37yU5tsB++uchHQ6nEEbwuzmY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=52.237.72.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eswincomputing.com
+Received: from dongxuyang$eswincomputing.com ( [10.12.96.41] ) by
+ ajax-webmail-app2 (Coremail) ; Mon, 27 Jul 2026 17:25:27 +0800 (GMT+08:00)
+Date: Mon, 27 Jul 2026 17:25:27 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From: "Xuyang Dong" <dongxuyang@eswincomputing.com>
+To: sashiko-reviews@lists.linux.dev
+Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, ben-linux@fluff.org, ben.dooks@codethink.co.uk,
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+	daniel.lezcano@kernel.org, tglx@kernel.org,
+	ningyu@eswincomputing.com, linmin@eswincomputing.com,
+	xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com,
+	pinkesh.vaghela@einfochips.com
+Subject: Re: Re: [PATCH v13 2/5] dt-bindings: pwm: dwc: Add eswin compatible
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2024.2-cmXT6 build
+ 20241203(6b039d88) Copyright (c) 2002-2026 www.mailtech.cn
+ mispb-72143050-eaf5-4703-89e0-86624513b4ce-eswincomputing.com
+In-Reply-To: <20260724085639.A7E841F000E9@smtp.kernel.org>
+References: <20260724084153.1473-1-dongxuyang@eswincomputing.com>
+ <20260724084320.1586-1-dongxuyang@eswincomputing.com>
+ <20260724085639.A7E841F000E9@smtp.kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260726101739.33170-1-farbere@amazon.com> <20260726141029.GAamYVVeVnJfH5ebH5@fat_crate.local>
-Date: Mon, 27 Jul 2026 00:47:42 -0700
-X-Gmail-Original-Message-ID: <CAMRc=McOT6m1CsmheePCxpZnB+GJmrqYa+D77Dz76Ovy0FPadg@mail.gmail.com>
-X-Gm-Features: AUfX_mwvXfjV5Db7FPNy2PNZM2AvQmMoXAOyTg5q8xJTdsDrQvC7kqKotPet8MQ
-Message-ID: <CAMRc=McOT6m1CsmheePCxpZnB+GJmrqYa+D77Dz76Ovy0FPadg@mail.gmail.com>
-Subject: Re: [PATCH v4 00/13] notifier: add device-managed registration APIs
- and convert drivers
-To: Borislav Petkov <bp@alien8.de>
-Cc: rafael@kernel.org, tony.luck@intel.com, guohanjun@huawei.com, 
-	mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org, 
-	laurent.pinchart@ideasonboard.com, linusw@kernel.org, brgl@kernel.org, 
-	orsonzhai@gmail.com, baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	dmitry.torokhov@gmail.com, hansg@kernel.org, ilpo.jarvinen@linux.intel.com, 
-	W_Armin@gmx.de, ukleinek@kernel.org, fabio.m.de.francesco@linux.intel.com, 
-	kaihengf@nvidia.com, ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br, 
-	paulmck@kernel.org, frederic@kernel.org, kees@kernel.org, 
-	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	platform-driver-x86@vger.kernel.org, Eliav Farber <farbere@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <75b02a0d.8bcc.19fa2e4be0f.Coremail.dongxuyang@eswincomputing.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:TQJkCgA3TJ8HJGdqY0w3AA--.7992W
+X-CM-SenderInfo: pgrqw5xx1d0w46hv4xpqfrz1xxwl0woofrz/1tbiAgEBAmpmNx0dB
+	wACs+
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+	daVFxhVjvjDU=
 
-On Sun, 26 Jul 2026 16:10:29 +0200, Borislav Petkov <bp@alien8.de> said:
-> On Sun, Jul 26, 2026 at 10:17:26AM +0000, Eliav Farber wrote:
->> Many drivers repeat the same boilerplate when registering notifiers with
->> device lifetime:
->
-> From: Documentation/process/submitting-patches.rst
->
-> Don't get discouraged - or impatient
-> ------------------------------------
->
-> After you have submitted your change, be patient and wait.  Reviewers are
-> busy people and may not get to your patch right away.
->
-> Once upon a time, patches used to disappear into the void without comment,
-> but the development process works more smoothly than that now.  You should
-> receive comments within a week or so; if that does not happen, make sure
-> that you have sent your patches to the right place.  Wait for a minimum of
-> 						     ^^^^^^^^^^^^^^^^^^^^^
-> one week before resubmitting or pinging reviewers - possibly longer during
-> ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> busy times like merge windows.
->
-> --
-> Regards/Gruss,
->     Boris.
->
-> https://people.kernel.org/tglx/notes-about-netiquette
->
-
-If the above snippet is not clear enough: *do not send three different versions
-of a series on a Sunday*.
-
-Thanks,
-Bartosz
+PiAKPiBUaGFuayB5b3UgZm9yIHlvdXIgY29udHJpYnV0aW9uISBTYXNoaWtvIEFJIHJldmlldyBm
+b3VuZCAxIHBvdGVudGlhbCBpc3N1ZShzKSB0byBjb25zaWRlcjoKPiAtIFtNZWRpdW1dIFN0cmlj
+dCBwb3NpdGlvbmFsIGNvbnN0cmFpbnQgb24gaW5kZXBlbmRlbnQgb3B0aW9uYWwgcmVzZXRzIHBy
+ZXZlbnRzIHVzaW5nIG9ubHkgdGhlIHNlY29uZCByZXNldCAoJ3RpbWVyJykuCj4gLS0KPiAKPiAt
+LS0gUGF0Y2ggWzJdOiBbUEFUQ0ggdjEzIDIvNV0gZHQtYmluZGluZ3M6IHB3bTogZHdjOiBBZGQg
+ZXN3aW4gY29tcGF0aWJsZSAtLS0KPiBjb21taXQgNWFiOTY3YWYxNmMzYjlmN2ExY2ZhODBhYjgy
+MzY5ZGQzN2Y4MjQ1Mgo+IEF1dGhvcjogWHV5YW5nIERvbmcgPGRvbmd4dXlhbmdAZXN3aW5jb21w
+dXRpbmcuY29tPgo+IAo+IGR0LWJpbmRpbmdzOiBwd206IGR3YzogQWRkIGVzd2luIGNvbXBhdGli
+bGUKPiAKPiBUaGlzIGNvbW1pdCBhZGRzIHRoZSBlc3dpbixlaWM3NzAwLXB3bSBjb21wYXRpYmxl
+IHN0cmluZyB0byB0aGUgRGVzaWduV2FyZSAKPiBQV00gSVAgYmluZGluZy4gSXQgY29uc3RyYWlu
+cyB0aGUgcmVzZXRzIHByb3BlcnR5IGZvciB0aGlzIHNwZWNpZmljIGhhcmR3YXJlIAo+IHZhcmlh
+bnQgdG8gZXhhY3RseSBvbmUgY29tYmluZWQgcmVzZXQgbGluZSwgYW5kIG1vZGlmaWVzIHRoZSBi
+YXNlIHJlc2V0IAo+IHByb3BlcnRpZXMgdG8gcmVxdWlyZSBhdCBsZWFzdCBvbmUgcmVzZXQuCj4g
+Cj4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9z
+bnBzLGR3LWFwYi10aW1lcnMtcHdtMi55YW1sIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
+bmRpbmdzL3B3bS9zbnBzLGR3LWFwYi10aW1lcnMtcHdtMi55YW1sCj4gPiBpbmRleCAxZjlkNzJm
+OWYzNTkwLi5jNjUxNzRlMjA0NWE3IDEwMDY0NAo+ID4gLS0tIGEvRG9jdW1lbnRhdGlvbi9kZXZp
+Y2V0cmVlL2JpbmRpbmdzL3B3bS9zbnBzLGR3LWFwYi10aW1lcnMtcHdtMi55YW1sCj4gPiArKysg
+Yi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL3NucHMsZHctYXBiLXRpbWVy
+cy1wd20yLnlhbWwKPiBbIC4uLiBdCj4gPiBAQCAtNDQsMTEgKzQzLDEzIEBAIHByb3BlcnRpZXM6
+Cj4gPiAgICAgICAgLSBjb25zdDogdGltZXIKPiA+ICAKPiA+ICAgIHJlc2V0czoKPiA+ICsgICAg
+bWluSXRlbXM6IDEKPiA+ICAgICAgaXRlbXM6Cj4gPiAgICAgICAgLSBkZXNjcmlwdGlvbjogSW50
+ZXJmYWNlIGJ1cyAocHJlc2V0bikgcmVzZXQKPiA+ICAgICAgICAtIGRlc2NyaXB0aW9uOiBQV00g
+dGltZXIgbG9naWMgKHRpbWVyX05fcmVzZXRuKSByZXNldAo+ID4gIAo+ID4gICAgcmVzZXQtbmFt
+ZXM6Cj4gPiArICAgIG1pbkl0ZW1zOiAxCj4gPiAgICAgIGl0ZW1zOgo+ID4gICAgICAgIC0gY29u
+c3Q6IGJ1cwo+ID4gICAgICAgIC0gY29uc3Q6IHRpbWVyCj4gCj4gW1NldmVyaXR5OiBNZWRpdW1d
+Cj4gRG9lcyB0aGlzIHN0cmljdCBwb3NpdGlvbmFsIGNvbnN0cmFpbnQgb24gcmVzZXQtbmFtZXMg
+cHJldmVudCBhIGdlbmVyaWMKPiBkZXZpY2UgZnJvbSB1c2luZyBvbmx5IHRoZSBzZWNvbmQgcmVz
+ZXQ/Cj4gCj4gVGhlIGdlbmVyaWMgY29tcGF0aWJsZSBhbGxvd3MgdXAgdG8gdHdvIGluZGVwZW5k
+ZW50IHJlc2V0cywgbWVhbmluZyBhbnkKPiBjb21iaW5hdGlvbiBzaG91bGQgYmUgdmFsaWQuIEhv
+d2V2ZXIsIGlmIGEgcGxhdGZvcm0gd2lyZXMgb25seSB0aGUKPiBpbmRlcGVuZGVudCB0aW1lciBy
+ZXNldCBhbmQgcHJvdmlkZXMgYSBzaW5nbGUgZWxlbWVudCBhcnJheSB3aXRoIGp1c3QKPiAidGlt
+ZXIiLCB0aGUgZHQtc2NoZW1hIHZhbGlkYXRlcyBpdCBzZXF1ZW50aWFsbHkgYWdhaW5zdCB0aGUg
+aXRlbXMgbGlzdC4KPiBCZWNhdXNlIGl0IGV4cGVjdHMgdGhlIGZpcnN0IHBvc2l0aW9uIHRvIGJl
+ICJidXMiLCBwcm92aWRpbmcganVzdCB0aGUKPiB0aW1lciByZXNldCB3aWxsIHJlc3VsdCBpbiBh
+IHZhbGlkYXRpb24gZXJyb3IgZm9yIGFuIG90aGVyd2lzZSB2YWxpZAo+IGhhcmR3YXJlIGNvbmZp
+Z3VyYXRpb24uCj4gCgpIaSBTYXNoaWtvLAoKRHJvcCBtaW5JdGVtcyBvZiByZXNldC1uYW1lcyBp
+biB0aGUgbmV4dCB2ZXJzaW9uLgoKQmVzdCByZWdhcmRzLApYdXlhbmcgRG9uZwoKPiAtLSAKPiBT
+YXNoaWtvIEFJIHJldmlldyDCtyBodHRwczovL3Nhc2hpa28uZGV2LyMvcGF0Y2hzZXQvMjAyNjA3
+MjQwODQxNTMuMTQ3My0xLWRvbmd4dXlhbmdAZXN3aW5jb21wdXRpbmcuY29tP3BhcnQ9Mgo=
