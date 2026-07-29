@@ -1,36 +1,36 @@
 Received: from CWXP265CU009.outbound.protection.outlook.com (mail-ukwestazon11021084.outbound.protection.outlook.com [52.101.100.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AEB63AAF5C;
-	Wed, 29 Jul 2026 15:39:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84D7E3AAF6C;
+	Wed, 29 Jul 2026 15:39:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.100.84
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785339543; cv=fail; b=ouNtsKtbukeDijS5fNjNxXjD8cBT4ts8VgNu7TGSXXk7v1CdsiEGARNUjTl20UEJFPuHplzes7cemHavUSq3pr9mEnPwIWvOzkXa1whao62bhyRAAkTt8l+GHJf3gOvdqmeeCPtH2P8ipHtfSfbtSxo2aC2E08gfePRCKkcz4c8=
+	t=1785339545; cv=fail; b=U78/8d16ydlrT85jhuMMBEW5PrrS8xIrrMjuomQcFdSYJTrAazFvTpl5mJiKOVON0eGLdMIbFVgpT4kO8ZouhTHZNMO9viSt2A4qb8JQiRgoBmG+GqYupwhbtGbIbtxpeny5IPf1ZJPK9caDtWAMQTX/a0aypDWianlVctpasQg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785339543; c=relaxed/simple;
-	bh=9QZwCl8ntNV/87PfNLRxepcne4jqatcn4iSr48gqvbY=;
+	s=arc-20240116; t=1785339545; c=relaxed/simple;
+	bh=VEQEJJbsDI8hY5xCoH48JC9TExDj/LVMNtVpVom2uzo=;
 	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=kCfBxneyzTGwJPqmcj8DMkIPh4eRdEFQn9lPd+qIH45lDHBwZ/X2Xs7xD7yxyfGYAlVu/naNIgY43jhQXQv4xdT6OegIiMRWbNJe2PFG9k0Z/Rw+yg3F6NwZyVlqxtQUKQZSmUmLaedzxzJiTfYY/3O3Za08AxHw8S9fh46U1Ko=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=cBl+Z7FL; arc=fail smtp.client-ip=52.101.100.84
+	 To:Cc:MIME-Version; b=jKJOZh4+UtEMuKwOdGJJJLfr6hvtd4zs5PsOKwAxHqKRC37Xx9nuuClNKbI5YAAP51g5noClir0zXW0HwggkZgILkheHs8gh5mhoY+nFRaQhaQft0kkMLhkfgnTf64QgTOLHNBoZofSxHAG/YmenO84dJDdW70YaIsWgWPycicM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=YVlkvYqE; arc=fail smtp.client-ip=52.101.100.84
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="cBl+Z7FL"
+	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="YVlkvYqE"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=axvlFavqVfHWvDANZAhKShBnv5lf8ih/O3Hij6CRjzdnIGnthKfF70xL+HIrH5iD5IbV6TtlJMKCqrlo2o/K+1Kde2SDC9tS9rjpX5q4VVPeTc7mLIvgAbAQ1qX9dn0gtpLVywhNO2gvmPyeF+JUXtgZwhgVADFPLevUUjRS9laW+ftTieFnqx2/YSlrQztfrd6nQj3tMLBRPGSgh6utysV46Y/NANYBt9JNUgDaN7dTD3aVUoHcXkEcpzVjjENbU9fMpC82HEJhPeATVdau/wlSXA6etegWdPEXEKd2CVuAm9Y+r4H6Ct9YJQDfyiW0FtPD0X8WXPc1NVzKSKpLZA==
+ b=AB+Lv5wz4e++ZtHALJ1R2srl1Wdl2eb0EEJu+Mr6egSawyqH0uPGrcLozb42tIMDmIon40Yuzyc+ws3otgSx5/LIbIojHV+e36HTSruZjHz4Xq6Gx1mtbEtx/xv6r5zAme/ybsnq6AtSoIpKQ5nFsMWNuLV8QRk9TIxhHcLvc12+iS2QvSJ6TW3rWraejkkZ+rVMToG8wA+hW35Oyke3l5yDrCG4Y/q+qnGvcl0Mh93AyjtLAHoQDldNSn47y2fcw25bWIv/ZP4sQycTQGaOMeY4SjuQmNoCmzeI2nHEWLpn3+fMI6hOp8+U+u5joKRAFbDQgldu2fZUQoH0EHUuFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Y8Vx6XgrSuMsl8C3R1k2ToTdC7o+9nGeRS/aNSzJi1I=;
- b=w0Jfly9Kf8g3ZIlqZmYfdV1TuzqzsbOKmpLoXndVxq2Z+Bo+NRKWEDKXPawOo8Z3pNQfGY/FdkSPE73yRMs/2KGaz2pFLI8kK51dAE7C36TIWB01PCS0xPkGxUU3kB++gjRnHnUwiNQjtgCLKSP0UjcJYhH/Matigb5k95ZSK2wUsyTCCXHz+tJD/nrBA3xx6NcdiOHMqzTc+tKMs636ZYpAh7+OytpfGtUy+Nazdggg5SN56rDF5vdzi4bM3SMjH0tjtNa3MF1X27qGH0onYejD/XTU8ocAf4vLKmu6q/twvGmYp4aDwMMTKBaEx4Cu1s10mUbFk8nOwGpckSB22Q==
+ bh=EHlz9WAI7S//M+J0yaYaE0PSAJUtSeCjjL/fnGXasdM=;
+ b=Rm4iIQkNop7j8eRJXTbebn/MSiTTGPuiiN5phverouX3n4DTndYIqODDIW1ewm5umVXQMKZMbPoxieVi3N+A7z5BAL9RdXbShUT/5uiFDELIriglKZRXKzro79RdT36y3ygnWmXvoW7Gp1Ov+tKINxl+bAAGQsTe3KYSuzEnh6Xx0+7miaSEd7rwPE/k42jAh34rhzSlGFSzzlP0fOBJ/ltAzQecT3VjKXvDDGHFfjnmJdIEixlyDASEr69f6Jup5XlX+3ycPBek6l3wuVq2DzL2Sbxxf0+HFByJBXuWTjNUF2GCTX7CvJg86RP8JZh8QGJBwvBy+Y80DprzHn+dVg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
  dkim=pass header.d=garyguo.net; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y8Vx6XgrSuMsl8C3R1k2ToTdC7o+9nGeRS/aNSzJi1I=;
- b=cBl+Z7FLd9O5WuzK86CY+HkzofvFF6kbJLY8elhJuj1yVhnyHUUkkj342QjOHumjCCrXFSxaH/aKZOLqVEDJC3B+QcTO+xxbvWn/7T+HInlPKV+wYdLyKa1KwQQWClWqCr9uHtjdDer1U6yZQN35TNNDc+KZkOLX0A7XPP31hiM=
+ bh=EHlz9WAI7S//M+J0yaYaE0PSAJUtSeCjjL/fnGXasdM=;
+ b=YVlkvYqEcmaYutN25jLLqZQk+Cw9BmHgW7dltyo0MpugY8ee5A5FaGAMno0tIWfag6tdUL9kjtNl8+8Ilx3MqF8ORYH9cy83+CZe2Dmn8yJqlP2wD8dM0ORdgjxDiwPao0DSs4NI7BC9XPWK6U/nUiudkV3vVeT2pgvInFoRVJ0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=garyguo.net;
 Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:488::16)
@@ -41,14 +41,14 @@ Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:488::16)
 Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
  ([fe80::1c3:ceba:21b4:9986]) by LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
  ([fe80::1c3:ceba:21b4:9986%2]) with mapi id 15.21.0270.009; Wed, 29 Jul 2026
- 15:38:51 +0000
+ 15:38:52 +0000
 From: Gary Guo <gary@garyguo.net>
-Date: Wed, 29 Jul 2026 16:38:45 +0100
-Subject: [PATCH v2 3/5] rust: pin-init: add `ptr_init` and `ptr_try_init`
- and recommend over `__init`
+Date: Wed, 29 Jul 2026 16:38:46 +0100
+Subject: [PATCH v2 4/5] rust: treewide: replace `__pinned_init` with
+ `ptr_[try_]init`
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260729-merge-init-v2-3-26adf47109e7@garyguo.net>
+Message-Id: <20260729-merge-init-v2-4-26adf47109e7@garyguo.net>
 References: <20260729-merge-init-v2-0-26adf47109e7@garyguo.net>
 In-Reply-To: <20260729-merge-init-v2-0-26adf47109e7@garyguo.net>
 To: Benno Lossin <lossin@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
@@ -64,11 +64,11 @@ To: Benno Lossin <lossin@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
 Cc: rust-for-linux@vger.kernel.org, linux-pwm@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Gary Guo <gary@garyguo.net>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1785339529; l=3908;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1785339529; l=13259;
  i=gary@garyguo.net; s=20221204; h=from:subject:message-id;
- bh=9QZwCl8ntNV/87PfNLRxepcne4jqatcn4iSr48gqvbY=;
- b=7+ZVEXKpBDz/J+X+gOOpKMon60tBLRj5pgNlEFh4757aKUnIFS3ht+8mfFkdgkaEaWqorXhMm
- XclGyl3IFeMBVcpHnJTVLtaFWRvEA2U87kiZAkIvGehtJEOTT4TPCaC
+ bh=VEQEJJbsDI8hY5xCoH48JC9TExDj/LVMNtVpVom2uzo=;
+ b=umXMuRHHErVgK/XOlzuD3oMp+vFsfOjy0AT+rqn5d4F9OBFwEifAtlPITwIbWU0nefmqozLW8
+ i4PyKw5oHlVAMJ2c87ejm79KKWNkwUT6lS6fkr8NdVjYZesyRkpuUx7
 X-Developer-Key: i=gary@garyguo.net; a=ed25519;
  pk=vB3uIX95SM4eVrIqo1DWNWKDKD2xzB+yLLLr0yOPYMo=
 X-ClientProxiedBy: LO4P123CA0031.GBRP123.PROD.OUTLOOK.COM
@@ -82,159 +82,321 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LOVP265MB8871:EE_|LO2P265MB7156:EE_
-X-MS-Office365-Filtering-Correlation-Id: 886cb844-2ddd-4fd7-f625-08deed877d02
+X-MS-Office365-Filtering-Correlation-Id: 695ac10b-324b-4f27-17c3-08deed877d39
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|366016|1800799024|10070799003|7416014|376014|23010399003|18002099003|22082099003|56012099006|6133799003|10067099003|921020;
 X-Microsoft-Antispam-Message-Info:
-	+f417LilsoKo5TjKYxQLrLO6rtlrAee//KiibGCJVkXwjvadcnyBP0onwLbIuayi2q/gMaSbQaJ5nWbkI1SVosHCq5tlnbGTI0Vmh5RDvKw1GD2xd2UhT8+0MVeHq5W2M0M1+j1fHQ7gAzQH83UmgamLNMm7P/lgIfT9FxgvEIw+wNbegHj7XFLD5DBqmHrV0H2JJzvfb91kchMnmZHNxOo1b0s0AfebkFch9UU9gi5uG/w4oZDvxGjITozkxVf7kTZPaa4C31Ymq6bMNI8zHMXFKJGcDfg3ezKTGAl80jxIoGoluTP5w4zZwd5NQkk8NV0PaB1B+LvJvrzXarq7ZU68yYREl+J51MLcNfyx6hRwCD+Gt8J+3yZFCOR3ZPbtbbbKms4XnodbvtDr6sT2RZ75xOY1jdjTLpF7QsA4l/aZzkGrShgOsUFjqM0pUHbfH566PmU/ba2pvde1OLYsX9IgOYLQNrHZWWlUehKCdZaKDQAHEacaadI1LadAEEXxJlHy02+ifXscBdUWegzAvTIB09JF7l5GYcHJ9gRqSOefcKH6hBwz7iABPPBB19845FeETMyNn6LGiCJa+TycAyhF2Ct6C+GZZ4qRHZ3C34nySkEeUhi9YkC+B8TWpcMDRTUIKdqA5yA9ob5qZAxQ191JdfWJA4Av536BCDSq1VUfizsZMfu58D4YdHaQuVsX7Xz9NKup1KQsq7Wp2gZH2w==
+	H300m2lRGvAoqXnQWkZLz8Suihbqn/gtKwhbiGWeKvw8I9EueXcUFrSZedIHbtj5mUemVvChuD3gGiu2sugKjndLlQUB46Libb2S9F+j8cTq0XZufs+GYCUYx+Fvv/wFPRE50fdAO2qcVR//yffK4rHHQ45SHD5OrGfVOVgH6yfif67uY6Zy1FeOex7XfJN1qLtv7ZvmGokX471qkWv9PYxFYo42qFPWCFXY48I1+IIhr+Dbd2RDQDdL48X6gSyy5H+jQ0nrCswwj4xAcp0m8aqNmXE6stUG3A/dmIJTzGZcLlcp9QrUfyBJ0XZHZfwoGf2drmtb1JhsOHkNJzzaO9Pfi7lKYdW/GYh6MG0scpkUFcE3NNGZCMH2EIpHGC1NihkQkTf5Dfu9J1+6L6+jM6L3i7etzITIkpOGZARDyokQYLs0SfYtIXFeqwiJaOOX44K73rNTlamRWqvUvSCsMPmVZy6Q0hvJTbBd539oIhX9VuRJMvEBqbGG2ixvgA8JCo2p817P0PCLC0Kygwwy+BuR2TktaRcQImyQ/EjRSrlZ/twP77fshDxVSOe8JwjDfxWQR9SXSHqf4ih14h9mMHW2o3bUUlX+OozNMyYEm9TIUKdVMe8WhdzZhQhLbWXmoZnHq2Kiky2tvECc+PH857Gy53/eqHk2zeRLo+pOccQnxydL8Dcwz3tw57pTOwT8nXyQUTwOHFHTMnmT3j9iWw==
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(10070799003)(7416014)(376014)(23010399003)(18002099003)(22082099003)(56012099006)(6133799003)(10067099003)(921020);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZFBvaGxHZURNUVFReW1Fb3E3UFF3K09HSzN3N3ovdEp4TWxpMHU5aVQrc0xn?=
- =?utf-8?B?S094QTRVYjJwY2F3cVlxRndKSFl3QldPbFloOU5Oc0VtL2ZMdVBKSXhJS0FI?=
- =?utf-8?B?clBnYW5nK1NxQnI5VGtFaERWSzg2OTFQTzdRZzFqS1h6Y2FJS2Y1cURDTm96?=
- =?utf-8?B?aDlBZ3d6K0VFdnFJM1J2NkZka2s2THZjTit6R1ZmODZHR3kvRGRWbHNaVWt0?=
- =?utf-8?B?dHBJdklJSDhsblFjaXZEZDViNUQ3a29qd2toTnZCRms4SkFNdG50MzFxM0Z2?=
- =?utf-8?B?TzVORVZKcnEybWpzRm83VzF6UWdtczgyL2RJS1dLeTViM2xTbmNEbGZrVGVh?=
- =?utf-8?B?aE5ZeHB2TTdzc3Rjdy85RUtNZnptdUdQUDJtR1VQTDNzQ1lkazk5VW5QMnU0?=
- =?utf-8?B?TWp5MVk0VGZLRHUwK2JubXl0aWFLL2QxOHBLN3RDdWdVTTZZVEZ6Y2JvY05y?=
- =?utf-8?B?djV0R0NDd3pVQStNR1pjMEMzdUhmQnVaTEN2Y2tMekd0Z3duLzB5Q2kxWHIw?=
- =?utf-8?B?U2xiMXdEVFY2TnhrM2JrZGcvN2JNSG5hVFd6b3lxakoyVTZkR0VNQlYvUDJT?=
- =?utf-8?B?MmFIRWRMS2lPV1hKc3VoN2l3T0U4VXZRRDVlRzFmbUhqL3lPYS9XVmxJU2pK?=
- =?utf-8?B?L1piOXFWb0NzM0dLRXMvbUgvNm1ESHB5V29GT1FBbllhMVlrYTViU3I3a3ly?=
- =?utf-8?B?SEF4cW9INTd2RmhhRW5IcHlFUU9OVk9ibk1ucDlaZi9scXFobDNxcy8yM2ti?=
- =?utf-8?B?TzFnbjdQM3FzMVF6aEszU2JMOGxPak1vN0p1OTNLV0RHWkFlalBIZ0NDblEv?=
- =?utf-8?B?WitxSTFBRThMd0huaW1FLyt2TlhJcW1wY3Y3Vy9tZVU2WWNHTHNISXk0UTlH?=
- =?utf-8?B?V1orV3BRSjArNW9HbnBVZERJR1cxYkQ3S3daeCsrZ0JwUDJNUk9IREEyaUpm?=
- =?utf-8?B?cDlSUjlKU1VZZDFTNUdtaHZxUzZNWDFlRHlBRmJqRFBTWEtXbzg3WHpPN1Jh?=
- =?utf-8?B?Y2hYaElBekJUbmliVHBuKzU4NGtCOHQ3WXNCOG41Y21BdkpRRW9TQ3MwTlRR?=
- =?utf-8?B?cHg4VjV6VWN3NWdFMVRmaVpFN2JqejRJWmVTVVE3dklGbW4rcGg0a0xFREZa?=
- =?utf-8?B?bWJqTXRDVmVnMnFyV0dQZnVFN0kvNHVUdjF0RXNvdDM0d2wwNk0xOTAyREdo?=
- =?utf-8?B?Y3d3SWRZSzMwSEhzdXlQZlV5bXJwSzNJUm9tUzlkYTIyWjBsbnExdzBJL2F5?=
- =?utf-8?B?NXdQYTFmZHlsQXhxSWNBb0R3OTUyNFh4QWJDT1hteWxHWi9NandxdHVid2JT?=
- =?utf-8?B?RkV4UysxdXlUb3pXT2Y1c3BWZjNIMDNWOE5qVmk5bkJOT3puNUFJMDM3T1U5?=
- =?utf-8?B?Y3ZpLzdVb3ZJU21IdlQwRkFRSzZJZG9NSGdKeVkzZDAxSnVBb1J1THVjZnhO?=
- =?utf-8?B?VkEvYVRISVVkV1VGQkdVenNMb2FlT3pzUENGY3liSE9FamtQS0hZanJkaVd3?=
- =?utf-8?B?ZGN2dmVxdEZBenllVkVKemQydEFrYWt2WVVlYzFRQW44cnJyNllmRmpacklK?=
- =?utf-8?B?L1F3UC9PNVgrYkJCZGVRK05MbEpuZ0pyUy85bkljWGowZCtXeDFwTWh4cDE2?=
- =?utf-8?B?OTRzQkZpbVExSFhVN1lUMU95enpidFl1dTRvcjZ4T2MwTHoxb2NKbGxpelp5?=
- =?utf-8?B?MDlvMjZrZXpSak5vbmZENEhWZ2x0cm5zTzJYdERKemFxdW9vYzAwSXNIQjJh?=
- =?utf-8?B?Ky9zVXFmbnhDTGNBSzBIbFZuOUVUMktWYXFGQWkrRnM2RTltRFpTYUpCaDdM?=
- =?utf-8?B?Unl2NVlhZHhyQkxNbm9LSjFiajJ1d3A2KzZlQUNaZlExVS92eDAxNVRMY21M?=
- =?utf-8?B?cHRBTHlGTWFiRVkxWmVIdklIQXpHZVVCY0hyNkhndTJVRzVDeUlNSWNwYjJa?=
- =?utf-8?B?aDR6VFdxd1ZmdURWNThIVkNROFBMMFRYSEdQeldMOWhVZ1JmWHQ4WE9HOXhW?=
- =?utf-8?B?Ujd6dlN3djAwVk5ld2ZKWGI2bFU4eHRLQlFTUkUrN1JNVjBvcjlsKzV1Z2Zn?=
- =?utf-8?B?MnpvdFJ0WTRNNmFFNENNYWtUWWp5Vk8ycEJHVTJ6ci9Eelp0NHNCSXBmY1dh?=
- =?utf-8?B?a1RJN09WUXV5SVc3eDBlZTJnVDJzRWJKUmw5VTk2dTJEOU0wbE9vRG5SemVt?=
- =?utf-8?B?SkpTR3JKdGtxVU5aWHhTNVlzMnVRT3dqRkx5YSszbHJubWtZN0ozN1IyUXpq?=
- =?utf-8?B?UHY2ajh2VWNsUy9IU1BFcW9EQzlpZ0F4UFA0dHcxTXVPM0ZDNkZDYkkyL2Vt?=
- =?utf-8?B?REUvZ3lEbVp0cGEwcWhSUWJ2UXdXZDh2UXg2eDcxUnZWOUM5S2pVZz09?=
+	=?utf-8?B?aXNKOGtPYmNLdDZQdmc4enlqZGl3MDdFZ0I3SCs4eVdjalFvMnhnTUpuNkN4?=
+ =?utf-8?B?R2NHTzloR0lsRnpBTW1sSGljcThsT0srYWNGY1pxa05KMHpjQzFQQ21kREJF?=
+ =?utf-8?B?K3JEVVFxeVI4UTlOeVlDK0NEUEpOQURNZG1lR2NleHpDVTNhM1l2K3hhZkds?=
+ =?utf-8?B?SU13ejdGMVk1K2RGVTB6UDc3OENKNEpKQTB1Y1Vha2ZlTDkvUm0yUTNNSkdh?=
+ =?utf-8?B?aXArb29lSlVvVG8xUFFRL0dHZnl3T3o3NHhTc2pYME1mL1lsaVJ6SzZVZS9N?=
+ =?utf-8?B?cnp0R2xQeTh6Y3FrUGU0MEpuVVZvclg2WTVsc0NRQTg2MDZaVFF6bGJsMU45?=
+ =?utf-8?B?WURuOXdTS1cvMERFUHVFdG03TVE3L0cyQlB2Y1VHdjhMdHVBbnVVZUNGc0tr?=
+ =?utf-8?B?WFE1c0VpeGpvMDFQMU9tWDlhaVJKTmpBZmc1WmlQZE8vb2pzMVc1UGpydm01?=
+ =?utf-8?B?N1NUOFE0YTFlc3czdEtjMjhmOWRRTGs0RiswV0dUUEQ4ODBpSXdNR1Q1ajhF?=
+ =?utf-8?B?eG02eTdkZFN3d3dxYlRLc0k1MUlaZmhBQWs5TE9rWlIrOFFrSzRQdjlGQ2F4?=
+ =?utf-8?B?aWVHTXVMQXRhTzFkV0FnV2l2ZnJENU1ON3pnN25yQndpZERtVHRmSEhNbm9X?=
+ =?utf-8?B?MCtUcnl1MnExMTBNVytzbzMzRkF5eVNNMDVoVjlPRGpha0xZTnFvVENtN0dP?=
+ =?utf-8?B?RVgwUWxUbzg5ZmFybmdUb3hBbFZ3R292TVhaaU1TcnFyMUZQclY4cUk5MWg2?=
+ =?utf-8?B?RFp2bTMrNUVnRlRma21SUnpoa2dXSzBMbWE2NWwzWW5mRjZzdmJFZk1lTXNp?=
+ =?utf-8?B?RHYvSWJnUkxqaG9INDBMOVQ4dk04OUNDSHo3K1dMVnBIaWRpTjlidzV3ZlJ2?=
+ =?utf-8?B?QTl4cUpVaVo3elBkSU9tN2d2RWpMdkdMMWtraGkxcHF5ZkhSV0tkSWNTR1hp?=
+ =?utf-8?B?UGEzenZIL095alNZd09KNWhSU1pvWGtYaHkwZmxvSGhwNTIyWWsyRSs3clV5?=
+ =?utf-8?B?Q2dmdUdBcTJGLzlCaGJwRzJFVFFEY1pxTldydEI1N1ZrOVJkVDdUV0NWU0lt?=
+ =?utf-8?B?b280TklKbFNVbUFrNXEyQUVhbzR5ZEtiTnEyZlBGMkZST25pTTA4dzN5UlZh?=
+ =?utf-8?B?eVFvc2x4Q3BmdVFFdkpkSnd4MHB5OUVCN3hFMExYVnVsbFpuWE9XMUdNVnpK?=
+ =?utf-8?B?ZFNMYlpPQnRITDVCYnNGT3hoelU4a2RKUWtBUUVWZ1I3YTZmeHZBeTdmSEdB?=
+ =?utf-8?B?TS85TTJuK2ZyTWVSaDBvaWVlSW9WWEhGUC9UUk9sd204OFlEdVA4NnBGV29l?=
+ =?utf-8?B?dnJMS3U3ZlMxdXhwQlQ0eVhzM2FlOVRuZ3YrQ0t0MXo4OS8wWUpNelVXUGFq?=
+ =?utf-8?B?bHJlMmd0QXRlYk1TK0NuSVZWbVExenNXU3ptQy8vVG1ZZmM3QU15RHR3THYx?=
+ =?utf-8?B?VVF3RjhodE0yOTBQTlJCQWE2cHNpemV6WE9DSkwvVW8ydG5ML0FhWUlGRzBU?=
+ =?utf-8?B?cHZXVkxIODFWNFQ4RlRaVjFzNWUwWUFiS3J6bGRwdGJNZU1YRHB2M0RXbmoz?=
+ =?utf-8?B?eGo5MVR3ZHlyT0ZsZ2pibW9tVXBTaEJISkhZNTUyQU9JU2NaYlVBbUczNFY2?=
+ =?utf-8?B?dzdIcmNWdEgwcmFlMEhVSE1qSURYR1VVWkx0RSszVTVreGMrVFVYYnJsOUZY?=
+ =?utf-8?B?SlNOWk1DVnZvZmc3U21vMUdGbEdMTEFNaStTQnBnNDd4VmZSMHlaNHRxTHpO?=
+ =?utf-8?B?RlltQnRGcEVJZ0tTS0NvTlpJb0VSN1h5RXpuRVVmM2tVVUtDL29BZk9Td3Y0?=
+ =?utf-8?B?b25Wb2QxY21TU0Myb0hNcWkrL3JUblNpU25VSGhOcGpnam03U0FtbkJkWnZY?=
+ =?utf-8?B?YjhRM1UzVXhIWGFZNlVlZHk0bFRucVpqZFZJUnBCQzhXcjZlanBwdTVJUVFU?=
+ =?utf-8?B?MlhQMGlDdnc3elZ5VVlLQkd3ZGx1SDI2OVJCV2xmOGo2UzhQcldoTUV0MG1S?=
+ =?utf-8?B?ZXFYNUdaSjZTNHJJQVhvK2JGcEpWSzdPZGgzZXJXRUdQWE9hNS9TTmg4Z1dS?=
+ =?utf-8?B?UXlFZ2pMdmJyUWdvSlJWYkFlM2RGY2ZxOXhWUmMxTG9JRFA1SENhMCtwdUps?=
+ =?utf-8?B?b094ckJhY0lnbjhJWW41dzVlSGZ2dmJ0NDlDVWVBUkQzSFlEem9pV0d6dzZ3?=
+ =?utf-8?B?ZDkvaTJyUlhFMkZsNlM5L1dRQ1YyZlMxc0JuMG1sbndSamJuWW5tWlVxdnNI?=
+ =?utf-8?B?R0JuZm1kMFRMRFVnWE5ZUHlxTWhWc0VkSWRXRVhtNnNveXdtaDVkcm5RZEdL?=
+ =?utf-8?B?bHZiQVovU3AwY1VGZWhqejVwV0xLd1RwWDlDc3VBcjlIdEFBOVZ1UT09?=
 X-OriginatorOrg: garyguo.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: 886cb844-2ddd-4fd7-f625-08deed877d02
+X-MS-Exchange-CrossTenant-Network-Message-Id: 695ac10b-324b-4f27-17c3-08deed877d39
 X-MS-Exchange-CrossTenant-AuthSource: LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2026 15:38:50.7564
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2026 15:38:51.1055
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DDTyFQGnfe6oNBEXuUAEeUtAIgJO2STCyNzud5ELSAn6sPKpg15izQiCx5ZRE13u7/fAK7ARXNfQWIlIpWPsug==
+X-MS-Exchange-CrossTenant-UserPrincipalName: VG1FDB0zjKS7HY2K5w6rniawO7xQT4nn0LQc3EouyjdxL25q/ljuamBXnyZ4PACkNmJZhfuQxQ0USMAiFlhRRg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO2P265MB7156
 
 The `__init` method is not designed to be a public API (existence of "__"
-is a hint for this); but currently there is no other API that allows raw
-initialization on pointers. Add `ptr_init` and `ptr_try_init` and recommend
-people to use this instead if raw pointer initialization is needed.
+is a hint for this); replace users with `pin_init::ptr_[try_]init` which
+does the same thing.
+
+There are a few users of `__init` which are replaced as well.
 
 Signed-off-by: Gary Guo <gary@garyguo.net>
 ---
- rust/pin-init/examples/static_init.rs |  5 +++--
- rust/pin-init/src/lib.rs              | 32 +++++++++++++++++++++++++++++++-
- 2 files changed, 34 insertions(+), 3 deletions(-)
+ drivers/gpu/nova-core/gsp/cmdq.rs |  4 ++--
+ rust/kernel/alloc/kbox.rs         |  8 ++++----
+ rust/kernel/dma.rs                | 10 +++++-----
+ rust/kernel/drm/device.rs         |  2 +-
+ rust/kernel/drm/gpuvm/va.rs       |  2 +-
+ rust/kernel/drm/gpuvm/vm_bo.rs    |  2 +-
+ rust/kernel/init.rs               |  6 ++++--
+ rust/kernel/pwm.rs                |  2 +-
+ rust/kernel/sync/arc.rs           |  8 ++++----
+ rust/kernel/types.rs              |  8 ++++----
+ rust/macros/module.rs             |  2 +-
+ 11 files changed, 28 insertions(+), 26 deletions(-)
 
-diff --git a/rust/pin-init/examples/static_init.rs b/rust/pin-init/examples/static_init.rs
-index 8e71556ffe85..109cceea2eab 100644
---- a/rust/pin-init/examples/static_init.rs
-+++ b/rust/pin-init/examples/static_init.rs
-@@ -59,7 +59,7 @@ fn deref(&self) -> &Self::Target {
-             println!("doing init");
-             let ptr = self.cell.get().cast::<T>();
-             match self.init.take() {
--                Some(f) => unsafe { f.__init(ptr).unwrap() },
-+                Some(f) => unsafe { pin_init::ptr_init(ptr, f) },
-                 None => unsafe { core::hint::unreachable_unchecked() },
-             }
-             self.present.set(true);
-@@ -74,7 +74,8 @@ unsafe impl PinInit<CMutex<usize>> for CountInit {
-     unsafe fn __init(self, slot: *mut CMutex<usize>) -> Result<(), core::convert::Infallible> {
-         let init = CMutex::new(0);
-         std::thread::sleep(std::time::Duration::from_millis(1000));
--        unsafe { init.__init(slot) }
-+        unsafe { pin_init::ptr_init(slot, init) };
-+        Ok(())
+diff --git a/drivers/gpu/nova-core/gsp/cmdq.rs b/drivers/gpu/nova-core/gsp/cmdq.rs
+index 070de0731e95..dbcd06a43350 100644
+--- a/drivers/gpu/nova-core/gsp/cmdq.rs
++++ b/drivers/gpu/nova-core/gsp/cmdq.rs
+@@ -645,8 +645,8 @@ fn send_single_command<M>(&mut self, bar: Bar0<'_>, command: M) -> Result
+         // SAFETY: `msg_header` and `cmd` are valid references, and not touched if the initializer
+         // fails.
+         unsafe {
+-            msg_element.__init(core::ptr::from_mut(dst.header))?;
+-            command.init().__init(core::ptr::from_mut(cmd))?;
++            pin_init::ptr_try_init(core::ptr::from_mut(dst.header), msg_element)?;
++            pin_init::ptr_try_init(core::ptr::from_mut(cmd), command.init())?;
+         }
+ 
+         // Fill the variable-length payload, which may be empty.
+diff --git a/rust/kernel/alloc/kbox.rs b/rust/kernel/alloc/kbox.rs
+index 35d1e015848d..c04c687b9ef3 100644
+--- a/rust/kernel/alloc/kbox.rs
++++ b/rust/kernel/alloc/kbox.rs
+@@ -372,13 +372,13 @@ pub fn pin_slice<Func, Item, E>(
+             // - `ptr` is a valid pointer to uninitialized memory.
+             // - `ptr` is not used if an error is returned.
+             // - `ptr` won't be moved until it is dropped, i.e. it is pinned.
+-            unsafe { init(i).__pinned_init(ptr)? };
++            unsafe { pin_init::ptr_try_init(ptr, init(i))? };
+ 
+             // SAFETY:
+             // - `i + 1 <= len`, hence we don't exceed the capacity, due to the call to
+             //   `with_capacity()` above.
+             // - The new value at index buffer.len() + 1 is the only element being added here, and
+-            //   it has been initialized above by `init(i).__pinned_init(ptr)`.
++            //   it has been initialized above by `ptr_try_init(ptr, i)`.
+             unsafe { buffer.inc_len(1) };
+         }
+ 
+@@ -463,7 +463,7 @@ fn write_init<E>(mut self, init: impl Init<T, E>) -> Result<Self::Initialized, E
+         let slot = self.as_mut_ptr();
+         // SAFETY: When init errors/panics, slot will get deallocated but not dropped,
+         // slot is valid.
+-        unsafe { init.__init(slot)? };
++        unsafe { pin_init::ptr_try_init(slot, init)? };
+         // SAFETY: All fields have been initialized.
+         Ok(unsafe { Box::assume_init(self) })
+     }
+@@ -473,7 +473,7 @@ fn write_pin_init<E>(mut self, init: impl PinInit<T, E>) -> Result<Pin<Self::Ini
+         let slot = self.as_mut_ptr();
+         // SAFETY: When init errors/panics, slot will get deallocated but not dropped,
+         // slot is valid and will not be moved, because we pin it later.
+-        unsafe { init.__pinned_init(slot)? };
++        unsafe { pin_init::ptr_try_init(slot, init)? };
+         // SAFETY: All fields have been initialized.
+         Ok(unsafe { Box::assume_init(self) }.into())
+     }
+diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
+index 200def84fb69..21e4f7b03836 100644
+--- a/rust/kernel/dma.rs
++++ b/rust/kernel/dma.rs
+@@ -449,7 +449,7 @@ pub fn init_at<E>(&mut self, i: usize, init: impl Init<T, E>) -> Result
+         // - `T: AsBytes + FromBytes` guarantees all bit patterns are valid, so partial writes on
+         //   error cannot leave the element in an invalid state.
+         // - The DMA address has not been exposed yet, so there is no concurrent device access.
+-        unsafe { init.__init(ptr)? };
++        unsafe { pin_init::ptr_try_init(ptr, init)? };
+ 
+         Ok(())
+     }
+@@ -791,10 +791,10 @@ pub fn init_with_attrs<E>(
+ 
+         // SAFETY:
+         // - `ptr` is valid, properly aligned, and points to exclusively owned memory.
+-        // - If `__init` fails, `self` is dropped, which safely frees the underlying `Coherent`'s
+-        //   DMA memory. `T: AsBytes + FromBytes` ensures there are no complex `Drop` requirements
+-        //   we are bypassing.
+-        unsafe { init.__init(ptr)? };
++        // - If `ptr_try_init` fails, `self` is dropped, which safely frees the underlying
++        //   `Coherent`'s DMA memory. `T: AsBytes + FromBytes` ensures there are no complex `Drop`
++        //   requirements we are bypassing.
++        unsafe { pin_init::ptr_try_init(ptr, init)? };
+ 
+         Ok(dmem)
+     }
+diff --git a/rust/kernel/drm/device.rs b/rust/kernel/drm/device.rs
+index 477cf771fb10..290f0cd471ce 100644
+--- a/rust/kernel/drm/device.rs
++++ b/rust/kernel/drm/device.rs
+@@ -244,7 +244,7 @@ pub fn new(dev: &device::Device, data: impl PinInit<T::Data, Error>) -> Result<S
+         // SAFETY:
+         // - `raw_data` is a valid pointer to uninitialized memory.
+         // - `raw_data` will not move until it is dropped.
+-        unsafe { data.__pinned_init(raw_data) }.inspect_err(|_| {
++        unsafe { pin_init::ptr_try_init(raw_data, data) }.inspect_err(|_| {
+             // SAFETY: `__drm_dev_alloc()` was successful, hence `drm_dev` must be valid and the
+             // refcount must be non-zero.
+             unsafe { bindings::drm_dev_put(drm_dev) };
+diff --git a/rust/kernel/drm/gpuvm/va.rs b/rust/kernel/drm/gpuvm/va.rs
+index 0b09fe44ab39..b61209090c32 100644
+--- a/rust/kernel/drm/gpuvm/va.rs
++++ b/rust/kernel/drm/gpuvm/va.rs
+@@ -116,7 +116,7 @@ pub fn new(flags: AllocFlags) -> Result<GpuVaAlloc<T>, AllocError> {
+     pub(super) fn prepare(mut self, va_data: impl PinInit<T::VaData>) -> *mut bindings::drm_gpuva {
+         let va_ptr = MaybeUninit::as_mut_ptr(&mut self.0);
+         // SAFETY: The `data` field is pinned.
+-        let Ok(()) = unsafe { va_data.__pinned_init(&raw mut (*va_ptr).data) };
++        unsafe { pin_init::ptr_init(&raw mut (*va_ptr).data, va_data) };
+         KBox::into_raw(self.0).cast()
      }
  }
+diff --git a/rust/kernel/drm/gpuvm/vm_bo.rs b/rust/kernel/drm/gpuvm/vm_bo.rs
+index c064ac63897b..cb0662c71087 100644
+--- a/rust/kernel/drm/gpuvm/vm_bo.rs
++++ b/rust/kernel/drm/gpuvm/vm_bo.rs
+@@ -181,7 +181,7 @@ pub(super) fn new(
+         };
+         let ptr = NonNull::new(raw_ptr).ok_or(AllocError)?;
+         // SAFETY: `ptr->data` is a valid pinned location.
+-        let Ok(()) = unsafe { value.__pinned_init(&raw mut (*raw_ptr).data) };
++        unsafe { pin_init::ptr_init(&raw mut (*raw_ptr).data, value) };
+         // INVARIANTS: We just created the vm_bo so it's absent from lists, and the data is valid
+         // as we just initialized it.
+         Ok(GpuVmBoAlloc(ptr))
+diff --git a/rust/kernel/init.rs b/rust/kernel/init.rs
+index 05a12e869a57..7d2c6bc5dd36 100644
+--- a/rust/kernel/init.rs
++++ b/rust/kernel/init.rs
+@@ -158,7 +158,9 @@ fn pin_init<E>(init: impl PinInit<T, E>, flags: Flags) -> error::Result<Self::Pi
+     {
+         // SAFETY: We delegate to `init` and only change the error type.
+         let init = unsafe {
+-            pin_init_from_closure(|slot| init.__pinned_init(slot).map_err(|e| Error::from(e)))
++            pin_init_from_closure(|slot| {
++                pin_init::ptr_try_init(slot, init).map_err(|e| Error::from(e))
++            })
+         };
+         Self::try_pin_init(init, flags)
+     }
+@@ -176,7 +178,7 @@ fn init<E>(init: impl Init<T, E>, flags: Flags) -> error::Result<Self>
+     {
+         // SAFETY: We delegate to `init` and only change the error type.
+         let init = unsafe {
+-            init_from_closure(|slot| init.__pinned_init(slot).map_err(|e| Error::from(e)))
++            init_from_closure(|slot| pin_init::ptr_try_init(slot, init).map_err(|e| Error::from(e)))
+         };
+         Self::try_init(init, flags)
+     }
+diff --git a/rust/kernel/pwm.rs b/rust/kernel/pwm.rs
+index 6c9d667009ef..5affd88b0fe8 100644
+--- a/rust/kernel/pwm.rs
++++ b/rust/kernel/pwm.rs
+@@ -600,7 +600,7 @@ pub fn new<'a>(
+         let drvdata_ptr = unsafe { bindings::pwmchip_get_drvdata(c_chip_ptr) };
  
-diff --git a/rust/pin-init/src/lib.rs b/rust/pin-init/src/lib.rs
-index fde53473763f..78a67ef54f4e 100644
---- a/rust/pin-init/src/lib.rs
-+++ b/rust/pin-init/src/lib.rs
-@@ -917,7 +917,7 @@ pub unsafe trait PinInit<T: ?Sized, E = Infallible>: Sized {
-     ///
-     /// Same as `__init`.
-     #[inline(always)]
--    #[cfg_attr(not(kernel), deprecated = "use `__init` instead")]
-+    #[cfg_attr(not(kernel), deprecated = "use `ptr_try_init` instead")]
-     unsafe fn __pinned_init(self, slot: *mut T) -> Result<(), E> {
-         // SAFETY: Per safety requirement.
-         unsafe { self.__init(slot) }
-@@ -925,6 +925,8 @@ unsafe fn __pinned_init(self, slot: *mut T) -> Result<(), E> {
+         // SAFETY: We construct the `T` object in-place in the allocated private memory.
+-        unsafe { data.__pinned_init(drvdata_ptr.cast()) }.inspect_err(|_| {
++        unsafe { pin_init::ptr_try_init(drvdata_ptr.cast(), data) }.inspect_err(|_| {
+             // SAFETY: It is safe to call `pwmchip_put()` with a valid pointer obtained
+             // from `pwmchip_alloc()`. We will not use pointer after this.
+             unsafe { bindings::pwmchip_put(c_chip_ptr) }
+diff --git a/rust/kernel/sync/arc.rs b/rust/kernel/sync/arc.rs
+index 5ac4961b7cd2..66af7035b824 100644
+--- a/rust/kernel/sync/arc.rs
++++ b/rust/kernel/sync/arc.rs
+@@ -717,7 +717,7 @@ fn write_init<E>(mut self, init: impl Init<T, E>) -> Result<Self::Initialized, E
+         let slot = self.as_mut_ptr();
+         // SAFETY: When init errors/panics, slot will get deallocated but not dropped,
+         // slot is valid.
+-        unsafe { init.__init(slot)? };
++        unsafe { pin_init::ptr_try_init(slot, init)? };
+         // SAFETY: All fields have been initialized.
+         Ok(unsafe { self.assume_init() })
+     }
+@@ -727,7 +727,7 @@ fn write_pin_init<E>(mut self, init: impl PinInit<T, E>) -> Result<Pin<Self::Ini
+         let slot = self.as_mut_ptr();
+         // SAFETY: When init errors/panics, slot will get deallocated but not dropped,
+         // slot is valid and will not be moved, because we pin it later.
+-        unsafe { init.__pinned_init(slot)? };
++        unsafe { pin_init::ptr_try_init(slot, init)? };
+         // SAFETY: All fields have been initialized.
+         Ok(unsafe { self.assume_init() }.into())
+     }
+@@ -795,7 +795,7 @@ pub unsafe fn assume_init(self) -> UniqueArc<T> {
+     #[inline]
+     pub fn init_with<E>(mut self, init: impl Init<T, E>) -> core::result::Result<UniqueArc<T>, E> {
+         // SAFETY: The supplied pointer is valid for initialization.
+-        match unsafe { init.__init(self.as_mut_ptr()) } {
++        match unsafe { pin_init::ptr_try_init(self.as_mut_ptr(), init) } {
+             // SAFETY: Initialization completed successfully.
+             Ok(()) => Ok(unsafe { self.assume_init() }),
+             Err(err) => Err(err),
+@@ -810,7 +810,7 @@ pub fn pin_init_with<E>(
+     ) -> core::result::Result<Pin<UniqueArc<T>>, E> {
+         // SAFETY: The supplied pointer is valid for initialization and we will later pin the value
+         // to ensure it does not move.
+-        match unsafe { init.__pinned_init(self.as_mut_ptr()) } {
++        match unsafe { pin_init::ptr_try_init(self.as_mut_ptr(), init) } {
+             // SAFETY: Initialization completed successfully.
+             Ok(()) => Ok(unsafe { self.assume_init() }.into()),
+             Err(err) => Err(err),
+diff --git a/rust/kernel/types.rs b/rust/kernel/types.rs
+index ac316fd7b538..46497957d846 100644
+--- a/rust/kernel/types.rs
++++ b/rust/kernel/types.rs
+@@ -417,13 +417,13 @@ pub const fn cast_from(this: *const T) -> *const Self {
  
-     /// Initializes `slot`.
-     ///
-+    /// It is not recommended to call this directly. Use [`ptr_init`] or [`ptr_try_init`].
-+    ///
-     /// # Safety
-     ///
-     /// - `slot` is a valid pointer to uninitialized memory.
-@@ -960,6 +962,34 @@ fn pin_chain<F>(self, f: F) -> ChainPinInit<Self, F, T, E>
+ impl<T> Wrapper<T> for Opaque<T> {
+     /// Create an opaque pin-initializer from the given pin-initializer.
+-    fn pin_init<E>(slot: impl PinInit<T, E>) -> impl PinInit<Self, E> {
+-        Self::try_ffi_init(|ptr: *mut T| {
++    fn pin_init<E>(init: impl PinInit<T, E>) -> impl PinInit<Self, E> {
++        Self::try_ffi_init(|slot: *mut T| {
+             // SAFETY:
+-            //   - `ptr` is a valid pointer to uninitialized memory,
++            //   - `slot` is a valid pointer to uninitialized memory,
+             //   - `slot` is not accessed on error,
+             //   - `slot` is pinned in memory.
+-            unsafe { PinInit::<T, E>::__pinned_init(slot, ptr) }
++            unsafe { pin_init::ptr_try_init(slot, init) }
+         })
      }
  }
- 
-+/// Initializes `slot` with an initializer.
-+///
-+/// # Safety
-+///
-+/// - `slot` is a valid pointer to uninitialized memory.
-+/// - `slot` will not move until it is dropped, i.e. it will be pinned.
-+///   If `init` implements `Init<T, E>`, this requirement is cancelled and it may be moved.
-+#[inline(always)]
-+pub unsafe fn ptr_init<T>(slot: *mut T, init: impl PinInit<T>) {
-+    // SAFETY: Per safety requirement.
-+    unsafe { init.__init(slot).unwrap_or_else(|e| match e {}) }
-+}
-+
-+/// Fallibly initializes `slot` with an initializer.
-+///
-+/// # Safety
-+///
-+/// - `slot` is a valid pointer to uninitialized memory.
-+/// - the caller does not touch `slot` when `Err` is returned, they are only permitted to
-+///   deallocate.
-+/// - `slot` will not move until it is dropped, i.e. it will be pinned.
-+///   If `init` implements `Init<T, E>`, this requirement is cancelled and it may be moved.
-+#[inline(always)]
-+pub unsafe fn ptr_try_init<T, E>(slot: *mut T, init: impl PinInit<T, E>) -> Result<(), E> {
-+    // SAFETY: Per safety requirement.
-+    unsafe { init.__init(slot) }
-+}
-+
- /// An initializer returned by [`PinInit::pin_chain`].
- pub struct ChainPinInit<I, F, T: ?Sized, E>(I, F, __internal::PhantomInvariant<(E, T)>);
- 
+diff --git a/rust/macros/module.rs b/rust/macros/module.rs
+index 06c18e207508..1421109f6487 100644
+--- a/rust/macros/module.rs
++++ b/rust/macros/module.rs
+@@ -621,7 +621,7 @@ unsafe fn __init() -> ::kernel::ffi::c_int {
+                     // SAFETY: No data race, since `__MOD` can only be accessed by this module
+                     // and there only `__init` and `__exit` access it. These functions are only
+                     // called once and `__exit` cannot be called before or during `__init`.
+-                    match unsafe { initer.__pinned_init(__MOD.as_mut_ptr()) } {
++                    match unsafe { ::pin_init::ptr_try_init(__MOD.as_mut_ptr(), initer) } {
+                         Ok(m) => 0,
+                         Err(e) => e.to_errno(),
+                     }
 
 -- 
 2.54.0
