@@ -1,20 +1,22 @@
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [4.193.249.245])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 249DF414A34;
-	Thu, 30 Jul 2026 11:16:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=4.193.249.245
+Received: from mail.eswincomputing.com (mail.eswincomputing.com [123.124.195.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24B4832ED3A;
+	Thu, 30 Jul 2026 11:16:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=123.124.195.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785410186; cv=none; b=R7P3lKX9ILMiPlKyfQsApnMqhK9Kj4pg01by5pwtjBhwGQVr8PhHoKDa9OAAh+UJ6lNSqLy2aoxNUP75Psc2Xcib0flGXVAMgvLY1ymU/FQ2jgkduEKZ1qWQO5xT8rjezMNVIw1ROKWMV65TVfZHGdeRX1prYZq5a0eg+Yz34ss=
+	t=1785410212; cv=none; b=T+F/ifFaqlBs+aj+3VBudP6cni5Z2LHQEN/y9+pbSe78FPBP/0PXIHt8yC0mWEIO0parBIL2ILQqalJSX/IEKyB++f0s5nsE09rRlhY/RMQfor2XljrZ9vvabSxc3NlR8fGWRt71ByRic19CsNPfx2nMxAwyz9i4c/EmwZvVM9Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785410186; c=relaxed/simple;
-	bh=7UbGoFmsSapnL7Ci7zijsKJvRK4+q0LO458b/pdPCOc=;
+	s=arc-20240116; t=1785410212; c=relaxed/simple;
+	bh=TD3loLQ5YkWwKXVcPdCEevsUEF2uDUapDc4CwJqnM5M=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=uMYUJ1SR4YsIwzWND9c/0m0ntq+cW0YhNMko0z31l9arYs+hkfxw1FP3++8cFjsRQb36PnBmyvaqd+icY5aEEdlDt7MierNwcIUwKO8xfJbByw4k/JmTgO6mKpZbZkfXsW2fIOqDS5E2si+lmZbfdxg/JUqw3fYDHr25/L4V2bg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=4.193.249.245
+	 MIME-Version; b=kXAD142nuZVlmfG78IW9aFpirHYN9kc17Pj30IiLzI0LQqw2ryeJdc+CaCf+JI6mNqsHsNBFjXNEt7vpKZT+aXLpVJJpXC00I8Vm8JgNxN3iLYXno/l6Cm/IhnBeWKVbSBcIxBYU995FlNRjbpVWjHHZWlkH5pZky4Q0NzU9VOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=123.124.195.78
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eswincomputing.com
 Received: from E0005152DT.eswin.cn (unknown [10.12.96.41])
-	by app2 (Coremail) with SMTP id TQJkCgCXnpx+Mmtq6M43AA--.4936S2;
-	Thu, 30 Jul 2026 19:16:15 +0800 (CST)
+	by app2 (Coremail) with SMTP id TQJkCgDn7ZuPMmtq6843AA--.4835S2;
+	Thu, 30 Jul 2026 19:16:33 +0800 (CST)
 From: dongxuyang@eswincomputing.com
 To: ukleinek@kernel.org,
 	robh@kernel.org,
@@ -33,11 +35,10 @@ Cc: ningyu@eswincomputing.com,
 	xuxiang@eswincomputing.com,
 	wangguosheng@eswincomputing.com,
 	pinkesh.vaghela@einfochips.com,
-	Xuyang Dong <dongxuyang@eswincomputing.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: [PATCH v14 4/5] dt-bindings: timer: dwc: Update resets property items
-Date: Thu, 30 Jul 2026 19:16:08 +0800
-Message-Id: <20260730111608.1938-1-dongxuyang@eswincomputing.com>
+	Xuyang Dong <dongxuyang@eswincomputing.com>
+Subject: [PATCH v14 5/5] clocksource: dw_apb_timer: Use reset array API to handle all resets
+Date: Thu, 30 Jul 2026 19:16:28 +0800
+Message-Id: <20260730111628.1990-1-dongxuyang@eswincomputing.com>
 X-Mailer: git-send-email 2.31.1.windows.1
 In-Reply-To: <20260730111425.1680-1-dongxuyang@eswincomputing.com>
 References: <20260730111425.1680-1-dongxuyang@eswincomputing.com>
@@ -48,11 +49,11 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:TQJkCgCXnpx+Mmtq6M43AA--.4936S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Ww43tF1kXF1rJr4rGFW8Xrb_yoW8Gr48pF
-	WxCFs2qF93XF13Xw4kJFn2ka45Zas8Cr4xCF1IgwsFyFW7Ja1YqF4Fkr1jqFW3Ar4I9FW3
-	WF4xuw4Yya4jyr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUBm14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+X-CM-TRANSID:TQJkCgDn7ZuPMmtq6843AA--.4835S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Ww4fuw4xGFWrAFyDWFy5XFb_yoW8uF1fpF
+	4fGry3Jryv9F4ruwsYyFyUuryfua1rtFWUGr4Skw4kA3y3JFy8JFW2kry5AFW7ArW0vrya
+	vF4S9w4rua4UAFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBG14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
 	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
 	1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
 	JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
@@ -62,43 +63,55 @@ X-Coremail-Antispam: 1UD129KBjvJXoW7Ww43tF1kXF1rJr4rGFW8Xrb_yoW8Gr48pF
 	Y2ka0xkIwI1lw4CEc2x0rVAKj4xxMxkF7I0En4kS14v26r4a6rW5MxkIecxEwVCm-wCF04
 	k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18
 	MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr4
-	1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1U
-	MIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I
-	8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjTRKtCzDUUUU
+	1lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4U
+	JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcV
+	C2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRByxiUUUUU=
 X-CM-SenderInfo: pgrqw5xx1d0w46hv4xpqfrz1xxwl0woofrz/
 
 From: Xuyang Dong <dongxuyang@eswincomputing.com>
 
-The DesignWare DW_apb_timers IP has two active-low reset inputs:
-presetn resets the register interface logic in the pclk (bus) domain,
-and timer_N_resetn resets the counter/timer logic in the timer_N_clk
-domain. The existing snps,dw-apb-timer binding only describes one.
+timer_get_base_and_rate() only fetched a single, index-0 reset control
+via of_reset_control_get(np, NULL), which does not consult reset-names
+and always resolves to the first entry. With the binding now allowing a
+second entry (APB interface reset), a device tree that lists both lines
+would leave the second entry permanently unasserted, since the driver
+never touches it.
 
-Update snps,dw-apb-timer binding to allow up to two reset lines,
-matching the hardware capabilities of the DesignWare IP family.
+Replace it with of_reset_control_array_get_optional_exclusive() to
+fetch and trigger all reset lines listed in the device tree at once,
+ensuring every line is properly asserted and deasserted rather than
+only the first. The exclusive references are intentionally retained
+for the lifetime of the timer -- the hardware continues to operate
+after initialization, and holding the references keeps the resets
+deasserted, preventing other devices on the bus from re-asserting
+them while the timer is running.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Xuyang Dong <dongxuyang@eswincomputing.com>
 ---
- .../devicetree/bindings/timer/snps,dw-apb-timer.yaml         | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/clocksource/dw_apb_timer_of.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml b/Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml
-index d33c9205a909..4d30cd01ac65 100644
---- a/Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml
-+++ b/Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml
-@@ -25,7 +25,10 @@ properties:
-     maxItems: 1
- 
-   resets:
--    maxItems: 1
-+    minItems: 1
-+    items:
-+      - description: Timer ticks reference (timer_N_resetn) reset
-+      - description: APB interface (presetn) reset
- 
-   clocks:
-     minItems: 1
--- 
+diff --git a/drivers/clocksource/dw_apb_timer_of.c b/drivers/clocksource/dw_apb_timer_of.c
+index 3245eb0c602d..3788b46e49ed 100644
+--- a/drivers/clocksource/dw_apb_timer_of.c
++++ b/drivers/clocksource/dw_apb_timer_of.c
+@@ -29,9 +29,14 @@ static int __init timer_get_base_and_rate(struct device_node *np,
+
+ 	/*
+ 	 * Reset the timer if the reset control is available, wiping
+-	 * out the state the firmware may have left it
++	 * out the state the firmware may have left it.
++	 * Use the array variant to fetch and trigger all reset lines
++	 * (e.g., timer and APB interface resets) together, without
++	 * ordering requirements.
++	 * The exclusive references are intentionally held to keep the
++	 * resets deasserted while the timer is running.
+ 	 */
+-	rstc = of_reset_control_get(np, NULL);
++	rstc = of_reset_control_array_get_optional_exclusive(np);
+ 	if (!IS_ERR(rstc)) {
+ 		reset_control_assert(rstc);
+ 		reset_control_deassert(rstc);
+--
 2.34.1
 
