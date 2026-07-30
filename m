@@ -1,68 +1,68 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E0403D47B4
-	for <linux-pwm@vger.kernel.org>; Thu, 30 Jul 2026 21:30:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D89A3D669C
+	for <linux-pwm@vger.kernel.org>; Thu, 30 Jul 2026 21:30:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785447019; cv=none; b=imdeY+lfc+wMt/MuLzEjhodQfmh7OIymKlXVcDrtsO3PhCSa6yH8T8ahyAD9x6sb0mm51r11CjC9i4wdRhNm9zYQkeZ7uwyK+2n2XEhVYYdoI9n20ZNFMKNMCI3TRKeXZVdse8nVVXA8S3cfMGYHdd9yWVfr2NTfG/eRUVYUa9o=
+	t=1785447031; cv=none; b=EQ0xDxlwsiiwvdNMlCHYMOj322zrbyO1/lNLmJSOMmieeEGe+eO1VjU6/v5N4yBQdAaO0tbuO9ILFd2p2lK5aCa2mWnnN/DbSOAjjtCfz5kd/XW4GLpTTLMpma585qsqt2VT+XePf8edEGrnbZ19UwkjVWyvtc/dTE9sY6nAfsI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785447019; c=relaxed/simple;
-	bh=62lcbR9+Va1j0R9nZb47tv42cOYtl5ojtrYnuKAsAyk=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=XUlKs1ELflUumw9Q/QRtCWJTouqNbKkhPwrPGk08m2SjPePUhDWxbldfhnKkjNXJsBHtP5O1fIOBO3pORhH5BuY+xhj5TFSbcV0Ch8Fg06wp2US+LZ3S81bUcBYk7r/0Lu8uE5lbbg0ct0bK+CsuboyvUEuQK6/TaOgf9703q3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WrL6Qn0V; arc=none smtp.client-ip=209.85.216.45
+	s=arc-20240116; t=1785447031; c=relaxed/simple;
+	bh=kPSU8K3hloJk0CA8KkjVBFkdAjOTtZpzNvFwM4OXI18=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=UzeDvgKr5tnrcniXZ3gX4DgsR9StJUxWrSduPAC+02vYQpzIdqp6CjGsKmhCun8hXs2xeIPL8sT2OA4J7hgYoouIhpVNOHTHr+KImfdCxznKNHe9AtyY7J+FU1U9Fvha6tb4/9tIiUJbtUiE3RVcv/a6VwUWFhYIVnjG5GSqfJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mtVPEDWU; arc=none smtp.client-ip=209.85.214.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WrL6Qn0V"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-38dfe7eb825so304675a91.0
-        for <linux-pwm@vger.kernel.org>; Thu, 30 Jul 2026 14:30:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mtVPEDWU"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2cacf197759so3529455ad.2
+        for <linux-pwm@vger.kernel.org>; Thu, 30 Jul 2026 14:30:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785447017; x=1786051817; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=bwpLtkucjUT6I4TmAoZ2ORiRbxHjHtLbtFrl1jewPys=;
-        b=WrL6Qn0V6+Z3zD68YAhL70UD3WVF+Dqt8hHFvvsyHKUnTGeh1sGzxufaKhTsz82w/5
-         4ojJ+aD34vqS8DOl3+GAs8YjoGxO5qva3sIIpu0xlvgJNhRCrKiD45aXfUa1zHjvgrAu
-         8LZJeVF2w/3tUGZGPbPhqC6GsQVPH6XaxuueDSaH55OKGLJK44caJQ3iU9Q99IWkumaS
-         IKRcgWqehI8ykKLMmYe4akjf7RpqeWUsJoLFEA2aQPAkcCKPsalEEpokYTkFGKZ6t8o+
-         SquWweYhIMvR0b2s2A9ZJ1p3ZBOz7EpwZ65iqorNFT+KJB/S+htheQALLSvYy7xWnLyJ
-         XRcw==
+        d=gmail.com; s=20251104; t=1785447028; x=1786051828; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KJRlG/nhDfRO8KA3xYrGnvb0TOuHPcGeB7eh7wI6Y04=;
+        b=mtVPEDWUCuTdz+e3LgqNxygHIqzI93ShgLoTjYwLyfwwCKdknXR4bmJWl4IpcWC4FT
+         Pn9OsH2/eoz6XgEdcezCjbxlpOppi2z1mZzd8XEyHmgbEaBfFJLqDIELNdjsoKljIFlm
+         FbZwBTTLpyB2KOnB9ejpSmM47gwU4XdbJLJHYWdpn0QGks8WxnBcStYCDVnb7NfEu4eF
+         JCPEsJljds0rD29i4T9aWCLbG+wc3tbD4I+WcxUCaQizKWpeqfFyPTzRtjb+ejy9SFqt
+         GUD2i5iB7Nzg8oODFw8gunT9xpsuJrm0CXUFGsNxXDYoHBmSuVtGW6BZedIZa5dpAtUd
+         m1mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785447017; x=1786051817;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=bwpLtkucjUT6I4TmAoZ2ORiRbxHjHtLbtFrl1jewPys=;
-        b=Pbh4jAcl3+FPNPCxtn7pLYXsYom4CRJdJdRNzaNG8fZKG3kYo5BtZAbnt1ArFVWEUU
-         ivcsmmlnqR/W9w4ThLXowvnaoZoae64We3QT8WQIOcHxAe9CNk414v5Dt++foUmlWDpG
-         YqKhjiMZKBfmZX/0p6kMFB+0SnmLCqxlyJPsJ60/SLOxqvZbPm6UxWDRQzGBR4RBTB/7
-         WWe3fXhwKWh+JLSV4D2YYE+tz/7qP+UWiPLtRw7Ib46CIOq92v1U7HGFb227Oc4glMIk
-         BPJJGDWYRY9yKPCieqE11g/xbhhB2Iz8EiIpKpn9LrbXXtzG7y2l7swlyyCw8QsI/K+S
-         +lIw==
-X-Forwarded-Encrypted: i=1; AHgh+RpPdW/jqV2+k/lMJDA2fTh0R08hKN2/Bp7bIOD2/v+JZpfc/pFZGcuTnSXYI4O2it5/qInDz7m2hG4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxqdeR7hSmtu0Oh4vhatO6iM/yP/cxeWcdMKCCc7bAwql4gZISr
-	7KFNp/MjfESCa77fYHGq+QEAjx9XeD+jzYFcCMF9wuxwtgFNGEZcbzyv
-X-Gm-Gg: AR+sD137a1CYNfx4ejdDkoP7pMR2Y5JJRuX9yQfRF0U2yIENqZHahoWA8h3b/3zH39K
-	f9u1bCuIk1CUJNILROfZxMvq3sRov0LAuBOso2rNim0aeBW/WA3X/rB0Odx7IbRNhMHIvhg+Acf
-	9aMOYb6w0SLzhy4c8aPNb1KfFA4RpNm0uR7LGOTXVdfN6EjKE+ov+FR0cuZNPOGcMKLaeQ6clNh
-	YaCCIyPpXRmMi67iZoaxS2P199bmsVbDuMh5Xk0jLu6qKLAVwkXpAvx6MPq+LLw3ebDDmGqNHDb
-	i5HfSZkJKTWXnTe7pLirdZ231igemnCVroGbsRWZm77BZkcLn7pXKUjYDBxTfNux1ALSZqQFVYO
-	+bTYkzLYqxDaWbvPRzbtcv8QV21TORPV2JAUFUIpUbAdozKXxAa4U+uY4O3FASj5f2vdoEWn1fh
-	xLdj55rJY0S+3mQhlAjFJEOuPuTpLFnnghr0KOr91aQd4Ns+v/bUcm+Ofh/CGT+ie0UkR8QzB4g
-	aKD
-X-Received: by 2002:a17:90b:394b:b0:387:e0db:bc24 with SMTP id 98e67ed59e1d1-38f9c09984fmr3332390a91.36.1785447016666;
-        Thu, 30 Jul 2026 14:30:16 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1785447028; x=1786051828;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=KJRlG/nhDfRO8KA3xYrGnvb0TOuHPcGeB7eh7wI6Y04=;
+        b=U7b51wJ6D0sv0qkMX+vm5Wq/p+h8KbF9BUa2zw0b/j3qnmxOCXr59e+MEnyU+TJPLn
+         p1/kYgcBrC5DP3oOVoNZtSs+flRfnmG1E0/VpiWJgdIeCKgT4CTpKsq8oUers+BHS8BC
+         35EwLThnn8LU/VNlzAFwcD7sJjdB1frSpL7Ool0hQOyz3gVf9rotRHPuVLiO5XE4Yiqk
+         pZeaC5Hv2ZabVgZpA3xwqhjNBlCOLAZOOmL7NrC+rucrwjAVqTsi85wZ+iMFmnCSSQiL
+         RetD+w8jfo/URlkyrO17yISTdW96UUPdbVui6XPqqtRalLAgLNwH5+q+pbxYJlP5iR2i
+         bXfw==
+X-Forwarded-Encrypted: i=1; AHgh+Roy7zNdRpg7lS01MAotkqDHqpZvi3jE9oZogpMCDxQMa5NTHYZ4gNa1bHunj0Px8vRaLii8J/tG/OM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzc65EHG5WJvyfuq+2DTjtrB31AE/tmdVInf17A/gBVHr0jUEN7
+	j+D0LU57KiaeO3O8sXoG0tuBXPDvVajOQwC9cL6q+E3WH5M9V2YnoFo5B/1jSKN1
+X-Gm-Gg: AR+sD11hQcEWwSSeV3SZNj7b7QqZZIDFozvlzXCMQCwche/zFHwphErt8ydY81wFaej
+	PfkoBOhnqeLy2Qy2xs49c58wycaf5havkIC1dkyfkOrmLoiMDR406zsgSmrdSScpHmpsmr+3mUC
+	N72+pOzpGiZQlszSxDXjHdSxV07QLYa5SN/PF+9mQguxhkd6DPJslNz7871DYZp3osDV3HY7g/G
+	ripCP9OEEU7eWr/YoITHntZYqR0rEkY76D4jrRJuj61f58gG0tbxa7NgUV8BGLUGH+kCKafu33M
+	muAva97p+ldzTCIzdPXaP+Sr+SKNnsr/PGc8ZJO5oZwHrj6m3EO5/O9QnXqlqR5NF+qqOClqvYE
+	tCGsB9Qlax5kdZCPpk+PrGHw0ld1lc0DtX4CSQJ+/LOs43yB+CFQGC+w3iPt7YjjkEOmqQFdC/7
+	xomjktAz59erXXQ3MZyMYpUN+N1dsaHi/gvz1ycmPcq88EYxRVNW+Fmc5MdwC6QhXPgvyldEMt6
+	duy
+X-Received: by 2002:a17:902:ec81:b0:2ca:2073:3119 with SMTP id d9443c01a7336-2d035ce64f1mr38650655ad.32.1785447027541;
+        Thu, 30 Jul 2026 14:30:27 -0700 (PDT)
 Received: from tresc054937.tre-sc.gov.br ([187.65.210.13])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504d2ec2asm28584728eec.21.2026.07.30.14.30.12
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504d2ec2asm28584728eec.21.2026.07.30.14.30.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2026 14:30:15 -0700 (PDT)
+        Thu, 30 Jul 2026 14:30:19 -0700 (PDT)
 From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [hwmon-next PATCH v5 0/4] hwmon: (adt7470) Add PWM provider and
- thermal sensor support
-Date: Thu, 30 Jul 2026 18:29:55 -0300
-Message-Id: <20260730-adt7470_thermalzone-v5-0-42995a6bb8c5@gmail.com>
+Date: Thu, 30 Jul 2026 18:29:56 -0300
+Subject: [hwmon-next PATCH v5 1/4] dt-bindings: hwmon: add adi,adt7470
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -70,13 +70,10 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAFPCa2oC/33RS27DIBAA0KtErEMFGAzuqveooorAOCaKoQXip
- o1892B7Y0VWliNm3ny4owTRQULvuzuKMLjkgi+B2O+Q6bQ/AXa2xIgRVhNJa6xtllySr9xB7PX
- lP3jAotGUMCaVlQyVyu8IrbvN6ifqfvvgsYdbRoflLV2PZzB5YqfszqUc4t88wkDnmpfdBooJN
- kYIaCsB1sLHqdfu8mZCP3cY2NqQ2wYrhhaCctkI1Wr7bFQrg6ltoyqG5ULVXCpjj/rZ4Guj2Tb
- 4tAvlpGpsqwnUa2NczhXh51r+JS/3PIzjA3yxf9e1AQAA
-X-Change-ID: 20260716-adt7470_thermalzone-59a102278d72
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260730-adt7470_thermalzone-v5-1-42995a6bb8c5@gmail.com>
+References: <20260730-adt7470_thermalzone-v5-0-42995a6bb8c5@gmail.com>
+In-Reply-To: <20260730-adt7470_thermalzone-v5-0-42995a6bb8c5@gmail.com>
 To: Guenter Roeck <linux@roeck-us.net>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, 
@@ -89,89 +86,85 @@ Cc: linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
  Luiz Angelo Daros de Luca <luizluca@gmail.com>, linux-pwm@vger.kernel.org
 X-Mailer: b4 0.15.2
 
-The ADT7470 is a temperature monitor and PWM fan controller capable of
-monitoring up to ten external temperature sensors and controlling up to
-four PWM outputs.
+The Analog Devices ADT7470 is a multichannel temperature sensor and
+PWM fan controller. It supports monitoring up to 10 external
+temperature sensors and controlling up to 4 fans.
 
-Currently, the driver exposes these sensors and PWM controls only
-through the hwmon sysfs interface. This patch series integrates the
-ADT7470 driver with the kernel's thermal and PWM subsystems. This allows
-temperature sensors to participate in Device Tree thermal zones while
-exposing the PWM outputs as generic PWM providers for consumers such as
-pwm-fan.
-
-Patch 1 adds the YAML device tree binding documentation.
-Patch 2 introduces the ADT7470_PWM_MAX macro.
-Patch 3 registers the four PWM channels as a generic PWM provider.
-Patch 4 registers the external temperature sensors with the thermal
-framework.
+Add the device tree binding documentation for it. This includes
+support for the thermal framework by defining the "#thermal-sensor-cells"
+property, and models the fan control lines as PWM channels by
+defining the "#pwm-cells" property.
 
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-
 ---
-Changes in v5:
-- Hide hwmon PWM sysfs attributes if "#pwm-cells" is present in DT.
-- Register PWM chip before hwmon in probe() to correctly initialize 
-  sysfs visibility.
-- Fix waveform rounding math to strictly satisfying CONFIG_PWM_DEBUG
-  expectations.
-- Return 1 in round_waveform_tohw when the requested period is too 
-  short for the hardware.
-- Link to v4: https://patch.msgid.link/20260729-adt7470_thermalzone-v4-0-c14039dfa0e6@gmail.com
+ .../devicetree/bindings/hwmon/adi,adt7470.yaml     | 58 ++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
 
-Changes in v4:
-- dt-bindings: Dropped redundant descriptions for standard properties
-  (#pwm-cells and #thermal-sensor-cells).
-- dt-bindings: Conditionally referenced thermal-sensor.yaml to preserve
-  ABI compatibility.
-- dt-bindings: Switched to unevaluatedProperties due to the imported $ref.
-- Link to v3: https://patch.msgid.link/20260728-adt7470_thermalzone-v3-0-d4586478cdba@gmail.com
+diff --git a/Documentation/devicetree/bindings/hwmon/adi,adt7470.yaml b/Documentation/devicetree/bindings/hwmon/adi,adt7470.yaml
+new file mode 100644
+index 000000000000..f653a06f241a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/adi,adt7470.yaml
+@@ -0,0 +1,58 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/adi,adt7470.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADT7470 hwmon sensor
++
++maintainers:
++  - Luiz Angelo Daros de Luca <luizluca@gmail.com>
++
++description:
++  Multi-channel temperature monitor and PWM fan controller.
++  It supports monitoring up to 10 external temperature sensors and
++  controlling up to 4 fans. The fan control lines are modeled
++  as standard PWM channels.
++
++allOf:
++  - if:
++      required:
++        - "#thermal-sensor-cells"
++    then:
++      $ref: /schemas/thermal/thermal-sensor.yaml#
++
++properties:
++  compatible:
++    const: adi,adt7470
++
++  reg:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++  "#thermal-sensor-cells":
++    const: 1
++    description:
++      Valid index values are 0 to 9, corresponding to temp1 through temp10.
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        hwmon@2f {
++            compatible = "adi,adt7470";
++            reg = <0x2f>;
++            #pwm-cells = <3>;
++            #thermal-sensor-cells = <1>;
++        };
++    };
 
-Changes in v3:
-- Migrated from the `.apply` callback to the PWM Waveform API.
-- Moved fixes to another patch series:
-  20260727-adt7470_thermalzone-v3-0-21424d550c3d@gmail.com
-- Use guard(mutex) for simpler locking.
-- Link to v2: https://patch.msgid.link/20260717-adt7470_thermalzone-v2-0-a55147958fad@gmail.com
-
-Changes in v2:
-- Fixed 2 previous bugs uncovered by Sashiko-bot during review.
-- Dropped the thermal cooling device registration for the PWM channels.
-- Implemented generic PWM provider support using the PWM subsystem.
-- Updated Kconfig to safely handle the PWM subsystem dependency (depends on PWM || PWM=n).
-- Updated Device Tree bindings to require #pwm-cells instead of #cooling-cells.
-- Link to v1: https://patch.msgid.link/20260716-adt7470_thermalzone-v1-0-cc55ef35edde@gmail.com
-
-To: Guenter Roeck <linux@roeck-us.net>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-To: Chris Packham <chris.packham@alliedtelesis.co.nz>
-To: Andrew Morton <akpm@linux-foundation.org>
-To: "Darrick J. Wong" <djwong@us.ibm.com>
-To: Uwe Kleine-König <ukleinek@kernel.org>
-Cc: linux-hwmon@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org
-
----
-Luiz Angelo Daros de Luca (4):
-      dt-bindings: hwmon: add adi,adt7470
-      hwmon: (adt7470) Add ADT7470_PWM_MAX macro
-      hwmon: (adt7470) Expose fan control via PWM framework
-      hwmon: (adt7470) Add thermal zone sensor support
-
- .../devicetree/bindings/hwmon/adi,adt7470.yaml     |  58 ++++++
- drivers/hwmon/Kconfig                              |   1 +
- drivers/hwmon/adt7470.c                            | 203 ++++++++++++++++++++-
- 3 files changed, 258 insertions(+), 4 deletions(-)
----
-base-commit: 4c2e8c377915496fbe9cc1c9d91a7297aaa01783
-change-id: 20260716-adt7470_thermalzone-59a102278d72
-
-Best regards,
---  
-Luiz Angelo Daros de Luca <luizluca@gmail.com>
+-- 
+2.55.0
 
