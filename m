@@ -1,129 +1,172 @@
-Received: from flow-b6-smtp.messagingengine.com (flow-b6-smtp.messagingengine.com [202.12.124.141])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB07B41CB5E;
-	Fri, 31 Jul 2026 10:45:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 348CF43CE54
+	for <linux-pwm@vger.kernel.org>; Fri, 31 Jul 2026 15:27:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785494739; cv=none; b=kEcfhl0PULzuNN7ovWLrvVRnUXDPWZJlhlfZu9EC2oIpk+iXKw8HKW9XwJE3Zrjhijss2RNEyRJ9D8Q7Vjf0KdLFAtADqqElNhtYWuAwdXhuLJgIKFawOo8IBRYpaooMwbuUZWgfe6h16yHfkGuSgiQV+DYkv5DFBgNqpus9MC0=
+	t=1785511645; cv=none; b=QbOkiBy8lD9dLsDVWjTjSNrMaVKFM5/Okin5FJELQsar8vvch5/1RlHB1XZoO70AOF24xc98PHGopMHNxgKJlspcRe0bP+H/ICnIMHkEroT5dFncGhdLEjBrCJP94WLjSEQPro1hZveE1Ji2XYu5xwByDnxt44v1RHnf2Qcu/bw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785494739; c=relaxed/simple;
-	bh=+kbXW/8CiVNgQ583Y+L3XXnyC+DLZttFI2fL4zNLjCo=;
-	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=Mb632eQSp+6fp0yjn1QXr5TIB+REBiPtPVHLGnpiT1qyWPENKoEQYUZNzRb0pDH8vU3CZbeRAEbhjNFyjfyc2pAe3kMc4xYn56nGw5fPQEDb7RlLuNVx4cQP4aZGS/3XWk43ONfYAZOksd27EkSIxafVfUv4nIPkmWno+Pe9zFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org; spf=pass smtp.mailfrom=flapping.org; dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b=ONehS35z; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XGVbakgg; arc=none smtp.client-ip=202.12.124.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flapping.org
+	s=arc-20240116; t=1785511645; c=relaxed/simple;
+	bh=7klZEho0H83j8ylpjNW4TH0V0nFQueKsAusCKPgOKBY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ew977f+WdJLCjFyCwtUV0JQnY68y8p91al8pJpehFevATnYVmkfDWL70qPqxZtKV/cwDtj4OtRV2IbpWB4E/ZXLPKUQytceDsPXoOF7BQAOu+HBUjyTkeVMgRCoOq7htGhHr+ALZsg6lQ3hCydX/F3Ygdhb6YyrcmM8tBFNIChU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ot8syubV; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=RELFfAQu; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b="ONehS35z";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XGVbakgg"
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailflow.stl.internal (Postfix) with ESMTP id 8440F13000DE;
-	Fri, 31 Jul 2026 06:45:22 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-05.internal (MEProxy); Fri, 31 Jul 2026 06:45:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flapping.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1785494722;
-	 x=1785498322; bh=9cYRjbKynmrdZ6ZOmjPzFzuKEmKJ7o6czSt4sOVcJu0=; b=
-	ONehS35z/NuNbZaHLGNCl+zUbNYQieVo3LvwKS2He3tXuvDALIjKgf2mHpgi5Rbt
-	nK3Y2WDr6boesSgVxRkeScN/0UqJmsg8D/ajYDwnJSMMdMxf1dbwjSAjaMbx4C0T
-	k/mAMltdhQo3iCZL8fdopraAlJzj5+dkAKn22eKLAWIq7FIJhf8yZjBfNmquoT0b
-	V09BLQIC/NJ8uUDGPcGPXp3JgNm/G6166yKOiv703HIhHZDJu08NdS27LXVhJ+ct
-	qjjfPY+dcPwDOZ1XTFzzCs9jE+22SLAR2HfR+/e1fgRYoR4EnIe0+6MEDoFNdMrH
-	BDEEbyKrAeWczqJAYFZ3Pg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1785494722; x=
-	1785498322; bh=9cYRjbKynmrdZ6ZOmjPzFzuKEmKJ7o6czSt4sOVcJu0=; b=X
-	GVbakggSPLxEevBHEbNFNOQ4fjcQiha6yuDzeKjOeHdC7Sr+jkACWTO85OvAAfzT
-	NAk3a8Qc6aQSOSWiyLDlOfnnc1jYruJ/lcquYFXWMlExVIZJWU0hsYpF3lQ5xWQE
-	q5+aR1Cq+fd5fRypRwsQiWXSihZTOdCdKFlvqZ8flJ44KXWtlQQKGc4EdPNr84+X
-	B1dYLN2Lk175ydXKrrC1RqSpQQHhwmaH0wlflk75r0CPX7LZ1xUHjVylhvSRLMwR
-	MVSPFGTfjte/x42ggkLY+yFeRpXo1vfLBc9NhWfM5F6zkQ2moW98V/aXsrU9sa2L
-	XDBRNyQEDmSUGaIZfmYLg==
-X-ME-Sender: <xms:wXxsavqS9NXSdZwLIbjTuGTsn3GGyYSvXMvchKYz8pbQMe4oB0bIkw>
-    <xme:wXxsaj0vjQ8OVTgRre8XjOzcaHURdJhgE0VbcS_E8B_yq1jnMvqih0fYYRcOI3n6u
-    YX3sxUsB97xLsrc0RPXRPBjrK0sjQeJYcmLX8S08BDMNX229paPalO0>
-X-ME-Received: <xmr:wXxsag0JrHIp23tbfQcNF8wWp9xYfCG9UqOAYNIrgXuj2piKN_oHonBW1kN_xGTOIQqTZHn7ZX_7vERFBEHRr28o>
-X-ME-Proxy-Cause: dmFkZTESiYr64BfODGRGPxARRYeKhSgda2bNED5mgnDDVRjzB/sHQAz8QPP74HyW+BeHzE
-    GOSDzxGIQ5lNwHDJMdTOfhQyDL6oLccVwDnPlSVY3RQPV6w0eqxndBDI72OaT/IQWEfZIZ
-    DgX8bp/QOYX4jUwYTX9SycpbLYA29cpSUNxd0sd8897NhsFyBBfKV0JGMLwt2LLSkewFmM
-    z1nB1cDeod8Qbs4I0h4ydQA75LjqZaj2xFg8SALv4KssNLLrtPIZeMWYyc8IHKvkGwQVjn
-    2oc6L2wSy8ixq83mQk3/c8amyXviL0Ydf2VqWh1X0SrRo+NliZU/aZrW6gnx6JrGuV4nht
-    ChzoU4J70ojSSkDfdwfmesqq8xnGusLFp08gp5YoUIT9gD+HmWUWnQYCMJWw5qSuCwpI09
-    23BIvYrgPptd3W60UNyf4bo+x0+dhn/5OJtm16HPfFEdFMkLnUDsapXqJ8O0cxCoCaYLnV
-    82wxzPdF7ygva8dWVYy90jfDoDJptOPzmmk0hPyB4zTJR+smoSPY/CvouZDb7m1AkndN6D
-    u0RD4OAlEIQwiSYbsSomKG4BedEMc7dlsFNY98xi39XaKzPHLWhD+kb9x9YclgI7VrjLQb
-    AllVK6JFGErSnUSnTO3OouUxocCHFG9a5DIYJRV1KBzxVtvNKqtPNA+IP0tQ
-X-ME-Proxy: <xmx:wXxsajcRuwaAHqDvuj2cCXYdePEZ3pI_iZdo_az4JBVv57fVOpzfHg>
-    <xmx:wXxsajIECSGcr3g-dwRrtQ_glJu60iBHbLq1nWfui3wDHi5G-b0riw>
-    <xmx:wXxsaua-kny0ZAfBqv1NsbhiC02tGvPa1pkoJYH6L3Y7TWY9ha3MYQ>
-    <xmx:wXxsagZrDShaAUf7ahxGOxIrPNjn3JLlfNhjII3IVa7idYXyE2wc_w>
-    <xmx:wnxsajC42RPpL2VPiHvHr2JOxhX6PuDYsyJa2YVO9m68CfbHvN5A3qKj>
-Feedback-ID: i51fe4b43:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 31 Jul 2026 06:45:12 -0400 (EDT)
-Date: Fri, 31 Jul 2026 19:45:09 +0900 (JST)
-Message-Id: <20260731.194509.1672759045396477102.tomo@flapping.org>
-To: dakr@kernel.org
-Cc: gary@garyguo.net, fujita.tomonori@gmail.com, gregkh@linuxfoundation.org,
- rafael@kernel.org, ojeda@kernel.org, boqun@kernel.org,
- bjorn3_gh@protonmail.com, lossin@kernel.org, a.hindborg@kernel.org,
- aliceryhl@google.com, tmgross@umich.edu, daniel.almeida@collabora.com,
- tamird@kernel.org, acourbot@nvidia.com, work@onurozkan.dev,
- airlied@gmail.com, simona@ffwll.ch, bhelgaas@google.com,
- kwilczynski@kernel.org, abdiel.janulgue@gmail.com, robin.murphy@arm.com,
- david.m.ertman@intel.com, iweiny@kernel.org, leon@kernel.org,
- lenb@kernel.org, igor.korotin@linux.dev, robh@kernel.org,
- saravanak@kernel.org, viresh.kumar@linaro.org, m.wilczynski@samsung.com,
- fustini@kernel.org, guoren@kernel.org, wefu@redhat.com,
- ukleinek@kernel.org, driver-core@lists.linux.dev,
- rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, nova-gpu@lists.linux.dev,
- dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org,
- linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-usb@vger.kernel.org
-Subject: Re: [PATCH v2 05/11] rust: net/phy: remove expansion from doc
-From: FUJITA Tomonori <tomo@flapping.org>
-In-Reply-To: <DKC7J1TB8TZN.1LT1GJ0WP9LR0@kernel.org>
-References: <20260629-id_info-v2-0-56fccbe9c5ef@garyguo.net>
-	<20260629-id_info-v2-5-56fccbe9c5ef@garyguo.net>
-	<DKC7J1TB8TZN.1LT1GJ0WP9LR0@kernel.org>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ot8syubV";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="RELFfAQu"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66VFOEAS1399713
+	for <linux-pwm@vger.kernel.org>; Fri, 31 Jul 2026 15:27:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	7uFsYuCwq0Qx2h2L72I1/1dKPl18cLwGQgBX9DoqR+E=; b=ot8syubVxIKhBaXY
+	GbPyChFT7d9PiDexEP7CrEwOpsRi04eXQ0sXIz0aj+UnJtEDIRMWEafWe4EZENP9
+	fiwNniIZ+8HMU8SdoY2NEi4wIruZDsnkqBu+tOgNgQ5HClFzpZII4DHoN5rRyweP
+	wPAhFj3UaBiAMiuTzjVN79DhDzL50NrehJvU0Czkr/q4drmt4rDAxdRI1wiiodeH
+	JptdpRGBAaRcMEHsL5PUbyioKRf/4kjA9DoUCfwYftiYjlcHd2G3eowN47I7gtXO
+	soJKm1+8HJWAGTb+N5Ly1C/dWOnYiJzZeosHZifZA+DyP54z6pG88hoV8qgrJSCd
+	lhA56g==
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fru1x8yec-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-pwm@vger.kernel.org>; Fri, 31 Jul 2026 15:27:23 +0000 (GMT)
+Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-51c1e777a15so1705761cf.2
+        for <linux-pwm@vger.kernel.org>; Fri, 31 Jul 2026 08:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1785511642; x=1786116442; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=7uFsYuCwq0Qx2h2L72I1/1dKPl18cLwGQgBX9DoqR+E=;
+        b=RELFfAQuGwVTMoPjQW0CkpzoY3qZ5rAD64tfmeYLQ7YmAQquRNDOgV4H/mIVgHpL5J
+         kK7EnFyrjfDrrWa7Xt6YnBxCKDJt2SHrUPhz3mXYA1ZEVNWPhjc7PTkZ92k8x8z6Eprn
+         HComGYtsU7AfvEkbz7SJ5q/qQh+FB1i/gcNkd5J1RptyFc1zMAJ1B9RsbDDBE8F+St7p
+         kJmcWRsW1iA+E8R6oL92NjteY/Jhmqyrotn/Tiba1W9RFET7IoMYq+HlzJbygr1ERF1E
+         hEhsyiELJ5N+6lk0URri/JKVTif4v4svjL4y9uNcqorKlPbnvXfjHACFm1VfiT0gkzPn
+         4pNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785511642; x=1786116442;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=7uFsYuCwq0Qx2h2L72I1/1dKPl18cLwGQgBX9DoqR+E=;
+        b=Cxjb5PAniAsIt1TRwo6IcaYziIncY3o7SYYjHI12qi0aYjSQTOusK/MgH5E1yKEFw+
+         SNB0nBbZ3HXyibmuxedlUjy9ddLltnM2yjcU/3u5KuthuYT779naRZFjuhjB3SpQFJOF
+         rYhHIOSsOhv8W7Dwv6Ls4EkyKwLlQVanfFsMoH5/aqS1bYZz4aPCtWzWIdtPbTpMEgOO
+         c52QCQIZpZFOOWAXSp7Mdv4p2RYd2mYn+QkM3+9jbhzbp4mvm04tDyZCfIR3H+H41dPB
+         hkK0K4xzNaVdPYxYRqutKsODmseZEVughSELIou89s45aidwsSdcqtLsd6ijCWWXDhIM
+         PIjg==
+X-Gm-Message-State: AOJu0Yyhd4prR+AbH8EsVh0yJ1P8CEFjJvOzN6qzGe2E8iQCQ96p7iFv
+	VL3IhZnco+QBCXb2GGVW6E4NyxNAfEybgBUXFbw5WhDVFbB5KIRF7Togdbi5yvKcUx2AiMm3BMq
+	gxV9GzWy5RfwvVL5rYJDmiEPskP5woPio+MCi0cIjL3Bh1/b2rssS4GFIZ8hbt8s=
+X-Gm-Gg: AR+sD11bVt5eTpos7QW74DHvHXP+2h2LAV2xCdP+zw7UonKNg26rcv+d7ynVqlMCYoO
+	NmcCd/owUZBzQSmpgHMYAgl6hjzXfcb7oMsla4HYQlF7+D4ne3d01tvIWVQzNJRyW3RAER61rAD
+	s6QmKkWMQVWFoSTsdNN4YiE4ZjokEs6iRHHDlj8TzYT4+MKDQbtmuMRrYZZSeZulUR8mRjAkuS2
+	svfXI7vNWry7XWauQ1GQR5AvD+ha4Z4OMC/AShbkCW9FcInkCog48/mOVLvdBlqqtrQuXct0QoT
+	DT4qqY4smnmHYyYfHa07GxLRaQg9C66Z5TR9qNB//uYd5j/soAmjUtqXGzxnoz33NuMZJKnYC2g
+	G34jiMBESb1vPYzgzbXrcvsHc
+X-Received: by 2002:a05:622a:e198:10b0:51b:eab3:4ef1 with SMTP id d75a77b69052e-52b567b3aafmr5993561cf.4.1785511641996;
+        Fri, 31 Jul 2026 08:27:21 -0700 (PDT)
+X-Received: by 2002:a05:622a:e198:10b0:51b:eab3:4ef1 with SMTP id d75a77b69052e-52b567b3aafmr5993261cf.4.1785511641664;
+        Fri, 31 Jul 2026 08:27:21 -0700 (PDT)
+Received: from [192.168.120.193] ([178.235.128.140])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a09c655446sm1975608a12.21.2026.07.31.08.27.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Jul 2026 08:27:20 -0700 (PDT)
+Message-ID: <db3c439b-d5b2-41c5-a3f0-bb528843a85c@oss.qualcomm.com>
+Date: Fri, 31 Jul 2026 17:27:19 +0200
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] pwm: ipq: fix period calculation
+To: Stephane Lepain <stephanelepain@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: linux-pwm@vger.kernel.org, Kenneth Kasilag <kenneth@kasilag.me>,
+        George Moussalem <george.moussalem@outlook.com>,
+        Devi Priya <quic_devipriy@quicinc.com>,
+        Baruch Siach
+ <baruch.siach@siklu.com>, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20260731070542.155398-1-stephanelepain@gmail.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20260731070542.155398-1-stephanelepain@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMxMDExNyBTYWx0ZWRfX6xyIU1eoplPD
+ wm8TYt6ebFordO8163Xvabkud+FnwJUcIGyg+DDCIb0ia97U24G9dB9MI6c2zmXyV//9OTUzHC9
+ CgaXLPYQ7IZscdQqJ5A/rysmDE5g4Jg=
+X-Authority-Analysis: v=2.4 cv=GpByPE1C c=1 sm=1 tr=0 ts=6a6cbedb cx=c_pps
+ a=WeENfcodrlLV9YRTxbY/uA==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
+ a=nVPmijOAcTPNv26JQuwA:9 a=QEXdDO2ut3YA:10 a=kacYvNCVWA4VmyqE58fU:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMxMDExNyBTYWx0ZWRfX5Vj7udqGwlfz
+ FKQAMP+Cn7WkRjOBsMEDJyGPvTXT2HPHr1/9aPvx7q/HOH0CVg730CivVcU10kSa87SmocGXKTw
+ ywG+haqYtpdOmgaf+oLRhf6D/cbbTyDli9ilE2qyvSP3HE7zwNlezL8glySuCV1aQrob8716gR+
+ 0bjI8aBOVgfXv+H1vZzo3R1VJitr67g9PwaGfVeWzvh4X3UMbP6QtxYJ6nn+SwsNU7Vf8Cx7Q5v
+ 6JLPVLi+qBY1mp+dvCiHN5T7q1Qy/fehuOrRQ/zaUbLqoJjRI63dYmzh9WLsogomUgoZ6VhE5zK
+ VUR/STqTTccQeWkf+c2dVE9xq3+2x4lKNmw2TI0E7MeiU3tw+x3V3LZ2ESj8xB9+MKZkynSxhbC
+ IPePgqE5Bz5/p6FaIEtYZRosQXqt+m7+hpKA2h++t5JqWKGd5L13VrBkMAqxHiP7u5VlvN4J+4p
+ lm/ekPncB2V2yjdTTPA==
+X-Proofpoint-ORIG-GUID: hprBziXbCzYQMotQy04AQnHhoBQKP0Hc
+X-Proofpoint-GUID: hprBziXbCzYQMotQy04AQnHhoBQKP0Hc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-31_05,2026-07-30_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 malwarescore=0 impostorscore=0 suspectscore=0 clxscore=1011
+ lowpriorityscore=0 priorityscore=1501 adultscore=0 bulkscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607310117
 
-On Thu, 30 Jul 2026 23:01:18 +0200
-"Danilo Krummrich" <dakr@kernel.org> wrote:
-
-> On Mon Jun 29, 2026 at 2:39 PM CEST, Gary Guo wrote:
->> The expansion serves little purpose and it can easily diverge.
->>
->> Signed-off-by: Gary Guo <gary@garyguo.net>
+On 7/31/26 9:05 AM, Stephane Lepain wrote:
+> From: Kenneth Kasilag <kenneth@kasilag.me>
 > 
-> I did not pick this one up, as it is not necessarily needed by this series.
-> 
-> However, I agree with the intend and I think it did diverge already before this
-> series.
-> 
-> FUJITA, please consider to pick this one up, or let me know if you want me to
-> take it.
+> ipq_pwm_apply() fixes pwm_div at its maximum and derives only pre_div
+> from the requested period. Since the period spans
+> (pre_div + 1) * (pwm_div + 1) input clocks, pinning pwm_div near its
+> maximum forces pre_div towards zero for short periods: once pre_div
+> rounds to 0 the shortest representable period is (pwm_div + 1) / clk_rate,
+> and any shorter request is rejected outright:
 
-net/phy changes normally go through netdev, but this one just removes
-documentation that is already obsolete, so I think taking it via
-driver-core as part of this series is the least work for everyone.
+[...]
 
-So please take it with the series, unless the netdev folks object.
+>  	/*
+> -	 * Pick the maximal value for PWM_DIV that still allows a
+> -	 * 100% relative duty cycle. This allows a fine grained
+> -	 * selection of duty cycles.
+> +	 * The period spans (pre_div + 1) * (pwm_div + 1) input clocks. Rather
+> +	 * than fixing pwm_div at its maximum (which gives usable duty
+> +	 * resolution only for long periods and collapses to ~0% for short
+> +	 * periods) search for the (pre_div, pwm_div) split whose period best
+> +	 * approximates the request while leaving pwm_div large enough to
+> +	 * resolve the duty cycle.
+>  	 */
 
-Thanks,
+I think the comment can just go
+
+> -	pwm_div = IPQ_PWM_MAX_DIV - 1;
+> +	if (ipq_chip->clk_rate > 16ULL * GIGA)
+> +		return -EINVAL;
+
+That's a very fast clock..
+
+[...]
+
+> -	hi_div = hi_dur * (pre_div + 1);
+> +	hi_div = (u64)hi_dur * (pre_div + 1);
+
+This looks like a separate fix
+
+Konrad
