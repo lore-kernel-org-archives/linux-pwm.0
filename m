@@ -1,233 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from sender4-op-o11.zoho.com (sender4-op-o11.zoho.com [136.143.188.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD8E947CA9E;
-	Fri, 31 Jul 2026 19:29:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785526178; cv=none; b=liBRHJ0UQeFoyUOjv5hapb+7+/eZ1eRn9jG7lX2B5XKXeQ+5bDXGonDkwjWEPT0YqiqkiRRJQYpAV6ot6BJu4/WN+wsi/kQPs08PVjVjDcKw3E92YKokDIKZBvW+XnbaXJHCD9cLLDI9z863ar//3h07iajtclC9cyF+ZoMjbW4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785526178; c=relaxed/simple;
-	bh=TFmeCZ/dCUMhaw5MZ56hsGkZXQjACI0WS0CBpsOJ840=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SYxUurnnpWG1hdlBBhz7YdVx6cRbKlQ+na94bOwsbo/iyJkwgsiv+DVo6WkZRHlXir0sGCJu1ADa/bLqtdUpexlg7u4J2PjvlFgz+TMOKvKw3QBF06MqkeutccEOlUiAJ8+5/q9TGzubBjjwJOQwHVY3pn39xM48mVWTx2AuPQQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=giwc9ViN; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 127EF1D95A3;
+	Fri, 31 Jul 2026 21:34:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785533650; cv=pass; b=rZb6ujd5xb/grIUW9InKwRbrLFRTs5xfNr+Wi4Iewwui9Tm0HCApkzyJ0TN7w7tSQBWmglALcz2n3lYDLy2FSDmVL9yI1ngYLsPuDLZHN4kTVqakoSqKQcYE3Rr1UCNZwLI4qGg4QQgHbygelY8wgJt7IoYYNXLZiZMSL3IGPLE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785533650; c=relaxed/simple;
+	bh=28SYLaxEswFYrX7pB/BBBjg3ucFfM5uxTXPR0tHPjcc=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=J0pUB0iAWulU8qW0CUexzJKDLZrdmsduhvL3BFa4jfyzTcTnZkoKM+n2rz4+R64+uAUgHrLBqRJNidn2MnIXh58xD52DBhOH2d/I42TLxg+RvjxPaXRV1z0ZKp5vvTYt+8V7m7NDqaDnl5dwydrQsaKnmLHGDDVK93TfKttji8o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=hv8bf7ml; arc=pass smtp.client-ip=136.143.188.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="giwc9ViN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785526176; x=1817062176;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TFmeCZ/dCUMhaw5MZ56hsGkZXQjACI0WS0CBpsOJ840=;
-  b=giwc9ViNpUDm+aG7vw7Qv2YdG5TRmyCEMCpapGSNQ5FD2tEz+Z+EoQzg
-   +oi8V61KNKbcV3qDvJN1HM0JOpW5DUtWIFDZ7VigDqTBUvld/khWXmSUT
-   Obf38ibAUyK07UN3GXMCVjf8MktrT6SSyJEpN5LF2rYPBj47BKvGbnwnN
-   GbkAS0wn7BxvO5dQ2rPvp63XRXSR6KhTMsak2A2DyASCstfZffM2qrcfv
-   78gSDb4GTETVNyN3Mmp5vMm/GvkvCUhemKoJbL8jZFkTzy1AkWoMoWMVf
-   Ex46gVI6ZLNvISHx4s5T8ylbqJA8wjxvfJfxMcmL4gVvh+oEHPasbg7Aj
-   w==;
-X-CSE-ConnectionGUID: rkeiqQJ/T++48tFuvyuiYw==
-X-CSE-MsgGUID: Pmw6N5UiRYexWu4MIB4vug==
-X-IronPort-AV: E=McAfee;i="6800,10657,11861"; a="90042765"
-X-IronPort-AV: E=Sophos;i="6.25,197,1779174000"; 
-   d="scan'208";a="90042765"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2026 12:29:35 -0700
-X-CSE-ConnectionGUID: qnGitLgpRJ20PIJsLXOqrA==
-X-CSE-MsgGUID: C1mGXY86SZevA5mPOhN5fw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,197,1779174000"; 
-   d="scan'208";a="254358296"
-Received: from lkp-server01.sh.intel.com (HELO 6eda058d650d) ([10.239.97.150])
-  by fmviesa009.fm.intel.com with ESMTP; 31 Jul 2026 12:29:33 -0700
-Received: from kbuild by 6eda058d650d with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1wpsvB-0000000024j-3GQG;
-	Fri, 31 Jul 2026 19:29:29 +0000
-Date: Sat, 1 Aug 2026 03:29:20 +0800
-From: kernel test robot <lkp@intel.com>
-To: Stephane Lepain <stephanelepain@gmail.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-pwm@vger.kernel.org, Kenneth Kasilag <kenneth@kasilag.me>,
-	George Moussalem <george.moussalem@outlook.com>,
-	Devi Priya <quic_devipriy@quicinc.com>,
-	Baruch Siach <baruch.siach@siklu.com>,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Stephane Lepain <stephanelepain@gmail.com>
-Subject: Re: [PATCH] pwm: ipq: fix period calculation
-Message-ID: <202608010336.m82kvZZ8-lkp@intel.com>
-References: <20260731070542.155398-1-stephanelepain@gmail.com>
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="hv8bf7ml"
+ARC-Seal: i=1; a=rsa-sha256; t=1785533593; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=gHWANFQFZoJJaYEhuKmaZUxWUFD+rkzqPNoml4H2CAPw9Eir1vP5sTf8FH55AQFSTqXbJsRM4yw6PQGOM3+kOK3r7L8MauTZbozYas9fQW65jLiuw5EycL0OsVg5TO4UsvIAt6uzxShq3/IXxF0gXXTGZxTO6NkOGsqXv11V2UU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1785533593; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=28SYLaxEswFYrX7pB/BBBjg3ucFfM5uxTXPR0tHPjcc=; 
+	b=i9xAT7I6wpEq5+55Y74aQJDsqPQN2QZYJAo6dyuwFyrXGYK6n0G4QS3yvwaIgiUukMsstV9j9UnOUru03iQu3tpTSKc8NBqBw12A1m0IaT/lICrjJ2XXiPUwRW0CKH/UhDz8g4VaX7/e2TkzPCXoFT47bwxxweCbYOXkFnNFTUM=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
+	dmarc=pass header.from=<daniel.almeida@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1785533593;
+	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
+	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:To:To:Reply-To;
+	bh=28SYLaxEswFYrX7pB/BBBjg3ucFfM5uxTXPR0tHPjcc=;
+	b=hv8bf7mlLR3lRI+e3WrpA+6efQ42RwhE8qX5b9m1qEMxfc9CGh7FGc46xbl6ss+l
+	VAF4ZyymF+yxhahxdJCFv82nK+92hoPQyWArswJxbPIlUignAZgCeUgrBJk8aUD9AWe
+	bpwEq29KEJWbNIYk7JBR1AT6NZeaCco7hOSh9vog=
+Received: by mx.zohomail.com with SMTPS id 1785533591479424.44668881936855;
+	Fri, 31 Jul 2026 14:33:11 -0700 (PDT)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260731070542.155398-1-stephanelepain@gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81\))
+Subject: Re: [PATCH v5 0/4] Clk improvements
+From: Daniel Almeida <daniel.almeida@collabora.com>
+In-Reply-To: <20260731183735.15036-1-mhi@mailbox.org>
+Date: Fri, 31 Jul 2026 18:32:48 -0300
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>,
+ Danilo Krummrich <dakr@kernel.org>,
+ Alice Ryhl <aliceryhl@google.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>,
+ Drew Fustini <fustini@kernel.org>,
+ Guo Ren <guoren@kernel.org>,
+ Fu Wei <wefu@redhat.com>,
+ =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>,
+ Stephen Boyd <sboyd@kernel.org>,
+ Miguel Ojeda <ojeda@kernel.org>,
+ Gary Guo <gary@garyguo.net>,
+ =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <lossin@kernel.org>,
+ Andreas Hindborg <a.hindborg@kernel.org>,
+ Trevor Gross <tmgross@umich.edu>,
+ Michal Wilczynski <m.wilczynski@samsung.com>,
+ Boqun Feng <boqun@kernel.org>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ =?utf-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
+ linux-pm@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org,
+ linux-riscv@lists.infradead.org,
+ linux-pwm@vger.kernel.org,
+ linux-clk@vger.kernel.org,
+ rust-for-linux@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <E20E4FD3-F4DA-4029-99F7-DB4F93AA2994@collabora.com>
+References: <20260706-clk-type-state-v5-0-67c5f326a16c@collabora.com>
+ <20260731183735.15036-1-mhi@mailbox.org>
+To: Maurice Hieronymus <mhi@mailbox.org>
+X-Mailer: Apple Mail (2.3826.700.81)
+X-ZohoMailClient: External
 
-Hi Stephane,
+Hi Maurice,
 
-kernel test robot noticed the following build warnings:
+> On 31 Jul 2026, at 15:37, Maurice Hieronymus <mhi@mailbox.org> wrote:
+>=20
+> Hi Daniel,
+>=20
+> at your suggestion [0] I rebased my `clk_rate_exclusive_get()` binding =
+for
+> pwm-th1520 on top of this series, so it is now waiting on it to land. =
+As v5
+> has not seen any comments in the last few weeks, I wanted to ask what =
+the
+> current status is.
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v7.2-rc5 next-20260731]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Nobody has replied so far. I don=E2=80=99t think there are any further =
+comments.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Stephane-Lepain/pwm-ipq-fix-period-calculation/20260731-152907
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20260731070542.155398-1-stephanelepain%40gmail.com
-patch subject: [PATCH] pwm: ipq: fix period calculation
-config: arm-randconfig-004-20260731 (https://download.01.org/0day-ci/archive/20260801/202608010336.m82kvZZ8-lkp@intel.com/config)
-compiler: clang version 24.0.0git (https://github.com/llvm/llvm-project bacfe2950f8218268fcc0a8765644ea0c15f0360)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260801/202608010336.m82kvZZ8-lkp@intel.com/reproduce)
+>=20
+> If there are no blockers left and you expect it to be merged soon, I =
+am
+> happy to keep waiting. Otherwise I would offer to send my series =
+standalone
+> against the current `Clk` API and let you rebase on top of mine - it =
+is the
+> much smaller of the two, touching only `Clk::rate_exclusive_get()` and
+> pwm_th1520.rs.
+>=20
+> [0]: =
+https://lore.kernel.org/rust-for-linux/140FE1B3-73CA-45EA-B978-648A1A48B57=
+7@collabora.com/
+>=20
+> Thanks a lot,
+>=20
+> Maurice
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202608010336.m82kvZZ8-lkp@intel.com/
+Your series might hit the same blocker as this one. Perhaps we can try =
+to get
+both merged at the same time?
 
-All warnings (new ones prefixed by >>):
+@Stephen gentle ping here :)
 
->> drivers/pwm/pwm-ipq.c:123:25: warning: result of comparison of constant 16000000000 with expression of type 'unsigned long' is always false [-Wtautological-constant-out-of-range-compare]
-     123 |         if (ipq_chip->clk_rate > 16ULL * GIGA)
-         |             ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~
-   1 warning generated.
+=E2=80=94 Daniel
 
-
-vim +123 drivers/pwm/pwm-ipq.c
-
-    87	
-    88	static int ipq_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-    89				 const struct pwm_state *state)
-    90	{
-    91		struct ipq_pwm_chip *ipq_chip = ipq_pwm_from_chip(chip);
-    92		unsigned int pre_div, pwm_div, best_pre_div, best_pwm_div;
-    93		u64 period_ns, duty_ns, period_rate, min_diff;
-    94		unsigned long val = 0;
-    95		u64 hi_dur;
-    96	
-    97		if (!state->enabled) {
-    98			/* clear IPQ_PWM_REG1_ENABLE */
-    99			ipq_pwm_reg_write(pwm, IPQ_PWM_REG1, IPQ_PWM_REG1_UPDATE);
-   100			return 0;
-   101		}
-   102	
-   103		if (state->polarity != PWM_POLARITY_NORMAL)
-   104			return -EINVAL;
-   105	
-   106		/*
-   107		 * Check the upper and lower bounds for the period as per
-   108		 * hardware limits
-   109		 */
-   110		if (state->period < IPQ_PWM_MIN_PERIOD_NS)
-   111			return -ERANGE;
-   112		period_ns = min(state->period, IPQ_PWM_MAX_PERIOD_NS);
-   113		duty_ns = min(state->duty_cycle, period_ns);
-   114	
-   115		/*
-   116		 * The period spans (pre_div + 1) * (pwm_div + 1) input clocks. Rather
-   117		 * than fixing pwm_div at its maximum (which gives usable duty
-   118		 * resolution only for long periods and collapses to ~0% for short
-   119		 * periods) search for the (pre_div, pwm_div) split whose period best
-   120		 * approximates the request while leaving pwm_div large enough to
-   121		 * resolve the duty cycle.
-   122		 */
- > 123		if (ipq_chip->clk_rate > 16ULL * GIGA)
-   124			return -EINVAL;
-   125		period_rate = period_ns * ipq_chip->clk_rate;
-   126	
-   127		best_pre_div = IPQ_PWM_MAX_DIV;
-   128		best_pwm_div = IPQ_PWM_MAX_DIV;
-   129		min_diff = period_rate;
-   130	
-   131		/*
-   132		 * Smaller pre_div than this cannot represent the period (pwm_div would
-   133		 * have to exceed its field), so start the search there.
-   134		 */
-   135		pre_div = div64_u64(period_rate,
-   136				    (u64)NSEC_PER_SEC * (IPQ_PWM_MAX_DIV + 1));
-   137	
-   138		for (; pre_div <= IPQ_PWM_MAX_DIV; pre_div++) {
-   139			u64 remainder;
-   140	
-   141			pwm_div = div64_u64_rem(period_rate,
-   142						(u64)NSEC_PER_SEC * (pre_div + 1),
-   143						&remainder);
-   144			/* pwm_div is unsigned; the swap check below catches underflow */
-   145			pwm_div--;
-   146	
-   147			/*
-   148			 * Swapping pre_div and pwm_div yields the same period but a
-   149			 * larger pwm_div gives finer duty resolution, so once pre_div
-   150			 * exceeds pwm_div every further candidate is strictly worse.
-   151			 */
-   152			if (pre_div > pwm_div)
-   153				break;
-   154	
-   155			/* need room for 100% duty, where hi_dur == pwm_div + 1 */
-   156			if (pwm_div > IPQ_PWM_MAX_DIV - 1)
-   157				continue;
-   158	
-   159			if (remainder < min_diff) {
-   160				best_pre_div = pre_div;
-   161				best_pwm_div = pwm_div;
-   162				min_diff = remainder;
-   163	
-   164				if (min_diff == 0)
-   165					break;
-   166			}
-   167		}
-   168	
-   169		pre_div = best_pre_div;
-   170		pwm_div = best_pwm_div;
-   171	
-   172		/*
-   173		 * If the search found no usable candidate, best_pwm_div is left at
-   174		 * IPQ_PWM_MAX_DIV; cap it so pwm_div + 1 still fits the 16-bit field
-   175		 * and 100% duty remains expressible.
-   176		 */
-   177		if (pwm_div > IPQ_PWM_MAX_DIV - 1)
-   178			pwm_div = IPQ_PWM_MAX_DIV - 1;
-   179	
-   180		/*
-   181		 * high duration = duty_ratio * (pwm_div + 1)
-   182		 *              = duty_ns * clk_rate / ((pre_div + 1) * NSEC_PER_SEC)
-   183		 *
-   184		 * Round to nearest to avoid biasing every duty cycle low, then clamp
-   185		 * to (pwm_div + 1): rounding or a 100% duty request can otherwise push
-   186		 * hi_dur past the period length and overflow the 16-bit HI_DURATION field
-   187		 * (which would alias a full-on request down to a near-zero high time)
-   188		 * and asking the hardware to stay high beyond one period. pwm_div is
-   189		 * at most IPQ_PWM_MAX_DIV - 1, so pwm_div + 1 always fits the field.
-   190		 */
-   191		hi_dur = DIV64_U64_ROUND_CLOSEST(duty_ns * ipq_chip->clk_rate,
-   192						 (u64)(pre_div + 1) * NSEC_PER_SEC);
-   193		if (hi_dur > (u64)pwm_div + 1)
-   194			hi_dur = (u64)pwm_div + 1;
-   195	
-   196		val = FIELD_PREP(IPQ_PWM_REG0_HI_DURATION, hi_dur) |
-   197			FIELD_PREP(IPQ_PWM_REG0_PWM_DIV, pwm_div);
-   198		ipq_pwm_reg_write(pwm, IPQ_PWM_REG0, val);
-   199	
-   200		val = FIELD_PREP(IPQ_PWM_REG1_PRE_DIV, pre_div);
-   201		ipq_pwm_reg_write(pwm, IPQ_PWM_REG1, val);
-   202	
-   203		/* PWM enable toggle needs a separate write to REG1 */
-   204		val |= IPQ_PWM_REG1_UPDATE | IPQ_PWM_REG1_ENABLE;
-   205		ipq_pwm_reg_write(pwm, IPQ_PWM_REG1, val);
-   206	
-   207		return 0;
-   208	}
-   209	
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
