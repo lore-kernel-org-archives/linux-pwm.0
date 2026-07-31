@@ -1,105 +1,73 @@
-Received: from zg8tmja2lje4os43os4xodqa.icoremail.net (zg8tmja2lje4os43os4xodqa.icoremail.net [206.189.79.184])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 783922EBBA9;
-	Fri, 31 Jul 2026 06:41:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.79.184
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE5A03101C0;
+	Fri, 31 Jul 2026 06:57:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785480097; cv=none; b=bsoex5IRqgdQ6yEsGxTZcOmlwIb3O48pDPhYoJTfBhkfJ3HUQca9b4JwMNHpI1RvpG8YdoLMzWfs+sy/FiM6KzDX6HMDq0CJWOGWSqn82yo6pSXZMq3PoJvDPRrsuR1tPIcniKVCGaOrbcs//GWO1KiPM5+M7abYvMeEu/JaKMo=
+	t=1785481030; cv=none; b=HwY0rBP2W/xCS8TMGUETkmf18in2UVzj4P3pnTWkRp6jGq4LYMVKCLkEU+3jE2L/9YoGyW5uTP5Y86FIHyJq8gpdmNh/CCQOrVM+nuiN98CivHSxTMBGJI5UlRTiiQoOvqbs0HhzQ0ay9NilZTkvS/gc7DTlfVmWmU28gHd+T+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785480097; c=relaxed/simple;
-	bh=31TR/mFFgqZHjGtCUMnGHxJv7hNJf+Djh8ajwHRaM2Q=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=SflN2EDog81oAhZ7jczQk/8se2u1BjQ/3aFCDmRekr+4nehTw0uXtrAN3hbsgpUQUWtiAGgJfP8Wq8o7tNefw+hprLfbRwolxXQTAb1lsUs6Z7V8qSook3KR6ZAERFBOdyUqvTSZnGr0JMDMby941lXQHesmv8m3Sef1p59+crM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=206.189.79.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eswincomputing.com
-Received: from dongxuyang$eswincomputing.com ( [10.12.96.41] ) by
- ajax-webmail-app2 (Coremail) ; Fri, 31 Jul 2026 14:41:27 +0800 (GMT+08:00)
-Date: Fri, 31 Jul 2026 14:41:27 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From: "Xuyang Dong" <dongxuyang@eswincomputing.com>
-To: sashiko-reviews@lists.linux.dev
-Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, ben-linux@fluff.org, ben.dooks@codethink.co.uk,
-	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-	daniel.lezcano@kernel.org, tglx@kernel.org,
-	ningyu@eswincomputing.com, linmin@eswincomputing.com,
-	xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com,
-	pinkesh.vaghela@einfochips.com
-Subject: Re: Re: [PATCH v14 5/5] clocksource: dw_apb_timer: Use reset array
- API to handle all resets
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2024.2-cmXT6 build
- 20241203(6b039d88) Copyright (c) 2002-2026 www.mailtech.cn
- mispb-72143050-eaf5-4703-89e0-86624513b4ce-eswincomputing.com
-In-Reply-To: <20260730115229.145411F000E9@smtp.kernel.org>
+	s=arc-20240116; t=1785481030; c=relaxed/simple;
+	bh=VADn+92ixpFyu15QPt4dsSFl/HBjrYkdd84BPy3oo9k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nxhGtPOIagQDk03zRgGyTqNNQDcVjAVTQodd/1f/kCsHKZs2ggb6ovUyM4KeDNFtctCczt1vNJk/T3BmNpb1m2/do4X27XtBQgwRSH95TblYjAY2jDCxhrcCAJlyunJawzEIpV4k2TbfKdhXNHDrVK1NQ61mK2rkZoRbTmae3mc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pf+ikemv; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pf+ikemv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 979061F000E9;
+	Fri, 31 Jul 2026 06:57:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785481029;
+	bh=rTR4Tw7AquFIFAqLaj/yYC+yG2NUbQZyazIKeFZT3Mc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Pf+ikemvejkUNjJZ/9aQVRbsAinZZKrQRd+AMvRNLCzHi5SylD/EIX/44qnfy+R5v
+	 snrblLd6iOv5cD3qHxWN9FBoiIUuTHK+oKEyAfkUBYsBD/bdOx34W1NIAMVcU51YZl
+	 ek+HnlKLa4dZOpSVJatUAmfdegUTyPG90iazrwtdbIrOTuylVOu0fG0S5O8Fh5+8Rm
+	 CQMd9MMqFfG0DCsF4EQMJ8JGreCwzyC5tIZ+PJnZDginmiuqbkIKR7YecOVFW/2gQh
+	 jl+BRS3B4ftMGwvzT9SLIibs5GWr70VqOV3fXTHaAylTNjno9CmKtxTmwKygeJpLln
+	 Q8xrUB1u/2sqw==
+Date: Fri, 31 Jul 2026 08:57:04 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: dongxuyang@eswincomputing.com
+Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, ben-linux@fluff.org, ben.dooks@codethink.co.uk, 
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	p.zabel@pengutronix.de, daniel.lezcano@kernel.org, tglx@kernel.org, 
+	ningyu@eswincomputing.com, linmin@eswincomputing.com, xuxiang@eswincomputing.com, 
+	wangguosheng@eswincomputing.com, pinkesh.vaghela@einfochips.com
+Subject: Re: [PATCH v14 2/5] dt-bindings: pwm: dwc: Add eswin compatible
+Message-ID: <20260731-utopian-fair-mouse-cce8b1@quoll>
 References: <20260730111425.1680-1-dongxuyang@eswincomputing.com>
- <20260730111628.1990-1-dongxuyang@eswincomputing.com>
- <20260730115229.145411F000E9@smtp.kernel.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+ <20260730111534.1834-1-dongxuyang@eswincomputing.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <53385ccd.8eee.19fb6e808f2.Coremail.dongxuyang@eswincomputing.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:TQJkCgAHHaCXQ2xqFPA3AA--.9565W
-X-CM-SenderInfo: pgrqw5xx1d0w46hv4xpqfrz1xxwl0woofrz/1tbiAQEFAmprfKgUQ
-	wACsH
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-	daVFxhVjvjDU=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260730111534.1834-1-dongxuyang@eswincomputing.com>
 
-PiAKPiBUaGFuayB5b3UgZm9yIHlvdXIgY29udHJpYnV0aW9uISBTYXNoaWtvIEFJIHJldmlldyBm
-b3VuZCAxIHBvdGVudGlhbCBpc3N1ZShzKSB0byBjb25zaWRlcjoKPiAtIFtIaWdoXSBFeGNsdXNp
-dmUgYWNxdWlzaXRpb24gb2YgYSBzaGFyZWQgYnVzIHJlc2V0IGJsb2NrcyBvdGhlciBkZXZpY2Vz
-IG9uIHRoZSBidXMgZnJvbSBwcm9iaW5nIGFuZCBtYXkgaW5hZHZlcnRlbnRseSByZXNldCB0aGUg
-ZW50aXJlIGJ1cy4KPiAtLQo+IAo+IC0tLSBQYXRjaCBbNV06IFtQQVRDSCB2MTQgNS81XSBjbG9j
-a3NvdXJjZTogZHdfYXBiX3RpbWVyOiBVc2UgcmVzZXQgYXJyYXkgQVBJIHRvIGhhbmRsZSBhbGwg
-cmVzZXRzIC0tLQo+IGNvbW1pdCA2NmVmM2U1NGNjMWRhYTY3M2VjMmY2YjY1OGUwYTE3ZmI3ZjM1
-OGFiCj4gQXV0aG9yOiBYdXlhbmcgRG9uZyA8ZG9uZ3h1eWFuZ0Blc3dpbmNvbXB1dGluZy5jb20+
-Cj4gCj4gY2xvY2tzb3VyY2U6IGR3X2FwYl90aW1lcjogVXNlIHJlc2V0IGFycmF5IEFQSSB0byBo
-YW5kbGUgYWxsIHJlc2V0cwo+IAo+IFRoaXMgY29tbWl0IHVwZGF0ZXMgdGhlIHRpbWVyIGluaXRp
-YWxpemF0aW9uIHRvIGZldGNoIGFuZCB0cmlnZ2VyIGFsbAo+IHJlc2V0IGxpbmVzIGxpc3RlZCBp
-biB0aGUgZGV2aWNlIHRyZWUgdXNpbmcgdGhlIGFycmF5IHZhcmlhbnQgb2YgdGhlCj4gcmVzZXQg
-QVBJLiBJdCBpbnRlbnRpb25hbGx5IGhvbGRzIGV4Y2x1c2l2ZSByZWZlcmVuY2VzIHRvIHRoZXNl
-IGxpbmVzCj4gdG8ga2VlcCB0aGVtIGRlYXNzZXJ0ZWQgd2hpbGUgdGhlIHRpbWVyIHJ1bnMuCj4g
-Cj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9jbG9ja3NvdXJjZS9kd19hcGJfdGltZXJfb2YuYyBi
-L2RyaXZlcnMvY2xvY2tzb3VyY2UvZHdfYXBiX3RpbWVyX29mLmMKPiA+IC0tLSBhL2RyaXZlcnMv
-Y2xvY2tzb3VyY2UvZHdfYXBiX3RpbWVyX29mLmMKPiA+ICsrKyBiL2RyaXZlcnMvY2xvY2tzb3Vy
-Y2UvZHdfYXBiX3RpbWVyX29mLmMKPiA+IEBAIC0yOSw5ICsyOSwxNCBAQCBzdGF0aWMgaW50IF9f
-aW5pdCB0aW1lcl9nZXRfYmFzZV9hbmRfcmF0ZShzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLAo+ID4g
-IAo+ID4gIAkvKgo+ID4gIAkgKiBSZXNldCB0aGUgdGltZXIgaWYgdGhlIHJlc2V0IGNvbnRyb2wg
-aXMgYXZhaWxhYmxlLCB3aXBpbmcKPiA+IC0JICogb3V0IHRoZSBzdGF0ZSB0aGUgZmlybXdhcmUg
-bWF5IGhhdmUgbGVmdCBpdAo+ID4gKwkgKiBvdXQgdGhlIHN0YXRlIHRoZSBmaXJtd2FyZSBtYXkg
-aGF2ZSBsZWZ0IGl0Lgo+ID4gKwkgKiBVc2UgdGhlIGFycmF5IHZhcmlhbnQgdG8gZmV0Y2ggYW5k
-IHRyaWdnZXIgYWxsIHJlc2V0IGxpbmVzCj4gPiArCSAqIChlLmcuLCB0aW1lciBhbmQgQVBCIGlu
-dGVyZmFjZSByZXNldHMpIHRvZ2V0aGVyLCB3aXRob3V0Cj4gPiArCSAqIG9yZGVyaW5nIHJlcXVp
-cmVtZW50cy4KPiA+ICsJICogVGhlIGV4Y2x1c2l2ZSByZWZlcmVuY2VzIGFyZSBpbnRlbnRpb25h
-bGx5IGhlbGQgdG8ga2VlcCB0aGUKPiA+ICsJICogcmVzZXRzIGRlYXNzZXJ0ZWQgd2hpbGUgdGhl
-IHRpbWVyIGlzIHJ1bm5pbmcuCj4gPiAgCSAqLwo+ID4gLQlyc3RjID0gb2ZfcmVzZXRfY29udHJv
-bF9nZXQobnAsIE5VTEwpOwo+ID4gKwlyc3RjID0gb2ZfcmVzZXRfY29udHJvbF9hcnJheV9nZXRf
-b3B0aW9uYWxfZXhjbHVzaXZlKG5wKTsKPiAKPiBbU2V2ZXJpdHk6IEhpZ2hdCj4gSWYgYW55IG9m
-IHRoZXNlIHJlc2V0IGxpbmVzIGFyZSBzaGFyZWQgYnVzIHJlc2V0cywgZG9lcyBhY3F1aXJpbmcg
-dGhlbQo+IGV4Y2x1c2l2ZWx5IGxvY2sgb3V0IG90aGVyIGRldmljZXMgdGhhdCBzaGFyZSB0aGUg
-c2FtZSByZXNldCBsaW5lPwo+IAoKSGkgU2FzaGlrbywKClRoZXNlIHJlc2V0IGxpbmVzIHNob3Vs
-ZCBiZSBleGNsdXNpdmVseSBvd25lZCBieSBlYWNoIHRpbWVyLgoKPiBUaGUgY29tbWl0IG1lc3Nh
-Z2UgbWVudGlvbnMgQVBCIGludGVyZmFjZSByZXNldHMsIHdoaWNoIGFyZSB0eXBpY2FsbHkgc2hh
-cmVkCj4gYWNyb3NzIG11bHRpcGxlIHBlcmlwaGVyYWxzLiBJZiB0aGlzIGRyaXZlciBob2xkcyBh
-IHNoYXJlZCByZXNldCBsaW5lCj4gZXhjbHVzaXZlbHksIHN1YnNlcXVlbnQgcmVzZXRfY29udHJv
-bF9nZXQoKSBjYWxscyBmcm9tIG90aGVyIGRyaXZlcnMgc2hhcmluZwo+IHRoZSBidXMgd2lsbCBm
-YWlsIHdpdGggLUVCVVNZLCBwcmV2ZW50aW5nIHRoZW0gZnJvbSBwcm9iaW5nLgo+IAo+IEZ1cnRo
-ZXJtb3JlLCB1bmNvbmRpdGlvbmFsbHkgYXNzZXJ0aW5nIGEgc2hhcmVkIGJ1cyByZXNldCBoZXJl
-IGluCj4gdGltZXJfZ2V0X2Jhc2VfYW5kX3JhdGUoKSBtaWdodCBpbmFkdmVydGVudGx5IHJlc2V0
-IG90aGVyIHBlcmlwaGVyYWxzIG9uIHRoZQo+IHNhbWUgYnVzIHRoYXQgYXJlIGFscmVhZHkgaW5p
-dGlhbGl6ZWQuIERvZXMgdGhlIHRpbWVyIGRyaXZlciBuZWVkIHRvIHVzZSBhCj4gc2hhcmVkIHJl
-c2V0IEFQSSB0byBhdm9pZCBkaXNydXB0aW5nIG90aGVyIGRldmljZXMgb24gdGhlIGJ1cz8KPiAK
-CklmIHRoZSByZXNldHMgYXJlIGV4Y2x1c2l2ZSwgZG8geW91IHRoaW5rIHVzaW5nIHRoZSBleGNs
-dXNpdmUgcmVzZXQgQVBJwqAKaXMgYmV0dGVyPwoKQmVzdCByZWdhcmRzLApYdXlhbmcgRG9uZwoK
-PiA+ICAJaWYgKCFJU19FUlIocnN0YykpIHsKPiA+ICAJCXJlc2V0X2NvbnRyb2xfYXNzZXJ0KHJz
-dGMpOwo+ID4gIAkJcmVzZXRfY29udHJvbF9kZWFzc2VydChyc3RjKTsKPiAKPiAtLSAKPiBTYXNo
-aWtvIEFJIHJldmlldyDCtyBodHRwczovL3Nhc2hpa28uZGV2LyMvcGF0Y2hzZXQvMjAyNjA3MzAx
-MTE0MjUuMTY4MC0xLWRvbmd4dXlhbmdAZXN3aW5jb21wdXRpbmcuY29tP3BhcnQ9NQo=
+On Thu, Jul 30, 2026 at 07:15:34PM +0800, dongxuyang@eswincomputing.com wrote:
+> From: Xuyang Dong <dongxuyang@eswincomputing.com>
+> 
+> EIC7700 integrates the DesignWare PWM IP described by the generic
+> snps,dw-apb-timers-pwm2 binding. On this SoC, the presetn and
+> timer_N_resetn inputs are physically tied together to a single reset
+> line, so exactly one reset is both required and sufficient, unlike
+> the generic binding where up to two independent lines are optional.
+> 
+> Add the eswin,eic7700-pwm compatible string and constrain its resets
+> property to exactly one entry.
+> 
+> Signed-off-by: Xuyang Dong <dongxuyang@eswincomputing.com>
+> ---
+>  .../bindings/pwm/snps,dw-apb-timers-pwm2.yaml | 40 +++++++++++++++++--
+>  1 file changed, 36 insertions(+), 4 deletions(-)
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+
+Best regards,
+Krzysztof
+
