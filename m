@@ -1,162 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5E03090C2;
-	Fri, 31 Jul 2026 05:39:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 992A523A562;
+	Fri, 31 Jul 2026 06:41:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785476371; cv=none; b=QKaQJAWsGvClniXI4kssP9K/OHTQBYbe5DLOYsXGvx5495abOT1KsX3PdfQ7ErTpl4OiHQpgRZhmoqVhjMUgvN2uCRM7TJ7F4h9dHAIekmT76xRb3GigDvm9XqJXY5sgzF9Aa3YWJnICZzlarifPbLctn8JXdeVrub9pH1JFrIE=
+	t=1785480080; cv=none; b=XOHbvFJqd8gs2dIDicPJzxuN4xJlLgFNEsLLXPkwJiMCEafEMJc3E2YSzEE6zdTf3L+YArbc1MnbHNmQMNfFbrJusoRkuurPHGQJXhAwxWJPy6aHNUzqutUKLh9Elb+JccnH8eePWX0Zij1nSijEnybIl8Ns8LcClFtOrKQlmWY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785476371; c=relaxed/simple;
-	bh=imXFAqWPqnJGY8WW24n+T9ijDhVhtqz1JOrVbz5WW8c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Uq0rYDh4qBNj6FInmgZyer3xtE/kSBmwiasIARYvO4ahy5zytNxVCjZQKlFm45hjJGi9AXHmLJXx0Gu/GbAueXFxY00wCuoo+7nl7L83yzZZspryLzh1gHetoyLdmrukJwPR3/kdj+Az3rcFVmFdLmFXkP6oLP4jO+ZDeMsStYM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ij73W4jw; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ij73W4jw"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 984031F000E9;
-	Fri, 31 Jul 2026 05:39:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785476370;
-	bh=nl9RKaJgoDPBj/kQI6IVDW+vPVyPl1iFcSZlkgXadKo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ij73W4jwXtp193BFt5tTx4ziblgpB9RWjgDaUSGDUsFuwBmivMwIF6N/yYJY2BChw
-	 6OCPc1/PF1reat/oZuzkbfajvMr06/zDsmmcvnVJKafigMVrGdgHEENTM91IUA5odc
-	 1jt2wgterPuTUjaTC2VrhvFkXSpOwFbdy7x6oM1qfe4hW5zCelW/f84vsre64/bEa/
-	 40IJIMfZMkB3/VnayJQ4lGPVx1XR89qCE+6CIAd28++EANROMr4FFIQIdCc796F2G6
-	 zJR4NTC75jCPi/CgjvoJ/6GTYorduZKLD5e6Z+ktX9fHC80dn8+aMow9ZIe79kpNMY
-	 U+Di/YGCqnThg==
-Date: Fri, 31 Jul 2026 07:39:26 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Luiz Angelo Daros de Luca <luizluca@gmail.com>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Chris Packham <chris.packham@alliedtelesis.co.nz>, Andrew Morton <akpm@linux-foundation.org>, 
-	"Darrick J. Wong" <djwong@us.ibm.com>, linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [hwmon-next PATCH v3 1/4] dt-bindings: hwmon: adi,adt7470
-Message-ID: <amwnEYMPhWXC3QJO@monoceros>
-References: <20260728-adt7470_thermalzone-v3-0-d4586478cdba@gmail.com>
- <20260728-adt7470_thermalzone-v3-1-d4586478cdba@gmail.com>
- <20260728-meteoric-quixotic-sunfish-0de2cb@quoll>
- <CAJq09z5CQgzzFahoiteh9ykjdbsYpP=QZ2AugzY4tQ79RpA-cg@mail.gmail.com>
- <6cc03c4c-2d88-46f2-aee4-adb769d10cbd@kernel.org>
- <05b7f116-25a9-49b3-a31c-15eb4e6ec838@roeck-us.net>
- <CAJq09z5GL16qQ6smjEHsiYxpXn6MaBkibwsvSR66cJ4kEx1M6Q@mail.gmail.com>
- <a447e67e-ac2c-4b8c-bb96-b469d2a2d61a@roeck-us.net>
+	s=arc-20240116; t=1785480080; c=relaxed/simple;
+	bh=lyr7c2H0MZlmbK9Vbrvow2o05mK8vYnyFKtJVx8ijgk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=mEmPcTfbXItcijRHUGIoo+cB1DbtWBAg65TEl6PWfNfuCjZZo7Hp7coMwY7q0pyhKHdMrZaVS7wtSglkUmN2SwW6WY4lUtQPBnUvW25OLhmO0tIbRRCNaS7K5CIeSdEhEq6GfJZGcmGZquLEYFE+nU7qS0b8rA+EeY7vgYC6s8g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com; spf=pass smtp.mailfrom=eswincomputing.com; arc=none smtp.client-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eswincomputing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eswincomputing.com
+Received: from dongxuyang$eswincomputing.com ( [10.12.96.41] ) by
+ ajax-webmail-app2 (Coremail) ; Fri, 31 Jul 2026 14:41:00 +0800 (GMT+08:00)
+Date: Fri, 31 Jul 2026 14:41:00 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From: "Xuyang Dong" <dongxuyang@eswincomputing.com>
+To: sashiko-reviews@lists.linux.dev
+Cc: ukleinek@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, ben-linux@fluff.org, ben.dooks@codethink.co.uk,
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+	daniel.lezcano@kernel.org, tglx@kernel.org,
+	ningyu@eswincomputing.com, linmin@eswincomputing.com,
+	xuxiang@eswincomputing.com, wangguosheng@eswincomputing.com,
+	pinkesh.vaghela@einfochips.com
+Subject: Re: Re: [PATCH v14 2/5] dt-bindings: pwm: dwc: Add eswin compatible
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2024.2-cmXT6 build
+ 20241203(6b039d88) Copyright (c) 2002-2026 www.mailtech.cn
+ mispb-72143050-eaf5-4703-89e0-86624513b4ce-eswincomputing.com
+In-Reply-To: <20260730112958.9ED571F00A3A@smtp.kernel.org>
+References: <20260730111425.1680-1-dongxuyang@eswincomputing.com>
+ <20260730111534.1834-1-dongxuyang@eswincomputing.com>
+ <20260730112958.9ED571F00A3A@smtp.kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="fobe3on45uuvhdwt"
-Content-Disposition: inline
-In-Reply-To: <a447e67e-ac2c-4b8c-bb96-b469d2a2d61a@roeck-us.net>
+Message-ID: <4dfe481d.8eec.19fb6e79ed6.Coremail.dongxuyang@eswincomputing.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:TQJkCgAnPJ98Q2xqDPA3AA--.8297W
+X-CM-SenderInfo: pgrqw5xx1d0w46hv4xpqfrz1xxwl0woofrz/1tbiAQEFAmprfKgUQ
+	wAAsF
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+	daVFxhVjvjDU=
 
-
---fobe3on45uuvhdwt
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [hwmon-next PATCH v3 1/4] dt-bindings: hwmon: adi,adt7470
-MIME-Version: 1.0
-
-Hello Guenter,
-
-On Thu, Jul 30, 2026 at 02:37:01PM -0700, Guenter Roeck wrote:
-> On 7/30/26 14:11, Luiz Angelo Daros de Luca wrote:
-> the architecture, while I looked at the `emc2305` approach,
-> > delegating the actual fan management to the time-proven `pwm-fan`
-> > driver allows us to avoid reinventing the wheel (like cooling device
-> > registration and state management) inside the adt7470 driver. It also
-> > keeps the standard PWM consumer/provider relationship clear in the DT.
-> > It still feels strange that emc2305 declares #pwm-cells and its
-> > subdriver fans pwm properties and they do not work as a pwm
-> > controller. Other drivers, like aspeed-g6-pwm-tach (with similar
->=20
-> That is your opinion. #pwm-cells and pwms exists because it is mandated
-> by DT maintainers for configuring pwm properties. That does not have to
-> reflect the implementation: DT property guidance explicitly states
-> that properties must describe the hardware, not the implementation.
-> There is no mandate how to implement a specific driver (such as a fan
-> controller driver) because a specific binding exists. It is perfectly
-> valid to describe pwm properties of a fan controller using #pwm-cells
-> and pwms without modeling it as pwm controller (which actually mandates
-> support of the pwm subsystem or no good reason other than "because").
->=20
-> While you may consider the emc2305 approach inferior, I happen to
-> disagree. That is your personal opinion. For my part I consider it
-> inferior and overly complex having to involve another subsystem (pwm)
-> and another driver (pwm-fan) just to make the chip's pwm outputs
-> visible to the thermal subsystem as cooling devices.
-
-Strange how opinions can differ. I'm with Luiz here. While I agree
-that mixing subsystems is slightly inconvenient, hwmon uses i2c and spi
-and clk and regmap and probably more, but pwm is a problem?
-
-What you call "inferior and overly complex" is actually nice and elegant
-in my view. There is code that handles PWMs, and by not using it you add
-code duplication with all the downsides that comes with it (different
-behaviours, maintenance overhead, wrong expectations).
-
-So amc6821 and nct7363 only support #pwm-cells =3D <2> which is
-non-standard for PWMs and I don't see where the period (cell 1 for
-amc6821 and cell 2 for nct7363 *sigh*) is going into the driver.
-
-For emc2305 uses #pwm-cells =3D <3> but cell 2 specifies something that
-actually belongs to pinctrl and not pwm, and cell 0 is a frequency
-instead of a time. And interpretation of cell 1 should better be done
-using:
-
-diff --git a/drivers/hwmon/emc2305.c b/drivers/hwmon/emc2305.c
-index eef3b021671b..c704fcd61356 100644
---- a/drivers/hwmon/emc2305.c
-+++ b/drivers/hwmon/emc2305.c
-@@ -571,12 +571,8 @@ static int emc2305_of_parse_pwm_child(struct device *d=
-ev,
- 	}
-=20
- 	if (args.args_count > 1) {
--		if (args.args[1] =3D=3D PWM_POLARITY_NORMAL || args.args[1] =3D=3D PWM_P=
-OLARITY_INVERSED)
--			data->pwm_polarity_mask |=3D args.args[1] << ch;
--		else
--			dev_err(dev, "Wrong PWM polarity config provided: %d\n", args.args[0]);
--	} else {
--		data->pwm_polarity_mask |=3D PWM_POLARITY_NORMAL << ch;
-+		if (args.args[1] & PWM_POLARITY_INVERTED)
-+			data->pwm_polarity_mask |=3D 1 << ch;
- 	}
-=20
- 	if (args.args_count > 2) {
-
-(Yes, I agree that the difference between PWM_POLARITY_INVERSED and
-PWM_POLARITY_INVERTED is annoying.)
-
-And all of these seem to ignore the phandle.
-
-So these all only somewhat look like standard pwm bindings, but actually
-there are traps and surprises hidden for the device tree author.
-
-Best regards
-Uwe
-
---fobe3on45uuvhdwt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpsNQwACgkQj4D7WH0S
-/k67bQf9GkgUqIbm3L9Eok5H9+WZQpFGDmrqMi2VBeJAHzcF+mG8N5/2kzf5BUXh
-L0ZeyccX6EBuHTOsI1Azgu2J5nWy/rYaDxNPbfpmR6atxaffmd8xLa454vZCPD4C
-0rrxdk8/kGM7n+C9L9XxMmpnQ0Hozb/t78L8EQX83/U8gQrPcgB/xJc2LCdJd5qK
-RzXHd0Tm+I6J+UAbuRLLpd4kh4qCTi9s1ayhFUu/jnYbJSWkUB8vcOukDwP9MsTM
-/W2bJ235ML+swt0NaSC1P64+NzLkUV1nMxwMyy6CbQOgAzcOpglzSUZA0YX2EFTy
-Zw+0voTiekDy5SvI3EVMLrzXc0umYA==
-=WUsj
------END PGP SIGNATURE-----
-
---fobe3on45uuvhdwt--
+PiAKPiBUaGFuayB5b3UgZm9yIHlvdXIgY29udHJpYnV0aW9uISBTYXNoaWtvIEFJIHJldmlldyBm
+b3VuZCAxIHBvdGVudGlhbCBpc3N1ZShzKSB0byBjb25zaWRlcjoKPiAtIFtNZWRpdW1dIFRoZSBj
+b25kaXRpb25hbCBzY2hlbWEgZm9yIGBlc3dpbixlaWM3NzAwLXB3bWAgZmFpbHMgdG8gY29uc3Ry
+YWluIHRoZSBgcmVzZXRzYCBwcm9wZXJ0eSB0byBhIG1heGltdW0gb2YgMSBpdGVtLgo+IC0tCj4g
+Cj4gLS0tIFBhdGNoIFsyXTogW1BBVENIIHYxNCAyLzVdIGR0LWJpbmRpbmdzOiBwd206IGR3Yzog
+QWRkIGVzd2luIGNvbXBhdGlibGUgLS0tCj4gY29tbWl0IDgwNGMzNGFmZmZlODZkNGEzZmYyNTMy
+MDFiNjQ3MGU3MDBmMWFmNDcKPiBBdXRob3I6IFh1eWFuZyBEb25nIDxkb25neHV5YW5nQGVzd2lu
+Y29tcHV0aW5nLmNvbT4KPiAKPiBkdC1iaW5kaW5nczogcHdtOiBkd2M6IEFkZCBlc3dpbiBjb21w
+YXRpYmxlCj4gCj4gVGhpcyBjb21taXQgYWRkcyB0aGUgZXN3aW4sZWljNzcwMC1wd20gY29tcGF0
+aWJsZSBzdHJpbmcgdG8gdGhlCj4gc25wcyxkdy1hcGItdGltZXJzLXB3bTIgYmluZGluZy4gVGhl
+IEVJQzc3MDAgaW50ZWdyYXRlcyB0aGlzIElQIGJ1dCByZXF1aXJlcwo+IGV4YWN0bHkgb25lIGNv
+bWJpbmVkIHJlc2V0IGxpbmUgaW5zdGVhZCBvZiB1cCB0byB0d28gaW5kZXBlbmRlbnQgbGluZXMu
+Cj4gCj4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3
+bS9zbnBzLGR3LWFwYi10aW1lcnMtcHdtMi55YW1sIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVl
+L2JpbmRpbmdzL3B3bS9zbnBzLGR3LWFwYi10aW1lcnMtcHdtMi55YW1sCj4gPiBpbmRleCAxZjlk
+NzJmOWYzNTkwLi44N2E1NmZmZWQwOWQ5IDEwMDY0NAo+ID4gLS0tIGEvRG9jdW1lbnRhdGlvbi9k
+ZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9zbnBzLGR3LWFwYi10aW1lcnMtcHdtMi55YW1sCj4gPiAr
+KysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL3NucHMsZHctYXBiLXRp
+bWVycy1wd20yLnlhbWwKPiBbIC4uLiBdCj4gPiBAQCAtNjQsNiArNjQsMjkgQEAgcmVxdWlyZWQ6
+Cj4gPiAgICAtIGNsb2Nrcwo+ID4gICAgLSBjbG9jay1uYW1lcwo+ID4gIAo+ID4gK2FsbE9mOgo+
+ID4gKyAgLSAkcmVmOiBwd20ueWFtbCMKPiA+ICsKPiA+ICsgIC0gaWY6Cj4gPiArICAgICAgcHJv
+cGVydGllczoKPiA+ICsgICAgICAgIGNvbXBhdGlibGU6Cj4gPiArICAgICAgICAgIGNvbnRhaW5z
+Ogo+ID4gKyAgICAgICAgICAgIGNvbnN0OiBlc3dpbixlaWM3NzAwLXB3bQo+ID4gKyAgICB0aGVu
+Ogo+ID4gKyAgICAgIHByb3BlcnRpZXM6Cj4gPiArICAgICAgICByZXNldHM6Cj4gPiArICAgICAg
+ICAgIGl0ZW1zOgo+ID4gKyAgICAgICAgICAgIC0gZGVzY3JpcHRpb246IENvbWJpbmVkIEFQQiBp
+bnRlcmZhY2UgYW5kIHRpbWVyIGxvZ2ljIHJlc2V0Cj4gCj4gW1NldmVyaXR5OiBNZWRpdW1dCj4g
+SXMgaXQgcG9zc2libGUgZm9yIGEgZGV2aWNlIHRyZWUgdG8gcGFzcyB2YWxpZGF0aW9uIHdpdGgg
+dHdvIHJlc2V0cyBmb3IgdGhpcwo+IGNvbXBhdGlibGUsIGRlc3BpdGUgdGhlIGludGVudGlvbiBp
+biB0aGUgY29tbWl0IG1lc3NhZ2U/Cj4gCgpIaSBTYXNoaWtvLAoKQmVjYXVzZSB3ZSBhZGRlZCBh
+biBleGFtcGxlIGZvciBvbmUgcmVzZXQuCklmIHlvdSBhZGQgdHdvIHJlc2V0cyBmb3IgZXN3aW4s
+ZWljNzcwMC1wd20gaW4gYSBkZXZpY2UgdHJlZSwgcnVubmluZ8KgCiJtYWtlIGR0YnNfY2hlY2si
+IHdpbGwgcmVwb3J0IHRoYXQgdGhlIHJlc2V0cyBwcm9wZXJ0eSBpcyB0b28gbG9uZy4KCj4gQmVj
+YXVzZSB0aGUgdG9wLWxldmVsIHJlc2V0cyBwcm9wZXJ0eSBpbXBsaWNpdGx5IGFsbG93cyB1cCB0
+byAyIGl0ZW1zLAo+IG92ZXJyaWRpbmcgdGhlIGl0ZW1zIGxpc3QgaGVyZSB3aXRoIGEgc2luZ2xl
+IGVsZW1lbnQgZG9lc24ndCBhdXRvbWF0aWNhbGx5Cj4gcmVkdWNlIHRoZSBtYXhpbXVtIGFsbG93
+ZWQgaXRlbXMuCj4gCj4gU2hvdWxkIG1heEl0ZW1zOiAxIGJlIGFkZGVkIGV4cGxpY2l0bHkgaW4g
+dGhpcyBibG9jayBhbG9uZ3NpZGUgaXRlbXM/Cj4gCgpJZiB3ZSBhZGQgIm1heEl0ZW1zOiAxIiwg
+cnVubmluZyAibWFrZSBkdF9iaW5kaW5nX2NoZWNrIiB3aWxsIHJlcG9ydCB0aGF0wqAKbWF4SXRl
+bXMgaXMgbm90IG5lZWRlZCB3aGVuIGFuIGl0ZW1zIGxpc3QgaXMgYWxyZWFkeSBwcmVzZW50LgoK
+QmVzdCByZWdhcmRzLApYdXlhbmcgRG9uZwoKPiAtLSAKPiBTYXNoaWtvIEFJIHJldmlldyDCtyBo
+dHRwczovL3Nhc2hpa28uZGV2LyMvcGF0Y2hzZXQvMjAyNjA3MzAxMTE0MjUuMTY4MC0xLWRvbmd4
+dXlhbmdAZXN3aW5jb21wdXRpbmcuY29tP3BhcnQ9Mgo=
