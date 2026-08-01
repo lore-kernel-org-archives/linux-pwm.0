@@ -1,35 +1,34 @@
 Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E538C3CF678;
-	Sat,  1 Aug 2026 21:41:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C6A43D3327;
+	Sat,  1 Aug 2026 21:41:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.39.247.168
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785620496; cv=none; b=oboJ5MZ3fUhP/TRjlPDYQzJr9eQ6hVgbKnZUWTTsw/06xqdYEZyFFEfUAKs4TBW35YixsuleifiNwTe/i10xXy7y3ZNvUAb4ESPLMYvHzwT5oQI6NukEUdzJ7+CNs35RCPxhgXni2zp7pkAlaFsjUsv1pNZ6nTzfvZJrXuX7A50=
+	t=1785620499; cv=none; b=ifzj/Uq/ICxN2NtBliAJpXc2ivscw7ldBvIJAkKPBDfJXi3zGdbDNl+UD3t+QHWIIwEGt3cxPmt1E+DNgaBUGT/JP5mSH4KJnP97MrqKvnj6I1BmHLOztd/iYdXGOm41t6z72m8qjwcfaDjhAHaV/BH4UIsuJ9ywKZOZI+lyfDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785620496; c=relaxed/simple;
-	bh=0dUO9cRWqmqZYdG/6Vj65qv6cUae0UbLXhnULaVb/oc=;
+	s=arc-20240116; t=1785620499; c=relaxed/simple;
+	bh=16/IQBiW659eKUP3JuGp4+b6DM+b9yBzYf8WnTo78IU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Ecch3cs2aXRQ+D6wfclxpQZO+vFbVjUzUz9ZNMz9dpXFEmrBggGSpeEvceT/SdZtPYsmGaOl7YWgHEuV2YAIfl9kJYvP/qDKCLcTX4qmq4X3GpimJrky0mR2U3u5Y16L7mznM9XEsq+H5k9YACPOtY5kePTZPiohHbmfn8eMXA4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=DgKZMBJW; arc=none smtp.client-ip=195.39.247.168
+	 In-Reply-To:To:Cc; b=UyX0cB1Fcgc4dUjjQxaovRzlE1Y+6IPloiEMlteshEFb98yG539lpeFX9B/Y+ko8+lSUc0qP91Ygd+5rV2FLISuB07AKM5d+cDNFGVt30NTmDH03CPYv0LBUpWJ6j8gFCO5cj7c7QrTgbmnZIpA9bfUk/I+NtSk6VeSBG3qfEKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=OYgp6U1I; arc=none smtp.client-ip=195.39.247.168
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="DgKZMBJW"
+	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="OYgp6U1I"
 From: Yureka Lilian <yureka@cyberchaos.dev>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1785620492;
+	s=mail; t=1785620496;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=+tOmBwltvbaApS+3tNMuJI15d9yWVj352U6mU7Zkwaw=;
-	b=DgKZMBJWCkMGV1PdjXqMLYQl6z11iJgZOihjCqksc+UMRx3fdRgxXSF2WiUwsuW9ZCxXEO
-	8wh01hfNuuU4PRNr0v23c/A7565jl4kPjshtaviQso74c33Nz8z1UEaoonGvSyjH0BWTFN
-	HBjls6d9xLDiHjnLYIkTM88Ks/BSvqs=
-Date: Sat, 01 Aug 2026 23:40:37 +0200
-Subject: [PATCH v2 7/9] dt-bindings: pwm: apple,s5l-fpwm: Add t8132
- compatible
+	bh=CGRI0yKrp5VIRC7CP/TE5VvduSX3IVkuXzRMbTq63wE=;
+	b=OYgp6U1IZAHoSbhr0ESmdU+YzF9VK1XiM4+0hmvqKtUTClSeeagpPgTbjl3MZwLNUsIMWs
+	PHLHTXQlFp9K2jm+bh5e2OlTmjBzAZf4Mo2m6Jb9yUjWcvNLlki5m28P7IMhHZEVShU1Uz
+	lFKiv8n0LkY20clrSKpBC/hla8HM2Hk=
+Date: Sat, 01 Aug 2026 23:40:38 +0200
+Subject: [PATCH v2 8/9] dt-bindings: arm: apple: Add M4 based devices
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -37,8 +36,8 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260801-apple-m4-initial-devicetrees-v2-7-5cb07cc275da@cyberchaos.dev>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260801-apple-m4-initial-devicetrees-v2-8-5cb07cc275da@cyberchaos.dev>
 References: <20260801-apple-m4-initial-devicetrees-v2-0-5cb07cc275da@cyberchaos.dev>
 In-Reply-To: <20260801-apple-m4-initial-devicetrees-v2-0-5cb07cc275da@cyberchaos.dev>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -55,28 +54,56 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
  linux-pwm@vger.kernel.org, Yureka Lilian <yureka@cyberchaos.dev>
 
-The PWM controller on the Apple silicon t8132 (M4) SoC is compatible
-with t8103. Add "apple,t8132-fpwm" as SoC specific compatible under
-"apple,s5l-fpwm".
+The Apple devices with the t8132 SoC (M4) are very similar to their M3
+predecessors.
 
-Acked-by: Uwe Kleine-König <ukleinek@kernel.org>
+In addition to the MacBook Pro and the various MacBook Air and iMac
+variants, a Mac mini is offered again with the M4.
+
 Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
 ---
- Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/arm/apple.yaml | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml b/Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml
-index dd95037ea5ee..ae8baa5f7bcd 100644
---- a/Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml
-@@ -19,6 +19,7 @@ properties:
-           - apple,t8103-fpwm
-           - apple,t8112-fpwm
-           - apple,t8122-fpwm
-+          - apple,t8132-fpwm
-           - apple,t6000-fpwm
-           - apple,t6020-fpwm
-           - apple,t6030-fpwm
+diff --git a/Documentation/devicetree/bindings/arm/apple.yaml b/Documentation/devicetree/bindings/arm/apple.yaml
+index fb277c96f341..5d87a4fef193 100644
+--- a/Documentation/devicetree/bindings/arm/apple.yaml
++++ b/Documentation/devicetree/bindings/arm/apple.yaml
+@@ -103,6 +103,15 @@ description: |
+   - MacBook Pro (14-inch, M3, 2023)
+   - iMac (24-inch, M3, 2023)
+ 
++  Devices based on the "M4" SoC:
++
++  - MacBook Pro (14-inch, M4, 2024)
++  - iMac (24-inch, 2x USB-C, M4, 2024)
++  - iMac (24-inch, 4x USB-C, M4, 2024)
++  - MacBook Air (13-inch, M4, 2025)
++  - MacBook Air (15-inch, M4, 2025)
++  - Mac mini (M4, 2024)
++
+   Devices based on the "M1 Pro", "M1 Max" and "M1 Ultra" SoCs:
+ 
+   - MacBook Pro (14-inch, M1 Pro, 2021)
+@@ -323,6 +332,18 @@ properties:
+           - const: apple,t8122
+           - const: apple,arm-platform
+ 
++      - description: Apple M4 SoC based platforms
++        items:
++          - enum:
++              - apple,j604  # MacBook Pro (14-inch, M4, 2024)
++              - apple,j623  # iMac (24-inch, 2x USB-C, M4, 2024)
++              - apple,j624  # iMac (24-inch, 4x USB-C, M4, 2024)
++              - apple,j713  # MacBook Air (13-inch, M4, 2025)
++              - apple,j715  # MacBook Air (15-inch, M4, 2025)
++              - apple,j773g # Mac mini (M4, 2024)
++          - const: apple,t8132
++          - const: apple,arm-platform
++
+       - description: Apple M1 Pro SoC based platforms
+         items:
+           - enum:
 
 -- 
 2.55.0
