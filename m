@@ -1,133 +1,183 @@
-Received: from sender4-op-o11.zoho.com (sender4-op-o11.zoho.com [136.143.188.11])
+Received: from mail-244106.protonmail.ch (mail-244106.protonmail.ch [109.224.244.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 127EF1D95A3;
-	Fri, 31 Jul 2026 21:34:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785533650; cv=pass; b=rZb6ujd5xb/grIUW9InKwRbrLFRTs5xfNr+Wi4Iewwui9Tm0HCApkzyJ0TN7w7tSQBWmglALcz2n3lYDLy2FSDmVL9yI1ngYLsPuDLZHN4kTVqakoSqKQcYE3Rr1UCNZwLI4qGg4QQgHbygelY8wgJt7IoYYNXLZiZMSL3IGPLE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785533650; c=relaxed/simple;
-	bh=28SYLaxEswFYrX7pB/BBBjg3ucFfM5uxTXPR0tHPjcc=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=J0pUB0iAWulU8qW0CUexzJKDLZrdmsduhvL3BFa4jfyzTcTnZkoKM+n2rz4+R64+uAUgHrLBqRJNidn2MnIXh58xD52DBhOH2d/I42TLxg+RvjxPaXRV1z0ZKp5vvTYt+8V7m7NDqaDnl5dwydrQsaKnmLHGDDVK93TfKttji8o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=hv8bf7ml; arc=pass smtp.client-ip=136.143.188.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16BC233AD82
+	for <linux-pwm@vger.kernel.org>; Sat,  1 Aug 2026 11:23:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.106
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785583391; cv=none; b=ktDyNUKZZ3qsspvDrZbKorEwgXrcPaLd/324Imrr1ErN5edJdAazsABxAkruXGO1TBUfKc6UXQNLWetdNlQGxodtrp3pu3d6gdaXRnT+06coash26eVRJD4/8+3NDV88No6TVQEJ9RuU2LrTKQaFhRTS+tQqy7jwtjIiZK+zAeA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785583391; c=relaxed/simple;
+	bh=65qyerLOMOizFkJF0mqetQ0ueVqUdZIXN/aKIcrO7lM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mp9SZYnECU5JsbB5uZiK43nEGgaBjlWan2Wi0bbGV2mlqoySyvxNhN5URAYdp2NthWoc+k9kg4WBGoyu8aYaTQ8q7oHmPETeFEVVLsC7yCCZpjgBV57Dn2yofOtpp+oCqFc0bycRHG+cJMFJiYd3LTWBa770otjmLPIOiRvS3jU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=onurozkan.dev; spf=pass smtp.mailfrom=onurozkan.dev; dkim=pass (2048-bit key) header.d=onurozkan.dev header.i=@onurozkan.dev header.b=GBjamspr; arc=none smtp.client-ip=109.224.244.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=onurozkan.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=onurozkan.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="hv8bf7ml"
-ARC-Seal: i=1; a=rsa-sha256; t=1785533593; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=gHWANFQFZoJJaYEhuKmaZUxWUFD+rkzqPNoml4H2CAPw9Eir1vP5sTf8FH55AQFSTqXbJsRM4yw6PQGOM3+kOK3r7L8MauTZbozYas9fQW65jLiuw5EycL0OsVg5TO4UsvIAt6uzxShq3/IXxF0gXXTGZxTO6NkOGsqXv11V2UU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1785533593; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=28SYLaxEswFYrX7pB/BBBjg3ucFfM5uxTXPR0tHPjcc=; 
-	b=i9xAT7I6wpEq5+55Y74aQJDsqPQN2QZYJAo6dyuwFyrXGYK6n0G4QS3yvwaIgiUukMsstV9j9UnOUru03iQu3tpTSKc8NBqBw12A1m0IaT/lICrjJ2XXiPUwRW0CKH/UhDz8g4VaX7/e2TkzPCXoFT47bwxxweCbYOXkFnNFTUM=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1785533593;
-	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
-	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:To:To:Reply-To;
-	bh=28SYLaxEswFYrX7pB/BBBjg3ucFfM5uxTXPR0tHPjcc=;
-	b=hv8bf7mlLR3lRI+e3WrpA+6efQ42RwhE8qX5b9m1qEMxfc9CGh7FGc46xbl6ss+l
-	VAF4ZyymF+yxhahxdJCFv82nK+92hoPQyWArswJxbPIlUignAZgCeUgrBJk8aUD9AWe
-	bpwEq29KEJWbNIYk7JBR1AT6NZeaCco7hOSh9vog=
-Received: by mx.zohomail.com with SMTPS id 1785533591479424.44668881936855;
-	Fri, 31 Jul 2026 14:33:11 -0700 (PDT)
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key) header.d=onurozkan.dev header.i=@onurozkan.dev header.b="GBjamspr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=onurozkan.dev;
+	s=protonmail; t=1785583379; x=1785842579;
+	bh=gNRt5vhm5rzA0r9SYRg4vpPJmSNy2rVVGJFfnD3HI1c=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=GBjamsprGcj4PJ+2tZTITaCwpA1KPghVP4Ho1RdnnRiTjaoLl+mtI4hCDjYBkjLBD
+	 82KdhJDeKUC6ujY02rLVX+E1evUhCj5oKPoxhK4rx6b+vSEy0MkLDc9QfVLW9CXQ/O
+	 nTTnvcOMLqAxn1jP/gglcT78OMLop3pPKEj+mMgoNmbaTm2cEvHVaKNZeSSGIuDyj3
+	 BacKGT25+a5IfltXpp5K+ufOdTr/zIaInIjO7KuOvmqeR0D0ueaHmsdtU7+kq6lQwk
+	 kMgPlUQaPo3e10IA8o1AO0u5WjhU+Fuu5lzfIXz/MfaglekZclzpTiRTakMZdZzFC+
+	 KKEqnuS5GK7CA==
+X-Pm-Submission-Id: 4hC0sq5XCMz2Sd4d
+From: =?UTF-8?q?Onur=20=C3=96zkan?= <work@onurozkan.dev>
+To: Daniel Almeida <daniel.almeida@collabora.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Drew Fustini <fustini@kernel.org>,
+	Guo Ren <guoren@kernel.org>,
+	Fu Wei <wefu@redhat.com>,
+	=?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Michal Wilczynski <m.wilczynski@samsung.com>,
+	Boqun Feng <boqun@kernel.org>,
+	linux-pm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-riscv@lists.infradead.org,
+	linux-pwm@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	rust-for-linux@vger.kernel.org,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	Maurice <mhi@mailbox.org>
+Subject: Re: [PATCH v5 3/4] rust: clk: add devres-managed clks
+Date: Sat,  1 Aug 2026 14:22:52 +0300
+Message-ID: <20260801112254.313381-1-work@onurozkan.dev>
+X-Mailer: git-send-email 2.51.2
+In-Reply-To: <20260706-clk-type-state-v5-3-67c5f326a16c@collabora.com>
+References: <20260706-clk-type-state-v5-0-67c5f326a16c@collabora.com> <20260706-clk-type-state-v5-3-67c5f326a16c@collabora.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81\))
-Subject: Re: [PATCH v5 0/4] Clk improvements
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <20260731183735.15036-1-mhi@mailbox.org>
-Date: Fri, 31 Jul 2026 18:32:48 -0300
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
- Viresh Kumar <viresh.kumar@linaro.org>,
- Danilo Krummrich <dakr@kernel.org>,
- Alice Ryhl <aliceryhl@google.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>,
- Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>,
- Drew Fustini <fustini@kernel.org>,
- Guo Ren <guoren@kernel.org>,
- Fu Wei <wefu@redhat.com>,
- =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- Michael Turquette <mturquette@baylibre.com>,
- Stephen Boyd <sboyd@kernel.org>,
- Miguel Ojeda <ojeda@kernel.org>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <lossin@kernel.org>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>,
- Michal Wilczynski <m.wilczynski@samsung.com>,
- Boqun Feng <boqun@kernel.org>,
- Boris Brezillon <boris.brezillon@collabora.com>,
- =?utf-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
- linux-pm@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org,
- linux-riscv@lists.infradead.org,
- linux-pwm@vger.kernel.org,
- linux-clk@vger.kernel.org,
- rust-for-linux@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <E20E4FD3-F4DA-4029-99F7-DB4F93AA2994@collabora.com>
-References: <20260706-clk-type-state-v5-0-67c5f326a16c@collabora.com>
- <20260731183735.15036-1-mhi@mailbox.org>
-To: Maurice Hieronymus <mhi@mailbox.org>
-X-Mailer: Apple Mail (2.3826.700.81)
-X-ZohoMailClient: External
 
-Hi Maurice,
-
-> On 31 Jul 2026, at 15:37, Maurice Hieronymus <mhi@mailbox.org> wrote:
->=20
-> Hi Daniel,
->=20
-> at your suggestion [0] I rebased my `clk_rate_exclusive_get()` binding =
-for
-> pwm-th1520 on top of this series, so it is now waiting on it to land. =
-As v5
-> has not seen any comments in the last few weeks, I wanted to ask what =
-the
-> current status is.
-
-Nobody has replied so far. I don=E2=80=99t think there are any further =
-comments.
-
->=20
-> If there are no blockers left and you expect it to be merged soon, I =
-am
-> happy to keep waiting. Otherwise I would offer to send my series =
-standalone
-> against the current `Clk` API and let you rebase on top of mine - it =
-is the
-> much smaller of the two, touching only `Clk::rate_exclusive_get()` and
-> pwm_th1520.rs.
->=20
-> [0]: =
-https://lore.kernel.org/rust-for-linux/140FE1B3-73CA-45EA-B978-648A1A48B57=
-7@collabora.com/
->=20
-> Thanks a lot,
->=20
-> Maurice
-
-Your series might hit the same blocker as this one. Perhaps we can try =
-to get
-both merged at the same time?
-
-@Stephen gentle ping here :)
-
-=E2=80=94 Daniel
-
+On Mon, 06 Jul 2026 11:37:14 -0300=0D
+Daniel Almeida <daniel.almeida@collabora.com> wrote:=0D
+=0D
+> The clk API allows fine-grained control, but some drivers might be=0D
+> more interested in a "set and forget" API.=0D
+> =0D
+> Expand the current API to support this. The clock will automatically be=0D
+> disabled, unprepared and freed when the device is unbound from the bus=0D
+> without further intervention by the driver.=0D
+> =0D
+> Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>=0D
+> ---=0D
+>  rust/kernel/clk.rs | 46 ++++++++++++++++++++++++++++++++++++++++++++++=0D
+>  1 file changed, 46 insertions(+)=0D
+> =0D
+> diff --git a/rust/kernel/clk.rs b/rust/kernel/clk.rs=0D
+> index dd5fd656271e..b9a44f83843a 100644=0D
+> --- a/rust/kernel/clk.rs=0D
+> +++ b/rust/kernel/clk.rs=0D
+> @@ -96,6 +96,52 @@ impl Sealed for super::Prepared {}=0D
+>          impl Sealed for super::Enabled {}=0D
+>      }=0D
+>  =0D
+> +    /// Obtains and enables a [`devres`]-managed [`Clk`] for a bound dev=
+ice.=0D
+> +    ///=0D
+> +    /// [`devres`]: crate::devres::Devres=0D
+> +    #[inline]=0D
+> +    pub fn devm_enable(dev: &Device<Bound>, name: Option<&CStr>) -> Resu=
+lt {=0D
+> +        let name =3D name.map_or(ptr::null(), |n| n.as_char_ptr());=0D
+> +=0D
+> +        // SAFETY: It is safe to call [`devm_clk_get_enabled`] with a va=
+lid=0D
+=0D
+Intra-doc links won't work in regular comments.=0D
+=0D
+> +        // device pointer.=0D
+> +        from_err_ptr(unsafe { bindings::devm_clk_get_enabled(dev.as_raw(=
+), name) })?;=0D
+> +        Ok(())=0D
+> +    }=0D
+> +=0D
+> +    /// Obtains and enables a [`devres`]-managed [`Clk`] for a bound dev=
+ice.=0D
+> +    ///=0D
+> +    /// This does not print any error messages if the clock is not found=
+.=0D
+> +    ///=0D
+> +    /// [`devres`]: crate::devres::Devres=0D
+> +    #[inline]=0D
+> +    pub fn devm_enable_optional(dev: &Device<Bound>, name: Option<&CStr>=
+) -> Result {=0D
+> +        let name =3D name.map_or(ptr::null(), |n| n.as_char_ptr());=0D
+> +=0D
+> +        // SAFETY: It is safe to call [`devm_clk_get_optional_enabled`] =
+with a=0D
+> +        // valid device pointer.=0D
+> +        from_err_ptr(unsafe { bindings::devm_clk_get_optional_enabled(de=
+v.as_raw(), name) })?;=0D
+> +        Ok(())=0D
+> +    }=0D
+> +=0D
+> +    /// Same as [`devm_enable_optional`], but also sets the rate.=0D
+> +    #[inline]=0D
+> +    pub fn devm_enable_optional_with_rate(=0D
+> +        dev: &Device<Bound>,=0D
+> +        name: Option<&CStr>,=0D
+> +        rate: Hertz,=0D
+> +    ) -> Result {=0D
+> +        let name =3D name.map_or(ptr::null(), |n| n.as_char_ptr());=0D
+> +=0D
+> +        // SAFETY: It is safe to call=0D
+> +        // [`devm_clk_get_optional_enabled_with_rate`] with a valid devi=
+ce=0D
+> +        // pointer.=0D
+> +        from_err_ptr(unsafe {=0D
+> +            bindings::devm_clk_get_optional_enabled_with_rate(dev.as_raw=
+(), name, rate.as_hz())=0D
+> +        })?;=0D
+=0D
+Just fyi, there's currently a bug in the C implementation of=0D
+devm_clk_get_optional_enabled_with_rate() which I caught while reviewing yo=
+ur=0D
+series. The fix patch is already on the list [1]. Other than that, this LGT=
+M.=0D
+=0D
+[1]: https://lore.kernel.org/all/20260801111637.304590-1-work@onurozkan.dev=
+=0D
+=0D
+Regards,=0D
+Onur=0D
+=0D
+> +        Ok(())=0D
+> +    }=0D
+> +=0D
+>      /// A trait representing the different states that a [`Clk`] can be =
+in.=0D
+>      pub trait ClkState: private::Sealed {=0D
+>          /// Whether the clock is enabled in this state.=0D
+> =0D
+> -- =0D
+> 2.54.0=0D
+> =0D
