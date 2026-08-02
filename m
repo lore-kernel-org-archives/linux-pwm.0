@@ -1,237 +1,242 @@
-Received: from flow-b3-smtp.messagingengine.com (flow-b3-smtp.messagingengine.com [202.12.124.138])
+Received: from CWXP265CU009.outbound.protection.outlook.com (mail-ukwestazon11021138.outbound.protection.outlook.com [52.101.100.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C890E3B42E1;
-	Sun,  2 Aug 2026 13:54:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.138
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785678900; cv=none; b=XB6ayHlCC7Qw7SOCotKZwB5zpJKIgjVp622RG426fktzOB0dzuc36FJzUwm7VvJzhV86oSWjl6TKt9qYZyxmx6Up+4zhgXMej1nIC0qPxjtIyU+FlTMZsJHOGX5VHUZrc3epugmysGPW6UPo33+NZ89UgYzlSpVyyhFoP+gM/lc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785678900; c=relaxed/simple;
-	bh=VOcJjiss4niXEUvQDfQflafcnB6M0cWpgiPL7XqFakk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WWz/qjPO7QdS+ao/ejH4Hlcz4Bz4coZqWbrQxAFsZGDzcisXAeYFeskP9RtdECmru4YKhpcRE2nV56ItUK4nRDRLwC4FN1Bd0Zp9vLtCDIc8b1cl10uPH2PpkjE8+DDqzWf5lIoDwfuTA+n/m80RkAjYEff0wBPSE0YR4TtQYDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=DplQdUY4; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XmXujbLf; arc=none smtp.client-ip=202.12.124.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E19D723504B;
+	Sun,  2 Aug 2026 18:30:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.100.138
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785695450; cv=fail; b=etorfCMK5HkZl6JyNNW42fSOCkAon6iW9o3Z6V8t9fjIsoDOBOCtPwxhGnhJSvB22xeXqpkI/yK6dID6c/rKLt9u+TYS3sIDesSmcu+Xt2BbOSOWzSH8kzk4AWUIoJpMfz7bS0UEOs0YDahBWKS1OCJ1z8JOUayE5c6q8NjzWZE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785695450; c=relaxed/simple;
+	bh=wsqxuNM694/wGgOP1l6QefGOhyzON8YsY2fkD3yRw/A=;
+	h=Content-Type:Date:Message-Id:Cc:Subject:From:To:References:
+	 In-Reply-To:MIME-Version; b=mkdzo7caLXWVsAD+ngSPFbC7uorAF2palqz9JrAn3tUPsAVzFDgli6xwJ8mnja3LO8wMEChWOOur3o5ThOiE4DaIS2D2Dn9T6B3GyMQocfwGiIs1s+QnmpyfduUFRt8zGhQGoap+o4KHhayFIQDxAsSi9x6AjElyw8mOXtw9FxY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=cCkzKK5C; arc=fail smtp.client-ip=52.101.100.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="DplQdUY4";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XmXujbLf"
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailflow.stl.internal (Postfix) with ESMTP id 452731300080;
-	Sun,  2 Aug 2026 09:54:55 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-05.internal (MEProxy); Sun, 02 Aug 2026 09:54:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:subject
-	:subject:to:to; s=fm1; t=1785678895; x=1785686095; bh=wr9KcQd5UO
-	YPcDKO9OAtdsNMsJA9M3uNYC31Vb57iYw=; b=DplQdUY4k5pHQXGjL444hzwd6x
-	Uq8dSWgKlS+OHbGSPASMrkkGChOSifHzzrcROinwlM/LbRiWRYwRepZ6NzEcq62J
-	1kHQB8c+GkHsi8Xy5ozdjGTV0UT0VfrO/ZCcAJib89mL/KBFed3s24XJXa0y4XR9
-	DmG07CgkJacT0R78Bx7D1e+PztPQNCrh105GK2Hel+sJVor6HeDuhC5/7cpoV6xQ
-	YjNshJiU/Krc1H5FAlRgLVfjqKGUUyYNT0cH1WmnIhiPUbpRAix/RkmQXRlkVgbM
-	acWu0zj9m3upJo6c++8sRnxmrgq5sK85QGKvzAIwtjybopnlu+AehCjw6D/w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-	1785678895; x=1785686095; bh=wr9KcQd5UOYPcDKO9OAtdsNMsJA9M3uNYC3
-	1Vb57iYw=; b=XmXujbLftAvTzmIRsm3mJklvTHKNeuEFC/RkixKrfD0Mtz+K0QW
-	CD+BrUdFEAD4GJLRGUY49krlo/4WFwreAYfzd1zd1jSIbtSciI8kGuFZaceRc7Vq
-	Y7PRwikXC54QM3rLe6gMWLoYRglvL4ZRr6A9VOVKVHHvdoknMKisqi57ki0UBcCD
-	pvxjVsXivQxijNKu/pxj8f87L++4SmL8+MWJ0WH9QeS5HEr2c81sKgpbnzrDaZwr
-	tHKM4H159b94yLV8tQvs8KSWfraamvoV4njSnahvQMZGI0AU7fv5/OcqhV2/NQUd
-	NbZ83SIH8TXlD3UwxfXv2cRw8IK6W6jyO3A==
-X-ME-Sender: <xms:LkxvauCaoemi6ekbEL9n1F5lQzcO8jBhOXr2q22E3cdSKkDBc7sdiw>
-    <xme:LkxvakHYhXc-hWPSL2n9ehREvUyQMNYpvZFqUp57Koi0HCHbm9AXAlBznGHY43fYy
-    wtCSx1OlpFrZP5KmeYuogTxS-a6R57xJf5_41EDPpxNuQ4SqBl-f-eg>
-X-ME-Received: <xmr:LkxvahkWLqzXMhat6N7CPn46vxNua51boNrAuicmbkwZty6wGHJpTGIjE6L5vRXbV6EZ6rGww3WMNVYpl201s2WGZivyDdDTvs8>
-X-ME-Proxy-Cause: dmFkZTFlapO+z6cp3wvBebk5lTAia5phm9tTAKSNHefTMzPdePd5v+T7JVgHEkLB41y5Ob
-    eSvN7viLYvrIAaqw29v6S68ef3GuIe/2QfmzPl60v9SPYjt+CGGoHIW4icP01WLKDzOc6C
-    MiBlzN9g5EQDae7iZTKYWr2YlkWF31TgHFKA+LB0yLkroETBvzCa+CA0RRC4tNufFsVOkV
-    rBdO8gOdXsYuegeK25nP42KabMus7xNwyQdViuVL8OaIh7kc5VQHPyc0zfTyon2d0FkYKU
-    iKGSoWac7r1ZoY7PQNed9fLAr9J3ro1NKAbgYiWXJJ8jWVM7YjMG9Y3saYGTypBJmAoANg
-    6oyVuzBsRLxCsCECJx6mzrLQKjXPPDHic5NrLn4ffrLwK0LVVeX1gZ0Xk2S6fP1r9ng8rS
-    JictUazSi5ecwImXJh9ByzRm9cRSeuTXsMNeYC6L+UY13nPaxF/yi0rzjqeQDNB0/kfdwQ
-    7KinW3spMgGWUzGBKXz+yv830VxsxGCoeMjdqciLz8LbA1UDF/b68vIYDiGFV4WePjXVRy
-    Ljjjyl0eJI4aDHemiD5CRG+9GLw327mg51Vd9A4CxF++M/+65FvYbANoIyQ+nubqAvFiuR
-    ZfkRufrt8jndKpUKNswRdOgYbLvXM/0Sva+kw0GvSxAUnmTFekcIuPPkf3+A
-X-ME-Proxy: <xmx:LkxvahvS1sbdmvnJZ79bvRMoB4wNkKEXllAdwxfgsQmg_zYiyk3EMQ>
-    <xmx:LkxvalPISx2OLXNqtyUDD7RWX9DKGenGyH6nXZGyL_U3bWBDAYDzoQ>
-    <xmx:LkxvajqtZUL0UFkgWV4d3V9XSJ_CEH_wJ0DXe--DGmcfvHAzCkXYtA>
-    <xmx:Lkxvau82rTgkUyaBlOMluJnPrylfJgR9EPqvuTQkmdXVMpX1Vqqqlg>
-    <xmx:L0xval7YbN51x2-d2X3fl9RZ4c2iEFgHkPjz_Oa7-MvVDSfgkqY73WVC>
-Feedback-ID: i47b949f6:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 2 Aug 2026 09:54:53 -0400 (EDT)
-Date: Sun, 2 Aug 2026 15:54:52 +0200
-From: Janne Grunau <j@jannau.net>
-To: Yureka Lilian <yureka@cyberchaos.dev>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>,
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
-	Hector Martin <marcan@marcan.st>, Linus Walleij <linusw@kernel.org>,
-	Mark Kettenis <kettenis@openbsd.org>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Sasha Finkelstein <k@chaosmail.tech>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v2 9/9] arm64: dts: apple: Add minimal t8132 (M4) device
- trees
-Message-ID: <20260802135452.GJ806854@robin.jannau.net>
-References: <20260801-apple-m4-initial-devicetrees-v2-0-5cb07cc275da@cyberchaos.dev>
- <20260801-apple-m4-initial-devicetrees-v2-9-5cb07cc275da@cyberchaos.dev>
+	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="cCkzKK5C"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=YRJRxgCmfkrYlLyiUZVd856znFfUMDDbkQDciXf7L8rzmYuv0rAYuQW2Ov9gjkNuvZRS3es6FcAYEkBiTm3+OpphIrcdjVSsxudyLsTKGpHH2xCW4TczXYNGKMztX4R7SpVLk1FM3XJyV6BGzBuVihdiZb0RkzH/fT78k2CEkHsOwqqGzMUHHYMgGSV0SVEtNAPnBRsoqRUqBKmb1iODbQBQMkyhs0s7Hd6NF2U9CnIBgbVkOS0r/z57ZnNDc1lYjQh75n/V6ER7VB96AGXTJWQnBV1I6ZaMmwfKNAlDips50RXeFw+jcKAQgyObIyiimZ5ppcZXq1zFqdSot898iw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wsqxuNM694/wGgOP1l6QefGOhyzON8YsY2fkD3yRw/A=;
+ b=Uy/ylENv8obaf1YFl+cdjMxJlAbd6zZP0FAV6MaS65uLkSTcamdei612KEKZl2kP4OwWRfUIkaVS1Qr8gWBbCvhhl1WiZFhQTGBlY0BfoU6RVyjkHt5FqtJptqilkkhsqL111qvNGYqQn7MDHKDjaQySQgLCK+Ifo9x5v2mWHQLF1GIXeRSivLlGWsD4pZ63SSKQQwfOgURV3wi2Wqg53EAHB3ubEBSnN22SxUg56E8AgH4lno1MxauZaAtTX09QC+YJs7hAvDYXZDIX0veqq1P2AXnQn7TanfC7Z7pE+4mUzsSLKibDDoyvmWsq88+wtOnhTRk7vJ9cY3eCR/fvDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
+ dkim=pass header.d=garyguo.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wsqxuNM694/wGgOP1l6QefGOhyzON8YsY2fkD3yRw/A=;
+ b=cCkzKK5CTCFAiRgpgt2ClV1rYa97Sio0ttSXgaS+9IRohXFDd4xAAf7wTrGehlBbRwkUlJxNsb4WqX7K5qooyxijPV2qmkV+1oDJU0e5dROQLLWn6MW6UOVoCIFpuo7pm622qaz7t6EfgINBEFtSplJUYa7TzFk7JfVhcsAFuMo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=garyguo.net;
+Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:4ab::19)
+ by LOAP265MB8981.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:492::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.17; Sun, 2 Aug
+ 2026 18:30:44 +0000
+Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f60b:1537:68d7:4fc1]) by LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f60b:1537:68d7:4fc1%4]) with mapi id 15.21.0270.016; Sun, 2 Aug 2026
+ 18:30:44 +0000
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sun, 02 Aug 2026 19:30:43 +0100
+Message-Id: <DKEO7DXQ8604.1CB09QFM2EO68@garyguo.net>
+Cc: <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <dri-devel@lists.freedesktop.org>, <linux-riscv@lists.infradead.org>,
+ <linux-pwm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+ <rust-for-linux@vger.kernel.org>, "Boris Brezillon"
+ <boris.brezillon@collabora.com>, =?utf-8?q?Onur_=C3=96zkan?=
+ <work@onurozkan.dev>, "Maurice" <mhi@mailbox.org>
+Subject: Re: [PATCH v5 1/4] rust: clk: use the type-state pattern
+From: "Gary Guo" <gary@garyguo.net>
+To: "Daniel Almeida" <daniel.almeida@collabora.com>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, "Viresh Kumar" <viresh.kumar@linaro.org>, "Danilo
+ Krummrich" <dakr@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>, "Maarten
+ Lankhorst" <maarten.lankhorst@linux.intel.com>, "Maxime Ripard"
+ <mripard@kernel.org>, "Thomas Zimmermann" <tzimmermann@suse.de>, "David
+ Airlie" <airlied@gmail.com>, "Simona Vetter" <simona@ffwll.ch>, "Drew
+ Fustini" <fustini@kernel.org>, "Guo Ren" <guoren@kernel.org>, "Fu Wei"
+ <wefu@redhat.com>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ "Michael Turquette" <mturquette@baylibre.com>, "Stephen Boyd"
+ <sboyd@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>, "Gary Guo"
+ <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, "Benno Lossin" <lossin@kernel.org>, "Andreas
+ Hindborg" <a.hindborg@kernel.org>, "Trevor Gross" <tmgross@umich.edu>,
+ "Michal Wilczynski" <m.wilczynski@samsung.com>, "Boqun Feng"
+ <boqun@kernel.org>
+X-Mailer: aerc 0.21.0
+References: <20260706-clk-type-state-v5-0-67c5f326a16c@collabora.com>
+ <20260706-clk-type-state-v5-1-67c5f326a16c@collabora.com>
+In-Reply-To: <20260706-clk-type-state-v5-1-67c5f326a16c@collabora.com>
+X-ClientProxiedBy: LO4P265CA0144.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:2c4::17) To LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:4ab::19)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260801-apple-m4-initial-devicetrees-v2-9-5cb07cc275da@cyberchaos.dev>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LOAP265MB8560:EE_|LOAP265MB8981:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3a848f32-b2cc-4f31-9a2f-08def0c42a2d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|10070799003|376014|7416014|23010399003|22082099003|18002099003|4143699003|5023799004|3023799007|10067099003|56012099006|921020;
+X-Microsoft-Antispam-Message-Info:
+	SiBlaTbU1KiPBcRszrcI4p287UdWfw4xtgjH0vAdcLHkMU4Irw0qPTky9IlIcNJMRhe+meAe+qWIen9BWLO6ZmPsqjK8uERFlc1DfnyQ5bDnmxZUf+Fs5RxpU1CqPr1ZpZ/GpOkAzOXSvpq7zbT4eG1NQ32PhB2f5XxnjzXCNxPMdb+sAhqmzL7gNSYLybkfXTiDdZwUFBJESp+NW3Xp41CA2G+3rQI6Ty0ZB/ImHkT9WtoDCMcfLPxfsBiF4LcwGmmx9yfBshBeh7PDZ0RXoRSB95QKC9M9Ns+OSlqFhPPNMC/COisc37dZCF0xZL0jjpUeRdwrzSclfOEM7VfaLLUF3ssj83jlJibPMTOnvFCH9neCRh18aPg9sBrPOduutar2NcwRnz/HQFNQaiONQ6Gpc9ddt1e0fPLRA2mXKLzVo221/Hay7uAjEIF8ME/9dEWL5H05svg0hP4QgFfX2i5Jctp6kiaS6KghzGWUEa+kZnkBBn4CMT0e+klH7VjYEe93yGt070rbvLBOPe0XoDznu9FMSX9O24s1OiG8dQByppIBXWCtN773pr9Hdx3cFtZpftITMYkQwU4+bG2uhNU+zumbAp0Qfl3VmgmZhY4FnjBUg9x9v9lhCPR+v9oIQ3RMxq3gYAqGQLi6OR9Y/CRXVZTlyS4wMMSlqXetcF4aW+4Y9OZQ33MLlCf8B6yYup7wRdDnlaI43HQIYK17Sg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(10070799003)(376014)(7416014)(23010399003)(22082099003)(18002099003)(4143699003)(5023799004)(3023799007)(10067099003)(56012099006)(921020);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?S1RaWXY5MnRUWks1cjdrSUxWL3o2eFJ6RWY1Q3drbm5hRGM5MkMzaEZTYWQw?=
+ =?utf-8?B?MWFMcVRMc0JYNmFtdXJnc1JWbnVGS3IvVllzdGkzcUhTL2R6RGlyNFNKRlJL?=
+ =?utf-8?B?MWNZK2pxMEFGeFFCaTJHUWNhK3J6Q1VsYWpRZnRzRWI1dEpJam4ycnU4Qkw3?=
+ =?utf-8?B?L2QxdnhQaFpyQTczajlrak9Vcy9rZmhEVmkxVko2dlcvSkJKZStrV2szSCtr?=
+ =?utf-8?B?MlRjWGhxeGd5TnMxaUFCT1pPeVE1M1ZWNUlNZUtwNm44UUhXN3BwaUhncGNk?=
+ =?utf-8?B?amk2STU5ZUtnd003MFpTYlkrSCtuSUdaeGZDbmNnWEhhNkFhaU14WmxRZ3c5?=
+ =?utf-8?B?RDhHc1IwTEZOUlhkelRndXhpQ2lsZkd6bmp5R1N5R0xqUlF4MGpxNlhRQTdn?=
+ =?utf-8?B?MlhTSysxY0ZtbjIzQlcxNVJxQWl3c2hoUWtZKytEMmgzTURMMGx2eDFsUHNz?=
+ =?utf-8?B?SjJ6amx0M3llMTVYd2JtVlJ0cUpMbCtsNVVybnB5WVRmQ1U1N3hzNm1JNm14?=
+ =?utf-8?B?cFRVcVdCZHNRRVhoRjhrRWt5TVZTVGhzbm96UEVqeDE5TUJKVlljbjNwZ3d5?=
+ =?utf-8?B?S2t5SThINFkvc2Q0TlA4RDl3WDFHMlB3eEVDYzZKVXhqN2ViOG5sYjdKRWZR?=
+ =?utf-8?B?Nnd3dEJDUDlRem1uaGdJb1VlcEhUNTlDUkdOZ3paL3k4NnNrcEtUc2k0cG5x?=
+ =?utf-8?B?RkxiM2liczYwQVdqNWFLLzVGTCtma1JGRVlYUjBwSStIOFRZWlpFRTVpdUZv?=
+ =?utf-8?B?YTM3OFNMY3FMWXBGRTN1Rzg2VUpEZHlTMFdqZ0RBQ0kvY1krYU9QczQybWVt?=
+ =?utf-8?B?V3ZVc1RYYTBPMEhIY2lNMS9wS2pnK0czSG5RN2NkaFpFMmk3R09oL2tXNDVF?=
+ =?utf-8?B?d29EV3BBN09tcGRac3V3eDZ2d3Ryc21wWGppNVFXZ2EwaTd3SFAzMUNDTCtr?=
+ =?utf-8?B?RVVIWkhtVS9CbEtyQXVhSWVjUm0yWGZSVWpWTlhJbHQ5Umx3ZWRJTmdYNlBP?=
+ =?utf-8?B?aEg1YTRqN0N3UW9sbC9sUmNqQ1l2b3AwUXZtWm5ORXFYb2F3bUF1NXE4dzdO?=
+ =?utf-8?B?WUpWTXdoZDU2eVVSRUNYbzkxMW1HbDNyRzNpa3FCejVQcFZ0eVF6RHI3S08w?=
+ =?utf-8?B?Y0Y1ZXVVR0N3SGM2ek9sRWNKeDVrMU9HMVVRSUxCbW16VndFd1owUDFZRStz?=
+ =?utf-8?B?RGMzbXdzUFArV2JYMk9TWFM4K3lsTXE2bXFzdW1OYzExMzg0dVpkWTVIWW1a?=
+ =?utf-8?B?ZzVCeG41azF5LzdUdEQvRDM2bXJMWWlnNlV0OHBpR0srYVVNZXUrbXlWSmdQ?=
+ =?utf-8?B?YkxIOC9wVVVTYUpwZ0Q0dThJalZHZjlYTnFyNnc1QjFXZURrUDZkWnNDOHdT?=
+ =?utf-8?B?NGFFbUZiSTFsR0s2RTJ1K05QRnVvSk9nSzNvQi9YbTIxTnp5WlkvUWtXUk53?=
+ =?utf-8?B?OHNHTENXVVFUY204UUczZStVd01tRW5CYTM4NDdaOGovTE1xNUhnZUIyOGNS?=
+ =?utf-8?B?cVNrUEdxVEw2RFNDcUZETldkeTZVU2plditjbVdvOFh5Rkl0ZWJNd2JzRU5w?=
+ =?utf-8?B?N0psbHVKTXFaYmJRSm9VZWpHVjNTZ1kxeWw3L21vOXNmRDZaZFMwcHRVdjMv?=
+ =?utf-8?B?OExCOW9pVGE0ODRSdUJOemROUW42cXA2M1c5R3YzcUFZdGwvNTFMb1d3SnJG?=
+ =?utf-8?B?Q0JNNVBqVFpndE52bTJVUUE0VGt1YUJKWmxnVmxZRERJRkNpRHM2a1Ayd0pv?=
+ =?utf-8?B?K21raDh4VHk5czdOOHk2dlE3ZEVaeVpCSDI1NlQ1YlY5VHlCYlN5VEpUV09Z?=
+ =?utf-8?B?MUVaVFFGektPR2tqZWVyUVV6b3BqL0lhWG5FUDl4VlUrclcycm03Q3FHMFkv?=
+ =?utf-8?B?bzhQaE1Nb0pFdGhIUitaOWd5d3cxQTMrM1QxVHcwckh5bEZGSjUzTnMweE5W?=
+ =?utf-8?B?ZGpJMDVhcVQ2aFo3Y1E3eGllY0RZemtUTlhtcHNzVHAxYi9XZlFveDFJOExa?=
+ =?utf-8?B?UmNQdE0rSTAvWDRqVHd6RDRCRlNEa0ZUM0ZRakt2ZnBXOVU1L3djbEpicUpO?=
+ =?utf-8?B?VEJzS1RsdUdrc2p2UTlIdkpoRURiQ3VyT0Z3Wm9hRlN0aGUzQWV3R1pmODZh?=
+ =?utf-8?B?djgyelJ2dEMvMzFiMXJsVlB0dnNlV1ZKRkNOOHJBSU05V2tiRUVabkNpSHBl?=
+ =?utf-8?B?TnhhY3MwU21hWXNaVGxsdlNoVjVJOWlsZ2E5RHhOcVZUR1I0V2Q2L1ZWcThF?=
+ =?utf-8?B?YnY4WDE0TzhyaFVuRng5d0hjbzkwUHc0aDREekZFK3oxdDJ3ZEs3TjN1am80?=
+ =?utf-8?B?UXkxUUJLM2NCNnh6K2VpNndvUEpTaHVzUmVCRC8wU1U0cVl1bXc0QT09?=
+X-OriginatorOrg: garyguo.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a848f32-b2cc-4f31-9a2f-08def0c42a2d
+X-MS-Exchange-CrossTenant-AuthSource: LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2026 18:30:44.6344
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qxSaeUBWXhqIdk60Ecnm93juP1VVG7+7zB/EXd5qM+siDjof9tR0Bc7ZfxUvZbJiV9XdgjYk5NUgHizY3XF0Cw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LOAP265MB8981
 
-On Sat, Aug 01, 2026 at 11:40:39PM +0200, Yureka Lilian wrote:
-> Added device trees for the following devices:
-> - apple,j604 - MacBook Pro (14-inch, M4, 2024)
-> - apple,j623 - iMac (24-inch, 2x USB-C, M4, 2024)
-> - apple,j624 - iMac (24-inch, 4x USB-C, M4, 2024)
-> - apple,j713 - MacBook Air (13-inch, M4, 2025)
-> - apple,j715 - MacBook Air (15-inch, M4, 2025)
-> - apple,j773g - Mac mini (M4, 2024)
-> 
-> The device trees have a minimal set of devices limited to CPU cores,
-> interrupt controller, power states, watchdog, serial, pin controller,
-> i2c and framebuffer.
-> The device trees for the notebooks add a PWM controller for the keyboard
-> LED illumination.
-> 
-> Using the macOS 26.6 iBoot/firmware, the Mac mini reliably boots on a
-> single core using the stock kernel.
-> Booting with smp requires avoiding the wfi and wfit instructions
-> in the idle loop and `delay()` respectively, since those instructions
-> cause a loss of architectural state on the secondary cores, and even
-> then boot is unreliable.
-> 
-> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
-> ---
->  arch/arm64/boot/dts/apple/Makefile        |    6 +
->  arch/arm64/boot/dts/apple/t8132-j604.dts  |   35 +
->  arch/arm64/boot/dts/apple/t8132-j623.dts  |   18 +
->  arch/arm64/boot/dts/apple/t8132-j624.dts  |   18 +
->  arch/arm64/boot/dts/apple/t8132-j713.dts  |   35 +
->  arch/arm64/boot/dts/apple/t8132-j715.dts  |   35 +
->  arch/arm64/boot/dts/apple/t8132-j773g.dts |   25 +
->  arch/arm64/boot/dts/apple/t8132-jxxx.dtsi |   48 ++
->  arch/arm64/boot/dts/apple/t8132-pmgr.dtsi | 1130 +++++++++++++++++++++++++++++
->  arch/arm64/boot/dts/apple/t8132.dtsi      |  447 ++++++++++++
->  10 files changed, 1797 insertions(+)
+On Mon Jul 6, 2026 at 3:37 PM BST, Daniel Almeida wrote:
+> The current Clk abstraction can still be improved on the following issues=
+:
+>
+> a) It only keeps track of a count to clk_get(), which means that users ha=
+ve
+> to manually call disable() and unprepare(), or a variation of those, like
+> disable_unprepare().
+>
+> b) It allows repeated calls to prepare() or enable(), but it keeps no tra=
+ck
+> of how often these were called, i.e., it's currently legal to write the
+> following:
+>
+> clk.prepare();
+> clk.prepare();
+> clk.enable();
+> clk.enable();
+>
+> And nothing gets undone on drop().
+>
+> c) It adds a OptionalClk type that is probably not needed. There is no
+> "struct optional_clk" in C and we should probably not add one.
+>
+> d) It does not let a user express the state of the clk through the
+> type system. For example, there is currently no way to encode that a Clk =
+is
+> enabled via the type system alone.
+>
+> In light of the Regulator abstraction that was recently merged, switch th=
+is
+> abstraction to use the type-state pattern instead. It solves both a) and =
+b)
+> by establishing a number of states and the valid ways to transition betwe=
+en
+> them. It also automatically undoes any call to clk_get(), clk_prepare() a=
+nd
+> clk_enable() as applicable on drop(), so users do not have to do anything
+> special before Clk goes out of scope.
+>
+> It solves c) by removing the OptionalClk type, which is now simply encode=
+d
+> as a Clk whose inner pointer is NULL.
 
-...
+This change could be a commit on its own?
 
-> diff --git a/arch/arm64/boot/dts/apple/t8132.dtsi b/arch/arm64/boot/dts/apple/t8132.dtsi
-> new file mode 100644
-> index 000000000000..6df6ccdda90e
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/apple/t8132.dtsi
-> @@ -0,0 +1,447 @@
-> +// SPDX-License-Identifier: GPL-2.0+ OR MIT
-> +/*
-> + * Apple T8132 "M4" SoC
-> + *
-> + * Copyright The Asahi Linux Contributors
-> + */
-> +
-> +#include <dt-bindings/interrupt-controller/apple-aic.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/pinctrl/apple.h>
-> +
-> +/ {
-> +	compatible = "apple,t8132", "apple,arm-platform";
-> +
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	cpus {
-> +		#address-cells = <2>;
-> +		#size-cells = <0>;
-> +
-> +		cpu-map {
-> +			cluster0 {
-> +				core0 {
-> +					cpu = <&cpu_e0>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu_e1>;
-> +				};
-> +				core2 {
-> +					cpu = <&cpu_e2>;
-> +				};
-> +				core3 {
-> +					cpu = <&cpu_e3>;
-> +				};
-> +				core4 {
-> +					cpu = <&cpu_e4>;
-> +				};
-> +				core5 {
-> +					cpu = <&cpu_e5>;
-> +				};
-> +			};
-> +
-> +			cluster1 {
-> +				core0 {
-> +					cpu = <&cpu_p0>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu_p1>;
-> +				};
-> +				core2 {
-> +					cpu = <&cpu_p2>;
-> +				};
-> +				core3 {
-> +					cpu = <&cpu_p3>;
-> +				};
-> +			};
-> +		};
-> +
-> +		cpu_e0: cpu@0 {
-> +			compatible = "apple,donan-e";
-> +			device_type = "cpu";
-> +			reg = <0x0 0x0>;
-> +			enable-method = "spin-table";
-> +			cpu-release-addr = <0 0>;
-> +			next-level-cache = <&l2_cache_0>;
+>
+> It solves d) by directly encoding the state of the Clk into the type, e.g=
+.:
+> Clk<Enabled> is now known to be a Clk that is enabled.
 
-missing "i-cache-size" and "d-cache-size". As far as I'm aware they
-remain unchanged. 128kB i-cache, 64kB d-cache for the e-cores and 192kB
-i-cache, 128kB d-cache for the p-cores
+The design conflate states with actions. Our existing type state for device=
+s
+don't do this: `Device<Bound>` means that the device is currently bound, no=
+t
+that dropping it will unbind it. Yet, a `Clk<Prepared>` doesn't mean just t=
+hat
+"clock is prepared" but rather "clock is prepared and needs to be unprepare=
+d on
+drop".
 
-...
+One way around this is to mimic the "Registration" pattern: have a type to
+indicate that a `Clk` has been prepared and its `drop` will undo it, and th=
+en
+this type can `Deref` to `Clk<Prepared>` which just mean a prepared clock.
 
-> +		pmgr_mini: power-management@388280000 {
-> +			compatible = "apple,t8132-pmgr", "apple,t8103-pmgr", "syscon", "simple-mfd";
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			reg = <0x3 0x88280000 0 0x4000>;
-> +			/* child nodes are added in t8132-pmgr.dtsi */
-> +		};
-> +
-> +		wdt: watchdog@3882b0000 {
-> +			compatible = "apple,t8132-wdt", "apple,t8103-wdt";
-> +			reg = <0x3 0x882b0000 0x0 0x4000>;
-> +			clocks = <&clkref>;
-> +			interrupt-parent = <&aic>;
-> +			interrupts = <AIC_IRQ 507 IRQ_TYPE_LEVEL_HIGH>;
-> +		};
-> +
-> +		pinctrl_nub: pinctrl@3881f0000 {
+>
+> The INVARIANTS section for Clk is expanded to highlight the relationship
+> between the states and the respective reference counts that are owned by
+> each of them.
+>
+> The examples are expanded to highlight how a user can transition between
+> states, as well as highlight some of the shortcuts built into the API.
+>
+> The current implementation is also more flexible, in the sense that it
+> allows for more states to be added in the future. This lets us implement
+> different strategies for handling clocks, including one that mimics the
+> current API, allowing for multiple calls to prepare() and enable().
+>
+> The users (cpufreq.rs/ rcpufreq_dt.rs) were updated by this patch (and no=
+t
+> a separate one) to reflect the new changes. This is needed, because
+> otherwise this patch would break the build.
+>
+> Link: https://crates.io/crates/sealed [1]
 
-out of order node, it belongs before pmgr_mini in unit-address order
+Link that doesn't seem to be referenced?
 
-Janne
+Best,
+Gary
+
+
+> Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
+
