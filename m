@@ -1,306 +1,308 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E19533C1BD
-	for <linux-pwm@vger.kernel.org>; Mon,  3 Aug 2026 04:48:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D899396572;
+	Mon,  3 Aug 2026 06:31:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.167.242.64
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785732495; cv=none; b=YMP3DF5Ipi+O8uNpghfc7xfOI/KVNC74Iv5oK7Zw72tSLhTFPNnxSpJRJoQ28kclCxkooYSMwC93CfdmM/cpCCRjqFVW9Ukynk9lL9wePcUSCoV/yVfw/WfV2Tn6qWCdEaRNkIWMYIBEsz1KjVuooEPzvCsVmp5YGZ/GnCh1Vjo=
+	t=1785738686; cv=none; b=kXQtbNxBKmzgEPQQFzMZEC+xt3P1DnE6mr6sJCCHNsBPo73UchO6OF81SHdbjcPWjQCMymSe5h7xhiySgjlbiHfpPOxcIp2ih/OaxJVxqgNLB6p9oI9UnP1wYYygwYkIsuhQISgwHSO1R+HsWQPkT7PlN4UxFrOgyrJM98OOdvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785732495; c=relaxed/simple;
-	bh=PXTpUFFxfLcQ8bCrLbv7JGiWMl2bbsUpe/ewaTrtbKc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Qjbil90egE73JWrBlNXKX+3GpUy9We98vqBhdaCpZ+jvPIWwEaOI6meHvDH4lfIWMJtG6QCRNoVl6DrhnN3dgHbC4CSsInEVobvcBJ6p/U2l7Ne27DhDMApFJEKy7n97tAYjiw+uhah3g0nDsrCHWlooP/hWUbdHUGgWauR+cGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jvDMmZrR; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785738686; c=relaxed/simple;
+	bh=0w26mLCibxmzad5cJ4RsBqQcZLwhm5292+fwf5AEBhg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:Cc:From:
+	 In-Reply-To:Content-Type; b=SpiroXl7M7H0nhWnWb+cnXpRfn/Ws6M6SMBxHVCdQCYX+DRu+wPojcBNnsqrR+i9cmrjn8M7IT4lAdZGIKfWcMpTps/sX3uMLuipDijqrVKr2NbhkPUXwNtii3wSuYJQOXvaIDf9HxRqPxhDWrtawm77fgo8q68PFqnBC0fLZek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ideasonboard.com; spf=pass smtp.mailfrom=ideasonboard.com; dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b=oer8sGJV; arc=none smtp.client-ip=213.167.242.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ideasonboard.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jvDMmZrR"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4954a2e73a9so9654935e9.3
-        for <linux-pwm@vger.kernel.org>; Sun, 02 Aug 2026 21:48:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785732492; x=1786337292; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=eidjmnrjKXjAWJf77xTqxScnhJGnGwTlBVkDzO31WGk=;
-        b=jvDMmZrRPu/UDJOlLuN5gXnSkgx9ebueylPMRhwIoE0/mnL7JW0pkqwwbGBtN8EfgQ
-         VE3XgPlEFsscORG/QnsRSzAVSIoLltcNGX9soQ7jQLVKPB6jYtHeFhXse9r1sMmu5MFD
-         WrOv+x0peibqEs0AUPTnZIYqK/RHpTYyiilgJywYs1Z7SUT3RQn3VQ84X1PFqnPUQnnk
-         EIWWjVtPwBgrFOpD2pH+LPYsy80iBW8XRXKfbmwS5N48dGIYaznf8Y36c1+RfdePJuPo
-         vFJ60F9Pa0+cVU0flaMmL3AZVtZ8JkF4lw0i3D25fdnyZ47vyIDOU8UWh9Hf6t50hiRy
-         DfqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785732492; x=1786337292;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=eidjmnrjKXjAWJf77xTqxScnhJGnGwTlBVkDzO31WGk=;
-        b=EFCzm0OVU1LpAqAElA6gFXlZhv3nQVdMpQkuHn3XVWPhzt7ndU1P49ybse0Lx/kCDx
-         1qgSdVVaBEeuhRiGkwKMAhVCov2BGlTItke/XGyzRL6QXc3kKO8+oYAwSSq7H0J4jjBe
-         xt7kORPXxu64KOxg+hxDEJ1I77LIVTVMszGjapNV8SIE4yplZj4kQNomyX+dZ2MbB1FO
-         R08Go0/LU8M0/hy5jU6vkVbNmW+/fu6d5wyPCT5O20jetbdRTrZmupjgxXIvGkxN74mu
-         0eEZcI/RHoM3dTfxwDk8uaFl1znlgYnRXv8zRFPkrlJeuwDWfDfIR5gyFsx9O7bL0KSt
-         mTqA==
-X-Forwarded-Encrypted: i=1; AHgh+RoQynjwfD3JyZyxnu18yroRpUlfExU4FYkQB4VB7aWU5nXVXF3LHnkHtZwGyEUIZg/hDQWj++DpJHA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyw+BL7EQRmsEljQPdoiYiKKPxajWqAeucC0sBDggYKkkDeG+JC
-	btY5ix+UZyDvGYUb0GHRmc9M7cCEFRqLJJWGJsqmGUT1bsNVfX/5VRu8
-X-Gm-Gg: AR+sD114iuvQ1jxH8AHaY8RP/eeN23eKxvBlwG8P4me1HTdRVFGbkFk9Lz6JGxeMkAi
-	5p4/XNLX0kpHQlQbOPc0RwUW+LiesHNS/S6jkYTtg6+cf7TWX8hHX3rZo0UXVJSKa86+4KNxWLr
-	JR/3k8ShIK4T0lbWjyxm7kjuqlj5AK/2RWvRKcv6oKHkJS6d51sQkVMvUFc9lkpgCqqR4jy8d8N
-	bqaFXNN4CQhMBxjTIdA7MrRlorOiLqQJtjaZhFfdXORfwCqYWzfYiPqL72tzQm8iCIF+wOPIpjR
-	m+iWChimH1sXlmPkWqr4MYWxj7WV2IplFkgbPCQ2Dce7rUVpTbhDoSXZPYTNh4tBhp0FXcZnY24
-	zZHceTZWAc55hc3/b5qJCGLaGYZFIS+ugkUpP9k7HazBMwkYAx+kARv+WBoFq3amo8Umn9BpBCW
-	Kh/CKixBG5iUp53BBe9cw89VyDo80FBHrmhjHU0Edir4mYAcMcAj9l654UtA05j1ts1VpuJ408A
-	0rnGZsxCPDuVnYkDU001gur7Bm8/UCb6Fyi5H6Fdpg80/iL3vgD6bd6wHTXNKbX+o27PQ==
-X-Received: by 2002:a05:600c:3e15:b0:495:5dcc:52b4 with SMTP id 5b1f17b1804b1-4980c649cbcmr183578235e9.3.1785732491559;
-        Sun, 02 Aug 2026 21:48:11 -0700 (PDT)
-Received: from rocinante (lfbn-tou-1-1098-107.w90-76.abo.wanadoo.fr. [90.76.164.107])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49807b86d66sm90376415e9.1.2026.08.02.21.48.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Aug 2026 21:48:11 -0700 (PDT)
-From: Stephane Lepain <stephanelepain@gmail.com>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	linux-pwm@vger.kernel.org,
-	Kenneth Kasilag <kenneth@kasilag.me>,
-	George Moussalem <george.moussalem@outlook.com>,
-	Devi Priya <quic_devipriy@quicinc.com>,
-	Baruch Siach <baruch.siach@siklu.com>,
-	linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Stephane Lepain <stephanelepain@gmail.com>
-Subject: [PATCH v3] pwm: ipq: fix period calculation
-Date: Mon,  3 Aug 2026 06:47:48 +0200
-Message-ID: <20260803044748.27116-1-stephanelepain@gmail.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260731070427.155221-1-stephanelepain@gmail.com>
-References: <20260731070427.155221-1-stephanelepain@gmail.com>
+	dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b="oer8sGJV"
+Received: from [192.168.88.20] (91-158-153-178.elisa-laajakaista.fi [91.158.153.178])
+	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9B0DE512;
+	Mon,  3 Aug 2026 08:30:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+	s=mail; t=1785738612;
+	bh=0w26mLCibxmzad5cJ4RsBqQcZLwhm5292+fwf5AEBhg=;
+	h=Date:Subject:To:References:Cc:From:In-Reply-To:From;
+	b=oer8sGJVImG3eAdX/1tDX4OfNrWm4pjhxRA/1dweeK0/QNZxTPxYqBKHqEkpRPb3+
+	 Egk1n6NaDUmYkxMzDpzoE4nw/3yETSw8cW+rrdPTRWBDGvsL/5y/zRRpTIM1V1Upa9
+	 AsybJri2Bo0Ucca/CHkw+txSHZGcz913RI4heSi4=
+Message-ID: <f428f54b-90dd-425a-b204-531df0e1d5fa@ideasonboard.com>
+Date: Mon, 3 Aug 2026 09:31:14 +0300
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: Correct white-space style
+To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+References: <20260801195613.235430-2-krzysztof.kozlowski@oss.qualcomm.com>
+Content-Language: en-US
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>, Mike Leach <mike.leach@arm.com>,
+ James Clark <james.clark@linaro.org>, Leo Yan <leo.yan@arm.com>,
+ Damien Le Moal <dlemoal@kernel.org>, Niklas Cassel <cassel@kernel.org>,
+ Jyri Sarha <jyri.sarha@iki.fi>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Patrice Chotard <patrice.chotard@foss.st.com>,
+ Andi Shyti <andi.shyti@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Lee Jones <lee@kernel.org>, Johannes Berg <johannes@sipsolutions.net>,
+ Jeff Johnson <jjohnson@kernel.org>, Viresh Kumar <vireshk@kernel.org>,
+ Nishanth Menon <nm@ti.com>, Stephen Boyd <sboyd@kernel.org>,
+ Yangbo Lu <yangbo.lu@nxp.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+ Samuel Holland <samuel.holland@sifive.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Richard Cochran <richardcochran@gmail.com>,
+ Jens Wiklander <jenswi@kernel.org>,
+ Yuanfang Zhang <yuanfang.zhang@oss.qualcomm.com>,
+ YC Hung <yc.hung@mediatek.com>, Svyatoslav Ryhel <clamor95@gmail.com>,
+ Sean Wang <sean.wang@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+ Peter Ujfalusi <peter.ujfalusi@gmail.com>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ coresight@lists.linaro.org, linux-arm-msm@vger.kernel.org,
+ linux-ide@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-mediatek@lists.infradead.org, linux-gpio@vger.kernel.org,
+ linux-i2c@vger.kernel.org, mfd@lists.linux.dev,
+ linux-wireless@vger.kernel.org, ath10k@lists.infradead.org,
+ linux-pm@vger.kernel.org, netdev@vger.kernel.org, linux-pwm@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-usb@vger.kernel.org
+From: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+In-Reply-To: <20260801195613.235430-2-krzysztof.kozlowski@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Kenneth Kasilag <kenneth@kasilag.me>
+Hi,
 
-ipq_pwm_apply() fixes pwm_div at its maximum and derives only pre_div
-from the requested period. Since the period spans
-(pre_div + 1) * (pwm_div + 1) input clocks, pinning pwm_div near its
-maximum forces pre_div towards zero for short periods: once pre_div
-rounds to 0 the shortest representable period is (pwm_div + 1) / clk_rate,
-and any shorter request is rejected outright:
+On 01/08/2026 22:56, Krzysztof Kozlowski wrote:
+> Correct a few white-space issues, like double space after '=' or before
+> bracket '{' characters, which will be flagged by dt-check-style.  No
+> functional changes.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> 
+> ---
+> 
+> Patch applies on Rob's for-next branch.
+> ---
+>   .../arm/firmware/linaro,optee-tz.yaml         |  8 +-
+>   .../devicetree/bindings/arm/psci.yaml         | 18 ++--
+>   .../bindings/arm/qcom,coresight-tnoc.yaml     |  2 +-
+>   .../devicetree/bindings/ata/st,ahci.yaml      | 22 ++---
+>   .../bindings/display/ti/ti,am65x-dss.yaml     | 12 +--
+>   .../bindings/display/ti/ti,j721e-dss.yaml     | 96 +++++++++----------
+>   .../bindings/display/ti/ti,k2g-dss.yaml       | 36 +++----
+>   .../bindings/dsp/mediatek,mt8195-dsp.yaml     |  2 +-
+>   .../bindings/gpio/st,nomadik-gpio.yaml        |  2 +-
+>   .../devicetree/bindings/i2c/st,sti-i2c.yaml   |  2 +-
+>   .../bindings/mailbox/st,sti-mailbox.yaml      |  2 +-
+>   .../bindings/mfd/maxim,max77620.yaml          |  2 +-
+>   .../bindings/net/wireless/qcom,ath10k.yaml    | 34 +++----
+>   .../devicetree/bindings/opp/opp-v2.yaml       | 28 +++---
+>   .../pinctrl/mediatek,mt7988-pinctrl.yaml      |  2 +-
+>   .../devicetree/bindings/ptp/fsl,ptp.yaml      | 12 +--
+>   .../devicetree/bindings/pwm/pwm-sifive.yaml   |  2 +-
+>   .../bindings/usb/ti,twl4030-usb.yaml          |  2 +-
+>   18 files changed, 142 insertions(+), 142 deletions(-)
 
-	pre_div = mul_u64_u64_div_u64(period_ns, ipq_chip->clk_rate,
-				      (u64)NSEC_PER_SEC * (pwm_div + 1));
-	if (!pre_div)
-		return -ERANGE;
 
-Four-wire fans commonly expect a ~25 kHz PWM, which is therefore
-unusable. On an IPQ6018 with the PWM block clocked at 100 MHz, a
-40,000 ns (25 kHz) request computes floor(0.061) == 0 and returns
--ERANGE deterministically. Where a request is not rejected outright, the
-high duration truncates to 0 and the output collapses to ~0% duty.
+> diff --git a/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml b/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
+> index 49a007cbcd3a..d1e530e12604 100644
+> --- a/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
+> +++ b/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
+> @@ -261,9 +261,9 @@ examples:
+>                   "ovr1", "ovr2", "vp1", "vp2", "common1";
+>           ti,am65x-oldi-io-ctrl = <&dss_oldi_io_ctrl>;
+>           power-domains = <&k3_pds 67 TI_SCI_PD_EXCLUSIVE>;
+> -        clocks =        <&k3_clks 67 1>,
+> -                        <&k3_clks 216 1>,
+> -                        <&k3_clks 67 2>;
+> +        clocks = <&k3_clks 67 1>,
+> +                 <&k3_clks 216 1>,
+> +                 <&k3_clks 67 2>;
+>           clock-names = "fck", "vp1", "vp2";
+>           interrupts = <GIC_SPI 166 IRQ_TYPE_EDGE_RISING>;
+>           ports {
+> @@ -299,9 +299,9 @@ examples:
+>               reg-names = "common", "vidl1", "vid",
+>                           "ovr1", "ovr2", "vp1", "vp2", "common1";
+>               power-domains = <&k3_pds 186 TI_SCI_PD_EXCLUSIVE>;
+> -            clocks =        <&k3_clks 186 6>,
+> -                            <&vp1_clock>,
+> -                            <&k3_clks 186 2>;
+> +            clocks = <&k3_clks 186 6>,
+> +                     <&vp1_clock>,
+> +                     <&k3_clks 186 2>;
+>               clock-names = "fck", "vp1", "vp2";
+>               interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
+>               oldi-transmitters {
+> diff --git a/Documentation/devicetree/bindings/display/ti/ti,j721e-dss.yaml b/Documentation/devicetree/bindings/display/ti/ti,j721e-dss.yaml
+> index 65ae8a1c3998..cac5ef1743d3 100644
+> --- a/Documentation/devicetree/bindings/display/ti/ti,j721e-dss.yaml
+> +++ b/Documentation/devicetree/bindings/display/ti/ti,j721e-dss.yaml
+> @@ -154,54 +154,54 @@ examples:
+>       #include <dt-bindings/soc/ti,sci_pm_domain.h>
+>   
+>       dss: dss@4a00000 {
+> -            compatible = "ti,j721e-dss";
+> -            reg =   <0x04a00000 0x10000>, /* common_m */
+> -                    <0x04a10000 0x10000>, /* common_s0*/
+> -                    <0x04b00000 0x10000>, /* common_s1*/
+> -                    <0x04b10000 0x10000>, /* common_s2*/
+> -                    <0x04a20000 0x10000>, /* vidl1 */
+> -                    <0x04a30000 0x10000>, /* vidl2 */
+> -                    <0x04a50000 0x10000>, /* vid1 */
+> -                    <0x04a60000 0x10000>, /* vid2 */
+> -                    <0x04a70000 0x10000>, /* ovr1 */
+> -                    <0x04a90000 0x10000>, /* ovr2 */
+> -                    <0x04ab0000 0x10000>, /* ovr3 */
+> -                    <0x04ad0000 0x10000>, /* ovr4 */
+> -                    <0x04a80000 0x10000>, /* vp1 */
+> -                    <0x04aa0000 0x10000>, /* vp2 */
+> -                    <0x04ac0000 0x10000>, /* vp3 */
+> -                    <0x04ae0000 0x10000>, /* vp4 */
+> -                    <0x04af0000 0x10000>; /* wb */
+> -            reg-names = "common_m", "common_s0",
+> -                    "common_s1", "common_s2",
+> -                    "vidl1", "vidl2","vid1","vid2",
+> -                    "ovr1", "ovr2", "ovr3", "ovr4",
+> -                    "vp1", "vp2", "vp3", "vp4",
+> -                    "wb";
+> -            clocks =        <&k3_clks 152 0>,
+> -                            <&k3_clks 152 1>,
+> -                            <&k3_clks 152 4>,
+> -                            <&k3_clks 152 9>,
+> -                            <&k3_clks 152 13>;
+> -            clock-names = "fck", "vp1", "vp2", "vp3", "vp4";
+> -            power-domains = <&k3_pds 152 TI_SCI_PD_EXCLUSIVE>;
+> -            interrupts =    <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>,
+> -                            <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>,
+> -                            <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>,
+> -                            <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH>;
+> -            interrupt-names =       "common_m",
+> -                                    "common_s0",
+> -                                    "common_s1",
+> -                                    "common_s2";
+> -            ports {
+> -                    #address-cells = <1>;
+> -                    #size-cells = <0>;
+> -                    port@0 {
+> -                            reg = <0>;
+> +        compatible = "ti,j721e-dss";
+> +        reg = <0x04a00000 0x10000>, /* common_m */
+> +              <0x04a10000 0x10000>, /* common_s0*/
+> +              <0x04b00000 0x10000>, /* common_s1*/
+> +              <0x04b10000 0x10000>, /* common_s2*/
+> +              <0x04a20000 0x10000>, /* vidl1 */
+> +              <0x04a30000 0x10000>, /* vidl2 */
+> +              <0x04a50000 0x10000>, /* vid1 */
+> +              <0x04a60000 0x10000>, /* vid2 */
+> +              <0x04a70000 0x10000>, /* ovr1 */
+> +              <0x04a90000 0x10000>, /* ovr2 */
+> +              <0x04ab0000 0x10000>, /* ovr3 */
+> +              <0x04ad0000 0x10000>, /* ovr4 */
+> +              <0x04a80000 0x10000>, /* vp1 */
+> +              <0x04aa0000 0x10000>, /* vp2 */
+> +              <0x04ac0000 0x10000>, /* vp3 */
+> +              <0x04ae0000 0x10000>, /* vp4 */
+> +              <0x04af0000 0x10000>; /* wb */
+> +        reg-names = "common_m", "common_s0",
+> +                "common_s1", "common_s2",
+> +                "vidl1", "vidl2","vid1","vid2",
+> +                "ovr1", "ovr2", "ovr3", "ovr4",
+> +                "vp1", "vp2", "vp3", "vp4",
+> +                "wb";
+> +        clocks = <&k3_clks 152 0>,
+> +                 <&k3_clks 152 1>,
+> +                 <&k3_clks 152 4>,
+> +                 <&k3_clks 152 9>,
+> +                 <&k3_clks 152 13>;
+> +        clock-names = "fck", "vp1", "vp2", "vp3", "vp4";
+> +        power-domains = <&k3_pds 152 TI_SCI_PD_EXCLUSIVE>;
+> +        interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH>;
+> +        interrupt-names = "common_m",
+> +                          "common_s0",
+> +                          "common_s1",
+> +                          "common_s2";
+> +        ports {
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +            port@0 {
+> +                reg = <0>;
+>   
+> -                            dpi_out_0: endpoint {
+> -                                    remote-endpoint = <&dp_bridge_input>;
+> -                            };
+> -                    };
+> +                dpi_out_0: endpoint {
+> +                    remote-endpoint = <&dp_bridge_input>;
+> +                };
+>               };
+> +        };
+>       };
+> diff --git a/Documentation/devicetree/bindings/display/ti/ti,k2g-dss.yaml b/Documentation/devicetree/bindings/display/ti/ti,k2g-dss.yaml
+> index 96b1439f88e3..87721da0a8af 100644
+> --- a/Documentation/devicetree/bindings/display/ti/ti,k2g-dss.yaml
+> +++ b/Documentation/devicetree/bindings/display/ti/ti,k2g-dss.yaml
+> @@ -80,26 +80,26 @@ examples:
+>       #include <dt-bindings/interrupt-controller/arm-gic.h>
+>       #include <dt-bindings/interrupt-controller/irq.h>
+>   
+> -    dss: dss@2540000 {
+> -            compatible = "ti,k2g-dss";
+> -            reg =   <0x02540000 0x400>,
+> -                    <0x02550000 0x1000>,
+> -                    <0x02557000 0x1000>,
+> -                    <0x0255a800 0x100>,
+> -                    <0x0255ac00 0x100>;
+> -            reg-names = "cfg", "common", "vid1", "ovr1", "vp1";
+> -            clocks =        <&k2g_clks 0x2 0>,
+> -                            <&k2g_clks 0x2 1>;
+> -            clock-names = "fck", "vp1";
+> -            interrupts = <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>;
+> +    dss@2540000 {
+> +        compatible = "ti,k2g-dss";
+> +        reg = <0x02540000 0x400>,
+> +              <0x02550000 0x1000>,
+> +              <0x02557000 0x1000>,
+> +              <0x0255a800 0x100>,
+> +              <0x0255ac00 0x100>;
+> +        reg-names = "cfg", "common", "vid1", "ovr1", "vp1";
+> +        clocks = <&k2g_clks 0x2 0>,
+> +                 <&k2g_clks 0x2 1>;
+> +        clock-names = "fck", "vp1";
+> +        interrupts = <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>;
+>   
+> -            power-domains = <&k2g_pds 0x2>;
+> +        power-domains = <&k2g_pds 0x2>;
+>   
+> -            max-memory-bandwidth = <230000000>;
+> +        max-memory-bandwidth = <230000000>;
+>   
+> -            port {
+> -                    dpi_out: endpoint {
+> -                            remote-endpoint = <&sii9022_in>;
+> -                    };
+> +        port {
+> +            dpi_out: endpoint {
+> +                remote-endpoint = <&sii9022_in>;
+>               };
+> +        };
+>       };
+For the TI DSS parts:
 
-Search for the (pre_div, pwm_div) pair whose period best approximates
-the request instead of fixing pwm_div. Starting pre_div at the smallest
-value that keeps pwm_div within its field and stopping once pre_div
-exceeds pwm_div bounds the loop and keeps pwm_div as large as possible
-for fine duty resolution. For a 25 kHz request at 100 MHz this selects
-pre_div = 0, pwm_div = 3999, i.e. exactly 4000 clocks, with full 0..4000
-duty resolution.
+Acked-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
 
-While reworking the high-duration computation, round it to nearest
-rather than truncating, so mid-range duty cycles are not biased low, and
-clamp it to pwm_div + 1. Rounding, or a 100% duty request, could
-otherwise push hi_dur past the period length and overflow the 16-bit
-HI_DURATION field.
-
-This was first fixed downstream in OpenWrt for the qualcommbe target
-after testing on the Askey SBE1V1K, and has since been applied to
-OpenWrt's qualcommax target as well.
-
-Tested on a GL.iNet GL-AXT1800 (IPQ6018, 100 MHz PWM clock) whose DTS
-requests a 25 kHz period for its four-wire fan:
-
-  pwms = <&pwm 1 40000 0>;
-
-Before, pwm-fan failed to probe on every boot:
-
-  pwm-fan pwm-fan: failed to enable PWM
-  pwm-fan pwm-fan: Failed to configure PWM: -34
-  pwm-fan pwm-fan: probe with driver pwm-fan failed with error -34
-
-The same failure is reproducible without pwm-fan, straight from sysfs:
-
-  # echo 40000   > period; echo 1 > enable   -> write error (-ERANGE)
-  # echo 2700000 > period; echo 1 > enable   -> succeeds
-
-Because probe returns before the tachometer IRQ is requested and before
-fan-supply is claimed, the board also lost fan RPM reporting and its
-vcc_fan regulator stayed disabled, leaving the DTS cooling-maps with no
-cooling device to bind to.
-
-After, pwm-fan probes cleanly and the fan is confirmed spinning by its
-own tachometer:
-
-  /sys/class/hwmon/hwmon7/name                          = pwmfan
-  /sys/devices/platform/pwm-fan/hwmon/hwmon7/fan1_input = 3548
-  /sys/class/regulator/regulator.3 (vcc_fan)            = enabled
-  /sys/class/thermal/cooling_device1                    = pwm-fan
-
-with idle SoC temperature dropping from ~76 °C to ~51 °C.
-
-Fixes: c436e3e9c265 ("pwm: Driver for qualcomm ipq6018 pwm block")
-Signed-off-by: Kenneth Kasilag <kenneth@kasilag.me>
-[Stephane: dropped the explanatory comment, the unreachable
- clk_rate > 16 GHz bound and the unrelated hi_div cast, per review]
-Tested-by: Stephane Lepain <stephanelepain@gmail.com>
-Signed-off-by: Stephane Lepain <stephanelepain@gmail.com>
----
-Changes in v3:
-- Resend: v2 accidentally carried a stray copy of the whole driver at
-  t/drivers/pwm/pwm-ipq.c (a leftover verification directory that got
-  swept into the commit). Only drivers/pwm/pwm-ipq.c is touched here.
-- No functional change from v2.
-
-Changes in v2 (per Konrad Dybcio's review):
-- Dropped the explanatory comment above the divider search; the rationale
-  lives in the commit message.
-- Dropped the "clk_rate > 16 * GIGA" bound. period_ns is already clamped
-  to IPQ_PWM_MAX_PERIOD_NS (1e9), so period_ns * clk_rate only overflows
-  u64 above ~18.4 GHz, i.e. ~184x the 100 MHz this block runs at; the
-  check was unreachable.
-- Dropped the "(u64)hi_div" cast as unrelated. It is not a live bug
-  either: hi_dur and pre_div both come from 16-bit fields, so the worst
-  case 65535 * 65536 = 4294901760 still fits u32 (effective_div on the
-  line above genuinely does need the cast, at 65536 * 65536).
-- Behaviour is unchanged: for 40,000 ns at 100 MHz the search still
-  selects pre_div = 0, pwm_div = 3999.
-
- drivers/pwm/pwm-ipq.c | 91 ++++++++++++++++++++++++++++++-------------
- 1 file changed, 65 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/pwm/pwm-ipq.c b/drivers/pwm/pwm-ipq.c
-index c533739..797559d 100644
---- a/drivers/pwm/pwm-ipq.c
-+++ b/drivers/pwm/pwm-ipq.c
-@@ -89,10 +89,10 @@ static int ipq_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			 const struct pwm_state *state)
- {
- 	struct ipq_pwm_chip *ipq_chip = ipq_pwm_from_chip(chip);
--	unsigned int pre_div, pwm_div;
--	u64 period_ns, duty_ns;
-+	unsigned int pre_div, pwm_div, best_pre_div, best_pwm_div;
-+	u64 period_ns, duty_ns, period_rate, min_diff;
- 	unsigned long val = 0;
--	unsigned long hi_dur;
-+	u64 hi_dur;
- 
- 	if (!state->enabled) {
- 		/* clear IPQ_PWM_REG1_ENABLE */
-@@ -112,35 +112,74 @@ static int ipq_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	period_ns = min(state->period, IPQ_PWM_MAX_PERIOD_NS);
- 	duty_ns = min(state->duty_cycle, period_ns);
- 
--	/*
--	 * Pick the maximal value for PWM_DIV that still allows a
--	 * 100% relative duty cycle. This allows a fine grained
--	 * selection of duty cycles.
--	 */
--	pwm_div = IPQ_PWM_MAX_DIV - 1;
-+	period_rate = period_ns * ipq_chip->clk_rate;
-+
-+	best_pre_div = IPQ_PWM_MAX_DIV;
-+	best_pwm_div = IPQ_PWM_MAX_DIV;
-+	min_diff = period_rate;
- 
- 	/*
--	 * although mul_u64_u64_div_u64 returns a u64, in practice it
--	 * won't overflow due to above constraints. Take the max period
--	 * of 10^9 (NSEC_PER_SEC) and the pwm_div + 1 (IPQ_PWM_MAX_DIV)
--	 *  10^9 * 10^8
--	 * ------------- => which fits well into a 32-bit unsigned int.
--	 * 10^9 * 65,535
-+	 * Smaller pre_div than this cannot represent the period (pwm_div would
-+	 * have to exceed its field), so start the search there.
- 	 */
--	pre_div = mul_u64_u64_div_u64(period_ns, ipq_chip->clk_rate,
--				      (u64)NSEC_PER_SEC * (pwm_div + 1));
--
--	if (!pre_div)
--		return -ERANGE;
-+	pre_div = div64_u64(period_rate,
-+			    (u64)NSEC_PER_SEC * (IPQ_PWM_MAX_DIV + 1));
-+
-+	for (; pre_div <= IPQ_PWM_MAX_DIV; pre_div++) {
-+		u64 remainder;
-+
-+		pwm_div = div64_u64_rem(period_rate,
-+					(u64)NSEC_PER_SEC * (pre_div + 1),
-+					&remainder);
-+		/* pwm_div is unsigned; the swap check below catches underflow */
-+		pwm_div--;
-+
-+		/*
-+		 * Swapping pre_div and pwm_div yields the same period but a
-+		 * larger pwm_div gives finer duty resolution, so once pre_div
-+		 * exceeds pwm_div every further candidate is strictly worse.
-+		 */
-+		if (pre_div > pwm_div)
-+			break;
-+
-+		/* need room for 100% duty, where hi_dur == pwm_div + 1 */
-+		if (pwm_div > IPQ_PWM_MAX_DIV - 1)
-+			continue;
-+
-+		if (remainder < min_diff) {
-+			best_pre_div = pre_div;
-+			best_pwm_div = pwm_div;
-+			min_diff = remainder;
-+
-+			if (min_diff == 0)
-+				break;
-+		}
-+	}
- 
--	pre_div -= 1;
-+	pre_div = best_pre_div;
-+	pwm_div = best_pwm_div;
- 
--	if (pre_div > IPQ_PWM_MAX_DIV)
--		pre_div = IPQ_PWM_MAX_DIV;
-+	/*
-+	 * If the search found no usable candidate, best_pwm_div is left at
-+	 * IPQ_PWM_MAX_DIV; cap it so pwm_div + 1 still fits the 16-bit field
-+	 * and 100% duty remains expressible.
-+	 */
-+	if (pwm_div > IPQ_PWM_MAX_DIV - 1)
-+		pwm_div = IPQ_PWM_MAX_DIV - 1;
- 
--	/* pwm duty = HI_DUR * (PRE_DIV + 1) / clk_rate */
--	hi_dur = mul_u64_u64_div_u64(duty_ns, ipq_chip->clk_rate,
--				     (u64)NSEC_PER_SEC * (pre_div + 1));
-+	/*
-+	 * high duration = duty_ratio * (pwm_div + 1)
-+	 *              = duty_ns * clk_rate / ((pre_div + 1) * NSEC_PER_SEC)
-+	 *
-+	 * Round to nearest to avoid biasing every duty cycle low, then clamp
-+	 * to (pwm_div + 1): rounding or a 100% request can otherwise push
-+	 * hi_dur past the period, overflowing the 16-bit HI_DURATION field
-+	 * and asking the hardware to stay high beyond one period.
-+	 */
-+	hi_dur = DIV64_U64_ROUND_CLOSEST(duty_ns * ipq_chip->clk_rate,
-+					 (u64)(pre_div + 1) * NSEC_PER_SEC);
-+	if (hi_dur > (u64)pwm_div + 1)
-+		hi_dur = (u64)pwm_div + 1;
- 
- 	val = FIELD_PREP(IPQ_PWM_REG0_HI_DURATION, hi_dur) |
- 		FIELD_PREP(IPQ_PWM_REG0_PWM_DIV, pwm_div);
--- 
-2.55.0
+  Tomi
 
