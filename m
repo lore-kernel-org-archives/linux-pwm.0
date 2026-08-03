@@ -1,203 +1,306 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012070.outbound.protection.outlook.com [40.107.200.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 048B938F941;
-	Mon,  3 Aug 2026 04:00:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.70
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785729656; cv=fail; b=V0681xLnLnt+7F+Z3lDh+9WqRHnNp6xvdfsdn4F5AyBw7D0QFkNBaAqm5qFwSxyjk/TAuOPYOgUSbmbarUAR18q01+xWu2OkC02+RGait3A/YpNrrGSwJpO6UBe3ZGY0VCfB/SzKcBDDKNOwZKCNiiczmMcMwcThx7WRTaNWMnk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785729656; c=relaxed/simple;
-	bh=PtVd90Gazq4Unm/j9/t8yKYWe2a5TkCQYnX/iCdNxxI=;
-	h=Content-Type:Date:Message-Id:From:To:Cc:Subject:References:
-	 In-Reply-To:MIME-Version; b=ucFZCjGIP4SwO3pDvZL/UzBQvI/45KlN3PqPY/6W4W9Vc0ysnV4KuhmVbk1UQkpZfrcPRUgmnMpNO3J7dYB56dOfg6QaJpmvn+2fcSuKbNRW3VPs0QjmzNmLuID+XH0G/JppNox7m8+m/p5+9vnAFiGzfM6APCo4FRhSEZq0hBw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LLOB84qH; arc=fail smtp.client-ip=40.107.200.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E19533C1BD
+	for <linux-pwm@vger.kernel.org>; Mon,  3 Aug 2026 04:48:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785732495; cv=none; b=YMP3DF5Ipi+O8uNpghfc7xfOI/KVNC74Iv5oK7Zw72tSLhTFPNnxSpJRJoQ28kclCxkooYSMwC93CfdmM/cpCCRjqFVW9Ukynk9lL9wePcUSCoV/yVfw/WfV2Tn6qWCdEaRNkIWMYIBEsz1KjVuooEPzvCsVmp5YGZ/GnCh1Vjo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785732495; c=relaxed/simple;
+	bh=PXTpUFFxfLcQ8bCrLbv7JGiWMl2bbsUpe/ewaTrtbKc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Qjbil90egE73JWrBlNXKX+3GpUy9We98vqBhdaCpZ+jvPIWwEaOI6meHvDH4lfIWMJtG6QCRNoVl6DrhnN3dgHbC4CSsInEVobvcBJ6p/U2l7Ne27DhDMApFJEKy7n97tAYjiw+uhah3g0nDsrCHWlooP/hWUbdHUGgWauR+cGk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jvDMmZrR; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LLOB84qH"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ja0UzfWclDGM7BZRYdfhZPzfnSLIE398rR3EEBBJDCKZAPXCkyUsPDm1qvoDL7dGUpqr+UO+l1Wxlw3Axzq18mHNM+T6C6yGlAAJygpoTN4Px4QIC5MrIxHDwyg7J+ywnmzZ4Bb0iZ6jGxZhI+FDlDj45nnjCus6N5Xrvl2GNhstZcR1Ce+D9gBNrlD4i3ZQX+dz1xwkFCEPaH8PfDSQj3+ycTnvpfURuT8C7Yn+eAw9EQmxiEjtYBB9Iu1GXtn8p1g6aTVTvcgd7olI4gLIWmMPk5EiHIml/CaGNDvcLyrr5XDCrf0xNWR5FLZxsNKH8yiN9MszYj8goDjd/Qfi4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PtVd90Gazq4Unm/j9/t8yKYWe2a5TkCQYnX/iCdNxxI=;
- b=Rz5ccnbUUPbyPBmsLj8tPbfIrokNwHxEbKqD7oSdqjEsff9m9cgwmTtCBNintyIF+OpX8zv/Jxlc1uci2PVCtU5JSYXmpmcHZq9g35/wyNOCsMng5cKMGqXHkyRf+WtWkXxOY12Vj4EcJZB1PH2SAoD5bK3eACCEkjGXIePgRcg3IfUINeN6vnrapIzxoCANSkoaQoMALGcSKW+ysetbzbLqSoxhK3KIl53hvWIsM9SNRwGW7HUDIofPBZ2bno5w0ckDvL+z2rBN9DsoqOHfD5PuK48YGWM88UHnrSKN2TcH0Ds0sBhNuqwzGltBaePtPIbRCWOacGIhKX6uXmpdzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PtVd90Gazq4Unm/j9/t8yKYWe2a5TkCQYnX/iCdNxxI=;
- b=LLOB84qH6mho1Lp7jnIhWFLfByuuRdZk6QWfZDWxG6zggHZGvowSDnj0wMBLPZrDb348OGPPQuaUuU5vpmzzC9whF7uRcycwlZTuGIFsdXhaY/DcqqAXDoRz5ANd8fNMfrDvIxBzmzNCW2LhwDnxg2C3/bz949DHNTKUJ7TN5aeZ8MgAtm1BqOXY7AprbqSfYpZaRe9sXtNSlkFfBQ0TF51YhTnXjB87cG+IfxhRXGqgTyR4IpwHRdi10gojxS809s/jgmquW7eJ5iWjWq9GAq1YAWj/4wwoMFNUuBryA5yBrnS1EEVvsH4/XXy6Kaitk2W9/umQ2BB1PbhztSGghQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH2PR12MB3990.namprd12.prod.outlook.com (2603:10b6:610:28::18)
- by SN7PR12MB7022.namprd12.prod.outlook.com (2603:10b6:806:261::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.17; Mon, 3 Aug
- 2026 04:00:49 +0000
-Received: from CH2PR12MB3990.namprd12.prod.outlook.com
- ([fe80::7de1:4fe5:8ead:5989]) by CH2PR12MB3990.namprd12.prod.outlook.com
- ([fe80::7de1:4fe5:8ead:5989%4]) with mapi id 15.21.0270.015; Mon, 3 Aug 2026
- 04:00:49 +0000
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 03 Aug 2026 13:00:45 +0900
-Message-Id: <DKF0BU8N7JJX.T802R11VZ0A5@nvidia.com>
-From: "Alexandre Courbot" <acourbot@nvidia.com>
-To: "Gary Guo" <gary@garyguo.net>
-Cc: "Daniel Almeida" <daniel.almeida@collabora.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, "Viresh Kumar" <viresh.kumar@linaro.org>, "Danilo
- Krummrich" <dakr@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>, "Maarten
- Lankhorst" <maarten.lankhorst@linux.intel.com>, "Maxime Ripard"
- <mripard@kernel.org>, "Thomas Zimmermann" <tzimmermann@suse.de>, "David
- Airlie" <airlied@gmail.com>, "Simona Vetter" <simona@ffwll.ch>, "Drew
- Fustini" <fustini@kernel.org>, "Guo Ren" <guoren@kernel.org>, "Fu Wei"
- <wefu@redhat.com>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- "Michael Turquette" <mturquette@baylibre.com>, "Stephen Boyd"
- <sboyd@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
- <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Trevor
- Gross" <tmgross@umich.edu>, "Michal Wilczynski" <m.wilczynski@samsung.com>,
- "Boqun Feng" <boqun@kernel.org>, <linux-pm@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
- <linux-riscv@lists.infradead.org>, <linux-pwm@vger.kernel.org>,
- <linux-clk@vger.kernel.org>, <rust-for-linux@vger.kernel.org>, "Boris
- Brezillon" <boris.brezillon@collabora.com>, =?utf-8?q?Onur_=C3=96zkan?=
- <work@onurozkan.dev>, "Maurice" <mhi@mailbox.org>
-Subject: Re: [PATCH v5 1/4] rust: clk: use the type-state pattern
-Content-Transfer-Encoding: quoted-printable
-References: <20260706-clk-type-state-v5-0-67c5f326a16c@collabora.com>
- <20260706-clk-type-state-v5-1-67c5f326a16c@collabora.com>
- <DKEO7DXQ8604.1CB09QFM2EO68@garyguo.net>
-In-Reply-To: <DKEO7DXQ8604.1CB09QFM2EO68@garyguo.net>
-X-ClientProxiedBy: TY4P301CA0041.JPNP301.PROD.OUTLOOK.COM
- (2603:1096:405:2be::15) To CH2PR12MB3990.namprd12.prod.outlook.com
- (2603:10b6:610:28::18)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jvDMmZrR"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4954a2e73a9so9654935e9.3
+        for <linux-pwm@vger.kernel.org>; Sun, 02 Aug 2026 21:48:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785732492; x=1786337292; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=eidjmnrjKXjAWJf77xTqxScnhJGnGwTlBVkDzO31WGk=;
+        b=jvDMmZrRPu/UDJOlLuN5gXnSkgx9ebueylPMRhwIoE0/mnL7JW0pkqwwbGBtN8EfgQ
+         VE3XgPlEFsscORG/QnsRSzAVSIoLltcNGX9soQ7jQLVKPB6jYtHeFhXse9r1sMmu5MFD
+         WrOv+x0peibqEs0AUPTnZIYqK/RHpTYyiilgJywYs1Z7SUT3RQn3VQ84X1PFqnPUQnnk
+         EIWWjVtPwBgrFOpD2pH+LPYsy80iBW8XRXKfbmwS5N48dGIYaznf8Y36c1+RfdePJuPo
+         vFJ60F9Pa0+cVU0flaMmL3AZVtZ8JkF4lw0i3D25fdnyZ47vyIDOU8UWh9Hf6t50hiRy
+         DfqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785732492; x=1786337292;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=eidjmnrjKXjAWJf77xTqxScnhJGnGwTlBVkDzO31WGk=;
+        b=EFCzm0OVU1LpAqAElA6gFXlZhv3nQVdMpQkuHn3XVWPhzt7ndU1P49ybse0Lx/kCDx
+         1qgSdVVaBEeuhRiGkwKMAhVCov2BGlTItke/XGyzRL6QXc3kKO8+oYAwSSq7H0J4jjBe
+         xt7kORPXxu64KOxg+hxDEJ1I77LIVTVMszGjapNV8SIE4yplZj4kQNomyX+dZ2MbB1FO
+         R08Go0/LU8M0/hy5jU6vkVbNmW+/fu6d5wyPCT5O20jetbdRTrZmupjgxXIvGkxN74mu
+         0eEZcI/RHoM3dTfxwDk8uaFl1znlgYnRXv8zRFPkrlJeuwDWfDfIR5gyFsx9O7bL0KSt
+         mTqA==
+X-Forwarded-Encrypted: i=1; AHgh+RoQynjwfD3JyZyxnu18yroRpUlfExU4FYkQB4VB7aWU5nXVXF3LHnkHtZwGyEUIZg/hDQWj++DpJHA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyw+BL7EQRmsEljQPdoiYiKKPxajWqAeucC0sBDggYKkkDeG+JC
+	btY5ix+UZyDvGYUb0GHRmc9M7cCEFRqLJJWGJsqmGUT1bsNVfX/5VRu8
+X-Gm-Gg: AR+sD114iuvQ1jxH8AHaY8RP/eeN23eKxvBlwG8P4me1HTdRVFGbkFk9Lz6JGxeMkAi
+	5p4/XNLX0kpHQlQbOPc0RwUW+LiesHNS/S6jkYTtg6+cf7TWX8hHX3rZo0UXVJSKa86+4KNxWLr
+	JR/3k8ShIK4T0lbWjyxm7kjuqlj5AK/2RWvRKcv6oKHkJS6d51sQkVMvUFc9lkpgCqqR4jy8d8N
+	bqaFXNN4CQhMBxjTIdA7MrRlorOiLqQJtjaZhFfdXORfwCqYWzfYiPqL72tzQm8iCIF+wOPIpjR
+	m+iWChimH1sXlmPkWqr4MYWxj7WV2IplFkgbPCQ2Dce7rUVpTbhDoSXZPYTNh4tBhp0FXcZnY24
+	zZHceTZWAc55hc3/b5qJCGLaGYZFIS+ugkUpP9k7HazBMwkYAx+kARv+WBoFq3amo8Umn9BpBCW
+	Kh/CKixBG5iUp53BBe9cw89VyDo80FBHrmhjHU0Edir4mYAcMcAj9l654UtA05j1ts1VpuJ408A
+	0rnGZsxCPDuVnYkDU001gur7Bm8/UCb6Fyi5H6Fdpg80/iL3vgD6bd6wHTXNKbX+o27PQ==
+X-Received: by 2002:a05:600c:3e15:b0:495:5dcc:52b4 with SMTP id 5b1f17b1804b1-4980c649cbcmr183578235e9.3.1785732491559;
+        Sun, 02 Aug 2026 21:48:11 -0700 (PDT)
+Received: from rocinante (lfbn-tou-1-1098-107.w90-76.abo.wanadoo.fr. [90.76.164.107])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49807b86d66sm90376415e9.1.2026.08.02.21.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Aug 2026 21:48:11 -0700 (PDT)
+From: Stephane Lepain <stephanelepain@gmail.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	linux-pwm@vger.kernel.org,
+	Kenneth Kasilag <kenneth@kasilag.me>,
+	George Moussalem <george.moussalem@outlook.com>,
+	Devi Priya <quic_devipriy@quicinc.com>,
+	Baruch Siach <baruch.siach@siklu.com>,
+	linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Stephane Lepain <stephanelepain@gmail.com>
+Subject: [PATCH v3] pwm: ipq: fix period calculation
+Date: Mon,  3 Aug 2026 06:47:48 +0200
+Message-ID: <20260803044748.27116-1-stephanelepain@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260731070427.155221-1-stephanelepain@gmail.com>
+References: <20260731070427.155221-1-stephanelepain@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PR12MB3990:EE_|SN7PR12MB7022:EE_
-X-MS-Office365-Filtering-Correlation-Id: f0737ca1-011a-4f4e-ba6b-08def113cd96
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|10070799003|23010399003|7416014|376014|22082099003|18002099003|5023799004|4143699003|11063799006|10067099003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	la5lIuKmE5whqFjroxnKBJkX6nybuADCXvSxEusMGv0qJxsDpnwu0IImpsVmmb2Br4fmabx289BSoQB5EVr/+SACAWwElNUTgv2kRyhyn0tstzJliJ7uQxkWYd14yYFwlN55UM9+KgFK+2CUbWKvQPpkRIUm528PxnE3xn5dqHyD7oi2DR9P0/iWJHBEDnlKhgsgjWEGjGRK5WsKhSdCRYm4VHxOd8GqGXDYg8g66oovrXxlrSuqWG0QHn/4GRVvifCMC2ClL3IMvkIF5TglL8IggOQQLPRlmqRRv41kYKAFyaR82vsMhZSBu+DDJq5dwfDRoAZlHagC33RCr/4FIdBc20ri3kUajU8yfYoNx8VkzvBu13AEBhxk/SvbZhgdqoJ74s5k+xoA43jKWO9//rkz0YFcoR/kRYksCgoiSIYPyPiUScKRB5R5irUmEUBuOumC/NpynV7E3lBWRnhodyYpI14yOeCsCw22XeBzZT4H/HTjhj1WP9VAChvJPG87umws+AApG61dKYhnHVzObcT4d+C3/h3/7stSoa4LU0OB/kr2EBgJQjcVohI6+Z6mHbAiCC/msT89lrvyj7+qrg0QNsiJNTxLE0U6KLGsO2Q9MmZdUEaTbiJcIrAx9PFHtQ/nJUMkaeNVYYDhBh3rMLAD3CCLB1IZR/LP/tNKMT4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB3990.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(10070799003)(23010399003)(7416014)(376014)(22082099003)(18002099003)(5023799004)(4143699003)(11063799006)(10067099003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SnFDYWZlNWN4OUcyKzNxSENyVVg0T28xV3FNMjFZSDdDbkswSFFGbzdJSVdk?=
- =?utf-8?B?NUhTNEsreFFrbVZQU0ZrNHdmUjI3TW5hRThjY2p0cEcydzgxd0VSNnlxaGlP?=
- =?utf-8?B?K2JrcWx0Nm9jaTNSdVRpajZoTmZsZUlsMnFva1VEaC9Jc25CQnBzdzJTS013?=
- =?utf-8?B?ZmliTXRESE8wRUdvZ25TdHhoSWZsZkZ0WENYaFVDVEhOY2dRR3JZNUpmVTFz?=
- =?utf-8?B?a2VncDdNMDRpSGk5UzJCeWRlWHIra05jZUxVc2dNZTRWWG5GWmxseXVpcnJZ?=
- =?utf-8?B?RmY3dGZPZUtTbVJIcVcvSFhLRnlPaDdkNXdzbUhVTWNXemFDY1FlZDcyRzNH?=
- =?utf-8?B?RHVHc1BkQkM3Nk44ZkpXT0Erc2pMbFduWHN4U1pmS243bU9qY2xNYzBXejRq?=
- =?utf-8?B?RENPamc2WTQySTZyZU5DajcreWM4RVdkUFRoeWdFZXlEdkZpdHM2SzJQZnhC?=
- =?utf-8?B?TnV4ZzZlWDRPSys1VjVDa09BMHBhRnpiL2FJYUxoQ2RsSk5kQTFORUN1NGFP?=
- =?utf-8?B?djZCd1NIQlhpZGlmQ3JPcGhsUThSNE90Q2FzZUFlQUFmSkFnWHRMUitLNjZJ?=
- =?utf-8?B?YWxRNlhZUWwzNkRValZ4bXI2bTFnT2lUVVN4cFRFLzRRam9ZM2ZHVEt4Unky?=
- =?utf-8?B?bzBMYUVDRHRlZ3kxQk4wb2t0blVZbXExSGEwcFRHcmMwU1R0S01lSk90cVMy?=
- =?utf-8?B?UjRFeDFpREpNYjhTeWQwVUNHbmxxQVlrKzN3aHRuWlFtdmJVOUlMcmxNbUI4?=
- =?utf-8?B?b1FtZHNqN3ltNmlWd1ZhcWZTcnZSdnhZNjhST1p0NHE1d01TZWxLTDR4VjJO?=
- =?utf-8?B?Rm96VkZBcnF2SVFpVlEvbW0xaWNqcHIzMDJyMFVpUk1yaW12dk00aEljdzMz?=
- =?utf-8?B?VnR3aHJuZlJyK3NhYkYzZ1IzbjZKS2RvaDVHVk5Vbk8xb1kxem1LempzYVVp?=
- =?utf-8?B?RVJaSThqWHBqbEJ4UXlZVmUxaWlxMTZlK3ZOcGt6Ui93REs5dGdTZzAxcUFV?=
- =?utf-8?B?R1JYK0VUQ0hrcUp1M25tcVpRbVphU1c3UG9JRmNiYkVxdnRpYlEvTG8xcjcz?=
- =?utf-8?B?VGFqYkJvbklQSG1oWVcvNnNMb1dCMmxnVTR4R2hOUXA0R0JiM0liNDJYeENu?=
- =?utf-8?B?MEU0emZTZ3RUdVZPSlFMMDVOU0xCeldaUGltMk1iMmpJcnU4L2FpZGpFcTNQ?=
- =?utf-8?B?RFZ2eGRmZXJDYVVjUmp3ZnVFT1JsSTVGRmJ4RlpudVVURGdhcUNPNFJVMkVM?=
- =?utf-8?B?N3hZQWl2WTlScHVkUEd5UGJGcllEdkVScURBSlRaRG56aDJ1ZHQ0RWVER2I2?=
- =?utf-8?B?NjJKZW8yN3JoQktaYXF6ME52QzNwMTc5c3VLeEYxTjhGU1dMVHg0MFBuTmdh?=
- =?utf-8?B?T0NNaXp5WjcrZ0RRb3piN1Zwc3M3b0ZWQ0cyMTV5cWo3dERkN2hEdklmSEZ0?=
- =?utf-8?B?RWJJZUpWVW9NNllHYm9sNktUTyt6QmVvMW9xZUV6Y0ZEVnl6WFJJYjQ5Z1lo?=
- =?utf-8?B?TTU5Q0dLK0kxMXFvQlhPMFRlWEJObitpT0ZqOHpWNkE5THl2Z2tGQU1xTzNK?=
- =?utf-8?B?bk1NMFZmeXlvRUZsOTZmSURUTHQyMjk3RCtpYllUbE9lWUJGckY4aktFWHg2?=
- =?utf-8?B?cXMxaSs2c2NMbyszN2tTV0hKUlh6ZFpNdlI1ZlNJdWhlN3BsWXBwcWtEQm5x?=
- =?utf-8?B?Q2o0MDc3bG9DUkgvemdvK1M4N2I3azlFdUlOMU41em1lTlJJbEJGcHRyYWM0?=
- =?utf-8?B?OEpYYkJPOWtLeGo2VVhPQnpVY3ZUWURNN2d6aUJrS2FCdS9BU1l5YzQyblVn?=
- =?utf-8?B?SEJSd0E1aU1EUVhTMW8welZPSnY5bld6YUZONHBjcjY5b3d2WWNKQ1RsYWYz?=
- =?utf-8?B?aXJvNW5BTUxkMW9yOVdyRTJYc3hFdnhrTktpN21XTzgvZzRWYW5OVmxTdGlZ?=
- =?utf-8?B?bnJnWVA0dGZ2UGhDdmFCVXJMU1NkZk5CaEgyU3NUaVFvV2EweVVSM2piZHVU?=
- =?utf-8?B?c2hiM1BWblloMURyRkNnUzZRaHdmR0Q2Q21BZUlGNjdUZ0tzcVhQUllRYnVl?=
- =?utf-8?B?d0gzYmZwYmFrWXVQVlRDbUNjWkR4RUMzUWUxcFpqb0s4VU1jVVlHWWRuN0Z2?=
- =?utf-8?B?NjBFM3lXZDZ0UXd6SWhWanVYOWxJT2hBS1UvdURIN3hrRzdoN3ZyMlN5WEY2?=
- =?utf-8?B?OGFUYVdaWXZURE92TlVqY2F1WWVBZ2wvTHBTV010Zkl0SDZaOXd3cXhCZFF4?=
- =?utf-8?B?RlF5VVhtR2tPKzlZR3pCSXNjL3I0TkI3Mm82dUVsWGh0RzdpOE80cTFjejF0?=
- =?utf-8?B?Z3VVaWVuVWNESjQvWlFtdTdOTjRyYkgvcGk1SnZRejZPWlA1NVZQMlRqZEhL?=
- =?utf-8?Q?vBw7rWd7NUcrVxI/z9pZkweCpOYJiUNqUMz28++12WVDZ?=
-X-MS-Exchange-AntiSpam-MessageData-1: IXcUqmo4JzWltg==
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f0737ca1-011a-4f4e-ba6b-08def113cd96
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB3990.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2026 04:00:49.2518
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p9tQfBu72J6ZyEjEzufexXb82DIPCAcjiP0UB0HJKdZ6gp4l5UzGCfkFa/SWh5lLyrMlL8gNqLf+yxD81NDfJg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7022
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon Aug 3, 2026 at 3:30 AM JST, Gary Guo wrote:
-> On Mon Jul 6, 2026 at 3:37 PM BST, Daniel Almeida wrote:
-<...>
->> It solves d) by directly encoding the state of the Clk into the type, e.=
-g.:
->> Clk<Enabled> is now known to be a Clk that is enabled.
->
-> The design conflate states with actions. Our existing type state for devi=
-ces
-> don't do this: `Device<Bound>` means that the device is currently bound, =
-not
-> that dropping it will unbind it. Yet, a `Clk<Prepared>` doesn't mean just=
- that
-> "clock is prepared" but rather "clock is prepared and needs to be unprepa=
-red on
-> drop".
->
-> One way around this is to mimic the "Registration" pattern: have a type t=
-o
-> indicate that a `Clk` has been prepared and its `drop` will undo it, and =
-then
-> this type can `Deref` to `Clk<Prepared>` which just mean a prepared clock=
-.
+From: Kenneth Kasilag <kenneth@kasilag.me>
 
-Just as the driver core hands over `&Device<Bound>` to a driver as a
-guarantee that the device is currently bound, so can the driver pass a
-`&Clk<Prepared>` to a function to assert a similar proof. Here the
-reference only means "clock is prepared", without any action implied.
+ipq_pwm_apply() fixes pwm_div at its maximum and derives only pre_div
+from the requested period. Since the period spans
+(pre_div + 1) * (pwm_div + 1) input clocks, pinning pwm_div near its
+maximum forces pre_div towards zero for short periods: once pre_div
+rounds to 0 the shortest representable period is (pwm_div + 1) / clk_rate,
+and any shorter request is rejected outright:
 
-The typestate has real practical benefits, as unlike `Device` which has
-a well-defined life cycle entirely controlled by the driver core, clock
-handles are owned by drivers and their use can go all over the place.
+	pre_div = mul_u64_u64_div_u64(period_ns, ipq_chip->clk_rate,
+				      (u64)NSEC_PER_SEC * (pwm_div + 1));
+	if (!pre_div)
+		return -ERANGE;
 
-Driver A might want to enable a clock in short bursts in order to
-preserve power, and keep it prepared otherwise. For this, a
-`Clk<Prepared>` with the `EnabledGuard` I mentioned in patch 2 would be
-a good fit. Driver B might need to keep a given clock enabled all the
-time and only change its rate, and thus will store a `Clk<Enabled>`.
-Driver C may have different PM states, and can encode these in an enum
-where relevant clocks are either `Prepared` or `Enabled` depending on
-the variant.
+Four-wire fans commonly expect a ~25 kHz PWM, which is therefore
+unusable. On an IPQ6018 with the PWM block clocked at 100 MHz, a
+40,000 ns (25 kHz) request computes floor(0.061) == 0 and returns
+-ERANGE deterministically. Where a request is not rejected outright, the
+high duration truncates to 0 and the output collapses to ~0% duty.
 
-Mandating a registration-like pattern here looks a bit overkill to me
-and I am not sure what this would grant us. It would definitely
-introduce some complexity: say that you want to keep a prepared clock in
-your driver data, does it mean you need to store the `Clk` itself, and
-then its prepared guard, which references the `Clk` in the same
-structure?
+Search for the (pre_div, pwm_div) pair whose period best approximates
+the request instead of fixing pwm_div. Starting pre_div at the smallest
+value that keeps pwm_div within its field and stopping once pre_div
+exceeds pwm_div bounds the loop and keeps pwm_div as large as possible
+for fine duty resolution. For a 25 kHz request at 100 MHz this selects
+pre_div = 0, pwm_div = 3999, i.e. exactly 4000 clocks, with full 0..4000
+duty resolution.
 
-I guess it's fine if we enable this pattern via the storage of a
-`Clk<Unprepared>` and the relevant use of guards, as it may be the
-correct fit for a few drivers; but that's not how most drivers use
-clocks, so we should also allow them to store their resource in a more
-advanced state.
+While reworking the high-duration computation, round it to nearest
+rather than truncating, so mid-range duty cycles are not biased low, and
+clamp it to pwm_div + 1. Rounding, or a 100% duty request, could
+otherwise push hi_dur past the period length and overflow the 16-bit
+HI_DURATION field.
+
+This was first fixed downstream in OpenWrt for the qualcommbe target
+after testing on the Askey SBE1V1K, and has since been applied to
+OpenWrt's qualcommax target as well.
+
+Tested on a GL.iNet GL-AXT1800 (IPQ6018, 100 MHz PWM clock) whose DTS
+requests a 25 kHz period for its four-wire fan:
+
+  pwms = <&pwm 1 40000 0>;
+
+Before, pwm-fan failed to probe on every boot:
+
+  pwm-fan pwm-fan: failed to enable PWM
+  pwm-fan pwm-fan: Failed to configure PWM: -34
+  pwm-fan pwm-fan: probe with driver pwm-fan failed with error -34
+
+The same failure is reproducible without pwm-fan, straight from sysfs:
+
+  # echo 40000   > period; echo 1 > enable   -> write error (-ERANGE)
+  # echo 2700000 > period; echo 1 > enable   -> succeeds
+
+Because probe returns before the tachometer IRQ is requested and before
+fan-supply is claimed, the board also lost fan RPM reporting and its
+vcc_fan regulator stayed disabled, leaving the DTS cooling-maps with no
+cooling device to bind to.
+
+After, pwm-fan probes cleanly and the fan is confirmed spinning by its
+own tachometer:
+
+  /sys/class/hwmon/hwmon7/name                          = pwmfan
+  /sys/devices/platform/pwm-fan/hwmon/hwmon7/fan1_input = 3548
+  /sys/class/regulator/regulator.3 (vcc_fan)            = enabled
+  /sys/class/thermal/cooling_device1                    = pwm-fan
+
+with idle SoC temperature dropping from ~76 °C to ~51 °C.
+
+Fixes: c436e3e9c265 ("pwm: Driver for qualcomm ipq6018 pwm block")
+Signed-off-by: Kenneth Kasilag <kenneth@kasilag.me>
+[Stephane: dropped the explanatory comment, the unreachable
+ clk_rate > 16 GHz bound and the unrelated hi_div cast, per review]
+Tested-by: Stephane Lepain <stephanelepain@gmail.com>
+Signed-off-by: Stephane Lepain <stephanelepain@gmail.com>
+---
+Changes in v3:
+- Resend: v2 accidentally carried a stray copy of the whole driver at
+  t/drivers/pwm/pwm-ipq.c (a leftover verification directory that got
+  swept into the commit). Only drivers/pwm/pwm-ipq.c is touched here.
+- No functional change from v2.
+
+Changes in v2 (per Konrad Dybcio's review):
+- Dropped the explanatory comment above the divider search; the rationale
+  lives in the commit message.
+- Dropped the "clk_rate > 16 * GIGA" bound. period_ns is already clamped
+  to IPQ_PWM_MAX_PERIOD_NS (1e9), so period_ns * clk_rate only overflows
+  u64 above ~18.4 GHz, i.e. ~184x the 100 MHz this block runs at; the
+  check was unreachable.
+- Dropped the "(u64)hi_div" cast as unrelated. It is not a live bug
+  either: hi_dur and pre_div both come from 16-bit fields, so the worst
+  case 65535 * 65536 = 4294901760 still fits u32 (effective_div on the
+  line above genuinely does need the cast, at 65536 * 65536).
+- Behaviour is unchanged: for 40,000 ns at 100 MHz the search still
+  selects pre_div = 0, pwm_div = 3999.
+
+ drivers/pwm/pwm-ipq.c | 91 ++++++++++++++++++++++++++++++-------------
+ 1 file changed, 65 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/pwm/pwm-ipq.c b/drivers/pwm/pwm-ipq.c
+index c533739..797559d 100644
+--- a/drivers/pwm/pwm-ipq.c
++++ b/drivers/pwm/pwm-ipq.c
+@@ -89,10 +89,10 @@ static int ipq_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			 const struct pwm_state *state)
+ {
+ 	struct ipq_pwm_chip *ipq_chip = ipq_pwm_from_chip(chip);
+-	unsigned int pre_div, pwm_div;
+-	u64 period_ns, duty_ns;
++	unsigned int pre_div, pwm_div, best_pre_div, best_pwm_div;
++	u64 period_ns, duty_ns, period_rate, min_diff;
+ 	unsigned long val = 0;
+-	unsigned long hi_dur;
++	u64 hi_dur;
+ 
+ 	if (!state->enabled) {
+ 		/* clear IPQ_PWM_REG1_ENABLE */
+@@ -112,35 +112,74 @@ static int ipq_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	period_ns = min(state->period, IPQ_PWM_MAX_PERIOD_NS);
+ 	duty_ns = min(state->duty_cycle, period_ns);
+ 
+-	/*
+-	 * Pick the maximal value for PWM_DIV that still allows a
+-	 * 100% relative duty cycle. This allows a fine grained
+-	 * selection of duty cycles.
+-	 */
+-	pwm_div = IPQ_PWM_MAX_DIV - 1;
++	period_rate = period_ns * ipq_chip->clk_rate;
++
++	best_pre_div = IPQ_PWM_MAX_DIV;
++	best_pwm_div = IPQ_PWM_MAX_DIV;
++	min_diff = period_rate;
+ 
+ 	/*
+-	 * although mul_u64_u64_div_u64 returns a u64, in practice it
+-	 * won't overflow due to above constraints. Take the max period
+-	 * of 10^9 (NSEC_PER_SEC) and the pwm_div + 1 (IPQ_PWM_MAX_DIV)
+-	 *  10^9 * 10^8
+-	 * ------------- => which fits well into a 32-bit unsigned int.
+-	 * 10^9 * 65,535
++	 * Smaller pre_div than this cannot represent the period (pwm_div would
++	 * have to exceed its field), so start the search there.
+ 	 */
+-	pre_div = mul_u64_u64_div_u64(period_ns, ipq_chip->clk_rate,
+-				      (u64)NSEC_PER_SEC * (pwm_div + 1));
+-
+-	if (!pre_div)
+-		return -ERANGE;
++	pre_div = div64_u64(period_rate,
++			    (u64)NSEC_PER_SEC * (IPQ_PWM_MAX_DIV + 1));
++
++	for (; pre_div <= IPQ_PWM_MAX_DIV; pre_div++) {
++		u64 remainder;
++
++		pwm_div = div64_u64_rem(period_rate,
++					(u64)NSEC_PER_SEC * (pre_div + 1),
++					&remainder);
++		/* pwm_div is unsigned; the swap check below catches underflow */
++		pwm_div--;
++
++		/*
++		 * Swapping pre_div and pwm_div yields the same period but a
++		 * larger pwm_div gives finer duty resolution, so once pre_div
++		 * exceeds pwm_div every further candidate is strictly worse.
++		 */
++		if (pre_div > pwm_div)
++			break;
++
++		/* need room for 100% duty, where hi_dur == pwm_div + 1 */
++		if (pwm_div > IPQ_PWM_MAX_DIV - 1)
++			continue;
++
++		if (remainder < min_diff) {
++			best_pre_div = pre_div;
++			best_pwm_div = pwm_div;
++			min_diff = remainder;
++
++			if (min_diff == 0)
++				break;
++		}
++	}
+ 
+-	pre_div -= 1;
++	pre_div = best_pre_div;
++	pwm_div = best_pwm_div;
+ 
+-	if (pre_div > IPQ_PWM_MAX_DIV)
+-		pre_div = IPQ_PWM_MAX_DIV;
++	/*
++	 * If the search found no usable candidate, best_pwm_div is left at
++	 * IPQ_PWM_MAX_DIV; cap it so pwm_div + 1 still fits the 16-bit field
++	 * and 100% duty remains expressible.
++	 */
++	if (pwm_div > IPQ_PWM_MAX_DIV - 1)
++		pwm_div = IPQ_PWM_MAX_DIV - 1;
+ 
+-	/* pwm duty = HI_DUR * (PRE_DIV + 1) / clk_rate */
+-	hi_dur = mul_u64_u64_div_u64(duty_ns, ipq_chip->clk_rate,
+-				     (u64)NSEC_PER_SEC * (pre_div + 1));
++	/*
++	 * high duration = duty_ratio * (pwm_div + 1)
++	 *              = duty_ns * clk_rate / ((pre_div + 1) * NSEC_PER_SEC)
++	 *
++	 * Round to nearest to avoid biasing every duty cycle low, then clamp
++	 * to (pwm_div + 1): rounding or a 100% request can otherwise push
++	 * hi_dur past the period, overflowing the 16-bit HI_DURATION field
++	 * and asking the hardware to stay high beyond one period.
++	 */
++	hi_dur = DIV64_U64_ROUND_CLOSEST(duty_ns * ipq_chip->clk_rate,
++					 (u64)(pre_div + 1) * NSEC_PER_SEC);
++	if (hi_dur > (u64)pwm_div + 1)
++		hi_dur = (u64)pwm_div + 1;
+ 
+ 	val = FIELD_PREP(IPQ_PWM_REG0_HI_DURATION, hi_dur) |
+ 		FIELD_PREP(IPQ_PWM_REG0_PWM_DIV, pwm_div);
+-- 
+2.55.0
+
