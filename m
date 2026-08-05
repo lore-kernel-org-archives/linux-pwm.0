@@ -1,176 +1,183 @@
-Received: from CWXP265CU008.outbound.protection.outlook.com (mail-ukwestazon11020107.outbound.protection.outlook.com [52.101.195.107])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7F623E7160;
-	Wed,  5 Aug 2026 10:56:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.195.107
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785927415; cv=fail; b=tva6ofXmJKETqSml9AaTQKHS3SE0s8w/etnIDNyW4Be2QvWX9eX/x5NupRFDzddmuNE377JuSCXkWyPLC9JpYIXCPo1j8TEequQVHfbsbiG38c0Mwjhszc2GvAcDovrkuY3XJx/NE8o5o0oUkOifnhOMh2O1PiFRMmleSZTUDL8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785927415; c=relaxed/simple;
-	bh=MbSE7Rnm1uhAGE4kc9NCCc9yaiqjXUfs8/cRQIxAmf8=;
-	h=Content-Type:Date:Message-Id:Cc:Subject:From:To:References:
-	 In-Reply-To:MIME-Version; b=DFvCoPaCnQd7fi2W/Qqe23P53Se8cjGV93FIjYLrpBjYLwnSOdBfZedrjR9st2EGg/xm7Yobs80oNj1bExYCAPg5otXAjWGMywypmiAw0hlidiuOiEgK/kBPbCsmqpzsGOVi5CO6V9F3p2zEz4RqJri9YQYxAQsUta89IhzLG9Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=qAr6SXSm; arc=fail smtp.client-ip=52.101.195.107
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C050846F498
+	for <linux-pwm@vger.kernel.org>; Wed,  5 Aug 2026 13:15:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785935739; cv=none; b=SsoWKPsxCLgYk2sBhIobldOV52Z8e1DuTBHSecAt9x6NbiM6ElSdLD47uHElj+rFn8VRZ71A/vj4rt0VlqFVGG5HeDxTTTeDzUs7AihwQfVHDTvxdPwdU7DpEv59ret7DaIqtbNwqd5LbC31E7lSA/YzKIeKlJXZBLwYhbuIBE0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785935739; c=relaxed/simple;
+	bh=BFGcDUFM2IGZ4TgmcIIPIXiOpFbJb35N7OkBBLt79qU=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=TyI4CzpU1Hp5QmBb5tRq/bRpbBjSXK8QxM0I27My9AyAnc7uMT3FbKrE48UnGCcRmXAROLdMum2qPcEzkT9YMF962jMIhRoOQhc0+IuotmrGMLsYU2Lno1lWZ25BoTBVww5UrNDZoxt3xT2v9WmVwKjkJPfZ0Bn9/B/dX43qqjM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nd54Q3Rj; arc=none smtp.client-ip=209.85.215.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="qAr6SXSm"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ox4PJXmgfpcC1OSJrYUX3amx2SAfv+Xn+EF27HWl98yp0cWCIed72MX8OPFdwExtPgcEzAAIu2Dgxfh9Q25FAeKKv1gdXQQVWh8kBMlBZjSEAuX0Sb696hOR5Y1hAxiypBjqxggzXLq87nRDbHS5BfrZ/qLFwG6hrhBCDCNDiMyOkrXEnjr3lVOcYBGZm6iP9t7FR8pvCnl9J2Fxbrqf32HntUsk3KU0a5Qu019Naqxm2JEy+2pymUse54eilsnh6jQoUs8hcBfRuZD7jgsEo+VWRD/dpE/LIQza5RRRDtyzNcyvQ7QE6rWF8N2ClDNsW1ftxe4BNzazEnIhuGXLEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4Uu4n5BLq7NnNYOte/HyNDxB4s1yyYp1t9mgWZj8Dus=;
- b=K4t+eOhsj1Mr4A/3n06Hd3Q3P1nJRRog0uZ4Oe5RZQREMUN0HmDiiFtXl5cyNvFpci8gbk5uQrsE5zntZluuQQQi8qh9io+BoEJP5Nei5Rd2gWQFO1/Kd0I2tyt7z3SMyA3S98urElpfstG0FX+7F9sn23fuD+E2MGEuvQBST423J3vAazcjmCVkkvqtsAP8cdyuxEcYDHvd+tushPc/F11ABzIzm2afn3oA0PnCxrel+UaN+IFBK6bASQ4W9ypTBveWgTKCRYNCqYXP5j7w/O/xFCogE84WoxuqhoZjpW2J8cEO+i1lLgMiAeVFtv8weQG+cZ1mYmQE+1LXs4Db1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
- dkim=pass header.d=garyguo.net; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4Uu4n5BLq7NnNYOte/HyNDxB4s1yyYp1t9mgWZj8Dus=;
- b=qAr6SXSmN/7qLo5beYv5J466jsWZFc9O322IoPGdalC+KIJUOSs+QQNW253ABX15bZDVlQ/uOn0BlS9k/+hZ8iBNYXBcgzCwaVcgaSqZIkLd3Q922OzlIckgBHTsfb1kwlHSEIfKUjv+1e+U/8thU57/DbHJRqXu7ZRIqcPwUyE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=garyguo.net;
-Received: from LOZP265MB8551.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:4b4::24)
- by LO2P265MB3514.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:1a3::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.18; Wed, 5 Aug
- 2026 10:56:50 +0000
-Received: from LOZP265MB8551.GBRP265.PROD.OUTLOOK.COM
- ([fe80::c07d:488c:d4aa:2a4a]) by LOZP265MB8551.GBRP265.PROD.OUTLOOK.COM
- ([fe80::c07d:488c:d4aa:2a4a%4]) with mapi id 15.21.0270.017; Wed, 5 Aug 2026
- 10:56:49 +0000
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 05 Aug 2026 11:56:48 +0100
-Message-Id: <DKGYFH95Q42E.3GGHZCD6BGWU@garyguo.net>
-Cc: <rust-for-linux@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/5] rust: pin-init: add `ptr_init` and
- `ptr_try_init` and recommend over `__init`
-From: "Gary Guo" <gary@garyguo.net>
-To: "Benno Lossin" <lossin@kernel.org>, "Gary Guo" <gary@garyguo.net>,
- "Miguel Ojeda" <ojeda@kernel.org>, "Boqun Feng" <boqun@kernel.org>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Andreas
- Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>,
- "Trevor Gross" <tmgross@umich.edu>, "Danilo Krummrich" <dakr@kernel.org>,
- "Daniel Almeida" <daniel.almeida@collabora.com>, "Tamir Duberstein"
- <tamird@kernel.org>, "Alexandre Courbot" <acourbot@nvidia.com>,
- =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>, "Michal Wilczynski"
- <m.wilczynski@samsung.com>
-X-Mailer: aerc 0.21.0
-References: <20260729-merge-init-v2-0-26adf47109e7@garyguo.net>
- <20260729-merge-init-v2-3-26adf47109e7@garyguo.net>
- <DKGXPILQQPJH.2ISNN9UUFUBGS@kernel.org>
-In-Reply-To: <DKGXPILQQPJH.2ISNN9UUFUBGS@kernel.org>
-X-ClientProxiedBy: LO4P265CA0113.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:2c3::17) To LOZP265MB8551.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:4b4::24)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nd54Q3Rj"
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-cb5b8572b70so1029668a12.2
+        for <linux-pwm@vger.kernel.org>; Wed, 05 Aug 2026 06:15:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785935736; x=1786540536; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=tIcTi6kuyQcSUxNPVhSjqqVVaDVKUW/1s+uq3qhElCE=;
+        b=nd54Q3RjPW2jNgUDPVCcFnBk6Y7c42MK1y9DNLA8cfjL7mDOb2daj9QGGEC7wdUoJO
+         Kh7ocunx74h9ldBpU/ir+/hXXM3YJ9+92L3Ny2VYuTcXQlnh1y3u3kI5zFNbKInQitOB
+         MPV3o61IgADWZYOoz3pQv133I8MuFEl/0SLF0PY+BOkV2I03Gow1IbI7zXuJ/Pf5nbMm
+         Ndx52iIdFSH4aZj6pVy7VQ+QsEhubkvysdinr5kFCrMSd9DTO+QruqILWGBBXCrz5TQn
+         fwhRfIe95v+QQZ28BtASvc9L4RWTN5ZlByx2Z6nZ1v4LeXj/Ft1UnnJFz1Fs5yP3IqM+
+         ImaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785935736; x=1786540536;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=tIcTi6kuyQcSUxNPVhSjqqVVaDVKUW/1s+uq3qhElCE=;
+        b=KulxSDhZD3SJcUpvU8k9SHQm7DUKiOPp2qEnwRcL+orHO+IpIqGPvltTFfGKya+G/9
+         tBAHaxOHZXv9aNHY2Wis7O0r70LDTjJaqEcqu0KRX2k4dllXsa4VbqVO3+UCUbs5hF0a
+         +5OagYt+CagUg4++BtZ4WmBrCEH81kojYZoNR6BgiClOZCB3ACDjdip2+JsNhnrcoz83
+         7sVdyRXkuKqo/qNBXdy6yZyA8B4WpP5vovUqxxdRd1Gx3qZyB6a2WHbRYCX5cPlx8JRU
+         W5YYqZW4hJ7H9Zjack4sl8Kxs4MtFhfTd7DGCc5eKAAML7RTyS+X2H9CVU/LNWHd+OrI
+         W3Rw==
+X-Forwarded-Encrypted: i=1; AHgh+RrR2Tpr3jesyp2VAnCsdW3tYLud6JlfvJYE4+4Ra7/RLxhiLdmLILGME1YcNWdQAemQ8sOMEVDwvvs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzyfYPCrZBueF+Tvp9+P+ZuzliZVqjtBigRAvxIfG23fSjCH6R1
+	DwkkC0Lus6/Yu1Pk4DQ+Os8pihBfYqOsCjYDki4QHRIEfNzqqzXv98Im
+X-Gm-Gg: AR+sD13a0N/+AKPqlGE/fYmf72UE0+XTUvjqCEgB3HrQWkwuBTpPohFSaYfYpmHJ7Em
+	0NJDlH1zNatFivTImFK5B9ihsXYsJ9m81xlrWZWyosiZ+aNNNnn9NQdxSoPXArYivPWk8EhghPy
+	dg/7qudjtBCHmF6pKJVKj1LX4IdRQ+Ax2iOWRMIt3BSz2gSGVnpPnUL+zFgOvAFrN4cCfNEcF9e
+	SyCY0nnBVYOgMomfz+A19kHYIlldq0mTVwKN2XBdLqA+tPYH2lN6hZhTalwlNkiuIxOWTZDJ+bz
+	XD63jiF8zWqv4nusuS/N+osrazUh0AYsPVCIKTV5C/slKekGZw4nNKKa/doEBncRwIeOKpx0KdR
+	Fdm4nUQt/0jjMCSYvn4sgXdPkRjpl3ft/34d24nYICtke8WK4DQa+YB/Q57gGZXmCj5K3oOwVjS
+	POQwflqWeGUtCSobNCz0QqA9eAXFHBJ7tnPTt+KOAd+OSx5yxjhMnPEsE08Bu0uS2cNaZ+Cg7H
+X-Received: by 2002:a05:6a21:164a:b0:3c3:a08d:5b44 with SMTP id adf61e73a8af0-3cb85ef9234mr8477121637.23.1785935735832;
+        Wed, 05 Aug 2026 06:15:35 -0700 (PDT)
+Received: from tresc054937.tre-sc.gov.br ([189.4.123.18])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3158673a9e4sm18292261eec.18.2026.08.05.06.15.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2026 06:15:34 -0700 (PDT)
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Subject: [hwmon-next PATCH v6 0/4] hwmon: (adt7470) Add PWM provider and
+ thermal sensor support
+Date: Wed, 05 Aug 2026 10:15:16 -0300
+Message-Id: <20260805-adt7470_thermalzone-v6-0-5605a5f95467@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LOZP265MB8551:EE_|LO2P265MB3514:EE_
-X-MS-Office365-Filtering-Correlation-Id: da7feb28-fc8e-4075-728a-08def2e0402e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|10070799003|23010399003|7416014|1800799024|366016|921020|4143699003|56012099006|6133799003|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	okICjLI+6TJqlx58jwNiJNYqDpuaLGjxO4urzrSav2TOkguBOlM3AQd6x9Sr1CR5d3AvrnupP+hlHws1vNxwoMNZVXAD3/ryNUgzLPYrTffYfsauG56htGkhxjyKEcfL+RL5vwezzqJ3hDYk8CV+Y5qFSYukKFplY76Snh0gLzd5T3WQseGTWrDeYipBQ+9CtupIodkhMV/Dig/ne/Ic0ihmQI3y8XOxXprQVCuHdnT7AIXpsfETX8FXL1IjHsVKkUrjGUboKnfMzYv8eok+zSgRs9DCoh8p+znn1Jfj1FUQTNS/hVd21/lPReGMOY6iwBdIHbUUR1IMh2zKykMLb1ovh2eoGr9EEqOomKJ5sptsv78sfMHQmARkKmIBHrhPxBhqBJByuIYdRhdjoHbxTTJlgmpzAgKRzhvrRJWY3w75/FatRZluKeixpe1FalV+6bheCWh0Gw0SvEeIEo/kj7wKlYeOYpLG8nK0Aa1ZNpjFBXJw3a/PdKwHykfRtjxx1IQ5fG2JO/PCDTNjPcEXF/9PC9j3vgHBI/GwV8lsiccw4GStjS3QGz5ulja/Oe1biySukQl3vAOtIvALanbgeJFsLTk3PohGBqLKOr3AfzXe41h4xsXzV8K3dkVtOZZBIChPr9W3OPxy3MXq3Q0SEKcl7A6SyWh6T1dQ3iyQkfoz2kJaiATMqmoMb6QkvlMA6s3L3GYTFNZpWKgFRCKhJw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOZP265MB8551.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(10070799003)(23010399003)(7416014)(1800799024)(366016)(921020)(4143699003)(56012099006)(6133799003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TDZLbG5Yc3ErTnhxNlVCODNDTUI2cHRrcmtSQ1JtNlVIcy9XRzRMNlZxRi9a?=
- =?utf-8?B?RHJDclNnZGovWEUwUjFYcXJUR1N4a3lPRkJ5aFhmR1gzNzZzM0NMMWZTb05z?=
- =?utf-8?B?SzNsVDF6WVhTbjBsVExJQmJUclQrOHJMOW85RUxGYkwvNVNwSm5QbGpQb0lx?=
- =?utf-8?B?OXhrR3ZSRjNyY2p3bUJZVmZtOWNJS3pRZ3NSZW9tbmVIeS9iZGlKVzRFaFJj?=
- =?utf-8?B?Y2RMd1ZMeERmeDdVK2gxNytBSGhmdlVjT2RPTU0rZFJZRkdtcWduMXM3YkFV?=
- =?utf-8?B?cHppcE9xMXBSWnBNQW1sNWV4V3RQNE9Uck56VHVLZGNla0xWem44bTY3cDVM?=
- =?utf-8?B?ZmEzQWxRV1dsTlo5bWZZNHRYblRyWW9FNyt3S0Z1Q0Z1MW9kMkN4dVc3VDNE?=
- =?utf-8?B?TEZiMjlxT1JOTUxiT1g4Wkw2dTM2QjBCWmppaEphblk2Q0hBSWJ6RlNSdEk2?=
- =?utf-8?B?VGhqTzMyVXZwNExPRXJrOGY5bHUyeXBBemIvcDJtck5kSkJicGp5WERFYldR?=
- =?utf-8?B?M3YvSWZVV3pMUVArb0Zwbkg4M3owb29rTnBDcU1GNno4Vjg0SHpnNVBWNlVm?=
- =?utf-8?B?am9DTlFmL0hzY2NUa21pMW5Ma2g3eGZ1dGNtU0pTUkUrZ2RxczhjbU5mNFBl?=
- =?utf-8?B?bEdmbTV4WDExMmhKQzVyY3ExeFBpYzgrbDRDa0c1NDV5UXBWd3oyYUtpU0Mz?=
- =?utf-8?B?T0FSWkFTejdUU3Uvb3FtRmVycnFtLzJVVHhJUEtGbVNmZ3F6c1FUTkxwODNi?=
- =?utf-8?B?ZlFralhPK01nd1NQaGFaZnJqWVRXVzFQaG9DYmU1Wkhoa1kzTzM3M1JNenpY?=
- =?utf-8?B?cEJRYklwWlNQUEc3OXJHWkJlaWNzVmQ3THJHelA1cUxva2J2QVkzRVArM2xv?=
- =?utf-8?B?b2xXWHNKTzI5dHNmOVNmei9zWUpYZkdXNGZxTmZqY0RheUV2S1pBRENkRXpp?=
- =?utf-8?B?Y1k3aVIvOGF5K0g2QjRoTEFmcmYxS3BQUzFkbG81a2R4elVJOXIrUG53VjNB?=
- =?utf-8?B?MnJSYU5WMzladFZQUTBML1FDNEIzSWxrOEhVek9EQ1J2c01kckVBeEhFS3Fq?=
- =?utf-8?B?NHF6djByL2xNRDlvanp0YWhibmljZGlkelZSOWJOOWNKL1dSTkhNZ3ZJMDBH?=
- =?utf-8?B?d2IvaWtIOEN3ZVpiV0Jaam45VE45Y09JakI4bkdlRHRzYVVDOXRvalY2OXZJ?=
- =?utf-8?B?clZMTnp4NXV6VkpvTFQ2dW5aeUdld0NVY201Qys4enV1RjZLYzcvTDZvS0d4?=
- =?utf-8?B?SDkyQ2pJZHJLZlpUMGw0M0dWQnB5dXpiUHVlM2Z5SCtteUN1L3F0U1FyQjR2?=
- =?utf-8?B?OEtVZWpneDJYcjk4SFlrVDY2RDYzYWZvZVNHbjVyQktTMXlXL3hhNnRjNk5o?=
- =?utf-8?B?cXJJd29BMVNHMUs1ZkhzUHYwWjRuUWRMclN0SHdMa2RyVzBEY3ZlcDluV1V2?=
- =?utf-8?B?czF4SStnbmFHWUgxaGpiMlVWT1E5NjZoYkNhSzYzM1oxYlVmVkwwYy8zbjA0?=
- =?utf-8?B?ZjU1MHU3RWZOdHJ1TWlKL2g3WllQaHBZZ0RldTEydHBkcmRubk9SZ0ZqVzZw?=
- =?utf-8?B?ODg0ZmFaOG5oSzkvYzhOVTVmYlZLOHFRNDdwVllVamN4d2diZkl1ZEZKK3l3?=
- =?utf-8?B?WW04dkZ5b1FqQkFoWWhVM1FTZUdxUVZCRUZDcnF5NW9NbU9mZVBFYjl6ZFEz?=
- =?utf-8?B?NUJIby9XaEhpbW9WZVVhSWVybDdIMGdEVzRHQUJsM1hmeWhBRlVmRlV1ZEQ0?=
- =?utf-8?B?bjg3MXI0RWFkQzdVaVZsUXQ3a0thRWc0QlBKbVZyOU5TSnUwV0IrRWJPME5j?=
- =?utf-8?B?dXd0TEE3SFcvTncrYUNuUzdVZWlBdEM5ZGtyREdHMVVuMlFQNzg1aTBUVkZ3?=
- =?utf-8?B?aHh1T25SZ3lmYjJFWGZjc3h5ZVFQVzlCU2h2MExuTGxCL3ZZZ09HYUlrVTRM?=
- =?utf-8?B?R3NSNzRxMWVrVXRoZHlEMy9KYm9PeUxFdm92VzhHNlFFT2dieHU3dWNsMXlv?=
- =?utf-8?B?UUE0ZzJiY1ZJUE1GV2pSWlR0YmJacnhYY2Zab2o4bnZMQlhhSTRza2lObXhx?=
- =?utf-8?B?TlRQMXNtcURHRVk3cnNhTURnUmFSdTNFRlU2STd1UHRLQUJmYnJoVzlxYlhw?=
- =?utf-8?B?VjB5QzNZbXMvbTRqQmtjaVljNlNMemhBWW5wSHIvbWM4ZXpVdEdNcDg0S3dY?=
- =?utf-8?B?TlhIRUkrZUFFdU52RGVjbGlVeUR0NjZmTVF2WWl1MHZTVUlSajdqR0FIZTl0?=
- =?utf-8?B?c1I4WVozYkFYQitCYzNXdVFqOXhZZFJISEc3TlVGdGd0UndwZGJYQTRkYnJB?=
- =?utf-8?B?c3Q0eVhSNmRNdDZvTzZPOGMvS2ZpY0tEbEhETnhlWHNjaU92Z3A2QT09?=
-X-OriginatorOrg: garyguo.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: da7feb28-fc8e-4075-728a-08def2e0402e
-X-MS-Exchange-CrossTenant-AuthSource: LOZP265MB8551.GBRP265.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2026 10:56:49.8039
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bWHw+6YrH/jNNB+MXluzCVaVIw9VOPTW6ImIZxve5R5BO9RiYqU4MEv6oEUP+ORbapEXFdKcipFMwN5oDxAxlg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO2P265MB3514
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAGQ3c2oC/33RUW+EIAwA4L9y4XksgBRkT/sfy2VBqCfLqRty7
+ raL/32oL8aYPTalX2n7IAPGgAN5OT1IxDEMoe9yoJ5OxDW2uyANPsdEMKGY5opan7TU7D01GFt
+ 7/e07pGAsZ0Lo0mtBcuVnxDrcF/WNNN9t39EO74mc19xwqz7QpZmdXzdhSH38Wb4w8qXm324jp
+ 4w6B4B1Aeg9vl5aG67Prm+XDqPYGvrYENmwAFxqA2Vt/d4oNoYoj40iG15CqaQuna/s3pBbwxw
+ bcp6FS1YYX1uGam/AxijYsQHZkMIYsKqqSgdbY1pXHvHrlm+b1pucp+kPitblmPkBAAA=
+X-Change-ID: 20260716-adt7470_thermalzone-59a102278d72
+To: Guenter Roeck <linux@roeck-us.net>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Chris Packham <chris.packham@alliedtelesis.co.nz>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ "Darrick J. Wong" <djwong@us.ibm.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Luiz Angelo Daros de Luca <luizluca@gmail.com>, linux-pwm@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
 
-On Wed Aug 5, 2026 at 11:22 AM BST, Benno Lossin wrote:
-> On Wed Jul 29, 2026 at 5:38 PM CEST, Gary Guo wrote:
->> The `__init` method is not designed to be a public API (existence of "__=
-"
->> is a hint for this); but currently there is no other API that allows raw
->> initialization on pointers. Add `ptr_init` and `ptr_try_init` and recomm=
-end
->> people to use this instead if raw pointer initialization is needed.
->
-> How about we call these two functions `raw_init` and `raw_try_init`
-> respectively? I feel like that conveys the meaning of what they are
-> doing much better.
->
-> With that: Reviewed-by: Benno Lossin <lossin@kernel.org>
+The ADT7470 is a temperature monitor and PWM fan controller capable of
+monitoring up to ten external temperature sensors and controlling up to
+four PWM outputs.
 
-Hmm, I agree that these names are better.
+Currently, the driver exposes these sensors and PWM controls only
+through the hwmon sysfs interface. This patch series integrates the
+ADT7470 driver with the kernel's thermal and PWM subsystems. This allows
+temperature sensors to participate in Device Tree thermal zones while
+exposing the PWM outputs as generic PWM providers for consumers such as
+pwm-fan.
 
-Given that I've picked these to pin-init-next already, I've amended the tre=
-e.
-Could you check the changes I made there?
+Patch 1 adds the YAML device tree binding documentation.
+Patch 2 introduces the ADT7470_PWM_MAX macro.
+Patch 3 registers the four PWM channels as a generic PWM provider.
+Patch 4 registers the external temperature sensors with the thermal
+framework.
 
-Best,
-Gary
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
->
-> Cheers,
-> Benno
->
->> Signed-off-by: Gary Guo <gary@garyguo.net>
->> ---
->>  rust/pin-init/examples/static_init.rs |  5 +++--
->>  rust/pin-init/src/lib.rs              | 32 ++++++++++++++++++++++++++++=
-+++-
->>  2 files changed, 34 insertions(+), 3 deletions(-)
+---
+Changes in v6:
+- dt-bindings: hwmon: add adi,adt7470:
+  - Move allOf: block after required: (DT schema ordering).
+  - Collect Reviewed-by tag from Krzysztof Kozlowski.
+- Link to v5: https://patch.msgid.link/20260730-adt7470_thermalzone-v5-0-42995a6bb8c5@gmail.com
 
+Changes in v5:
+- Hide hwmon PWM sysfs attributes if "#pwm-cells" is present in DT.
+- Register PWM chip before hwmon in probe() to correctly initialize 
+  sysfs visibility.
+- Fix waveform rounding math to strictly satisfying CONFIG_PWM_DEBUG
+  expectations.
+- Return 1 in round_waveform_tohw when the requested period is too 
+  short for the hardware.
+- Link to v4: https://patch.msgid.link/20260729-adt7470_thermalzone-v4-0-c14039dfa0e6@gmail.com
+
+Changes in v4:
+- dt-bindings: Dropped redundant descriptions for standard properties
+  (#pwm-cells and #thermal-sensor-cells).
+- dt-bindings: Conditionally referenced thermal-sensor.yaml to preserve
+  ABI compatibility.
+- dt-bindings: Switched to unevaluatedProperties due to the imported $ref.
+- Link to v3: https://patch.msgid.link/20260728-adt7470_thermalzone-v3-0-d4586478cdba@gmail.com
+
+Changes in v3:
+- Migrated from the `.apply` callback to the PWM Waveform API.
+- Moved fixes to another patch series:
+  20260727-adt7470_thermalzone-v3-0-21424d550c3d@gmail.com
+- Use guard(mutex) for simpler locking.
+- Link to v2: https://patch.msgid.link/20260717-adt7470_thermalzone-v2-0-a55147958fad@gmail.com
+
+Changes in v2:
+- Fixed 2 previous bugs uncovered by Sashiko-bot during review.
+- Dropped the thermal cooling device registration for the PWM channels.
+- Implemented generic PWM provider support using the PWM subsystem.
+- Updated Kconfig to safely handle the PWM subsystem dependency (depends on PWM || PWM=n).
+- Updated Device Tree bindings to require #pwm-cells instead of #cooling-cells.
+- Link to v1: https://patch.msgid.link/20260716-adt7470_thermalzone-v1-0-cc55ef35edde@gmail.com
+
+To: Guenter Roeck <linux@roeck-us.net>
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+To: Chris Packham <chris.packham@alliedtelesis.co.nz>
+To: Andrew Morton <akpm@linux-foundation.org>
+To: "Darrick J. Wong" <djwong@us.ibm.com>
+To: Uwe Kleine-König <ukleinek@kernel.org>
+Cc: linux-hwmon@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org
+
+---
+Luiz Angelo Daros de Luca (4):
+      dt-bindings: hwmon: add adi,adt7470
+      hwmon: (adt7470) Add ADT7470_PWM_MAX macro
+      hwmon: (adt7470) Expose fan control via PWM framework
+      hwmon: (adt7470) Add thermal zone sensor support
+
+ .../devicetree/bindings/hwmon/adi,adt7470.yaml     |  58 ++++++
+ drivers/hwmon/Kconfig                              |   1 +
+ drivers/hwmon/adt7470.c                            | 203 ++++++++++++++++++++-
+ 3 files changed, 258 insertions(+), 4 deletions(-)
+---
+base-commit: 4c2e8c377915496fbe9cc1c9d91a7297aaa01783
+change-id: 20260716-adt7470_thermalzone-59a102278d72
+
+Best regards,
+--  
+Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
