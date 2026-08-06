@@ -1,235 +1,151 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011060.outbound.protection.outlook.com [52.101.62.60])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EF502BEC3F;
-	Thu,  6 Aug 2026 13:54:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786024483; cv=fail; b=VhwEQS2573OMTLd53yuzf91VGPe2vaz0yTICRIIfM2cFnVc4MsmWBW7YgBKfcvDj6OiRGhjAG8ySS9hYAA5agXABZHP+IMWZRYlgkfclDISG1IGVCZhEzw8NM87oBQngJBv2jh8Sr9uq7vVAD2Lg2fFRkg/O/RoxVrOLmZ3J4/o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786024483; c=relaxed/simple;
-	bh=hrwsktyehp58cJh2GuG6hWiGFdKRr1tUbLCM0SjkXsA=;
-	h=Content-Type:Date:Message-Id:To:Cc:Subject:From:References:
-	 In-Reply-To:MIME-Version; b=QpNs65vEvL1ul5xatgk1G/Jutt8PoMTQ+w+wfcc20BbDhP8T3GC410ehElOrEez9lv2qQnJdoN6HPLyjO78GZQ9adc8JDd6dIX6VnWB6Nm0BQRXxzKVnigGs7l2/Afl9WMpP56Pe9tYSkI8hi43n/cXjogPwTBqz/5jV2uolhk0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=H8XOuHke; arc=fail smtp.client-ip=52.101.62.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AAF3479899
+	for <linux-pwm@vger.kernel.org>; Thu,  6 Aug 2026 15:35:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786030503; cv=none; b=XAtKvndeEN4byu/nF2eDzplknUuAn6Ta2dAwOtwOqpnfZW1irpu5HTRjK+9pOU26oxFjJzU0XjpAkw1NbRbq159duj6Y5BVC8wZuyrPduLe/YlliTgOr1+9ZT+gsqPsDUcSKhSibZz5SEYRQFJAR+EVQb9kfVBHj4oRGQVdOAMQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786030503; c=relaxed/simple;
+	bh=I82qCAapuq5q4XLsdlrx/cBUqFtHqRFuOYioPzImCLw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QVKi52/NJ6Rv0QnKhh7/rNOXtdTTxb113kW8HXDs8GvsG0Fbvkiqy7CBIkNSkCix0dMgZzMzhARCB59ifNMLKzl5zMOcttOdVU19t/3Yd7JMwnEAmcf0MdpPC1M1+s194+qSk12gy4uYRuZ2u72f/sRpYaa+KnPHielaAs6V63o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dnNuNjR6; arc=none smtp.client-ip=209.85.215.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="H8XOuHke"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tSzE+TYbpGC0CWP+FWYcHrAy2ydE3Ai0Ki0wRvw7tx73WvFEh2+KFRIrGSe3eatuvRVUcvrggFIzNyF3sSsuFf79WTvPlXUEEA4MoancBV/0G52ShjaZGeEI/HoiWXjMJORgXCzKPFICbbBk7ceGQ4/PPtEZ/qgaPNLrtxc5Bg3HyVhtLTlUfDTOOSZLZClkGLwob+YF0nzoGgvU+vYdjSx8QgNftSzWlOcfjzfqx09hOSTE+clMqKsCSE47svcCPyzHy5es7lIuIMKZ7jHVk4xfTX29npEZjfhF2ISRvDPf+FSLaxIW7o4zJJMldBeGffCjCvq11wH4pjHgWPE3KA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hrwsktyehp58cJh2GuG6hWiGFdKRr1tUbLCM0SjkXsA=;
- b=TI4QX5Dritqw68s/7PHQP2dVXx137RavN+pxOPqu4MT/NYFumKuds7dFtEVnK1bGLv5y98EB7IXVhxfylIkI+zwr3b7w9aJZ7Jqh86HtaBcyj9CqaxHWFaYO5oyG2gvmRT6XkDfjutBiNIr5TUmEWlzbpXaSYhqgc5QpWP6AObuy7fXkaTctGjsA6xyha3iqb8NrPyAaSutzjXxk15Q2W0RxRbXg1tw35OAus7KcGzdmuJ1HaLR14hBkCiMCe6reXA/DEpoIQFy6w8JkvKIPiX3h0uYLuTFc1Suy0+fxlTqGftEbPS3oZk56tZ2NdW+NDFJHJaVN2LGpwq/Szzdv9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hrwsktyehp58cJh2GuG6hWiGFdKRr1tUbLCM0SjkXsA=;
- b=H8XOuHkeu+snTkU/XNg1NTegV+A7NlKjvtTuhZ0uwIbVx47iHRujwY0cRe1bMOaqYeR+4V72X4ILw81g7zKaiMDtebfWqIKUkt+h48j885AjpH9K7Q4J7O4gXc2uz0zbb9h0bWyLN7XYNRNUBRFMO2oauhlcmL8lCCsx4OrQ+3htCoETjhuyZPwubF5ClhpL2ijLMs7bmNAXQt4nWITUUdk8p/5BMSfa2KPIwVr57+xVKJ9C0OSWjafMBLOs+aOV7BEKg0t5TRONZzIZ/bJ5lugJqnT/ToHSGPdgcMWeks/P2zHfgtDjVqv9O45U/S7+iB8aKfvn9Mad2thKNhSB3Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH2PR12MB3990.namprd12.prod.outlook.com (2603:10b6:610:28::18)
- by LV2PR12MB5847.namprd12.prod.outlook.com (2603:10b6:408:174::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.19; Thu, 6 Aug
- 2026 13:54:31 +0000
-Received: from CH2PR12MB3990.namprd12.prod.outlook.com
- ([fe80::7de1:4fe5:8ead:5989]) by CH2PR12MB3990.namprd12.prod.outlook.com
- ([fe80::7de1:4fe5:8ead:5989%4]) with mapi id 15.21.0292.018; Thu, 6 Aug 2026
- 13:54:28 +0000
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 06 Aug 2026 22:54:23 +0900
-Message-Id: <DKHWTZRKI3NV.39TYNLA5HA4HS@nvidia.com>
-To: "Gary Guo" <gary@garyguo.net>
-Cc: "Daniel Almeida" <daniel.almeida@collabora.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, "Viresh Kumar" <viresh.kumar@linaro.org>, "Danilo
- Krummrich" <dakr@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>, "Maarten
- Lankhorst" <maarten.lankhorst@linux.intel.com>, "Maxime Ripard"
- <mripard@kernel.org>, "Thomas Zimmermann" <tzimmermann@suse.de>, "David
- Airlie" <airlied@gmail.com>, "Simona Vetter" <simona@ffwll.ch>, "Drew
- Fustini" <fustini@kernel.org>, "Guo Ren" <guoren@kernel.org>, "Fu Wei"
- <wefu@redhat.com>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- "Michael Turquette" <mturquette@baylibre.com>, "Stephen Boyd"
- <sboyd@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
- <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Trevor
- Gross" <tmgross@umich.edu>, "Michal Wilczynski" <m.wilczynski@samsung.com>,
- "Boqun Feng" <boqun@kernel.org>, <linux-pm@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
- <linux-riscv@lists.infradead.org>, <linux-pwm@vger.kernel.org>,
- <linux-clk@vger.kernel.org>, <rust-for-linux@vger.kernel.org>, "Boris
- Brezillon" <boris.brezillon@collabora.com>, =?utf-8?q?Onur_=C3=96zkan?=
- <work@onurozkan.dev>, "Maurice" <mhi@mailbox.org>
-Subject: Re: [PATCH v5 1/4] rust: clk: use the type-state pattern
-From: "Alexandre Courbot" <acourbot@nvidia.com>
-Content-Transfer-Encoding: quoted-printable
-References: <20260706-clk-type-state-v5-0-67c5f326a16c@collabora.com>
- <20260706-clk-type-state-v5-1-67c5f326a16c@collabora.com>
- <DKEO7DXQ8604.1CB09QFM2EO68@garyguo.net>
- <DKF0BU8N7JJX.T802R11VZ0A5@nvidia.com>
- <DKFB5CL2I1FO.7ULPVEF0VG5Z@garyguo.net>
-In-Reply-To: <DKFB5CL2I1FO.7ULPVEF0VG5Z@garyguo.net>
-X-ClientProxiedBy: TYCP301CA0018.JPNP301.PROD.OUTLOOK.COM
- (2603:1096:400:381::19) To CH2PR12MB3990.namprd12.prod.outlook.com
- (2603:10b6:610:28::18)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dnNuNjR6"
+Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-c966b9ee9cbso1589141a12.1
+        for <linux-pwm@vger.kernel.org>; Thu, 06 Aug 2026 08:35:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786030501; x=1786635301; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:sender:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=bbrmQ+GhkVEYubpdUNjaSBaIV7BvrLU3vULivoHV6Ks=;
+        b=dnNuNjR6V3XOnbyCTm2mqXFwVpmNxbMVGxQjowCGYR4n6HR8Sgn0f3S76rauk3SXVv
+         JnqKC9ArrZNFoTNVZv0pkrbp/33CjNcILlPwjWY7+qdJHCbe+3r6xPpJ3xaP8xEeHP1i
+         9pJG5bQU/cVdj1MfnKePWqItT0AJNXd90b5BLSbR0vMHxA4yLMEb3h3vYB3Fj/9JYpNg
+         6Z4eBeoi486nHpV8HIRHIR15PWoGCtsDLfhEsZKWP9+1RSFocQvEmueWbbBJ6WzzQ/Aa
+         pzoZ9Z+1/3aJDobjrmZyWUkTLbsqU5zDHzrslSM3uGmmp3N2ktPq6THN7JBzf/VWFkQD
+         STSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786030501; x=1786635301;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:sender:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=bbrmQ+GhkVEYubpdUNjaSBaIV7BvrLU3vULivoHV6Ks=;
+        b=UKyn9VSBYEYIaicCW2E6CoeD42tKtS4E1snBnLHTdKw53402Wq7Wo8lngAHR1L4Oby
+         GwdpYx13G+ul3XMJSrLBlB60Gncy0813RM1sxUN5e8uBDa8CLcDcFhy8OXhMwCOBC7on
+         rIZPGU44Gkp1H5LyVFnzBwznjFI2Y9A/7krVeuHPfncOS0QvBYur1y5GxoZ+5VrJYwZu
+         IudBcp0qwWJHXda6b2tZ/WV3ADaS9/ttYL9TcBxJUOSs2jSv/fPDftA9OiiqABr7Qfrf
+         LtFDxvtXcXePCBFz6p/gibT9qKHvgEFynY/U2Lc4j+Og5XtkZNgzLDwDPZIRKX+7pDha
+         IsSw==
+X-Forwarded-Encrypted: i=1; AHgh+Ro4pBEntLX43feTxaGcgkAxTeFcxrfSC1seQoydAz5obm3D++m2Xl9elrN2DbZjwssabdQs5AtEXAw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+hG6lPDiA5WAmZ4C1kIfi6s5YRL7lCSPg097gYbsO2uimT+3u
+	0FeCZf+dmA3S0O5rco4elC124hFDPW9voc04Mqhz6v4pSWb/fvL9ng/D
+X-Gm-Gg: AR+sD11WZjkafA5in5fyUqVflAG2bWwNSUYRjUt2TWVt7Zy0Qy2V5Qp6ugObysk6lJp
+	xizHsydt0jXTChF/bO9UMYdXjKg/DzcczQICEF1s1JTomMn+FJkPOZiLwVxRT/GU7GE9kizFNGG
+	ci1RyLyfTJmFa3fNu4yNmKJ70gAfeCMJpE4ZOMbqXPEkH7Qs1BRQ2H2otvgBx9snbO8rzs8irdV
+	rmC+DwQQ8JLNBwSv8clxDOeudzfJoCON32wlh7KjVnm7I074oD+Z7vxdhiLLYTwZ0Ld0CoX//ZZ
+	XXvLaoNz5zgZY/Nnrh6LiMZNu2RqqnSjtIgMwzp2eH3i9GWeH/UnZCwAc6TLkhfFuqyWblS0MNW
+	qPgMad2LzSE1bTOC0r5lQ/7WHMbnsfAEzfbb7zmLSSqVArQMU531UP+2us3tEA/3cCsVDbVMm9m
+	adfm7P1Ua9kSOdDnXZD2uOW1kqafKtzcdl5yb3+igLd6XFKmU+zA4Uab3X+A1b29IHt5scKzzfA
+	pmzFw81r3To5kSPqocg0rNSZnbiB9AeCMEOeg==
+X-Received: by 2002:a05:6a21:9992:b0:3bf:b68f:4685 with SMTP id adf61e73a8af0-3cb85f43e7cmr17944621637.23.1786030500875;
+        Thu, 06 Aug 2026 08:35:00 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:da43:aeff:fecc:bfd5? ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31586777bcfsm42980668eec.21.2026.08.06.08.34.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Aug 2026 08:35:00 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <d027eec5-ca83-4aba-a3c1-4724c77df0dc@roeck-us.net>
+Date: Thu, 6 Aug 2026 08:34:58 -0700
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PR12MB3990:EE_|LV2PR12MB5847:EE_
-X-MS-Office365-Filtering-Correlation-Id: afd3b8dd-3ebc-49c1-5eb0-08def3c23b45
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|7416014|10070799003|366016|1800799024|10067099003|56012099006|11063799006|5023799004|4143699003|18002099003|22082099003|3023799007;
-X-Microsoft-Antispam-Message-Info:
-	1LmhdrGKy7joZdqOuKP5j0dya0y93eTcxQstzreVuQUCeZTHMvRomX5xsnbyOBRPrMLgNbGooXaFOF9lDNrUCycD59O9W6eBC8Y2veAR2vwwBW3YfEy9cC+WdMGDTGyoOEkFapNNFxyjAhm0xyjau0uH/zw2gmOFzi+0B0f4+f4FMxNo3oVgReLH2BfGxrylBdMVGfqcmNS4Oa3sdYuI9RrSR1AlKe1yTr5trQz6ln0diDo2SLP48DN7lgjrHSjDoMypLzQ+ymeSAGyePZgCtDmCc5YhrvpAVFpKku6AiFJYCaSAYEN1aZvOy50/ysPU9V3zb0h0PoZjsIm/ierm0eiI2b3eGh0jLmFrYGraaSpZIWhZgwCgBPBsJ107U0PY617JGZWM+zk+aKZy2/BQU/MJRsUfOZEPXvVnhB5bhVwArpryPAqIBU+8oJp2i+I9I3iPGTB+EwH40RcUsuJaWe5FV1cKW2JJCdGAn9o9TaENIPMeoRyZVOHgfEsZfLDpXLZUDk/BduZ8uZJjx7mDk6/hv7URnBcmFB+MsT+jLpYrZ4eMUKnC+GavOgmbScSpRWEZiYyLHS6jp1kAL3z40O8rHOg9P2psT03xVGKobGjKNrIhNQt8Z5MVcU0CBA8fdDVXZfAo8g8TH5yeX973AhAmKT/90KsjXOlRWZLZ8pw=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB3990.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(7416014)(10070799003)(366016)(1800799024)(10067099003)(56012099006)(11063799006)(5023799004)(4143699003)(18002099003)(22082099003)(3023799007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MTRqYml0eTRpTElQbW5lazVOcUQ4emtYc1R2Q0ZyU3NmMG11b0RNQ3VNWENN?=
- =?utf-8?B?U2t6ZGlCUU9mT1FVZk5uQ0V5ODZaamlUdVlNclFQY1EyUE9IZmFtV2lra2hB?=
- =?utf-8?B?azVqUC9xSkhtczE2VHdDUGhrUnMxNjFmYWpDTVZHQ1hNakVvL3NhTlZsTHY1?=
- =?utf-8?B?V0dNMUY3UWwwenNhd25YblRjbXBIc05adUNBa1R2SU5CYXpTemVEREdzeXAr?=
- =?utf-8?B?UE5SV1h1UlVJQzluMUgwOGsxTGEzU2s3VXMrWkgxcWR2SmlPQmpRSTBCMXhl?=
- =?utf-8?B?SnBZNUNDaXZDVVZDYlFUTlFyd3VqRzJOWC9DV3JxQXBuT2VGMlB2emdKdXRx?=
- =?utf-8?B?WGtaVCt6NjBoUHZ0VE1vZ3JpMC9CcE9nSVdJaGp4WFgySXlWeUVvYndKRTFU?=
- =?utf-8?B?Qm9qRVBPSXM1TEJYWkI4T2M5L0dCbjRZdEZFWTlWbHBJSzNwWGk0aFFTZjJq?=
- =?utf-8?B?Ri9wVDl5WEs4L2JZNTl1bjFFVlk4VlVUU2Zack9ZZ29rRkljRFU1MzB6NFZT?=
- =?utf-8?B?RkE4VXFpb3hNcjVrazhwOFd4eFNiWFkwc0JzYmtMWUpaYlBMOExMdUgyTG9n?=
- =?utf-8?B?QUFQdVhtVTZyNzVpdy9tZ3hUYUJKaGh5TDFpN2NsWmV4T1pqZTdmZ3ZlZWor?=
- =?utf-8?B?ZitOZFVWSTEybTg0RjVidmI4OHZ3MW5BWnBnVzFlVkJWVEI4TnNuWkNmeFRs?=
- =?utf-8?B?OUpnckI2Vys3alJqdmlhTUNFUlUyOG00Vy9kUWdGSk1mR09wSVBnemFmYkVZ?=
- =?utf-8?B?c0ozYVljcEZ0VnloMDY1SlJFUTVuL01lWDNBK2NqbktLUkxKUzgwK2lKRFN1?=
- =?utf-8?B?VVVMWmRCWVV3akN4bSt0Zkh4ZDN4UVZyNHpwMDZtb1VRUkkxejJOY2JrZlc3?=
- =?utf-8?B?M0NQTVMwdG9xbjcyOXRKdGU5QTg0S2tOUUV4UXJuQUcydXh2WmJMSGczMzJo?=
- =?utf-8?B?aGplQ1VZUUxMeXAyb1N1RmVneTdhVGYwdjQ5dU5aZDJwZWcxbmp4blVvOTN0?=
- =?utf-8?B?aXU3aWFnaEZJaTc0MVBVWjl4V3p6ZTBwb3Fxc0U2clFLREQzQmlWdkVIUFhW?=
- =?utf-8?B?aXNxdGJPYkRhY1Y4cmRCZXRIcy9BTFAwNjF2SHFZOS9iZ2xRNnZycDUwMHRX?=
- =?utf-8?B?cnhGK0RwQm13S2dOaG9wUGVVd29wbGtqbFVxaC9wTFV2NkxsVDRPNThxKzdP?=
- =?utf-8?B?STlsTVZyclBlUVQ4NGRtUHI5VTJsMDhRWW92TlR1NnZPb2hnQ1hGTlRxZ2JM?=
- =?utf-8?B?QkNWV1pQZ0xtS3crL2JRcVVVKy9OTU56ZHVoeWZiaVJPNlF2blA0T1NWWG1C?=
- =?utf-8?B?VW4zZ0tWMzR5a3VWNHI5TXBJRW1WdXhNUXRMK2RWaStlRHJZclpPeVl2c1pj?=
- =?utf-8?B?V0JMNk9HdmJRV2xCVGo0Znh2WnVRUzdTSnV2eDM2TnpxYmxvRmNqNlhqK015?=
- =?utf-8?B?bnJJTjFuMmp5NGhINm9kNVpzWm5HdjY3c1paMm91S1U2a2VIcXh2azVkSTFo?=
- =?utf-8?B?dEFqRHMrUlJ4QWRaTkFPNTM5OThlT2FJejJ1NUkwazBRQWUxTWwxWHBGYVk4?=
- =?utf-8?B?SGRLa0RncTVhYng0NU9YZnZEZlFsODE5Zm04UmRZZTJPcVBOU2U1ZEFkSTJK?=
- =?utf-8?B?T1BQQjJxd2phM1RxcHF0YkZzTThyME1xQVdWVjY5eXpQOHpoMWZzR1d1TVdh?=
- =?utf-8?B?VUJ2VTJVcmx2YmlaQ0VkVmJ5T0VCaFdnN3dCNG4zSmxQWW16UWI0cyttMnFq?=
- =?utf-8?B?YUVWUjd6MjQ4dUZsVktsOVgvY0xybUZVRkFIS3Q5bmhlSVdqVnpXQ0tsQWZE?=
- =?utf-8?B?Sjl5YnNrVUhmeFNKbnFEZXp2ZWR5bk1jSkRaU040WFlNZ2p3ZWdEa1FDaUY0?=
- =?utf-8?B?dXArL3Y2eHBUZ3FFS1RIUHFKSCtJUzFvaFExbzhpVnQxSXg5TS95dmkrY2sy?=
- =?utf-8?B?ak81UlNvYnZTbVJaUk9uSlJDWkUxb2FtZVRTZjJRZWNmMS9UajBKaDZwNVlD?=
- =?utf-8?B?Q1Q1ZDdRNEp2WllQWHJEZTZ5SXFXQUpJMWJvNzh2QjNJR2wxTVlPYlA3ZUpo?=
- =?utf-8?B?U3JjN1JnRENWcEQxVU1DTWNyWDFXK0ovSFFWZkxRSHAwWUNrOE5paXNuSzVM?=
- =?utf-8?B?TFdRTEYxcVlrR09jL214WVZtTzNQQ291NHRFaDYyZWZlR2p1aFEyb2JDYmdU?=
- =?utf-8?B?ODVNSE9udExVMUEvendsT2JFc1BPUktLQkJWUjdlWVRKRnRxcTBndjZLQkov?=
- =?utf-8?B?Vm5rM3FxVkNBRXFkRmRkeEFYTitWd1hlcm5zUVFiNVQ1TUlhNzUxeG1FdkRQ?=
- =?utf-8?B?dWtyZU5TK0c5d00rcGU0M2daMGMxdDZqUjNFUmZsM3IzQmFGYm1tQS96WXoz?=
- =?utf-8?Q?9CCViQv66hogwfx91K2AGZ8AtPef9Bim1JXyP2eraeqaZ?=
-X-MS-Exchange-AntiSpam-MessageData-1: 9AwZV/dT3LeRng==
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afd3b8dd-3ebc-49c1-5eb0-08def3c23b45
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB3990.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Aug 2026 13:54:27.9772
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7n7xzSyHig7BYX45PVju3HxUP7lN1pIh2WzFS9uZ0L4dKT3HDOHGW62ZIW5nvKEIiPFle2yofjzcs42PkJFsvA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5847
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] hwmon: add Axiado AX3000 and AX3005 PWM fan
+ controller driver
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ Petar Stepanovic <pstepanovic@axiado.com>
+Cc: Akhila Kavi <akavi@axiado.com>, Prasad Bolisetty <pbolisetty@axiado.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
+ Tzu-Hao Wei <twei@axiado.com>, Karthikeyan Mitran <kmitran@axiado.com>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org
+References: <20260806-axiado-ax3000-pwm-fan-v1-0-f6db4cf2166b@axiado.com>
+ <20260806-axiado-ax3000-pwm-fan-v1-2-f6db4cf2166b@axiado.com>
+ <anRaB--HAHoWFkDo@monoceros>
+Content-Language: en-US
+From: Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
+In-Reply-To: <anRaB--HAHoWFkDo@monoceros>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon Aug 3, 2026 at 9:29 PM JST, Gary Guo wrote:
-> On Mon Aug 3, 2026 at 5:00 AM BST, Alexandre Courbot wrote:
->> On Mon Aug 3, 2026 at 3:30 AM JST, Gary Guo wrote:
->>> On Mon Jul 6, 2026 at 3:37 PM BST, Daniel Almeida wrote:
->> <...>
->>>> It solves d) by directly encoding the state of the Clk into the type, =
-e.g.:
->>>> Clk<Enabled> is now known to be a Clk that is enabled.
->>>
->>> The design conflate states with actions. Our existing type state for de=
-vices
->>> don't do this: `Device<Bound>` means that the device is currently bound=
-, not
->>> that dropping it will unbind it. Yet, a `Clk<Prepared>` doesn't mean ju=
-st that
->>> "clock is prepared" but rather "clock is prepared and needs to be unpre=
-pared on
->>> drop".
->>>
->>> One way around this is to mimic the "Registration" pattern: have a type=
- to
->>> indicate that a `Clk` has been prepared and its `drop` will undo it, an=
-d then
->>> this type can `Deref` to `Clk<Prepared>` which just mean a prepared clo=
-ck.
->>
->> Just as the driver core hands over `&Device<Bound>` to a driver as a
->> guarantee that the device is currently bound, so can the driver pass a
->> `&Clk<Prepared>` to a function to assert a similar proof. Here the
->> reference only means "clock is prepared", without any action implied.
->>
->> The typestate has real practical benefits, as unlike `Device` which has
->> a well-defined life cycle entirely controlled by the driver core, clock
->> handles are owned by drivers and their use can go all over the place.
->>
->> Driver A might want to enable a clock in short bursts in order to
->> preserve power, and keep it prepared otherwise. For this, a
->> `Clk<Prepared>` with the `EnabledGuard` I mentioned in patch 2 would be
->> a good fit. Driver B might need to keep a given clock enabled all the
->> time and only change its rate, and thus will store a `Clk<Enabled>`.
->> Driver C may have different PM states, and can encode these in an enum
->> where relevant clocks are either `Prepared` or `Enabled` depending on
->> the variant.
->>
->> Mandating a registration-like pattern here looks a bit overkill to me
->> and I am not sure what this would grant us. It would definitely
->> introduce some complexity: say that you want to keep a prepared clock in
->> your driver data, does it mean you need to store the `Clk` itself, and
->> then its prepared guard, which references the `Clk` in the same
->> structure?
->
-> You could have the `PreparedGuard` takes a reference to the clock, no nee=
-d to
-> store `Clk` separately. We can have a method that gives out `Clk<Prepared=
-<'_>>`.
+On 8/6/26 03:04, Uwe Kleine-König wrote:
 
-The tricky part is "take a reference to the clock". `struct clk` does
-not have its own get/put counter, so in order for the guard to not be
-constrained by lifetimes, we would need to add our own sharing
-mechanism, which is basically what patch 2 of this series does.
+> If there is a hwmon lock that serializes calls to hwmon_ops::read and
+> hwmon_ops::write, .pwm_lock isn't needed. (Unless I miss something,
+> please double check. Also I'm unsure if there is such a hwmon
+> serialization.)
+> 
 
-My main problem with patch 2 is that it adds additional constraints
-(heap allocation) for a Rust driver to keep several references to the
-same clock handle. A C driver doesn't need to do that; a Rust driver
-shouldn't need to either.
+In hwmon_attr_show(), hwmon_attr_show_string(), and hwmon_attr_store():
 
-The typestate pattern of patch 1 is nice and simple, but it also adds
-constraints of its own to the C API, in that a clock handle can
-contribute at most a single prepare and a single enable count to the
-clock. Patch 2 tries to work around that limitation by adding the
-reference count we wish `struct clk` had; but at the end of the day what
-it really does is create another indirection for clock handles, and each
-of these indirections can still only contribute a single prepare/enable
-count to the clock.
+	guard(mutex)(&hwdev->lock);
 
-Adding guards alleviates that limitation, with the caveat that the `Clk`
-that provided these guards cannot transition into another state while
-any guard exists, as the transition methods consume it. And these guards
-cannot easily be stored long-term - not without unsafe code anyway.
+Guenter
 
-So after sleeping twice on it, I still cannot think of a design that
-would solve it all. But I sense that providing both the typestate and
-guards would largely cover most use-cases until we converge towards the
-perfect fit for the C API.
