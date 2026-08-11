@@ -1,76 +1,178 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 642F743746C;
-	Mon, 10 Aug 2026 18:35:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43ED0286409;
+	Tue, 11 Aug 2026 04:46:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786386952; cv=none; b=D6iWgQmEfRfg9lI1tIxImAmuRtvm/zJ3LyL/eMq4+Fkd+lyv+00swpZGI/n2NCTBsvPaIrsH0Vw36hvvxnWg245VM7R/PT+RrNLzRNEVY6dkofXz4/0DCikOdPZDkSX3ShkHxeBqfs9ft9WLF8gsJsyTQXZHs+7mG5Jvj+wTlVk=
+	t=1786423598; cv=none; b=g52zOD0w4FmhNGqkftLRmwzD8Mjv0IudGyDSs5D2i6GpbJL+EDBSwk7Yb35hArK0VrP8/g9vFj5W8b2ee2mmaE+kahR/4rRgEcuv21gs7HOSRL4juFsIMFm5wUb81RS6veh4GZGmbzeOWwMcV1h+JvY4XCrv5Y5Mgya06Qpgi6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786386952; c=relaxed/simple;
-	bh=J+7Qf4C+BCkphTM5Iv8Y9G8botn3Z1MPiWmfqLgbhk8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OcFiD7n8A4t3lBbYy9CYrOGVTrSDiqIDXZNeRb1a8rkze0SXN1baSughLM8gu8U+D6EQT3ZuhrlVtofl9M1b+lmOI810y4uSNhl1iG4jxC4OU9MA2vP1GzkU1iG9whPqhCqyMD9vd3oMv982AAl5E0KGhMXxRokJsF4HwMq4xb8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HlzpUbYz; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786423598; c=relaxed/simple;
+	bh=GTkOB2Wxi5hEX2mIwzJTm5d/29Sc42ULzXtp4BpvDVg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Q8DICEqokiDiYz1Un7a6w04BF7njYfOMHaKJ958/8eW7Odgm6vW8542k22exnTqLxQzydptOgyG027WqtePyiFMfV3tTrbK6LiWCI0bDFMKw2YkOSSsO3iRSU2+raaOKyTh6nCiy2oYOhbmei2dM8USdOEYUALobrn0mePoBhr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=byL5nLN9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HlzpUbYz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02FA21F000E9;
-	Mon, 10 Aug 2026 18:35:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="byL5nLN9"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 159D41F00A3A;
+	Tue, 11 Aug 2026 04:46:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786386950;
-	bh=J+7Qf4C+BCkphTM5Iv8Y9G8botn3Z1MPiWmfqLgbhk8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=HlzpUbYzcJ3KMfPEvXyW3Fdt/nE5/mxqLTwgQd16JMs1HWaHaTGufcH6czd6tgMZ3
-	 q5k786zQ4Zphisf702b1r/G+BCt2fll3h81IcQ/S7RBIcdpBCzVhVl3q9xYVFRN2Vz
-	 0GGN5j1vEs1t6jvao2VddGT+ws7pP6d+v2bHKphI1pn1tTPDEqyUsOX+KFYWVffcO0
-	 KcPlP0Kgse5B/lTHtocl0cfyMJ+M/6J6ri+2vdoc/Av1RK3s5Sjfya7g2NycTE7g9y
-	 gW0gdlCAV7+3XC0Z/bokVCVPUn6q4uJA4xXHDEl8ujcjS5IbLCpjdH5z2Aa43Yh0wB
-	 d1O782y0QFKdw==
-Date: Mon, 10 Aug 2026 11:35:48 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Vladislav Leonov <vlad@zlab.su>
-Cc: linux-rockchip@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, Simon Glass <sjg@chromium.org>,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Alexandre Torgue
- <alexandre.torgue@foss.st.com>, Andi Shyti <andi.shyti@kernel.org>, Andrew
- Lunn <andrew+netdev@lunn.ch>, Aurelien Jarno <aurelien@aurel32.net>, Brian
- Masney <bmasney@redhat.com>, Conor Dooley <conor+dt@kernel.org>, Daniel
- Golle <daniel@makrotopia.org>, "David S. Miller" <davem@davemloft.net>,
- David Wu <david.wu@rock-chips.com>, Eric Dumazet <edumazet@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heiko Stuebner
- <heiko@sntech.de>, Herbert Xu <herbert@gondor.apana.org.au>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Mark Brown <broonie@kernel.org>, Maxime
- Chevallier <maxime.chevallier@bootlin.com>, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Michael Turquette <mturquette@baylibre.com>,
- Neil Armstrong <neil.armstrong@linaro.org>, Nicolas Frattaroli
- <nicolas.frattaroli@collabora.com>, Olivia Mackall <olivia@selenic.com>,
- Paolo Abeni <pabeni@redhat.com>, Philipp Zabel <p.zabel@pengutronix.de>,
- Rob Herring <robh@kernel.org>, Stephen Boyd <sboyd@kernel.org>, Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Vinod Koul
- <vkoul@kernel.org>, linux-crypto@vger.kernel.org,
- linux-i2c@vger.kernel.org, linux-phy@lists.infradead.org,
- linux-pwm@vger.kernel.org, linux-spi@vger.kernel.org,
- linux-stm32@st-md-mailman.stormreply.com, linux-usb@vger.kernel.org,
- netdev@vger.kernel.org
-Subject: Re: [PATCH 00/25] ARM: rockchip: Add peripheral support for RV1106
-Message-ID: <20260810113548.7fd24d56@kernel.org>
-In-Reply-To: <20260810121121.210040-1-vlad@zlab.su>
-References: <20260810121121.210040-1-vlad@zlab.su>
+	s=k20260515; t=1786423596;
+	bh=4EpS7VWmzddg2JU4Yq8TnnLax8NwlqEQzTHK2msPp1A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=byL5nLN9p4uTRnm2l4VJcv6vJJFDdD1y470p25he8zjX+zLqOcTNTWNFI7895S44W
+	 z0kimI8da0ixsHibmhCYhKPz+85CaZyZoIZ4AFIuawotNGTLvzruJOmeinclRM7LkD
+	 81mN6ZSVI5LiIt0m+g/ZioTmLN9UIGsxIVumWC8xPEkw5BT2i3XICjE90yGsWWzFO6
+	 lYxtroWnW88Qgd1mqllkvKjTesm4Z7uH8mTN/im8QxnmV7VECxpBFVQq4SyhXtNElF
+	 wL29A1nItWjVMS7BO6XX64WruWPyKNhXYZDE+EZCP2qD+3PFi520bdflVSPRcOjToZ
+	 OQT1fbMJjMytg==
+Date: Tue, 11 Aug 2026 06:46:33 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Eliav Farber <farbere@amazon.com>, rafael@kernel.org, 
+	tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com, mchehab@kernel.org, 
+	xueshuai@linux.alibaba.com, lenb@kernel.org, laurent.pinchart@ideasonboard.com, 
+	linusw@kernel.org, brgl@kernel.org, orsonzhai@gmail.com, 
+	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com, jic23@kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, dmitry.torokhov@gmail.com, hansg@kernel.org, 
+	ilpo.jarvinen@linux.intel.com, W_Armin@gmx.de, fabio.m.de.francesco@linux.intel.com, 
+	kaihengf@nvidia.com, ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br, 
+	paulmck@kernel.org, frederic@kernel.org, kees@kernel.org, linux-acpi@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH v4 01/13] notifier: add device-managed registration APIs
+Message-ID: <anqlfa6UADHn4qbo@monoceros>
+References: <20260726101739.33170-1-farbere@amazon.com>
+ <20260726101739.33170-2-farbere@amazon.com>
+ <anlUQXtxrghA8kNT@monoceros>
+ <anmVwiYW6fT7XhD2@ashevche-desk.local>
+ <anmWCWT_p8sIMwyf@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="pgdaeslknqpb7jv7"
+Content-Disposition: inline
+In-Reply-To: <anmWCWT_p8sIMwyf@ashevche-desk.local>
 
-On Mon, 10 Aug 2026 15:10:51 +0300 Vladislav Leonov wrote:
-> Basic support for the Rockchip RV1106/RV1103 SoCs currently under review.
-> This series builds on top of that and enables the peripherals needed to
-> bring up a board beyond a serial console:
 
-Don't expect maintainers to dig out patches for their subsystems
-from a big series. This is not how upstream development works.
-Repost 4+5 as a separate series to networking..
+--pgdaeslknqpb7jv7
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v4 01/13] notifier: add device-managed registration APIs
+MIME-Version: 1.0
+
+Hello Andy,
+
+On Mon, Aug 10, 2026 at 12:12:41PM +0300, Andy Shevchenko wrote:
+> On Mon, Aug 10, 2026 at 12:11:40PM +0300, Andy Shevchenko wrote:
+> > On Mon, Aug 10, 2026 at 06:37:25AM +0200, Uwe Kleine-K=F6nig wrote:
+> > > On Sun, Jul 26, 2026 at 10:17:27AM +0000, Eliav Farber wrote:
+>=20
+> ...
+>=20
+> > > > +{
+> > > > +	struct atomic_notifier_chain_devres *dr;
+> > > > +	int ret;
+> > > > +
+> > > > +	dr =3D devres_alloc(devm_atomic_notifier_chain_unregister,
+> > > > +			  sizeof(*dr), GFP_KERNEL);
+> > > > +	if (!dr)
+> > > > +		return -ENOMEM;
+> > > > +
+> > > > +	ret =3D atomic_notifier_chain_register(nh, n);
+> > > > +	if (ret) {
+> > > > +		devres_free(dr);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	dr->nh =3D nh;
+> > > > +	dr->nb =3D n;
+> > > > +	devres_add(dev, dr);
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > +EXPORT_SYMBOL_GPL(devm_atomic_notifier_chain_register);
+> > >=20
+> > > IMHO devm_atomic_notifier_chain_register() should look as follows:
+> > >=20
+> > > 	ret =3D atomic_notifier_chain_register(nh, n);
+> > > 	if (ret)
+> > > 		return ret;
+> > >=20
+> > > 	return devm_add_action_or_reset(dev, devm_atomic_notifier_chain_unre=
+gister, dr)
+> > >=20
+> > > which is much easier and includes less details from the inner workings
+> > > of devm. Same for the blocking variant.
+> >=20
+> > Won't work. We need more than one parameter and hence the whole devres_=
+alloc().
+
+Oh indeed, justified concern.
+
+> > Please, look closer to the code.
+>=20
+> And just answering ahead, no, devm_kmalloc() is not good bandaid as it ma=
+kes code
+> not anyhow better to read and have a downside of memory fragmentation.
+
+My idea would be to introduce a variant of devm_add_action_or_reset()
+that copies the data (in a way to prevent the fragmentation), such that
+the function could look as follows:
+
+int devm_atomic_notifier_chain_register(struct device *dev,
+                                       struct atomic_notifier_head *nh,
+                                       struct notifier_block *n)
+{
+	struct atomic_notifier_chain_devres dr =3D {
+		.nh =3D nh,
+		/*
+		 * Maybe rename n to nb (or vice-versa) to make the
+		 * names match here?
+		 */
+		.nb =3D n,
+	};
+	int ret;
+=09
+	ret =3D atomic_notifier_chain_register(nh, n);
+	if (ret)
+		return ret;
+=09
+	return devm_copy_data_and_add_action_or_reset(dev,
+						      devm_atomic_notifier_chain_unregister,
+						      &dr, sizeof(dr));
+}
+
+The name is ugly and long, but IMHO the semantics are useful and the new
+devm_atomic_notifier_chain_register() looks IMHO nicer that the original
+=66rom Eliav's patch.
+
+But that would be a separate topic, so going with the currently
+suggested approach is fine for me.
+
+If you rename n to nb, you can have my ack.
+
+Best regards
+Uwe
+
+--pgdaeslknqpb7jv7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmp6qQ0ACgkQj4D7WH0S
+/k6ggwf/Z6S0sEQFjfzsNngJIVe2RoUmYHf1HfmknhlH/LnJGYT0OHIavL+0UQOU
+B+wpvX9017EnBs2q/1eK2G+HPFlD3maUNsneSetO+JmHsM+irw3CWi7q8Dp2WPcn
+ytwmRruben9C96hQPBK/rhAaLk/763FJ+0OHkJtc3Jr9reRXtEqdBtHdM5WzSX/q
+ccFlhWQAlYb2myD50oTjypoiw19P+hig/s0eBOZZR9y7Zpc19Hjou6Eh6hpCOR8n
+RKw8Z9tFLBn2BlxaO7WW1scfOoxSdNhvoXlj5zeQqozPxcVvmpsmS/LwY90vaCIF
+WgjPbhvYs1ELYqC5MLau4yu6CUumAA==
+=5gDi
+-----END PGP SIGNATURE-----
+
+--pgdaeslknqpb7jv7--
