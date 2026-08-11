@@ -1,201 +1,250 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11022125.outbound.protection.outlook.com [40.93.195.125])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D575C422540;
-	Tue, 11 Aug 2026 09:02:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.125
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786438959; cv=fail; b=M8EWiTjhgFRcnZRv7l8HvoBQUAmJxAH8ZBW2Bdq8bRJxACQY8jQDyJjGsQq0bXpdMtuMX1CFQdtd20MaPDm2VIZ0fCqs4ac6040WdfL+jOoWT7PFy+TJ51EYlGV1EcdBFv916Jb9fe94hxa0vpfln/slyqTiuI/YGYuQDMLogWg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786438959; c=relaxed/simple;
-	bh=qtPLEdR45LEo0wZaU0U4sHX7g0VBI9UC1fT2eMz5fRk=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=RrR8S7BYeqmc67YTU9wBFRQ4Q97y0LGc+5DhZAB74FBBx+O/TZOtIHZ9S37XWbTPNAgtqxz15KF5jvj6Yqmsd7wVM6x+hlT9B7TS3l5dfgxuzFXDTwxnroKJm67sNdfJV91oSVPG4Avp8pzVtPAYq1NG3ifIJIKgSW9cUwV+nRk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=u9uVI2b5; arc=fail smtp.client-ip=40.93.195.125
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC204428820
+	for <linux-pwm@vger.kernel.org>; Tue, 11 Aug 2026 09:22:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786440141; cv=none; b=TaQkzu3xhO/wojmgzlD5E1zJn+wzLD0+sMQPkZXdukDfNDe1pR90TKAXBNnGMBUL+IIeIdK63ALRGlx6zok6oQeHUjha1hyNcqZmgYmiqJXzOzlBUt0oQ2QwB8ewGr+pIglrJLhY0GM2Vg4ymJpiubm5ZeW57p1Xk14wFMLdE/E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786440141; c=relaxed/simple;
+	bh=S3A2ra3jz3AcQxeTx3cJwZ7OkPVtzFnz5WVpXi4oW68=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PJ0XodOazpvWBi51SkNvP0rUwV1UCHxImFAEiiymmAGjAwK7XnbJ6uLwMFXnIEQd7awkexwEsp6ZPnq2hUK12/OLJoL2cuUqEoh1VvTYJA9noiT/Vub/dJXuPP9idqOJJLoCVyiA2G2VlcQYYGhvPFt8ccepD89t8WVIdTpOafg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ARgbl+Wk; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="u9uVI2b5"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ResyciNWVSIBqs2pqJkmCJl5o6UiqTjgTGzwKeLl3i8V5Ppo8b+r2MFo5eLdQChkIHWJFhxtT2qwfVqGIfjejrcVJGhrPcM1YivvjO0O7D03jBjte4SDc2VJzItMEuWPOo7ODr/zgxzsYUcb9j7TRYaIiWLRMKZF2bqkc0TdoI3HAIbFvpvAWuSqKbo3wdjfzfXVBZWh5Pfs0+RkaipDDE77irqse65t6Yi2tOEFyI9KsZFFaGXiAQAD9I8Rhh+iwciZlLJHGneJleyl/XaXrkW4jFvnXjsc3Dm4boJS3wU9ny6IdC0fq/o0jBrt2ZN75BmYcDD5r6uP8WBV7wjNiw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WaWMG6qG0AoJfmw+GusTjDXo+UgHIcucLwKvmhwkcCY=;
- b=uUfyI3mpi2MfKP7FnePZOzQ9yif4PoXYyXS15+dSASiX+3y1XVB/lWvP61q0J3E4uNS2lGrsSZuZrdaDml5t7XI5OFRDQ6nRTeNaOAEp7/LDb2PvxojwtRAoqYIC/fk73sy5Z9oEie9lCuA7UXR3AQsXferU9wfDO5LAhm+i2wjM756NkV66kXyXy+hXe7Gw/YDqa5+RsPu0mJDlM1JlGFQUWkq21ZhuVlJloVQmZKau0sVoXGauu45AoJJrGcQGkWaEeUHv9BeIWn1Zu/tHtrx6KvR0RriIF47Wg+e800HX/S/yFf+staRynHY2PSZvLSUX1a5c3H9t3CsHhv/Upw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 64.62.143.114) smtp.rcpttodomain=axiado.com smtp.mailfrom=axiado.com;
- dmarc=none action=none header.from=axiado.com; dkim=none (message not
- signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WaWMG6qG0AoJfmw+GusTjDXo+UgHIcucLwKvmhwkcCY=;
- b=u9uVI2b53wfoEE+iLv0xuCcSeHSdGSpzqjvVb5AF99bbxnON+CrK+fkPC5jvLkKTZMRd9iuCiHdkGsJKCE9nC/eEKWgg/XhwCfjjviUNam4+SE6zRIykcX9f5uuqyLyi5VeKAroioFX3VmNwnHJGrh4wGUZCGW0O/kMG5USxOS3N9HdR2JV2e883SzW6s0545aqJggkHIBdkDO3qWl4ivG4kTAemqJi7K8lb1yzVWQ+yt6DKOF5aL917pN8lslBcqbgec26wc7vDeNuyEedqlR8Qu6no0YF7ANbYJnzch8PnffYZ7Ro2h9NxIRI8CZoTVFFFbS9E05UBdFVX+dRAfg==
-Received: from DSSP221CA0012.NAMP221.PROD.OUTLOOK.COM (2603:10b6:8:3d5::12) by
- PH0PR18MB5211.namprd18.prod.outlook.com (2603:10b6:510:173::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.12; Tue, 11 Aug
- 2026 09:02:32 +0000
-Received: from DS3PEPF000099DF.namprd04.prod.outlook.com
- (2603:10b6:8:3d5:cafe::35) by DSSP221CA0012.outlook.office365.com
- (2603:10b6:8:3d5::12) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.315.11 via Frontend Transport; Tue,
- 11 Aug 2026 09:02:32 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 64.62.143.114)
- smtp.mailfrom=axiado.com; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=axiado.com;
-Received-SPF: Fail (protection.outlook.com: domain of axiado.com does not
- designate 64.62.143.114 as permitted sender) receiver=protection.outlook.com;
- client-ip=64.62.143.114; helo=smtp.corp.axiado.com;
-Received: from smtp.corp.axiado.com (64.62.143.114) by
- DS3PEPF000099DF.mail.protection.outlook.com (10.167.17.202) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.315.6
- via Frontend Transport; Tue, 11 Aug 2026 09:02:32 +0000
-Received: from axz-uw1-build-vm02.corp.axiado.com (unknown [10.14.1.22])
-	by smtp.corp.axiado.com (Postfix) with ESMTP id 4E3CA4157BE1;
-	Tue, 11 Aug 2026 02:02:31 -0700 (PDT)
-From: Petar Stepanovic <pstepanovic@axiado.com>
-Subject: [PATCH v3 0/2] pwm: add Axiado AX3000 PWM support
-Date: Tue, 11 Aug 2026 02:01:49 -0700
-Message-Id: <20260811-axiado-ax3000-pwm-v3-0-6ceaccd812cf@axiado.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ARgbl+Wk"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4980fe6b3beso5849425e9.0
+        for <linux-pwm@vger.kernel.org>; Tue, 11 Aug 2026 02:22:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786440138; x=1787044938; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=EKXI7y0JHFmbbxY51QxCMYAPTBi2nh1lduL5Yg6Ghi0=;
+        b=ARgbl+WkLXaccKKdxRd/al3AzRgTNFjevmintXBGx34MDH0ePRKbdmN0c5VoX4KY4g
+         5ldXvO6hPyECewDjdjfGtpRtM35nPLm1MZiLkvCyabVzQkofnmdZx52y99WMRQXaYUcB
+         cZZNda1k3I7dN5AavDhQ4iitkiwHy3GrM0eTaswbeHlp2KE6FAWi1WXQis52W8mNF4nU
+         e9vO4Uv97Cfja0Bo8o/vrnv5bjxCJUqHC0FGPneUhCltHagrASMeVxlWqwNQmsGNnb/h
+         YOFMa60VUhEDGCYChNiAhalMUfszWLixH1Wt4k5QXUjuJZNRUxXLbcrxw/YT3/8UjXie
+         AQwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786440138; x=1787044938;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=EKXI7y0JHFmbbxY51QxCMYAPTBi2nh1lduL5Yg6Ghi0=;
+        b=UtoFMLys0aMZ60VuYKCNpyGikYyhYWEjXxoSaedbkDi9uyUSJPTWxYf0pLMNTkvMjN
+         VFEpRJWCvnYjwZRfTymG8pfndZzJR6siiLOhnfL64RvzObe3H22hbqYdikcOhUsAkDeP
+         5mnmtlOvNxfrle4db+zpbPsi3xqit+8RkDiI/RqVU8un+ElTHVKF0+PXGw8Kv5JtcWa+
+         HH9+durQQ4e7i+vKLWfk//7MC/5OWCfmJaKQTLbv+MsaCZ+E4drMSkj4X7+/i1zNvHxF
+         Tjs52HxEIkSOtslK6K9pPkaRypbTTFkuazFQTcrOrcvAmsg2Kh9X+pM2cO5/WJVigcbA
+         dHsQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpTd0PhZCOAexw5OKviLdt/BXdyEFHbZsjtsMWbGJrP3iJEbTSXq+/bF2Ha7ti52CZZ8PDB/ILKB5A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzgF3YM21ueyBqG9ENKh/CzrRZdDbNflwBHMFSrH8T3Go3dCx14
+	0OJRauowl+EdyFScuvlwnIQkr/8qIcm/kDaL20bzbpYOt34waKAQnWPC
+X-Gm-Gg: AR+sD123ADyM3Z++YhkVHbewo3y3CtZW1prJgK72t+mEZjefwLJcyvQz45Zt7zWxfDG
+	k0/+u9SWiR/aJj3SXW4bPn8YgW3WHtZ6amx8cMmecyX+tyhunLoObQeJua+jLDfDjDNYNTYOy7S
+	uZEDkzkCUZmmr9L3igewok99qmj0ZnXztb4gHLAm+TSJ4AIsfilibnR1YUI8Y4nqsvxyuZwia5y
+	fj1wEoHeurAvVcFwVUpHGEn+Sswzlp0LElR6RAzxEUUr1Z4UIWQFmYxn/qNzpHqTGc6Vlxfk9dE
+	lkcVi5UoxjdrPgZWba40V1rR3aUugV/cIisZt4XOoMkFNNrQrXXdSh4qYwaTIWeGdS4JffR4wYG
+	SP/vHjpBb/oC5nwOpNJSuqCStJNk5QUZOUYTdgXYYFQbf3rG6uR+OKFEp+jXqHHyLbo1hiC6hsB
+	Eo8McJ4+1qVYsqVdB6rOjOgZ7eBiaoXzpx0Xi83RxF8Z1td0ly0/O1obZDsDFrIW/PJpoaZqODS
+	u7zAFsdQzR90+Jv2RJl43Z1ozcMNQ==
+X-Received: by 2002:a05:600c:19cd:b0:493:f783:c46a with SMTP id 5b1f17b1804b1-49978ef4e13mr17934985e9.6.1786440137773;
+        Tue, 11 Aug 2026 02:22:17 -0700 (PDT)
+Received: from localhost.localdomain ([82.137.32.40])
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-49978840189sm21849585e9.0.2026.08.11.02.22.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Aug 2026 02:22:17 -0700 (PDT)
+From: Eduard Bostina <egbostina@gmail.com>
+To: Conor Dooley <conor+dt@kernel.org>,
+	devicetree@vger.kernel.org,
+	Eduard Bostina <egbostina@gmail.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org,
+	Rob Herring <robh@kernel.org>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: daniel.baluta@nxp.com,
+	simona.toaca@nxp.com,
+	goledhruva@gmail.com,
+	m-chawdhry@ti.com
+Subject: [PATCH] dt-bindings: pwm: Convert TI PWM Subsystem to DT schema
+Date: Tue, 11 Aug 2026 09:22:08 +0000
+Message-ID: <20260811092208.687731-1-egbostina@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAP3kemoC/23NQQ7CIBAF0Ks0rMUMA5biynsYFwjUsqg0YLCm6
- d2l7cKYdDX5kz9vJpJc9C6RczWR6LJPPjxL4IeKmE4/H456WzJBwBpOrKF69NqGMjgA0OHdU2O
- l4aJuhGoZKXdDdK0fV/N6K7nz6RXiZ32R2bLdtHpXy4wCNUoqqRUowcRl6xxN6MnCZfwREvkeg
- YVABMAW7tgw+0fM8/wFbCJnevYAAAA=
-X-Change-ID: 20260518-axiado-ax3000-pwm-cd7c346849f1
-To: Akhila Kavi <akavi@axiado.com>, 
- Prasad Bolisetty <pbolisetty@axiado.com>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Petar Stepanovic <pstepanovic@axiado.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786438951; l=3694;
- i=pstepanovic@axiado.com; s=20250916; h=from:subject:message-id;
- bh=qtPLEdR45LEo0wZaU0U4sHX7g0VBI9UC1fT2eMz5fRk=;
- b=VEfYGiIE2wlausBpJI/WVPxYnNnB6DYiFIRV35Lyvtm977RlsjtctfbuF8poDWyixd93cpFQK
- dGDqSshxQyUBfl5/QDiRcDdi87dj5s34G4iqoEkTewpY6pnZTeHuBVm
-X-Developer-Key: i=pstepanovic@axiado.com; a=ed25519;
- pk=70f1UJOGT9U11ZK6o+ENXtv0I5wBE3e+Y9YWODzRsdI=
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF000099DF:EE_|PH0PR18MB5211:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6dbf2e7f-a770-4eb0-3409-08def7874744
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|36860700016|376014|23010399003|18002099003|56012099006|3023799007|13003099007|6133799003|10067099003;
-X-Microsoft-Antispam-Message-Info:
-	RC/Afhs51ejpl5Y6KZlEnL5+Cy1oOQJkA/isRvcZMwIJfZy5hpKWiP5hI0yp7fECku5mIG1OJc2fQOKrCD/oBjB12O1zeTtu3g6MhW7GJjOreScATQCZvHkhDwDcGrvCKjOLi/UnNUegkHZCy4KQMQbZGYqMJYhv9TxqJIWs93tcZzCab9CTst4vmW2coCUmO0s+0qZr9p9KbMIQ8BAW9pcyX6Ls04h92JwIuDDdDTLBVc+1FYMWSgsSIehhycE7fRRqDl5jhFPxQzIIjZ0sCBWLut6SrY1SrSupJ3l9wSBlbuh0xjOIOp+66IXxRVL58fvx12DLLn0QHe5owhRvBxP4bwRd36XuPnI/TSzDjqUk3O9s/+EVo6bx4anY2POiiOYBPW/Deu44oA8Xa+ORGrpDU78YtTxTh4xT5enZFwT/GwSDz0B5Xi3JTf0ZWughuASELPJm6399O6h0ZoKKaxWF2xWdFmTVpmP8DyeqUAMD/3ZydXYjP96aizHWSe5l6G+SGfiLf0OWYevzyJKonZfBWXx2R4Iru4SGBhJmdHlsqWHwIhlacP4PBwT4d8SQhyiGNg7z/SXRXEUTHOIzQ9S8PoEAlVJp+AHvqHbGt9uEs1/hkSM3Kvt9jb8SW0gmx582JEFY01LkCMFJbRfXBw==
-X-Forefront-Antispam-Report:
-	CIP:64.62.143.114;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:smtp.corp.axiado.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700016)(376014)(23010399003)(18002099003)(56012099006)(3023799007)(13003099007)(6133799003)(10067099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	cI7p1tB1GyeNA/kTBe42MNGnE2lXbNcJ+HbBVlqTgY1E8uci46lKAv8Lq5ToRHsXu8h8vwoyc3Tkx2x3G0ntHWXAZKGyHHxRtkxWqe7JWz8pkck7Q5kOtZrRAnMgaA8oWgwZJPcflqrDO/JF30Ck5qBaoep5cugPQZEircOX/LRYbtKqbMTNIWvdq8GqWPoMW6+FSnI8bpylSdx//TxgYVBMVJmYmuw3FBfbemqY1NbQyJkxXs4cpU90No1Hig55hBJJipwieehRhHO1UbFKuB0n/d0oXjJX9mLHowY/sOIk3OHMB60SXyn3nrvRPkGPQJW292uU0mHl2jCwoiDPqyWw5z14143Xny7oG2OYJiwgDFRcVPkDpatZWxqJEgSL6Hy4rr8B16aW6uKUaoE5CqaHblExGIwblAHJZDsHZb9T3SujA0ssbVyWXZzM1iYK
-X-OriginatorOrg: axiado.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2026 09:02:32.0221
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6dbf2e7f-a770-4eb0-3409-08def7874744
-X-MS-Exchange-CrossTenant-Id: ff2db17c-4338-408e-9036-2dee8e3e17d7
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=ff2db17c-4338-408e-9036-2dee8e3e17d7;Ip=[64.62.143.114];Helo=[smtp.corp.axiado.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF000099DF.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR18MB5211
 
-This series adds support for the PWM controller found on Axiado
-AX3000 and AX3005 SoCs.
+Convert the Texas Instruments SoC PWM Subsystem bindings
+to DT schema.
 
-A new driver is needed because this PWM controller is a SoC-specific
-hardware block used on Axiado SoCs. It has its own register layout,
-enable control, period configuration, duty-cycle configuration, and
-does not match any existing upstream PWM driver.
+During the conversion, the following updates were made:
+- 'counter' node was added to the allowed child nodes
+  list to resolve dtbs_check warnings. Some eqep nodes
+  use 'counter' instead of 'eqep'.
 
-The controller provides configurable PWM output signals. The driver
-exposes the controller through the Linux PWM framework and supports
-period and duty-cycle configuration.
-
-The driver converts the requested period and duty cycle from nanoseconds
-to hardware clock cycles based on the input clock rate.
-
-The datasheet is not publicly available. Public high-level product
-information is available at:
-
-https://axiado.com/products/#AX3080
-
-The register definitions and programming sequence used by this driver
-are based on Axiado internal SoC documentation.
-
-Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
+Signed-off-by: Eduard Bostina <egbostina@gmail.com>
 ---
-Changes in v3:
-- Express AX3005 compatibility with AX3000 using a fallback compatible.
-- Update the Devicetree binding example accordingly.
-- Add 0% duty-cycle support using the hardware constant-low encoding.
-- Cache the rounded period for 0% duty-cycle waveform readback.
-- Allow sub-cycle duty requests to round down to 0% instead of rounding
-  up to one clock cycle.
-- Normalize high-time values greater than the period to 100% duty.
-- Drop the redundant AX3005 OF match entry and use the AX3000 fallback.
-- Clarify comments and PWM hardware limitations.
-- Link to v2: https://lore.kernel.org/r/20260723-axiado-ax3000-pwm-v2-0-22002f0b281d@axiado.com
+ .../devicetree/bindings/pwm/pwm-tipwmss.txt   | 58 --------------
+ .../devicetree/bindings/pwm/ti,pwmss.yaml     | 77 +++++++++++++++++++
+ 2 files changed, 77 insertions(+), 58 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/ti,pwmss.yaml
 
-Changes in v2:
-- Migrated the driver from the legacy apply/get_state API to the new
-  waveform ops API (round_waveform_tohw/fromhw, read/write_waveform).
-- Cache the clock rate at probe and lock it with
-  devm_clk_rate_exclusive_get() instead of reading it on every op.
-- Improved rounding: clamp period/duty to hardware limits, reject
-  non-zero duty offset, preserve exact 100% duty, round sub-cycle duty
-  up to the minimum.
-- Added a "Limitations" comment block documenting hardware constraints.
-- Renamed macros from AX_PWM_* to AXIADO_PWM_* and dropped unused ones.
-- DT binding: dropped clock-names, made #pwm-cells required, and
-  updated the description and compatible list to cover both the AX3000
-  and AX3005 SoCs.
-- Added axiado,ax3005-pwm to the driver's OF device match table.
-- Link to v1: https://lore.kernel.org/r/20260618-axiado-ax3000-pwm-v1-0-c9797a909414@axiado.com
-
-To: Petar Stepanovic <pstepanovic@axiado.com>
-To: Akhila Kavi <akavi@axiado.com>
-To: Prasad Bolisetty <pbolisetty@axiado.com>
-To: Uwe Kleine-König <ukleinek@kernel.org>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: Harshit Shah <hshah@axiado.com>
-Cc: linux-pwm@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-
----
-Petar Stepanovic (2):
-      dt-bindings: pwm: add Axiado AX3000 PWM
-      pwm: add Axiado AX3000 PWM driver
-
- .../devicetree/bindings/pwm/axiado,ax3000-pwm.yaml |  53 ++++
- MAINTAINERS                                        |   9 +
- drivers/pwm/Kconfig                                |  11 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-axiado.c                           | 310 +++++++++++++++++++++
- 5 files changed, 384 insertions(+)
----
-base-commit: 368d34807e6d04bb2089918383b58abf40e720a0
-change-id: 20260518-axiado-ax3000-pwm-cd7c346849f1
-
-Best regards,
---  
-Petar Stepanovic <pstepanovic@axiado.com>
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt b/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
+deleted file mode 100644
+index 4633697fbda1..000000000000
+--- a/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
++++ /dev/null
+@@ -1,58 +0,0 @@
+-TI SOC based PWM Subsystem
+-
+-Required properties:
+-- compatible: Must be "ti,<soc>-pwmss".
+-  for am33xx  - compatible = "ti,am33xx-pwmss";
+-  for am4372  - compatible = "ti,am4372-pwmss","ti,am33xx-pwmss";
+-  for dra746 - compatible = "ti,dra746-pwmss", "ti,am33xx-pwmss"
+-
+-- reg: physical base address and size of the registers map.
+-- address-cells: Specify the number of u32 entries needed in child nodes.
+-		  Should set to 1.
+-- size-cells: specify number of u32 entries needed to specify child nodes size
+-		in reg property. Should set to 1.
+-- ranges: describes the address mapping of a memory-mapped bus. Should set to
+-	   physical address map of child's base address, physical address within
+-	   parent's address  space and length of the address map. For am33xx,
+-	   3 set of child register maps present, ECAP register space, EQEP
+-	   register space, EHRPWM register space.
+-
+-Also child nodes should also populated under PWMSS DT node.
+-
+-Example:
+-epwmss0: epwmss@48300000 { /* PWMSS for am33xx */
+-	compatible = "ti,am33xx-pwmss";
+-	reg = <0x48300000 0x10>;
+-	ti,hwmods = "epwmss0";
+-	#address-cells = <1>;
+-	#size-cells = <1>;
+-	ranges = <0x48300100 0x48300100 0x80   /* ECAP */
+-		  0x48300180 0x48300180 0x80   /* EQEP */
+-		  0x48300200 0x48300200 0x80>; /* EHRPWM */
+-
+-	/* child nodes go here */
+-};
+-
+-epwmss0: epwmss@48300000 { /* PWMSS for am4372 */
+-	compatible = "ti,am4372-pwmss","ti,am33xx-pwmss"
+-	reg = <0x48300000 0x10>;
+-	ti,hwmods = "epwmss0";
+-	#address-cells = <1>;
+-	#size-cells = <1>;
+-	ranges = <0x48300100 0x48300100 0x80   /* ECAP */
+-		  0x48300180 0x48300180 0x80   /* EQEP */
+-		  0x48300200 0x48300200 0x80>; /* EHRPWM */
+-
+-	/* child nodes go here */
+-};
+-
+-epwmss0: epwmss@4843e000 { /* PWMSS for DRA7xx */
+-	compatible = "ti,dra746-pwmss", "ti,am33xx-pwmss";
+-	reg = <0x4843e000 0x30>;
+-	ti,hwmods = "epwmss0";
+-	#address-cells = <1>;
+-	#size-cells = <1>;
+-	ranges;
+-
+-	/* child nodes go here */
+-};
+diff --git a/Documentation/devicetree/bindings/pwm/ti,pwmss.yaml b/Documentation/devicetree/bindings/pwm/ti,pwmss.yaml
+new file mode 100644
+index 000000000000..53f88139dcd4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/ti,pwmss.yaml
+@@ -0,0 +1,77 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/ti,pwmss.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments SoC PWM Subsystem
++
++maintainers:
++  - Eduard Bostina <egbostina@gmail.com>
++
++properties:
++  compatible:
++    oneOf:
++      - const: ti,am33xx-pwmss
++      - items:
++          - enum:
++              - ti,am4372-pwmss
++              - ti,dra746-pwmss
++          - const: ti,am33xx-pwmss
++
++  reg:
++    maxItems: 1
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 1
++
++  ranges: true
++
++patternProperties:
++  "^(ecap|eqep|pwm|counter)@[0-9a-f]+$":
++    type: object
++    description: Child nodes for ECAP, EQEP (counter), and EHRPWM
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++  - ranges
++
++additionalProperties: false
++
++examples:
++  - |
++    pwm@48300000 { /* PWMSS for am33xx */
++        compatible = "ti,am33xx-pwmss";
++        reg = <0x48300000 0x10>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x48300100 0x48300100 0x80>,   /* ECAP */
++                 <0x48300180 0x48300180 0x80>,   /* EQEP */
++                 <0x48300200 0x48300200 0x80>;   /* EHRPWM */
++    };
++
++  - |
++    pwm@48300000 { /* PWMSS for am4372 */
++        compatible = "ti,am4372-pwmss", "ti,am33xx-pwmss";
++        reg = <0x48300000 0x10>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x48300100 0x48300100 0x80>,   /* ECAP */
++                 <0x48300180 0x48300180 0x80>,   /* EQEP */
++                 <0x48300200 0x48300200 0x80>;   /* EHRPWM */
++    };
++
++  - |
++    pwm@4843e000 { /* PWMSS for DRA7xx */
++        compatible = "ti,dra746-pwmss", "ti,am33xx-pwmss";
++        reg = <0x4843e000 0x30>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges;
++    };
+-- 
+2.43.0
 
