@@ -1,74 +1,92 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33E9630567B;
-	Tue, 11 Aug 2026 13:54:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 580EC382298;
+	Tue, 11 Aug 2026 15:53:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786456483; cv=none; b=JpBnAuEk4AlWCr3eqsXfysI7RHdJw8vzMpZs4VBSeBECbVxEThqsar6eC/4d7lQWwe/cQR1O0HTe0HSIrJo8FYz0chk3wlNoDHBdCUKRnDBCl7ugtqUv7jHn4cjcOiyiyhbh1xDN5pHFLQ9IXCPL2K8mCX8D9oiKXRXb/hjcexQ=
+	t=1786463596; cv=none; b=mHqiZjwQ7sLj21sOtjVkK3mD6lLaLUbvUsU1HY3Xy0tgXcvQ7p5WD/QKlkI+VbXIkivpf6Mn79WeBKg3clO+SqwzzUfqJM5SSAXJqD9EweY9tw6vdu6Vq0dIjnBVmmKjN+5O1XJHDJ6uyiWKrgHj7YfmDGtPDnxnPiUQReeUiec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786456483; c=relaxed/simple;
-	bh=0Iq+a3XQnmuU8OKhx0xHgNoDs12Odag4xbp14zLZDrM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nq7XY1YZXyH2BFXM76xNcSQz7LaCx/CX7eVEgcMEVbtzPMBHrKkOiH8NyNxhj0TCby12UqTuXTrYq/YtQCtpGWZtOTirPy8nWyeXSn8IijEHt4eunnMlHEubN3VX7s1PJdXHkv+iNWqmMko75iGwPR6mBIWHeH0N1EJrJYt18xc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JGLfuozP; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786463596; c=relaxed/simple;
+	bh=DnF3aQdkXNx4oU+Fl+i9D15DW8KRXhFLW9FERxBFTB4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=pf0KHz/HXir6hiHBh8EQCYWLAmM8nsnYEGLmNyDcgHNfqyeCodvDvwO/njwpYbgWBULQpwXgu9exwh9igBJ/qqfVIfDh712ck7FpyJ/bOj2+p9R7Bmy/hyN7tAos0ndRCmamC2CJYhNiY2NwgGrlafHXlIoBxzvHLrIZHfgUKqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AnBX8YUZ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JGLfuozP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A95EB1F00A3A;
-	Tue, 11 Aug 2026 13:54:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AnBX8YUZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B16171F000E9;
+	Tue, 11 Aug 2026 15:53:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786456481;
-	bh=0JZA17aHcI0IRIEiveRVYy3aeVmVhVMofUrMfE0EO3w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=JGLfuozPTND9eWwSdd1YMCkf5wDMHWMqzqX3A10OvSKNYSnavA+xPAMEvITpisaUP
-	 NbbEhGfVNf0YAxGZFIzGA7jfaVz5uv7Zz1MSFD/LnlbdPwO24oJCrrFD6u6NJDPeV4
-	 q3/7Wvme4QGZ07JUy1dCUZbpZ22KM6gAMxeDxBGWetXSGiPMrxWTr7nrnVxTAtvk3g
-	 XHfzbdWwpxK5aOT3FiqVVw9yqq1M1BHV3HAXNB0Apj29Bzc6L9C85iksD3vosiun3K
-	 PXrosZyFreHyAxjJTvMK6G4ztVpdrDtzoP+zZzmPo2cEyz70YcZC5Kc4P8lZPYemJG
-	 VfUo1/x81zMyA==
-Date: Tue, 11 Aug 2026 08:54:41 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Yureka Lilian <yureka@cyberchaos.dev>
-Cc: Radu Rendec <radu@rendec.net>, Linus Walleij <linusw@kernel.org>,
-	Mark Kettenis <kettenis@openbsd.org>, linux-gpio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	linux-pwm@vger.kernel.org, Neal Gompa <neal@gompa.dev>,
-	linux-kernel@vger.kernel.org,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Janne Grunau <j@jannau.net>, Sasha Finkelstein <k@chaosmail.tech>,
-	Hector Martin <marcan@marcan.st>, Thomas Gleixner <tglx@kernel.org>,
-	Sven Peter <sven@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,
-	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-	Conor Dooley <conor+dt@kernel.org>, asahi@lists.linux.dev,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>
-Subject: Re: [PATCH v2 8/9] dt-bindings: arm: apple: Add M4 based devices
-Message-ID: <178645648045.2076922.10746333465104640376.robh@kernel.org>
-References: <20260801-apple-m4-initial-devicetrees-v2-0-5cb07cc275da@cyberchaos.dev>
- <20260801-apple-m4-initial-devicetrees-v2-8-5cb07cc275da@cyberchaos.dev>
+	s=k20260515; t=1786463595;
+	bh=DnF3aQdkXNx4oU+Fl+i9D15DW8KRXhFLW9FERxBFTB4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=AnBX8YUZAaCz4DWFbJVo8gwN0rMr0SQ87izcGiOCA8nKHT0RqjFPMsRZojovf1ARD
+	 R5XkNTvGzeFQAU5mg2idWrFbIwVVzAD9RSLBSFdfsCWYwNHz4H+gjbsAPn88kJWRk+
+	 wveagclyOQ7huxROaH9sdj2yv6rNO1qXpteNII8BFYSFExL2MDPOcYxWHR7f3mm5LR
+	 /jU41Z3dF5zhd1omvwkQVRIy5/zaud7PaVIy3tHMqxf3jNtOXwVGNc/ZXUC3X6uwqq
+	 DjWjoFk+g0u02Vd8xPFPyxWH/V95eAmH0jPD/oqP3vkmOrLhHgrclkzlhC5O0382d6
+	 uCdkZ/wtPpeJA==
+Date: Tue, 11 Aug 2026 08:53:13 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>
+Cc: Vladislav Leonov <vlad@zlab.su>, linux-rockchip@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, Simon Glass <sjg@chromium.org>,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Andi Shyti <andi.shyti@kernel.org>, Andrew
+ Lunn <andrew+netdev@lunn.ch>, Aurelien Jarno <aurelien@aurel32.net>, Brian
+ Masney <bmasney@redhat.com>, Conor Dooley <conor+dt@kernel.org>, Daniel
+ Golle <daniel@makrotopia.org>, "David S. Miller" <davem@davemloft.net>,
+ David Wu <david.wu@rock-chips.com>, Eric Dumazet <edumazet@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Heiko Stuebner
+ <heiko@sntech.de>, Herbert Xu <herbert@gondor.apana.org.au>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Mark Brown <broonie@kernel.org>, Maxime
+ Chevallier <maxime.chevallier@bootlin.com>, Maxime Coquelin
+ <mcoquelin.stm32@gmail.com>, Michael Turquette <mturquette@baylibre.com>,
+ Neil Armstrong <neil.armstrong@linaro.org>, Nicolas Frattaroli
+ <nicolas.frattaroli@collabora.com>, Olivia Mackall <olivia@selenic.com>,
+ Paolo Abeni <pabeni@redhat.com>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Rob Herring <robh@kernel.org>, Stephen Boyd <sboyd@kernel.org>, Vinod Koul
+ <vkoul@kernel.org>, linux-crypto@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-phy@lists.infradead.org,
+ linux-pwm@vger.kernel.org, linux-spi@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com, linux-usb@vger.kernel.org,
+ netdev@vger.kernel.org
+Subject: Re: [PATCH 00/25] ARM: rockchip: Add peripheral support for RV1106
+Message-ID: <20260811085313.379ac489@kernel.org>
+In-Reply-To: <anq1ouUnKA02Eauj@monoceros>
+References: <20260810121121.210040-1-vlad@zlab.su>
+	<20260810113548.7fd24d56@kernel.org>
+	<anq1ouUnKA02Eauj@monoceros>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260801-apple-m4-initial-devicetrees-v2-8-5cb07cc275da@cyberchaos.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, 11 Aug 2026 07:43:16 +0200 Uwe Kleine-K=C3=B6nig wrote:
+> On Mon, Aug 10, 2026 at 11:35:48AM -0700, Jakub Kicinski wrote:
+> > On Mon, 10 Aug 2026 15:10:51 +0300 Vladislav Leonov wrote: =20
+> > > Basic support for the Rockchip RV1106/RV1103 SoCs currently under rev=
+iew.
+> > > This series builds on top of that and enables the peripherals needed =
+to
+> > > bring up a board beyond a serial console: =20
+> >=20
+> > Don't expect maintainers to dig out patches for their subsystems
+> > from a big series. This is not how upstream development works. =20
+>=20
+> I see this from time to time and I personally think it's fine to have
+> these patches together. Also the only the patch that affects my
+> subsystem was Cc:d to me which is how I like it (but I think opinions
+> differ on that one, too).
+>=20
+> `b4 am -P _` is great!
 
-On Sat, 01 Aug 2026 23:40:38 +0200, Yureka Lilian wrote:
-> The Apple devices with the t8132 SoC (M4) are very similar to their M3
-> predecessors.
-> 
-> In addition to the MacBook Pro and the various MacBook Air and iMac
-> variants, a Mac mini is offered again with the M4.
-> 
-> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
-> ---
->  Documentation/devicetree/bindings/arm/apple.yaml | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
-> 
-
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
-
+We have automation and CI systems which ignore anything that isn't
+scoped to networking to save cost. Not sure if there's a polite way=20
+to say this but the smaller the subsystem the more flexibility can=20
+be afforded? Let's stick to the existing process, please.
