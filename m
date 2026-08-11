@@ -1,71 +1,73 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C819D36215A;
-	Tue, 11 Aug 2026 13:53:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4274730567B;
+	Tue, 11 Aug 2026 13:54:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786456424; cv=none; b=hXnnxF5Fm8+SFTwyig6q1mlbTlpE+pC05300MO4IXQUqynYQPMoEGmbNxDZKWXcesf7rQlOd85SzkT23bCbSFDenwkP/nokg3TyuckOVjhRvBZe/WLCT1ShNhrQ5CehdLYT0skK0eTz+ngwmuarCcZDH0YFTECKM4qBrkbjj0o8=
+	t=1786456447; cv=none; b=JanjbiEudpxpVYgvj0nnNiQm5mVMcCzwy+8aVpp90cEOmjSxKaeu7hFVCrB8Gn754ZPg9+kmuSXemsDrrSa2XV6evqO0TfHYyEm2kIvMEe2+wGERNA4U3N1ANQgnhY1cgHzZUDcnwaF40xGhLd1MVOyi7omc3ugmVjdm+4dTPcc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786456424; c=relaxed/simple;
-	bh=XC5Z7K4swmJTpro9CxD2XzRI0JBMChZa8G2ZXsG3tOs=;
+	s=arc-20240116; t=1786456447; c=relaxed/simple;
+	bh=Va8M7x1oQwy8xaRKxomin1ZJrotaVMxvW7vvwU1gj3w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o4ZmpbrK6h/Dv18I22/u+IwFkgi3ZgbGcKL0fIdgD4GX2W/xeBqMfyCN4t2TeGSdD7aGymAdiPc35SYPGhz/2a6wUKnzMnAEhyo12SHSTJcSGda6FEpn+n5Tc5yvBDtbCs/0ohNNp7XtquwxTW/RXPmS/tR25KRiMl8/aR5C5z8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=T2HM8ACr; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=YQSuaPzlclee0LuXQtjdEyaj/gcstTusRwM7uYIBa1RCVmGDkUbbsunNWNMh7oIt/ZAGq5hrbqTUd6N2g7MbFz4mtQqiKJp6n3YqsRcncRTQ2s6PBAluQTcFwQu66ioByW03Ipwb+lcjcKLVJCr2diCZkGQB38TAoCOHiADMpcQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K+/02pTl; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="T2HM8ACr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 094931F000E9;
-	Tue, 11 Aug 2026 13:53:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K+/02pTl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62AE11F000E9;
+	Tue, 11 Aug 2026 13:54:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786456417;
-	bh=cXxRUdXqmfxaZfLrJ4X9zDN6u+LElKEVesAj3Tp9yj0=;
+	s=k20260515; t=1786456445;
+	bh=4iDdgE/owU51lZlIN0HYazq6pMIvFsHvbr4vWfd/kbw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=T2HM8ACrzefnEewnDI7WsdoKzf3r3sMzzekKlS5Omm9nrOWlYTMqL4MApiTPRlpeG
-	 WhD5Yqv0Z/eO6sf5YyB44A5OiGcfw48Gg+6sramLudG0jjFsK1V6RGBN9w5T7QM6IB
-	 bVKsc7/doSeGgQFW9MTNhXKXj9WPWs1/GGB+B+62f1xe5h5WTAHgxh1LbaSrrtAfR8
-	 NzBzfn9SnXS7q1BpBTJFS/GXajWD4YUUiIBMjNK25VPNDtjcRDtQM//wc5SYCEcmNJ
-	 Khidd8S3VvLjxzclUIHzbzu/t1FAuTg0hmhJiE/gYrWNA11xLs9gWwERXqSs4eKrfj
-	 dwW5uGbDbuzGg==
-Date: Tue, 11 Aug 2026 08:53:36 -0500
+	b=K+/02pTldSr8TyJQf+JRpYO4qxJy70slL1XMJAcUjV6qwEo48GNBLelNXNlQn7Z5s
+	 qokChyQ4EbeOB51/Yn0k6ibNNcglRj0FKNBDoH3nCcBQb8LE+X/17iYyWgAZvcotNu
+	 izyU1TUwNuYOFj/Hp01D7KYqWZFzkBTW/oNWqY661GdEHoH0Dktb9jiT2fGpGgLhhR
+	 W65ZnPF2IWFJ7/V4T7dBau4M4V0mnwgq4kebr2EHSo4nF+hXnS9ASTmm83ccMsyH6h
+	 9CzEO3Ilo3cNttuhOzVEsngvW0EU6Fo0FQ7mZ2H2ZKKhgwj4gJebe2k1DZ8DSjRXMv
+	 h/xwLWnw15Fzg==
+Date: Tue, 11 Aug 2026 08:54:04 -0500
 From: "Rob Herring (Arm)" <robh@kernel.org>
 To: Yureka Lilian <yureka@cyberchaos.dev>
-Cc: Sven Peter <sven@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>, linux-gpio@vger.kernel.org,
+	Mark Kettenis <kettenis@openbsd.org>, Sven Peter <sven@kernel.org>,
 	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Conor Dooley <conor+dt@kernel.org>, Radu Rendec <radu@rendec.net>,
-	Janne Grunau <j@jannau.net>, linux-gpio@vger.kernel.org,
-	Neal Gompa <neal@gompa.dev>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>, Neal Gompa <neal@gompa.dev>,
 	Linus Walleij <linusw@kernel.org>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Mark Kettenis <kettenis@openbsd.org>, linux-i2c@vger.kernel.org,
-	Hector Martin <marcan@marcan.st>, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Sasha Finkelstein <k@chaosmail.tech>, asahi@lists.linux.dev
-Subject: Re: [PATCH v2 6/9] dt-bindings: i2c: apple,i2c: Add t8132 compatible
-Message-ID: <178645641594.2075087.11441421386167172018.robh@kernel.org>
+	Andi Shyti <andi.shyti@kernel.org>, Janne Grunau <j@jannau.net>,
+	linux-i2c@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+	linux-arm-kernel@lists.infradead.org, Radu Rendec <radu@rendec.net>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	devicetree@vger.kernel.org, asahi@lists.linux.dev,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Sasha Finkelstein <k@chaosmail.tech>,
+	Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH v2 7/9] dt-bindings: pwm: apple,s5l-fpwm: Add t8132
+ compatible
+Message-ID: <178645644426.2075921.17129631857001345476.robh@kernel.org>
 References: <20260801-apple-m4-initial-devicetrees-v2-0-5cb07cc275da@cyberchaos.dev>
- <20260801-apple-m4-initial-devicetrees-v2-6-5cb07cc275da@cyberchaos.dev>
+ <20260801-apple-m4-initial-devicetrees-v2-7-5cb07cc275da@cyberchaos.dev>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20260801-apple-m4-initial-devicetrees-v2-6-5cb07cc275da@cyberchaos.dev>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260801-apple-m4-initial-devicetrees-v2-7-5cb07cc275da@cyberchaos.dev>
 
 
-On Sat, 01 Aug 2026 23:40:36 +0200, Yureka Lilian wrote:
-> The i2c block on the Apple silicon t8132 (M4) SoC is compatible with
-> t8103. Add "apple,t8132-i2c" as SoC specific compatible under
-> "apple,t8103-i2c".
+On Sat, 01 Aug 2026 23:40:37 +0200, Yureka Lilian wrote:
+> The PWM controller on the Apple silicon t8132 (M4) SoC is compatible
+> with t8103. Add "apple,t8132-fpwm" as SoC specific compatible under
+> "apple,s5l-fpwm".
 > 
+> Acked-by: Uwe Kleine-König <ukleinek@kernel.org>
 > Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
 > ---
->  Documentation/devicetree/bindings/i2c/apple,i2c.yaml | 1 +
+>  Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml | 1 +
 >  1 file changed, 1 insertion(+)
 > 
 
