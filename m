@@ -1,226 +1,160 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E867E33D6ED;
-	Tue, 11 Aug 2026 17:48:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDF833EC805;
+	Tue, 11 Aug 2026 19:37:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.39.247.168
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786470493; cv=none; b=lWxCGj57G9VI3g1AifjcDaByClsuGtsed82O71gNM5mtNZKD6pyx6dksAhcsf2EnekMgq1CYRP//HmwF5T92edM8vXME0n5dQBnu5VgMfYMaRCq4TcNWkM2rpXaNNN0kUwypGATZvKI1eG72enPYajdT2r4wV6t7ZLmRX9Ss3nE=
+	t=1786477032; cv=none; b=pWgQ66YzeVEDltakxDn+6AgjuJg3J9w+CRkY7iqDfrvvySBSFoZo9lkSLAMOgd1+z4jZ+QLmk3ifBHApEMWqf2lzJ6ea73aBfAnC1gIXRAfLjDALaATIsFOIeYtUWe2B42c45pOeCC/X/jdx32W3VqAvl18e79LIZ5twT4W/GKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786470493; c=relaxed/simple;
-	bh=bWcGc9MGWql3bYi+7d3qmdmwQwpUuHbzgX3+REZaOdE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VSk4lQWf/usEsfnlc0rvBplvGEF+gJOjJneYWhFqleHC1X8Lusm4L7t3bbdFmrryFvXCZB6z89mG8mRo+5jY6bGDnW9a9Jq+DoED9bgyz99vblPKu2yx7QWWysQ3uzpfxWKE/SPDr8l6F97CM14MDfIQtRsfkw7ar6LwYZ+gDlY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c0GN7Iwe; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786477032; c=relaxed/simple;
+	bh=XhCocvRlqpxz3Ix+dK0e/T+Ux+SQ85BXJDki4NEkc4o=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ANNsXIkiIlW9sePqZmh26hpqld8aU7scpZb61dzLpoqyOXB3BOYZv75W73Dh/X/wTch5aryCjXY5qrjqLeauCkIlePrtmgwtI/zrRihCt8jwduHmhEv5P7nw9Qhts6DTQwlsOFbOBXSYGoB6TZraC9DxUpCwLK+xElWrzplrVjw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=1G1uTXbo; arc=none smtp.client-ip=195.39.247.168
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c0GN7Iwe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C041F000E9;
-	Tue, 11 Aug 2026 17:48:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786470489;
-	bh=hhbmpDHoO5cLRxJcMRaAzIKo6MeOaFfMtDAsDeBrB8s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=c0GN7IweDOwmZM3MvcdQW2gncOFKyMAa6YoWV+YCr3nlQggZbN+hNITRnBKUxfbCu
-	 bOIaTCvMlSV6A/tUiBTneuTGz5eZYWTQV73ohNX83Xx0s9oJewDJy4ZeX6YcT7Xafe
-	 QcRCOzeh0HFj4mc1bWCdKzaNnr133lkRP6lNretZiZC5owHQQunLf6opudxBEjhAC0
-	 2QQonuweeJsyDPD76Ljcz9SYwesqNlVF0Zn18suEYgDrMtuhCgL5sDmQ164u0QybIK
-	 9XsnPTxFTP/+isx459L7sOZitPPB7/dvJt44/H1XodsAzTi6dA1D28BEgQ/zMsEvzE
-	 nhBfp3NXPw7gA==
-Date: Tue, 11 Aug 2026 12:48:08 -0500
-From: Rob Herring <robh@kernel.org>
-To: Eduard Bostina <egbostina@gmail.com>
-Cc: Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	daniel.baluta@nxp.com, simona.toaca@nxp.com, goledhruva@gmail.com,
-	m-chawdhry@ti.com
-Subject: Re: [PATCH] dt-bindings: pwm: Convert TI PWM Subsystem to DT schema
-Message-ID: <20260811174808.GA2709327-robh@kernel.org>
-References: <20260811092208.687731-1-egbostina@gmail.com>
+	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="1G1uTXbo"
+From: Yureka Lilian <yureka@cyberchaos.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
+	s=mail; t=1786477022;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=OHA9zlC97iQEd9Z/K0ZMi6fcOGFr2AIQ8m935rD2YRM=;
+	b=1G1uTXboJ3+0TChcjCo/PBxFkklV7vYSqa+BsVaxW5SfprIUFR/lq/XMANH7pPjWjl4F/w
+	mbcRdore3GBWcwEHmDyLwwG6gFsSD/YsO0i8PEixQ50f5uwD83pXJUmx8EjWfkrcKqmCh9
+	7QVj4VQfNQqFgldVij4bekfLU5YVGto=
+Subject: [PATCH v3 0/9] Initial Apple Silicon M4 device trees and
+ dt-bindings
+Date: Tue, 11 Aug 2026 21:36:53 +0200
+Message-Id: <20260811-apple-m4-initial-devicetrees-v3-0-6bf32d45ad0b@cyberchaos.dev>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260811092208.687731-1-egbostina@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42QzU4DMQyEX6XKmSDnz0l64j0Qh8Tx0iDaLZvti
+ qrqu5NtD0hwgIulkcbf2HMRjafKTWw3FzHxUlsdD12Yh42gXTq8sqyla6FBI3hwMh2P7yz3VtZ
+ DnWt6l6VvEc8Tc5MDcs6KfNJUREccJx7q5w3//HLX7ZTfmOaVuTp2tc3jdL7lL2r1/TNqURIkO
+ 3SO16nNE50zT/3osT12o1jzFv1NDKD+IOpOdJTBE2nvSvpFvN5fmPjj1Iua73+JnBpLGvf7Om8
+ 3yCFCHtBa7ZwhnweHAX2KinTJHUw6ughwayfNtOv9bjeRKFpIiMBBlRQYDLAJhjVScckDDKw5/
+ NhSCcFoNSCyjWBVUYV1QDso9AEgJjAOdbT98OsX8jfwIekBAAA=
+X-Change-ID: 20260705-apple-m4-initial-devicetrees-f6ebb1c7a2cd
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Sven Peter <sven@kernel.org>, 
+ Janne Grunau <j@jannau.net>, Neal Gompa <neal@gompa.dev>, 
+ Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>, 
+ Hector Martin <marcan@marcan.st>, Linus Walleij <linusw@kernel.org>, 
+ Mark Kettenis <kettenis@openbsd.org>, Andi Shyti <andi.shyti@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Sasha Finkelstein <k@chaosmail.tech>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+ linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
+ linux-pwm@vger.kernel.org, Yureka Lilian <yureka@cyberchaos.dev>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-On Tue, Aug 11, 2026 at 09:22:08AM +0000, Eduard Bostina wrote:
-> Convert the Texas Instruments SoC PWM Subsystem bindings
-> to DT schema.
-> 
-> During the conversion, the following updates were made:
-> - 'counter' node was added to the allowed child nodes
->   list to resolve dtbs_check warnings. Some eqep nodes
->   use 'counter' instead of 'eqep'.
-> 
-> Signed-off-by: Eduard Bostina <egbostina@gmail.com>
-> ---
->  .../devicetree/bindings/pwm/pwm-tipwmss.txt   | 58 --------------
->  .../devicetree/bindings/pwm/ti,pwmss.yaml     | 77 +++++++++++++++++++
->  2 files changed, 77 insertions(+), 58 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/ti,pwmss.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt b/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
-> deleted file mode 100644
-> index 4633697fbda1..000000000000
-> --- a/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
-> +++ /dev/null
-> @@ -1,58 +0,0 @@
-> -TI SOC based PWM Subsystem
-> -
-> -Required properties:
-> -- compatible: Must be "ti,<soc>-pwmss".
-> -  for am33xx  - compatible = "ti,am33xx-pwmss";
-> -  for am4372  - compatible = "ti,am4372-pwmss","ti,am33xx-pwmss";
-> -  for dra746 - compatible = "ti,dra746-pwmss", "ti,am33xx-pwmss"
-> -
-> -- reg: physical base address and size of the registers map.
-> -- address-cells: Specify the number of u32 entries needed in child nodes.
-> -		  Should set to 1.
-> -- size-cells: specify number of u32 entries needed to specify child nodes size
-> -		in reg property. Should set to 1.
-> -- ranges: describes the address mapping of a memory-mapped bus. Should set to
-> -	   physical address map of child's base address, physical address within
-> -	   parent's address  space and length of the address map. For am33xx,
-> -	   3 set of child register maps present, ECAP register space, EQEP
-> -	   register space, EHRPWM register space.
-> -
-> -Also child nodes should also populated under PWMSS DT node.
-> -
-> -Example:
-> -epwmss0: epwmss@48300000 { /* PWMSS for am33xx */
-> -	compatible = "ti,am33xx-pwmss";
-> -	reg = <0x48300000 0x10>;
-> -	ti,hwmods = "epwmss0";
-> -	#address-cells = <1>;
-> -	#size-cells = <1>;
-> -	ranges = <0x48300100 0x48300100 0x80   /* ECAP */
-> -		  0x48300180 0x48300180 0x80   /* EQEP */
-> -		  0x48300200 0x48300200 0x80>; /* EHRPWM */
-> -
-> -	/* child nodes go here */
-> -};
-> -
-> -epwmss0: epwmss@48300000 { /* PWMSS for am4372 */
-> -	compatible = "ti,am4372-pwmss","ti,am33xx-pwmss"
-> -	reg = <0x48300000 0x10>;
-> -	ti,hwmods = "epwmss0";
-> -	#address-cells = <1>;
-> -	#size-cells = <1>;
-> -	ranges = <0x48300100 0x48300100 0x80   /* ECAP */
-> -		  0x48300180 0x48300180 0x80   /* EQEP */
-> -		  0x48300200 0x48300200 0x80>; /* EHRPWM */
-> -
-> -	/* child nodes go here */
-> -};
-> -
-> -epwmss0: epwmss@4843e000 { /* PWMSS for DRA7xx */
-> -	compatible = "ti,dra746-pwmss", "ti,am33xx-pwmss";
-> -	reg = <0x4843e000 0x30>;
-> -	ti,hwmods = "epwmss0";
-> -	#address-cells = <1>;
-> -	#size-cells = <1>;
-> -	ranges;
-> -
-> -	/* child nodes go here */
-> -};
-> diff --git a/Documentation/devicetree/bindings/pwm/ti,pwmss.yaml b/Documentation/devicetree/bindings/pwm/ti,pwmss.yaml
-> new file mode 100644
-> index 000000000000..53f88139dcd4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/ti,pwmss.yaml
-> @@ -0,0 +1,77 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/ti,pwmss.yaml#
+Hi,
 
-ti,am33xx-pwmss.yaml for the filename.
+This series adds initial device trees and dt-bindings for the Apple
+Silicon devices using the M4 (t8132) SoC. For the most part it mirrors
+Janne's M3 (t8122) bringup series as it was merged in the 7.2 cycle.
 
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Texas Instruments SoC PWM Subsystem
-> +
-> +maintainers:
-> +  - Eduard Bostina <egbostina@gmail.com>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: ti,am33xx-pwmss
-> +      - items:
-> +          - enum:
-> +              - ti,am4372-pwmss
-> +              - ti,dra746-pwmss
-> +          - const: ti,am33xx-pwmss
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 1
-> +
-> +  ranges: true
-> +
-> +patternProperties:
-> +  "^(ecap|eqep|pwm|counter)@[0-9a-f]+$":
-> +    type: object
-> +    description: Child nodes for ECAP, EQEP (counter), and EHRPWM
+This series covers only a minimal amount of hardware, which is useful
+as a basis for future developments. The hardware added here has remained
+largely unchanged between the M3 and M4 generations.
 
-       required:
-         - compatible
+Most of the changes for bringing these M4 devices into a bootable state
+have been happening in the m1n1 bootloader, which, compared to the M3
+generation, is no longer responsible for setting the configuration bits
+(🐔-bits) of the CPU, since these are now set and locked by iBoot.  
 
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +  - ranges
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    pwm@48300000 { /* PWMSS for am33xx */
-> +        compatible = "ti,am33xx-pwmss";
-> +        reg = <0x48300000 0x10>;
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        ranges = <0x48300100 0x48300100 0x80>,   /* ECAP */
-> +                 <0x48300180 0x48300180 0x80>,   /* EQEP */
-> +                 <0x48300200 0x48300200 0x80>;   /* EHRPWM */
-> +    };
-> +
-> +  - |
-> +    pwm@48300000 { /* PWMSS for am4372 */
-> +        compatible = "ti,am4372-pwmss", "ti,am33xx-pwmss";
-> +        reg = <0x48300000 0x10>;
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        ranges = <0x48300100 0x48300100 0x80>,   /* ECAP */
-> +                 <0x48300180 0x48300180 0x80>,   /* EQEP */
-> +                 <0x48300200 0x48300200 0x80>;   /* EHRPWM */
-> +    };
-> +
-> +  - |
-> +    pwm@4843e000 { /* PWMSS for DRA7xx */
-> +        compatible = "ti,dra746-pwmss", "ti,am33xx-pwmss";
-> +        reg = <0x4843e000 0x30>;
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        ranges;
-> +    };
+Additionally, SMP boot depends on patches to avoid WFI and WFIT
+instructions, such as the idle=nop patches I sent out just before v1.
+Even with those, SMP boot remains unreliable.
 
-One example is enough.
+Since there are no actual driver changes, we'd generally prefer to merge
+the dt-bindings changes through the apple-soc tree once Acked by the
+respective maintainers.
+There are two notable exceptions in this patch series, due to some
+commits having already been applied to the respective subsystems' trees:
+- "dt-bindings: watchdog: apple,wdt: Add t8132 compatible"[1] has already
+  been applied to the watchdog subsystem tree, and this patch series
+  will pass check_dtbs when applied on top of linux-next, which includes
+  that commit.
+- "dt-bindings: pinctrl: apple,pinctrl: Add t8132 compatible" should be
+  applied through the pinctrl tree, since it depends on
+  "dt-bindings: pinctrl: apple,pinctrl: Add t6030 and t6031 compatibles"[2]
+  which has been applied in the pinctrl tree.
 
-Rob
+Link: https://lore.kernel.org/asahi/20260705-apple-m4-initial-devicetrees-v1-3-e5655ee56523@cyberchaos.dev/ [1]
+Link: https://lore.kernel.org/all/20260709-apple-t603x-initial-devices-v1-7-55b305833123@jannau.net/ [2]
+
+Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
+---
+Changes in v3:
+- Fix pinctrl_nub node ordering
+- Add i-cache-size and d-cache-size
+- Link to v2: https://patch.msgid.link/20260801-apple-m4-initial-devicetrees-v2-0-5cb07cc275da@cyberchaos.dev
+
+Changes in v2:
+- Rebased on top of the M3 Pro/Max patch series, which was applied to
+  apple-soc earlier today.
+- Fix several typos
+- Explain merge strategy in cover letter
+- Drop "dt-bindings: watchdog: apple,wdt: Add t8132 compatible", as it's
+  been applied in linux-watchdog.
+- Reword dt-bindings commit messages to not reference the driver
+- Add apple,always-on to ps_ans node, since powering it off causes reboots
+- Disable ps_disp*_cpu nodes, since even reading their state causes
+  SErrors with recent firmware
+- Fix inconsistency of name and reg of aic node
+- Add M4 devices to the global description in Documentation/devicetree/bindings/arm/apple.yaml
+- Link to v1: https://patch.msgid.link/20260705-apple-m4-initial-devicetrees-v1-0-e5655ee56523@cyberchaos.dev
+
+---
+Yureka Lilian (9):
+      dt-bindings: arm: cpus: Add Apple M4 CPU core compatibles
+      dt-bindings: interrupt-controller: apple,aic2: Add apple,t8132 compatible
+      dt-bindings: arm: apple: apple,pmgr: Add t8132 compatible
+      dt-bindings: power: apple,pmgr-pwrstate: Add t8132 compatible
+      dt-bindings: pinctrl: apple,pinctrl: Add t8132 compatible
+      dt-bindings: i2c: apple,i2c: Add t8132 compatible
+      dt-bindings: pwm: apple,s5l-fpwm: Add t8132 compatible
+      dt-bindings: arm: apple: Add M4 based devices
+      arm64: dts: apple: Add minimal t8132 (M4) device trees
+
+ Documentation/devicetree/bindings/arm/apple.yaml   |   21 +
+ .../devicetree/bindings/arm/apple/apple,pmgr.yaml  |    1 +
+ Documentation/devicetree/bindings/arm/cpus.yaml    |    2 +
+ .../devicetree/bindings/i2c/apple,i2c.yaml         |    1 +
+ .../bindings/interrupt-controller/apple,aic2.yaml  |    1 +
+ .../devicetree/bindings/pinctrl/apple,pinctrl.yaml |    1 +
+ .../bindings/power/apple,pmgr-pwrstate.yaml        |    1 +
+ .../devicetree/bindings/pwm/apple,s5l-fpwm.yaml    |    1 +
+ arch/arm64/boot/dts/apple/Makefile                 |    6 +
+ arch/arm64/boot/dts/apple/t8132-j604.dts           |   35 +
+ arch/arm64/boot/dts/apple/t8132-j623.dts           |   18 +
+ arch/arm64/boot/dts/apple/t8132-j624.dts           |   18 +
+ arch/arm64/boot/dts/apple/t8132-j713.dts           |   35 +
+ arch/arm64/boot/dts/apple/t8132-j715.dts           |   35 +
+ arch/arm64/boot/dts/apple/t8132-j773g.dts          |   25 +
+ arch/arm64/boot/dts/apple/t8132-jxxx.dtsi          |   48 +
+ arch/arm64/boot/dts/apple/t8132-pmgr.dtsi          | 1130 ++++++++++++++++++++
+ arch/arm64/boot/dts/apple/t8132.dtsi               |  467 ++++++++
+ 18 files changed, 1846 insertions(+)
+---
+base-commit: 6e890bf6442553c7bf56867a91c2dbcc2c295900
+change-id: 20260705-apple-m4-initial-devicetrees-f6ebb1c7a2cd
+prerequisite-patch-id: 9cc940a660e81da8e030e383e26cd5a700fe2e80
+prerequisite-patch-id: 1a60321f66e49041d1de2864f1678009a0356294
+
+Best regards,
+--  
+Yureka Lilian <yureka@cyberchaos.dev>
 
