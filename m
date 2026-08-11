@@ -1,35 +1,35 @@
 Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF35D403AE1;
-	Tue, 11 Aug 2026 19:37:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A580476CCC;
+	Tue, 11 Aug 2026 19:37:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.39.247.168
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786477034; cv=none; b=WP5E9XZI6Rp4HqHQ7PCBf0DgUfg6510wF313t0m+yU2jCv9qQbizREsqlRATYIhAi/ylliA+6YrNcVA6XgA/TJhwRhf/NjOCmzZEsYi8aJ2YExC8ypT2f2jX+8TimAue/DDDtu0/QXh4DecTIdoibykZl0boaBDGtjOQ5ga8/eY=
+	t=1786477035; cv=none; b=O24cAtvzt832pM+oRm+UZls4eS6NWtmCb+VZy1o7HOzE+Txkh7a7hxYGNZN6o6j22ccK4QX+tRznoFhLo3bNTNL8gOl4Va1zbAU3kCGJhsgYlzoBE0GCF5t88M2fF3aGgt6ZblJ8d1rQN6LaFzQpeGbqIOx3GXSdnCPxoiDnqBQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786477034; c=relaxed/simple;
-	bh=5EBBa6OVSvOCiSiPRkep3jiYn5mqqxftWQ7tp2CWrdE=;
+	s=arc-20240116; t=1786477035; c=relaxed/simple;
+	bh=4Ll6UalzXq5TeKpxwb4XG2sshOdGsYwoQRY2dbFg3Mw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HGDA0dBE/w5EQmFk9HpqT6VYzIHgD2O9UshX9x/VhFGzrbQUO5uIT0WIIc1ztBsTR6pWrl5svVEikDRBwBs0RYhSRAlcfFkdQ6/C1ZA9/hb8Ioc00hjQqoAZp58D4NbOKR8mSNpIpPzp1/xjhAIBYFb6soX/BTmzR1u9Sm/GLfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=WCzuLyep; arc=none smtp.client-ip=195.39.247.168
+	 In-Reply-To:To:Cc; b=JjAg6M0VYgXJ8CT0Lh7sXq/jxJs7e9ETAnmkiPzaL6eo/GK/buX6S43NZ1aHtskid38BVMrsGxDMBcLKOEDdcbceXarYjVS7x6MpNejXZe9t2BgML2asJCpt+h7JAquigZDjkKwvLd8587vepK+/bRa8f2CzyCGRrqZuNZsWik0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=M/yKqom8; arc=none smtp.client-ip=195.39.247.168
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="WCzuLyep"
+	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="M/yKqom8"
 From: Yureka Lilian <yureka@cyberchaos.dev>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1786477023;
+	s=mail; t=1786477026;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=3qOaSj38gbQXIBnLLo6XU1JtH18hHfOPNkOOi36DWfE=;
-	b=WCzuLyepOJKNfqIVjKVe/M9wb74aq/aLu95g5L50YSjf4WvTkLGTtS685xH+rWJUyVbWQ8
-	2uWLaCVMcc2/i3gFjZC06lfALTfp4m0fbZe0OGsNcosa2wbliFc04wW36e/P2DIU78jE38
-	E1n8iCXWCp6BtPAcmzx/vqPdK2D06mY=
-Date: Tue, 11 Aug 2026 21:36:54 +0200
-Subject: [PATCH v3 1/9] dt-bindings: arm: cpus: Add Apple M4 CPU core
- compatibles
+	bh=5wvhJvl8V/UCRIKi03HOG9kNnF6pjoj6mjPMcmy9q1U=;
+	b=M/yKqom8oC0X59FtMHL36plaW/EN8JAAh2csOiwbPGvkZqy//VIZ334BqZWqGwQaFjSNQT
+	NzMtGwDqvx5EFJ1ykHt1xRVBc6lTr8tya3lT9pXFKKeuJFVdD6e5dGCmhaLQ3n/IO2m8VB
+	Zao3gZKwZRMmJnVtsnGDAXzPG6pgaSM=
+Date: Tue, 11 Aug 2026 21:36:56 +0200
+Subject: [PATCH v3 3/9] dt-bindings: arm: apple: apple,pmgr: Add t8132
+ compatible
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260811-apple-m4-initial-devicetrees-v3-1-6bf32d45ad0b@cyberchaos.dev>
+Message-Id: <20260811-apple-m4-initial-devicetrees-v3-3-6bf32d45ad0b@cyberchaos.dev>
 References: <20260811-apple-m4-initial-devicetrees-v3-0-6bf32d45ad0b@cyberchaos.dev>
 In-Reply-To: <20260811-apple-m4-initial-devicetrees-v3-0-6bf32d45ad0b@cyberchaos.dev>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -56,33 +56,27 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-pwm@vger.kernel.org, Yureka Lilian <yureka@cyberchaos.dev>, 
  Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-The core types of the M4 SoC no longer carry individual codenames.
-Apple's device trees re-use the 'everest' and 'sawtooth' codenames from
-the M3 generation for all later cores.
-
-Instead, we use a combination of the SoC's codename ('Donan') and the
-type of core ('e' and 'p' for the efficiency and performance cores
-respectively) as compatible for these cores.
+The PMGR blocks on Apple silicon M4 SoCs (t8132) are compatible with the
+M1/M2/M3 predecessors. Add "apple,t8132-pmgr" as M4 specific compatible.
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
 ---
- Documentation/devicetree/bindings/arm/cpus.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/cpus.yaml b/Documentation/devicetree/bindings/arm/cpus.yaml
-index 5be89c584026..c328e9fb9843 100644
---- a/Documentation/devicetree/bindings/arm/cpus.yaml
-+++ b/Documentation/devicetree/bindings/arm/cpus.yaml
-@@ -86,6 +86,8 @@ properties:
-           - apple,avalanche
-           - apple,blizzard
-           - apple,cyclone
-+          - apple,donan-e
-+          - apple,donan-p
-           - apple,everest
-           - apple,firestorm
-           - apple,hurricane-zephyr
+diff --git a/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+index 1d2001836eb4..da660fa13f77 100644
+--- a/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
++++ b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+@@ -41,6 +41,7 @@ properties:
+               - apple,t6030-pmgr
+               - apple,t6031-pmgr
+               - apple,t8122-pmgr
++              - apple,t8132-pmgr
+           - const: apple,t8103-pmgr
+           - const: syscon
+           - const: simple-mfd
 
 -- 
 2.55.0
