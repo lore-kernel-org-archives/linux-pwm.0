@@ -1,112 +1,80 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B48438D3F9;
-	Tue, 11 Aug 2026 22:59:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01E511D5CE0;
+	Tue, 11 Aug 2026 23:01:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786489144; cv=none; b=aMln2GZOZP78G8PyL1ov4wUx11/2ZDQcsGzBVhPC2U0Z8QTTqX/BQUGqqGzg96sb/S00h7xZA8CwDnO8kPN9wnZ88uE+RRtXVosOQlbl9umBth4E+ZzOqYzqtLgulKbdsEfA2QhVcHM0N5BKLnWSM8xDqJJURTlPHQZ2bglA/zQ=
+	t=1786489288; cv=none; b=GrV8qdov/FcJcHz1m7YzCJi7eNX9Cn3lV30Gyp+oFTwt2v5h6+Zpso4/mA88yav+qkjYZNn4pILYXqSUlvkbhRNCmM83vFqofFt5NUe8XSIabS1bPY0nTMMBSiJODSpWERGmO33v+dYTfQtqhUsGx8YmiMiFIfggUoreC2oxTmo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786489144; c=relaxed/simple;
-	bh=v1mlBgsg2PtvLEwBU1pVKahWO09p8g+Okqo9NCg+wIQ=;
+	s=arc-20240116; t=1786489288; c=relaxed/simple;
+	bh=oKTkD7k/OmVMYC6QGDl1G08NwEJItuzdQVg3pLw97yg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=STSpQyiLihAMa92eozwkjS4SSQgVM16tAuVG5XYNrcP+4EN8cH4QgsQK/k4b6ru35b+hqf/oC2Cxp8oqMmhFqaaGTRnes7WOXSUXV+cciCQabkVKTzOdNh7hiaZWTruibEjDZ++Pdp1j9x1KK2ApPjIeh1Jl4fQCBMy4Q/7mnGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c8Yp9CyM; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=e+axkW6LBApU4g3Lrp7AbHq0UpMeDlAqvjEyYj9N3ddlRwAMIHQ49R5PbnWl1C+lKnq6dBFQHRDWmWG94vTcV1TyT2jW0q+LgBrrI+kgsHiyFWtv98vrrD0gs6SbYKCeRzKlb+gzueZ8KeS9oz8uVrwnMtndLYmRwdHBxEprU7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WyrKvP+v; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c8Yp9CyM"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8E2C31F000E9;
-	Tue, 11 Aug 2026 22:59:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WyrKvP+v"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A191F000E9;
+	Tue, 11 Aug 2026 23:01:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786489143;
-	bh=L878Y2FCSeUYAm6DEI1wNveVQulYO+oPHyG5saSsW1M=;
+	s=k20260515; t=1786489286;
+	bh=FeV0k62/mpnJ6VJ9GI5IffO1V7QQd/8uA8y1iY3oRzQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=c8Yp9CyMcpjvUDzvTfrjm6J8JY8BmtmNQs5Zjzq65jwwi7lUVyPGK19Vus/9gwOh1
-	 gp5PRBB28v3SGCjtXiYRAYA+Dfm7Wq8RBYwrm6clSJe7mzKOqPXjVskdURAgGEfGjf
-	 jC8RwG37EeMVaXsdD3g4LgRTPSnthhmHZS3DtbECVwK59vQ/f9854+OFzK9jNuZpSm
-	 lZvmOd9YsYPIVupwqOh3NEw/h9iCXd3J6N/jek4qnLa0efJCaLEe8AvEZMtMV+A0pV
-	 AI1JO8Q9KWFFnYXaIARLiQEyHWFyrKKNU6ZJXnxEPRyoK5y0PysfJdGjj25y6ugh+Z
-	 k8wY3WqmkkVhA==
-Date: Wed, 12 Aug 2026 00:58:59 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Eduard Bostina <egbostina@gmail.com>, 
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	daniel.baluta@nxp.com, simona.toaca@nxp.com, goledhruva@gmail.com, m-chawdhry@ti.com
-Subject: Re: [PATCH] dt-bindings: pwm: Convert TI PWM Subsystem to DT schema
-Message-ID: <anuo_LNHuSvZZMgh@monoceros>
-References: <20260811092208.687731-1-egbostina@gmail.com>
- <20260811174808.GA2709327-robh@kernel.org>
+	b=WyrKvP+vOMmEQL2E4667OuKIizJVPjqSFzrW8YdeeOsVvZfJyidHozqlRMS9OqwLi
+	 xbOtHL/tZ+W7jSO7hxyBJ+c16Eu18eJcmK60jJIBU2eHonQ8tqLrVh0v733chQoubG
+	 zA2OTcoKBl5aFPoV4TYu49S/jX5r0FHd2LVhyLh43y7U235PxkSl54XM9ITz6OR7Ck
+	 rFSodhtsTTGqwDVD5MSZzRN0dVHTKkfXo1Eq9u7VEwufLCYpHO4s0oYMX9saj3ZgjQ
+	 Sf/KoOGilmi/tGGzYFbhckffV5U04llUCqhKlw0KxjDMIDQWOUSFvZA9AvEJKzJbE/
+	 61Zp2ryn3iUpw==
+Date: Tue, 11 Aug 2026 19:01:23 -0400
+From: Konstantin Ryabitsev <mricon@kernel.org>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Francis Laniel <laniel_francis@privacyrequired.com>, 
+	Michal Wilczynski <m.wilczynski@samsung.com>, Miguel Ojeda <ojeda@kernel.org>, 
+	Benno Lossin <lossin@kernel.org>, Gary Guo <gary@garyguo.net>, 
+	Alexandre Courbot <acourbot@nvidia.com>, Boqun Feng <boqun@kernel.org>, 
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Andreas Hindborg <a.hindborg@kernel.org>, 
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
+	Danilo Krummrich <dakr@kernel.org>, linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, tools@kernel.org
+Subject: Re: [PATCH v3] rust: pwm: replace `core::mem::zeroed` with
+ `pin_init::zeroed`
+Message-ID: <20260811-small-ubiquitous-caracal-ebb9cb@meerkat>
+References: <20260603160910.159307-1-laniel_francis@privacyrequired.com>
+ <anqsTVj5QGYGiEQ9@monoceros>
+ <20260811-garrulous-serpent-of-agreement-cf9b19@meerkat>
+ <anunw_qC23XMqye8@monoceros>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ntxy2e5gk4fecbs4"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260811174808.GA2709327-robh@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <anunw_qC23XMqye8@monoceros>
 
+On Wed, Aug 12, 2026 at 12:56:05AM +0200, Uwe Kleine-König wrote:
+> On Tue, Aug 11, 2026 at 04:54:47PM -0400, Konstantin Ryabitsev wrote:
+> > On Tue, Aug 11, 2026 at 07:04:49AM +0200, Uwe Kleine-König wrote:
+> > > I didn't research what went wrong there and the trailer made it into the
+> > > patch anyhow and adding -S doesn't change the patch. I added the
+> > > tools@k.o mailing list to Cc:, maybe someone there wants to debug that.
+> > 
+> > It was just Miguel responding with a suggestion how to better reorder
+> > trailers. Since we can't tell this case from the case when someone actually
+> > replies with a follow-up trailer, hence the error.
+> 
+> The strange thing from my POV is that before your mail Miguel didn't
+> participate in that thread according to
+> https://patch.msgid.link/20260603160910.159307-1-laniel_francis@privacyrequired.com .
+> I'm confused.
 
---ntxy2e5gk4fecbs4
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] dt-bindings: pwm: Convert TI PWM Subsystem to DT schema
-MIME-Version: 1.0
+It came from v2 of the series and was carried over because the patch-id hasn't
+changed (meaning it's the same patch, so any code review trailers still apply).
 
-On Tue, Aug 11, 2026 at 12:48:08PM -0500, Rob Herring wrote:
-> On Tue, Aug 11, 2026 at 09:22:08AM +0000, Eduard Bostina wrote:
-> > +examples:
-> > +  - |
-> > +    pwm@48300000 { /* PWMSS for am33xx */
-> > +        compatible =3D "ti,am33xx-pwmss";
-> > +        reg =3D <0x48300000 0x10>;
-> > +        #address-cells =3D <1>;
-> > +        #size-cells =3D <1>;
-> > +        ranges =3D <0x48300100 0x48300100 0x80>,   /* ECAP */
-> > +                 <0x48300180 0x48300180 0x80>,   /* EQEP */
-> > +                 <0x48300200 0x48300200 0x80>;   /* EHRPWM */
-> > +    };
-> > +
-> > +  - |
-> > +    pwm@48300000 { /* PWMSS for am4372 */
-> > +        compatible =3D "ti,am4372-pwmss", "ti,am33xx-pwmss";
-> > +        reg =3D <0x48300000 0x10>;
-> > +        #address-cells =3D <1>;
-> > +        #size-cells =3D <1>;
-> > +        ranges =3D <0x48300100 0x48300100 0x80>,   /* ECAP */
-> > +                 <0x48300180 0x48300180 0x80>,   /* EQEP */
-> > +                 <0x48300200 0x48300200 0x80>;   /* EHRPWM */
-> > +    };
-> > +
-> > +  - |
-> > +    pwm@4843e000 { /* PWMSS for DRA7xx */
-> > +        compatible =3D "ti,dra746-pwmss", "ti,am33xx-pwmss";
-> > +        reg =3D <0x4843e000 0x30>;
-> > +        #address-cells =3D <1>;
-> > +        #size-cells =3D <1>;
-> > +        ranges;
-> > +    };
->=20
-> One example is enough.
+https://lore.kernel.org/all/CANiq72n+tyDcabpwZOR1gHb4mycbpTQbzr0QNgi9c48cSnrZ8w@mail.gmail.com/
 
-Also it would be nice if that one example included the actual PWM.
+-K
 
---ntxy2e5gk4fecbs4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmp7qTAACgkQj4D7WH0S
-/k7m5gf/QafZDYcoko+9zy4vn8+PmkeLxWLq0owNEZzeC0OxwMsdNbBAFKoekf93
-dj050pADhwivBueq/9x/GUk/nkIaK5k1Ern2+W38D9PFj2tYbVTDC7OWd/QxvGJR
-GnHw+VrSfDsEPoCx91VRAaPV+3y7tleKK7P7facybDouIfLGdYNT4TZLdmZNVber
-Ba+HJp49wRfznKCiCslpH1bzumVhqTwFeD+LQWk1WL7PWEl6Nl76ujQTXVzlrFvK
-EcOH8XQJoJoSU1fGRhKdZjD5P0xV6HNuzcjLIaEusKm0lOWyPkCcx2ghb5Pr0VsC
-ShqTc9+H19EoymRq85XgKohCy4+V4A==
-=AOGV
------END PGP SIGNATURE-----
-
---ntxy2e5gk4fecbs4--
