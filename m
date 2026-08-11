@@ -1,35 +1,35 @@
 Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE814766B5;
-	Tue, 11 Aug 2026 19:37:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43E01476CC5;
+	Tue, 11 Aug 2026 19:37:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.39.247.168
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786477036; cv=none; b=b6k5u9ZwKQes0tw6msE26Qq3AF4qjvtcWlgwyyTj2jV+fpbvP6QSxcEKr9l6Dk/GWqEkYCaOiRhALmGXk/xLJIoRl0jKhmjxIKJOpC7Wmi70nM7Q05DBzkO1+iAkysi38Ukc2umwusNlKXYVO2BGLZWkzfdOqfFK256Dk+zep+4=
+	t=1786477037; cv=none; b=fPHdB9SKJRYyxYVsylb5JbKgstsj3ym2Zshuh9HhXDRoNWfvcxp9PZhAx1SW0P/jBtDxtOT9Q2LteqgrJfM1HiVlLPkg4bG0T0pBqGx7ZqEsB2UJa09vAODzeElWTpuuJHbnxOcAAOdBNrQT+luvIDxoo/TvWhexfCE8Q/mor1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786477036; c=relaxed/simple;
-	bh=uCrZoq9hMO3BwCtPxYeBInYsLX6Ph0hM5oymw0p7uBA=;
+	s=arc-20240116; t=1786477037; c=relaxed/simple;
+	bh=b1+ox9bvvZi6esBCO4i+A29vpkObZzsDgandkj048qY=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=KRoxUuu9PCkRAVgHRUm29RPd59rsyzM270smz1hjAotN2wra6479AqmOjdxfn0/ZEOvR7QfNQXVxQjSntttJkCUK43bOMplhqWoezLBQZ6VZmWSw7esMXwP1xhBJO8Ue45dAIuridJseCpkD1uY4PqYE5HD/d7+U1OaAkZy29e8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=dR/yBnpI; arc=none smtp.client-ip=195.39.247.168
+	 In-Reply-To:To:Cc; b=eVjvU5RiW55goeTBmYEogy7DPTkXT+Ze18mNf0lxEanf35IDmn/5fQ1JH8TJBZNQQIyuE97V2L46y7pVZjXfjyFuwgozblhrMuFDFjva3bwOWsGRE8U5BegNGNqtxWubDRYyzR5cHmXz87Op8Zk2615pA1mI9J+M8MBbM77dLuQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=LxWp0Oxy; arc=none smtp.client-ip=195.39.247.168
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="dR/yBnpI"
+	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="LxWp0Oxy"
 From: Yureka Lilian <yureka@cyberchaos.dev>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1786477028;
+	s=mail; t=1786477025;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=UF4U3j1h1VfITySsF+7uOQMAlNKLIP6jXfmWmWtYH5U=;
-	b=dR/yBnpIqwWCvcwKiByw8Hybb6/LoW4y+RxsOLkr3IDeIOVBT5t7yWwYU+WRHOe3lgFYTo
-	DXfWlXzTXPjWqGSYW6N3djdVhTUa2l5swQVtQZAKZAYM6GRlITwPhBnrMbyJn6Q3o45PZi
-	jFK/yxh/wl/00VQUx+QS0viyxYoB0e8=
-Date: Tue, 11 Aug 2026 21:36:58 +0200
-Subject: [PATCH v3 5/9] dt-bindings: pinctrl: apple,pinctrl: Add t8132
- compatible
+	bh=bGqkzE9J7l8eega5eRBiLNQWdpKKNJCn7O+8KgX4WaU=;
+	b=LxWp0Oxyiq9e4y6NZpeAvfpmPC8/Q2kmwCELrzaq6Lt8XzC33j4tS6XMKEHfW1J+HfAoEt
+	abYHRzLxKJsVJ2w9qN/D3TT1P8bMttE3lPTdbgesCAmAVgvFsgC5WUyLuiDXQzh8we6zA6
+	K1QWgMsqnZ/JfQ56OOYSeAlneJWv8CM=
+Date: Tue, 11 Aug 2026 21:36:55 +0200
+Subject: [PATCH v3 2/9] dt-bindings: interrupt-controller: apple,aic2: Add
+ apple,t8132 compatible
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260811-apple-m4-initial-devicetrees-v3-5-6bf32d45ad0b@cyberchaos.dev>
+Message-Id: <20260811-apple-m4-initial-devicetrees-v3-2-6bf32d45ad0b@cyberchaos.dev>
 References: <20260811-apple-m4-initial-devicetrees-v3-0-6bf32d45ad0b@cyberchaos.dev>
 In-Reply-To: <20260811-apple-m4-initial-devicetrees-v3-0-6bf32d45ad0b@cyberchaos.dev>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -53,38 +53,30 @@ To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
  linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
- linux-pwm@vger.kernel.org, Yureka Lilian <yureka@cyberchaos.dev>
+ linux-pwm@vger.kernel.org, Yureka Lilian <yureka@cyberchaos.dev>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-The pin controller on the Apple silicon t8132 (M4) SoC is compatible
-with t8103. Add "apple,t8132-pinctrl" as SoC specific compatible under
-"apple,t8103-pinctrl".
+The Apple t8132 (M4) SoC uses an AIC3 as interrupt controller, same as
+the M3 predecessor.
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
-
 ---
-This should be pulled via the pinctrl subtree, since it depends on
-"dt-bindings: pinctrl: apple,pinctrl: Add t6030 and t6031 compatibles"[1]
-which has been applied in the pinctrl tree. Thanks!
-
-Link: https://lore.kernel.org/all/20260709-apple-t603x-initial-devices-v1-7-55b305833123@jannau.net/ [1]
----
- Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml | 1 +
+ Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-index f08d2c4f5784..bc6d41b63b5d 100644
---- a/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-@@ -23,6 +23,7 @@ properties:
-               - apple,t6030-pinctrl
-               - apple,t6031-pinctrl
-               - apple,t8122-pinctrl
-+              - apple,t8132-pinctrl
-           - const: apple,t8103-pinctrl
-       - items:
-           # Do not add additional SoC to this list.
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml b/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
+index 726a6720e05f..1cb886785173 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
+@@ -45,6 +45,7 @@ properties:
+           - enum:
+               - apple,t6030-aic3
+               - apple,t6031-aic3
++              - apple,t8132-aic3
+           - const: apple,t8122-aic3
+       - const: apple,t8122-aic3
+ 
 
 -- 
 2.55.0
