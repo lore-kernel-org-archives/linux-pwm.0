@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4AC3386443;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4B58386453;
 	Wed, 12 Aug 2026 03:24:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786505046; cv=none; b=IddFHNO1sWKapxBKnn+JjK9hWDCN0358VNAWYnQPi2iJi0oJGAer1eEwXhSOix8sCvu+owfC1fySDvPxQTUAAE/6IcX+eU5pcnItseNKvK3darpF27TF9vi9GSZoRrezVUM752b4dONlK+SHQeJ0wzK+vusjIlMCIulS5Md+5OI=
+	t=1786505046; cv=none; b=dQiIC8lG4+McSsSCM3ovsQKdylBKUc+Rblep7zVp49vf3o8IjLBupX26pLDLMj3w2TAN/TCtZv+MkUMvOe/qeFI+08Bl+6gC7Mouishu0wBlAgj2H85/iGZQhXfH6bXvAAD+Zte/cTBJ7QtDMdYyCkaoVJ4sc/7qO7FlPRgvDJo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1786505046; c=relaxed/simple;
-	bh=0odK6xSyoWBXE8YW1H9s3//6ogBtCBPjLnBcdTuq+qA=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=bZH7EkgAsLyVzMGp3jidOTbmvrSdVn3q7s13NyDAJ3hhB5cfm88s9CmcQs4SFIXDBv1FBCF7YRVj/RGtkAW34I6Rv0i29rtUv8cCgH25qIWX053q0C8mA5hqHvrWNAUs6usk81iIuQ1CMFomBtGDJK4eGlYmdOvxUslcJvL6rtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GiElGb/i; arc=none smtp.client-ip=10.30.226.201
+	bh=kgoSJfCQHW0+Dg62ei7S7n3mzCu8wyzu0Bm2onZRb/E=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ec7qcGAvkZZ41lXl9iyTKQXaU65Syle6TF2ViYHAoAF0Qcz5/isSf+WmUhmSwM7xSvcar9tLWvZ1Quod4EIVE3ytIk8PizCedQ3vdAqibkaUXGssy4ctTj8tFSR++mE5HcUlDlppOetGoMmhVK+eKLK+9ACX8uxYg1Zrt7mGlws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W88hO110; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GiElGb/i"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 46507C2BCB9;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W88hO110"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 50BD1C2BCF5;
 	Wed, 12 Aug 2026 03:24:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1786505046;
-	bh=0odK6xSyoWBXE8YW1H9s3//6ogBtCBPjLnBcdTuq+qA=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=GiElGb/irrzBhq3Iai3vxxjybpN2t5n+wS/uwJkIPDJMc62uhjr3phdDK3VyGzNRl
-	 +mfe0+oWO82Px3YNLQqFDC7WXWxlSuXHUfXnPG+VcI2yAOHyQJC7vtKCIxI1hJrHYd
-	 /kjgRCSnI7BmJBmvyFTWjI2px1ezxURC2XYglvCx0Tncg6kjKZlgSveHdg5qAu6MbX
-	 uiOP0nkV2iTcg/GdMfVwud60WJeb/WWgq620M9yKpsdjHVTYb6oLDwhEDkPl7h0VU+
-	 wGnGv+aNvl7M0iBSK8g3sHgQnGw0S1dS5llKV8Pdfkt3ky9dRZ3gSVusMlTYDW5PJj
-	 yi9qlWLwWU3wg==
+	bh=kgoSJfCQHW0+Dg62ei7S7n3mzCu8wyzu0Bm2onZRb/E=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=W88hO110mV2R9+DkHRAdklqrnq66sZ+V3IRCNl0nLkFcz2viWwfH6wdTbgq5Zyozm
+	 bMcutLiJLWk9vscKbGRMsZ2sOAz+SYaUWGr/Oi0cG5b73VXN6vdRxm6A71dI9LHSQP
+	 HKwl+AGJvisJ/LZBHGPQs3iff3t3Iq/txDGVxMuSZmx76HxzftUiWT3TbOcgRQx66K
+	 irmKwVbyFAANVt9ePIsez8JLZjjaD7g49VCu1fIme32TxZuS5kjhtoWQ5bak7btCWF
+	 m+B9BA5vmEawKM9mQ8EbHqorCHz5aEO1efZ2bUA/qmI/QMriDZGGBaYUOQXWfSkZlz
+	 OzDbAiapDIBEg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D00C5B572;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4026DC5B567;
 	Wed, 12 Aug 2026 03:24:06 +0000 (UTC)
 From: Ben Zong-You Xie via B4 Relay <devnull+ben717.andestech.com@kernel.org>
-Subject: [PATCH v7 0/3] pwm: add support for Andes platform
-Date: Wed, 12 Aug 2026 11:24:03 +0800
-Message-Id: <20260812-andes-pwm-v7-0-a806da8185d1@andestech.com>
+Date: Wed, 12 Aug 2026 11:24:04 +0800
+Subject: [PATCH v7 1/3] dt-bindings: pwm: add support for AE350 PWM
+ controller
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -40,23 +41,20 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAFPne2oC/33QwWrEIBAG4FdZPNcwM+qY7KnvUXowxjQWNllim
- rYsefealCVLu+xBYeD//hEvIoUxhiSOh4sYwxxTHPo82KeD8J3r34KMTZ4FATEQaOn6JiR5/jx
- JhOCYEb3yrcj58xja+LV1vbz+zumjfg9+WgvWRBfTNIzf27IZ19zaqxGozMcSFlgxUllJlHXoL
- drnbd0UfFf44STW2pl2mC9gQG0LJIvE+iFUV2gASWGljNJFaTUZfuj01f39gVlLkGwBua5RGWP
- uabNrpeBWm6wBvakcm6ohf0/zrpnMreaslQstokWE/y9fluUHgPDW6d4BAAA=
-X-Change-ID: 20260204-andes-pwm-10ea6611c3cf
+Message-Id: <20260812-andes-pwm-v7-1-a806da8185d1@andestech.com>
+References: <20260812-andes-pwm-v7-0-a806da8185d1@andestech.com>
+In-Reply-To: <20260812-andes-pwm-v7-0-a806da8185d1@andestech.com>
 To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>
 Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Ben Zong-You Xie <ben717@andestech.com>
 X-Mailer: b4 0.15-dev-09770
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786505045; l=5382;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786505045; l=2621;
  i=ben717@andestech.com; s=20260120; h=from:subject:message-id;
- bh=0odK6xSyoWBXE8YW1H9s3//6ogBtCBPjLnBcdTuq+qA=;
- b=gQiRLeM/NEguL3j1eiDpmlUskoGayGrBWwc1WOUJqCoqLaR/Ib83P7fQRSZ5MQS4m1pIrTwcW
- PO4cDfpsqQcAazdKx9ASGr/dEYwGYPjpabim/8mzwHZd+FkWEOkINYU
+ bh=AlnVaPc7CqtbKonPziakNqedexQPh0xwvAlumniDgw0=;
+ b=Uven+JtvvWPDfRJ8NXATFqn9rZkWQE3ntU9nH4nlQQnqgfENI06Kpb7/Ppbww/jh+smbFxwos
+ b17UCUZVzWoAAJqDjK5H6vnO57Kl7+dtHezvg774//+PGiIA5j5/yw/
 X-Developer-Key: i=ben717@andestech.com; a=ed25519;
  pk=nb8L7zQKGJpYk0yvrYKjViOZ34A36g1ZIsCmCsP518s=
 X-Endpoint-Received: by B4 Relay for ben717@andestech.com/20260120 with
@@ -64,123 +62,97 @@ X-Endpoint-Received: by B4 Relay for ben717@andestech.com/20260120 with
 X-Original-From: Ben Zong-You Xie <ben717@andestech.com>
 Reply-To: ben717@andestech.com
 
+From: Ben Zong-You Xie <ben717@andestech.com>
+
 The ATCPIT100 is a set of compact multi-function timers, which can be
-a simple timer or PWM, or a combination of the timer and the PWM. This
-IP block is a core component of the Andes AE350 platform, which serves
-as a reference architecture for SoC designs. The QiLai SoC also
-integrates this controller.
+used as pulse width modulators (PWM) as well as simple timers.
+ATCPIT100 supports up to 4 PIT channels, and each PIT channel may be
+configured as a simple timer or PWM, or a combination of the timer and
+the PWM. This IP block is a core component of the Andes AE350 platform,
+which serves as a reference architecture for SoC designs. The QiLai SoC
+also integrates this controller.
 
-This device driver was previously part of the Linux Kernel, and the
-compatible was its IP name "andestech,atcpit100". However, the driver
-and its binding were removed due to the deprecation of the NDS32
-architecture [1]. Although Andes now dedicates our effort on RISC-V,
-ATCPIT100 is still one of our peripheral IPs, and that's why we are
-re-introducing it now. Since only using the IP block name as the
-compatible is forbidden now, change the compatible to
-"andestech,ae350-pwm" and "andestech,qilai-pwm".
+The binding introduces the following compatible strings:
+- "andestech,qilai-pwm": For the implementation integrated into the
+  Andes QiLai SoC.
+- "andestech,ae350-pwm": As a fallback compatible string representing
+  the base IP design used across the AE350 platform architecture.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=aec499c75cf8e0b599be4d559e6922b613085f8f
-
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 Signed-off-by: Ben Zong-You Xie <ben717@andestech.com>
 ---
-Changes in v7:
-- Rebased on ukleinek/pwm/for-next
-- (2/3)
-  - Add the missing Kconfig dependencies: select REGMAP_MMIO, and depend on
-    HAS_IOMEM && COMMON_CLK. (Uwe)
-  - Only reject a period shorter than one cycle. With a single cycle the duty
-    cycle can only be 0 or 1 cycle, and both are emitted by parking the
-    channel. (Uwe)
-  - Check the return value of regmap_assign_bits() in andes_pwm_park(). (Uwe)
-  - Select the phase carrying the duty cycle first and convert it to
-    nanoseconds once in .get_state(). (Uwe)
-  - Call devm_clk_rate_exclusive_get() for both clocks so their rates cannot
-    be changed behind the driver's back. (Uwe)
-  - Set chip->atomic. (Uwe)
-  - Set state->polarity before .get_state() returns early for an unavailable
-    clock source.
-- Link to v6: https://patch.msgid.link/20260625-andes-pwm-v6-0-3aef11711017@andestech.com
+ .../bindings/pwm/andestech,ae350-pwm.yaml          | 61 ++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
 
-Changes in v6:
-- Rebased on ukleinek/pwm/for-next.
-- (2/3)
-  - Round a too-large period or duty cycle down to the largest achievable
-    value, and emulate 0%/100% relative duty cycles by parking the channel,
-    instead of erroring out. (Uwe)
-  - Choose the period from the requested period alone, so it no longer
-    depends on the requested duty cycle. (Uwe)
-  - Convert the period to ticks and compute the high/low phases in the tick
-    domain to avoid rounding errors. (Uwe)
-  - Reconstruct the period in .get_state() with a single DIV_ROUND_UP_ULL()
-    over both phases, shared by both polarities, and read the control
-    register with FIELD_GET(). (Uwe)
-  - Set an out-of-range clock rate to 0 so that source cannot be selected,
-    and name both rates in the "no usable clock" error message. (Uwe)
-  - Rename to_andes_pwm() to andes_pwm_from_chip(). (Uwe)
-  - Capitalize error messages. (Uwe)
-  - Tidy up the in-function comment and the limitations list.
-- Link to v5: https://patch.msgid.link/20260330-andes-pwm-v5-0-01c59a659d2c@andestech.com
+diff --git a/Documentation/devicetree/bindings/pwm/andestech,ae350-pwm.yaml b/Documentation/devicetree/bindings/pwm/andestech,ae350-pwm.yaml
+new file mode 100644
+index 000000000000..287f3c62965f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/andestech,ae350-pwm.yaml
+@@ -0,0 +1,61 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/andestech,ae350-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Andes PWM controller on AE350 platform
++
++description:
++  This controller has 4 channels and two clock sources. Each channel can
++  switch the clock source by programming the corresponding register.
++
++maintainers:
++  - Ben Zong-You Xie <ben717@andestech.com>
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - andestech,qilai-pwm
++          - const: andestech,ae350-pwm
++      - const: andestech,ae350-pwm
++
++  reg:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++  clocks:
++    items:
++      - description: APB bus clock
++      - description: External clock
++
++  clock-names:
++    items:
++      - const: pclk
++      - const: extclk
++
++required:
++  - compatible
++  - reg
++  - "#pwm-cells"
++  - clocks
++  - clock-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    pwm@f0400000 {
++        compatible = "andestech,ae350-pwm";
++        reg = <0xf0400000 0x100000>;
++        #pwm-cells = <3>;
++        clocks = <&pclk>, <&extclk>;
++        clock-names = "pclk", "extclk";
++    };
 
-Changes in v5:
-- Rebased on ukleinek/pwm/for-next
-- (1/3)
-  - Added Rob's reviewed-by tag.
-- Link to v4: https://patch.msgid.link/20260204-andes-pwm-v4-0-67016bb13555@andestech.com
-
-Changes in v4:
-- Updated cover letter title and its commit message.
-- (1/3)
-    - Updated the compatibles and the binding file name.
-    - Added the description to the binding.
-    - Corrected device register size.
-    - Dropped the changes to the MAINTAINERS file.
-- (2/3)
-    - Updated the driver name.
-    - Made the driver support inversed polarity.
-    - Changed the clock selection algorithm.
-    - Made the configuration depend on ARCH_ANDES, instead of RISCV. (Krzysztof)
-    - Dropped the changes to the MAINTAINERS file.
-- (3/3) (new)
-    - Collected all changes to the MAINTAINERS file into a single patch.
-- Link to v3: https://patch.msgid.link/20250123193534.874256-1-ben717@andestech.com
-
-Changes in v3:
-- (1/2):
-    - modified the compatible string. (Krzysztof)
-- (2/2):
-    - added a check for the clock rate to prevent the overflow warning.
-      (kernel test robot)
-    - removed the unnecessary check in .apply(). (kernel test robot)
-- Link to v2: https://patch.msgid.link/20241202060147.1271264-1-ben717@andestech.com
-
-Changes in v2:
-- (1/2):
-    - changed "title" in the yaml file.
-    - removed vendor-specific property, and added clocks property.
-- (2/2):
-    - added a description for hardware limitations. (Uwe)
-    - switched the clock parent depending on the requested setting
-      instead of statically configuring the clock source in DT. (Uwe)
-- Link to v1: https://patch.msgid.link/20241028102721.1961289-1-ben717@andestech.com
-
----
-Ben Zong-You Xie (3):
-      dt-bindings: pwm: add support for AE350 PWM controller
-      pwm: add Andes PWM driver support
-      MAINTAINERS: add an entry for Andes PWM driver
-
- .../bindings/pwm/andestech,ae350-pwm.yaml          |  61 ++++
- MAINTAINERS                                        |   6 +
- drivers/pwm/Kconfig                                |  12 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-andes.c                            | 365 +++++++++++++++++++++
- 5 files changed, 445 insertions(+)
----
-base-commit: b4e94b0418ad6dbe62b6ca53369159ed3d9f0d8c
-change-id: 20260204-andes-pwm-10ea6611c3cf
-
-Best regards,
---  
-Ben Zong-You Xie <ben717@andestech.com>
+-- 
+2.34.1
 
 
