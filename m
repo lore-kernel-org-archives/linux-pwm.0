@@ -1,80 +1,186 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01E511D5CE0;
-	Tue, 11 Aug 2026 23:01:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4AC3386443;
+	Wed, 12 Aug 2026 03:24:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786489288; cv=none; b=GrV8qdov/FcJcHz1m7YzCJi7eNX9Cn3lV30Gyp+oFTwt2v5h6+Zpso4/mA88yav+qkjYZNn4pILYXqSUlvkbhRNCmM83vFqofFt5NUe8XSIabS1bPY0nTMMBSiJODSpWERGmO33v+dYTfQtqhUsGx8YmiMiFIfggUoreC2oxTmo=
+	t=1786505046; cv=none; b=IddFHNO1sWKapxBKnn+JjK9hWDCN0358VNAWYnQPi2iJi0oJGAer1eEwXhSOix8sCvu+owfC1fySDvPxQTUAAE/6IcX+eU5pcnItseNKvK3darpF27TF9vi9GSZoRrezVUM752b4dONlK+SHQeJ0wzK+vusjIlMCIulS5Md+5OI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786489288; c=relaxed/simple;
-	bh=oKTkD7k/OmVMYC6QGDl1G08NwEJItuzdQVg3pLw97yg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e+axkW6LBApU4g3Lrp7AbHq0UpMeDlAqvjEyYj9N3ddlRwAMIHQ49R5PbnWl1C+lKnq6dBFQHRDWmWG94vTcV1TyT2jW0q+LgBrrI+kgsHiyFWtv98vrrD0gs6SbYKCeRzKlb+gzueZ8KeS9oz8uVrwnMtndLYmRwdHBxEprU7g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WyrKvP+v; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786505046; c=relaxed/simple;
+	bh=0odK6xSyoWBXE8YW1H9s3//6ogBtCBPjLnBcdTuq+qA=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=bZH7EkgAsLyVzMGp3jidOTbmvrSdVn3q7s13NyDAJ3hhB5cfm88s9CmcQs4SFIXDBv1FBCF7YRVj/RGtkAW34I6Rv0i29rtUv8cCgH25qIWX053q0C8mA5hqHvrWNAUs6usk81iIuQ1CMFomBtGDJK4eGlYmdOvxUslcJvL6rtY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GiElGb/i; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WyrKvP+v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A191F000E9;
-	Tue, 11 Aug 2026 23:01:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786489286;
-	bh=FeV0k62/mpnJ6VJ9GI5IffO1V7QQd/8uA8y1iY3oRzQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=WyrKvP+vOMmEQL2E4667OuKIizJVPjqSFzrW8YdeeOsVvZfJyidHozqlRMS9OqwLi
-	 xbOtHL/tZ+W7jSO7hxyBJ+c16Eu18eJcmK60jJIBU2eHonQ8tqLrVh0v733chQoubG
-	 zA2OTcoKBl5aFPoV4TYu49S/jX5r0FHd2LVhyLh43y7U235PxkSl54XM9ITz6OR7Ck
-	 rFSodhtsTTGqwDVD5MSZzRN0dVHTKkfXo1Eq9u7VEwufLCYpHO4s0oYMX9saj3ZgjQ
-	 Sf/KoOGilmi/tGGzYFbhckffV5U04llUCqhKlw0KxjDMIDQWOUSFvZA9AvEJKzJbE/
-	 61Zp2ryn3iUpw==
-Date: Tue, 11 Aug 2026 19:01:23 -0400
-From: Konstantin Ryabitsev <mricon@kernel.org>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: Francis Laniel <laniel_francis@privacyrequired.com>, 
-	Michal Wilczynski <m.wilczynski@samsung.com>, Miguel Ojeda <ojeda@kernel.org>, 
-	Benno Lossin <lossin@kernel.org>, Gary Guo <gary@garyguo.net>, 
-	Alexandre Courbot <acourbot@nvidia.com>, Boqun Feng <boqun@kernel.org>, 
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
-	Danilo Krummrich <dakr@kernel.org>, linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, tools@kernel.org
-Subject: Re: [PATCH v3] rust: pwm: replace `core::mem::zeroed` with
- `pin_init::zeroed`
-Message-ID: <20260811-small-ubiquitous-caracal-ebb9cb@meerkat>
-References: <20260603160910.159307-1-laniel_francis@privacyrequired.com>
- <anqsTVj5QGYGiEQ9@monoceros>
- <20260811-garrulous-serpent-of-agreement-cf9b19@meerkat>
- <anunw_qC23XMqye8@monoceros>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GiElGb/i"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 46507C2BCB9;
+	Wed, 12 Aug 2026 03:24:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1786505046;
+	bh=0odK6xSyoWBXE8YW1H9s3//6ogBtCBPjLnBcdTuq+qA=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=GiElGb/irrzBhq3Iai3vxxjybpN2t5n+wS/uwJkIPDJMc62uhjr3phdDK3VyGzNRl
+	 +mfe0+oWO82Px3YNLQqFDC7WXWxlSuXHUfXnPG+VcI2yAOHyQJC7vtKCIxI1hJrHYd
+	 /kjgRCSnI7BmJBmvyFTWjI2px1ezxURC2XYglvCx0Tncg6kjKZlgSveHdg5qAu6MbX
+	 uiOP0nkV2iTcg/GdMfVwud60WJeb/WWgq620M9yKpsdjHVTYb6oLDwhEDkPl7h0VU+
+	 wGnGv+aNvl7M0iBSK8g3sHgQnGw0S1dS5llKV8Pdfkt3ky9dRZ3gSVusMlTYDW5PJj
+	 yi9qlWLwWU3wg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D00C5B572;
+	Wed, 12 Aug 2026 03:24:06 +0000 (UTC)
+From: Ben Zong-You Xie via B4 Relay <devnull+ben717.andestech.com@kernel.org>
+Subject: [PATCH v7 0/3] pwm: add support for Andes platform
+Date: Wed, 12 Aug 2026 11:24:03 +0800
+Message-Id: <20260812-andes-pwm-v7-0-a806da8185d1@andestech.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <anunw_qC23XMqye8@monoceros>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAFPne2oC/33QwWrEIBAG4FdZPNcwM+qY7KnvUXowxjQWNllim
+ rYsefealCVLu+xBYeD//hEvIoUxhiSOh4sYwxxTHPo82KeD8J3r34KMTZ4FATEQaOn6JiR5/jx
+ JhOCYEb3yrcj58xja+LV1vbz+zumjfg9+WgvWRBfTNIzf27IZ19zaqxGozMcSFlgxUllJlHXoL
+ drnbd0UfFf44STW2pl2mC9gQG0LJIvE+iFUV2gASWGljNJFaTUZfuj01f39gVlLkGwBua5RGWP
+ uabNrpeBWm6wBvakcm6ohf0/zrpnMreaslQstokWE/y9fluUHgPDW6d4BAAA=
+X-Change-ID: 20260204-andes-pwm-10ea6611c3cf
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Ben Zong-You Xie <ben717@andestech.com>
+X-Mailer: b4 0.15-dev-09770
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786505045; l=5382;
+ i=ben717@andestech.com; s=20260120; h=from:subject:message-id;
+ bh=0odK6xSyoWBXE8YW1H9s3//6ogBtCBPjLnBcdTuq+qA=;
+ b=gQiRLeM/NEguL3j1eiDpmlUskoGayGrBWwc1WOUJqCoqLaR/Ib83P7fQRSZ5MQS4m1pIrTwcW
+ PO4cDfpsqQcAazdKx9ASGr/dEYwGYPjpabim/8mzwHZd+FkWEOkINYU
+X-Developer-Key: i=ben717@andestech.com; a=ed25519;
+ pk=nb8L7zQKGJpYk0yvrYKjViOZ34A36g1ZIsCmCsP518s=
+X-Endpoint-Received: by B4 Relay for ben717@andestech.com/20260120 with
+ auth_id=610
+X-Original-From: Ben Zong-You Xie <ben717@andestech.com>
+Reply-To: ben717@andestech.com
 
-On Wed, Aug 12, 2026 at 12:56:05AM +0200, Uwe Kleine-König wrote:
-> On Tue, Aug 11, 2026 at 04:54:47PM -0400, Konstantin Ryabitsev wrote:
-> > On Tue, Aug 11, 2026 at 07:04:49AM +0200, Uwe Kleine-König wrote:
-> > > I didn't research what went wrong there and the trailer made it into the
-> > > patch anyhow and adding -S doesn't change the patch. I added the
-> > > tools@k.o mailing list to Cc:, maybe someone there wants to debug that.
-> > 
-> > It was just Miguel responding with a suggestion how to better reorder
-> > trailers. Since we can't tell this case from the case when someone actually
-> > replies with a follow-up trailer, hence the error.
-> 
-> The strange thing from my POV is that before your mail Miguel didn't
-> participate in that thread according to
-> https://patch.msgid.link/20260603160910.159307-1-laniel_francis@privacyrequired.com .
-> I'm confused.
+The ATCPIT100 is a set of compact multi-function timers, which can be
+a simple timer or PWM, or a combination of the timer and the PWM. This
+IP block is a core component of the Andes AE350 platform, which serves
+as a reference architecture for SoC designs. The QiLai SoC also
+integrates this controller.
 
-It came from v2 of the series and was carried over because the patch-id hasn't
-changed (meaning it's the same patch, so any code review trailers still apply).
+This device driver was previously part of the Linux Kernel, and the
+compatible was its IP name "andestech,atcpit100". However, the driver
+and its binding were removed due to the deprecation of the NDS32
+architecture [1]. Although Andes now dedicates our effort on RISC-V,
+ATCPIT100 is still one of our peripheral IPs, and that's why we are
+re-introducing it now. Since only using the IP block name as the
+compatible is forbidden now, change the compatible to
+"andestech,ae350-pwm" and "andestech,qilai-pwm".
 
-https://lore.kernel.org/all/CANiq72n+tyDcabpwZOR1gHb4mycbpTQbzr0QNgi9c48cSnrZ8w@mail.gmail.com/
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=aec499c75cf8e0b599be4d559e6922b613085f8f
 
--K
+Signed-off-by: Ben Zong-You Xie <ben717@andestech.com>
+---
+Changes in v7:
+- Rebased on ukleinek/pwm/for-next
+- (2/3)
+  - Add the missing Kconfig dependencies: select REGMAP_MMIO, and depend on
+    HAS_IOMEM && COMMON_CLK. (Uwe)
+  - Only reject a period shorter than one cycle. With a single cycle the duty
+    cycle can only be 0 or 1 cycle, and both are emitted by parking the
+    channel. (Uwe)
+  - Check the return value of regmap_assign_bits() in andes_pwm_park(). (Uwe)
+  - Select the phase carrying the duty cycle first and convert it to
+    nanoseconds once in .get_state(). (Uwe)
+  - Call devm_clk_rate_exclusive_get() for both clocks so their rates cannot
+    be changed behind the driver's back. (Uwe)
+  - Set chip->atomic. (Uwe)
+  - Set state->polarity before .get_state() returns early for an unavailable
+    clock source.
+- Link to v6: https://patch.msgid.link/20260625-andes-pwm-v6-0-3aef11711017@andestech.com
+
+Changes in v6:
+- Rebased on ukleinek/pwm/for-next.
+- (2/3)
+  - Round a too-large period or duty cycle down to the largest achievable
+    value, and emulate 0%/100% relative duty cycles by parking the channel,
+    instead of erroring out. (Uwe)
+  - Choose the period from the requested period alone, so it no longer
+    depends on the requested duty cycle. (Uwe)
+  - Convert the period to ticks and compute the high/low phases in the tick
+    domain to avoid rounding errors. (Uwe)
+  - Reconstruct the period in .get_state() with a single DIV_ROUND_UP_ULL()
+    over both phases, shared by both polarities, and read the control
+    register with FIELD_GET(). (Uwe)
+  - Set an out-of-range clock rate to 0 so that source cannot be selected,
+    and name both rates in the "no usable clock" error message. (Uwe)
+  - Rename to_andes_pwm() to andes_pwm_from_chip(). (Uwe)
+  - Capitalize error messages. (Uwe)
+  - Tidy up the in-function comment and the limitations list.
+- Link to v5: https://patch.msgid.link/20260330-andes-pwm-v5-0-01c59a659d2c@andestech.com
+
+Changes in v5:
+- Rebased on ukleinek/pwm/for-next
+- (1/3)
+  - Added Rob's reviewed-by tag.
+- Link to v4: https://patch.msgid.link/20260204-andes-pwm-v4-0-67016bb13555@andestech.com
+
+Changes in v4:
+- Updated cover letter title and its commit message.
+- (1/3)
+    - Updated the compatibles and the binding file name.
+    - Added the description to the binding.
+    - Corrected device register size.
+    - Dropped the changes to the MAINTAINERS file.
+- (2/3)
+    - Updated the driver name.
+    - Made the driver support inversed polarity.
+    - Changed the clock selection algorithm.
+    - Made the configuration depend on ARCH_ANDES, instead of RISCV. (Krzysztof)
+    - Dropped the changes to the MAINTAINERS file.
+- (3/3) (new)
+    - Collected all changes to the MAINTAINERS file into a single patch.
+- Link to v3: https://patch.msgid.link/20250123193534.874256-1-ben717@andestech.com
+
+Changes in v3:
+- (1/2):
+    - modified the compatible string. (Krzysztof)
+- (2/2):
+    - added a check for the clock rate to prevent the overflow warning.
+      (kernel test robot)
+    - removed the unnecessary check in .apply(). (kernel test robot)
+- Link to v2: https://patch.msgid.link/20241202060147.1271264-1-ben717@andestech.com
+
+Changes in v2:
+- (1/2):
+    - changed "title" in the yaml file.
+    - removed vendor-specific property, and added clocks property.
+- (2/2):
+    - added a description for hardware limitations. (Uwe)
+    - switched the clock parent depending on the requested setting
+      instead of statically configuring the clock source in DT. (Uwe)
+- Link to v1: https://patch.msgid.link/20241028102721.1961289-1-ben717@andestech.com
+
+---
+Ben Zong-You Xie (3):
+      dt-bindings: pwm: add support for AE350 PWM controller
+      pwm: add Andes PWM driver support
+      MAINTAINERS: add an entry for Andes PWM driver
+
+ .../bindings/pwm/andestech,ae350-pwm.yaml          |  61 ++++
+ MAINTAINERS                                        |   6 +
+ drivers/pwm/Kconfig                                |  12 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-andes.c                            | 365 +++++++++++++++++++++
+ 5 files changed, 445 insertions(+)
+---
+base-commit: b4e94b0418ad6dbe62b6ca53369159ed3d9f0d8c
+change-id: 20260204-andes-pwm-10ea6611c3cf
+
+Best regards,
+--  
+Ben Zong-You Xie <ben717@andestech.com>
+
 
