@@ -1,122 +1,115 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E847E431A34;
-	Wed, 12 Aug 2026 11:16:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1FDB36728D;
+	Wed, 12 Aug 2026 19:28:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786533393; cv=none; b=avevjoCglJI9sVkXbF3n9T7pvTb36Bt2bqWTwcJbwc18OPkw9FSO7FH8qVkOUSBOhA54M+2pCs8h4GSuse+dJ9040Waq0B5xcW1EfQeTxNATRb7Vr+nUwxmypl9LJgrsCIWQOiSNgna2hoq4Q4i/uaI8ro6GUx8dArcKEbV1Lb8=
+	t=1786562916; cv=none; b=CQ7wucTqAaJniGQ9lm54144gOXPKugn+EI+YfWY4/1QVhPkExFu7NrcdyLOzq/D+Vb1qNpIk4hdI0HtCFA4lfx9QWF+dcomhepNVK/+I19Q9D1rsIl0/pIywQ9KDBWkYHqKYUfftHhxhImLsd6ki8+LL+VEFDf/H1ZWfh3VB9KA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786533393; c=relaxed/simple;
-	bh=UkrJAuwGmMF/fNtON2HKSi5JO/fwDV6RkKpWMrh9VcA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KFYoRgJBYe9nxBbW0W8FCkVo5D+9ZT48XTH5YsNo4GVQLvCcE4m0Y8rqKs4BI7kA+rS4jkW2SUmVpuxOJ0Hsth+yCBpQMYkKz/3YCBZDSFnN2V+ewaxs4zsvn/19vnOrZZ7km25ED4CcuwF+UX30BYBBXhWiWLxbN/s+1S1Cxk4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aq7b+b7P; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786562916; c=relaxed/simple;
+	bh=Nodc1poISzZwSd/dSurIGAysUrbHV0LqQc2SaO6STJ0=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=t/iCj8nCjWCCG4p/Ta5OSGB05KI/PccCwr9zwyr+C+8gEUJSpocDSSPEJKgMAiBcu2e/Q+b4pvynJJiD5TuGLmToNbGHN94/enZsSjCs+HnpTqPtWsMgs79piDpbakR5BekfXFrjScYBnxwYop+NWJNFt/lCPxo2lmjTIzmHIqM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hUuFXnK7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aq7b+b7P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFEB71F000E9;
-	Wed, 12 Aug 2026 11:16:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hUuFXnK7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C07B1F000E9;
+	Wed, 12 Aug 2026 19:28:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786533390;
-	bh=bXJAoKuOzaSXieVdd1OyY5L7/X1+2blaPqmx6LTftp8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=aq7b+b7PcLmUOEwd9UicdMfO87JgdcEtptnXSCcIaSWvrXr1ePMlHrIKMCMgDJRoe
-	 3IsYqPg00fvZLBvex1B84lsnSnpAJKQNNfdZJRdlj3o9mEo2sro2TuYIkZQ9yXoH6B
-	 rxMEz5m/yTiX35wWi4zR+Ak4dt3cw4nY1oEgYvPVOvLt4oqEi25Q7AhB4h/8Ac3JTu
-	 1SeA6OSlIJTPkubkkO5OHP610vxPikIYNqJtQyXg72dk32xyBtqVc+RyJL1en1E0LX
-	 qIv4L/33x6zTNJb4+5EFNDuzGkVCOYrxCiUmGjvbn4BjzJNfRI1txUD+5+lgDacvnk
-	 +4etDeFAQiBcw==
-Date: Wed, 12 Aug 2026 13:16:22 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Petar Stepanovic <pstepanovic@axiado.com>
-Cc: Akhila Kavi <akavi@axiado.com>, 
-	Prasad Bolisetty <pbolisetty@axiado.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>, linux-pwm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] dt-bindings: pwm: add Axiado AX3000 PWM
-Message-ID: <20260812-fearless-antelope-of-might-cf3eff@quoll>
-References: <20260811-axiado-ax3000-pwm-v3-0-6ceaccd812cf@axiado.com>
- <20260811-axiado-ax3000-pwm-v3-1-6ceaccd812cf@axiado.com>
+	s=k20260515; t=1786562914;
+	bh=K5CNn8aIVT29di1qS2FYGQcnlcCFvUTt1GoXcoHHt58=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject;
+	b=hUuFXnK7cKwV6HS4kBvAK4OrldF3ukvqu3+/bK3MyBvi/aAHtLGmmoLlBnPQamTdm
+	 TuJTbIIopDLdWizXuu1004QLy5rYgvlOwIFYsnjdx6lQLLvUvR7xSJwuyVAEh9rxOA
+	 n7AtbFmUsM3x/BH4pL6W0kLS+MOGKUGgFCjdqkZIpa+MnTfucTqr+GC+yKkMpOgJV9
+	 kuZjqJzEPatNBD7uW8pt0DJsmTu9N0t2rne7DAqjZOS49s/sFnSPj7s4y5RzFCLhcz
+	 lHFfJgzk0YXhau2X2aUTyAjbP/t5aNlteSPzhtG0u2LvLaa+DJ5sOBVnbqNNgtnhL8
+	 ZpuibDis/P9QA==
+Date: Wed, 12 Aug 2026 14:28:33 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260811-axiado-ax3000-pwm-v3-1-6ceaccd812cf@axiado.com>
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ daniel.baluta@nxp.com, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ linux-pwm@vger.kernel.org, m-chawdhry@ti.com, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, goledhruva@gmail.com, 
+ simona.toaca@nxp.com, Conor Dooley <conor+dt@kernel.org>
+To: Eduard Bostina <egbostina@gmail.com>
+In-Reply-To: <20260812094420.1057067-1-egbostina@gmail.com>
+References: <20260812094420.1057067-1-egbostina@gmail.com>
+Message-Id: <178656291274.677408.8543317562709598309.robh@kernel.org>
+Subject: Re: [PATCH v2] dt-bindings: pwm: Convert TI PWM Subsystem to DT
+ schema
 
-On Tue, Aug 11, 2026 at 02:01:50AM -0700, Petar Stepanovic wrote:
-> The Axiado AX3000 and AX3005 SoCs include PWM controllers that can be
-> used to generate configurable PWM output signals.
+
+On Wed, 12 Aug 2026 09:44:20 +0000, Eduard Bostina wrote:
+> Convert the Texas Instruments SoC PWM Subsystem bindings
+> to DT schema.
 > 
-> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
+> During the conversion, the following updates were made:
+> - 'counter' node was added to the allowed child nodes
+>   list to resolve dtbs_check warnings. Some eqep nodes
+>   use 'counter' instead of 'eqep'.
+> 
+> Signed-off-by: Eduard Bostina <egbostina@gmail.com>
 > ---
->  .../devicetree/bindings/pwm/axiado,ax3000-pwm.yaml | 53 ++++++++++++++++++++++
->  MAINTAINERS                                        |  8 ++++
->  2 files changed, 61 insertions(+)
+> Changes in v2:
+> - Renamed the file to ti,am33xx-pwmss.yaml to match the base compatible.
+> - Required a 'compatible' property in the child nodes.
+> - Reduced the binding to a single example and included the PWM child
+>   nodes (ECAP, EQEP, EHRPWM) in it.
+> 
+> Link to v1: https://lore.kernel.org/all/2026081109d-up2208.687731-1-egbostina@gmail.com/
+> 
+>  .../devicetree/bindings/pwm/pwm-tipwmss.txt   | 58 --------------
+>  .../bindings/pwm/ti,am33xx-pwmss.yaml         | 76 +++++++++++++++++++
+>  2 files changed, 76 insertions(+), 58 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
+>  create mode 100644 Documentation/devicetree/bindings/pwm/ti,am33xx-pwmss.yaml
 > 
 
-Where did you explain reason to drop the tag?
+My bot found errors running 'make dt_binding_check' on your patch:
 
-<form letter>
-This is a friendly reminder during the review process.
+yamllint warnings/errors:
 
-It looks like you received a tag and forgot to add it.
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/pwm/ti,am33xx-pwmss.example.dtb: pwm@48300100 (ti,am3352-ecap): 'clocks' is a required property
+	from schema $id: http://devicetree.org/schemas/pwm/pwm-tiecap.yaml
+Documentation/devicetree/bindings/pwm/ti,am33xx-pwmss.example.dtb: pwm@48300100 (ti,am3352-ecap): 'clock-names' is a required property
+	from schema $id: http://devicetree.org/schemas/pwm/pwm-tiecap.yaml
+Documentation/devicetree/bindings/pwm/ti,am33xx-pwmss.example.dtb: counter@48300180 (ti,am3352-eqep): 'oneOf' conditional failed, one must be fixed:
+	'interrupts' is a required property
+	'interrupts-extended' is a required property
+	from schema $id: http://devicetree.org/schemas/counter/ti-eqep.yaml
+Documentation/devicetree/bindings/pwm/ti,am33xx-pwmss.example.dtb: counter@48300180 (ti,am3352-eqep): 'clocks' is a required property
+	from schema $id: http://devicetree.org/schemas/counter/ti-eqep.yaml
+Documentation/devicetree/bindings/pwm/ti,am33xx-pwmss.example.dtb: pwm@48300200 (ti,am3352-ehrpwm): 'clocks' is a required property
+	from schema $id: http://devicetree.org/schemas/pwm/pwm-tiehrpwm.yaml
+Documentation/devicetree/bindings/pwm/ti,am33xx-pwmss.example.dtb: pwm@48300200 (ti,am3352-ehrpwm): 'clock-names' is a required property
+	from schema $id: http://devicetree.org/schemas/pwm/pwm-tiehrpwm.yaml
 
-If you do not know the process, here is a short explanation:
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new
-versions of patchset, under or above your Signed-off-by tag, unless
-patch changed significantly (e.g. new properties added to the DT
-bindings). Tag is "received", when provided in a message replied to you
-on the mailing list. Tools like b4 can help here. However, there's no
-need to repost patches *only* to add the tags. The upstream maintainer
-will do that for tags received on the version they apply.
+doc reference errors (make refcheckdocs):
 
-Please read:
-https://elixir.bootlin.com/linux/v6.12-rc3/source/Documentation/process/submitting-patches.rst#L577
+See https://patchwork.kernel.org/project/devicetree/patch/20260812094420.1057067-1-egbostina@gmail.com
 
-If a tag was not added on purpose, please state in the patch changelog
-or cover letter why and what changed.
-</form letter>
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
 
-> diff --git a/Documentation/devicetree/bindings/pwm/axiado,ax3000-pwm.yaml b/Documentation/devicetree/bindings/pwm/axiado,ax3000-pwm.yaml
-> new file mode 100644
-> index 000000000000..7297abccbc24
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/axiado,ax3000-pwm.yaml
-> @@ -0,0 +1,53 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/axiado,ax3000-pwm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Axiado AX3000 PWM controller
-> +
-> +maintainers:
-> +  - Petar Stepanovic <pstepanovic@axiado.com>
-> +  - Akhila Kavi <akavi@axiado.com>
-> +  - Prasad Bolisetty <pbolisetty@axiado.com>
-> +
-> +description:
-> +  The Axiado PWM controller found on the AX3000 and AX3005 SoCs.
-> +
-> +allOf:
-> +  - $ref: pwm.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: axiado,ax3000-pwm
-> +      - items:
-> +          - const: axiado,ax3000-pwm
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-So 3000 is listed twice. You need to test your DTS.
+pip3 install dtschema --upgrade
 
-Best regards,
-Krzysztof
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
