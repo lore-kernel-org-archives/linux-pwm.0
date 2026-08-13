@@ -1,87 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from latitanza.investici.org (latitanza.investici.org [185.218.207.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DCDA37E5CA;
-	Wed, 12 Aug 2026 19:44:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4988481AAC;
+	Thu, 13 Aug 2026 15:01:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.218.207.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786563886; cv=none; b=HynsioUIigfkTaq8Np3N8mA0tmnMfkkH9s8OmirVXLRfaj5UhMVx2eE1u6bgdhUdUJrHa+T82Vo3ZCfG/uUiDJRwoN0aQ80k++Ol+mVA19mAcsEgSGsFKvhttsdJ8YnAEdpT6Hyt5wULYiSjtzq3WaNt58YGv9tN/hI7OnCHON8=
+	t=1786633301; cv=none; b=IGHhCc3ti2mu2JPk/tF/futfCloQ373C7LRYyMfj1muOPcvm8tmk0qUU6l8nfbfG5uucvAC1e7vaIoVebXK+nDyrHPMdALT3sov5vv3qLtHkU3FqqaDg0Ey3NOiHdJVjuMCITVHkz5AxZEGF6g1KYjLx61YtNqCzlmKvClzXYXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786563886; c=relaxed/simple;
-	bh=U3TGCPVC2yy3il+YKuGpp732RYB6TSQm8RVz0RS5uCw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sW7qVQDD0j5MDk8BzPNQVbanGSXbrFhKhJV+vDLV8hBJpsD+ucyKhGpQaPcgOf5DsGBZsKWThh2NnBwUr7CrKjzG1bV+gZ9OekpwjXI+I3pt9JjUSMMBJ578sl7j8uLQy2KeZqXDwzPIvl1BvdrfajC0U54SAz5GzQQ0yAXyEQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hevFYgBe; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786633301; c=relaxed/simple;
+	bh=47228c6mwrwCFoOYOFJF314LC9C5iWjAtvP7Exzj3fI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rz8QCWqWIAzEhjcjR6v9f+7FLVJdQ+S3vhE0mx4Sf2bfrYQ5/jMBr6/dJBqKpkh3Hj6pXiWfzDJJDh3J+DWabW/QK07xSUYjQROjxFuRxKQ8eibBlPny8/5r2vVFw15mOQj7ORRfH/8nzVf+TqOvSMfe29gZUlSl4gxoF2LGaQg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=privacyrequired.com; spf=pass smtp.mailfrom=privacyrequired.com; dkim=pass (1024-bit key) header.d=privacyrequired.com header.i=@privacyrequired.com header.b=dScnafpQ; arc=none smtp.client-ip=185.218.207.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=privacyrequired.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=privacyrequired.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hevFYgBe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D80381F000E9;
-	Wed, 12 Aug 2026 19:44:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786563885;
-	bh=uRG41YjUcntiKwh1UKbqg1nGoAcrQJFvwoaaCU2YtPo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=hevFYgBeDxy1TCdmZuiADLNDGERXJTwfSV2iWbeOixOGpv5mRFg88g8utzrvP4uvj
-	 tqtCQqe8FuBh+gAeV0V7qV4F1/aKy0dHSL/zMlyABixTEGV/MkdjSImzA1xeCmbg1Z
-	 Z4w5nhknJ7vsAeTjsxBg4E6L96jDv+QGsSu1d1qkOwpxh2I+WzKDLCrdQ6544cfoWM
-	 XJ0ee+kKXXwPAvW96gh4fXW7RLZ73454H5f7Bqe5/A0vsvfIeAc9WxynITiq0KfWcM
-	 k+mYfIdRXaS1Ejb1k5+6ZC54pLMLktdHJtMUXo2snfJRSrOHPydMUiGNP6+jf+rs0Y
-	 KMbhZSh7ZJKxA==
-Date: Wed, 12 Aug 2026 14:44:44 -0500
-From: Rob Herring <robh@kernel.org>
-To: Eduard Bostina <egbostina@gmail.com>
-Cc: daniel.baluta@nxp.com, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	goledhruva@gmail.com, m-chawdhry@ti.com, linux-pwm@vger.kernel.org,
-	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
-	simona.toaca@nxp.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: pwm: Convert TI PWM Subsystem to DT
- schema
-Message-ID: <20260812194444.GA693080-robh@kernel.org>
-References: <20260812094420.1057067-1-egbostina@gmail.com>
- <178656332725.687853.3345749883291406683.robh@kernel.org>
+	dkim=pass (1024-bit key) header.d=privacyrequired.com header.i=@privacyrequired.com header.b="dScnafpQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=privacyrequired.com;
+	s=stigmate; t=1786633295;
+	bh=7WZnUvfYkOTTsuqH5/XMnYy/uMCnuOzvuQvHa2zGtZo=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=dScnafpQ1xmrpna8EvZGJa4Fw29QjMbeJ1SblJt4cz8Nf4CUuBp44UXjRSjesHVTX
+	 RpVlhM8GQCG13uL2nDfQSRbxXsYZ5J1a/FeTGfGx6akaVRXfydbAspmvqKRs9SccsF
+	 SEqjfFfWNFxsDuu/4PzODYgRuFeoZ31jF2U7zfdQ=
+Received: from mx3.investici.org (unknown [127.0.0.1])
+	by latitanza.investici.org (Postfix) with ESMTP id 4hLT8b41CkzGpB4;
+	Thu, 13 Aug 2026 15:01:35 +0000 (UTC)
+Received: by mx3.investici.org (Postfix) id 4hLT8Z0l31zGp9V;
+	Thu, 13 Aug 2026 15:01:34 +0000 (UTC)
+From: Francis Laniel <laniel_francis@privacyrequired.com>
+To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>
+Cc: Michal Wilczynski <m.wilczynski@samsung.com>,
+ Miguel Ojeda <ojeda@kernel.org>, Benno Lossin <lossin@kernel.org>,
+ Gary Guo <gary@garyguo.net>, Alexandre Courbot <acourbot@nvidia.com>,
+ Boqun Feng <boqun@kernel.org>,
+ =?UTF-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
+ linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org,
+ linux-kernel@vger.kernel.org, tools@kernel.org
+Subject:
+ Re: [PATCH v3] rust: pwm: replace `core::mem::zeroed` with `pin_init::zeroed`
+Date: Thu, 13 Aug 2026 18:01:33 +0300
+Message-ID: <2849575.mvXUDI8C0e@pmachine>
+In-Reply-To: <anqsTVj5QGYGiEQ9@monoceros>
+References:
+ <20260603160910.159307-1-laniel_francis@privacyrequired.com>
+ <anqsTVj5QGYGiEQ9@monoceros>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <178656332725.687853.3345749883291406683.robh@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-On Wed, Aug 12, 2026 at 02:35:28PM -0500, Rob Herring (Arm) wrote:
-> 
-> On Wed, 12 Aug 2026 09:44:20 +0000, Eduard Bostina wrote:
-> > Convert the Texas Instruments SoC PWM Subsystem bindings
-> > to DT schema.
-> > 
-> > During the conversion, the following updates were made:
-> > - 'counter' node was added to the allowed child nodes
-> >   list to resolve dtbs_check warnings. Some eqep nodes
-> >   use 'counter' instead of 'eqep'.
-> > 
-> > Signed-off-by: Eduard Bostina <egbostina@gmail.com>
-> > ---
-> > Changes in v2:
-> > - Renamed the file to ti,am33xx-pwmss.yaml to match the base compatible.
-> > - Required a 'compatible' property in the child nodes.
-> > - Reduced the binding to a single example and included the PWM child
-> >   nodes (ECAP, EQEP, EHRPWM) in it.
-> > 
-> > Link to v1: https://lore.kernel.org/all/2026081109d-up2208.687731-1-egbostina@gmail.com/
-> > 
-> >  .../devicetree/bindings/pwm/pwm-tipwmss.txt   | 58 --------------
-> >  .../bindings/pwm/ti,am33xx-pwmss.yaml         | 76 +++++++++++++++++++
-> >  2 files changed, 76 insertions(+), 58 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
-> >  create mode 100644 Documentation/devicetree/bindings/pwm/ti,am33xx-pwmss.yaml
-> > 
-> 
-> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+Hi!
 
-Withdrawn. Your example is incomplete.
+Le mardi 11 ao=C3=BBt 2026, 08:04:49 heure d=E2=80=99=C3=A9t=C3=A9 d=E2=80=
+=99Europe de l=E2=80=99Est Uwe Kleine-K=C3=B6nig a =C3=A9crit :
+> Hello,
+>=20
+> On Wed, Jun 03, 2026 at 07:09:09PM +0300, Francis Laniel wrote:
+> > All types in `bindings` implement `Zeroable` if they can, so use
+> > `pin_init::zeroed` instead of relying on `unsafe` code.
+> >=20
+> > If this ends up not compiling in the future, something in bindgen or on
+> > the C side changed and is most likely incorrect.
+> >=20
+> > Suggested-by: Benno Lossin <lossin@kernel.org>
+> > Link: https://github.com/Rust-for-Linux/linux/issues/1189
+> > Reviewed-by: Alexandre Courbot <acourbot@nvidia.com>
+> > Acked-by: Michal Wilczynski <m.wilczynski@samsung.com>
+> > Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.com>
+>=20
+> Applied to
+>=20
+> 	https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/f=
+or-next
+>=20
+> for the 7.3 merge window.
 
-Do not use DT_SCHEMA_FILES to test. You can do 
-'make pwm/ti,am33xx-pwmss.yaml' which is a bit more complete of a test.
+Thank you for the merge!
 
-Rob
+>=20
+> b4 behaved strange on that patch:
+>=20
+> 	$ b4 am -s -l -t -3 20260603160910.159307-1-laniel_francis@privacyrequir=
+ed.com
+> 	Grabbing thread from lore.kernel.org/all/20260603160910.159307-1-laniel_=
+francis@privacyrequired.com/t.mbox.gz
+> 	Analyzing 2 messages in the thread
+> 	Looking for additional code-review trailers on lore.kernel.org
+> 	Analyzing 23 code-review messages
+> 	Checking attestation on all messages, may take a moment...
+> 	---
+> 	  =E2=9C=93 [PATCH v3] rust: pwm: replace `core::mem::zeroed` with `pin_=
+init::zeroed`
+> 	    + Link: https://patch.msgid.link/20260603160910.159307-1-laniel_fran=
+cis@privacyrequired.com
+> 	    + Signed-off-by: Uwe Kleine-K=C3=B6nig <ukleinek@kernel.org>
+> 	  ---
+> 	  =E2=9C=93 Signed: DKIM/privacyrequired.com
+> 	---
+> 	Total patches: 1
+> 	---
+> 	NOTE: some trailers ignored due to from/email mismatches:
+> 	    ! Trailer: Suggested-by: Benno Lossin <lossin@kernel.org>
+> 	     Msg From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+> 	    ! Trailer: Acked-by: Michal Wilczynski <m.wilczynski@samsung.com>
+> 	     Msg From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+> 	    ! Trailer: Signed-off-by: Francis Laniel <laniel_francis@privacyrequ=
+ired.com>
+> 	     Msg From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+> 	    ! Trailer: Reviewed-by: Alexandre Courbot <acourbot@nvidia.com>
+> 	     Msg From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+> 	NOTE: Rerun with -S to apply them anyway
+> 	Preparing fake-am for v3: rust: pwm: replace `core::mem::zeroed` with `p=
+in_init::zeroed`
+> 	  range: 2707b9df955d..81c3f2b030a1
+> 	Preared a fake commit range for 3-way merge (2707b9df955d..81c3f2b030a1)
+> 	---
+> 	 Link: https://patch.msgid.link/20260603160910.159307-1-laniel_francis@p=
+rivacyrequired.com
+> 	 Base: applies clean to current tree
+> 	       git checkout -b v3_20260603_laniel_francis_privacyrequired_com HE=
+AD
+> 	       git am -3 ./v3_20260603_laniel_francis_rust_pwm_replace_core_mem_=
+zeroed_with_pin_init_zeroed.mbx
+>=20
+> I didn't research what went wrong there and the trailer made it into the
+> patch anyhow and adding -S doesn't change the patch. I added the
+> tools@k.o mailing list to Cc:, maybe someone there wants to debug that.
+>=20
+> Best regards and thanks for your contribution,
+> Uwe
+>=20
+
+Best regards,
+
+
