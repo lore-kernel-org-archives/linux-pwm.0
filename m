@@ -1,240 +1,198 @@
-Received: from CWXP265CU010.outbound.protection.outlook.com (mail-ukwestazon11022086.outbound.protection.outlook.com [52.101.101.86])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1335470421;
-	Tue, 25 Aug 2026 13:37:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.101.86
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787665032; cv=fail; b=N2BUJzMx5rrBf1CYe4YRrhJpZBzOxRhsMc38f3Ejg+jU33ajoti8jZ3hEjAbl+l4ygyGflFmcwUCbFiYTRGGTuBis8ku3TRYWbniLr0+UeM7BoEYqHOepdbGI0Xol5JlFKebrvJfb9sUsPpL3/R+GSe97uNoV5gfTV8mXx4hGG8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787665032; c=relaxed/simple;
-	bh=Zy+OOeDq3ZYpZkQ98k7kLPeUBp8dalKmgW1we7zpO7Y=;
-	h=Content-Type:Date:Message-Id:From:To:Cc:Subject:References:
-	 In-Reply-To:MIME-Version; b=umBe4VOMsa0VsXh6HV6Wi0HzPH5n8YsylIpxz1LtN6CpLOnaC5R13+FYoUN0vOU3U+beS1qSts3c2xAStlNLrZ/ljpD9PJpIZGn5csCQYX2EjvXSjtfbg0RCEEOUtSZe8Ny+tDTwOWPUs1IyqYw61ihXcLjcP9+rUhuCjtOVCLg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=uz8eUJa+; arc=fail smtp.client-ip=52.101.101.86
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9E7235C6A1
+	for <linux-pwm@vger.kernel.org>; Tue, 25 Aug 2026 15:48:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787672934; cv=none; b=aqZ3yHSV3MtsXDLzQXMPtcHipZvOQNabTeQBO7Tm/CAsNiDnjevuxPr5XOoWnRBzS79iVKo7wxCKdGQcyiOtSKSom+ZgmNm5Q3o/opoHAvWJqkRckWjMna56Bpqrv8KXxEvWAaI3gR9qNKoiWkMlVKwQgUwI4ybaE/tu0UdeU/U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787672934; c=relaxed/simple;
+	bh=rxyHzPNUz9b4zNYK7txdcG7VFbrJRknz+tzv7o8YuWs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WPZZZE31UMctC8ixMYT4mCq+TvzMbItqvspbXbCbncycWMmBVcTbafBWmlUPyjdI5irrmn33w8e9IiGEUk/6KrBi956mxotGI4ci/lnz+hNXZ5SctxEGyU28wAloReOVU4g32FaxNmbglX/nsOP3n5jn+ixpypwx2w2+xTs9jEg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N+xAQa/0; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="uz8eUJa+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=soPK5Hzeh1Ma2hiY3VvNvVd65OXdpJG9p0x9/kryqMmqLV8keCsb6ujUQ8BdHsMlIjPMU/OT0LczFuEOD0i52V6NihZ8OEYsCNKTVTWSQdJEIdzuuRZouuwboyVWNfl4Vp06W/TAZfEuq5C/hjeyr6UtlY05eiQae+hjLwMbyjR/vrUHYthdLLDbinY1/h06c8qIfVeHZBFPPBXu86H/5rg7dlJsYVswPuMZI5EF+r15oX8v0qq8GAK0kVKh7gNiuZdWTLYFGk8u4+S789KB+dU6gfC8BcuWQCi0PovsFQgc794BjLs/N8S72NY6ZxnAghByVGFXkXV32TuRSh8izQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ya9oRL8hQP+2VLtBxg6F1Mzaryv1xrYEgcVxsJjZcJ8=;
- b=Ukpy0hvJt/zFRT7icrDACplAs+vmDny/IoIE09uGM0I/G89/fXluOcirb/IiyDhkUOJzb0+W1spGLB4zt82ircFJZL8rDZ+Egjn6B+QC7Q07o/8ROyxs0QEObWaDMKo1vScA/nthmfic1NhPxSOD1t8YG+ELk7EZQC54fJ9jtmv7dtAdkQ/P3wSFNc+YEMq/f0W0UgoWORw64xL8Ut/ThQKH8yVGPFnR4xF7WUjp06XZHBohfbNxGkctT1vOr3eIGM3DmfYl9q+J61fo/zr6grfo+3mvrFkW7Ox8lJop8mj40ZvV/w5x3nYxrAXG4nRMSXHFGvMCEMdOvLEI2w4iTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
- dkim=pass header.d=garyguo.net; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ya9oRL8hQP+2VLtBxg6F1Mzaryv1xrYEgcVxsJjZcJ8=;
- b=uz8eUJa+6rfo6qLAawCaUbE6dE3IhmFU1x7osIlmNjCzo+EC9qU1wV2n5ALAwfHLh/+qM/L3seqLbbMM/0SAyFjIvAkJrk8q/XoXLlkK9QXSGN0COVVFP1dc7EnP6NSjFKk2rSRuNOPT8a4S1IEv2ab5kvGbgJxP1iDOJtdubsk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=garyguo.net;
-Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:4ab::19)
- by CWLP265MB2929.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:cb::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.6; Tue, 25 Aug
- 2026 13:37:06 +0000
-Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
- ([fe80::f60b:1537:68d7:4fc1]) by LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
- ([fe80::f60b:1537:68d7:4fc1%4]) with mapi id 15.21.0360.005; Tue, 25 Aug 2026
- 13:37:06 +0000
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 25 Aug 2026 14:37:05 +0100
-Message-Id: <DKY2D3AP6PZG.9RIX8KB3FF7P@garyguo.net>
-From: "Gary Guo" <gary@garyguo.net>
-To: "Danilo Krummrich" <dakr@kernel.org>, "Andreas Hindborg"
- <a.hindborg@kernel.org>
-Cc: "Lorenzo Stoakes" <ljs@kernel.org>, "Vlastimil Babka"
- <vbabka@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, "Uladzislau
- Rezki" <urezki@gmail.com>, "Miguel Ojeda" <ojeda@kernel.org>, "Boqun Feng"
- <boqun@kernel.org>, "Gary Guo" <gary@garyguo.net>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
- <lossin@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>, "Trevor Gross"
- <tmgross@umich.edu>, "Daniel Almeida" <daniel.almeida@collabora.com>,
- "Tamir Duberstein" <tamird@kernel.org>, "Alexandre Courbot"
- <acourbot@nvidia.com>, =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
- "Lyude Paul" <lyude@redhat.com>, "Greg Kroah-Hartman"
- <gregkh@linuxfoundation.org>, =?utf-8?q?Arve_Hj=C3=B8nnev=C3=A5g?=
- <arve@android.com>, "Todd Kjos" <tkjos@android.com>, "Christian Brauner"
- <brauner@kernel.org>, "Carlos Llamas" <cmllamas@google.com>, "Rafael J.
- Wysocki" <rafael@kernel.org>, "Dave Ertman" <david.m.ertman@intel.com>,
- "Leon Romanovsky" <leon@kernel.org>, "Paul Moore" <paul@paul-moore.com>,
- "Serge Hallyn" <sergeh@kernel.org>, "David Airlie" <airlied@gmail.com>,
- "Simona Vetter" <simona@ffwll.ch>, "Alexander Viro"
- <viro@zeniv.linux.org.uk>, "Jan Kara" <jack@suse.cz>, "Igor Korotin"
- <igor.korotin@linux.dev>, "Viresh Kumar" <vireshk@kernel.org>, "Nishanth
- Menon" <nm@ti.com>, "Stephen Boyd" <sboyd@kernel.org>, "Bjorn Helgaas"
- <bhelgaas@google.com>, =?utf-8?q?Krzysztof_Wilczy=C5=84ski?=
- <kwilczynski@kernel.org>, "Pavel Tikhomirov" <ptikhomirov@virtuozzo.com>,
- "Michal Wilczynski" <m.wilczynski@samsung.com>, "Ira Weiny"
- <iweiny@kernel.org>, "Philipp Stanner" <phasta@kernel.org>,
- <rust-for-linux@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-mm@kvack.org>, <driver-core@lists.linux.dev>,
- <linux-block@vger.kernel.org>, <linux-security-module@vger.kernel.org>,
- <dri-devel@lists.freedesktop.org>, <linux-fsdevel@vger.kernel.org>,
- <linux-pm@vger.kernel.org>, <linux-pci@vger.kernel.org>,
- <linux-pwm@vger.kernel.org>, <linux-usb@vger.kernel.org>, "Oliver Mangold"
- <oliver.mangold@pm.me>
-Subject: Re: [PATCH v20 7/8] rust: Add `OwnableRefCounted`
-X-Mailer: aerc 0.22.0
-References: <20260824-unique-ref-v20-0-490735672187@kernel.org>
- <20260824-unique-ref-v20-7-490735672187@kernel.org>
- <DKY1WYBNR288.36W5V60TR81MG@kernel.org>
-In-Reply-To: <DKY1WYBNR288.36W5V60TR81MG@kernel.org>
-X-ClientProxiedBy: LO4P123CA0560.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:33b::18) To LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:4ab::19)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N+xAQa/0"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-c2074710751so900164266b.1
+        for <linux-pwm@vger.kernel.org>; Tue, 25 Aug 2026 08:48:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787672931; x=1788277731; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=jebXbQa4a7c2PMydy+yk1SSG+FUmio3GZyCN/zd+c9c=;
+        b=N+xAQa/0ceBiYhWnEYB3U+mnD5IDt0WJpcT6pwq9cZgtakR84L+YueI7kLqSVNZdS+
+         MvEeAD4KMhPnGCLC51vKWkrXm8aMMulWV4QUKJis2Q2cAxfopDiYWUVOEQm6HHk03T1e
+         RWQnNQTUmFq++KJFbti84+f5PCeEiMOJP6vKLRLKwUT5k6h/XpdPd8qd0AUKlxXt6Oe3
+         n7cneK0x+ypQNWtPWJPQmAmuQdSaqzmrA5WFgTKp1qSfj4DjDNyzi+QGeKwZVGdoTXCL
+         6ZY04SJz2ix/2q0H1fM859BS1FPNBbVzHYhs4z09JvAXtC9LPsUrE/J4BOddsad4TcEw
+         zRcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787672931; x=1788277731;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=jebXbQa4a7c2PMydy+yk1SSG+FUmio3GZyCN/zd+c9c=;
+        b=NHOuMyZxGMM+UGHqgRglniYUaafcpzlWA8VBkVFXzQjIfZLwBERmOx1w2ioa6m35QC
+         aHaWQj0Rrx003xcMM7+cC18X+YHEZP5P97V50cvD5f3X/AleOKqd8t19E7wNMaRzKzMy
+         gsO/eB2Z2HMD0mK8XMmXkN5wZkcv/ND9vYfls7Ao1M5SMn9QfTCxtVC2FhxxPAxPr0QQ
+         2qYDwM/wqKzJ9ezv2hBaS2uSXClQH32GuMDCN9YAKmFAKBRw63Lx1GaP1+udKZOlAtKg
+         izvv5FisCfg3TH7c0HAeYEJzsE+kDyFgfpeHV80EtORDunMrI6+wI5u8a4DSuNP69Rd9
+         M3Sw==
+X-Forwarded-Encrypted: i=1; AHgh+Ro6e8FNvzcfLdsxy+rAZDFPMdsZibpVZzTZx1ll+4JnZ4OBxVDUOX948UJOSyfRtcOD2L5SxtSyYuo=@vger.kernel.org
+X-Gm-Message-State: AFuF++lodOWT2S/sZoEgqg6c+na0iRPHlvchKKq/h8OToR4n9s913H/O
+	xoIT/L77P8P/JQRAwgom6fd4A0bIn6OXvS0M0/Y7sKYpV7spEhKNkzRJ
+X-Gm-Gg: AR+sD12FLJkkdZ3maI7cOvKNTusimCtP7p0xqMHI1hBWTgIi3P8YltvOLmdOsIcEfzM
+	EwXw4HzRM+lDUCYHA+2rDE2A2AMlNM8n5ZlfjVLtdc7F0OWFkwYPxgi92Khy7lA+cw3fTEZSc3U
+	Tsz9CsK7KTYeTfAgHwY/Cll+cJKKjkJgUF5NzL3YXHzg41rXMuD1/KXKP+YyH66ExB37dmgtWI3
+	joiyZOqvHWGo8RtPkhHbYOfbrU1fd4M92LZGu8E7pxuniQnd3P+X+Vv+fmfCJQKMaHv8KSy80H8
+	zE2ThkRFDRjp+7mYPdmLdRlz834ubhvyIAgy4j633TWK2NIjKeOz4WJi7Y8xp5049ni9VtkGgO8
+	vmIs0z/DySKI6yM3e2KMOuA+K8g7uGzd2xzObrNYyXsbFsZHogInDYmYDWU3tt07uEwbSuTgN0r
+	CMRxOtAYIwpLeO6TNQFqtai2rHuueVm3M2dVgs8T3hBQmKl0UJ78n51HMkesPWJNR3US4Pv713Z
+	Hvw6fUoDd8Ds6dA6LX5W+E=
+X-Received: by 2002:a17:906:7316:b0:c19:45e3:2f57 with SMTP id a640c23a62f3a-c2491cbca79mr3035402366b.9.1787672930739;
+        Tue, 25 Aug 2026 08:48:50 -0700 (PDT)
+Received: from localhost.localdomain ([2a00:23c4:a702:d301:81d:57c0:e4cb:959c])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c250a6fd69asm16682066b.18.2026.08.25.08.48.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2026 08:48:50 -0700 (PDT)
+From: Biju <biju.das.au@gmail.com>
+X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	linux-pwm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Biju Das <biju.das.au@gmail.com>
+Subject: [PATCH v8 0/9] Add Renesas RZ/G3E GPT support
+Date: Tue, 25 Aug 2026 16:48:28 +0100
+Message-ID: <20260825154847.197948-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LOAP265MB8560:EE_|CWLP265MB2929:EE_
-X-MS-Office365-Filtering-Correlation-Id: 55cd4131-fb3b-4955-65fb-08df02adf49c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|10070799003|7416014|376014|366016|1800799024|10067099003|6133799003|3023799007|22082099003|18002099003|4143699003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	pI7vH5zk0fwrZi33VGpjVwtMdNELTnTL14q7n2jxhjyNl0rVT1z7TMUWa8wCH4Ki0nlr/kHq3quHHfIGlpluPf+96fZlgn1d7pSznlUUacjYP9H8ZbzPBHwaLBcMrmdp9n5hxMwRa7IvKWt/RbhJ+UxwelLgqIJyad0xNozwtTD9sbxIith8ugiyZOjD80CNlt5xMzXAIR06/iPKo+hd7LcSOuvKA9O276R1CBzui18rHlnTlOUH2PaHOePw5VnfXQwKesJkKF/4d5zjchi5q7qFveq5yVnUzyyVp/kvKHKRIZCb73xn4tuCUYY1k8wYXvy0G9gaOaFMGE4B2vhbNt+HVAz0E2GwK3+1/d3WavLMZZNyYAHWqWOfMmACzj+ONlLWxZcAKwqN22fVFQ7Yiic4Wy2f+nJ3fHRvDEOqHVKeXQJd9HhpQGXJWLTr00sBzPW+0omei7YMDT0uWp9bB3MpxpP0cAqkDv0v+0kf2FQOfLZ3jqpceejh5AdftoM3zbnKg5Iw/W7Q6xhY8waqWcKuQWt5yj2Xzmn+wtucKOpjlkY+Q9l2xP1ddHUgUii1CqBaTCKjpROW0mi2khMffHn7GyuBP9Z1qU12JVhY2p/l4RJU/y3tCLPVezF39PsEk6Or0cfsOsuk6JdRVzPEAMTjkevcZyo7yHZJ5uJ6wuQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(10070799003)(7416014)(376014)(366016)(1800799024)(10067099003)(6133799003)(3023799007)(22082099003)(18002099003)(4143699003)(56012099006);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Vi8zVjk3R2ZrTnVvNVFLbG1tOGU3dVNDS1ZqdDVKSkNmdEVmMnZTQXJPYTRC?=
- =?utf-8?B?TmNya3lVekd2WWtWcTJPM1J3THJpMGZYM213U1htQWxuMWNWL0E2eEpHUmFy?=
- =?utf-8?B?VGlXSHQwelNzYitSZUhGaHZic2d4YVl4NW1vTnR5eEY0QXBtc1dEejVkaFNh?=
- =?utf-8?B?Mm5iNi9xK3VxY3E1VTRHQjdDdVdGWGMrdlpCN2s0U210U3Nkc0p2TUxqY2hz?=
- =?utf-8?B?dUd0bkhFbXc4TCtwMXRJVm9IL3Y3T25nWjN2eUJuWEM0cVV3bWtBVHBkL09K?=
- =?utf-8?B?blNUNFB3UTlKVDhtZnNDcEFnd3p5b3BQb1pQeEdiY0R2UldhS0lwOTBVSmhw?=
- =?utf-8?B?eWdkS0ppeDZ1SkZybDhYQW5tRGY5U0FsS2NIL0xHcCtBUGIzTUgrdmZMR3dC?=
- =?utf-8?B?STFzVzgxMnpCSndobjRVZ1J5bC9iWUZZMFlUc0IxMTlyRXdCbmhFYk9Eb0F0?=
- =?utf-8?B?V0E4Yk1QWmdrYmdxUmxmOXJaclVRbzVEd0RYSEtOMDRMNmN6a1VyelJzTG9a?=
- =?utf-8?B?b1oyc0NHRVdvNFlGNU0rVDlEbnlHbmxQb2poRXJIS2RPZGF0Zk84ZmZHZTRp?=
- =?utf-8?B?Q2ovOHB4c3l4UEoramJJK1hSWDlzWXU0SmtoSFQ3SjVCWFJ5dEd4am4zZ0Ni?=
- =?utf-8?B?TzNIeXlZT3NVVWdHdVQ0KzlIdnFXQ2hQWlpVL0VQdkxQMUZjaTV0TnhHZ29D?=
- =?utf-8?B?VS9XSUp2NUJMWjVHV1o3WWw3MU9VOURLaVpaSTQ4OWNvakVZdk51ckN0Vm9n?=
- =?utf-8?B?TjQwVGUzWDQwNzhVWU03bXlqZEJUdkY1NE9tZncvU3hRN0kxa3V3M2EvaXFQ?=
- =?utf-8?B?MHZXY2RZM0FLQzI2K0Z5QzM2eCtsaFIwWDlITkZUcWNtcDc3Qmo2RE5lUEZR?=
- =?utf-8?B?WUtsYWlBZjJNUjlIT1JIWHlvbUF1V3g0L281enQzM2g3bVYxWkNibjFTNEEy?=
- =?utf-8?B?VDY5a2ZwUGRzS3FGTUFhOXB1SmNMMllzMUhxTE1QSHJ6TUQzRkMwYkhhQWRy?=
- =?utf-8?B?dnpqVWRIaDAzMWU0bmZjYnd5dmdtMEpaOTVsY0QwZGFtL01YYnNwVnM0b2l0?=
- =?utf-8?B?RFR4UHBRZDUvVENEQnlPVW1kOEV2VFdVY2hmWlZwMG0rMUZuRFV3dWZpSVpo?=
- =?utf-8?B?dDNLNktBaTMreDUzY1BQdy9FS21VeFR4WHlsWTF5VlFIZ3JFSVArc2d5UWhx?=
- =?utf-8?B?QmJvTW50SDdYTjhhclA5d2tOZ0ZobWtzZ2tBUVNPUG1KRzJOeithQkVqeW9K?=
- =?utf-8?B?Y1p5NmpNcDZGeTFuZ1ptUDdEUWUySkc4L1FheGE5NytXVVZyK1I3UmRFWGdB?=
- =?utf-8?B?MXhzTXNKdml2TUl4M0hGaDZsanBPOUtUTTJRRHJndFVsNUp2U3NKZERuOGlt?=
- =?utf-8?B?RFF3a3FQUGtkbWxucUZFRHZYdTIwZ2w5SXhiOXBQeUJURG5OVFhJd2h5dFNY?=
- =?utf-8?B?WlRXdE13OEM4eEJDMEhZaFByaHdHMWtrRHdoMTJDMjhyTXExZTNmd2VsOE1Q?=
- =?utf-8?B?c200S015TEFxQ2FoNWVRblRVeXpwMjV2WEJlbVlHTndMb2lRVCtMMmlFMFFo?=
- =?utf-8?B?VlVHSWxUc282aVVnZXBJWjZpZTlrYURaRkVXUEJIcE84bjdaQnhyOVNaTDNQ?=
- =?utf-8?B?Vk00V1RpWEtoL3B6ZEorZUl5Z1o3RkNjeDBLQ2ZQYXZPZ1pvWTFudzBDdlFq?=
- =?utf-8?B?QWkyczY1ZS9LcFRXRkR5VlZYWXdnOWJCQjVNOTBjV0ZyV2R2d2RTdWdBdHNS?=
- =?utf-8?B?eWs1U0EwYWFSR0xhbDFUWktBZ2tjZlpRYm12eTZ0eENRTUR0K0hnZEYya0FQ?=
- =?utf-8?B?eUh0K3dDNjlJOTNYRjhnMFZoczI5RDN0ZDUyNEw3TFFGNUsrTENRMW4yNXRp?=
- =?utf-8?B?Z005MTR5OXNOdzZxVll1RkdkNFlkNmExV3FrRTZUU0pTcWhIc210MXhDM1M3?=
- =?utf-8?B?UGdzSnZKWU9ad3M4ZENtSDJub0kxRDFhcVlaM0V2M1Vqcy9zeWVZS0h3NHZL?=
- =?utf-8?B?ckh4YTVZcXBTRWV5TWFnaGRsQVVxbjlUcDkrck1QbnBncXRrUU5NUHJ5bDdt?=
- =?utf-8?B?TG1KM2JYNlUrVUFibzdXU0FzNE8wV1ZacmJPbWVGQmFvOVpKUDZSbFpkTFZK?=
- =?utf-8?B?bGIwVUJSQXRIbWJQWVpCNTIrUnkzUUpYWnlac0hxVGwzcURJZDlQblAvODdk?=
- =?utf-8?B?cmRwK1BvZzNvaGsyRTVtUGNNWWtxQkxZL0pnd0I5RncxZ3NHNXJoWFZCbTVp?=
- =?utf-8?B?TS9PMlJidExtL2cwam0vQTBCOXZhWk9EOXhwcHJsYXNxd2VvQUt5NVJxazNM?=
- =?utf-8?B?VlZ1WmZnWS9mT3E2ejN5ZDk3WnY3cU1JQlJ0Y1pxU1VVbXh5M0Y2QT09?=
-X-OriginatorOrg: garyguo.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55cd4131-fb3b-4955-65fb-08df02adf49c
-X-MS-Exchange-CrossTenant-AuthSource: LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2026 13:37:06.7305
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ALYGD5KXtFjCjlHERzfTe5xeiAY16ZVzMXD5zwRYCceH7qCL+ulKruVPV4cG6JZttYO2EAq7s80+lbqKyFH9dg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP265MB2929
+Content-Transfer-Encoding: 8bit
 
-On Tue Aug 25, 2026 at 2:16 PM BST, Danilo Krummrich wrote:
-> On Mon Aug 24, 2026 at 1:17 PM CEST, Andreas Hindborg wrote:
->> +/// struct Foo {
->> +///     refcount: Cell<usize>,
->> +/// }
->> +///
->> +/// impl Foo {
->> +///     fn new() -> Result<Owned<Self>> {
->> +///         // We are just using a `KBox` here to handle the actual all=
-ocation, as our `Foo` is
->> +///         // not actually a C-allocated object.
->> +///         // INVARIANT: We initialize `refcount` to 1, satisfying the=
- invariants.
->> +///         let result =3D KBox::new(
->> +///             Foo {
->> +///                 refcount: Cell::new(1),
->> +///             },
->> +///             flags::GFP_KERNEL,
->> +///         )?;
->> +///         let result =3D KBox::into_non_null(result);
->> +///         // SAFETY:
->> +///         //  - We just allocated the `Self`, thus it is valid and we=
- own it.
->> +///         //  - We can transfer this ownership to the `from_raw` meth=
-od.
->> +///         Ok(unsafe { Owned::from_raw(result) })
->> +///     }
->> +/// }
->> +///
->> +/// // SAFETY: We increment and decrement each time the respective func=
-tion is called and only free
->> +/// // the `Foo` when the refcount reaches zero.
->> +/// unsafe impl RefCounted for Foo {
->> +///     fn inc_ref(&self) {
->> +///         self.refcount.replace(self.refcount.get() + 1);
->> +///     }
->> +///
->> +///     unsafe fn dec_ref(this: NonNull<Self>) {
->> +///         // SAFETY: By requirement on calling this function, the ref=
-count is non-zero,
->> +///         // implying the underlying object is valid.
->> +///         let refcount =3D unsafe { &this.as_ref().refcount };
->> +///         let new_refcount =3D refcount.get() - 1;
->> +///         if new_refcount =3D=3D 0 {
->> +///             // The `Foo` will be dropped when `KBox` goes out of sc=
-ope.
->> +///             // SAFETY: The [`KBox<Foo>`] is still alive as the old =
-refcount is 1. We can pass
->> +///             // ownership to the [`KBox`] as by requirement on calli=
-ng this function,
->> +///             // the `Self` will no longer be used by the caller.
->> +///             unsafe { KBox::from_raw(this.as_ptr()) };
->> +///         } else {
->> +///             refcount.replace(new_refcount);
->> +///         }
->> +///     }
->> +/// }
->
-> This is valid as Foo is !Sync, but I think it does look racy on casual re=
-ading
-> and possibly even encourages people to do the wrong thing, i.e. to peek a
-> reference count and subsequently act on the read value.
->
-> Besides that, if the value can't be shared across tasks it's not overly u=
-seful
-> in the kernel to reference count it in the first place. Do you have a bet=
-ter
-> example for this?  Maybe a broken down version of the one that motivates =
-the
-> patch?
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-I think the series is very old and might even predate the `sync::Refcount`.=
- But
-given that we have that type now, the example should do the correct thing a=
-nd
-use that instead.
+This series extends the RZ/G2L GPT PWM driver with RZ/G3E SoC support.
 
-Best,
-Gary
+The RZ/G3E GPT has a number of hardware differences compared to RZ/G2L:
+it exposes 16 channels (across two GPT instances of 8 channels each),
+uses a 4-bit GTCR prescaler field (versus 3-bit on RZ/G2L), and has a
+discontinuous prescale sequence with powers-of-2 scaling rather than the
+continuous powers-of-4 sequence on RZ/G2L. It also has additional clocks
+and resets (bus clock and rst_s).
+
+v7->v8:
+ * Cached prescale value.
+ * Updated rzg2l_gpt_write_waveform() for caching the period, If the
+   channel is already enabled and the user changes its period.
+ * Updated rzg3e_gpt_calculate_prescale() with >= 64.
+v6->v7:
+ * Reordered the patched moving POEG support to last.
+ * Replaced USEC_PER_SEC->NSEC_PER_MSEC for period/duty cycle
+   conversion.
+ * Avoided recalculation of prescale, if is_small_second_period == true.
+ * Moved `wfhw->gtccr = 0` into the if block in rzg2l_gpt_config().
+ * Added rzg2l_gpt_poeg_link_channels() and used __free for deallocating
+   device node pointer.
+ * Replaced dev_err()->dev_err_probe() in rzg2l_gpt_poeg_link_channels().
+ * Replaced local variable cells with num_poeg_pairs in
+   rzg2l_gpt_poeg_init().
+v5->v6:
+ * Added patch for fixing period_ticks overflow.
+ * Added patch to add missing newlines to dev_err_probe() messages.
+ * Dropped extra space in poegs variable assignment in
+   rzg2l_gpt_poeg_init().
+ * Updated the comment sections of rzg2l_gpt_poeg_init() with POEG and GPT
+   in upper-case and replaced configure->configures.
+ * Format specifiers in dev_err() changed from %d to %u in
+   rzg2l_gpt_poeg_init().
+ * Dropped local variables pv and dc from rzg2l_gpt_round_waveform_tohw().
+ * Dropped blank line in rzg2l_gpt_round_waveform_tohw().
+ * Moved assignment of rzg2l_gpt->period_ticks[ch] to *_write_waveform().
+ * Restored clamping of duty_ticks with period_ticks in
+   rzg2l_gpt_round_waveform_tohw().
+ * Simplified rzg2l_gpt_write_waveform() using else if statement.
+ * Dropped local variable gptr in rzg2l_gpt_write_waveform().
+ * Moved mutex after early return in rzg2l_gpt_round_waveform_tohw().
+ * Dropped extra parameter rzg2l_gpt from rzg2l_gpt_calculate_prescale()
+   in rzg2l_gpt_round_waveform_tohw().
+ * Updated comment in rzg2l_gpt_calculate_period_or_duty().
+ * Updated rzg3e_gpt_calculate_prescale().
+v4->v5:
+ * Merged GPT linking POEG patch series here.
+ * Dropped suspend/resume patch; will be added later.
+ * Updated commit description for patches #2, #4, #5, and #6.
+ * Replaced return type of rzg2l_gpt_poeg_init() from void to int and
+   probe() check this return value.
+ * Added more error checks in rzg2l_gpt_poeg_init().
+ * Added a patch to drop the unused rzg2l_gpt_chip parameter from
+   rzg2l_gpt_calculate_prescale().
+ * Updated rzg2l_gpt_round_waveform_tohw() to initialize gtccr when the
+   period of the second channel is smaller.
+ * Replaced period_ticks with RZG2L_MAX_TICKS for the duty_ticks maximum
+   value check in rzg2l_gpt_round_waveform_tohw().
+v3->v4:
+ * Added wave form callback conversion back to this patch series.
+ * Updated rzg2l_gpt_is_ch_enabled() fit into 80-character limit for
+   consistency with other functions.
+ * Dropped field_{get,prep} as mainline now support it.
+ * Updated commit description for patch#3
+ * Retained RZG2L_GTCR_TPCS bit definitons
+ * Replaced gtcr_tpcs_mask->gtcr_tpcs
+ * Updated commit header and description for patch#4
+ * Renamed prescale_pow_of_two_mult_factor->prescale_mult
+ * Added RZG3E_GTCR_TPCS bit definition for RZ/G3E and added to
+   rzg3e_data.
+ * Added error checks on suspend() and device set to operational state
+   on failure().
+ * Added Rb tag from Geert for SoC dtsi.
+ * Added SW_GPIO9_CAN1_STB check to gpt0 node.
+v2->v3:
+ * Added Rb tag from Rob for bindings patch
+ * Dropped wave form callback conversion from this patch series as
+   it is covered in another series[1]
+ * Added suspend/resume support.
+v1->v2:
+ * Created separate document for RZ/G3E GPT.
+ * Updated commit header and description for binding patch.
+ * Added waveform callback conversion to this series.
+ * Collected tag.
+ * Added link to hardware manual
+ * Updated limitation section in driver patch.
+
+Biju Das (9):
+  pwm: rzg2l-gpt: Fix macro used for period/duty cycle conversion
+  pwm: rzg2l-gpt: Convert to waveform callbacks
+  pwm: rzg2l-gpt: Add info variable to struct rzg2l_gpt_chip
+  pwm: rzg2l-gpt: Add prescale_mult variable to struct rzg2l_gpt_info
+  pwm: rzg2l-gpt: Add calculate_prescale() callback to struct
+    rzg2l_gpt_info
+  dt-bindings: pwm: Document RZ/G3E GPT support
+  pwm: rzg2l-gpt: Add RZ/G3E support
+  dt-bindings: pwm: rzg2l-gpt: Document renesas,poegs property
+  pwm: rzg2l-gpt: Add support for gpt linking with poeg
+
+ .../bindings/pwm/renesas,rzg2l-gpt.yaml       |  23 ++
+ .../bindings/pwm/renesas,rzg3e-gpt.yaml       | 323 +++++++++++++++
+ drivers/pwm/pwm-rzg2l-gpt.c                   | 385 ++++++++++++++----
+ 3 files changed, 643 insertions(+), 88 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/renesas,rzg3e-gpt.yaml
+
+-- 
+2.43.0
+
