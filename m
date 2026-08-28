@@ -1,30 +1,53 @@
-Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FD7D3845A7;
-	Fri, 28 Aug 2026 09:20:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF5C3D566F
+	for <linux-pwm@vger.kernel.org>; Fri, 28 Aug 2026 13:14:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787908821; cv=none; b=cptWSmkT9TLX5aPuePsR9gMmqsVthw1188324EaBQirLdJKZT1WtZqD4jyrHPp6o9vAJeEqo8s1bEodowMJT9GvKKGQceVh31f0y8qU4Pc/JFksK96jlgNc5ircOikfrzLkQ91euAMZdR7JjtnjEQs0creWM5L+gF2teDkZ9pbw=
+	t=1787922880; cv=none; b=bMptEMp4fWJNrQXZ2mttAJ504OUlng+D1AJPuXa4EUSqdSGTIFpjCK9Q3N6RYHuXJ0d7SGbOo7mfCjtHVYXPYqTKza1s83aDU+jmLRff5abgNEyfLImtcjscyHQ67N9AIJi44XVSigQXE+oSHQzF/yokEJ+bf7L0f+dIH6ltgRI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787908821; c=relaxed/simple;
-	bh=sQNqPK047NxT+SCQ2xLoY1f0jB0/i52Ovv3ypMjQEuo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=D/htvx4uxWov4vo1jOxGFIE++Pr5uSZE9qzoCqCOuijGzWIicJYQmSV9gqhAPL9ViMh1Y4PYYjs9ZGfFV0kRubk8hTWRCQ8KtsysUx/ITzTNDSU4DhO6T7tRagTtbJrF2/3xTCwIOcjTTn0T1uv3snOGj51F18U9hlCsZMKlpBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from localhost.localdomain (unknown [111.196.241.250])
-	by APP-03 (Coremail) with SMTP id rQCowACnc0HPUpFqLk11Bg--.64833S2;
-	Fri, 28 Aug 2026 17:20:16 +0800 (CST)
-From: Pengpeng Hou <pengpeng@iscas.ac.cn>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: Pengpeng Hou <pengpeng@iscas.ac.cn>,
-	linux-pwm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] pwm: fsl-ftm: Unwind resume failures
-Date: Fri, 28 Aug 2026 17:20:14 +0800
-Message-ID: <20260828092014.9211-1-pengpeng@iscas.ac.cn>
-X-Mailer: git-send-email 2.50.1
+	s=arc-20240116; t=1787922880; c=relaxed/simple;
+	bh=D4QUybtwdaEGeFdOBILEBAa96aMUCabEn4IKFQTSTqQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
+	 References; b=YYGrkRIGHQibQxxBGIlxxnsL2/qTcsLA7MFKf2qxJ9LieNjPu7iBlpUMTN+DQWIPhit0NTEchFiD+hAWMy3gLJ/MEGMt0ZuE12GXpSfETLKOueOUpeHztjGN3snErqokCci+tfP2tBRap3s5wS0PjaHqoxVa8Q5jwIwRzG30UfI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=G9WfxMU+; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="G9WfxMU+"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260828131429euoutp02e6ed19de6faa73c50178f200e8539399~P_mB0j2MU2411624116euoutp02C
+	for <linux-pwm@vger.kernel.org>; Fri, 28 Aug 2026 13:14:29 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260828131429euoutp02e6ed19de6faa73c50178f200e8539399~P_mB0j2MU2411624116euoutp02C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1787922869;
+	bh=lwl9ZR836nXomiAuieh4El+iSMRVFsDG8HllN7ocCco=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=G9WfxMU+ufl7buuH3N4EZ28j7RN2elpdzcYXFBksv+UhFV54sgY8Ncl1WqPrM+Hhh
+	 ReqnNU0qIB+ewC0S+rJsrLfiNBaGQ4wrqr30UeEvIMPsQ8cfAFp7lvcISp+DqLNl2s
+	 /YSvcsUTMAqvak6ICW53OJtJym/LyfBIlH0X1rrs=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260828131428eucas1p2cc2d9767d5ed62b8297c2cff0295226d~P_mBgz0Nf2835228352eucas1p2P;
+	Fri, 28 Aug 2026 13:14:28 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260828131428eusmtip175545c44f75392432a02ffdf32bacde6~P_mA87mUu1290512905eusmtip1T;
+	Fri, 28 Aug 2026 13:14:28 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Stephen Boyd
+	<sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet
+	<jbrunet+clk@baylibre.com>, Peter Zijlstra <peterz@infradead.org>, Ingo
+	Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>, Waiman Long
+	<longman@redhat.com>, =?UTF-8?q?we=20Kleine-K=C3=B6nig?=
+	<ukleinek@kernel.org>
+Subject: [RFC/PATCH] clk: add lockdep_ignore_clk_prepare_lock cmdline option
+Date: Fri, 28 Aug 2026 15:14:07 +0200
+Message-ID: <20260828131409.962825-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -32,113 +55,74 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:rQCowACnc0HPUpFqLk11Bg--.64833S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGFy8KrWkKFW5tryDGw4DArb_yoW5GFy7pr
-	WfKF1FvrWkXrZ2gan3trs5Jr1rtr4xta43Gay3Kas5uwn0yrsF9a1rGF92vFs0yr18AFy3
-	AFs8tFyDCr1jyF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUyG14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-	JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-	CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
-	r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
-	xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0
-	cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwCI42IY6xAIw2
-	0EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
-	67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUb4v3UUUUUU==
-X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
+X-CMS-MailID: 20260828131428eucas1p2cc2d9767d5ed62b8297c2cff0295226d
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260828131428eucas1p2cc2d9767d5ed62b8297c2cff0295226d
+X-EPHeader: CA
+X-CMS-RootMailID: 20260828131428eucas1p2cc2d9767d5ed62b8297c2cff0295226d
+References: <CGME20260828131428eucas1p2cc2d9767d5ed62b8297c2cff0295226d@eucas1p2.samsung.com>
 
-fsl_pwm_resume() ignores all clock-enable and register-cache replay
-failures.  A failure can leave a prefix of requested PWM channels
-holding clocks while runtime PM reports the chip resumed.
+The clock framework uses a single global re-entrant mutex, prepare_lock,
+to serialize all operations on the whole clock tree. It is taken by
+nearly every clk API call and it is held while calling into the clock
+providers, which in turn often take their own locks or trigger runtime
+PM. As a result prepare_lock sits in the middle of a large number of
+lock chains and lockdep frequently reports possible circular locking
+dependencies involving it.
 
-Check each acquisition and regcache_sync(), then unwind completed
-channels in the reverse of the suspend order.  Restore cache-only and
-dirty state when the register replay fails.
+Such reports are often not real deadlocks, but once the first one is hit
+lockdep turns itself off and all subsequent locking problems - including
+the ones actually being investigated - are no longer reported.
 
-The issue was identified via static analysis and manually reviewed.
+Add a "lockdep_ignore_clk_prepare_lock" kernel command line parameter,
+which marks the prepare_lock class as novalidate, so lockdep skips the
+dependency tracking for it and keeps validating the rest of the system.
 
-Fixes: 97d0b42e39a7 ("pwm: ftm: Add Power Management support for FTM PWM")
+The option is only available when CONFIG_LOCKDEP is enabled and is meant
+purely as a debugging aid.
 
-Assisted-by: LLM
-Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/pwm/pwm-fsl-ftm.c | 44 +++++++++++++++++++++++++++++++++------
- 1 file changed, 38 insertions(+), 6 deletions(-)
+The problems with clock framework's prepare_lock are well known and
+there are machines that always report lockdep issues related to it. A
+good example are Khadas VIM3/VIM3l boards, on which prepare_lock
+interferes with locks used in PWM subsytem:
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index 35406b2e1925..7a61ccb75963 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -501,7 +501,7 @@ static int fsl_pwm_resume(struct device *dev)
+https://lore.kernel.org/all/adqtn6iljcguv3m3ovhltusbbf4mljzlwg73yklaudvjjtazxv@vyf5fvuzic6x/
+
+This new cmdline option allows to hide prepare_lock related issues on
+the test machines possibly enabling lockdep to catch other issues.
+
+Best regards,
+Marek Szyprowski
+---
+ drivers/clk/clk.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index fef87167a60b..a5c8c4256102 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -168,6 +168,17 @@ struct clk {
+ 	struct hlist_node clks_node;
+ };
+ 
++#ifdef CONFIG_LOCKDEP
++static int __init lockdep_ignore_clk_prepare_lock_setup(char *__unused)
++{
++	lockdep_set_novalidate_class(&prepare_lock);
++	pr_warn("lockdep: ignoring prepare_lock class in clock subsystem\n");
++	return 1;
++}
++__setup("lockdep_ignore_clk_prepare_lock",
++	lockdep_ignore_clk_prepare_lock_setup);
++#endif
++
+ /***           runtime pm          ***/
+ static int clk_pm_runtime_get(struct clk_core *core)
  {
- 	struct pwm_chip *chip = dev_get_drvdata(dev);
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
--	int i;
-+	int i, ret;
- 
- 	for (i = 0; i < chip->npwm; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
-@@ -509,20 +509,52 @@ static int fsl_pwm_resume(struct device *dev)
- 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 			continue;
- 
--		clk_prepare_enable(fpc->ipg_clk);
-+		ret = clk_prepare_enable(fpc->ipg_clk);
-+		if (ret)
-+			goto unwind;
- 
- 		if (!pwm_is_enabled(pwm))
- 			continue;
- 
--		clk_prepare_enable(fpc->clk[fpc->period.clk_select]);
--		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+		ret = clk_prepare_enable(fpc->clk[fpc->period.clk_select]);
-+		if (ret) {
-+			clk_disable_unprepare(fpc->ipg_clk);
-+			goto unwind;
-+		}
-+
-+		ret = clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+		if (ret) {
-+			clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
-+			clk_disable_unprepare(fpc->ipg_clk);
-+			goto unwind;
-+		}
- 	}
- 
- 	/* restore all registers from cache */
- 	regcache_cache_only(fpc->regmap, false);
--	regcache_sync(fpc->regmap);
-+	ret = regcache_sync(fpc->regmap);
-+	if (!ret)
-+		return 0;
- 
--	return 0;
-+	regcache_cache_only(fpc->regmap, true);
-+	regcache_mark_dirty(fpc->regmap);
-+
-+unwind:
-+	while (i--) {
-+		struct pwm_device *pwm = &chip->pwms[i];
-+
-+		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-+			continue;
-+
-+		if (pwm_is_enabled(pwm)) {
-+			clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+			clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
-+		}
-+
-+		clk_disable_unprepare(fpc->ipg_clk);
-+	}
-+
-+	return ret;
- }
- #endif
- 
 -- 
 2.43.0
 
