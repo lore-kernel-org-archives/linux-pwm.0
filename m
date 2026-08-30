@@ -1,97 +1,88 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4576D3CB2DC;
-	Fri, 28 Aug 2026 13:38:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE1B23B14A2;
+	Sun, 30 Aug 2026 12:58:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787924295; cv=none; b=CesEETk2zwgLz36YYJXrrcGAClVH79jn7lYn2/kqTbJwfQiTiADl0U+aTDOrRtJlPlR0ejwS4hN8HHnNaM0mZ24wolVpPPSFdyNmzQ57NX28A6zn3WhJnPbnWBUf6+FQ2V85DhPFQb37iBoGufPTr4IGGwBZWul/tB+fM4iagiU=
+	t=1788094734; cv=none; b=Z/JXGcyJJabCMy3jgkRc56fxykPd9jPJ98bLrnY+A0fvvYcmNaT/Ken2jNMbKn84JgcwG6hNiWOCrk3NYc1eWcjo4hptlVdGklJ+DA2VzqRlfg9kvZ7yl3RXvsk4+QIbEvycuX8X897qGA8+6vSaf1eTGQmcyEmE6zYOYrn3syc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787924295; c=relaxed/simple;
-	bh=Jhsym6f3hDxXMDYh7a5eB4zANqsZJSTbjH4B4uu0Bow=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=c0PqtpI8rYaSaprUdZnFAYCFe//gYjyD2VcEwWCCggoPvXPdMmeZ5FhnbRDbiEPgD2JO1eAw2ZmMOrBs/aiju9Y/6ZmVgiZBU5D1LFfeZTkudTqhjxXkzHFbss60mPfgnLE82NDfeXswEmzCMuYsL4YHLTotwkmJ4C3f1AP+z4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=RNVQBmBZ; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RNVQBmBZ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=CFJUxpvPlwOMp8n0DOd2ctpg3rwMBTHCSZGNAQKUeiQ=; b=RNVQBmBZGbxbkCUwoz+zkXUBZa
-	BbWj3hLZO0Y5dlTUCdmG7B+pIbEmvL67VyDY0HA1zSotfOx3GTbrVPQRtQ3Z7HP3Q76Btk7I/UyKZ
-	CFdLGZratNGxDyZffjdyq55//JzsIk/37FfXjC+vo11RukOZxJ4ulXLQnS6MpIV9Ow03+jpXvn89Q
-	/LjZn0bw4usmt26PLpEV8aOriP+9qt0pJFAw3v7GXMl1YTuB05ERai9teG17b+UUVI67/yHe/pMYj
-	D9x4LUXjNIL8aFVx9O4rTzav7wRoJ2dT7x0l2FlnBzs5SHRGATtb069jKtUFM/mRj9pgJXN632P6o
-	d56TVi4g==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.99.2 #2 (Red Hat Linux))
-	id 1wzwmS-00000008H5C-1wCW;
-	Fri, 28 Aug 2026 13:38:04 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 38D0C30030F; Fri, 28 Aug 2026 15:38:03 +0200 (CEST)
-Date: Fri, 28 Aug 2026 15:38:03 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-	Brian Masney <bmasney+clk@redhat.com>,
-	Jerome Brunet <jbrunet+clk@baylibre.com>,
-	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-	Waiman Long <longman@redhat.com>,
-	we =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
-Subject: Re: [RFC/PATCH] clk: add lockdep_ignore_clk_prepare_lock cmdline
- option
-Message-ID: <20260828133803.GT776954@noisy.programming.kicks-ass.net>
-References: <CGME20260828131428eucas1p2cc2d9767d5ed62b8297c2cff0295226d@eucas1p2.samsung.com>
- <20260828131409.962825-1-m.szyprowski@samsung.com>
+	s=arc-20240116; t=1788094734; c=relaxed/simple;
+	bh=ULLsCIvRURUfWtY7aMZOQIJq838+3+EZQOBCAb4TPwM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uKHvLdbUd4r7CGweA+cyWclqZsjqt2EG2YrRHPHCq4lV5wmThl4TsfVHbOPaIRBkwaMY+/5DzxdprYPFT9PY/yWFZ1BvRViBDfEqQGV5ImJIc+4XGo7V9hdpsVUFqvCQa2NwJUDrES6xqZ23Lb1iSmMl22HTD51IxSsLChFDVH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from localhost.localdomain (unknown [111.196.241.250])
+	by APP-03 (Coremail) with SMTP id rQCowADn6jgFKZRqOLuaBg--.22542S2;
+	Sun, 30 Aug 2026 20:58:45 +0800 (CST)
+From: Pengpeng Hou <pengpeng@iscas.ac.cn>
+To: Thierry Reding <thierry.reding@kernel.org>
+Cc: Pengpeng Hou <pengpeng@iscas.ac.cn>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	linux-pwm@vger.kernel.org,
+	linux-tegra@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] pwm: tegra: fail probe on reset deassert errors
+Date: Sun, 30 Aug 2026 20:58:43 +0800
+Message-ID: <20260830125843.99132-1-pengpeng@iscas.ac.cn>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260828131409.962825-1-m.szyprowski@samsung.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:rQCowADn6jgFKZRqOLuaBg--.22542S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrurW5Gw47XFyxAryDur4xCrg_yoWDWFc_u3
+	4xXFsrWws8CryvkFnxt3yfZFWayF98uF10grZrtw13Kas0qF15GryvyrW5u34xWan8uFy7
+	GFW2vrWfA3sxAjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUb4xFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+	Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26F4UJV
+	W0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+	I7IYx2IY67AKxVWUAVWUtwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AKxVWU
+	AVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
+	v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkG
+	c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxVAFwI
+	0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4U
+	MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUmjgxUUU
+	UU=
+X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
 
-On Fri, Aug 28, 2026 at 03:14:07PM +0200, Marek Szyprowski wrote:
-> The clock framework uses a single global re-entrant mutex, prepare_lock,
+tegra_pwm_probe() registers the PWM provider after deasserting the reset
+control without checking whether the reset controller accepted the request.
 
-There is no such primitive in the kernel -- this means the clock people
-rolled their own. Why ?!
+Propagate the failure through the existing runtime-PM cleanup path instead
+of publishing a PWM controller whose hardware may still be reset.
 
-> to serialize all operations on the whole clock tree. It is taken by
-> nearly every clk API call and it is held while calling into the clock
-> providers, which in turn often take their own locks or trigger runtime
-> PM. As a result prepare_lock sits in the middle of a large number of
-> lock chains and lockdep frequently reports possible circular locking
-> dependencies involving it.
-> 
-> Such reports are often not real deadlocks, but once the first one is hit
-> lockdep turns itself off and all subsequent locking problems - including
-> the ones actually being investigated - are no longer reported.
-> 
-> Add a "lockdep_ignore_clk_prepare_lock" kernel command line parameter,
-> which marks the prepare_lock class as novalidate, so lockdep skips the
-> dependency tracking for it and keeps validating the rest of the system.
-> 
-> The option is only available when CONFIG_LOCKDEP is enabled and is meant
-> purely as a debugging aid.
-> 
-> Assisted-by: Claude:claude-opus-5
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
-> The problems with clock framework's prepare_lock are well known and
-> there are machines that always report lockdep issues related to it. A
-> good example are Khadas VIM3/VIM3l boards, on which prepare_lock
-> interferes with locks used in PWM subsytem:
-> 
-> https://lore.kernel.org/all/adqtn6iljcguv3m3ovhltusbbf4mljzlwg73yklaudvjjtazxv@vyf5fvuzic6x/
-> 
-> This new cmdline option allows to hide prepare_lock related issues on
-> the test machines possibly enabling lockdep to catch other issues.
+Fixes: 5dfbd2bd5439 ("pwm: tegra: Add support for reset control")
+Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+---
+ drivers/pwm/pwm-tegra.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-This is horrible. Why not fix the clock framework?
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index 5cdbe120ba2d8..d9fa16a7b31f4 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -379,7 +379,9 @@ static int tegra_pwm_probe(struct platform_device *pdev)
+ 		goto put_pm;
+ 	}
+ 
+-	reset_control_deassert(pc->rst);
++	ret = reset_control_deassert(pc->rst);
++	if (ret)
++		goto put_pm;
+ 
+ 	chip->ops = &tegra_pwm_ops;
+
+base-commit: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+-- 
+2.50.1
+
