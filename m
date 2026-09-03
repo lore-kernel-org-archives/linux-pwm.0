@@ -1,157 +1,157 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f100.google.com (mail-vs1-f100.google.com [209.85.217.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C8964F7995
-	for <linux-pwm@vger.kernel.org>; Thu,  3 Sep 2026 17:20:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB6C650C299
+	for <linux-pwm@vger.kernel.org>; Thu,  3 Sep 2026 20:11:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.100
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788456020; cv=none; b=SU4+pUluSgZmAuaHZi3ECZx5HfHUp7CT1K8LY6rKlyzrFSZWdewVq90yrZyQrVoX7A5djRetPdreWKK8AcvYQqI3fBa4jhymRxdKO3ks6uzbCT8XBtoiRZOWkasKkJLpHfbw/1VASp9IRTURMxOP1JmNQyOB3f9RTPG2Unztxck=
+	t=1788466320; cv=none; b=i1x4jlUCu1esTmO1vqa7nZ/8r2fRNJcYO9wS/tvpYNfs9QnIdt0l5l2oK3nPf2WlP+Vsa3m9xIjqiQhMp1zy6Hebs6eIxZceqsYqsfeG602ZNb2/lFWaYkjl12tHbQPcfGC1/fCF/Q9n7rdWEX1pQ8u6FTJcohw6afIRk+dhDN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788456020; c=relaxed/simple;
-	bh=XckZyXRA0wdQ2t/rQ8UQFXAwi1VWzGG6EOxNNhqHRbU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DTEtW88Wfvjh1WMqnMOoGroMt11E2CKWHicFlAS/y3J6y4MaF4AZR5utLWq7gu4Sth/GyIH5vdhruIpava5WZG2gfB1y0WvL0dat4Pawkshegw26RR9jr/P1Pdaa8ZgSQ/c5lETfU76qAgV5L23fpzlJa+x/lvwNtIA8m3exrRs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=SdOT+MsS; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=fnJZmp4w; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1788466320; c=relaxed/simple;
+	bh=2x3Fg80qrgO1JMvyRsoWryYQdJjCtQvS1HZl+tKOeMM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=TVvv5Q+uKWZILKBawz4yMXRlB5RWyBIR4wd6wg6ReKwN21BVbAmnfTEP6l+zAZNS7ZMfI1ETGr6FtrvCJSEHXn2dEUI7U7BRd5I+BOwo3fYUO/GgkYwXBQD466xgUXDv0dJuMyrygJMpTfnYiWW2DSu0/x2Wb0XwIbMnRd07X90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=IxBApYry; arc=none smtp.client-ip=209.85.217.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SdOT+MsS";
-	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="fnJZmp4w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1788456018;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=U9SlpKBC41ZAAv9XrMQhlqWr3QRc3I1Zse/kq3Web2k=;
-	b=SdOT+MsSQQMy5FjbfxtxofD5kUdPJvOWjgEjfmtZ1SpVAkChN356cAO9y5RyPBJm2ezW6q
-	mY2k16RzgcCl24eFX51yQ72pTDg7sdNY3U5O/q5Ob49gCXGug88rlXQEX88CQ5ocSR+AQi
-	ei8Cl0aVUbMSqiyUHDwp3PZzbQkZ59Q=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-341-WarEe2xFOyudsMiIusfrvg-1; Thu, 03 Sep 2026 13:20:14 -0400
-X-MC-Unique: WarEe2xFOyudsMiIusfrvg-1
-X-Mimecast-MFC-AGG-ID: WarEe2xFOyudsMiIusfrvg_1788456014
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-52f9e903b02so16529311cf.0
-        for <linux-pwm@vger.kernel.org>; Thu, 03 Sep 2026 10:20:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=redhat.com; s=google; t=1788456014; x=1789060814; darn=vger.kernel.org;
-        h=user-agent:in-reply-to:content-disposition:content-type
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=U9SlpKBC41ZAAv9XrMQhlqWr3QRc3I1Zse/kq3Web2k=;
-        b=fnJZmp4wkDw1bZ6SG+5eSW+WBpsCBlKmL6KlcAIc+QVPCHxsnrATYEZLBTKcOP3SyQ
-         4QCZTUrAJsz9gEgNbFEFSubbdv9nxDfICWY+QzC14zwDoWkck4kEUvxcgrTt0Roi9Pgy
-         IXwxiRixSZ+BCYEEG2mYo6Q94iDdEdLoxJZZsnyrNfyb6NKeTm7fQeb3k9Y+0DAFyh9k
-         XQmSGoC/prKzj+7+hLhG3HjKt5s80sT1ekoV8zEfM9RNTDwAMfWGe7oYMcAZZ8wcu9Xn
-         aNbBGRKxOdZFAup0ZjZBhqDxDRpcdaXuXd4Ddn+ikpuxVE8nLO5F5tY3k3Y8zwsNpqDQ
-         n0GQ==
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="IxBApYry"
+Received: by mail-vs1-f100.google.com with SMTP id ada2fe7eead31-7466771f1caso96455137.0
+        for <linux-pwm@vger.kernel.org>; Thu, 03 Sep 2026 13:11:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788456014; x=1789060814;
-        h=user-agent:in-reply-to:content-disposition:content-type
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=U9SlpKBC41ZAAv9XrMQhlqWr3QRc3I1Zse/kq3Web2k=;
-        b=edD22VLLwJTmwuymRdCd1zUmNRmyzJtkzu4hXeO8yke9Hixe47fbt34udqjZYiljzN
-         i4ATAGDrceZ+wCp6dl1ijv1nOe1FtShdfrJAx0koiD4xvfsJ/YUflK5BkMkcy4TWjWBv
-         8+dkyMx35kSeyYH0TsfCFMShxCBNw2ooIjG16pWKZeH9IuO11kmxLkkrowzpRhvmSI1Y
-         dPAqwWyVYMwkDkxPpeob01/Y4ZUa3gOWRBgcpjDSAzXivgZt1Au9lnXnYjz/KIX8IIFz
-         sRGqX7uF2n6Ku7riQ3EE7FJYRZWHwO9q1AXL/o6yE4Q4WrFl/Ax4wWyDl7keDa6ss5Ib
-         KMPQ==
-X-Forwarded-Encrypted: i=1; AKwUvByQKhvOJCMj6jWQoeytujGUcGUrtyzaIhQSs3ZRa8JYT81/l6F+vw4pxA4gdVpnhzb8k5cdiGocSpo=@vger.kernel.org
-X-Gm-Message-State: AFuF++mqL2Xm5nMWNW8R2LzJXiIAuUtxyTpE1QLbRIfZiniqJiMNcRQC
-	N1gJaVwEK+7mnQxaILZOUJQlbXCnLO+yXZNsGp2gHTQ7Jx5dXHsouNHhWkXUmFsmwztmZrzM7Z0
-	u3GNbUymnm7gc45fnw80lVrwALmH+vbmSrvMJ5F3rYh1uUSsnTumYV0yTdXBglA==
-X-Gm-Gg: AYBFou21MEgWz3vT6fiddMYt5Zt/Os3IId2++n0SIioPXUNFWEXkGWJPnhwOlAM8D8o
-	8tT7IRh9Wo6XQnvhOKEJRXw453iCoEDBj5NEV5CoDLL0ITLigqPeTLVMnwppuIHeNTwwnTj8u8f
-	mTduQdT/QFYMk/MK6g97FsbGiOH/nVXBEbFF7yXIA2SBbHUrh6S10qnqdUar1Ti+tI2QB6OJDng
-	aOxVN2NW7VrfnQ5z6Tk/q/J9S+ov/UAmC2QeszbvNPIGCtHOMHC1Q5qN/vMeLHScgqH4isX3w45
-	DiBXiBQG6MCyPeoqgPqrq5erE1Su5EZTgl4aEznvy/BG0kMPl4dP7RBiGB/shi56DOv4OL9fsyT
-	vLNrMvSCynQFyGwXssHgf41pO+l8H2sXvG0E=
-X-Received: by 2002:a05:622a:3d3:b0:516:82e2:7788 with SMTP id d75a77b69052e-53042f6ed28mr70698571cf.1.1788456013924;
-        Thu, 03 Sep 2026 10:20:13 -0700 (PDT)
-X-Received: by 2002:a05:622a:3d3:b0:516:82e2:7788 with SMTP id d75a77b69052e-53042f6ed28mr70697611cf.1.1788456013149;
-        Thu, 03 Sep 2026 10:20:13 -0700 (PDT)
-Received: from redhat.com (c-73-183-53-213.hsd1.pa.comcast.net. [73.183.53.213])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-530541eab6csm1956071cf.26.2026.09.03.10.20.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2026 10:20:11 -0700 (PDT)
-Date: Thu, 3 Sep 2026 13:20:10 -0400
-From: Brian Masney <bmasney@redhat.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linux-clk@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	Stephen Boyd <sboyd@kernel.org>,
-	Brian Masney <bmasney+clk@redhat.com>,
-	Jerome Brunet <jbrunet+clk@baylibre.com>,
-	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-	Waiman Long <longman@redhat.com>,
-	we =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
-Subject: Re: [RFC/PATCH] clk: add lockdep_ignore_clk_prepare_lock cmdline
- option
-Message-ID: <apmsSsXdc32Z09_f@redhat.com>
-References: <CGME20260828131428eucas1p2cc2d9767d5ed62b8297c2cff0295226d@eucas1p2.samsung.com>
- <20260828131409.962825-1-m.szyprowski@samsung.com>
- <20260828133803.GT776954@noisy.programming.kicks-ass.net>
+        d=1e100.net; s=20251104; t=1788466307; x=1789071107;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:dkim-signature:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=130lNonfXTPzQR8jeTPo2lF/JuVtb2EqoFtB3DFAlj4=;
+        b=F1gtF5Gl0sacwcnjjwPs7ZkxYwtXXYYU+IC7UhhlP0PQnj7hT3D3UgoUwM4Y0RVygW
+         8BI+oayRj7LfxUQP9fAsz6S6zAzOlRLUay5wIX1nYLeN2biokS5216zLs3Hnj2DR1i0E
+         0mLz4A/nSM/E67WV9VL/SCzRCsKMamlPGehnHQ+y6LEa9jAqA1CBvRIZKWeYDsZ6jjT+
+         anl0Rf0PD+xw8rxjp5C7y+AleA5tMjb68fsgmJ7f56+990Tiji9Ra39A0aeYezBAJ0dw
+         V4YTQCwMD9cFalYs0FxRKCsOFfP0CI7d4kY4Xmh8KauDyQKvpKX7X9tWmlj+kGxL35D2
+         3VSw==
+X-Forwarded-Encrypted: i=1; AKwUvBzJu/NEk9N9/0TPr3fekYD9M/FfnUNdF0YZRoBT4AzjqVyy7S2IyOJpR/7J7gsWgJ5SQpGjJ0dO8V0=@vger.kernel.org
+X-Gm-Message-State: AFuF++n7TG17Z6ZqwnBCYW5ovhYFXz6VSKNCO4FvdYhbP8DaSjpY8E0G
+	V0bvNxZYBsAB8X/eTxXIHwTBIDz5lMnbCdRfbaomd0XPb0+/T8wZDvwYvz/nVD8dJlu8d43krnd
+	SyjLrowRZ7u4rUIm8FyMbpsl80cHfRp3Q98lwCwaDqcuP4Ab2xU9esj3sF9D8Qg9QM9rel6eZAy
+	ZYiPqMU8gnrYmCBmT6wsGDj68WVhI5ucufadk2E3KYaixdoQIsTnkBiVCJhlT7C+ZLQstktWjTN
+	YQ7VcJKTT1RDn22zIVD
+X-Gm-Gg: AYBFou2+v73Mt3sOmH6OM2rAym3MHX2jSquuhBMoR56HGUQOqLDGzRsQKaX38gC7+jg
+	twXuHA4w+ODnjbMvaFQz9ERPmK4PBP8G9mMMjEC7zJJdcBVAJDWApZtl3GfqK7EHa+2z/Wigi9C
+	sWDPcm7ltLZMMrp71pzUfn2WCGfMwYF2wptZBlxf4Ed3UCTOUl6zamw120Apre9jCVbpuSuHnMv
+	A8zJ602tp6z4/h9hBzGt2LZOMzJltCge2hm/WeF2e4coDuAjQuGI/CRTteTfrIdOg4SdXjng5B/
+	8Qghc04aapOHa6RWxlGC1533MC86jPuyvlAZAqO2P8791LecCTx1EWS2XJcr+WV1lygsEb5BI/z
+	hAW/qjvVsu4j4wyEjLnblNmyN3kEjp1ehfXfOeLBuFLX3GQzEq7BAnzIqL5+AcgIpXARnMcU5rI
+	bGjkCJWsecOp52qETQCZhLjVWEE5SUVdkBHxZB3dGx
+X-Received: by 2002:a05:6102:38c7:b0:777:4e99:6f84 with SMTP id ada2fe7eead31-78a4a727bccmr84286137.1.1788466307172;
+        Thu, 03 Sep 2026 13:11:47 -0700 (PDT)
+Received: from smtp-us-east1-p01-i01-si01.dlp.protect.broadcom.com (address-144-49-247-27.dlp.protect.broadcom.com. [144.49.247.27])
+        by smtp-relay.gmail.com with ESMTPS id a1e0cc1a2514c-9808eb912f0sm59086241.1.2026.09.03.13.11.46
+        for <linux-pwm@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 03 Sep 2026 13:11:47 -0700 (PDT)
+X-Relaying-Domain: broadcom.com
+X-CFilter-Loop: Reflected
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-92e5fc4c7e9so26036685a.3
+        for <linux-pwm@vger.kernel.org>; Thu, 03 Sep 2026 13:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1788466306; x=1789071106; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=130lNonfXTPzQR8jeTPo2lF/JuVtb2EqoFtB3DFAlj4=;
+        b=IxBApYrySYMAETAe4+Bm9eRkwGYZUDu5bngMYt2j2f0brZS3VcQ/g16THiJQwlEQdv
+         7+Qbdee0eqAL7VuQba7nbAFsOls2FZVkefB9JBe6VlTE/mYeNcKYfhvL9u/zHU00GfMv
+         zmbw2M75xkyD2sJbzp4q7F7yn6x/97rwicGrM=
+X-Forwarded-Encrypted: i=1; AKwUvBxTWEUDdPhMrto4eY8YAjruDRr2wWavMzuqyEj3yNQBLQfvzocsqloGi8L8ZsCwSVWuoBV7ouA7a/o=@vger.kernel.org
+X-Received: by 2002:a05:620a:4887:b0:939:6de9:208c with SMTP id af79cd13be357-93980586029mr97446985a.49.1788466306368;
+        Thu, 03 Sep 2026 13:11:46 -0700 (PDT)
+X-Received: by 2002:a05:620a:4887:b0:939:6de9:208c with SMTP id af79cd13be357-93980586029mr97442185a.49.1788466305792;
+        Thu, 03 Sep 2026 13:11:45 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9397f9ee9fbsm51700885a.1.2026.09.03.13.11.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Sep 2026 13:11:45 -0700 (PDT)
+Message-ID: <be3aac0c-3475-4f48-aaef-765aadcc6b75@broadcom.com>
+Date: Thu, 3 Sep 2026 13:11:41 -0700
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260828133803.GT776954@noisy.programming.kicks-ass.net>
-User-Agent: Mutt/2.4.0 (2026-06-19)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 0/3] Add RP1 PWM controller support
+To: Andrea della Porta <andrea.porta@suse.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, devicetree@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, Naushir Patuck <naush@raspberrypi.com>,
+ Stanimir Varbanov <svarbanov@suse.de>, mbrugger@suse.com,
+ Sean Young <sean@mess.org>, Julian Braha <julianbraha@gmail.com>
+References: <cover.1784539788.git.andrea.porta@suse.com>
+Content-Language: en-US, fr-FR
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
+ xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
+ M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
+ JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
+ PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
+ KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
+ AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
+ IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
+ ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
+ bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
+ Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
+ tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
+ TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
+ zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
+ WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
+ IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
+ U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
+ 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
+ pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
+ MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
+ IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
+ gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
+ obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
+ N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
+ CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
+ C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
+ wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
+ EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
+ fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
+ MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
+ 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
+ 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
+In-Reply-To: <cover.1784539788.git.andrea.porta@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-DetectorID-Processed: b00c1d49-9d2e-4205-b15f-d015386d3d5e
 
-Hi Peter,
-
-On Fri, Aug 28, 2026 at 03:38:03PM +0200, Peter Zijlstra wrote:
-> On Fri, Aug 28, 2026 at 03:14:07PM +0200, Marek Szyprowski wrote:
-> > The clock framework uses a single global re-entrant mutex, prepare_lock,
+On 7/20/26 02:44, Andrea della Porta wrote:
+> This patchset adds support for the PWM controller found on the
+> Raspberry Pi RP1 southbridge. This is necessary to operate the
+> cooling fan connected to one of the PWM channels.
 > 
-> There is no such primitive in the kernel -- this means the clock people
-> rolled their own. Why ?!
+> The tachometer pin for the fan speed is managed by the firmware
+> running on the RP1's M-core. It uses the PHASE2 register
+> to report the RPM, which is then exported by this driver via
+> syscon registers. A subsequent patch will add a new device
+> and driver to read the RPM and export this value via hwmon.
+>   
+> Subsequent patches will also add the CPU thermal zone, which
+> acts as a consumer of the PWM device.
 > 
-> > to serialize all operations on the whole clock tree. It is taken by
-> > nearly every clk API call and it is held while calling into the clock
-> > providers, which in turn often take their own locks or trigger runtime
-> > PM. As a result prepare_lock sits in the middle of a large number of
-> > lock chains and lockdep frequently reports possible circular locking
-> > dependencies involving it.
-> > 
-> > Such reports are often not real deadlocks, but once the first one is hit
-> > lockdep turns itself off and all subsequent locking problems - including
-> > the ones actually being investigated - are no longer reported.
-> > 
-> > Add a "lockdep_ignore_clk_prepare_lock" kernel command line parameter,
-> > which marks the prepare_lock class as novalidate, so lockdep skips the
-> > dependency tracking for it and keeps validating the rest of the system.
-> > 
-> > The option is only available when CONFIG_LOCKDEP is enabled and is meant
-> > purely as a debugging aid.
-> > 
-> > Assisted-by: Claude:claude-opus-5
-> > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> > ---
-> > The problems with clock framework's prepare_lock are well known and
-> > there are machines that always report lockdep issues related to it. A
-> > good example are Khadas VIM3/VIM3l boards, on which prepare_lock
-> > interferes with locks used in PWM subsytem:
-> > 
-> > https://lore.kernel.org/all/adqtn6iljcguv3m3ovhltusbbf4mljzlwg73yklaudvjjtazxv@vyf5fvuzic6x/
-> > 
-> > This new cmdline option allows to hide prepare_lock related issues on
-> > the test machines possibly enabling lockdep to catch other issues.
-> 
-> This is horrible. Why not fix the clock framework?
+> Best regards,
+> Andrea
 
-I'm one of the two new co-maintainers for the clk subsystem. Do you have
-a suggestion for how you would change this locking in the core clk
-framework? Long term I'd like to see more fine grained locking since I
-see at boot up on my Thinkpad x13s laptop that it takes ~10ms in some
-cases to acquire the prepare lock.
-
-Brian
-
+Uwe, how do we go about applying these patches? Do you want to take 
+patch #2 and I take patches #1 and #3 through the Broadcom ARM SoC tree(s)?
+-- 
+Florian
