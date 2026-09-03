@@ -1,134 +1,134 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA94046DFF6
-	for <linux-pwm@vger.kernel.org>; Thu,  3 Sep 2026 11:51:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788436279; cv=none; b=WzoU83WKZuzx0v2j4FGXThGukWdMOOjMs4icb7VFjFp5NGNP+V3nEn73+zbh17gw1kTjoLjDsDMjVBaw/yCQ/lHPWwUlZT99hHFr8H7LiLuVJs+lK3cxBcApTxPgq/70LmdesTP2zGJv0ze9Swql3siFNS+6kxxBArKcXDAFH8c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788436279; c=relaxed/simple;
-	bh=C+QWB+KZzeonLvV0qDuesLnMy5eu8R+OizXBY3d888s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hTW1HIC1fIO+XIwKjjWG9BaOh9qMQlKI9v33COP3Jv+FXOWpsPKyVZdmMitX/w+rYK6Sbd3Kq9TumRdthnEhqPy9KB2zefw0nmYq8Mn6tOpoP00WYJdguHvIULf3S82hdVk4KHyB17JD9+UlpGpOGWrQ0JIfLpQKf0P6plEaxy8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QuMsJK6I; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 416504AF9F0
+	for <linux-pwm@vger.kernel.org>; Thu,  3 Sep 2026 13:29:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.181
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788442147; cv=pass; b=sqm4phNFTsLO9yPmqhu3vXmNrjg/MTa3BXVLnDBXtCEtxBunDWFhFyyJ4SUARaI3P2u3XQFjL7yWUTZyhotG7ODPhvMEA6vvvQxd3jHFF+9ZLyYmyWIK1fFD2dpTB9tXUwzX5tRXW0/4lR+v1C696aXB0zOlzJVUn1iA8JaaJ9E=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788442147; c=relaxed/simple;
+	bh=0lzGBDpPSFyRzORpVpv5BVqn0OH17bvA2nEL9BC2eGk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=C19C8ZvOEyGnHfI0TWd03+0TrHs5npCGFfZ5dfu+qNhi6c7yYJfVMH94Twin39lef4vx79pCsXZred0qVFasa/LlwAGb1wJXWHf6whnax96Qas/h0p9hqoPLVrGnUBezm8CBcmWP/vp4lZ3pm3NjM+SvaMlq+Z2XGos47dWBGgI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QibOJQnk; arc=pass smtp.client-ip=209.85.214.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QuMsJK6I"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-485853f8800so142722f8f.0
-        for <linux-pwm@vger.kernel.org>; Thu, 03 Sep 2026 04:51:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QibOJQnk"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2d900ac39ffso2954935ad.1
+        for <linux-pwm@vger.kernel.org>; Thu, 03 Sep 2026 06:28:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788442137; cv=none;
+        d=google.com; s=arc-20260327;
+        b=mKfFNzVV4v1Q3fmDCo/veDGb3ekbiyeAgCd5BMZ1YMp6Goc6kJBfAntCYjRxVHpdYz
+         vydSDoI1DbYm6Mp8ebsaBg00T9LK4K2xi7jXlEFC9aHr0CeWptbdhuTtpIc0qUs0EE4D
+         PVByjlHQivhx5OWHI3Qi+LKtXLHZPoXiavE1Qb41PM5zAz6qV7xlpY7i3VmME5qt/VkT
+         emmSFXnQyT/pt9v5Wd7XC0IVyBeIAl2+RYDEH4aH+ryMviPeNUDJZhchb8sCK2l9wLkA
+         Nlt4SyOyfyiTlZ8yz4mz+z+7xLPxz8x8FX8RTalLiO+OFgHzvm1DX9AgCoRKR/iJrjVy
+         o22A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=0lzGBDpPSFyRzORpVpv5BVqn0OH17bvA2nEL9BC2eGk=;
+        fh=DKQZXNtV0QmsQnmJDBrM/eXmu/U1GJDGX8dLsgVjZ2M=;
+        b=IvrFt7oGtNjrH/jGLKipU9NFr2GEok9WO0Y/RYrjaMR0ueFyy2WwgOQ4g0X8x5gCsX
+         4vPs8HD9CLHJftrK5dLaKmIZvxk91NT+drAyfA8uolXf0ACtcn/t6kyPWqVn/xNqkO1+
+         FkIW5oUyfwxMY7Oooxeh1O4ofYp6zs2mEMMvt1GZu9RFU0YuDy+fr0nQAsPNITFu9ryC
+         A+UYOcIp9JXR8RrLJw+eybk3t38ahWP1KcRBhnH6qu01OVpzcomlQfpLdWOLvPzEv0T+
+         /Uy1j7sc2ITPko03FSLpdTnkLEqzbRzXpu+SswN1TfMGaPfYjwJ9qCP/pY+2ZV6Kqgvx
+         Ph2A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788436272; x=1789041072; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=1LiMV9lpRiXnBE6CK4fygOV5eeeeR5AdD/GCs6lVbQQ=;
-        b=QuMsJK6IPyQoldLxUmoNS8vlhkN23066FUD8gMtVLSfPwrcA0V8B+oGC+OsBPzuOHr
-         YIPb4F0p4CrJSOvCV0YUbQ086PADTWdAsxcinxy4Pm10a6gzblDtcOeMqTe3L5WrYzq2
-         LkKA9YNCMkx7Y/W+6pj1HEx5JBSBB6GXoFdOeoccfNTtyxmSsRAXKxVBIcHRkJa6LHdk
-         3J8xI6RTRiGT0rTNrLg3l6TpB6GFKWStuO8RCY/CNSvSXcpfmJw2PVfCwX0dxrOGuxoq
-         MPUrkweb4VYWWqu+89gf9nHf0oucmQmNnwVC34o9XTdW+iU7kqW+PIn6ob3tfV3mpFDs
-         qFTw==
+        d=gmail.com; s=20251104; t=1788442137; x=1789046937; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=0lzGBDpPSFyRzORpVpv5BVqn0OH17bvA2nEL9BC2eGk=;
+        b=QibOJQnk1IcJqAPts7niHKXB4MYd7rKKk/wudeEGKQp0iGQwDGwevv3JskZ75xdch6
+         jfqm4L1dCpknWVRfoup0pgPVeoVkxrEgPBofP5UlvVojRvaPkpNXhQFo3YOpI5eUKzJ3
+         oVIpCzNOrezqt2zVbyS0+jWle3e6IbhPsEo3ji4QqZhQGS8vqm75osJq5KNHbniSe7Cs
+         7IMjXLKRAKNvoWjZP6f0QpU7q5nxhdS5rzzAAq7Cy/eRo92sBJSuU2C/89sY38/jJfVI
+         jvANMBPDBxnLupAoA5f1OGYcmYjS1lAQ1aXvNLhVjMv0fKwt2U1nwuAN5oFlZ7SxOXAL
+         4HoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788436272; x=1789041072;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=1LiMV9lpRiXnBE6CK4fygOV5eeeeR5AdD/GCs6lVbQQ=;
-        b=QMBW8vr54cGYgR9TvGCsvLwiEZJ6cighNXQnLwgkUu6bE8z4/yEd7HF0lMlDcVFt/2
-         hlDjdg6GvisW0Cvyk5/Tkzw+Vy4GoTDnor5XXXCVWA+zdUpz/NhSANihK8Nh7vpMZCR/
-         35pCnhagUzF9blZcnhtr7ufIzv9zGZtHayb+eQx4JuVzEZpxPczMMVPHZcXCMApX4X3p
-         OOgg1XeHmq+zl8qgBi7PpXr1dR99VEC25J6xml9dj61nQP+N1thbcDcVz+WeoemBaQJc
-         sWu00+PhU8DygLqfQFoV0W9AsyslriZbNDMyhuGISZrt1ojthYQ/UlRFb3VluQtbjBkT
-         eDmQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxOy4N9lAU0DiNcf2WEqUFHSJ9G8gG6wMmcWTItn80R6EG1yd6JPDtwjZMs6kEE/fghQIS3umjEUPg=@vger.kernel.org
-X-Gm-Message-State: AFuF++n8Zyf3yWSifAOHZ3BwHcF2cUCxKKSTsRHlIodLmWqpMeHcAzbw
-	k3uhkLytkpulyuY6gYI6LKf9tILrXBS5Xz090OraVZ4j4dM4tkYEwUPD
-X-Gm-Gg: AYBFou0zhFx4ut97YE5wVPf3RuFeQlTG6FoUy/fX8C9nbZId9ByvAyLjIaUJj//WF72
-	IL74XpoScSoTtF0U2Q5mg5DJ4ZOkeN8JQiEH/PzWoE4D28j74Pa7oRQeMILmr7YkuuyKd984Wcm
-	V629WPAhtsfbBpTwgX2ULvb5etXH4xLBDxeY+mW5CdRdMEVW+mwqHyQHam0+q8snCsYrFrh4+DW
-	EbL4bBGkpXUdf8e3pyTjZhvoydSS0uV1K6L1lHvh55ePm6Y5K+N4+bpU/ZoYR0PkzaSKiSVFciU
-	Qct6G+8wDq2hNQNZFjXhwmkGkqSkeAh8X4F1gs/1PwBOlrpH9MRnqyj0Yz5T1tiuciLso8qd2An
-	4OQmGzPEhLyiWar07npihmZw+cw6aabegsUJRv9LUa79CK8QqeUS81tQzJBeW7KBXTSeHbzRI/4
-	A830Q8NsX2K1pi3x0oIHst+RZpYijpCFL+hneDMHF2Mq46UMNy6wsh1sG6oYaD+bkUGFHLtAvLg
-	vEQiSh1x/KD0BBa4fMJH0W89OZxNDDnMcs+ylhzSOBC5eoiSh1hDZKrVH5gN8nsbJZYX71SyA==
-X-Received: by 2002:a05:6000:542:b0:484:361a:1c7b with SMTP id ffacd0b85a97d-4857e4eb54dmr6750369f8f.7.1788436272260;
-        Thu, 03 Sep 2026 04:51:12 -0700 (PDT)
-Received: from ernest.hoecke-nb (248.201.173.83.static.wline.lns.sme.cust.swisscom.ch. [83.173.201.248])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48448e6f604sm13185506f8f.2.2026.09.03.04.51.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2026 04:51:11 -0700 (PDT)
-Date: Thu, 3 Sep 2026 13:51:10 +0200
-From: Ernest Van Hoecke <ernestvanhoecke@gmail.com>
-To: Miquel Raynal <miquel.raynal@bootlin.com>
-Cc: Herve Codina <herve.codina@bootlin.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Saravana Kannan <saravanak@kernel.org>, Frank Li <Frank.li@oss.nxp.com>, 
-	Kieran Bingham <kieran.bingham@ideasonboard.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>, 
-	Linus Walleij <linusw@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	Leonardo Costa <leonardo.costa@toradex.com>, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Ernest Van Hoecke <ernest.vanhoecke@toradex.com>, stable@vger.kernel.org
-Subject: Re: [PATCH RFC 1/2] of: property: fw_devlink: Follow GPIO nexus maps
-Message-ID: <hxtrtbmfb3jznfw7ooiyx533fzuuagxlhweq6yo4n6j5bne2uh@omibim7aiobk>
-References: <20260902-fw-devlink-nexus-ready-v1-0-68fe1996e78a@toradex.com>
- <20260902-fw-devlink-nexus-ready-v1-1-68fe1996e78a@toradex.com>
- <CAMRc=MfN73=K1nZrqUbhrMSijjpzhF_z_U9JU4_H163W0vRpqA@mail.gmail.com>
- <qg2nemg4mlxpancg7az2vsnjkfc4anxkieozoxh3mj3zgkyifd@b5b6yiz4uew3>
- <20260902185513.4867bc92@bootlin.com>
- <874ig664ih.fsf@bootlin.com>
+        d=1e100.net; s=20251104; t=1788442137; x=1789046937;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=0lzGBDpPSFyRzORpVpv5BVqn0OH17bvA2nEL9BC2eGk=;
+        b=fAI6pDV9bWEfzs8C38/ZG9tn4D/cyCi66xcZx4UemKxJStSOV0PekG8ckcsQSi017H
+         3vPdWKkLQyAno9+iBbwXYczFrDgEcn9+qBZPHFvPRkQU/ZtjAe14fBvcocZ+LWdUTFna
+         4gUZPhyNqWMAd4abl5mvsxLJtKlgBAC3o5j/tNCfRKkEyyvvRE72zy9C97R/bkgYq/xo
+         syiNpe6DO9k+VOh0f8zRylD0gh6bVgiYRi1kvhM4RX7GK2blxbZnzgr382rOKfFv3WLR
+         L9ZOEU/9C0RjUtFx2HfPZWD9/pYbw+nurkW8PNcoTfUbhmp6Jn1zp3ktk3TpZriTEw4H
+         3Rlw==
+X-Forwarded-Encrypted: i=1; AKwUvByTAp8kdq3HX31wPRxrCcJWvoC7C1YoBqCGW5uHqCon9ulTQmTO0Msk2NRIeV/+WNCowuEDyqGvpNs=@vger.kernel.org
+X-Gm-Message-State: AFuF++k+hNRTkKcEo55oUu4lNcWuJS0tqNxLaXCh27vzwneYRyowQbzn
+	SA5Z2M47WLOMWFlUaNCg0NhWry9FRLCrIPK4tOvfuEqa2ke8X+m1TNLCFYDKjK1xfSaznSrDDI2
+	IdF1b4wxY/2BoZpMSm9XeMC7LW2q9GXE=
+X-Gm-Gg: AYBFou17fJf0eRh6po9fms4f3u7g72UPoxTU/xwogIi/wV16Jj/IoUBF0Cllc1JRwXZ
+	bbXIg4tATtr+AL+13wb4B/qPk3tLD7O2f1o/3xOrNn/4MuqMbF2EWCQ/yBpYNCK8OpiKT7oupl1
+	hih3VD2NlbIxuFEF8fTNg6/RlUxo63F7Lv57Su4uz35Ws4ExozhJfgQicdf6elfVmQduq0qls+2
+	UoIn4ucFPSexPpyGHNE9fBCX4XUyYZWDY5iqbKaEAj9pVjsIWtbCpQqaHuekKmM87louLggfacS
+	8tdd9k7GnTWlmhKYUchx1Ke7rwVXOmho8d70Ho8Yuhtp63lIX7lyEifLrw2+pJ2d7Dm7DIxCqId
+	d6B7gy9rmeJnANMuWJJSnG9Gob4jfkE2EYcBV/U++Ltnu1yi6k7j/N9fwzXGF
+X-Received: by 2002:a17:90b:1d0d:b0:38e:c140:2a0b with SMTP id
+ 98e67ed59e1d1-39aee0e6ed8mr12609481a91.3.1788442136905; Thu, 03 Sep 2026
+ 06:28:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <874ig664ih.fsf@bootlin.com>
+References: <20260824-unique-ref-v20-0-490735672187@kernel.org>
+ <20260824-unique-ref-v20-6-490735672187@kernel.org> <CANiq72mPLrKQMzb37ow2969m5r3Z2Kh_4LHERUun6ALw3ea6tg@mail.gmail.com>
+ <87y0dt1b8b.fsf@t14s.mail-host-address-is-not-set>
+In-Reply-To: <87y0dt1b8b.fsf@t14s.mail-host-address-is-not-set>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Thu, 3 Sep 2026 15:28:43 +0200
+X-Gm-Features: AcwNN1XsmuEPyO39jqyvRGfAMw_DGGPMkiDRHtfg1ZEoNlBhpVDCHnmjvBP_pa8
+Message-ID: <CANiq72muo8SotJHJQhEe=2kiprbrQTvrEMqd1Uw_7yNSfA3Gpw@mail.gmail.com>
+Subject: Re: [PATCH v20 6/8] rust: Add missing SAFETY documentation for `ARef` example
+To: Andreas Hindborg <a.hindborg@kernel.org>
+Cc: Danilo Krummrich <dakr@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Uladzislau Rezki <urezki@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, 
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <lossin@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
+	Trevor Gross <tmgross@umich.edu>, Daniel Almeida <daniel.almeida@collabora.com>, 
+	Tamir Duberstein <tamird@kernel.org>, Alexandre Courbot <acourbot@nvidia.com>, 
+	=?UTF-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>, 
+	Lyude Paul <lyude@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	=?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>, 
+	Todd Kjos <tkjos@android.com>, Christian Brauner <brauner@kernel.org>, 
+	Carlos Llamas <cmllamas@google.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Dave Ertman <david.m.ertman@intel.com>, Leon Romanovsky <leon@kernel.org>, 
+	Paul Moore <paul@paul-moore.com>, Serge Hallyn <sergeh@kernel.org>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>, 
+	Igor Korotin <igor.korotin@linux.dev>, Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
+	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
+	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>, Michal Wilczynski <m.wilczynski@samsung.com>, 
+	Ira Weiny <iweiny@kernel.org>, Philipp Stanner <phasta@kernel.org>, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, driver-core@lists.linux.dev, 
+	linux-block@vger.kernel.org, linux-security-module@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-fsdevel@vger.kernel.org, 
+	linux-pm@vger.kernel.org, linux-pci@vger.kernel.org, 
+	linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, 
+	Oliver Mangold <oliver.mangold@pm.me>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 03, 2026 at 11:57:58AM +0200, Miquel Raynal wrote:
-> Hello Ernest,
-> 
-> On 02/09/2026 at 18:55:13 +02, Herve Codina <herve.codina@bootlin.com> wrote:
-> 
-> > Hi Ernest, Bartosz,
-> >
-> > On Wed, 2 Sep 2026 15:22:36 +0200
-> > Ernest Van Hoecke <ernestvanhoecke@gmail.com> wrote:
-> >
-> >> On Wed, Sep 02, 2026 at 05:30:19AM -0700, Bartosz Golaszewski wrote:
-> >> > On Wed, 2 Sep 2026 13:41:39 +0200, Ernest Van Hoecke
-> >> > <ernestvanhoecke@gmail.com> said:  
-> >> > > From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
-> >> > >
-> >> > > GPIO consumers use of_parse_phandle_with_args_map() to resolve specifiers
-> >> > > through gpio-map properties. fw_devlink instead parses GPIO properties as  
-> >> > 
-> >> > Unlike PWM, there's no such thing as "gpio-map" properties.
-> 
-> Just as an FYI, there is a pending series to extend the nexus
-> node concept to clocks, this may also require some fw-devlink magic :-)
-> 
-> Link: https://lore.kernel.org/linux-clk/20260807-schneider-v7-2-rc1-eip201-upstream-v5-0-8785f9531cf0@bootlin.com/T/#m16ddef087544db31b5f434fa44be70aad0b5e37e
-> 
-> Thanks,
-> Miquèl
+On Wed, Aug 26, 2026 at 11:29=E2=80=AFAM Andreas Hindborg <a.hindborg@kerne=
+l.org> wrote:
+>
+> Do you want a link to this issue with a regular `Link:` tag?
 
-Hi Miquèl,
+Yeah, thanks!
 
-That's the reason I put you in cc and also the reason I went for new
-NEXUS macros in this series. Clock would hopefully be the next consumer
-of that :)
-
-I should've mentioned that more explicitly in my cover letter. Your work
-on the clock nexus can certainly come in handy for us, thanks for your
-input.
-
-Kind regards,
-Ernest
+Cheers,
+Miguel
