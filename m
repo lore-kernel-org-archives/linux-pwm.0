@@ -1,211 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E38673BFAD9;
-	Mon,  7 Sep 2026 09:18:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788772693; cv=none; b=E+aD76nNd0oEbBph9TnWDTS4Udl0Cbn1yyIur2u1gNYmSSH1HvwVJ6h7U7jL/bdKxQDNlT+q5hucV88gCWZ5j2Hh+RulfMWESOhaIAfy9KAW+0PeJiZ3ZmVtfswQHhwnP/8rHH9SSqiKKq2caOrAK2QlbnWxh4AxpidTSD0bPcE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788772693; c=relaxed/simple;
-	bh=hQUTdEhPqVVhEcwvcK+xJyXQVUmljL9MFNZ5tY2Q88I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tv1MUUKYFzdpKMj52yT7WhVeelHPZztVLrEia7/qLvZG946E4h5F+0jOasv1jSqoLVGg+WS5PIzlqB0eFIJtOpdMOAApiXkyib6p3uqG1polbX7sq4RMNNaHC30IfmG04HVjWErtzaA3jQOF2hc8SixIj6fuwBoFtWJVoiKQwOU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NiPGE7lF; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4D40442FB3
+	for <linux-pwm@vger.kernel.org>; Mon,  7 Sep 2026 09:24:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788773079; cv=pass; b=HLwvN0533MimYzmGucSK8d5QJd2PpCuD+YBn4jpxjn3AIwOPCezN9H5ft2EVlECsHY5UUDkfueqzYp7PXL0J+3XUbX9ZTkpPxyFNPhrh2IM8/rh1R3A1X1nYYbzq79jcD7IgBJckaXFKicHHIg6wlSGOHqCGpQbB8SGc96VS7Qo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788773079; c=relaxed/simple;
+	bh=cSfmMGgIFwjjaaI7Bk9duU/SsMv1zgWa3X4ow3p9Z0U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KU8RfTaGEiKFuH21zYwqVvFj/HXO54ClMLJLv5GGRVlxFYl3sxbXySK3EMupr1xjP8leFVsLnvgBu51YfnHnqpmZLBVpse4S72pArGrth4Ug2mV4tXDBQJNj1eZcO1ter/sd0F6PTFfiZVrNPF+HxEJ4k/omXe+vVx0zpufHWh4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bYzWZS6h; arc=pass smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NiPGE7lF"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id DA33B1F00A3D;
-	Mon,  7 Sep 2026 09:18:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788772691;
-	bh=wHyGtpzCA2UeJuKcWokcD3vWTCf9cr25A+AFNW1+xAo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=NiPGE7lFV/HpXwdfBdTwzMxjWRo95qu+9LXVpniNX6k5Tlt/LUHttZrSFeT+MM9kx
-	 xMxjfbUbdxicz/7uy7OYUJ4+w4KhFQ78tSf2ZY0wfmtTyGzeKKBFXoEaioAxlnFt+r
-	 iCUv/qNVLLgYE+L0+8zKx/xmWO+teFWzrKyDlT1n0HqOGwGpGIQXFivjtHYgObXbcr
-	 VdIki8JQGqNZNmkP5hZ07WBuaGDVQsLe9mmMbZ/ZvvwTY7ctBfn3tzR6LDyZtfWVkh
-	 wn9URmXX5IwOxg3u8le+3MbtXUBF5kyVTgDuv9/rPl++O+QlHHLJW0QoKDpFN+fwHc
-	 804IdheX9T+7w==
-Date: Mon, 7 Sep 2026 11:18:08 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: keguang.zhang@gmail.com
-Cc: Binbin Zhou <zhoubinbin@loongson.cn>, linux-pwm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] pwm: loongson: Fix low pulse buffer register
- handling
-Message-ID: <ap599_CvfJSjk-2l@monoceros>
-References: <20260715-pwm-loongson-fix-v3-0-0aab2847eaa7@gmail.com>
- <20260715-pwm-loongson-fix-v3-1-0aab2847eaa7@gmail.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bYzWZS6h"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-485843aeab8so3687583f8f.1
+        for <linux-pwm@vger.kernel.org>; Mon, 07 Sep 2026 02:24:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788773075; cv=none;
+        d=google.com; s=arc-20260327;
+        b=F+9iMOZN/0Z6k/R8LnvneTLK/8MIuUtNuUJrVncyZkyccEwqx1UaJboznTv9E1mc9J
+         bC/kWKU47yO1BL092LkQYVOjrtO6meOeZQZ/54kcAq1JdeQZsmqbm5xECw1Sqp8sjij8
+         X9o35QXLY/IB0KvEBGNKRYifxfgZ5CJhKnG9R6D930zOykj7VNDGq/O9PmJ/tXbRGKiC
+         TyuPH+EhuocdgAigwHFZxMQmjljaDSLk/3+lCdJuAIt0rMMrtszzWQGw+r2PBTgSh8HZ
+         xXV0/bFhfkoa5UPkhfo01PjpJMsn38djE353ygQ21M+IK5O+eCbW04BrGNt+3DVV6M/z
+         cr8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=hfGjfP8T35WEV6rGIAsKY4f5Rwo6my7dAG0voowddxQ=;
+        fh=cIbKk3m3lF3E+xqFXKjj27KusYHJlaWLs3KCeEtHycg=;
+        b=VOukPevVSdPht6joDs71xOuUGFbThXExU6czRjY9GwbzHCGKWU4R63jC3vHzyz5vq/
+         +n9hrAiQKPlBp1t4gxR9eOli3HxmX6w+0b71G16oHdsYugT1OPBnhrNPHFUQRKJznfen
+         d1WHU9tGh/Vd99KxMFs4tIB/UIl9AJ6Zyj4/us/VW5rqckWLkIOF5kgyCUGM7Lu808r0
+         Dq9iFAkXvMQaHqGVIyf4LMYJDhpglgzfC5scnlDPF8xCVllsdjVH5IwHNLP9j+PUuQq2
+         awB/waGJE/PmRb70Qad/hYQi8YRcLxCptjd6prmijV9kvKgNA/3QzU8enpNykN8m4O2V
+         3mZQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1788773075; x=1789377875; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=hfGjfP8T35WEV6rGIAsKY4f5Rwo6my7dAG0voowddxQ=;
+        b=bYzWZS6hvyblgTmL2WcmqKBFUHHD7UV1gkXyod2CvfAo9EbydIVeGF++9jABbnZPte
+         ys7ocRIu1X8wdEIGp96wY0ZJwuX9iep0RRInWAVJmxBvFDn1O/SCyei+2Uu4DEx9EFWy
+         Ju0SX+/3BqiQeyfykHFwlXZNMjTYSHT9Hz+p1tge65xlQefntxQdIOB//wajbELDPR6l
+         bZSz7BV5hpdU91s0tZALuvzT0BaGoZvdwZ+37h8mSbXVV8RthaPq9o6xvdh7qixRCia5
+         5aTu+haqTXNlK7d6WQD6MLUT44ym0DOgw7EgnQhTgLv5A9qh2xRN6Nek2Upj1f/kRQ35
+         VQFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788773075; x=1789377875;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=hfGjfP8T35WEV6rGIAsKY4f5Rwo6my7dAG0voowddxQ=;
+        b=QxTw9pCB2nOjpif1VJ2iIUoJeoprmeFkGs/8LDXS1oKls84fZVDeXy8F/hJvVYX83H
+         zUmTGAr0anVUVXzZutOoWA/VMjK/Q5J74bStyvWACNZZ6blt/wD/h+KgEDh1BK8eGj3h
+         xXssciMWmmuGz9/D7OQDQpmbVqWtNi4N572DZfuymNoJJrHF7ZPTPr488XBOcz5vFzXz
+         MzLIbHsrQ9XOezCAl5WDj99pPIzecwSDaD+SYq/66X6Rs9EyCRkp0MShypbA1EH84X8G
+         Nepupgp4KA4nIRGV3x82PYZxTxsyAtMHRAmT6HxEuOXkfsy7r2n7Ow2xOc9fRkC1p2Sd
+         dtFw==
+X-Forwarded-Encrypted: i=1; AKwUvBxgy39e08Dgf2oE34EjcOd0ny+UAgTBeyjxjoemHammzyZK8+pMU34KFcA1B1CvoTpOk/oqcblgqsQ=@vger.kernel.org
+X-Gm-Message-State: AFuF++nR3KXly8S66wAVqTB2fRAuSIH87UY4jjUxRMtYuDXrbBbmR/e7
+	jMqPvc6GGyZmIbDhT5VG02z0EzLtmRMqs70IQMYxyvsPzC7JvYPc518FAGCj9RFLGQnZkdz6Wn3
+	MDke4+TeQwj544L+NQSxf+xt/YhTkx5nu7wDq5vR5
+X-Gm-Gg: AYBFou39r4GzORVxo3a5jCLNnPnk8E4zCFfpo207z+7UXuWJn3+jN88YWSPND99iLJO
+	gDfw9N2jKqIdr5vlObmxU0iGEVHIavJwRfPEClIKVX0CsNVzwnpwK4POe+G7/ZyYZ53RczabOde
+	EXVq2iHjgjGMX6RKjWyNX5bMr4tmjVdeQcfA/LLYC63aa0YT2Shq3mNGVoZuTOompYkYn5CdOE4
+	HnMPQCmHJfqefucwZQo+yUEyuDVuLmTlWb52Vn9XB2GaVl7gCf/9ltD6v2+KVDXYphjaV5VC+Dx
+	0ylWQOHraN1eWuz8UecUWO2YO17RbZ0bNyUQAdYeca5gYnjeHbcidwSEiwC/Kg612gE9APfdvul
+	1eCoQ7vYBNolWZ8AoqKmV5yxU4QyRFg8=
+X-Received: by 2002:a05:6000:430b:b0:485:8ad6:3752 with SMTP id
+ ffacd0b85a97d-4858ad63a6fmr37026021f8f.5.1788773074197; Mon, 07 Sep 2026
+ 02:24:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="mgll4jd2v5glfqpy"
-Content-Disposition: inline
-In-Reply-To: <20260715-pwm-loongson-fix-v3-1-0aab2847eaa7@gmail.com>
-
-
---mgll4jd2v5glfqpy
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
+References: <20260824-unique-ref-v20-0-490735672187@kernel.org>
+ <20260824-unique-ref-v20-4-490735672187@kernel.org> <ao2WubjLtDuHvRzx@google.com>
+ <DL894TFXM5AT.2QOXN683UKXIF@garyguo.net>
+In-Reply-To: <DL894TFXM5AT.2QOXN683UKXIF@garyguo.net>
+From: Alice Ryhl <aliceryhl@google.com>
+Date: Mon, 7 Sep 2026 11:24:21 +0200
+X-Gm-Features: AcwNN1V4plkowyMHAsnIxTQwxzR-aYAz331pg1N8okzwNx7uKX70uWh-YG4Yx6I
+Message-ID: <CAH5fLggAMfBcxprKJxs4JbieKadC_mKg4B0xNETOH1QUi72UGQ@mail.gmail.com>
+Subject: Re: [PATCH v20 4/8] rust: page: convert to `Ownable`'
+To: Gary Guo <gary@garyguo.net>
+Cc: Andreas Hindborg <a.hindborg@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
+	Lorenzo Stoakes <ljs@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Uladzislau Rezki <urezki@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, 
+	Boqun Feng <boqun@kernel.org>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <lossin@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
+	Daniel Almeida <daniel.almeida@collabora.com>, Tamir Duberstein <tamird@kernel.org>, 
+	Alexandre Courbot <acourbot@nvidia.com>, =?UTF-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>, 
+	Lyude Paul <lyude@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	=?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>, 
+	Todd Kjos <tkjos@android.com>, Christian Brauner <brauner@kernel.org>, 
+	Carlos Llamas <cmllamas@google.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Dave Ertman <david.m.ertman@intel.com>, Leon Romanovsky <leon@kernel.org>, 
+	Paul Moore <paul@paul-moore.com>, Serge Hallyn <sergeh@kernel.org>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>, 
+	Igor Korotin <igor.korotin@linux.dev>, Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
+	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
+	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>, Michal Wilczynski <m.wilczynski@samsung.com>, 
+	Ira Weiny <iweiny@kernel.org>, Philipp Stanner <phasta@kernel.org>, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, driver-core@lists.linux.dev, 
+	linux-block@vger.kernel.org, linux-security-module@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-fsdevel@vger.kernel.org, 
+	linux-pm@vger.kernel.org, linux-pci@vger.kernel.org, 
+	linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, 
+	Asahi Lina <lina+kernel@asahilina.net>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v3 1/2] pwm: loongson: Fix low pulse buffer register
- handling
-MIME-Version: 1.0
 
-Hello Keguang,
+On Sun, Sep 6, 2026 at 3:02=E2=80=AFPM Gary Guo <gary@garyguo.net> wrote:
+>
+> On Tue Aug 25, 2026 at 2:20 PM BST, Alice Ryhl wrote:
+> > On Mon, Aug 24, 2026 at 01:17:56PM +0200, Andreas Hindborg wrote:
+> >> +        // SAFETY: We just successfully allocated a page, so we now h=
+ave ownership of the newly
+> >> +        // allocated page. We transfer that ownership to the new `Own=
+ed<Page>` object.
+> >> +        // Since `Page` is transparent, we can cast the pointer direc=
+tly.
+> >> +        Ok(unsafe { Owned::from_raw(page.cast()) })
+> >
+> > This doesn't satisfy the safety requirements of Owned::from_raw()
+> > because the page may be used with vm_insert_page(), which increments it=
+s
+> > refcount and causes it to be shared the vma system, and this occurs
+> > before Page::release() is called.
+>
+> I suppose the existing vm_insert_page() abstraction we have is already
+> problematic, because it uses `&Page`?
+>
+> Maybe we want to change the API to use `ARef<Page>` so it already has to =
+be
+> shared? Conceptually it takes a reference count from a `&Page`, which isn=
+'t
+> possible because `Page` is not `AlwaysRefCounted`, so it needs a `&ARef<P=
+age>`
+> to be able to do that op.
 
-On Wed, Jul 15, 2026 at 07:05:23PM +0800, Keguang Zhang via B4 Relay wrote:
-> From: Keguang Zhang <keguang.zhang@gmail.com>
->=20
-> The Loongson PWM register at offset 0x4 is documented as the Low
-> Pulse Buffer Register, which stores the low pulse width rather than
-> the duty cycle.
->=20
-> However, this register was incorrectly defined and treated as a
-> duty-cycle register. As a result, the duty cycle and low pulse cycle
-> are swapped in the generated PWM waveform.
->=20
-> Program the low pulse (period - duty) into the register and
-> adjust pwm_loongson_get_state() accordingly when reconstructing the
-> duty cycle.
->=20
-> Fixes: 2b62c89448dd ("pwm: Add Loongson PWM controller support")
-> Signed-off-by: Keguang Zhang <keguang.zhang@gmail.com>
-> ---
->  drivers/pwm/pwm-loongson.c | 38 ++++++++++++++++++++++++--------------
->  1 file changed, 24 insertions(+), 14 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-loongson.c b/drivers/pwm/pwm-loongson.c
-> index f2fb35b7af2b..e703217a6d5e 100644
-> --- a/drivers/pwm/pwm-loongson.c
-> +++ b/drivers/pwm/pwm-loongson.c
-> @@ -22,6 +22,7 @@
->   */
-> =20
->  #include <linux/acpi.h>
-> +#include <linux/bitfield.h>
->  #include <linux/clk.h>
->  #include <linux/device.h>
->  #include <linux/init.h>
-> @@ -33,10 +34,13 @@
->  #include <linux/units.h>
-> =20
->  /* Loongson PWM registers */
-> -#define LOONGSON_PWM_REG_DUTY		0x4 /* Low Pulse Buffer Register */
-> +#define LOONGSON_PWM_REG_LOW		0x4 /* Low Pulse Buffer Register */
->  #define LOONGSON_PWM_REG_PERIOD		0x8 /* Pulse Period Buffer Register */
->  #define LOONGSON_PWM_REG_CTRL		0xc /* Control Register */
-> =20
-> +#define LOONGSON_PWM_MAX_LOW		GENMASK(31, 0)
-> +#define LOONGSON_PWM_MAX_PERIOD		GENMASK(31, 0)
+Honestly, the problem is the safety requirements of Owned::from_raw().
+Pages have a "special" main reference, and free_page() does more than
+put_page(). It even does something when the refcount does not hit
+zero.
 
-Can you please make this a minimal fix and do the rework in a separate
-patch? This way it a backport to stable is easier to motivate.
+The correct behavior for Page is to allow the user to hold one
+Owned<Page> whose drop calls free_page(), *plus* any number of
+ARef<Page> references that invoke put_page() on drop. This way, the
+owned page controls the special drop codepath.
 
-> +
->  /* Control register bits */
->  #define LOONGSON_PWM_CTRL_REG_EN	BIT(0)  /* Counter Enable Bit */
->  #define LOONGSON_PWM_CTRL_REG_OE	BIT(3)  /* Pulse Output Enable Control =
-Bit, Valid Low */
-> @@ -118,20 +122,21 @@ static int pwm_loongson_enable(struct pwm_chip *chi=
-p, struct pwm_device *pwm)
->  static int pwm_loongson_config(struct pwm_chip *chip, struct pwm_device =
-*pwm,
->  			       u64 duty_ns, u64 period_ns)
->  {
-> -	u64 duty, period;
-> +	u64 low, duty, period;
->  	struct pwm_loongson_ddata *ddata =3D to_pwm_loongson_ddata(chip);
-> =20
-> -	/* duty =3D duty_ns * ddata->clk_rate / NSEC_PER_SEC */
-> -	duty =3D mul_u64_u64_div_u64(duty_ns, ddata->clk_rate, NSEC_PER_SEC);
-> -	if (duty > U32_MAX)
-> -		duty =3D U32_MAX;
-> -
->  	/* period =3D period_ns * ddata->clk_rate / NSEC_PER_SEC */
->  	period =3D mul_u64_u64_div_u64(period_ns, ddata->clk_rate, NSEC_PER_SEC=
-);
-> -	if (period > U32_MAX)
-> -		period =3D U32_MAX;
-> +	if ((!FIELD_FIT(LOONGSON_PWM_MAX_PERIOD, period)))
-> +		period =3D LOONGSON_PWM_MAX_PERIOD;
-> =20
-> -	pwm_loongson_writel(ddata, duty, LOONGSON_PWM_REG_DUTY);
-> +	/* duty =3D duty_ns * ddata->clk_rate / NSEC_PER_SEC */
-> +	duty =3D mul_u64_u64_div_u64_roundup(duty_ns, ddata->clk_rate, NSEC_PER=
-_SEC);
-> +	low =3D period - duty;
-
-This might overflow. I think in that case the right thing happens (at
-least I failed to find an example that results in bogous settings), but
-that might be worth to be handled (either by a comment explaining it or
-explicitly limiting duty to be <=3D period first).
-
-> +	if ((!FIELD_FIT(LOONGSON_PWM_MAX_LOW, low)))
-> +		low =3D LOONGSON_PWM_MAX_LOW;
-> +
-> +	pwm_loongson_writel(ddata, low, LOONGSON_PWM_REG_LOW);
->  	pwm_loongson_writel(ddata, period, LOONGSON_PWM_REG_PERIOD);
-> =20
->  	return 0;
-> @@ -166,15 +171,20 @@ static int pwm_loongson_apply(struct pwm_chip *chip=
-, struct pwm_device *pwm,
->  static int pwm_loongson_get_state(struct pwm_chip *chip, struct pwm_devi=
-ce *pwm,
->  				  struct pwm_state *state)
->  {
-> -	u32 duty, period, ctrl;
-> +	u32 low, period, ctrl;
->  	struct pwm_loongson_ddata *ddata =3D to_pwm_loongson_ddata(chip);
-> =20
-> -	duty =3D pwm_loongson_readl(ddata, LOONGSON_PWM_REG_DUTY);
-> +	low =3D pwm_loongson_readl(ddata, LOONGSON_PWM_REG_LOW);
->  	period =3D pwm_loongson_readl(ddata, LOONGSON_PWM_REG_PERIOD);
->  	ctrl =3D pwm_loongson_readl(ddata, LOONGSON_PWM_REG_CTRL);
-> =20
-> -	/* duty & period have a max of 2^32, so we can't overflow */
-> -	state->duty_cycle =3D DIV64_U64_ROUND_UP((u64)duty * NSEC_PER_SEC, ddat=
-a->clk_rate);
-> +	/* low & period have a max of 2^32, so we can't overflow */
-
-2^32-1 is the maximal value, right? (This was already wrong before.)
-
-> +	if (low > period)
-> +		state->duty_cycle =3D 0;
-> +	else
-> +		state->duty_cycle =3D
-> +		    DIV64_U64_ROUND_UP((u64)(period - low) * NSEC_PER_SEC, ddata->clk_=
-rate);
-> +
->  	state->period =3D DIV64_U64_ROUND_UP((u64)period * NSEC_PER_SEC, ddata-=
->clk_rate);
->  	state->polarity =3D (ctrl & LOONGSON_PWM_CTRL_REG_INVERT) ? PWM_POLARIT=
-Y_INVERSED :
->  			  PWM_POLARITY_NORMAL;
-
-You could do s/>/>=3D/ as a micro optimisation, but I don't care much.
-Otherwise the adaption to pwm_loongson_get_state() looks fine.
-
-Best regards
-Uwe
-
---mgll4jd2v5glfqpy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqegU4ACgkQj4D7WH0S
-/k5AdggAnKEqeY4F+jpjdgYhLaD+THJmkSKcrwCNVIXJrjwt/ultwauiyDO4N4LS
-RF0yfMl+eSRP6F+pAudsOwy0taz5UBPo22UKrED1Yc8/oEtnKG9uVmuVl8zNOCp6
-pvgbMKNWfUurRVzAfFxSeMjc7qNGX1y4pgVO2K9fL2l5HS4GiZ3tXN1b5ds3khLB
-XDUwous8hLgrGdzoqVzVJ+cvAcxET8j2zTyuo9HY1SpmA+kzjIz/MTp6gNp8qwYq
-/rL+K4rY9WZpfF0ucSSdOfrqWjdRZkxXhxG85LQc2f1kn1QsSrx8+BMmhs1OBVql
-es8II48rQy8daHHWCvdolDwrQ5xhfw==
-=ypFN
------END PGP SIGNATURE-----
-
---mgll4jd2v5glfqpy--
+Alice
