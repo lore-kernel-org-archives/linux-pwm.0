@@ -1,117 +1,90 @@
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 606AF3AA4F1
-	for <linux-pwm@vger.kernel.org>; Mon,  7 Sep 2026 06:27:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A5A3431484;
+	Mon,  7 Sep 2026 08:05:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788762427; cv=none; b=Vn0oYqOc15FCgo+TaRt5OReVwkC954SeL4GM7X6MWGD15x/weOU3EdeRF60zf3LnUFSosBpLUmOWi0YzFyI3IpuM877ZdKNTWrb0P6qA7vDPvHpxWcrzpc8lkexv7ySCJiQhSzqNm0Mha0SO9+GzV5liriS74tyaXweqhmrCN3k=
+	t=1788768336; cv=none; b=ftTKNXUdp4TZRQkMgCUbJHfWiXVO0Dt1W62Ljoog+MTjib42C3HZpnEcO3y8gQKRPBL3cRjhShXAZ2B+uV1lGrJaOWnptY7nGTdlqkXGCIj4TAZmCpy+6iFREosflnXwG/zqKGSDY0GRvypEN3M9BQZHCuHFboeRdl04ctAgbwI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788762427; c=relaxed/simple;
-	bh=rZ8iRBSZE6xpKvhJ0ZOhQ94EMB7ydccG7ry6lP67m40=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EHQt0e9E2ikq3JXdjEzPN26cw6JhP2AyURXjgVZniD6e6tx646nZnZzAGU8Ni16KLZhi945B7tWPALZvxSz2bLOUj+emyxaSVICLr1CxeIGjOgUTa5VqhBrcucuh5KzO3rLJhv5NSeWeuQhLowyj0Png4fSqrx/liRgNwmXs1dk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nrSgwwQ4; arc=none smtp.client-ip=209.85.214.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788768336; c=relaxed/simple;
+	bh=aPs8vOeOkDwA+cdOHEggTr5cgfZ4hBDA0b/o2U+3pmY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GX0bOT7Y2ghJtpN3CtpGo42VnVJmlTwSm5xGvHoc+0RJ8h5d4/0gH9f7ER32qyVgiwCSehjR8Dj9qO37P2+lWKLXpAfVwF3D2KiVnqX+61wNC4egvFuxzXWVuD4IIw7EGwappnMFsnZ/qpVNtmyae9bOkLB0hQrQcpzOPbwIf2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hdOFqkHG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nrSgwwQ4"
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2d5cad1a6baso26946135ad.3
-        for <linux-pwm@vger.kernel.org>; Sun, 06 Sep 2026 23:27:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788762424; x=1789367224; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=OcF57hu0+g/ff9yOn0KrB5lQwjHMKCpuTDcWS1ABzmY=;
-        b=nrSgwwQ4mP+GDp/Ie1Umg0MgTJOWzUZbn1CzHIT/7zk11giFBiSXHhIAfGb5cPRtYs
-         UtfXY7ZOHkFuOWEqnK0g1/i1njA4h0GikT58SCJu6rPyd1xP4kLX9TSDiPpFHhOMek4c
-         biJOQev9dP7EPtqWacpajMhlYMDyET1wEg4L1tSHemROFGd3jvCtVftk3eJzUFgnzmoF
-         kEO4IJ5HTKQ5MO2kS8RfofjUfo+3r/F/RuZeXVH81D7Nwmd0nSCHoav4OblUVEwsglAk
-         zh2xkeUBjk3qWSJ3s0e6+HykZ1m1GfKGB5GQMdIPdS0hkQEXixTfJOChnHwazPzABkPg
-         CJvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788762424; x=1789367224;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=OcF57hu0+g/ff9yOn0KrB5lQwjHMKCpuTDcWS1ABzmY=;
-        b=d0UNiF12KAJFiZmV0Pi6oJnas7EJFYi2QzlMFIXD/CCHpR1zEk4+S7h8IJpQJWgqhw
-         4TMZGQb/xujGqrABh0PEgz1/xKV6GQe+54zkBO+Rv9iUB8ML/IAJYtkIvfzQYrQO6pib
-         D08LwOmVFgL9z9wAvV1KpmaJK55vksxrfMAUV2rWfLUInkzv32tuPa9Tog3gEI4wuQki
-         bC1M9puk17+GuyEdybENhs3OJD2ZEkiEAsZKBrgrvgMBRCZnuNoNoWBg65wVEelShw9j
-         xlbG41Rs3WyCFmz0pUJk8tkMYdtAP7rA/B5KUwGBJC/+BL2tGbIVKbyCFGv3n52fGF7E
-         Xjqg==
-X-Gm-Message-State: AFuF++nO5mGUjSqF+LWnvmHFICEyHTTIPe1Zyx8YQhntNFmxyX6OmjLH
-	aKdzoD+gU365PInCnw4MhpEBwUpqc+EG2bSBzaMXxvvZGE2c5qiszkYw
-X-Gm-Gg: AYBFou3T/EoEB8i+1OU0vrIq7OIzzzWhbSrLMWeAO1bEQ+jC2wrcmQ17a9pgmtVg2YZ
-	eaCskT6QqFHkTKu6JtBeUQgSiQB8vGnJg+6aubsEN7FC1iAqZAWHWEx8c/aBhFxNU6lH/xWfz6R
-	TSfB4+Ynn/dU4lBmCplUEAk1HDS2L16W/05FK4r8rEYZ27OkPS/cAqMqjLYiEGsDXIe0q1Feu+K
-	XXm3PC0fyqQk0gBv1L9r5/biGC1Ele2UsULULaRpZ9wdOMWvZQfbI0x1wA1+US/NYtka3wWECgb
-	LM+G0NFpWCQyx83iV1piVGW70cYbUEP6fq87zCZVK1GEWZCUOU2t2z0+280gA18sjKPCdWIOtb1
-	WnK87KolyrktHkLhXUt1pqKBhpy3CdRGjNv88yCzvmtYMwO7sv20F6iFP1OBKuQ4tJ7mg3lcHeW
-	1T5jumVU23UkkdGHdw0MDttIzA/ASXWPnzmT0LPuAv4EulXkueBO3kYYmFcR/l1cm0epbZZ9KhT
-	qEnPfmx/BxkaQ==
-X-Received: by 2002:a17:903:1b4c:b0:2d8:d4d3:da4d with SMTP id d9443c01a7336-2db1262325fmr342823045ad.17.1788762424119;
-        Sun, 06 Sep 2026 23:27:04 -0700 (PDT)
-Received: from volcano9f6e-hostos.amd.com ([165.204.217.251])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-33450e140d3sm20404392eec.4.2026.09.06.23.27.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Sep 2026 23:27:03 -0700 (PDT)
-From: Hemanth Selam <hemanth.selam@gmail.com>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
-Cc: linux-pwm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hdOFqkHG"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 144241F00A3D;
+	Mon,  7 Sep 2026 08:05:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788768334;
+	bh=KFc3Q3n3ot5F3E+SE4+u2bsbzV+Be3EJmOfLOxeBnys=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=hdOFqkHGZtPx7BkOVcOTWt2Sl/nVdIQdVdxgmt1zB3lahFF4JDXllC2ynvYn4zw9Q
+	 mjZmE/3kUbjazBQVc/GLRIAFMP6+OfZUx/MjpMwRFk+NYXd5wvM8+Ch8jdIqDAQiwh
+	 Z8FRN0dAmcrFQveHk47pxbL0CJkOiFTESGSDZ/lOvRyuluONHQbkAZxK5A7fZPtdGP
+	 YYdkkVSDi/lR05qKLUvdWvJP60vIOSbOUpi8yquGlQER3Q+EIGb48shl4VotcKBvCD
+	 Ppy4/I8gbTD0EtD4Do4aDPKACYFeLRyh6Ixuam871cP5tTN0wSTlum9eUCSLnOl4yH
+	 s3gaYdjNxuajg==
+Date: Mon, 7 Sep 2026 10:05:31 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Hemanth Selam <hemanth.selam@gmail.com>
+Cc: Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] pwm: fix typos in comments
-Date: Mon,  7 Sep 2026 11:56:58 +0530
-Message-ID: <20260907062659.15500-1-hemanth.selam@gmail.com>
-X-Mailer: git-send-email 2.48.1
+Subject: Re: [PATCH] pwm: fix typos in comments
+Message-ID: <ap5v7IBBmroh4VZC@monoceros>
+References: <20260907062659.15500-1-hemanth.selam@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="llupe44bve4w4fvk"
+Content-Disposition: inline
+In-Reply-To: <20260907062659.15500-1-hemanth.selam@gmail.com>
 
-Fix typos in comments, reported by scripts/checkpatch.pl using the
-misspelling list in scripts/spelling.txt.  Only touches comments, no code
-changes.
 
-Assisted-by: Cursor:claude-opus-5
-Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
----
- drivers/pwm/pwm-brcmstb.c | 2 +-
- drivers/pwm/pwm-pca9685.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+--llupe44bve4w4fvk
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] pwm: fix typos in comments
+MIME-Version: 1.0
 
-diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
-index 790ef7ffbbe5..78378787e4e9 100644
---- a/drivers/pwm/pwm-brcmstb.c
-+++ b/drivers/pwm/pwm-brcmstb.c
-@@ -101,7 +101,7 @@ static int brcmstb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	u32 value;
- 
- 	/*
--	 * If asking for a duty_ns equal to period_ns, we need to substract
-+	 * If asking for a duty_ns equal to period_ns, we need to subtract
- 	 * the period value by 1 to make it shorter than the "on" time and
- 	 * produce a flat 100% duty cycle signal, and max out the "on" time
- 	 */
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index a2792b803643..3374ed76f8d3 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -54,7 +54,7 @@
- /*
-  * The time value of one counter tick. Note that NSEC_PER_SEC is an integer
-  * multiple of PCA9685_OSC_CLOCK_HZ, so there is no rounding involved and we're
-- * not loosing precision due to the early division.
-+ * not losing precision due to the early division.
-  */
- #define PCA9685_QUANTUM_NS(_prescale)	((NSEC_PER_SEC / PCA9685_OSC_CLOCK_HZ) * (_prescale + 1))
- 
--- 
-2.48.1
+Hello,
 
+On Mon, Sep 07, 2026 at 11:56:58AM +0530, Hemanth Selam wrote:
+> Fix typos in comments, reported by scripts/checkpatch.pl using the
+> misspelling list in scripts/spelling.txt.  Only touches comments, no code
+> changes.
+>=20
+> Assisted-by: Cursor:claude-opus-5
+> Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
+
+Thanks, applied to
+
+https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-=
+next
+
+Best regards
+Uwe
+
+--llupe44bve4w4fvk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqecEkACgkQj4D7WH0S
+/k4KKgf/QTm2WVRrQALfoV9JLBdZorixC3WKwq5wW134IKXEizGfPMsfhkdNdJ3H
+4gniCrvqedM1DLXGJD9AODV1zOYY7GOlnOxuieAScC4pfUebusv1B6r3CQWjYVwD
+FkfTprdCUmHs8/NumPSyfzZ27JdSSa4gR0P66ZwdM1SJmfksFHLK5PDbRmQ2iEgs
+u4eO9VNm4Il4wnbXGNTaPrCGknyJIdaMUZ2ghpC2GuEBg0REtDTpwErufGqk+3d3
+Ufus4k+8X08wR2x7lPPG3hyt8C+r2JYeJ04xqiWNbnfjTJbfjFn/bqOiDFMwjMP3
+0ATm0Fro1uwkd1vZ5ApMoAltUXBqgg==
+=0rB7
+-----END PGP SIGNATURE-----
+
+--llupe44bve4w4fvk--
