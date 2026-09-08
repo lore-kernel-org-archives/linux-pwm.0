@@ -1,129 +1,114 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4E4B2BE655
-	for <linux-pwm@vger.kernel.org>; Tue,  8 Sep 2026 16:53:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B7DD57ED97;
+	Tue,  8 Sep 2026 17:13:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788886436; cv=none; b=O5rvDZ7+LzQ1lgQ2/pyn/dg3vNUqdSHJNbeidf8BfBgo8FspOnvwf6O6kh3z+e9bU1usT3mJGCZPICcN0vCAshjuqKaPpHu1ery+8y6WFL8uqO3YBd+V5JECvzqBI+todEMk45KPBiUThjHVMylSGlm9aLky8KHoRC1ghA0lIfQ=
+	t=1788887637; cv=none; b=DY1BryJuPX4I6RAgR4orL77e1/YGKEFINiangVtOW6tk0vx6dNTPY19CT9K7i6Rs5Ys1euPEsnzL++mM127ObMJbz5KQsNQr9uKL+2DTSmD7tpdsljBSOqPP1q1S4uKd0z58NgEeMnLfbHPoHBsd7yucjNLsjjXidoUEwcxhpdM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788886436; c=relaxed/simple;
-	bh=9M7weo/ro39rmyV3qc6k67t2ckADpSAmD5qUSxEkVV0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Ncmzh/rCjpvfYePOPI7QNP2bWCa8zd17egeIQKkzP8U0GDniZT67BDxk9naJkyAAf07S3aFI4UppD5kyfX9SWeKxDSHE3885HxnwFtyWYXC+Iqg3babm9sCj6eZETLQ/X/42FEy4KK5w18NVQKJTgmaGJEZiOEZRgTH6JRKGqJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Yc3uH1KV; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1788887637; c=relaxed/simple;
+	bh=ek0Smayhi8B4gW1GXsCn8FTSwdWZSt/IemVrVchRirE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BPtqj1+Tsf5rXCMcvkHuEAOtJ9nCReNsWHzVYKB93MYYs7ZhNuZ5bWE2HXdZZMgNXsS5ebfzg2AaLcjb3uuXwxTJzf2abdCDfUO/p8ItxMO3jXwqAR2fnU5uBJftpk+OmBxqd6h6/fPAapwWUnTU6alhkGLJNKHQSHXG6CZcXLc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g4gcHqvq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Yc3uH1KV"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-49b8e527d63so58618235e9.2
-        for <linux-pwm@vger.kernel.org>; Tue, 08 Sep 2026 09:53:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1788886432; x=1789491232; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=zJTRRM399Ynn6HcZ5P+mZPLneQozNygw9v2NsKc0JRs=;
-        b=Yc3uH1KVPRJPP+ywJXhufNRQ4lyIJHbKWH0QG4WJo53ymYmNHzNQ1qE4YB6e1PK3CF
-         mlfO2ucW23d9t4TJr6VuqDoeiEKViFCejQbVQJUNPYuD7sRBBj/Rtrlw3BLOYWBcfDtJ
-         shK1vgvASva7pAEVQfGL0x+fKmYId9vr+SCh1DIJX59JiE/+nJZxidV5HtNp/+SuL0uA
-         O6SHUIKbtDGi7JIf7/eQElMkMFUQtOufSHXN7s8WWABgFhF8ig2qMnaxVEIH6jm4OU1s
-         69Nr1DotvzEpazRKziFrkG1gJCTK555I+Wt3pyX0M7phJEXN4enNEBj0domnbjtVAx00
-         meNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788886432; x=1789491232;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=zJTRRM399Ynn6HcZ5P+mZPLneQozNygw9v2NsKc0JRs=;
-        b=W9l5XZY1JdMUZSLvWIat5xyTjTl6KzIvzUKJzxIy+ttUmgSWGrABTrDJnAROf8fohp
-         i11waOWxU9TUTTppbxu4lkYTkmvQx69P7y/7XD7JJQc95mH2BnAbfupv8HDJtiqkRcNh
-         DjKiO3JSmfqFzSXOwGMteBV1xSr7FHXfc9rGFRIOW4KOMEv45KH5/gHxYXDAqFHXTddv
-         kwvRsH1m5m/0C4/0tJBGym8zmk7QV51fBKmLhxzo/AhFyy/xTQ4HkHk4cjMc2g2rT4Wf
-         oeMO2S7oqvJNAVryl8zX4B42uEtCB2L/hDGC999XQ+p2VD47b31we4cHnWkDa8YRvyCE
-         hoCg==
-X-Gm-Message-State: AFuF++mfcOcRhFkbMN0hVPAX95eaHyizLZJxd2S29Kod4fySDFKy7wVK
-	HT4jSJZFuGOrswFNxG8Oqc9q7mucbyUZrTqkGCb2S3q9ZjQRxmuvugdCpgJskXyoq3heozaMilP
-	WogFH0CY=
-X-Gm-Gg: AYBFou1tcWFzc6w5Vaqo8uWwvB48/VTFKnYWXLS+27567ASwQgkeKO+r7DvbaNHLTzN
-	QoJTe8Spjb6hBq9zVqPArEWNx355VIaew0b/HwQ3KHh66VzAwT1PYlGYZVXtpCGGX9SCGgI17rp
-	RnvemI7WvGe2e4qkE+6jgLP5+VpHwjwYtkIfu+miz7qjnaKFCtZWqV1TGr5tZ94Jl/08IY8a55s
-	+bSWlgDvX8MqDC6w/B8jgeB84nAaPahUIPhqYQ7xm29eFp4B69gNEV6jBqcH20jeuOE8ETcEBGk
-	jkhwgIG2vpgTqTc+bKTF592bb6lq1vraD8mMxWjPoqguppjA7X8KRWwjkCi6LFZ8Upwi4k07tpr
-	UmQv9j+t3goKRY0XkCLfKFU+eNkPVbzPckkg5lJMMVTXpork/8spX6dYbkcg5eouuHpGuoSN26w
-	TrUjk7ID4XVPr7jAMAksA6J6eoaP6NjeiqeU5Cp1J39kqQdHhOG0OUAjghyNHu+Rx/JfUjSKuwH
-	BksAdls7jRUu3p9NjAmU+TT/eYjInoKLQhD9sAYI6oFr6NZCGs=
-X-Received: by 2002:a05:600c:4e11:b0:49c:f2f4:eddd with SMTP id 5b1f17b1804b1-49cf8268795mr324700295e9.16.1788886431855;
-        Tue, 08 Sep 2026 09:53:51 -0700 (PDT)
-Received: from localhost (p200300f65f19a9042cc2680c1f1bf2f5.dip0.t-ipconnect.de. [2003:f6:5f19:a904:2cc2:680c:1f1b:f2f5])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49cee5d476esm536676275e9.1.2026.09.08.09.53.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2026 09:53:51 -0700 (PDT)
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: linux-pwm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Lee Jones <lee@kernel.org>,
-	mfd@lists.linux.dev,
-	Manush Prajwal <manushprajwal555@gmail.com>
-Subject: [PATCH] pwm: lp3943: Mark parent device's platform data as const
-Date: Tue,  8 Sep 2026 18:53:41 +0200
-Message-ID: <20260908165341.1423611-2-u.kleine-koenig@baylibre.com>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g4gcHqvq"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A523C1F00A3A;
+	Tue,  8 Sep 2026 17:13:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788887636;
+	bh=/W45qRLtv26bOktI1LZR0If7Nwl0xlxx+IRS4Ck7a+4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=g4gcHqvqiSL8lilNMcUUKApSZrQmo8qRP5ML43l85YT1dhOraV36u1FAEc07O8ad9
+	 RrrKvqJ5fuOGfZioFiDQfiiFML8gCvpIxoKpxPfsuC2P+ZMPREPAq59TlUYkKgi1El
+	 w2AqDMSp+mVz0JfjfIs3anBDi8BEMS86rWvuaCHKhHRxPuYVKt9YT02f1FiWDMUlN1
+	 tioKLbaXm2DhRWP9R6wSBLfUvijINHw5av3Xb35DNWPomWVTTWMiW/yKBqT4ukadqc
+	 bOv/HNFrNYu+JJlauc2GBEDzhh7EGYWPQfAYc7N9qqfTfGzoFqcUHLpPJy4XbQIRuh
+	 oGlCNb/IitN7g==
+Date: Tue, 8 Sep 2026 19:13:53 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Manush Prajwal <manushprajwal555@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pwm: lp3943: fix NULL pointer dereference for an
+ unconfigured channel
+Message-ID: <aqBBapT-KcJDDDGB@monoceros>
+References: <6a9d5187.d63de05c.175391.a17c@mx.google.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1607; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=9M7weo/ro39rmyV3qc6k67t2ckADpSAmD5qUSxEkVV0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqoD2VLnWy5R8B5NkHwHSMkn0/k3VEl+14/KK+G 694a8OVKSaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCaqA9lQAKCRCPgPtYfRL+ TnkDB/9+HZE7ZVJbhQULxt24ztlbksvRvJrzMvU3jnHIoTQ1Fhlcty9R37MkMJcuhFjDr3crDB1 Tt/UNPv+m2EXBZSS8iNvzuhgCEW45745F/EOetjt6VezzjdDf6West9mFHQ9JzdOViL5rScuzlC Y5RzXDvHHAQF3HJbel4MUyZlDyFNVlHjBuiPt0aS10/S1tsjjfKLn6YNuzs5fToCnan5TEX86aQ vPRPVTtAaSG7WJhc+htDPSactsXYa8TG5dVtXTZCClQdIofqOm2x5bapTIe+npYFrWgg5ZUOm8j Y1EN8uLSNFXOzwuOcj5aCOvSQGEaAqUAy9ShNRY4rKKTrRrh
-X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="sfwbrcaebbdwjzx7"
+Content-Disposition: inline
+In-Reply-To: <6a9d5187.d63de05c.175391.a17c@mx.google.com>
 
-Platform data should never get modified by a driver. So add a respective
-`const` which makes it explicit that the pwm-lp3943 driver indeed
-doesn't modify platform data.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
----
-Hello,
+--sfwbrcaebbdwjzx7
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] pwm: lp3943: fix NULL pointer dereference for an
+ unconfigured channel
+MIME-Version: 1.0
 
-I found this patch opportunity while reviewing another patch to this
-driver[1]. A possible followup is to mark struct lp3943::pdata also as
-const. I made a note to address at a later point (i.e. when the mfd tree
-contains this patch).
+On Sun, Sep 06, 2026 at 05:11:58PM +0530, Manush Prajwal wrote:
+> lp3943_pwm_probe() unconditionally registers a pwmchip with
+> LP3943_NUM_PWMS(2) hwpwm channels, but lp3943_pwm_parse_dt() only
+> populates pdata->pwms[i] for the channels whose ti,pwm0/ti,pwm1
+> property is actually present in the devicetree (the binding
+> explicitly allows each PWM generator to drive zero or more outputs,
+> and lp3943_pwm_parse_dt() only fails outright with -ENODATA if
+> *neither* property is present). A devicetree that configures only one
+> of the two channels leaves pdata->pwms[] NULL for the other.
+>=20
+> lp3943_pwm_request_map() dereferences pdata->pwms[hwpwm] with no NULL
+> check:
+>=20
+> 	pwm_map->output =3D pdata->pwms[hwpwm]->output;
+> 	pwm_map->num_outputs =3D pdata->pwms[hwpwm]->num_outputs;
+>=20
+> so requesting the unconfigured channel (e.g. exporting it from
+> sysfs) crashes with a NULL pointer dereference instead of failing
+> cleanly.
+>=20
+> Return -ENODEV from lp3943_pwm_request_map() when the channel was
+> never configured, before the pointer is dereferenced. The caller,
+> lp3943_pwm_request(), already propagates an ERR_PTR return correctly
+> (it does so today for the existing -EBUSY case).
+>=20
+> Reported-by: Sashiko AI review <sashiko-bot@kernel.org>
+> Closes: https://sashiko.dev/#/patchset/6a9d4c6b.79b5ea6e.147aa1.5883@mx.g=
+oogle.com?part=3D1
+> Signed-off-by: Manush Prajwal <manushprajwal555@gmail.com>
+
+Applied to
+https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-=
+next
+
+adding a Fixes trailer for af66b3c0934e ("pwm: Add LP3943 PWM driver").
+
+I havn't made up my mind yet if I send a fixes PR before 7.3. If I do I
+will likely include this patch.
 
 Best regards
 Uwe
 
-[1] https://lore.kernel.org/linux-pwm/6a9d5187.d63de05c.175391.a17c@mx.google.com
+--sfwbrcaebbdwjzx7
+Content-Type: application/pgp-signature; name="signature.asc"
 
- drivers/pwm/pwm-lp3943.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
-index 10537e74be28..0fde89018d2a 100644
---- a/drivers/pwm/pwm-lp3943.c
-+++ b/drivers/pwm/pwm-lp3943.c
-@@ -21,7 +21,7 @@
- 
- struct lp3943_pwm {
- 	struct lp3943 *lp3943;
--	struct lp3943_platform_data *pdata;
-+	const struct lp3943_platform_data *pdata;
- 	struct lp3943_pwm_map pwm_map[LP3943_NUM_PWMS];
- };
- 
-@@ -33,7 +33,7 @@ static inline struct lp3943_pwm *to_lp3943_pwm(struct pwm_chip *chip)
- static struct lp3943_pwm_map *
- lp3943_pwm_request_map(struct lp3943_pwm *lp3943_pwm, int hwpwm)
- {
--	struct lp3943_platform_data *pdata = lp3943_pwm->pdata;
-+	const struct lp3943_platform_data *pdata = lp3943_pwm->pdata;
- 	struct lp3943 *lp3943 = lp3943_pwm->lp3943;
- 	struct lp3943_pwm_map *pwm_map = &lp3943_pwm->pwm_map[hwpwm];
- 	int i, offset;
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqgQk4ACgkQj4D7WH0S
+/k7XpAgAnPnwwfi0ZrVs6V6kJfuKb2EBztPoEhjifptfZAhfy7evyhOW7huM33Tf
+5hmyHLbyBvnRfLtJbPgDdIGk9my6HCmiODbpAVF2h/2iLVbu3nG4CxpgsK6SY4hL
+shF75mdeN/Ju3pllmVI7h0R9yaS0IFxCtBMugeHGLo03vHamUtti8qE90kgKjGzb
+PEiB4vZBkhWIs9J1TTrUuzsUBEGDzb2c00OEct1VGn+4CODAclcNA+lN6Jvi+Lph
+m395cEwq51HSE51z5Y6x3HZXtSpUVuDB2uA550yjsIo5z5pSM4Vm8Ky79wFgSgwG
+vdFpBHarC2xVkSsSIVrPGJphe4uquw==
+=N3MN
+-----END PGP SIGNATURE-----
 
-base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
--- 
-2.55.0.11.g153666a7d9bb
-
+--sfwbrcaebbdwjzx7--
