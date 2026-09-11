@@ -1,170 +1,98 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 001843D647C;
-	Fri, 11 Sep 2026 07:32:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D5DC3DCDB1
+	for <linux-pwm@vger.kernel.org>; Fri, 11 Sep 2026 07:51:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789111952; cv=none; b=LuYX3yhy1pW5/i/5cr+iB7cPen+8Ju6fd6FiI7sTDr+mJzEmdnXw36BgKjlXrIxfagyaAWrvoz4u9FspcJRG+nymK8jA3j3GfiYASBbxkF5HJ2MT2BxxnOqDGnqZeoQ13R3rpqPN/mU9NRP5QMM+FsQqiEirKwDhLXx1LATUeAY=
+	t=1789113071; cv=none; b=HqTUaFKIH6zD223yk2pDSWnyln1UdySZKu/9GIIYkYtHOUlxdZy7Hudh933ul6Xjx96HDcOSME02mSnds87jbnXrgans6bpIiYww+h3aiVOjDNnU4T0sVCwnI+orDB2IeeqHxnOB7b71BqVT1xn/KxCJTAjrvpNNer3Pr7K8Af8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789111952; c=relaxed/simple;
-	bh=8xJ5Ga1qjvb/g+qh9y49zkiEcKW9V67qWAwQ7eAiGNk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KvXkwzjh4rrZKAkxs+ErwzJXD2PO1tD0W7Y1JL1C7h0iJVZi1tHXZRWsNLuDN3Usvy1IsOo933fFg1kQtd3P6n2adW9HH4s+BoQns7CDnJ3c/tLb0kEi7FX56zJLpE5GnZD+HpuLpJsOKASYxb+tIElCZXPMzYz4m39lx5FGLVY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PTZXVftu; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789113071; c=relaxed/simple;
+	bh=EQswtJ3POdIXhCALaheNzM1TnP2uc1nhkY47KA385Hw=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=R9l2X1wYjq1mt6UqGCW11SPeg3vOXvUcXenzfuO6EdYC2SEoaIotn/mH02AwFbAq/+BdCwf4N6ZiZCKTw7DWRT6FOH7rQCLeRIAtXLaLdzdCEwZz6/n948PCMnEopnFnJ3ascejwZLBnq6F56keIk5Z8ON6VVlZcF7mCqaDiQA4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RqrNBPLx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PTZXVftu"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4ABD51F000FF;
-	Fri, 11 Sep 2026 07:32:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RqrNBPLx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04F6E1F008A1
+	for <linux-pwm@vger.kernel.org>; Fri, 11 Sep 2026 07:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789111950;
-	bh=+U1Pz8fAB/65/jotNNqvI/uO7lQqgo0VqiZVUcHIrCI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=PTZXVftuo9441qDbAVKVulB1Thkq0wK+HLSdINejlCEE6fyKIEzId7AGigl+IgO7a
-	 c1UvSdiD24hU4i013iO21jgzIfjoRp7Jg3pOzSMtZyMJIdcMDNRtJ8bJsfqE0+0UlM
-	 MYOgegckpvlgu6dRTxaO+N5BhsU3QXneRFpAKIoMd4A/tABiKtRkaDy39PORviU9/4
-	 Yrnk9ASvBtvfq7VzPUSPFqJh25GoDvgy8Kd++DzryruE5lxpaUGKFFZz0UjTqJxxpS
-	 5h5OxeCA2no4hkk4AiAASsHoXVAsO+XsTbeimm4AqDzTieqWSrCUulDM/F06UzD6Hf
-	 VIT8X1v1JHlgA==
-Date: Fri, 11 Sep 2026 09:32:28 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Pengpeng Hou <pengpeng@iscas.ac.cn>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: fsl-ftm: Unwind resume failures
-Message-ID: <aqOo-XbIvbDRDCH7@monoceros>
-References: <20260828092014.9211-1-pengpeng@iscas.ac.cn>
+	s=k20260515; t=1789113069;
+	bh=EQswtJ3POdIXhCALaheNzM1TnP2uc1nhkY47KA385Hw=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=RqrNBPLxbhzBUPms/n1fQBTR3hHYKCm5qrkSS30jGzPNEpgohPF9UqaLZwPRGpoqs
+	 +b71S6HYHHKF4xdorCwgaEyIlRr9EugoKH9AyIU5gEmjNf6NuS1RjyHmfYx0djYXwd
+	 qbjNs95/LuO5o/O/+sz7MVNOcohlNqpCjcyXf1ffvLN+D+mmh2LSY3JP7Ji6jBlkP1
+	 d61YtENjjSH+73REqyMk8tlwrGCLERb6wZUHnCMUOh8EozL3J8l7ug9BaI3VI+FemY
+	 4Sn5ldWKZGfsGvvNRukm7KAtvQK54a2Y1CL0G9wzeHQZtMrFKyt9F4kYgfmc2IfGD2
+	 3tdCkh4y0CLhQ==
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-3a5938ab935so5173181fa.0
+        for <linux-pwm@vger.kernel.org>; Fri, 11 Sep 2026 00:51:08 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBxypLEBEEVUKw1GfqtUo97nuI/6dsVpCu5+uSNliswysHx55hYUFonFiFjm/meUip6prTjWEUtOYN8=@vger.kernel.org
+X-Gm-Message-State: AFuF++k3/S+vmGe+PhzrSOVZGGP2cBGAALjvxHlyUGXUnfXbvNOHpFyC
+	C9Q0IZ7FQHpax8wcGkWnPfvGQlAXdFUpELpx0zpEn6HZbZf3ElDaTKVSyRuxlp8zE21FiBTxaVw
+	r/LAdXcCdZGDgqDjg1FwxcpumVx89LXAyNjZ0owqvoA==
+X-Received: by 2002:a05:6512:238a:b0:5b6:4ad:77b3 with SMTP id
+ 2adb3069b0e04-5b8a02ddf43mr662301e87.27.1789113067582; Fri, 11 Sep 2026
+ 00:51:07 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 11 Sep 2026 00:51:05 -0700
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 11 Sep 2026 00:51:05 -0700
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <20260910-fw-devlink-nexus-ready-v2-1-17ac82dbe226@toradex.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="xp6r6gvdbrbmxpop"
-Content-Disposition: inline
-In-Reply-To: <20260828092014.9211-1-pengpeng@iscas.ac.cn>
+References: <20260910-fw-devlink-nexus-ready-v2-0-17ac82dbe226@toradex.com> <20260910-fw-devlink-nexus-ready-v2-1-17ac82dbe226@toradex.com>
+Date: Fri, 11 Sep 2026 00:51:05 -0700
+X-Gmail-Original-Message-ID: <CAMRc=MfmAor3GW1JCd7HqXtALcdsAYw8ARNHseS7k-cVbFqp6w@mail.gmail.com>
+X-Gm-Features: AcwNN1VLX99zdUZYPSL3ecujs_j3--rWZ9Roiou4FjiqsxMWc4tiYDfScmaaJLc
+Message-ID: <CAMRc=MfmAor3GW1JCd7HqXtALcdsAYw8ARNHseS7k-cVbFqp6w@mail.gmail.com>
+Subject: Re: [PATCH v2 1/7] of: property: fw_devlink: Follow GPIO nexus maps
+To: Ernest Van Hoecke <ernestvanhoecke@gmail.com>
+Cc: "Miquel Raynal (Schneider Electric)" <miquel.raynal@bootlin.com>, Frank Li <Frank.li@oss.nxp.com>, 
+	Kieran Bingham <kieran.bingham@ideasonboard.com>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Stephen Boyd <sboyd@kernel.org>, 
+	Brian Masney <bmasney@redhat.com>, Linus Walleij <linusw@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
+	Herve Codina <herve.codina@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Geert Uytterhoeven <geert@linux-m68k.org>, Leonardo Costa <leonardo.costa@toradex.com>, 
+	devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, 
+	Ernest Van Hoecke <ernest.vanhoecke@toradex.com>, stable@vger.kernel.org, 
+	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-
---xp6r6gvdbrbmxpop
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] pwm: fsl-ftm: Unwind resume failures
-MIME-Version: 1.0
-
-On Fri, Aug 28, 2026 at 05:20:14PM +0800, Pengpeng Hou wrote:
-> fsl_pwm_resume() ignores all clock-enable and register-cache replay
-> failures.  A failure can leave a prefix of requested PWM channels
-> holding clocks while runtime PM reports the chip resumed.
->=20
-> Check each acquisition and regcache_sync(), then unwind completed
-> channels in the reverse of the suspend order.  Restore cache-only and
-> dirty state when the register replay fails.
->=20
-> The issue was identified via static analysis and manually reviewed.
->=20
-> Fixes: 97d0b42e39a7 ("pwm: ftm: Add Power Management support for FTM PWM")
->=20
-
-This empty line should be dropped.
-
-> Assisted-by: LLM
-> Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+On Thu, 10 Sep 2026 16:16:42 +0200, Ernest Van Hoecke
+<ernestvanhoecke@gmail.com> said:
+> From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+>
+> GPIO consumers use of_parse_phandle_with_args_map() to resolve
+> specifiers through gpio-map properties. fw_devlink instead parses GPIO
+> properties as direct phandle references, so it records the nexus node as
+> the supplier rather than the mapped GPIO provider.
+>
+> A nexus is a translation node, not the GPIO provider, and need not be
+> populated as a device. The resulting fwnode link can therefore remain
+> unresolved and indefinitely defer the consumer while
+> device_links_check_suppliers() waits for the nexus.
+>
+> Use the map-aware parser for all supported GPIO property spellings. This
+> makes fw_devlink resolve the same provider as the GPIO consumer API.
+> Direct GPIO references continue to work because the map-aware parser
+> returns the original provider when no gpio-map property is present.
+>
+> Fixes: 7f00be96f125 ("of: property: Add device link support for interrupt-parent, dmas and -gpio(s)")
+> Reported-by: Leonardo Costa <leonardo.costa@toradex.com>
+> Link: https://lore.kernel.org/all/juuc4af7ndbajcl7gzf4tg5qz2q2j5tt3rvql4jbauradujrre@gc5nbdhhixaf/
+> Tested-by: Leonardo Costa <leonardo.costa@toradex.com>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
 > ---
->  drivers/pwm/pwm-fsl-ftm.c | 44 +++++++++++++++++++++++++++++++++------
->  1 file changed, 38 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-> index 35406b2e1925..7a61ccb75963 100644
-> --- a/drivers/pwm/pwm-fsl-ftm.c
-> +++ b/drivers/pwm/pwm-fsl-ftm.c
-> @@ -501,7 +501,7 @@ static int fsl_pwm_resume(struct device *dev)
->  {
->  	struct pwm_chip *chip =3D dev_get_drvdata(dev);
->  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
-> -	int i;
-> +	int i, ret;
-> =20
->  	for (i =3D 0; i < chip->npwm; i++) {
->  		struct pwm_device *pwm =3D &chip->pwms[i];
-> @@ -509,20 +509,52 @@ static int fsl_pwm_resume(struct device *dev)
->  		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
->  			continue;
-> =20
-> -		clk_prepare_enable(fpc->ipg_clk);
-> +		ret =3D clk_prepare_enable(fpc->ipg_clk);
-> +		if (ret)
-> +			goto unwind;
-> =20
->  		if (!pwm_is_enabled(pwm))
->  			continue;
-> =20
-> -		clk_prepare_enable(fpc->clk[fpc->period.clk_select]);
-> -		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
-> +		ret =3D clk_prepare_enable(fpc->clk[fpc->period.clk_select]);
-> +		if (ret) {
-> +			clk_disable_unprepare(fpc->ipg_clk);
-> +			goto unwind;
-> +		}
-> +
-> +		ret =3D clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
-> +		if (ret) {
-> +			clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
-> +			clk_disable_unprepare(fpc->ipg_clk);
-> +			goto unwind;
-> +		}
->  	}
-> =20
->  	/* restore all registers from cache */
->  	regcache_cache_only(fpc->regmap, false);
-> -	regcache_sync(fpc->regmap);
-> +	ret =3D regcache_sync(fpc->regmap);
-> +	if (!ret)
-> +		return 0;
 
-I think this is semantically right, but still surprising as it looks
-like error handling.
-
-> =20
-> -	return 0;
-> +	regcache_cache_only(fpc->regmap, true);
-> +	regcache_mark_dirty(fpc->regmap);
-> +
-> +unwind:
-> +	while (i--) {
-> +		struct pwm_device *pwm =3D &chip->pwms[i];
-> +
-> +		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-> +			continue;
-> +
-> +		if (pwm_is_enabled(pwm)) {
-> +			clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-> +			clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
-> +		}
-> +
-> +		clk_disable_unprepare(fpc->ipg_clk);
-> +	}
-> +
-> +	return ret;
->  }
->  #endif
-
-Best regards
-Uwe
-
---xp6r6gvdbrbmxpop
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqjroEACgkQj4D7WH0S
-/k6HOgf/aPOLhAAxyrgk5BiKxkhbOpnJM1gdNlLVJVSGV0zUkTdSqbi7EQKmjCaO
-sjBPRn5Wr8cBfTsHqZStX2PUJ1wy7fHOGwUjkk7elginigVgTPDQU/4vD+zJV2yq
-w1GrNHXseoixz4MTn0U5dD20NS68deTxGRgJV2fvrF5pYd/2EqnDS6QKLUeHzdV2
-erkEr1tcKNd34YjfDhXPsylQn4ZiKarX0uaVppboPvwFxJVthFdhohMg1OsJUbdu
-ND7++56FZuVlRtjJUKg260HC57XJgyuZgUU3JyVdHhFLru4uKzkhjTqHpyDgG48+
-CW/65fJYvf1I51xsXxREYdhLm+IEjQ==
-=g3Zk
------END PGP SIGNATURE-----
-
---xp6r6gvdbrbmxpop--
+Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
