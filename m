@@ -1,95 +1,76 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B22B48A8D9;
-	Thu, 10 Sep 2026 14:34:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E2303D647C;
+	Fri, 11 Sep 2026 07:03:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789050858; cv=none; b=KFSTi4Yfkg6HU9pnwVZdf6xPDs64gQiu+8AgHrPw11NbYibWpMHqzvNUQsVWnqtN/njD8W7eOOCrAmVdyOp0EWKb0HfLyNejf8BeMTXU2T9G/ylqFeJOT4DUbu9cJ/R+OlsGM9knLygt8I9CWBxT87TpnvPYLllxq0DbzAo3JiM=
+	t=1789110204; cv=none; b=Iz3BQrfJaSnCateGcTXFjjKFG08SLdQksD/OIueqnDjA1Ke7P2tDYdVsVS5m955XWDJgeX976j3B2zigdn2SDMvRUqor/CC0By13Y0mDe9IzJsY+KFcl41qfvz54+ORe8fK4DFzQkD0YVD0MyDgDRYwKb+DpFXPdKygOVITtc2k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789050858; c=relaxed/simple;
-	bh=ytbFbGsFsPMRN15cnZnGQ+BVVT4omhd+u4UV7g+TRTs=;
+	s=arc-20240116; t=1789110204; c=relaxed/simple;
+	bh=XfnCNwQRJmMHNboMQkxeZV5+wm9+CQAH6rOmQEgC1/4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YpCFJGd3ra+uE3hhxW6TTGWwIAK8g1IjbdDAXlSKICdJL0uoqyzI4m2tMrZBDUtYjdj+is4f08gP8V3MMiJAghZDrpZGnM7Q/WasHl5zgcsR6McUQ83IpeF2M/iLEweqnC3NNqco+CqJABAXfn1K5DSQQJVuE43/NIUWyymFpeM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MdHM+gna; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=LqKW1lPtFPikCCv/SqGcCXOD4AguyVzBMpejS5HqsDlIROwWrwaUPcAa6EGuFl1plXlXIGHtuujFKy1cG3CLJ5yhZkS1PNOiM/nIgp3zAG5RXGLm/rLpZoIHMaywLU//NveTm82RnLtQRJswzc9/Nx8pUYQLjeFWnH6F9J49FDE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gg0J95fH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MdHM+gna"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 971921F000FF;
-	Thu, 10 Sep 2026 14:34:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gg0J95fH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF3421F000FF;
+	Fri, 11 Sep 2026 07:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789050857;
-	bh=kHpkKe+nPJNBGeOT8DGVr7Z58xbhCeUm9eb1dXLR9j4=;
+	s=k20260515; t=1789110187;
+	bh=fLOv9PqRHm0Dp6AEU3FrEQYqlkc9d2Rysj5SU5cG6RY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=MdHM+gnaQHzb0Sjjo27rAv48N+jKElQ+tcp9TZX/Xksy/w9yGYALktm1zO43RQh8N
-	 3x1FkmiUZUS7oOwcx8j7+CJC2LlNejThDAr0NZXw3I7kN0uGdV+wlkXg/2y1fixmBS
-	 ile6oJvXxkJKkUuadH2ZWRElUYnT50Nk7C0o0SM4hTrU7Fsuf5fvLZyAFUsduo64Rp
-	 26y22SdiIft3Z5gN9nTG5ORuoih8B75PRYSQbnLZhKxXjc+oSktsiNWHLzjBaekv7w
-	 Bh5wSCschZdq7Z6XVkTRWS6LyrmGH+hSIYcjBkwy8oX+OdRHbzH9eChrxVqq7U9uR2
-	 Bm8Z18DzI+Krw==
-Date: Thu, 10 Sep 2026 16:34:14 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Pengpeng Hou <pengpeng@iscas.ac.cn>
-Cc: Thierry Reding <thierry.reding@kernel.org>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: tegra: fail probe on reset deassert errors
-Message-ID: <aqK_pBOW9xkY6iz4@monoceros>
-References: <20260830125843.99132-1-pengpeng@iscas.ac.cn>
+	b=Gg0J95fHymQW9M8DoQvwqtACHc8nmHNl3IQWWBWUFvaP/N3OpVH0jrAGtc44djAkT
+	 3+G3/D5vLC4wPjCNtA0WMtNa/MO2TkPe+ebtT0UBqnDRZIkTsEYY1dAJmZPRs98rUD
+	 MTp1DoYUVl4Xyk70tm07cBt9bKGNME+RcofIzO0pHken0ud47IeATdooHTXZXjsNX+
+	 6/K92K/LJCRnlHk5J3CkxuKAOYAfuojyK1U4E7MqSpT85p7Z5gLNfE5K07Vcov9cEX
+	 5Unv0Z/nW7hykBvwro5/waAjxNj8kmwAmp9xKsZUeK9e5HOSQzr27Q2OGR3euIz1ut
+	 laaSeYJmaKqFA==
+Date: Fri, 11 Sep 2026 09:03:03 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Petar Stepanovic <pstepanovic@axiado.com>
+Cc: Akhila Kavi <akavi@axiado.com>, 
+	Prasad Bolisetty <pbolisetty@axiado.com>, Guenter Roeck <linux@roeck-us.net>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Tzu-Hao Wei <twei@axiado.com>, 
+	Karthikeyan Mitran <kmitran@axiado.com>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	linux-doc@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: hwmon: add Axiado AX3000 and AX3005
+ PWM fan controller
+Message-ID: <20260911-melodic-naughty-kestrel-efc72e@quoll>
+References: <20260903-axiado-ax3000-pwm-fan-v2-0-ef43df46163e@axiado.com>
+ <20260903-axiado-ax3000-pwm-fan-v2-1-ef43df46163e@axiado.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ee3c4izufh7z3jmg"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260830125843.99132-1-pengpeng@iscas.ac.cn>
+In-Reply-To: <20260903-axiado-ax3000-pwm-fan-v2-1-ef43df46163e@axiado.com>
 
+On Thu, Sep 03, 2026 at 01:38:39AM -0700, Petar Stepanovic wrote:
+> Add a Devicetree binding for the PWM fan controller found on the
+> Axiado AX3000 and AX3005 SoCs.
+> 
+> The controller measures fan speed using a hardware tachometer block.
+> Fan speed is controlled through a PWM signal supplied by an external
+> PWM controller.
+> 
+> Add a MAINTAINERS entry for the binding.
+> 
+> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
+> ---
+>  .../bindings/hwmon/axiado,ax3000-pwm-fan.yaml      | 72 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  8 +++
+>  2 files changed, 80 insertions(+)
 
---ee3c4izufh7z3jmg
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] pwm: tegra: fail probe on reset deassert errors
-MIME-Version: 1.0
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-Hello,
+Best regards,
+Krzysztof
 
-On Sun, Aug 30, 2026 at 08:58:43PM +0800, Pengpeng Hou wrote:
-> diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-> index 5cdbe120ba2d8..d9fa16a7b31f4 100644
-> --- a/drivers/pwm/pwm-tegra.c
-> +++ b/drivers/pwm/pwm-tegra.c
-> @@ -379,7 +379,9 @@ static int tegra_pwm_probe(struct platform_device *pd=
-ev)
->  		goto put_pm;
->  	}
-> =20
-> -	reset_control_deassert(pc->rst);
-> +	ret =3D reset_control_deassert(pc->rst);
-> +	if (ret)
-> +		goto put_pm;
-
-Alternatively use devm_reset_control_get_exclusive_deasserted() instead
-of devm_reset_control_get_exclusive().
-
-Best regards
-Uwe
-
---ee3c4izufh7z3jmg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqiv+QACgkQj4D7WH0S
-/k7vtwf+Kg1/sorhO93TI7iyBrp6/hRS1Qfu6Qwgn2OwN1XP5omoVZP9bhcDIJ2I
-mVLwz9B5OBR7HuyVe6+fHtOJCzAiiemAAJ/bNc85rRgX6KHBaqlXkGjWxAByDVtE
-zFb4sAW8/q4dwtGMY2G3IZPjUNM/+9NNFAgXJzOTp6yl0F+oHctRytcZTdzqqyNw
-t58KH2CUBv0kpaTGAClqSX+0hy1zoQ357uep/xoJoYNXEff/AQyyR7ERqY/oJCGZ
-raeYltaK1VbdW+5790PYgB63pSB7oKUa4d2EfVBx70YYDJQy9ruUvPlEhDuXjhnn
-uXmyBot2X1/mukxOj7aE/kOa0CzK2w==
-=03u1
------END PGP SIGNATURE-----
-
---ee3c4izufh7z3jmg--
