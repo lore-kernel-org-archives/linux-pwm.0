@@ -1,39 +1,39 @@
 Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CA5C4AB3A1;
-	Wed, 16 Sep 2026 17:44:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B8604D7D56;
+	Wed, 16 Sep 2026 17:44:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789580655; cv=none; b=AZPgeHN0tOQkX93B2qJ6X1Wwpdx1Q74dFXX6rIU85lgp+zay5rvymO7WU2YJL7jinflkQ2cu6MtuwhcmnqogyPc6Xs42g+bX45YdegtW/SfHJBNpC+G46sW/m8/IlzTH6mFvfSy8XOd18oLcSqq1taEH+nnqOLEtJNLFUtbM4qU=
+	t=1789580700; cv=none; b=otCrA9+m3rcZtJNMfU9n/OYp3JixlwEzSvKr/uJB2YAA5fiIxWV9oljJp4h751KtwwZJu278xLbt8cC1o2qsM5JmGolX3V9wq3K1/Css61xrVI2U2RDPj6Gz4X2BubJ+ncUOmbDj/h6k0TBHEQxs9iyQ8R30EZ69iWHeGlGeWdI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789580655; c=relaxed/simple;
-	bh=2OOP0JMYk+pJMTU5YtIeYOi3WP98ynR3TaVSUbH3E5E=;
+	s=arc-20240116; t=1789580700; c=relaxed/simple;
+	bh=vVgvE+DVRi10/wjC5BXvLaAYZOW2gQVgtP/dxaimUs8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XYFUOpsPdMXmstDR219a6NNRNxo68g1j7QFYsToIb1QlGV4b+LdqMNiyUqXdpePy1C3hBTzAqwLLob2TwyD5enOvv5V1H2+c6yhaz2yhJPbT4R7kNy4j6ybpRGYDJXmFp61nNFlp/IQyeVg+BaFyKDXlxEfpDyEtNBDImhcDlII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=ZFytWn1U; arc=none smtp.client-ip=185.246.85.4
+	 MIME-Version:Content-Type; b=YiFxOJjtf7Ke2Io2yUvHDYZ+jVU8IORzYuHOTugzcXQg6IanxZDv/M2gyPLCszZRpEi3x3UA2nvG+I6tVJ6PBWIR/BINyQhmvDPtZGS+anQFl6a7nTpSLZrXrAAkc//K7Z0IGDXI69DurfJrD2V8dyH1hblsfxeWC9JGFzdd5z8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=j3DRG/GW; arc=none smtp.client-ip=185.246.85.4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="ZFytWn1U"
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="j3DRG/GW"
 Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-03.galae.net (Postfix) with ESMTPS id 8562B4E40762;
-	Wed, 16 Sep 2026 17:43:58 +0000 (UTC)
+	by smtpout-03.galae.net (Postfix) with ESMTPS id B2B574E40762;
+	Wed, 16 Sep 2026 17:44:48 +0000 (UTC)
 Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 46F2C60337;
-	Wed, 16 Sep 2026 17:43:58 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 12BE811C7B00D;
-	Wed, 16 Sep 2026 19:43:51 +0200 (CEST)
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 7A56260337;
+	Wed, 16 Sep 2026 17:44:48 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 78E4211C7B00D;
+	Wed, 16 Sep 2026 19:44:45 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1789580637; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	t=1789580687; h=from:subject:date:message-id:to:cc:mime-version:content-type:
 	 content-transfer-encoding:in-reply-to:references;
-	bh=aFDP0OtgM04h6KpMbOI+Vccp+f6xtWNikAv+ehWoG/4=;
-	b=ZFytWn1UGFS/jQkA89BYHexak702dnf2Egu/30bERPXEWYD07TVUJjPrnmnfMhDB+INGts
-	SK+VPXHqXplI8/zwluditU33qOejUfRiub6ylKwwW4chdH2yYKHbtzErrLG2YBuFHZJc+Z
-	C2lyD22nIPilgg5036KKI3Zjhc7tvCclFKjK8tm4RbWceFcxeYnqJdV+hDxKPtBd3aJHSx
-	p3i7LXLZmOEiB0AakhWAik/semEGcc74QB7Swv/CtfL9o5I/NwT2zCqrVT1cXSERQaxzuw
-	x5+BF2EjWTfQACUNF+BbjSDWO/xNWmVAbzNvZEohhK9qy8m6q0uPmUg1zY32SQ==
-Date: Wed, 16 Sep 2026 19:43:51 +0200
+	bh=zOkNP+060kWI8evPyG7XxKhlF+a9qe7vg/5I3PYHEvM=;
+	b=j3DRG/GWTMPDRpKHz/mq4qYTx10eN3k3TsNMPo4cT4NpLZTlXFXVAybtKtKSos+oBtKLTB
+	TN+7dhPC2raqihaHzMiLCbXDOhjVPOz3zqZeY9aoXRbCtxUsddUJCE83mtWI+++1yACvSz
+	xxwFwwws7DPyU/y7+Y4LYgQpZqdSvCRMLoM6EpV3kq3H4hEwoimu4f3xvskmtcuCQWR2en
+	s1t8ANmndtdUsiLn7rNJndVnZDAmHzYZCxsUq9hQzV/5CsGYTx8DOqCtT8cgSpm2jFh+BS
+	W65k+7mSfdjPn1uTtCI2togN8I4dgqgrRhrym9QDOsF65yZXnEI+LambFUEgHQ==
+Date: Wed, 16 Sep 2026 19:44:44 +0200
 From: Herve Codina <herve.codina@bootlin.com>
 To: Ernest Van Hoecke <ernestvanhoecke@gmail.com>
 Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
@@ -47,12 +47,13 @@ Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
  Leonardo Costa <leonardo.costa@toradex.com>, devicetree@vger.kernel.org,
  linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
  linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Ernest Van Hoecke
- <ernest.vanhoecke@toradex.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/7] of: property: fw_devlink: Follow GPIO nexus maps
-Message-ID: <20260916194351.1fa06403@bootlin.com>
-In-Reply-To: <20260910-fw-devlink-nexus-ready-v2-1-17ac82dbe226@toradex.com>
+ <ernest.vanhoecke@toradex.com>
+Subject: Re: [PATCH v2 2/7] of: property: fw_devlink: Report unsupported
+ supplier linking
+Message-ID: <20260916194444.7d677516@bootlin.com>
+In-Reply-To: <20260910-fw-devlink-nexus-ready-v2-2-17ac82dbe226@toradex.com>
 References: <20260910-fw-devlink-nexus-ready-v2-0-17ac82dbe226@toradex.com>
-	<20260910-fw-devlink-nexus-ready-v2-1-17ac82dbe226@toradex.com>
+	<20260910-fw-devlink-nexus-ready-v2-2-17ac82dbe226@toradex.com>
 Organization: Bootlin
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
@@ -67,35 +68,27 @@ X-Last-TLS-Session-Version: TLSv1.3
 
 Hi Ernest,
 
-On Thu, 10 Sep 2026 16:16:42 +0200
+On Thu, 10 Sep 2026 16:16:43 +0200
 Ernest Van Hoecke <ernestvanhoecke@gmail.com> wrote:
 
 > From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
 > 
-> GPIO consumers use of_parse_phandle_with_args_map() to resolve
-> specifiers through gpio-map properties. fw_devlink instead parses GPIO
-> properties as direct phandle references, so it records the nexus node as
-> the supplier rather than the mapped GPIO provider.
+> OF supplier linking is deliberately disabled on OLPC and Intel CE4100
+> systems. The add_links operation currently returns zero on these systems,
+> so callers cannot distinguish unsupported linking from success.
 > 
-> A nexus is a translation node, not the GPIO provider, and need not be
-> populated as a device. The resulting fwnode link can therefore remain
-> unresolved and indefinitely defer the consumer while
-> device_links_check_suppliers() waits for the nexus.
+> Return -EOPNOTSUPP when supplier linking is unsupported. This allows OF
+> unit tests to skip link assertions on these systems without exposing the
+> private platform-support predicate.
 > 
-> Use the map-aware parser for all supported GPIO property spellings. This
-> makes fw_devlink resolve the same provider as the GPIO consumer API.
-> Direct GPIO references continue to work because the map-aware parser
-> returns the original provider when no gpio-map property is present.
+> The driver core ignores the add_links return value and marks the fwnode
+> as processed regardless, so its link creation and retry behavior remain
+> unchanged.
 > 
-> Fixes: 7f00be96f125 ("of: property: Add device link support for interrupt-parent, dmas and -gpio(s)")
-> Reported-by: Leonardo Costa <leonardo.costa@toradex.com>
-> Link: https://lore.kernel.org/all/juuc4af7ndbajcl7gzf4tg5qz2q2j5tt3rvql4jbauradujrre@gc5nbdhhixaf/
-> Tested-by: Leonardo Costa <leonardo.costa@toradex.com>
-> Cc: stable@vger.kernel.org
 > Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
 > ---
->  drivers/of/property.c | 38 ++++++++++++++++++++++++++++----------
->  1 file changed, 28 insertions(+), 10 deletions(-)
+>  drivers/of/property.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 
 Reviewed-by: Herve Codina <herve.codina@bootlin.com>
