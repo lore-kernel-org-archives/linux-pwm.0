@@ -1,39 +1,39 @@
 Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B68413D6CC3;
-	Wed, 16 Sep 2026 17:52:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD45E39B4A1;
+	Wed, 16 Sep 2026 17:54:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789581168; cv=none; b=I3wag3FjSxuxM45/wQCSqdkMpQ0IFoYeA9g0wCjdDXfKVKDOoZGBmSGy/jRE6RvjFBSEc3SVdvLLJVlmDutDMGyWh3BIY036p/U+4KRgC0xSW6DqjLIlNa7TALDpLiti5aNr7FNGJufXNbrtrChFw2b+ikTsVfZqwfuK1JgMQtw=
+	t=1789581273; cv=none; b=a98otLip2IS00Z2b/qeeEBvPbv3XWURW9dOCC30MgFS9mR9Txf74cTui4/gg//qSq1VHjWe93hf50OxPrIWZbNsYYTQ2tDOvP0nTFtcba3FUwKJssn39EN9eYvQ5wWcUSrQ5lBHW9gsGZLO2uvUKC4pk5eAHaGgCpSqxfcERWeg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789581168; c=relaxed/simple;
-	bh=6zeoML6bAETakMCWlyOIj5/pOqwuK+LF7dIdA+EmfGU=;
+	s=arc-20240116; t=1789581273; c=relaxed/simple;
+	bh=Cqg6vVI70cLVzEG8ecPWCjFZMFvO/UxUkzSSLhHLR1w=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=u62S6pPBIUmlcFL4mXzVKIecSONpC3V7A+PRd07YeWLezEPEABavZFwSSdOE4Yndvw9BGjWsk8GlEnBRKC+zGOehh5LBBNVTkxu7Ado2oDG7573vgBGc2BSUX7Ch9yBETe4ttnBOC8cK+zPloez0c50Ahi/d+626jejEpSE2WJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=pfZrC1S2; arc=none smtp.client-ip=185.246.84.56
+	 MIME-Version:Content-Type; b=QaS1F1vAJY/s3meHDgA90QoBTeCYyt4DCMKFGq6kJF/ESB1lTLAvUH5bdztpiN+3+IzU8sW6nZM5Hw1cfJo/wCTgUXrv2fojzyCbrxeNz2u2zV1IfuG+A9y3Bhrq3bSoiUFBsSWZenot1D/ZmP+tuO8teP0k6bbk3fWeowP8tWU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=TcSoHG9V; arc=none smtp.client-ip=185.246.84.56
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="pfZrC1S2"
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="TcSoHG9V"
 Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-02.galae.net (Postfix) with ESMTPS id D39E01A0906;
-	Wed, 16 Sep 2026 17:52:40 +0000 (UTC)
+	by smtpout-02.galae.net (Postfix) with ESMTPS id A80961A0906;
+	Wed, 16 Sep 2026 17:54:10 +0000 (UTC)
 Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id A075F60337;
-	Wed, 16 Sep 2026 17:52:40 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 42A9511C7B00D;
-	Wed, 16 Sep 2026 19:52:34 +0200 (CEST)
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 6E92D60337;
+	Wed, 16 Sep 2026 17:54:10 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id E109411C7B048;
+	Wed, 16 Sep 2026 19:54:02 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1789581159; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	t=1789581245; h=from:subject:date:message-id:to:cc:mime-version:content-type:
 	 content-transfer-encoding:in-reply-to:references;
-	bh=I6pfsw/MvwDowDozZ8Afzk9PULdspfiFODztGSFhnlk=;
-	b=pfZrC1S2Pz+nDCHC0MRQePHXLvvEygZMbLDEhsqYWTcLLVYc605J1I+X5K3Mw+eMROwfOy
-	K9bEroV7LZFKYK00ArVEmP7P+Q0frdLORsmHCfI57V/3yDITi/hqgs+t/JpduFOM6h4VWJ
-	Yu3rIhL2CpXHamoJJY8iEIFdWuTGgwNG6Zt487kg8Yfsye3B5GnXEr+0WAbrnV/9IX/pUN
-	+5FgZmSGwAZ4k2hakefDU5N/fTW/8BWW+4BCZqy9UhhVLev181H5sGDMJk8Nbw1+0njVlG
-	D0mHasiNu6vigN/QOs3N/JE2uPA5UVO9e87uh3B7TdMAJVoMbL22SqhzMFSV+A==
-Date: Wed, 16 Sep 2026 19:52:33 +0200
+	bh=dk0JQm8us/AHyRmRetaMD31Tkw103q/6ScjStQSddmA=;
+	b=TcSoHG9VOO8N/Akl1Ii5cXGAwVbhs35cR/6fcw83quy012TAR8wslY0ekQpyWWsvOcKMSK
+	YJXXQSTo2x+g0+urFdfPyc1yvtrfLSbJHRyXtV8GNkZCgf4PJxWMAmj+ACBJG6eYpJk27K
+	yf/2FhVmrRURAfimPmiirMOghxiKmgM38qTlx4uohz88EhDu0K9CzqON4RuMBmgFoLeDR8
+	q1enwneWpIxGKZuDxcABQA+y80oXiIxkIVe9bpHnsD0LJu8X/rOwJP1+KnN5ssZdlHwcJn
+	JxGTOCzdsQhdCb+2qfFmBaIjh89GML2SzqfCttBGoz9tWCtwzGRjCUTmR5xtng==
+Date: Wed, 16 Sep 2026 19:54:02 +0200
 From: Herve Codina <herve.codina@bootlin.com>
 To: Ernest Van Hoecke <ernestvanhoecke@gmail.com>
 Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
@@ -47,12 +47,13 @@ Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
  Leonardo Costa <leonardo.costa@toradex.com>, devicetree@vger.kernel.org,
  linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
  linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Ernest Van Hoecke
- <ernest.vanhoecke@toradex.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 4/7] of: property: fw_devlink: Follow PWM nexus maps
-Message-ID: <20260916195233.6812ef66@bootlin.com>
-In-Reply-To: <20260910-fw-devlink-nexus-ready-v2-4-17ac82dbe226@toradex.com>
+ <ernest.vanhoecke@toradex.com>
+Subject: Re: [PATCH v2 5/7] of: unittest: Test fw_devlink with PWM nexus
+ maps
+Message-ID: <20260916195402.6b48cb77@bootlin.com>
+In-Reply-To: <20260910-fw-devlink-nexus-ready-v2-5-17ac82dbe226@toradex.com>
 References: <20260910-fw-devlink-nexus-ready-v2-0-17ac82dbe226@toradex.com>
-	<20260910-fw-devlink-nexus-ready-v2-4-17ac82dbe226@toradex.com>
+	<20260910-fw-devlink-nexus-ready-v2-5-17ac82dbe226@toradex.com>
 Organization: Bootlin
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
@@ -67,38 +68,24 @@ X-Last-TLS-Session-Version: TLSv1.3
 
 Hi Ernest,
 
-On Thu, 10 Sep 2026 16:16:45 +0200
+On Thu, 10 Sep 2026 16:16:46 +0200
 Ernest Van Hoecke <ernestvanhoecke@gmail.com> wrote:
 
-> From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
-> 
-> PWM consumers use of_parse_phandle_with_args_map() to resolve specifiers
-> through pwm-map properties. fw_devlink instead parses the pwms property
-> as a direct phandle reference, so it records the nexus node as the
-> supplier rather than the mapped PWM provider.
-> 
-> A nexus is a translation node, not the PWM provider, and need not be
-> populated as a device. The resulting fwnode link can therefore remain
-> unresolved and indefinitely defer the consumer while
-> device_links_check_suppliers() waits for the nexus.
-> 
-> Use the map-aware parser for pwms so fw_devlink resolves the same
-> provider as the PWM consumer API. Direct PWM references continue to work
-> because the map-aware parser returns the original provider when no
-> pwm-map property is present.
-> 
-> Fixes: e71e46a6f19c ("pwm: Add support for pwm nexus dt bindings")
-> Reported-by: Leonardo Costa <leonardo.costa@toradex.com>
-> Link: https://lore.kernel.org/all/juuc4af7ndbajcl7gzf4tg5qz2q2j5tt3rvql4jbauradujrre@gc5nbdhhixaf/
-> Tested-by: Leonardo Costa <leonardo.costa@toradex.com>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
-> ---
->  drivers/of/property.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
+...
 
-Reviewed-by: Herve Codina <herve.codina@bootlin.com>
+>  				fwdevlink_nexus: nexus {
+>  					#gpio-cells = <2>;
+> +					#pwm-cells = <2>;
+>  					gpio-map = <0 0 &gpio_provider 1 0>;
+>  					gpio-map-mask = <0xffffffff 0>;
+>  					gpio-map-pass-thru = <0 0xffffffff>;
+> +					pwm-map = <0 0 &pwm_provider 1 0>;
+
+Same comment as for GPIOs
+
+> +					pwm-map-mask = <0xffffffff 0>;
+> +					pwm-map-pass-thru = <0 0xffffffff>;
+>  				};
 
 Best regards,
 Hervé
