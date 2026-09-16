@@ -1,168 +1,105 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CCC53F6610
-	for <linux-pwm@vger.kernel.org>; Mon, 14 Sep 2026 22:35:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4C564D7975
+	for <linux-pwm@vger.kernel.org>; Wed, 16 Sep 2026 16:59:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789425322; cv=none; b=UeQUFEW3VhcRe5NLcQlq+JCvekhUQVYub7aYvTghmzsTO1cRac41+6UFxwdd667eJe7afpfDFjqFqHH/NqpW/6IsOnyoa4gEUjeI6GOoE53QwKGbxxGg4J8AgmBe7W7a0aaP61N75iK2cCy+WF5lCsIA8n55V8py0gPd5L4HSrk=
+	t=1789577958; cv=none; b=KeKuCH22cmzXpOrqJjYQukTxlXfAPfrJCxMb637uQbWGv/msMG+d1wX5Z4DspS6AtxAftQVTV9FTYAU7wy/dbIndymHm7SNaXMyfib3cA3yncMBtVqOXlIWOcLNPQQUkVi7fjjk4+y6C6ozHZwIOM8QWIbtp9qtnxvu6F3kL/ak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789425322; c=relaxed/simple;
-	bh=lPgEvreu0zPGM3ILg+o19Q8j1zzZ/FcyTs9QLV6/qZc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=m0TOpKxqGurGl7z6l9Ivlv911vwdqE/F6jRuO8T6FQBKZeYSBQpYKO9lhlk316nCns5pj8ddktcZwUnPtjxBGZDfrUKvaae05Q1qnF/1dLv/cWhOmcgPqZQB62qVMdenPhnkqrhB3WZ2VUMIrwihd9/Dgyy0bDTD4mpWE8/KGxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=paZw3DSg; arc=none smtp.client-ip=209.85.219.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789577958; c=relaxed/simple;
+	bh=sCKOAQ6q3IOv9589d5+TMd6PkNK0d6K2VF/Jj1/not0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BkNd5Q4oNh0sHUHuD2IK9HdJVXagA28PkEPmDzpd9LG/lf5RDibEU31LW5gXctD4Geq5YKumLfirCZEnKnC/nTtcFbbEQTScopg/91m43iEhxxyyFHBntHaGIKx8vyWdgfToftHDiasG20JlptWLpl+CGq/9/FVT3JwHiaA+Ewc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CxLjr/zq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="paZw3DSg"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-912333a94fdso6469126d6.3
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Sep 2026 15:35:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789425320; x=1790030120; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=EFwlG4gnZYkH84K5Z6UxkyDABvsd4Q+eyxbwPqCRkks=;
-        b=paZw3DSg+Y5euFpKVEViYKsZXWDoCmlgn2K0ZJAJnu6v49+jQluFLkJ1s2CwNolcZE
-         yChKbfz7bKSmycC9oJam01Ev7bYozTHofpfdIkLy1MUSkNGgTPPxqk/yoeh1V6yze2EH
-         WF8IRT/voz9R9RUe+AI486jyY2gV7wh9Rv4HHcUe91VCX5zodPWjDz3jm1eCoZfTKVEp
-         VK+TSog4xvSwST3mJBXTBXvrkBFXzK8oxo4L1VC6oxkE5lUVGjtzZ5bprWBi9a3WshpI
-         L6wkYge7BXTY2lYkyRzVUTqQkoPtoFmWXk1qh6BGslzPm7897fg5HB4w2zx14Tf95upg
-         DMOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789425320; x=1790030120;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=EFwlG4gnZYkH84K5Z6UxkyDABvsd4Q+eyxbwPqCRkks=;
-        b=WqozU00b9cU+6QTjl23+Z3bKgfwAAv0YVRtYrJufQb9k0YtNUmsRpwzLJXeXRzHHhJ
-         u5smvWLrPFXEtjFZTQ0z21G6bAEi+coTrp1kB4P0Winii15gafVCYqXNtRefSOpucQj4
-         azmGso0c6B3oRWPGs3zeuX78nLGjhnEIXZPluFluGi3V0QLYYX2YurjwK7zBjWqXPpOQ
-         Cw2gjjlSkf3+FZOCDMzGt4eCpwymRaOY+PJTyawEV79k95nRswQ5whZHYm2YLTlGWznv
-         2aBt7pMz2Whf8iVHmzJMZbIcq5V3oczwqAPcg0oCQWkGnECfAOH69bpxxaDfkj2Rvtm5
-         CyNw==
-X-Forwarded-Encrypted: i=1; AKwUvBzH9WtihX03pXRJmomeaZPLmy/R9YNjfRExX/vTJQ7BG1T+G7BIq/zqScNYruItb6LZKm3Ax339Pqs=@vger.kernel.org
-X-Gm-Message-State: AFuF++mWuFoBUSA9KicVGLr265n6YSckecuaBy6ku83hnpaP2EFnvrIa
-	sy9zlP8Gtf29tWj+gU4xHtrFwNeQ+MrLEsCwNpkS57CQ8Zyh5PRlpM8=
-X-Gm-Gg: AYBFou3EqH9U0MYIlEn3avOanpUOWmAN1rdskewLZL8+loQLaY0k2cvBi2hnUXPm3vY
-	rlGZdaUyyn4z1wNs6WMHLTDbhs0EYCi0i5FHxae1lBvQliwB4bdyb15janNIP1xnOTrkH/2d5Kt
-	I8FyOqa6GKlCcAp3uL2iWBSv6ECDC64If3Lep22Rqh28jc/H4yUahKiqxaTrZg/RxwbL6u0U67l
-	VfKELl5RJoI++qt2VcvkkD+o7NJhmWdR+ya6U5wWxYY0qc7aKHdQiVj2OFgFNahHuTYvQ9E2ArQ
-	1Uk2RFn+zpNC4+Wt6jzx3xOnW2J+KCh2irPVEvYlC65OibOAlePIbIBBstsjGM3qrdA8CuGr+0b
-	a7jRfy46mHT1yfvzQoGOMuQSvQ44IEwjK1H6X3KxScyR8sboMMekCJ2cc+3smugEfK6H6BtMq77
-	oZw7KvqDG+QuO6SYz9cjUTzTWsbg9Bj3aRyFnNWkEdh7R31mZu5DCd6KinkfxI7WdK/4CQSI/Dl
-	Nhy0yrmgPVlz+UhFYEsw5U8vuHcllXBUKbgLmLSlN1Wi6ugzFI+W/9A6WxbAt3amdp2ScYi4FEr
-	HJWjdaa45xxHGCaMmrf2n+1DxfER59Xds40+xzvC6L9TYOJQzhQivaeBL5mZ5hCV+kUzWg==
-X-Received: by 2002:a05:6214:320d:b0:912:289:647f with SMTP id 6a1803df08f44-9122e6906d0mr85830766d6.33.1789425319817;
-        Mon, 14 Sep 2026 15:35:19 -0700 (PDT)
-Received: from 6e-wmo5420-02.ad.psu.edu.net (6e-wmo5420-02.ad.psu.edu. [104.39.213.233])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-9120f477d42sm106004416d6.18.2026.09.14.15.35.17
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 14 Sep 2026 15:35:18 -0700 (PDT)
-From: Myeonghun Pak <mhun512@gmail.com>
-To: Thierry Reding <thierry.reding@kernel.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>
-Cc: Mikko Perttunen <mperttunen@nvidia.com>,
-	Dmitry Osipenko <digetx@gmail.com>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	linux-pwm@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Ijae Kim <ae878000@gmail.com>
-Subject: [PATCH v2] pwm: tegra: Use managed runtime PM cleanup
-Date: Mon, 14 Sep 2026 18:35:12 -0400
-Message-ID: <20260914223512.31049-1-mhun512@gmail.com>
-X-Mailer: git-send-email 2.47.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CxLjr/zq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C09A1F008A7
+	for <linux-pwm@vger.kernel.org>; Wed, 16 Sep 2026 16:59:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789577950;
+	bh=sCKOAQ6q3IOv9589d5+TMd6PkNK0d6K2VF/Jj1/not0=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=CxLjr/zq5awXlYm+A6e8PszYPrvbuv8SEElAf89XU+RnAaUGpDAC+Zytljrmr8o4c
+	 FdRa8ABvsvHgBgv89JlsWP+7z8iuGavV5m7vpz//I6rO8eNC44uZQU7PU5QdOdx5W7
+	 IISe0CKSxyFhix/cCxUb2PdWGNTpQt2DktI7EQAIBQj2TqFkgJVn+jjQ4XHKitDyMI
+	 NSFFSeuCNI6YGkfR6ywrtyBa3O0bsLn7Agw1owLnBTu5d6UPyAYI+NVvK0EEL3Dv++
+	 HNo/gzrXU9fBP8YQkbEjKIP18tM3bn/pmm+zMmv/XdYc311NCPTkviMs061ksUSOpC
+	 ly7dmMgw8T+Ag==
+Received: by mail-lf2-f12.google.com with SMTP id 2adb3069b0e04-5b5e4f13d76so1346533e87.3
+        for <linux-pwm@vger.kernel.org>; Wed, 16 Sep 2026 09:59:10 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvByZMzj6C+n1oNDPH2eCLaZfAJqVP0HuvIxyPxN2hG1g7Hxj/5zxziD+n0nMWFjmrlBxEd74vkNqsY8=@vger.kernel.org
+X-Gm-Message-State: AFuF++lGDJwNgyCj7SLv1Y6kpgql25MXSgQpEQNbP5yYTrtmBpXSbqA+
+	UFgHj7kweX2iOjy8cgjQaXxJvOmrBLVrIvol0AIUQF8iw+rCC2U5QAzdKroE6o10iP0dwqJ/8Zu
+	d4445R6pD8nLk+GnA3ybFFDwczMybr6A=
+X-Received: by 2002:a05:6512:3347:b0:5b7:6735:260f with SMTP id
+ 2adb3069b0e04-5b8b6671067mr785119e87.67.1789577949266; Wed, 16 Sep 2026
+ 09:59:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260902-fw-devlink-nexus-ready-v1-0-68fe1996e78a@toradex.com> <20260902-fw-devlink-nexus-ready-v1-1-68fe1996e78a@toradex.com>
+In-Reply-To: <20260902-fw-devlink-nexus-ready-v1-1-68fe1996e78a@toradex.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 16 Sep 2026 18:58:56 +0200
+X-Gmail-Original-Message-ID: <CAD++jL=qaXxEr_sVnAF7BLUvp4ik+f8Zsg2sKY6n0=DwWqEYYw@mail.gmail.com>
+X-Gm-Features: AcwNN1W08ixPUt1OAFzYlOyj5ELEgdAq-l8aLJH_GmHSe9MLq2CYRkq-wafwNZs
+Message-ID: <CAD++jL=qaXxEr_sVnAF7BLUvp4ik+f8Zsg2sKY6n0=DwWqEYYw@mail.gmail.com>
+Subject: Re: [PATCH RFC 1/2] of: property: fw_devlink: Follow GPIO nexus maps
+To: Ernest Van Hoecke <ernestvanhoecke@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, 
+	"Miquel Raynal (Schneider Electric)" <miquel.raynal@bootlin.com>, Frank Li <Frank.li@oss.nxp.com>, 
+	Kieran Bingham <kieran.bingham@ideasonboard.com>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Stephen Boyd <sboyd@kernel.org>, 
+	Brian Masney <bmasney@redhat.com>, Bartosz Golaszewski <brgl@kernel.org>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
+	Herve Codina <herve.codina@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Geert Uytterhoeven <geert@linux-m68k.org>, Leonardo Costa <leonardo.costa@toradex.com>, 
+	devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Ernest Van Hoecke <ernest.vanhoecke@toradex.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Runtime PM remains enabled if the initial resume fails or force-suspend
-fails during probe unwind or removal.
+On Wed, Sep 2, 2026 at 1:42=E2=80=AFPM Ernest Van Hoecke
+<ernestvanhoecke@gmail.com> wrote:
 
-Use devm_pm_runtime_enable() and replace the force-suspend calls with a
-managed hardware cleanup action. Order cleanup so runtime PM is disabled
-before turning off the clock and selecting sleep pinctrl for an active
-device. Preserve the probe error and usage-count handling.
+> From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+>
+> GPIO consumers use of_parse_phandle_with_args_map() to resolve specifiers
+> through gpio-map properties. fw_devlink instead parses GPIO properties as
+> direct phandle references, so it records the nexus node as the supplier
+> rather than the mapped GPIO provider.
+>
+> A nexus is a translation node, not the GPIO provider, and need not be
+> populated as a device. The resulting fwnode link can therefore remain
+> unresolved and indefinitely defer the consumer while
+> device_links_check_suppliers() waits for the nexus.
+>
+> Use the map-aware parser for all supported GPIO property spellings. This
+> makes fw_devlink resolve the same provider as the GPIO consumer API. Dire=
+ct
+> GPIO references continue to work because the map-aware parser returns the
+> original provider when no gpio-map property is present.
+>
+> Add OF unittest coverage for mapped and direct GPIO suppliers, including
+> the deprecated singular and unprefixed property spellings.
+>
+> Fixes: 7f00be96f125 ("of: property: Add device link support for interrupt=
+-parent, dmas and -gpio(s)")
+> Reported-by: Leonardo Costa <leonardo.costa@toradex.com>
+> Link: https://lore.kernel.org/all/juuc4af7ndbajcl7gzf4tg5qz2q2j5tt3rvql4j=
+bauradujrre@gc5nbdhhixaf/
+> Tested-by: Leonardo Costa <leonardo.costa@toradex.com>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
 
-This issue was identified during our ongoing static-analysis research while
-reviewing kernel code.
+I feel it needs a compulsory review by Rob, but AFAICT this is
+in line with the Nexus ideas.
+Acked-by: Linus Walleij <linusw@kernel.org>
 
-Fixes: 3da9b0feaa16 ("pwm: tegra: Add runtime PM and OPP support")
-Cc: stable@vger.kernel.org
-Assisted-by: OpenAI:GPT-5.6
-Co-developed-by: Ijae Kim <ae878000@gmail.com>
-Signed-off-by: Ijae Kim <ae878000@gmail.com>
-Signed-off-by: Myeonghun Pak <mhun512@gmail.com>
----
-Changes in v2:
-- Use devm_pm_runtime_enable(), as suggested by Mikko Perttunen.
-- Replace probe/remove force-suspend calls with ordered managed cleanup.
-- Retain clock cleanup for devices that remain active at teardown.
-
- drivers/pwm/pwm-tegra.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index 5cdbe12..b68b690 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -314,6 +314,19 @@ static const struct pwm_ops tegra_pwm_ops = {
- 	.apply = tegra_pwm_apply,
- };
- 
-+static void tegra_pwm_cleanup(void *data)
-+{
-+	struct device *dev = data;
-+	struct pwm_chip *chip = dev_get_drvdata(dev);
-+	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
-+
-+	if (!IS_ENABLED(CONFIG_PM) || pm_runtime_status_suspended(dev))
-+		return;
-+
-+	clk_disable_unprepare(pc->clk);
-+	pinctrl_pm_select_sleep_state(dev);
-+}
-+
- static int tegra_pwm_probe(struct platform_device *pdev)
- {
- 	struct pwm_chip *chip;
-@@ -344,7 +357,15 @@ static int tegra_pwm_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	pm_runtime_enable(&pdev->dev);
-+	/* Disable runtime PM before cleaning up the hardware. */
-+	ret = devm_add_action_or_reset(&pdev->dev, tegra_pwm_cleanup, &pdev->dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_pm_runtime_enable(&pdev->dev);
-+	if (ret)
-+		return ret;
-+
- 	ret = pm_runtime_resume_and_get(&pdev->dev);
- 	if (ret)
- 		return ret;
-@@ -395,7 +416,6 @@ static int tegra_pwm_probe(struct platform_device *pdev)
- 	return 0;
- put_pm:
- 	pm_runtime_put_sync_suspend(&pdev->dev);
--	pm_runtime_force_suspend(&pdev->dev);
- 	return ret;
- }
- 
-@@ -407,8 +427,6 @@ static void tegra_pwm_remove(struct platform_device *pdev)
- 	pwmchip_remove(chip);
- 
- 	reset_control_assert(pc->rst);
--
--	pm_runtime_force_suspend(&pdev->dev);
- }
- 
- static int __maybe_unused tegra_pwm_runtime_suspend(struct device *dev)
+Yours,
+Linus Walleij
