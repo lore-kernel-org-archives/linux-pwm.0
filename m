@@ -1,162 +1,102 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8CC495ACE
-	for <linux-pwm@vger.kernel.org>; Fri, 18 Sep 2026 14:34:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5641C3E5EF8;
+	Sun, 20 Sep 2026 12:02:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789742048; cv=none; b=kf0iZ5kJO8XV/ARoOqKEuZ+ys8E2mB7s4H/ufXD3/74tI4lS00o/Ghfrx8i0UOd8tJGGYoZ5lk0RaRrqLeIMXQ9rqCDOIncYKV4MIsu0ZVa41MimTP5KrLhCR4d59bggiFt8c8Xx4b0pP3zKPVscF4W3AyFtEDklMc2cQiEahcU=
+	t=1789905772; cv=none; b=Ul2ZbD8fGKMjLsNeDFBaysYW2y5ruRc6SopCixFkVBDjHLvysd5w+5obVnMm18RM4HjRA3JpPhvaeqzPJqq2iVU1A5r4n6tvgesEPUO8i9e1iPMrdOUd1oSQ+LGO6oK9yo1zU58sJjljRjlnw2eyj+9UGgQ/LytmmZiAplfqLt8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789742048; c=relaxed/simple;
-	bh=xWBZ1RSCOb2sPTHZ3/cPm3sP3q3od05A9jCMXfg09xI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DpugLNw3adzU6fCc9uSMBJtifeY7Hgzl+Y2Nl1Wk4+S0P0s4s3FqMerPifSAw4bfHs/CypQZUo6vGXJriRfMAN1+S3D5fbFhuOEf/f9yRyGTBYEaR/1FoM1tYHiiLofn3Me0e1zuhSIdd7n1AhU//HmsZbCoYWG/znfHTW9t4Mk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=mt+Y09Lz; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1789905772; c=relaxed/simple;
+	bh=EmlQF7MKA+mSQxHFuLAhipdko6cuIMhOh4NeHmdUiNQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=fSSGcW8CRZEhUgLuGJi9agpRoAZxOLG0KkHQ3e1FFD2gBuHn6+Y/MCO6Cw0a3ydC3VBCwxn+63hTfFqzaQh8MooA7Hssc5UEJ0dBPvZlFtrAlnYchnWxEYow2Cv2XpAsJELr6zI+4LBHpFh+EAdvbh7Tl4xvsvifr3MAq6pJI1g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UoNB6j/S; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="mt+Y09Lz"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49d1fb0cf5eso6378085e9.3
-        for <linux-pwm@vger.kernel.org>; Fri, 18 Sep 2026 07:34:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1789742044; x=1790346844; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=xqW5h3rRLnqhtoQ3APikYnZ226msCNVttggqavOp9CY=;
-        b=mt+Y09Lz0DHRDJPhkWYmsNzpgQXD9a30qGPi8En1XGxlgvkTDOi6i++dkq3sWCD1+4
-         eXZIYXM8jpluhvF+YvvP7jwwk8Oy5jne9xUm3TLowozVblvVQr1fULdWPZKErvpLV4iw
-         TyoLrKPdCi95eR3dc+f1CCBg0hv1POkSySxkqIIerVVTpudsKeQLvWenzqWgy46Rkq3z
-         bERwBsAL69yzZlFgCShjp9uRu/KQA7FjcteYfxSxZ1UKAfjc1ua6M0fh2HMKofhwGSWj
-         WAtfFV6fMaHFcIP51XBMY2XM2yA08+6FM/y1NVrzZm55z8yY4N9n+t4l80+uPCTD3IVK
-         H8jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789742044; x=1790346844;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=xqW5h3rRLnqhtoQ3APikYnZ226msCNVttggqavOp9CY=;
-        b=BJkatPdAosAIiNdNi+OzYiAgT/H9TCO6l0OYK9NEwVY643LqdAAtuUB8sAbyQMHU7t
-         t88qSU4WZ4dgHodqh75VyWUSatQyAMidAM0X8dw+BrC4GHsIT1Hav639FqrVONM0Y3gg
-         A8Ik7Bwt+KYf/1cEsWmxmwOH6zxgeRIVRYCfR3ArAdZpeIYp2k0CoqZ9jWiZkn7qADsR
-         C2gK31Ru4hrwSUDQm0Tpf5POfBHh/pvHv34ABMoyhP3N6QEh+IWmWMEzfL6jqTp2yUJP
-         lghTljDbrOqRROJA4nVYTPE6Iro9PzqgkbBBJ1G82GAFW7TVB+NUg5mrJrYfxeUm4zGc
-         Z+Mw==
-X-Forwarded-Encrypted: i=1; AKwUvBy4kRav6SoMrrWdxGAskkEaySJE3O7L0+2HSHY4w/qd+wWfbhj0L4ixwSYbNc59/xqMrmeXRKVmbPQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++nij7DIOa3XMtMsj2TSZljyY/MNjItQArdcF+fiYI8inGeoQPHq
-	3qPJAuEpWgsBB+liFtF1vHAM+ixsTxm+8svHtyilLdwpvvnZpxhjNpnb4JuV9laQs4w=
-X-Gm-Gg: AYBFou15iTj5lzn+a7anjmvm/ylDnyPHnGLmUWBTsnY1gNOAD9WRALNLCGFl4KxxrxO
-	NVtpNhP9YL4dZ7xobAMFE1E6dFLYoG3fOhrQ9H5dBdwhnWTxmI14lWTnqnwOL29MAiR07UfkB3/
-	dxheUu8yXBoN1/focs7o+mTNvmUSwvlwfwbHgGtZgYGRzKXsM545dmI7iBX4vVHCS6MG4EKJFNg
-	yg6sDm8UQA3BWb4HX6pdnNkXCld1tBidwWdKiFALh1IK4n6oCnDrlUtA1dQ32ICHebuiPao8SP4
-	Exu/9tmAkSlrfcc1WR7eGY5D5c5XQvxkEP3SL1mTRvHadOKD7/6jSnl3bvVa9oJ9ERRghP8Ph2H
-	1BLHdq9KA2McH6m/P+stDPHbp8quXo8P+TQab/mAZ3gKhdqtR1R/13cVK29VOZsN8WgPoiAmG6+
-	hi2Degtr1ql4JpNvOeRL/RXKf+LnTnqCNtjgbhxs0sVhaQLzhptVr+YsxO9BU7dWsjft7Fp0MFb
-	ENVbTxIthp7M3pqSpn0kZhTrMrrh+k0SAURihr30qaPx75kxS7dOt/eoyH5VQ==
-X-Received: by 2002:a05:600c:8b8b:b0:49e:663c:c69f with SMTP id 5b1f17b1804b1-49fc56d170dmr31354845e9.15.1789742044127;
-        Fri, 18 Sep 2026 07:34:04 -0700 (PDT)
-Received: from localhost (p200300f65f19a90444c8989fe13f5be4.dip0.t-ipconnect.de. [2003:f6:5f19:a904:44c8:989f:e13f:5be4])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-48720072efcsm4458883f8f.25.2026.09.18.07.34.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2026 07:34:03 -0700 (PDT)
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Thierry Reding <thierry.reding@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Mikko Perttunen <mperttunen@nvidia.com>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>,
-	linux-pwm@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Ola Chr. Vaage" <ola.christoffer.vage@scoutdi.com>
-Subject: [PATCH v2 3/3] pwm: tegra: Implement .get_state()
-Date: Fri, 18 Sep 2026 16:33:47 +0200
-Message-ID:  <b72b16cf704aa662a1b49805db284379d4fa4050.1789741839.git.u.kleine-koenig@baylibre.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <cover.1789741839.git.u.kleine-koenig@baylibre.com>
-References: <cover.1789741839.git.u.kleine-koenig@baylibre.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UoNB6j/S"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1404BC2BCF6;
+	Sun, 20 Sep 2026 12:02:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1789905772;
+	bh=EmlQF7MKA+mSQxHFuLAhipdko6cuIMhOh4NeHmdUiNQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=UoNB6j/Sig6nuLWPcm+RHSGZ8zYCe7G7aIUU6lYpRikjQMtou0c3S4Gza9rungwfK
+	 g4JaKV19jIun6G3vG7OMBOarxbOl83sILFwatqqzJtMRZNyUW1PrVJ22PPIcG9NnTm
+	 ygpHEnyCpcMqqeOOCbouLiR1whwxP01A/nrrzXcgXBmnwElCVy87waiNTYjBn4XUfM
+	 0RE2ddWTVtAiF7cVpOo5Z+kisvz/Ttj7zh6IUPs+kNbhN1samBpt9bRG1OhfsoZkUX
+	 +l+f6S0Erp/ojp9dfC4mvCsaaNwXYO6oji4Y94S3XYrZX44DnnxqFUv+UuSxv1oMa2
+	 oLRaYJZvbWdJQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EA6C982EB;
+	Sun, 20 Sep 2026 12:02:51 +0000 (UTC)
+From: Keguang Zhang via B4 Relay <devnull+keguang.zhang.gmail.com@kernel.org>
+Date: Sun, 20 Sep 2026 20:02:07 +0800
+Subject: [PATCH v4 2/3] pwm: loongson: Reset the counters before enabling
+ PWM
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2234; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=xWBZ1RSCOb2sPTHZ3/cPm3sP3q3od05A9jCMXfg09xI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqrUvQk/+ohXgs+lRHunSsyku0trjD3CJV3pLrs FzIO5KtU/GJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCaq1L0AAKCRCPgPtYfRL+ TmCIB/9rvizxMyVjppYBSRwq+FlnCb8gCWROptuLc40bhFoK6f3ZCQJyRXKUXnpPnqaaf5uQHhr bzb+uleAxKPXxgltstGwYvAGn8SJDFDUAfkjkgXxpNAUSSg5qKD9T3p3mjo17Xbkjxi1WsFFmmX +r7O4gFFKpuFJXzoDLQYIFHXgT3pzb41I2+jXeU9P91qmiEiT5tGz5IR7LSfQ0NJOQ4nczMuMT9 Y5myRL2tIBOa5913212w1Z06twEHBMdloj6tJi1LMNzfuMh1g9n1jtRjve6T59rJsspyFG/8MsO pP8l0Pq1E4xACWk612IdxIptrnEoK1eondT1tuca8NFl5neP
-X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+Message-Id: <20260920-pwm-loongson-fix-v4-2-41b36b3c6497@gmail.com>
+References: <20260920-pwm-loongson-fix-v4-0-41b36b3c6497@gmail.com>
+In-Reply-To: <20260920-pwm-loongson-fix-v4-0-41b36b3c6497@gmail.com>
+To: Binbin Zhou <zhoubinbin@loongson.cn>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Keguang Zhang <keguang.zhang@gmail.com>, stable@vger.kernel.org
+X-Mailer: b4 0.14.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789905770; l=1375;
+ i=keguang.zhang@gmail.com; s=20231129; h=from:subject:message-id;
+ bh=NyDNTlsnJdK4cl0ga4IeWZLMrmPfP3DVW7yBKqicjC4=;
+ b=/Ly+hsfIlgz3pdAE1Sn8R2ixiFAUhwfEbv8E/4H2cjhVMkTojBjj4aAHFVbxAza5y5pS40oEg
+ fvjNVzJg++YCwVn/bKGFN38eCoq0TFqK34L+aGve13mcv+iqyi0Gy61
+X-Developer-Key: i=keguang.zhang@gmail.com; a=ed25519;
+ pk=FMKGj/JgKll/MgClpNZ3frIIogsh5e5r8CeW2mr+WLs=
+X-Endpoint-Received: by B4 Relay for keguang.zhang@gmail.com/20231129 with
+ auth_id=102
+X-Original-From: Keguang Zhang <keguang.zhang@gmail.com>
+Reply-To: keguang.zhang@gmail.com
 
-The registers of the PWM IP are readable. Use that to implement the
-.get_state() callback.
+From: Keguang Zhang <keguang.zhang@gmail.com>
 
-Reviewed-by: Mikko Perttunen <mperttunen@nvidia.com>
-Tested-by: Ola Chr. Vaage <ola.christoffer.vage@scoutdi.com>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
+The PWM controller may retain its initial hardware state when the driver
+binds. Reset the counters before enabling to ensure that the PWM starts
+from a known state.
+
+Fixes: 2b62c89448dd ("pwm: Add Loongson PWM controller support")
+Fixes: 0de9b836a3bc ("pwm: loongson: Reload PWM configuration through counter reset")
+Cc: stable@vger.kernel.org
+Suggested-by: Uwe Kleine-König <ukleinek@kernel.org>
+Signed-off-by: Keguang Zhang <keguang.zhang@gmail.com>
 ---
- drivers/pwm/pwm-tegra.c | 48 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ drivers/pwm/pwm-loongson.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index b461d3877f43..0520d025c776 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -310,8 +310,56 @@ static int tegra_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	return err;
- }
+diff --git a/drivers/pwm/pwm-loongson.c b/drivers/pwm/pwm-loongson.c
+index 7af5d4ce1060..977d867bdb8a 100644
+--- a/drivers/pwm/pwm-loongson.c
++++ b/drivers/pwm/pwm-loongson.c
+@@ -110,6 +110,14 @@ static int pwm_loongson_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct pwm_loongson_ddata *ddata = to_pwm_loongson_ddata(chip);
  
-+static int tegra_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+			       struct pwm_state *state)
-+{
-+	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
-+	int rc;
-+	u32 val;
+ 	val = pwm_loongson_readl(ddata, LOONGSON_PWM_REG_CTRL);
 +
-+	rc = pm_runtime_resume_and_get(pwmchip_parent(chip));
-+	if (rc)
-+		return rc;
++	/*
++	 * Ensure that the values of LOW and PERIOD are sampled into
++	 * the shadow register when the hardware starts running.
++	 */
++	if (!(val & LOONGSON_PWM_CTRL_REG_RST))
++		pwm_loongson_writel(ddata, val | LOONGSON_PWM_CTRL_REG_RST, LOONGSON_PWM_REG_CTRL);
 +
-+	val = tegra_pwm_readl(pwm, pc->soc->enable_reg);
-+	if (val & TEGRA_PWM_ENABLE) {
-+		u32 scale, pwm0;
-+
-+		if (pc->soc->enable_reg != TEGRA_PWM_CSR_0)
-+			val = tegra_pwm_readl(pwm, TEGRA_PWM_CSR_0);
-+
-+		scale = (val >> TEGRA_PWM_SCALE_SHIFT) & ((1 << pc->soc->scale_width) - 1);
-+		pwm0 = (val >> TEGRA_PWM_DUTY_SHIFT) & (2 * TEGRA_PWM_DEPTH - 1);
-+
-+		if (pwm0 > TEGRA_PWM_DEPTH)
-+			pwm0 = TEGRA_PWM_DEPTH;
-+
-+		/*
-+		 * scale + 1 is at most 1 << 17, TEGRA_PWM_DEPTH is 256, so the
-+		 * multiplication for .period doesn't overflow a u64. With
-+		 * pwm0 ≤ TEGRA_PWM_DEPTH, .duty_cycle is also fine.
-+		 */
-+		*state = (struct pwm_state){
-+			.period = DIV64_U64_ROUND_UP((u64)(scale + 1) * TEGRA_PWM_DEPTH * NSEC_PER_SEC, pc->clk_rate),
-+			.duty_cycle = DIV64_U64_ROUND_UP((u64)(scale + 1) * pwm0 * NSEC_PER_SEC, pc->clk_rate),
-+			.polarity = PWM_POLARITY_NORMAL,
-+			.enabled = true,
-+		};
-+
-+	} else {
-+		*state = (struct pwm_state){
-+			.enabled = false,
-+		};
-+	}
-+
-+	pm_runtime_put(pwmchip_parent(chip));
-+
-+	return 0;
-+}
-+
- static const struct pwm_ops tegra_pwm_ops = {
- 	.apply = tegra_pwm_apply,
-+	.get_state = tegra_pwm_get_state,
- };
- 
- static int tegra_pwm_probe(struct platform_device *pdev)
+ 	val &= ~LOONGSON_PWM_CTRL_REG_RST;
+ 	val |= LOONGSON_PWM_CTRL_REG_EN;
+ 	pwm_loongson_writel(ddata, val, LOONGSON_PWM_REG_CTRL);
+
 -- 
-2.47.3
+2.43.0
+
 
