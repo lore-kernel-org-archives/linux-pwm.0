@@ -1,77 +1,77 @@
-Received: from mail-wr2-f42.google.com (mail-wr2-f42.google.com [74.125.225.106])
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53A893EE1FD
-	for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 12:46:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.106
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 436574756B8
+	for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 14:26:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789994771; cv=none; b=sRSH7HofGo+8y/HW5dlrOiby8bCe0/D7GxFJcYEvP0qgCKaR0Qr8rsovM0kjGcJ2wbvsNYtwtntcwEb7z2pCywWZNzBeyfZC7B3GZ+PRGWypuJl/M2AYQoTqaeZxs95l7gkkmX76QuHQqGgxKGbG3VhnnsosHPPDfPOLWjPPL2c=
+	t=1790000769; cv=none; b=lLj1cS6YuMEBEdigPKDSdrz7BoKBW2KBq+6ufqNS74BzNJ0XtpgxtNefwyBN9/8gx2DYH7UFpM6QQ00omE8SIpNS3YitmexnE2pl4I1ehAAK5EaHZM/8ss5+i/QVAIXmY6xGESV6YAjGgKZaaFSxVVR+9XesWd0REMeB48aQYwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789994771; c=relaxed/simple;
-	bh=7R1Rn+2qMXkFEF7BvVUCxelrDSnx+67+3Np2fXUKa84=;
+	s=arc-20240116; t=1790000769; c=relaxed/simple;
+	bh=u79GVvIrNgovGs36Fao9Rh6cQHN/TgXSWpa2Q+lis6o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LdQHxC40+VaVo2cL/DS7b708YbPHwhrZ7U4CJd0Fajg7Py7YN7uqAbfdCvu/OiYfZf4ync716y84jX53yqvb3ZDrtNY/M9N7XzLV9V2E/jNUdcfFIJF9ciFjkoZ7q0lH/IYyS2bxMRgLEpUfduQ0jEtsGhmO/cpZ1cbiiHKn8Qg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=RBkw+hD5; arc=none smtp.client-ip=74.125.225.106
+	 Content-Type:Content-Disposition:In-Reply-To; b=MKs6KRsVRL3MJom6EyxyT7kuwoXyrk/Cq2gGt1x6kPbf3mVKcXOun45D0AhpkGCkbTl7wiJweNYVSMGDNjJBp98IWD2C43n/zX5Q91SwZbVe27U6d0u1RuR7jVTzQZ4TtB41HgRnKsMAFKYPNkLP2SVlk4nQBpmk2cMwqRd7NvI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=l1Ea1RHV; arc=none smtp.client-ip=74.125.225.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="RBkw+hD5"
-Received: by mail-wr2-f42.google.com with SMTP id ffacd0b85a97d-482f6351832so1477977f8f.3
-        for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 05:46:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="l1Ea1RHV"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-485984ebf5cso2425783f8f.0
+        for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 07:26:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1789994766; x=1790599566; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1790000765; x=1790605565; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=VRzt0l54E3ZERRUZPLXC250ltjhNiAUfDutetMT3kZU=;
-        b=RBkw+hD5dzaiiECDV+P0jR/36CJjARn/ZYd8e7BY8yQ1SrI2rUDmwYdS+0uiyZqfEY
-         LIUQRnrPt8tQhszAUCJy0xzV5j6usICWvrrNV7JUOUR/AwWiYwoHL9QXsRjwOIpVoNBd
-         AsmF6vdp24I5wT7NLfR/UDSE2VHmZBOZT0bUcRqz9z6LNTihjTb5yXqKZkw9oDcorcDb
-         2Nq9leUIC8jDKgZzvmA8RFENWDT73fLlyq43StivztxQJyGs/4XSDKAnf1CcRHhg1/xL
-         2sAv9luyAeP8ePRqRl6u1L8IDDLaLov9kxnCj5NX5jUaKb5febkVZql+q1zIV1efRKVW
-         19IA==
+        bh=fKaXtSv/kbKul4ZN5Cjuy3lIzweY+anlAeJnxQKsOuk=;
+        b=l1Ea1RHVmAsB0z7ojHjSr2xmmjYcjdH0qvg0JMOGJQm6HSEco0QARF+Rot97So+0Y/
+         ZlBB6qtQCXX4ZD337dxI2fAvQc3yjy2AZn/pbHgEqZqQDAXN9ftI9i/DYoGpFQXCxJU3
+         MiHACGJOxC9SKBWXtPs6jj7NKH7tilEDNChcgcDne8CE9OubcnSt54bEH+yquwgIJO4L
+         gdPwFGCOWuaJWPnC3NppLC1Ay6xqzewUGfyFCrSV/g4BMhCmlftKFYdAZPvQKjLbFeeD
+         lQqNgz9xk3VeYRoDoB59ZO89uJSyqG5YsUt1bvVD9Y5WutWv055qKBvofEqxmGvmhObw
+         kjtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789994766; x=1790599566;
+        d=1e100.net; s=20260707; t=1790000765; x=1790605565;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=VRzt0l54E3ZERRUZPLXC250ltjhNiAUfDutetMT3kZU=;
-        b=WnPos8Fzjp/oT0g7p/d9vmzvW5c94Ki0PA5ON3+z6MGcHsC+ZtAGgL2maFlk3+Zl/6
-         jaGlTxE1E7bBt69Dga0FHVCTXl4fIcH0zBWjM1mIRtFbKSKuM/LRevducAlrmsA97pFy
-         y4N11ek9HgzUAkQsykmJRctnnJi6PMNCQbzGEUx2l8iEam+cX0r95EuIa39F/pd5dAA6
-         ryoOsTFOStZx5rdM1nlNR2NUM2ykHmBTrvF4hNBRx6oC/U2uCUqIhrgfA5sQ6J45xrB9
-         g10pSPJFVtg1MhZUdNw/whKMoZKzjWNlFxlFwf0YGf2Ni3Bq3Z/AeTCCcRa6lIi9WST1
-         RRLg==
-X-Forwarded-Encrypted: i=1; AKwUvBwrouKuh+OQU8D0SOOOS6IezO4MjvDvnjUtbK1Eatw9lurYaqioo6iGx0K8WxxrAXteWVjf0Yy/byE=@vger.kernel.org
-X-Gm-Message-State: AFuF++k1LhTh9AwrPNdUAm+gQ6bhJDCCJCCm5GOFZJ4+69AoRcHvMEOe
-	UdoHoyy224hUGamCWUP+e4uJ6gItKzdQk4Ni06sUCDV+x4mgs+uQvJpf8JfP4jY9W+PKgMXAqxg
-	rRYvp
-X-Gm-Gg: AYBFou1APoe2d2Jj2IB17njl9ERtvDKibod6aZ6T+ZmFSjGFSuA9l2NNK9uDqPDy3I2
-	6ShwWfCp0VVt4fPWRdEdI7GsHtjb5UTcsTD+1ax3LI/YItyD1ZEzXYC8V4PNRoKNFIXl6SVw2K4
-	z/xlODC3XSybdfAHkAt8d34IcXlk3+KQ7VLPIm+74g5dkShd639gYPDU1QE7M3PEpzB5i6/BIhO
-	RyURDJT0TwoltJZKgaTLUtKP+63FBLf1HsyP68Vbh+hX6FJg7lbRJXpvapg0E23JIDrjFyGFRWm
-	4WlwFfRKiD70nGOd263fzL3LunPFX742DoaJ0YJBZIFsCCY9gVNCPXf6ND3pxvi0SetfMdmyHeG
-	enFIdl5gmGrr+CTSMaMbR4vlU1UpAKSE2IRFZgIbkcbI4sKVVPVig8ixAVtAVuuoZ9dTc9wOdOX
-	5dIK6tmvREu5H4V+tSzfmJk6bSgRXY7B7yfc398XsoGdwxlTM54zZf5TeeAXCCHyzN7QH3pRWof
-	8Ep
-X-Received: by 2002:a05:6000:2890:b0:487:370:45d3 with SMTP id ffacd0b85a97d-4871e26e3e9mr13472477f8f.43.1789994766281;
-        Mon, 21 Sep 2026 05:46:06 -0700 (PDT)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-487244608e7sm23927472f8f.6.2026.09.21.05.46.05
+        bh=fKaXtSv/kbKul4ZN5Cjuy3lIzweY+anlAeJnxQKsOuk=;
+        b=jFIbEvYWliuCVHHrL4/AfRlM4DR15DYABFt8bnRQPNJyjZJSYCQlKfxElPF7QJ28mW
+         HA0MuUWp59E+pxNXbyfShalxBF5Z3O/RUrGxMEt0jt+UbGL7T98t5H8jpiaKjhBxzvoq
+         gQv0Ju8F4sgmBbLruXdUNqP+HHTvSgD5rr/fUH5nXDODp/BpzFTorrl6w86YECG4oS12
+         g+p0Ld2GhJGra/sOsXhIb+89NwdsA8vzVP7QFYBmnqXi+yJBiO5mWmdtTZPDG88WHe7G
+         nCSi+e5Q8XfjSSUDTXUENOUlNkmsYLY/Sb72//V7I70iPn5wBeL2GxjN+uPaJCLmeZxN
+         4Qig==
+X-Forwarded-Encrypted: i=1; AKwUvBxIFmDfLQ36QZyQHF5yX/+k6U0x5Asmh1YxncpOGvdry8vSm18XASDE2jRE4/jAMicvRXyPooRQbbU=@vger.kernel.org
+X-Gm-Message-State: AFuF++laSPl5SKqt5q6OGBl4Bd8k2sOtmtZ6rVYRw63kqoRSU6MOOB3O
+	jj2hzUq9b6nDahwXagi0UhNYdmOwMFk2kHZdKocX8W/RJ1gP2APtv0kRpCuZgYsqNV0=
+X-Gm-Gg: AYBFou2F/4QcNYnJcXwwZL58MrtZRJXkGMCrglbaNQvS/uXRtK3BIps3UERbKmnQi0H
+	8DY/mQI8vYP3u1MCtdHRlscoeiC1BWaKTM6xmzog4XSvYyeNbfIDfZm3G5GmVUYZF+sky4lFKwK
+	siZh1hTRR/AAxtAGfmYD+Y/Kgu1e53ipx03BloOMG2Y1X3e5+uCJT/c8xqNW7Eccr+dyb3/oKXi
+	JaXzEsMq12xRRqIDGB7Uim9VksqDSC99bsWXVQXiHmqSgYnjfRthc0XEQI/KbujaLFwE15qmcmh
+	OeiHUw967Sb4GydDOfzdsuofvYY0Ja9Sz61Cp/N6m+QevaarJ1UIa6MCPjsSoCm1tByRTiEg5Pe
+	lg6hNhCTH4KuFVc57ULbhbCCZPO9v4ipNmds06hIVcTzpG/fgDVaQCe9prAViB+M182PlpF6wWL
+	hoDZVoq/pp3iciCwm8tRRp5rOo/oE9cp2ujcc101mdU/cQt8jOQMIvBIhSjvTYB/kL/xxZ2F+xn
+	mlMzmvYLVaMeiDF+hcrmqERyWPfH6zAY0rge9ldt4rwTfqaS0PY69OtKJpQUw==
+X-Received: by 2002:a05:600c:c8f:b0:49e:6c9b:4e94 with SMTP id 5b1f17b1804b1-49fc5743124mr150664255e9.28.1790000765458;
+        Mon, 21 Sep 2026 07:26:05 -0700 (PDT)
+Received: from localhost (p200300f65f19a904d4f76eed31f2ef79.dip0.t-ipconnect.de. [2003:f6:5f19:a904:d4f7:6eed:31f2:ef79])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-4872459f446sm21874677f8f.35.2026.09.21.07.26.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 05:46:05 -0700 (PDT)
-Date: Mon, 21 Sep 2026 14:46:03 +0200
+        Mon, 21 Sep 2026 07:26:04 -0700 (PDT)
+Date: Mon, 21 Sep 2026 16:26:03 +0200
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
 To: Thierry Reding <thierry.reding@kernel.org>
 Cc: Jonathan Hunter <jonathanh@nvidia.com>, 
 	Mikko Perttunen <mperttunen@nvidia.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] pwm: tegra: Make use of dev_err_probe()
-Message-ID: <arEiVZG7UqxpqAPZ@monoceros>
+	linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	"Ola Chr. Vaage" <ola.christoffer.vage@scoutdi.com>
+Subject: Re: [PATCH v2 3/3] pwm: tegra: Implement .get_state()
+Message-ID: <arE932ZcHGB8RAN6@monoceros>
 References: <cover.1789741839.git.u.kleine-koenig@baylibre.com>
- <641219a7d76bbcd8fe98b5955f2355ed45f55986.1789741839.git.u.kleine-koenig@baylibre.com>
- <arD6ILv1sd8YBUXj@orome>
+ <b72b16cf704aa662a1b49805db284379d4fa4050.1789741839.git.u.kleine-koenig@baylibre.com>
+ <arEAjOHU4rH5aGqb@orome>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -79,154 +79,131 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="xmimg5iqxopngnsh"
+	protocol="application/pgp-signature"; boundary="qkbghpdorbcu5kso"
 Content-Disposition: inline
-In-Reply-To: <arD6ILv1sd8YBUXj@orome>
+In-Reply-To: <arEAjOHU4rH5aGqb@orome>
 
 
---xmimg5iqxopngnsh
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+--qkbghpdorbcu5kso
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 1/3] pwm: tegra: Make use of dev_err_probe()
+Subject: Re: [PATCH v2 3/3] pwm: tegra: Implement .get_state()
 MIME-Version: 1.0
 
 Hello Thierry,
 
-On Mon, Sep 21, 2026 at 11:38:41AM +0200, Thierry Reding wrote:
-> On Fri, Sep 18, 2026 at 04:33:45PM +0200, Uwe Kleine-K=F6nig wrote:
-> > Usage of dev_err_probe() is more compact than dev_err()'s, emits the
-> > error code and handles -ENOMEM and -EPROBE_DEFER properly. Benefit from
-> > these improvements.
-> >=20
-> > Also add a few messages in error paths that lacked an output before.
+On Mon, Sep 21, 2026 at 12:18:16PM +0200, Thierry Reding wrote:
+> On Fri, Sep 18, 2026 at 04:33:47PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> > The registers of the PWM IP are readable. Use that to implement the
+> > .get_state() callback.
 > >=20
 > > Reviewed-by: Mikko Perttunen <mperttunen@nvidia.com>
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
+> > Tested-by: Ola Chr. Vaage <ola.christoffer.vage@scoutdi.com>
+> > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
 > > ---
-> >  drivers/pwm/pwm-tegra.c | 52 ++++++++++++++++++++++++-----------------
-> >  1 file changed, 31 insertions(+), 21 deletions(-)
+> >  drivers/pwm/pwm-tegra.c | 48 +++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 48 insertions(+)
 > >=20
 > > diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-> > index 5cdbe120ba2d..efb7ab60f602 100644
+> > index b461d3877f43..0520d025c776 100644
 > > --- a/drivers/pwm/pwm-tegra.c
 > > +++ b/drivers/pwm/pwm-tegra.c
-> > @@ -316,14 +316,15 @@ static const struct pwm_ops tegra_pwm_ops =3D {
+> > @@ -310,8 +310,56 @@ static int tegra_pwm_apply(struct pwm_chip *chip, =
+struct pwm_device *pwm,
+> >  	return err;
+> >  }
 > > =20
-> >  static int tegra_pwm_probe(struct platform_device *pdev)
-> >  {
-> > +	struct device *dev =3D &pdev->dev;
-> >  	struct pwm_chip *chip;
-> >  	struct tegra_pwm_chip *pc;
-> >  	const struct tegra_pwm_soc *soc;
-> >  	int ret;
-> > =20
-> > -	soc =3D of_device_get_match_data(&pdev->dev);
-> > +	soc =3D of_device_get_match_data(dev);
-> > =20
-> > -	chip =3D devm_pwmchip_alloc(&pdev->dev, soc->num_channels, sizeof(*pc=
-));
-> > +	chip =3D devm_pwmchip_alloc(dev, soc->num_channels, sizeof(*pc));
-> >  	if (IS_ERR(chip))
-> >  		return PTR_ERR(chip);
-> >  	pc =3D to_tegra_pwm_chip(chip);
-> > @@ -331,28 +332,39 @@ static int tegra_pwm_probe(struct platform_device=
- *pdev)
-> >  	pc->soc =3D soc;
-> > =20
-> >  	pc->regs =3D devm_platform_ioremap_resource(pdev, 0);
-> > -	if (IS_ERR(pc->regs))
-> > +	if (IS_ERR(pc->regs)) {
+> > +static int tegra_pwm_get_state(struct pwm_chip *chip, struct pwm_devic=
+e *pwm,
+> > +			       struct pwm_state *state)
+> > +{
+> > +	struct tegra_pwm_chip *pc =3D to_tegra_pwm_chip(chip);
+> > +	int rc;
+> > +	u32 val;
+> > +
+> > +	rc =3D pm_runtime_resume_and_get(pwmchip_parent(chip));
+> > +	if (rc)
+> > +		return rc;
+> > +
+> > +	val =3D tegra_pwm_readl(pwm, pc->soc->enable_reg);
+> > +	if (val & TEGRA_PWM_ENABLE) {
+> > +		u32 scale, pwm0;
+> > +
+> > +		if (pc->soc->enable_reg !=3D TEGRA_PWM_CSR_0)
+> > +			val =3D tegra_pwm_readl(pwm, TEGRA_PWM_CSR_0);
+> > +
+> > +		scale =3D (val >> TEGRA_PWM_SCALE_SHIFT) & ((1 << pc->soc->scale_wid=
+th) - 1);
+> > +		pwm0 =3D (val >> TEGRA_PWM_DUTY_SHIFT) & (2 * TEGRA_PWM_DEPTH - 1);
+> > +
+> > +		if (pwm0 > TEGRA_PWM_DEPTH)
+> > +			pwm0 =3D TEGRA_PWM_DEPTH;
+>=20
+> It feels like this has too many assumptions built-in. That's mostly a
+> predefined issue, but I think if we want to get accurate hardware read-
+> out, we need to address this.
+>=20
+> According to the register documentation, the PWM depth is 16 bits wide
+> (on generations where it can be programmed). The value defaults to 255
+> (which is n - 1 encoded, hence TEGRA_PWM_DEPTH), but it can technically
+> be reprogrammed to any 16-bit value, as far as I can tell.
+>=20
+> So I think for this to be correct we'd need to read out the actual value
+> before overwriting with TEGRA_PWM_CSR_0 contents above. At that point I
+> think we'd need to either adjust the mask to be (2 * depth) - 1, or
+> maybe better yet, avoid masking it out arbitrarily based on the depth
+> and instead cap it at depth so we never exceed the 1:1 ratio for duty
+> cycle vs. period.
+
+As long as .apply() also hardcodes TEGRA_PWM_DEPTH, it's IMO fine that
+=2Eget_state() does so, too.
+
 > > +		/*
-> > +		 * devm_platform_ioremap_resource() already emits an error
-> > +		 * message with CONFIG_HAS_IOMEM, so don't emit another message
-> > +		 * here.
+> > +		 * scale + 1 is at most 1 << 17, TEGRA_PWM_DEPTH is 256, so the
+> > +		 * multiplication for .period doesn't overflow a u64. With
+> > +		 * pwm0 =E2=89=A4 TEGRA_PWM_DEPTH, .duty_cycle is also fine.
 > > +		 */
+> > +		*state =3D (struct pwm_state){
+> > +			.period =3D DIV64_U64_ROUND_UP((u64)(scale + 1) * TEGRA_PWM_DEPTH *=
+ NSEC_PER_SEC, pc->clk_rate),
+> > +			.duty_cycle =3D DIV64_U64_ROUND_UP((u64)(scale + 1) * pwm0 * NSEC_P=
+ER_SEC, pc->clk_rate),
 >=20
-> Seems a bit counter-productive to leave comments like this. Function
-> comments should document what the function does and then people should
-> read those comments. Then we don't need to mention it every time we call
-> these functions.
-
-I often deal with bug reports by users where things fail without an
-error message[1]. So a usual thing I do is checking probe (and other)
-functions for silent error paths. As I fail to follow the (continously
-changing) set of functions that emit an error message, this comment is
-very useful for a me at least and I'd wish others would add such
-comments, too. (An IMHO fine thing here would be to let no generic
-resource getter function emit an error message, but that ship has
-sailed.)
-
-I'd be open for a shorter marker, that might even be machine-parsable.
-=20
-> >  		return PTR_ERR(pc->regs);
-> > +	}
-> > =20
-> >  	platform_set_drvdata(pdev, chip);
-> > =20
-> > -	pc->clk =3D devm_clk_get(&pdev->dev, NULL);
-> > +	pc->clk =3D devm_clk_get(dev, NULL);
-> >  	if (IS_ERR(pc->clk))
-> > -		return PTR_ERR(pc->clk);
-> > +		return dev_err_probe(dev, PTR_ERR(pc->clk), "Failed to get clock\n");
-> > =20
-> > -	ret =3D devm_tegra_core_dev_init_opp_table_common(&pdev->dev);
-> > -	if (ret)
-> > +	ret =3D devm_tegra_core_dev_init_opp_table_common(dev);
-> > +	if (ret) {
-> > +		/*
-> > +		 * devm_tegra_core_dev_init_opp_table_common() emits an error
-> > +		 * message most of the time, so don't add another.
-> > +		 */
+> Maybe as part of the above this can be broken down a bit to make it
+> easier to read? Something like:
 >=20
-> Same here.
+> 	u64 duty_cycle =3D (u64)(scale + 1) * pwm0 * NSEC_PER_SEC;
+> 	u64 period =3D (u64)(scale + 1) * depth * NSEC_PER_SEC;
 >=20
-> > @@ -385,17 +395,17 @@ static int tegra_pwm_probe(struct platform_device=
- *pdev)
-> > =20
-> >  	ret =3D pwmchip_add(chip);
-> >  	if (ret < 0) {
-> > -		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
-> > +		dev_err_probe(dev, ret, "Adding pwmchip failed\n");
+> 	...
 >=20
-> This stands out as very different from other error messages, so maybe
-> change this to something like "Failed to add PWM chip" for consistency?
+> 	*state =3D (struct pwm_state) {
+> 		.period =3D DIV64_U64_ROUND_UP(period, pc->clk_rate),
+> 		.duty_cycle =3D DIV64_U64_ROUND_UP(duty_cycle, pc->clk_rate),
+> 		...
+> 	};
+>=20
+> is a bit easier on the eye and would make checkpatch happy (or happier).
 
-Fine for me, will fix in the next submission.
+Fine for me, will address in the next revision.
 
-Thanks for your feedback,
+Best regards
 Uwe
 
-[1] last instance was just today, where on a bananapi USB didn't work
-    and /sys/kernel/debug/devices_deferred ended up containing:
-
-	1c13000.usb     platform: supplier 1c13400.phy not ready
-	1c1c000.usb     platform: supplier 1c13400.phy not ready
-	1c14400.usb     platform: supplier 1c13400.phy not ready
-	1c13400.phy     platform: supplier axp20x-usb-power-supply not ready
-	1c14000.usb     platform: supplier 1c13400.phy not ready
-	1c1c400.usb     platform: supplier 1c13400.phy not ready
-	axp20x-usb-power-supply
-
-    It would be so easy[2] to add a useful debugging hint here
-
-[2] https://lore.kernel.org/all/b699f8251afed736af454a981630926e45eb7da7.17=
-89983244.git.ukleinek@debian.org/
-
-
---xmimg5iqxopngnsh
+--qkbghpdorbcu5kso
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqxJwIACgkQj4D7WH0S
-/k6TkQf/eAw5zDfaIbztIoZT+VAAcehCL1/kPn4I4Hi46xzJMzl40YQBF4L7/HXX
-8j/EMjuck3VKqQGIVsByUhalES2OtJn7ArCIun6Gv/lNnQ9qAXdkifDnKFWMlg8Y
-DwwrEF31d09eQXRZGAJoMiPNCXSCD5ySLfYyAPcL/PitgOWSWecir9tNH3QtvnJs
-VUKv9AnmEwZ2pf7omkMU3GSHP97HbFXUll6lLpQn1P0qotsVB04W9becs5poiMuz
-JLCEbPnsh5yIh2BDZpmCuskVAGatpRUIITMH3sBapm+zFRmUkGHWnDW59uM/3GMU
-jG+1znJHsdEc1YuAhpXZd/lkwzbuWw==
-=+P+D
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqxPnkACgkQj4D7WH0S
+/k77Kwf9HxX3gL2kjGUKkvvjXebMyyfQxZRXgqCU/pg12x5boLb18HblbZUDfnsX
+d19SKdoOiLJ/HAWUgKF9O9XA1RN60DhMjkBSUQgOKWd8J0397yW5YcTyoXsWM7FU
++dLfLHUj9S4Mv12ZWdpUOsAzdqOeJmdcGwby+OE7WjUc7B7mgcHg+SiBL+0QhA+z
+iye5Tag5LBtF/E6nCniBQV40ZFYME87gLKhtnZ6TrIKjGcw0TIEMb+fprw1Zm0ST
+gV1hPx94YVT37Gf1sOCC945uutgq6b7iivRlk0o+wetKxUANXbdbjRbOZ3S98OOL
+8L8Ibx6QLCqRAH4q0ud2Vk+nhi1FQQ==
+=KT2n
 -----END PGP SIGNATURE-----
 
---xmimg5iqxopngnsh--
+--qkbghpdorbcu5kso--
