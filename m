@@ -1,260 +1,188 @@
-Received: from mail-vs2-f40.google.com (mail-vs2-f40.google.com [74.125.227.40])
+Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEF84502789
-	for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 19:02:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.40
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C212D3EFD21
+	for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 20:10:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790017346; cv=none; b=SkIsVCDDsRaeeFhENO2Kh8H62OtLh71EU8tmdYBfhsyprdwCru64VSuTB4wBrEY7W6ToN+m8ta9f30oXe6rf+/9GVVJ72O17hVbSIYUZU3nBiV/Hx1cqnRSSjCEykFmxfpGXJvcIyWySe8w1mLte7EuEABNR3CJPEwoLdh1hF6U=
+	t=1790021434; cv=none; b=BkKhxN7ZEalFTeRhsbbawaL/5nvM06iJcephlTB0Y28IuOaZVslaKAD1D592sQr+PCQjEFXS39ooK8nl+yVC5kHIRlXV5BeiHw8vszCEq2gLwvMmla0V9I9eDgp1c0TbDuXqtl35jsGottZrLvglu0I9s/j7OASkXTDkh9OD04M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790017346; c=relaxed/simple;
-	bh=Xt2My9d1ZnGzWqEb1isRLvU2Ix5KpWtA+uFdwmPk1pc=;
-	h=Message-ID:Date:MIME-Version:From:To:Cc:Subject:Content-Type; b=T3GW1MAdJRpbj+PhE/qiQRDk0qyms4/TCdnIOqqsVCFRws3VDvGrrAkZlN1NVCOtyLDWs7XJldePR1UwxTaFmqxlSkkozRW35tD/C5+SbpIdnGgBKIv/tBOXoaZN+SLZRdJG5GOYWhukcEw+Nzg//t9p9qYGycm3NNWYl+eCqF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=brivo.com; spf=pass smtp.mailfrom=brivo.com; dkim=pass (2048-bit key) header.d=brivo.com header.i=@brivo.com header.b=x7e3d25Y; arc=none smtp.client-ip=74.125.227.40
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=brivo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=brivo.com
+	s=arc-20240116; t=1790021434; c=relaxed/simple;
+	bh=taNf5/Tp609jJz/o1QdibWPNvIDa5FOtcz4S5G+LZAc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=br4h1C0/1BuiWHPJd1EP1Tum7fuscbedeRFHFfh533r2YTga8TZJ0G4yG0HqtO45yUvVBsWZtSerPihMNh3ph3JDvDsXP9P2a9QbmvRDs4RaeSzj3iH2VTYLFLshoegb2nVUOdJWKGRrfmuDI3FFiKmS84sS0byzWcPxXCHqU7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=chOV7XAg; arc=none smtp.client-ip=74.125.225.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=brivo.com header.i=@brivo.com header.b="x7e3d25Y"
-Received: by mail-vs2-f40.google.com with SMTP id ada2fe7eead31-7a05d236f53so1850941137.1
-        for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 12:02:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="chOV7XAg"
+Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e71cdb22bso25571375e9.2
+        for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 13:10:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brivo.com; s=google; t=1790017341; x=1790622141; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:subject:cc:to:from
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=GFcZ8v2IrQlVXsS28/gxish2Yf7RjcBy4ak1q2e8MoU=;
-        b=x7e3d25YPd75gL8HlZ1xRpCnjjWqYlhmInOSVC2ddsvhBGE5so2kUtibji2AC5t6Me
-         2Sq3TVxI2i2IxpLNruy9NVxiEtQIIOk5ecev0yBJ9VKKyXSXUqB0ZgIpbdgWHV6HH35r
-         JSQlDiJuJBIitTj5cfcjs9s7EoDjC5AcmRN+lJftkSStajXLg72+d8IxbAt8r/+pYTER
-         GGz41jmnLSDr1Gf3OZw0dfAak+9Lew5gF2x68JAOzNEfudwd8zv3xaHG5e4S1ABlyNem
-         7O1Ggnuwbjm2Cr4PDUmZz9GReBqjzyNGLXNQLSDMOBLOXzVmTdJjq6u4mfAs3xDzBr/3
-         lw0w==
+        d=baylibre.com; s=google; t=1790021429; x=1790626229; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=edJlGdsW+IzYIhpth5aaFdSHP7ncbtzcihxUtYZk784=;
+        b=chOV7XAg01OVsX4Ktfp/MgviXWtEq9TQu5jgdXpX+xvMvjO4aHu975l5xrntARDQLe
+         ZhKFr+XyGwhojOYmIglgBWQL/7tX9dLPyre7i+O0Wbz63qPhijgqIBLhF+p7xRyuX8vU
+         KxmmhaYTFtFlasxNuAmuieLT4K40sPWkQP/2VK6lDfszt2kCW4s4YDdr7upvSEzaIAzb
+         e/SsZDoeoldR590iOzzXaEMasZUFmcTFXqMeGCn4ZHlRtDtSfexezw6Dw23I6Qb+S65w
+         IA4JNY4Q8qxDXgm+M0mQ8qtptDptBSOaGCXXdvW7JfrYUX0LNGrxH9FvBj9J5BiUpQVC
+         P6Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790017341; x=1790622141;
-        h=content-transfer-encoding:content-type:subject:cc:to:from
-         :content-language:user-agent:mime-version:date:message-id:x-gm-gg
+        d=1e100.net; s=20260707; t=1790021429; x=1790626229;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=GFcZ8v2IrQlVXsS28/gxish2Yf7RjcBy4ak1q2e8MoU=;
-        b=aRD2SiuJkv5KB/BPZsI40w972YBkur0kVibKzTnHsN9PwhtQXlsoF8qRhkDn8SVeph
-         ss6+sH9E8rJISAcrSOIS4NSlD4MnE+0pLYZo4RsuWIGv5ikKlxLVh5SRDYmPTKTK+J/G
-         Qt7spaZA2m/Iy1om7BhwstZZ5SJfX5v5yDmRsCNkHUzjE4GDC2OBYSOO/kJzjZzLKWSJ
-         uYcK3ODgqcXzwTT0Z1miKrJgjvuNqugfGNZzuLGZx+QpbEdOGu/zMSj9HBVV1RzPDuTR
-         ZxbWB97gBQ1So7tyPi8G5tqkhICue2USxLxnywfKXEINHyET6YpPUOfRAiW9c26eH6RL
-         YEMw==
-X-Forwarded-Encrypted: i=1; AKwUvByqUJdE0c/+iIAY///LSNT+IrLDykAWwT1xzRvbskp98P3IvWS6PPSXX0bV4DFaV5yl0SQIPkZNKbo=@vger.kernel.org
-X-Gm-Message-State: AFuF++llzwvRMrL180lu8TdXfiCKVpweie0Djeq68XCpanng9JG5onaH
-	M2/t3/pJt6A5OhaS+a+Iz8LUdgSp6xK6Lgfunxh0foZUy2k6ValU1s4FgCwjNY0UFB4oomGi4Ub
-	DoSW3jSr4j8YLEVs6WzH1ngOI2r8Mtnku40VR9s/6gUtOT7LRcodDqVg=
-X-Gm-Gg: AYBFou32AAnkEZddzvy6qjcxV2u2f1dOVA+1jBPj8c9qUY2KAQI2MiKh6Wt7XcAvojz
-	rYoop3OPt1qPprm9mX5i9YzY202VUSy5h+LmgqZFWKIBBUW3yVpuQR4YB+W3MFvi7cNpuX4T4GJ
-	5MvH3mNt5tGzx95DS4D7k5KA354gOgQn0tax0GafBiHJc5rvManf+YxHG9X5AbHPnQKnWyTvOv/
-	92S2SvAjH4WP2sFoD7TDKIjOkHMN/ows3FVgfRsQ07i4sVtxH1p6f/Q2V24dGK41hwhSCxOrcLK
-	v04UQu5Q5Gey6tVBoK0Kka2+G9Hdb57Q34kDYHXXUgOOrC4x8ohyXCUY1W32Y/efGXUG0zhG0Sw
-	BGylkCDJyBg8nHvs4E4iQzR/bJhw+UASJrVT9DGc9ubg5vH3nCPinc4rYBYkx3r+Xl/+7iYFHCT
-	MydG3RGb5bo9ELc8gOnh2iKkx/DQ/a+0xOTE2bDb6mWZ8TP9PbSpNxxuZwE5VirRW/u96C2TNmf
-	n3I
-X-Received: by 2002:a05:6102:2922:b0:7a3:4e75:d1f0 with SMTP id ada2fe7eead31-7a55d38b2b7mr6284952137.23.1790017341074;
-        Mon, 21 Sep 2026 12:02:21 -0700 (PDT)
-Received: from [10.200.233.210] ([71.163.254.246])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7aad2e36ea7sm8429137.4.2026.09.21.12.02.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Sep 2026 12:02:20 -0700 (PDT)
-Message-ID: <d90c0eec-728b-4607-b480-86b2534559c4@brivo.com>
-Date: Mon, 21 Sep 2026 15:02:19 -0400
+        bh=edJlGdsW+IzYIhpth5aaFdSHP7ncbtzcihxUtYZk784=;
+        b=y21BC8FvRYDi819kC8j5OSCFTliEoPex28wjUNNCtlsCSduWO14m1fyN9SVY7DPcCT
+         9IE6/YivyrQLsc6rsLN07FWHFqW5r6PVwsr0SkLBi681iaj0kvwvSLIZVVgGCFG2tdog
+         1QzTihYhibJFSrz1kLDwARiEzoeXCDcd2w0inooKhxbvLVxJ3sBGSJwdXaPyAl1YcDAG
+         P7SeQReendDrsK6fb3ozut6hPjspYgpLQ+F633ndTH6I2vu6N2GM3H+n421uzZjkHd87
+         3t97UvKHanPyygF5RRY86eBktErQ+UlihY3svhdTILiyFNS8XI8fJ1B5G5SsEBI+PPUB
+         8lhA==
+X-Forwarded-Encrypted: i=1; AKwUvBxcQnTrcdafNHwypxxyCCHViqA1z1HuJt9s5XnP261aRE0+mePK6U5cwlrtxLuZO4ycNKsXG5tjI4M=@vger.kernel.org
+X-Gm-Message-State: AFuF++mF0l0YYcgDby4Yu92n+wEclxAlN6+9uO+Q+nNt2tVCXDqgXz7L
+	/ZyNkpZqV65Nnc38S4GKjTIqgd3oEwuDoqKU/QgJ8aj+FlwA+TpUiZWUu4Y/8qfc3mM=
+X-Gm-Gg: AYBFou3FdujVIQcKaR0QTPAmMIXSQVBE3fQtMUC2yhyXgP32vK+L+97L2JqvuRhrpkI
+	t/NplTlRK4dlzJCcUnotdi6xC84ttfPf/klOau+O0/8uRzshY6uy0fLUgpmrVn9qjNnWwfrTsY3
+	NGzjrtDSVkk0KixomaT0MglQ9oyqQAzgLmdVjtupIPLqsUv/7b/hHvoZf4+OO++4bugG7BvgUcK
+	JB018WDDt7F16BO7egOFXmT7ShHWMitXxPEUem4aqpc3wyrP1NLCqdR9cYe1mWG22Kvw7x7x0YI
+	hVzeElGmXYhAuoal6OxU4ubMiGTghtDXF5GkTvE/M7+vSz4U2rgzllJ/riuDR1PVDXYeIoMY34v
+	uWtecWjkWd+VZPh1R4kCVhVx4APrx31Daz2ALIhaVvgaBigKPlF3nD1gEoil2XxVg9pRwmREOym
+	9teJXGcC+31jRSAD0XX+OnR3H6wg4gOVPpH/ByWZIQacCLCqcpflvN7Vq124mb9nqqmSgqNkKPX
+	+PO
+X-Received: by 2002:a05:600c:4ed4:b0:49c:cee2:a508 with SMTP id 5b1f17b1804b1-49fc5728f9amr149860325e9.16.1790021428998;
+        Mon, 21 Sep 2026 13:10:28 -0700 (PDT)
+Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49fc59286b6sm251754085e9.4.2026.09.21.13.10.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Sep 2026 13:10:28 -0700 (PDT)
+Date: Mon, 21 Sep 2026 22:10:25 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Thierry Reding <thierry.reding@kernel.org>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
+	linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] pwm: tegra: Check for match_data being NULL
+Message-ID: <arGKNDBsngs2NEZo@monoceros>
+References: <cover.1789741839.git.u.kleine-koenig@baylibre.com>
+ <ed943d9be3b785514e0f65a5b8c13a78aba7a090.1789741839.git.u.kleine-koenig@baylibre.com>
+ <arD7N6A6ncBNR1Jk@orome>
+ <arE-s0zbTUn14aIr@monoceros>
+ <arFYGka5NpcgJ8oQ@orome>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-From: Sean Anderson <sanderson@brivo.com>
-To: Michael Turquette <mturquette@baylibre.com>,
- Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- linux-pwm@vger.kernel.org
-Cc: Brian Masney <bmasney@redhat.com>, linux-kernel@vger.kernel.org,
- Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
- Neil Armstrong <neil.armstrong@linaro.org>,
- Kevin Hilman <khilman@baylibre.com>, imx@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org
-Subject: Potential deadlock in clk-pwm
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-
-Hi,
-
-I found a potential deadlock in clk-pwm with lockdep. The problem occurs
-when a multi-channel PWM calls a clock function (such as clk_get_rate) in
-its apply callback. If one channel of the PWM is used for a clk-pwm, and
-another channel is used for some other purpose, then the following deadlock
-can occur:
-
-CPU0                        CPU1
-====================== =========================
-pwm_get_state_hw(chip)
-  guard(pwmchip)(chip)
-		       clk_get_scaled_duty_cycle(clkb)
-		        clk_prepare_lock()
-		        clk_pwm_get_duty_cycle(clkb)
-		         pwm_get_state_hw(chip)
-		          guard(pwmchip)(chip)
-  chip->get_state()
-   clk_get_rate(clka)
-    clk_prepare_lock()
-
-The same scenario can play out with apply instead of get_state.  I don't
-think this can really be fixed in clk-pwm. That driver doesn't have control
-over whether it's called with prepare_lock held or not, and it has to call
-into the PWM API in order to do anything.
-
-One approach could be to convert the PWM drivers to avoid calling any
-(sleeping) clock functions from apply. Fortunately, it seems like there are
-not that many drivers used in-tree:
-
-- pwm-imx27
-- pwm-meson (by far the most prolific user)
-- pwm-renesas-tpu
-- pwm-tiecap (doesn't call any clock functions from apply/get_state)
-
-and none of the in-tree users use any of the other channels AFAICT.
-
-Unfortunately, converting these drivers to be atomic is non-trivial.
-All of them enable/prepare their parent clock only when necessary to save
-power. Converting them to prepare/disable in request/free could result
-in increased power usage if the parent turns on in prepare instead of
-enable. Additionally, pwm-meson also sets the clock rate for improved
-accuracy, and this would have to be removed.
-
-I suspect that removing these features to fix a bug that can't occur on
-existing hardware would be well-received. On the other hand, pwms are
-exposed to userspace, so I think a privileged user could deadlock the
-system just by reading /sys/kernel/debug/pwm and
-/sys/kernel/debug/clk/<name>/clk_duty_cycle repeatedly.
-
-Does anyone have better ideas? I don't know if there's a way to catch this
-bug at runtime without lockdep. Non-atomic drivers are still OK as long as
-they don't take prepare_lock.
-
---Sean
-
-======================================================
-WARNING: possible circular locking dependency detected
-6.18.52-yocto-standard-00169-gbc0cb063dbe7-dirty #1 Not tainted
-------------------------------------------------------
-kworker/u16:2/47 is trying to acquire lock:
-ffff8000827d8968 (prepare_lock){+.+.}-{4:4}, at: clk_prepare_lock (drivers/clk/clk.c:228)
-
-but task is already holding lock:
-c5ff000002bc77c8 (&chip->nonatomic_lock){+.+.}-{4:4}, at: pwm_apply_might_sleep (drivers/pwm/core.c:43 drivers/pwm/core.c:54 drivers/pwm/core.c:747)
-
-which lock already depends on the new lock.
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="gnzowsmozdenpnzo"
+Content-Disposition: inline
+In-Reply-To: <arFYGka5NpcgJ8oQ@orome>
 
 
-the existing dependency chain (in reverse order) is:
+--gnzowsmozdenpnzo
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v2 2/3] pwm: tegra: Check for match_data being NULL
+MIME-Version: 1.0
 
--> #1 (&chip->nonatomic_lock){+.+.}-{4:4}:
-        __mutex_lock (kernel/locking/mutex.c:598 kernel/locking/mutex.c:760)
-        mutex_lock_nested (kernel/locking/mutex.c:812 (discriminator 1))
-        pwm_get_state_hw (drivers/pwm/core.c:43 drivers/pwm/core.c:54 drivers/pwm/core.c:812)
-        clk_pwm_get_duty_cycle (drivers/clk/clk-pwm.c:71)
-        clk_core_update_duty_cycle_nolock (drivers/clk/clk.c:3095)
-        __clk_register (drivers/clk/clk.c:4032 drivers/clk/clk.c:4380)
-        devm_clk_hw_register (drivers/clk/clk.c:4460 (discriminator 1) drivers/clk/clk.c:4684 (discriminator 1))
-        clk_pwm_probe (drivers/clk/clk-pwm.c:152)
-        platform_probe (drivers/base/platform.c:1377)
-        really_probe (drivers/base/dd.c:640 drivers/base/dd.c:718)
-        __driver_probe_device (drivers/base/dd.c:880)
-        driver_probe_device (drivers/base/dd.c:910)
-        __device_attach_driver (drivers/base/dd.c:1038)
-        bus_for_each_drv (drivers/base/bus.c:462)
-        __device_attach (drivers/base/dd.c:1110)
-        device_initial_probe (drivers/base/dd.c:1159)
-        bus_probe_device (drivers/base/bus.c:583)
-        deferred_probe_work_func (drivers/base/dd.c:124)
-        process_one_work (kernel/workqueue.c:3294)
-        worker_thread (kernel/workqueue.c:3377 kernel/workqueue.c:3458)
-        kthread (kernel/kthread.c:432)
-        ret_from_fork (/usr/src/debug/linux-yocto/6.18.52+git/arch/arm64/kernel/entry.S:860)
+On Mon, Sep 21, 2026 at 06:24:39PM +0200, Thierry Reding wrote:
+> On Mon, Sep 21, 2026 at 04:34:09PM +0200, Uwe Kleine-K=F6nig wrote:
+> > Hello Thierry,
+> >=20
+> > On Mon, Sep 21, 2026 at 11:47:17AM +0200, Thierry Reding wrote:
+> > > On Fri, Sep 18, 2026 at 04:33:46PM +0200, Uwe Kleine-K=F6nig wrote:
+> > > > diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+> > > > index efb7ab60f602..b461d3877f43 100644
+> > > > --- a/drivers/pwm/pwm-tegra.c
+> > > > +++ b/drivers/pwm/pwm-tegra.c
+> > > > @@ -323,6 +323,14 @@ static int tegra_pwm_probe(struct platform_dev=
+ice *pdev)
+> > > >  	int ret;
+> > > > =20
+> > > >  	soc =3D of_device_get_match_data(dev);
+> > > > +	if (!soc) {
+> > > > +		/*
+> > > > +		 * This can only happen if pdev was matched via pdev->name
+> > > > +		 * (which should not happen today) or in combination with a
+> > > > +		 * driver override.
+> > > > +		 */
+> > > > +		return dev_err_probe(dev, -ENODEV, "Unsupported device\n");
+> > > > +	}
+> > >=20
+> > > We don't usually do this. Matching via anything other than OF device =
+ID
+> > > tables (or ACPI, I suppose) is a programming error and you deserve the
+> > > crash which forces you to fix things rather than continue with an err=
+or
+> > > that is easy to miss.
+> >=20
+> > I don't agree to "you deserve the crash". IMHO even root should be
+> > unable to make the kernel crash. I don't understand what you think
+> > should be fixed if I hit that crash. My userspace interactions in /sys?
+> > Which error is easy to miss?
+>=20
+> Oh, root can easily make the kernel crash in any number of ways. That's
+> really kind of baked into the concept.
 
--> #0 (prepare_lock){+.+.}-{4:4}:
-        __lock_acquire (kernel/locking/lockdep.c:3167 kernel/locking/lockdep.c:3286 kernel/locking/lockdep.c:3910 kernel/locking/lockdep.c:5239)
-        lock_acquire (kernel/locking/lockdep.c:5872 kernel/locking/lockdep.c:5829)
-        __mutex_lock (kernel/locking/mutex.c:598 kernel/locking/mutex.c:760)
-        mutex_lock_nested (kernel/locking/mutex.c:812 (discriminator 1))
-        clk_prepare_lock (drivers/clk/clk.c:228)
-        clk_set_rate (drivers/clk/clk.c:2592 drivers/clk/clk.c:2584)
-        meson_pwm_enable.isra.0 (drivers/pwm/pwm-meson.c:235)
-        meson_pwm_apply (drivers/pwm/pwm-meson.c:328)
-        __pwm_apply (drivers/pwm/core.c:707)
-        pwm_apply_might_sleep (drivers/pwm/core.c:761)
-        pwm_adjust_config (drivers/pwm/core.c:897)
-        pwm_regulator_probe (drivers/regulator/pwm-regulator.c:403)
-        platform_probe (drivers/base/platform.c:1377)
-        really_probe (drivers/base/dd.c:640 drivers/base/dd.c:718)
-        __driver_probe_device (drivers/base/dd.c:880)
-        driver_probe_device (drivers/base/dd.c:910)
-        __device_attach_driver (drivers/base/dd.c:1038)
-        bus_for_each_drv (drivers/base/bus.c:462)
-        __device_attach_async_helper (drivers/base/dd.c:1067)
-        async_run_entry_fn (kernel/async.c:129)
-        process_one_work (kernel/workqueue.c:3294)
-        worker_thread (kernel/workqueue.c:3377 kernel/workqueue.c:3458)
-        kthread (kernel/kthread.c:432)
-        ret_from_fork (/usr/src/debug/linux-yocto/6.18.52+git/arch/arm64/kernel/entry.S:860)
+Yeah, right. root can poke in /dev/mem (unless STRICT_DEVMEM=3Dy). And
+root can allocate memory until the machine crashes (unless a resource
+limit is in place). And root can unbind devices, or bring down the
+network, but that shouldn't result in a kernel crash. If it does, that's
+a bug worth fixing.
+=20
+> To me this is in the same category as force-unloading a module. You can
+> do it, but you should know that it's potentially dangerous and most of
+> the time doesn't make sense either.
 
-other info that might help us debug this:
+Yes, force-unloading is another such thing, but this can only be done
+if MODULE_FORCE_LOAD (default n) is enabled.
 
-  Possible unsafe locking scenario:
+The only thing I'm aware that root can do to crash the kernel where I'm
+not aware of a guard rail is `kill 1`.
 
-        CPU0                    CPU1
-        ----                    ----
-   lock(&chip->nonatomic_lock);
-                                lock(prepare_lock);
-                                lock(&chip->nonatomic_lock);
-   lock(prepare_lock);
+> It's called forcing because there
+> are guardrails in place to prevent you from trying to do it.
+>=20
+> If a device cannot operate without device data, it doesn't make sense to
+> bind to it with a driver override because then you just don't get that
+> data.
 
-  *** DEADLOCK ***
+Ack, it doesn't make sense, and so IMHO it's worth to spend a check to
+prevent that from happening.
 
-4 locks held by kworker/u16:2/47:
-  #0: 81ff0000003dc948 ((wq_completion)async){+.+.}-{0:0}, at: process_one_work (kernel/workqueue.c:3268)
-  #1: 02ff800083a37d10 ((work_completion)(&entry->work)){+.+.}-{0:0}, at: process_one_work (kernel/workqueue.c:3269 (discriminator 1))
-  #2: afff000000a57140 (&dev->mutex){....}-{4:4}, at: __device_attach_async_helper (include/linux/device.h:1013 drivers/base/dd.c:1053)
-  #3: c5ff000002bc77c8 (&chip->nonatomic_lock){+.+.}-{4:4}, at: pwm_apply_might_sleep (drivers/pwm/core.c:43 drivers/pwm/core.c:54 drivers/pwm/core.c:747)
+> I'll grant you that purposefully crashing the system is maybe a bit of
+> an exaggeration if there's a knob specifically designed to let you do
+> this, hence why I volunteered to look into opting out of driver_override
+> where it doesn't make sense.
 
-stack backtrace:
-CPU: 3 UID: 0 PID: 47 Comm: kworker/u16:2 Not tainted 6.18.52-yocto-standard-00169-gbc0cb063dbe7-dirty #1 PREEMPT
-Hardware name: Blaze Edge 3.0 (DT)
-Workqueue: async async_run_entry_fn
-Call trace:
-  show_stack (arch/arm64/kernel/stacktrace.c:499) (C)
-  dump_stack_lvl (lib/dump_stack.c:94 lib/dump_stack.c:120)
-  dump_stack (lib/dump_stack.c:129)
-  print_circular_bug (kernel/locking/lockdep.c:2045)
-  check_noncircular (kernel/locking/lockdep.c:2177)
-  __lock_acquire (kernel/locking/lockdep.c:3167 kernel/locking/lockdep.c:3286 kernel/locking/lockdep.c:3910 kernel/locking/lockdep.c:5239)
-  lock_acquire (kernel/locking/lockdep.c:5872 kernel/locking/lockdep.c:5829)
-  __mutex_lock (kernel/locking/mutex.c:598 kernel/locking/mutex.c:760)
-  mutex_lock_nested (kernel/locking/mutex.c:812 (discriminator 1))
-  clk_prepare_lock (drivers/clk/clk.c:228)
-  clk_set_rate (drivers/clk/clk.c:2592 drivers/clk/clk.c:2584)
-  meson_pwm_enable.isra.0 (drivers/pwm/pwm-meson.c:235)
-  meson_pwm_apply (drivers/pwm/pwm-meson.c:328)
-  __pwm_apply (drivers/pwm/core.c:707)
-  pwm_apply_might_sleep (drivers/pwm/core.c:761)
-  pwm_adjust_config (drivers/pwm/core.c:897)
-  pwm_regulator_probe (drivers/regulator/pwm-regulator.c:403)
-  platform_probe (drivers/base/platform.c:1377)
-  really_probe (drivers/base/dd.c:640 drivers/base/dd.c:718)
-  __driver_probe_device (drivers/base/dd.c:880)
-  driver_probe_device (drivers/base/dd.c:910)
-  __device_attach_driver (drivers/base/dd.c:1038)
-  bus_for_each_drv (drivers/base/bus.c:462)
-  __device_attach_async_helper (drivers/base/dd.c:1067)
-  async_run_entry_fn (kernel/async.c:129)
-  process_one_work (kernel/workqueue.c:3294)
-  worker_thread (kernel/workqueue.c:3377 kernel/workqueue.c:3458)
-  kthread (kernel/kthread.c:432)
-  ret_from_fork (/usr/src/debug/linux-yocto/6.18.52+git/arch/arm64/kernel/entry.S:860)
+Cc: me if you find something. Until that happens I consider introducing
+that check the right thing to do. My patch is essentially a codifycation
+of such an opt-out. :-D But I agree a more semantical version would be
+nicer (but not sooo nice that *I*'d start a new quest for it).
+
+Best regards
+Uwe
+
+--gnzowsmozdenpnzo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqxjy4ACgkQj4D7WH0S
+/k6ljAf/XXz3ObrZ1C6gC2IW0gDCH+rRf82Q1RkSbDnNVrUksg6LqnlGq8+wBS28
+jr5Y/SrnzLVkWnbNQFzi09Xk8/ukvJE4hfN8l8D/WPnnKXuRJshDENC6P6hKJs1w
+Kn1d3cwne1dektKk7zJHBE4786qkwtnuG5yVfjdPFiC8rjijv4RexG+pd191G+US
+Yu/pGj1EYG0T49B4mk34YnbUweMDYJrtUuthMYeqcA6vrrplJbZkZj4+GnpWt1gj
+qZ+dd3LdrA16wjEIZITtCSib0YorlFDrVxEmaGv0/kNd6QWqvetyPCqiXu6E8GgG
+0B8GsoKqUEy3VSGpnjJm6cxKgv/hew==
+=9Zf4
+-----END PGP SIGNATURE-----
+
+--gnzowsmozdenpnzo--
