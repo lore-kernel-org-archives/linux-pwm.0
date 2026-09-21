@@ -1,116 +1,232 @@
-Received: from mail-pz2-f43.google.com (mail-pz2-f43.google.com [74.125.228.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 019FE4B66C2
-	for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 15:16:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB4154CB8C8;
+	Mon, 21 Sep 2026 16:14:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790003817; cv=none; b=c/7G6l8MUXCke6wZ83/53QAzJ40o/vigTYi76G0u9h59pls+tazPXHcQy+KxWgBSfm2VXtuoKBD4X6yQXyTLK1RTErq0wc58cQEPv2nexAemuq6THiBKyXuhrrXwHoF5jYvTx+Ndnp4lfmoDFQQ54YRE/9nOph4lWGyBGTRKk2E=
+	t=1790007289; cv=none; b=ud1Kj4y+j6wkDaSx1Ij6cT66/fdpy+94rvR+CvW/KkzC/vDmqlaGiiM4bigCYachSCrJh8IoCmN9SZYYLVxROHiwgmetMfuwKz3KLyIIwnrATCZc8QEzp6kqII22xn8oBONj8avhAkCEg3I8cKsuKyCiJLXQxL/3BWhwplngY8c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790003817; c=relaxed/simple;
-	bh=btmsrMp6ZT1BNi7RwicFG5ia2RT35kS11G26E2R65RI=;
+	s=arc-20240116; t=1790007289; c=relaxed/simple;
+	bh=hjXbafy4rxZkXAf8mVKHOJ22dxFdhpv4unxVTvmtffw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NQKslj4/hmriUhSMQGF/x9mLyE0/L/E3xvIh6MsClhP5ZzV2eUmDNX7YENbZS9K4u+0NOYJDdpPYy7l75nSBwCJZJjQY6ijw30Tz5ViEDzPwTlxW7VwMNF3gvczlkyGc4LfhizE2kMWuBmC9M+lzDKbtFCiO6B4RBaoMNE3WAss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gsv5SvNc; arc=none smtp.client-ip=74.125.228.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Zjf0kH2qXUgIdvuqUm0lBB2lwhgpp+n6g0XfAQ5bfxv8qQ44grPjzJmfBOZulSZ/SmhqKqQlGwERzbj9nyuai9DJT9GqwGCAKTTc2GXf5Sn8eDxP4MuIq86Pp18lmebtwy8J90mRkmRrZZhr7Dct1pI37uYD+1aScpisxLnZ1xs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DmMSZhTs; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gsv5SvNc"
-Received: by mail-pz2-f43.google.com with SMTP id d2e1a72fcca58-8692a8568e9so2635683b3a.3
-        for <linux-pwm@vger.kernel.org>; Mon, 21 Sep 2026 08:16:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790003815; x=1790608615; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:sender:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=DrpGKqIUkLFawAwAJ6T5iyyW+Mbq35mI1r9oJC3ubjA=;
-        b=Gsv5SvNc3udEak8jwB8FeYVWdWaqy/aay5ShKJkiMtg7dgfnXhWKyS/x9mmisNKdNJ
-         zC62/crv6yTsmQQR6AxoUxJ8Oi0pg2GXPur83bfU4kUZtXwqwTIQkNm1ph1W3SbHIodE
-         p574YS5oyMiWYGYYjx3I4PM95ly8nfYqyQt5FilDDyGZR/t/OQB0KfFfV+bedIm0juxk
-         kkUTofiJ6n1EKP9D8mufAjKZl+0X98BhZ4vg+ebTFvBO+vlEyodH8C2gDlirrt0AueJP
-         nmofaNVDrotJ2D73E9JkCMMpO1CeC28c8k/YhI/LG/sWUA+cX0WXXrAox34iH5AS/3PL
-         PsKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790003815; x=1790608615;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:sender:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=DrpGKqIUkLFawAwAJ6T5iyyW+Mbq35mI1r9oJC3ubjA=;
-        b=t8e9m9g26GxIYMY31+yMKE3ZxUUT3Bcf9UeIprj5LJmGdEGQgff+TNmWRvFd0/G5ff
-         dkZ6aISeI9c6llkOgjVG/eWl8Wxqj70EnAUDBRK7LkFwkXuOjxKnJ+X47JiHPRq/YCkT
-         S+Xelj5yS88r5T7mQE6K8S5H8ttDeaQobx77XiQxDp3O/0TlKeRfWlCrg/oJtrC/ywSO
-         fZevztzXofa/MkVApWyYlLJAmzEQUoyZZIyxK6Gq/21lc5pmVa5HvSPgJiCPY4fRXZvD
-         esi0F288TH1RAlV4jGB+XD95EWx0UxFN2CX+BZ1NhpuJz2hTLQfiDbuLBF2GmBxXn3mR
-         5fyg==
-X-Forwarded-Encrypted: i=1; AKwUvByDkdSmUYjJ2RT3xS69WgQZwN5WioGE4F57+kUkbrltfuDqmtjf1Jfnhm+IMlnaOnvkrjNPCLIkINk=@vger.kernel.org
-X-Gm-Message-State: AFuF++ljW2fjZNQUUbbfmtuDKYImwdN19qJP3miuxvMM9CJ0zg48xupK
-	7S/tM0HmtwxSNV0ZS1LoG2Ka1z6ITWcy7WH4mtuQNASzNFN+pVWhAjua
-X-Gm-Gg: AYBFou27L/+k77J1P9ED1+OWUOb1MgkCD3F2/SF53fKhUd0LrF3+zLVlL5RJfkE8OX+
-	m7dPNjid1JAZ100O3IqY/uSkQoINXAipIwY9YxAvPeQKUDNCst7JJJ1Y0zQ5YRKyWbS/RKnsMVt
-	PU3CfPaR2Hvt+0OwjF0zeFhcu0S6aWBFOolZt6Gj09GvLDKwVTmUoMjCa1V2ncy4y0A/vOUjnVu
-	m9ci5pbk3ypuWygma+kGfQP37feYWXQ0v0M86npcz9DgYtUxIOrEdrKyQ7/HmQxonBvRWK9ROc5
-	BlUvK7Txsq6MonB3f9YErpPKk1gT0MsIFKzKgoVKRLUYePSsrVT/5bfEBZpOKOoqZPcV3IiVbOi
-	D7EZz67mm7+dMP1kbsZCNbJMYldnxUFqjn/rTxH9+oVojBPfxl8bh08+9O5LKfAh74iXzfeTrWK
-	6BPriFh45RHgksxD8Pe6jhwDTjUEoNKyg/0+b8T5VncS1zkbkYLeSc5xYaR6+E2+eLOTvKrMEKi
-	IeQR8gKRx5D
-X-Received: by 2002:a05:6a00:ad08:b0:874:706d:857b with SMTP id d2e1a72fcca58-874de9fd734mr15109225b3a.35.1790003815225;
-        Mon, 21 Sep 2026 08:16:55 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-877a95eceb2sm3431796b3a.24.2026.09.21.08.16.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 08:16:54 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Mon, 21 Sep 2026 08:16:53 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Petar Stepanovic <pstepanovic@axiado.com>
-Cc: Akhila Kavi <akavi@axiado.com>,
-	Prasad Bolisetty <pbolisetty@axiado.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Tzu-Hao Wei <twei@axiado.com>,
-	Karthikeyan Mitran <kmitran@axiado.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-hwmon@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-doc@vger.kernel.org, openbmc@lists.ozlabs.org
-Subject: Re: [PATCH v3 2/2] hwmon: add Axiado AX3000 and AX3005 PWM fan
- controller driver
-Message-ID: <d9dfa12a-0999-4425-ba83-aacd48eea1ea@roeck-us.net>
-References: <20260921-axiado-ax3000-pwm-fan-v3-0-3def8b6ffec9@axiado.com>
- <20260921-axiado-ax3000-pwm-fan-v3-2-3def8b6ffec9@axiado.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DmMSZhTs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8BF61F000FF;
+	Mon, 21 Sep 2026 16:14:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790007274;
+	bh=ua+CeTf8EeH5BmbofI0sGMgT7vQHm+wg0hsM+OpZO+I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=DmMSZhTs56oa06SLaeij4alikNuHGjOhr5f4rIV1oMS5IXas0rbrAvC3V2tsntp7o
+	 F0S9XOP0ThUYjPxJGHzXkXz+QmVYkEN9inRYxS9UciXXXAAVqHxoMsuIvTbxPDEz9k
+	 Z2ETx7ivELdGQnyyYQ/6P3MR2+zFoLuBSCTBYOHqtsioeVO1Wbv0F+7mPokAYXSwoM
+	 Wz65RGQbeexV5f2KuvtPjIVU+PaJNvD/ljZIAzid/g5bMQgg3z/KgHivqR0bhKysRt
+	 a+QkawJE4CfYDnXCWWrw+HNUSku6RVTZoBJqE1VJ2ZZgGtWjqEMaJlXWxIjsuG3NFx
+	 bcgGOIw+eyqnA==
+Date: Mon, 21 Sep 2026 18:14:31 +0200
+From: Thierry Reding <thierry.reding@kernel.org>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>, 
+	Mikko Perttunen <mperttunen@nvidia.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
+	linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] pwm: tegra: Make use of dev_err_probe()
+Message-ID: <arFVjZ7bE2-lgnqm@orome>
+References: <cover.1789741839.git.u.kleine-koenig@baylibre.com>
+ <641219a7d76bbcd8fe98b5955f2355ed45f55986.1789741839.git.u.kleine-koenig@baylibre.com>
+ <arD6ILv1sd8YBUXj@orome>
+ <arEiVZG7UqxpqAPZ@monoceros>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="txouqlewv4ubh273"
 Content-Disposition: inline
-In-Reply-To: <20260921-axiado-ax3000-pwm-fan-v3-2-3def8b6ffec9@axiado.com>
+In-Reply-To: <arEiVZG7UqxpqAPZ@monoceros>
 
-On Mon, Sep 21, 2026 at 12:23:56AM -0700, Petar Stepanovic wrote:
-> Add support for the PWM fan controller found on the Axiado AX3000 and
-> AX3005 SoCs.
-> 
-> The controller uses a hardware tachometer block and interrupt to measure
-> fan speed. Fan speed is controlled through a PWM signal supplied by an
-> external PWM controller.
-> 
-> Register the controller with the hwmon subsystem and expose the standard
-> fan1_input and pwm1 attributes. The physical fan is represented by a fan
-> child node containing the PWM specifier and the optional
-> pulses-per-revolution property. If pulses-per-revolution is not specified,
-> the driver uses two pulses per revolution.
-> 
-> The driver was tested on AX3000 and AX3005 boards.
-> 
-> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
 
-Applied.
+--txouqlewv4ubh273
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v2 1/3] pwm: tegra: Make use of dev_err_probe()
+MIME-Version: 1.0
 
-Thanks,
-Guenter
+On Mon, Sep 21, 2026 at 02:46:03PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> Hello Thierry,
+>=20
+> On Mon, Sep 21, 2026 at 11:38:41AM +0200, Thierry Reding wrote:
+> > On Fri, Sep 18, 2026 at 04:33:45PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> > > Usage of dev_err_probe() is more compact than dev_err()'s, emits the
+> > > error code and handles -ENOMEM and -EPROBE_DEFER properly. Benefit fr=
+om
+> > > these improvements.
+> > >=20
+> > > Also add a few messages in error paths that lacked an output before.
+> > >=20
+> > > Reviewed-by: Mikko Perttunen <mperttunen@nvidia.com>
+> > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
+> > > ---
+> > >  drivers/pwm/pwm-tegra.c | 52 ++++++++++++++++++++++++---------------=
+--
+> > >  1 file changed, 31 insertions(+), 21 deletions(-)
+> > >=20
+> > > diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+> > > index 5cdbe120ba2d..efb7ab60f602 100644
+> > > --- a/drivers/pwm/pwm-tegra.c
+> > > +++ b/drivers/pwm/pwm-tegra.c
+> > > @@ -316,14 +316,15 @@ static const struct pwm_ops tegra_pwm_ops =3D {
+> > > =20
+> > >  static int tegra_pwm_probe(struct platform_device *pdev)
+> > >  {
+> > > +	struct device *dev =3D &pdev->dev;
+> > >  	struct pwm_chip *chip;
+> > >  	struct tegra_pwm_chip *pc;
+> > >  	const struct tegra_pwm_soc *soc;
+> > >  	int ret;
+> > > =20
+> > > -	soc =3D of_device_get_match_data(&pdev->dev);
+> > > +	soc =3D of_device_get_match_data(dev);
+> > > =20
+> > > -	chip =3D devm_pwmchip_alloc(&pdev->dev, soc->num_channels, sizeof(*=
+pc));
+> > > +	chip =3D devm_pwmchip_alloc(dev, soc->num_channels, sizeof(*pc));
+> > >  	if (IS_ERR(chip))
+> > >  		return PTR_ERR(chip);
+> > >  	pc =3D to_tegra_pwm_chip(chip);
+> > > @@ -331,28 +332,39 @@ static int tegra_pwm_probe(struct platform_devi=
+ce *pdev)
+> > >  	pc->soc =3D soc;
+> > > =20
+> > >  	pc->regs =3D devm_platform_ioremap_resource(pdev, 0);
+> > > -	if (IS_ERR(pc->regs))
+> > > +	if (IS_ERR(pc->regs)) {
+> > > +		/*
+> > > +		 * devm_platform_ioremap_resource() already emits an error
+> > > +		 * message with CONFIG_HAS_IOMEM, so don't emit another message
+> > > +		 * here.
+> > > +		 */
+> >=20
+> > Seems a bit counter-productive to leave comments like this. Function
+> > comments should document what the function does and then people should
+> > read those comments. Then we don't need to mention it every time we call
+> > these functions.
+>=20
+> I often deal with bug reports by users where things fail without an
+> error message[1]. So a usual thing I do is checking probe (and other)
+> functions for silent error paths. As I fail to follow the (continously
+> changing) set of functions that emit an error message, this comment is
+> very useful for a me at least and I'd wish others would add such
+> comments, too. (An IMHO fine thing here would be to let no generic
+> resource getter function emit an error message, but that ship has
+> sailed.)
+
+I seem to remember that we discussed both options at the time and the
+general concensus was that these functions should provide canonical
+error messages since their whole purpose was to remove boilerplate and
+about a quarter or so of the boilerplate was the error message, with the
+added issue that error messages were all over the place. All of these
+callsites are going to print an message for these errors, so might as
+well add standard messages for these types of situations and save a
+bunch of text. I think overall it's a win, but it comes at the cost of
+people having to know that these already print errors.
+
+> I'd be open for a shorter marker, that might even be machine-parsable.
+
+I don't know if an extra marker would be all that helpful over a
+comment. The beauty of the current solution is that the error handling
+is reduced to just the check and the return value, everything else is
+encapsulated into the helper.
+
+There are semantic patches that check for these situations, but I
+suspect not everyone runs those. I don't know if we can somehow make the
+compiler warn about these situations.
+
+> > >  		return PTR_ERR(pc->regs);
+> > > +	}
+> > > =20
+> > >  	platform_set_drvdata(pdev, chip);
+> > > =20
+> > > -	pc->clk =3D devm_clk_get(&pdev->dev, NULL);
+> > > +	pc->clk =3D devm_clk_get(dev, NULL);
+> > >  	if (IS_ERR(pc->clk))
+> > > -		return PTR_ERR(pc->clk);
+> > > +		return dev_err_probe(dev, PTR_ERR(pc->clk), "Failed to get clock\n=
+");
+> > > =20
+> > > -	ret =3D devm_tegra_core_dev_init_opp_table_common(&pdev->dev);
+> > > -	if (ret)
+> > > +	ret =3D devm_tegra_core_dev_init_opp_table_common(dev);
+> > > +	if (ret) {
+> > > +		/*
+> > > +		 * devm_tegra_core_dev_init_opp_table_common() emits an error
+> > > +		 * message most of the time, so don't add another.
+> > > +		 */
+> >=20
+> > Same here.
+> >=20
+> > > @@ -385,17 +395,17 @@ static int tegra_pwm_probe(struct platform_devi=
+ce *pdev)
+> > > =20
+> > >  	ret =3D pwmchip_add(chip);
+> > >  	if (ret < 0) {
+> > > -		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> > > +		dev_err_probe(dev, ret, "Adding pwmchip failed\n");
+> >=20
+> > This stands out as very different from other error messages, so maybe
+> > change this to something like "Failed to add PWM chip" for consistency?
+>=20
+> Fine for me, will fix in the next submission.
+>=20
+> Thanks for your feedback,
+> Uwe
+>=20
+> [1] last instance was just today, where on a bananapi USB didn't work
+>     and /sys/kernel/debug/devices_deferred ended up containing:
+>=20
+> 	1c13000.usb     platform: supplier 1c13400.phy not ready
+> 	1c1c000.usb     platform: supplier 1c13400.phy not ready
+> 	1c14400.usb     platform: supplier 1c13400.phy not ready
+> 	1c13400.phy     platform: supplier axp20x-usb-power-supply not ready
+> 	1c14000.usb     platform: supplier 1c13400.phy not ready
+> 	1c1c400.usb     platform: supplier 1c13400.phy not ready
+> 	axp20x-usb-power-supply
+>=20
+>     It would be so easy[2] to add a useful debugging hint here
+>=20
+> [2] https://lore.kernel.org/all/b699f8251afed736af454a981630926e45eb7da7.=
+1789983244.git.ukleinek@debian.org/
+
+I see. Yeah, I find it increasingly difficult to remember all the
+context of a function call, whether it is that it prints an error
+message or needs some lock to be held, sleeps or not. Sashiko has
+been really good about pointing some of those things out.
+
+Thierry
+
+--txouqlewv4ubh273
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmqxV+QACgkQ3SOs138+
+s6HNoRAAgmI2ZiLP12EH1r2UHrED9HjWYRfSeR9ci+2l2B+V3RePnm7bigCLLLNJ
+25NqRe/9mcjMt2f4o+r/2dIePPYHiI/4p+G35Jlz1HRsNt1tdcKfBOx4KngpBb8A
+/QJJgjuI3TAWXkApJUs9eiyZxDdqZcb6kHFBc2eemYslUSPTTNTcYH0+Fh/IxL3N
+Pn9VFlT9KdExN9dluSQmGyvy6L79KO0rHh1Gz84E9lYTGjGOjfNjDtYn/6ty8/ku
+rBB5mISZ+W1Lap5cndnGxHEJmo0wsXMjRX4E6SvOXQ9I+k50MZEX52qCBl8cmaVI
+XkiNmyUV2uuvREclt7NY4Mz3b4yYrB4osO8leVAATF3YXbuoE3/o6XVsA5DX538x
+Ii61rQOTKnAaGZypkvX0HLlbmw3XpQ07x3rLA1RYIu8nAs6lCGZ+rZkv+YpOdYMz
+TjF2IumAF6cnDB0HMf+BPLIIuvQpogy2oGzVPNnbtsJi5vszklcqHyTlnDksnlnd
+aD83rVOwnhdi1hANL8laiEpI6oy+JWNZLpzNjY1PrlS3d4yJiYn73xzio3GJR1i4
+gbiYc6DqtZgOT0UIXMUtic2whkPV4PHlbxMCdTl1Kl8BQeeqGGM/MTCslsBH0FXr
+QK3O20XZe71KV3aT2SjRag3riGVoPppqqyOdEad2axDUe763DvI=
+=tQNN
+-----END PGP SIGNATURE-----
+
+--txouqlewv4ubh273--
