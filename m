@@ -1,94 +1,72 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11420542ED1;
-	Tue, 22 Sep 2026 12:18:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4078544D57;
+	Tue, 22 Sep 2026 12:50:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790079539; cv=none; b=ZT702/dlu0O9eSv6jZ6HeqotPs+ZVLyZUQeY0MHs3rsUkBPKOEH/Ax39V6IBIIWg7E4kSNZaLN8jRWkhRhQRo1lPLSYZXh6tzKBzRWjDRyAhNBek52y3cXb4GvhJzQFheb9BiEGegNuorCH7xF0CAyocDTeyjIwXpZbTH1YuRcA=
+	t=1790081402; cv=none; b=iVoRNxSMSS2O+QBUpA3aPFjeo3w81EggNAOE7sIu/4nZiJr8SwzuxPFf3MKUARFGJoflwKWrUZt51wKEKx+4BVEqg4diUoKgq3g6m/NfJOGo+KXSEN2PCiYBM5SRo6jP7Lw2iqNgYU2dqmVn2AJcaS0PGg1x5y5ls0AxHRR5gGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790079539; c=relaxed/simple;
-	bh=l5RZcKg+LbYgBEC38tBWMYTL90wiPcpCp/KCZSxeShI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gJ8lmrf5C2QlOGLaSJxIzTEgDx1p8LpM8Rxy8sQBz3hxW2Ylx8LqZW56ZEe3fbuNFaLCAeBBDrtY6586QVN2VsHAYy0/ZiUGl3GF5buHZNpznLJBQ4GGd3bj8Hosg/qFLamMb6WZUQbfH12HJw34v3Fy7yudrH+NB/b+6ph7UPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=HqFu3q/p; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790081402; c=relaxed/simple;
+	bh=U61nrlf6Rzr9P45390+WWOxofv7eccqWssOJ/x8m2JQ=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=MXnZ++w7UfuhnC1PNeODz6GNy5K6v0fR9axsbhoAi+4jVUU8x6mx3eLQ/pfgw/OlOG7BALYR3Bi95yHo36l/kuCPNEjCJKTCpsVn7Ug0P2yv1s1NzAO7cWJcS0NexsAfa1FHVgpZP/RTZCvbg7cVtHcp3Ar36oaKcqC6Lo4LMew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b5rLmd5b; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="HqFu3q/p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BFE51F000FF;
-	Tue, 22 Sep 2026 12:18:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1790079538;
-	bh=2CErJxI8kyBH6yMs3SPQRJ1NFZT9+yN4VflkNoKBvRk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=HqFu3q/pviOh3Oc6Q8MqNEDMW/AVtEW5lj6PEBuc9jg3zmaDBK+B/gh1SQspCGgBQ
-	 ggBEwxbrvfcsrXbfn6vmXjVSsOI9VK5lq0W6Fv/uKRIa1dPppbujzfHpDFh3vuejmG
-	 aaExi+2JBCoFx32lljQzNZVb8eghX74k7pM4wLL4=
-Date: Tue, 22 Sep 2026 14:13:58 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Thierry Reding <thierry.reding@kernel.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>, driver-core@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-tegra@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH 1/2] driver: core: Allow drivers to opt out of
- driver_override
-Message-ID: <2026092227-marbling-untying-c1df@gregkh>
-References: <20260922-driver-override-opt-out-v1-0-58c35ded3b83@nvidia.com>
- <20260922-driver-override-opt-out-v1-1-58c35ded3b83@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b5rLmd5b"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 314C31F000FF;
+	Tue, 22 Sep 2026 12:49:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790081400;
+	bh=zA+GCqss1BJt2eyEGaNbn9BPABpPtcuxg8nHLoRtwIY=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To;
+	b=b5rLmd5bWxK5MhXoiYJT/vrxWKDUIQG9wU9NmlecSLJNiy50dmDpiP5HQ1qCkFAbO
+	 xahaUPwLJ3+jghJTj8Lcw5eZxlEiZB9Cvbj0PbaadZGfIm6HL5HnYyxG+YC15KIwEI
+	 5A3vNKw6c+9dq2c8rz1exSDfK9GFqCSktwrHOeBmXlqnA6JU1spy6CEk++lkSbzNtX
+	 Z1/7CQaOJLt5tKp8PSyY2GLQfl3d1uTPPuEhNs2TeKgGX8sM7SXrPE4hSCLYS446ki
+	 VghH/5KIkvUoO5tvWFskqHTHGghkqobAgr5boT72RCG6PeC3SMAsnleQYvRYQvjI+y
+	 /2TCAUes5w0Jg==
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260922-driver-override-opt-out-v1-1-58c35ded3b83@nvidia.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 22 Sep 2026 14:49:56 +0200
+Message-Id: <DLLUW8UZUU4G.3FX7WHWGVM1T4@kernel.org>
+Subject: Re: [PATCH 1/2] driver: core: Allow drivers to opt out of
+ driver_override
+Cc: "Thierry Reding" <thierry.reding@kernel.org>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, "Jonathan Hunter" <jonathanh@nvidia.com>,
+ <driver-core@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+ <linux-pwm@vger.kernel.org>, <linux-tegra@vger.kernel.org>, "Thierry
+ Reding" <treding@nvidia.com>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@baylibre.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <20260922-driver-override-opt-out-v1-0-58c35ded3b83@nvidia.com>
+ <20260922-driver-override-opt-out-v1-1-58c35ded3b83@nvidia.com>
+ <2026092227-marbling-untying-c1df@gregkh>
+In-Reply-To: <2026092227-marbling-untying-c1df@gregkh>
 
-On Tue, Sep 22, 2026 at 01:38:28PM +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
-> 
-> Some drivers rely on device data obtained through device ID matching and
-> will not work otherwise. Some such drivers don't check for the validity
-> of the device data because it is never NULL when the device is matched
-> against the device ID table.
-> 
-> However, Uwe recently pointed out that drivers always need to check this
-> device data because any device can be forced to bind against a driver if
-> their driver_override sysfs attribute is set and the driver rebound. Any
-> such device will now not have device data from a device ID match table
-> and may crash.
-> 
-> Add a flag that allows drivers to opt out of the override mechanism when
-> it doesn't make sense. This allows us to deal with these situations in
-> the core rather than sprinkle checks throughout all of these drivers to
-> check for validity of the device data.
-> 
-> Cc: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> ---
->  include/linux/device.h        | 12 +++++++++---
->  include/linux/device/driver.h | 12 ++++++++++++
->  2 files changed, 21 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 90cdd77458bb..45c23cc5efa8 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -899,14 +899,20 @@ static inline bool device_has_driver_override(struct device *dev)
->   *
->   * Returns > 0 if a driver override is set and matches the given driver, 0 if a
->   * driver override is set but does not match, or < 0 if a driver override is not
-> - * set at all.
-> + * set at all or the driver opts out of the override mechanism.
+On Tue Sep 22, 2026 at 2:13 PM CEST, Greg Kroah-Hartman wrote:
+> On Tue, Sep 22, 2026 at 01:38:28PM +0200, Thierry Reding wrote:
+>> From: Thierry Reding <treding@nvidia.com>
+> What's wrong with just not allowing bind/unbind at all?  Why would you
+> want that, but NOT the driver_override file?
 
-What's wrong with just not allowing bind/unbind at all?  Why would you
-want that, but NOT the driver_override file?
+pwm-tegra is a platform driver, but for drivers on hot-pluggable buses we s=
+till
+want bind/unbind for testing, even if we opt-out from driver_override.
 
-thanks,
-
-greg k-h
+Besides that, I think that even for buses that do not have hotplug, there a=
+re
+cases where it can be useful to be able test whether a driver survives
+bind/unbind (i.e. follows the device driver lifecycle rules). E.g. because =
+the
+same IP will later receive an implementation on a hot-pluggable bus that sh=
+ares
+driver code, or just to validate driver design in general.
