@@ -1,38 +1,42 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6510D33689D;
-	Tue, 22 Sep 2026 00:42:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC0F30568B;
+	Tue, 22 Sep 2026 06:19:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790037738; cv=none; b=UI8i+iM3xQzHbX0SvQidvVlwwQ1lOutyls7zz8Dps+QcJ7Xs11FGM+ptP2A3uiCogXLrNzcy27/ljOvC1LZQ/eVlT/qzeqDLxhXP/oUjKzwJRRUuWh4/urwgGe8sZqAcZi2jl20wIXvQARIeqmc5BAOvyQ7UPlWB3MPvYgDeKTk=
+	t=1790057993; cv=none; b=f6t5v6z1/lafiXrSydfnm0hcyz0EkEcWKz5sMBJHlSjVAuz231SlIm01cwWugs5XSl/csi/QbTyNW2Bk0U9Qk5BULuvD2+F2FRNG+4GWPsffZ7SyBg1PaRcGKAsFwVl4Pvc10DK+x580I+T+Nxg81PpNDScJw8ZL7AJf1N6UwxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790037738; c=relaxed/simple;
-	bh=fYgBs0hMO8Rv03e//NL7rKu6soFHZ+KMCw99x+DsGYg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BRtQg5BBINFfde18+E/li4uZyQmXOtp6qkELNh7YetuiMH85yWfucV3YvYYt9Or+TXv7CNouTSz0aGSLrmUH967cIuROn3aYx4ddGYKwM5h3bjr0XDRSbFrtiI19fe8efIp5DNgWX2beqJl26qOgz8JWhYzEFbvPCi0gBMd9jhQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=VmDQkl3N; arc=none smtp.client-ip=117.135.210.4
+	s=arc-20240116; t=1790057993; c=relaxed/simple;
+	bh=MjkxYsgZfi1ENMq6oD+JZlpmwvBVoXRm4CNxKkFQCDs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TakA03IVfUZWhrmYCK7hM/ywvEr7FKmphz1i23NaQ5y0ipleXpk9XU2Gd2H7XToBVI6DCk206qWSUIKu2xuyPZ9wnvCimOPek8RErxFpcVWH2OSxKyayKNMH453iS+6O4/cPVBoZ0W19rDGenHKGNutKmIG8xki/8VbkvK9TagQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=in8YwjSS; arc=none smtp.client-ip=220.197.31.4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="VmDQkl3N"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="in8YwjSS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=5D
-	raQSoeUDlTV5a9KL9CmbEiqVAM6BOedYwwQhvAmxM=; b=VmDQkl3N+Vu/RkC02m
-	dazH0kx3nQ8GBd+Og+xrIrvb173kjy9dVOivqJvq+Uqe3F456yUY8izSAU4RBxCi
-	yai6P0iztJoVKk9PzLnFs8F+RmybDbmiNoEe9Vo7you+j66rYNjOg0r7SNbPy9rC
-	VtSOfziWh/iYZGm/H4alcRYCM=
-Received: from localhost.localdomain (unknown [])
-	by gzsmtp1 (Coremail) with SMTP id PCgvCgBHFxjTzrFqmpJpAg--.56442S2;
-	Tue, 22 Sep 2026 08:41:56 +0800 (CST)
-From: Pengpeng Hou <hppiscas@163.com>
-To: ukleinek@kernel.org
-Cc: linux-pwm@vger.kernel.org,
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=Ao
+	HMNpZZeCvgyXjU5ouI34mrD2A1Vq2PGowe6O3nbAE=; b=in8YwjSSTL1osBt8bL
+	AzHktdmFPYfr0hGBLD58l3DQVPJm4Okp4+uugvLD6XjwAcI/vHbIjjX91X0TbqQh
+	RiphyzYM72X9sDtjKjRjM+YuUfizjLs2zoRt8nTsMmV3hoVTb1tFmCxQHrHcOBbt
+	HYz7MWCY4k0Y+eTuC0FOjv9RE=
+Received: from chaosheng-ASUS-TUF-Gaming-F16-FX607JV-FX607JV.lan (unknown [])
+	by gzga-smtp-mtada-g1-4 (Coremail) with SMTP id _____wDnd1HkHbJqkgs+AA--.25598S2;
+	Tue, 22 Sep 2026 14:19:17 +0800 (CST)
+From: Quchaosheng <quchaosheng000406@163.com>
+To: Lee Jones <lee@kernel.org>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: devicetree@vger.kernel.org,
+	mfd@lists.linux.dev,
+	linux-pwm@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	hppiscas@163.com
-Subject: [PATCH v2] pwm: fsl-ftm: keep clock ownership balanced after resume failure
-Date: Tue, 22 Sep 2026 08:41:54 +0800
-Message-ID: <20260922004154.2899-1-hppiscas@163.com>
-X-Mailer: git-send-email 2.50.1
+	quchaosheng000406@163.com,
+	Rob Herring <robh@kernel.org>
+Subject: [PATCH v2] dt-bindings: mfd: convert lp3943 to DT schema
+Date: Tue, 22 Sep 2026 14:19:07 +0800
+Message-ID: <20260922061907.56372-1-quchaosheng000406@163.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -40,214 +44,300 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:PCgvCgBHFxjTzrFqmpJpAg--.56442S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxuw1xXFyDZF18uw1Uuw47twb_yoWxXFyxpF
-	WfKr4Fv3ykXrW0gwn3tr4kAr1rtr4xtay5Ca95K3y0kwnIyr4Ig3WrCF9YvFsYyrn7AF1x
-	AFs8tFyDGF1UCF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRMa0dUUUUU=
-X-CM-SenderInfo: 5kssx2xfdvqiywtou0bp/xtbC7RXvuGqxztWBIgAA3M
+X-CM-TRANSID:_____wDnd1HkHbJqkgs+AA--.25598S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxKFyxurWxGw48Zw13KFWrAFb_yoWxtry7pa
+	s7C34xtF1IqF13Kw4Iga18ZF13uF1kA3W8KF17tr1jga93G3Zxtr43Kr90v3WfCFWxWay7
+	XF1a9r1rtw4kAw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRDl1gUUUUU=
+X-CM-SenderInfo: xtxfxtprvkv0bjqqikiqw6il2tof0z/xtbC4wXHPWqyHeULEQAA3m
 
-fsl_pwm_resume() ignores clock-enable and regcache_sync() errors. It can
-therefore leave requested channels with only some of their clocks enabled
-and continue as though register restoration succeeded.
+Convert the LP3943 MFD binding from free-form text to DT schema.
 
-Check each acquisition and unwind only the references acquired by this
-resume attempt. Keep the register cache offline and dirty on replay
-failure. Retain a suspended state until all clocks and registers have
-been restored so a later suspend or free cannot release them twice.
+The LP3943 is an I2C LED driver with two sub-devices, lp3943-gpio and
+lp3943-pwm. The GPIO sub-device is covered by trivial-gpio.yaml, so only
+the PWM sub-device gets a schema of its own.
 
-Keep a bitmap of the enabled channels whose functional clocks were
-released at suspend. pwm_put() does not necessarily disable the PWM or
-clear its cached enabled state. If a channel is freed after a failed
-resume, the retry must still restore those functional clocks, while
-restoring the interface-clock references only for requested channels.
-Otherwise a subsequent request can inherit an enabled state without the
-clock references expected by apply().
+The PWM schema documents ti,pwm0 and ti,pwm1, which select the output pins
+of the two internal PWM channels and are read by pwm-lp3943.c with
+of_property_read_u32_array().
 
-Reject requests and enabled applies while suspended. A disabled apply
-can still mask its cached output and cancel the corresponding functional
-clock restoration. This keeps that disable distinct from simply freeing
-an enabled PWM.
-
-The issue was found by our static-analysis tool.
-
-Fixes: 97d0b42e39a7 ("pwm: ftm: Add Power Management support for FTM PWM")
-Assisted-by: gpt 5
-Signed-off-by: Pengpeng Hou <hppiscas@163.com>
+Assisted-by: LLM
+Signed-off-by: Quchaosheng <quchaosheng000406@163.com>
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 ---
-Changes since v1:
-- separate successful register replay from error handling
-- keep the trailers together without an intervening blank line
-- retain suspended ownership across a failed resume and the next cleanup
-- restore functional clocks even if an enabled channel was freed after
-  the failure; a disable, unlike free, cancels that restoration
 
-Previous version:
-https://lore.kernel.org/all/20260828092014.9211-1-pengpeng@iscas.ac.cn/
+v2:
+ - Add Assisted-by and the Reviewed-by tag received on v1. No content change.
 
- drivers/pwm/pwm-fsl-ftm.c | 85 +++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 75 insertions(+), 10 deletions(-)
+ .../devicetree/bindings/mfd/lp3943.txt        | 33 --------
+ .../devicetree/bindings/mfd/ti,lp3943.yaml    | 64 +++++++++++++++
+ .../devicetree/bindings/pwm/pwm-lp3943.txt    | 58 --------------
+ .../devicetree/bindings/pwm/pwm-lp3943.yaml   | 80 +++++++++++++++++++
+ 4 files changed, 144 insertions(+), 91 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/ti,lp3943.yaml
+ delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.yaml
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index 35406b2e1925..21ac97e3ed7a 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -51,6 +51,10 @@ struct fsl_pwm_chip {
- 	struct clk *clk[FSL_PWM_CLK_MAX];
- 
- 	const struct fsl_ftm_soc *soc;
-+	/* Functional clock references to restore, even if a channel is freed. */
-+	unsigned long suspended_enabled;
-+	/* Requested/enabled PWM state no longer implies owned clock references. */
-+	bool suspended;
- };
- 
- static inline struct fsl_pwm_chip *to_fsl_chip(struct pwm_chip *chip)
-@@ -89,6 +93,9 @@ static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 	int ret;
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
- 
-+	if (fpc->suspended)
-+		return -EIO;
-+
- 	ret = clk_prepare_enable(fpc->ipg_clk);
- 	if (!ret && fpc->soc->has_enable_bits)
- 		regmap_set_bits(fpc->regmap, FTM_SC, BIT(pwm->hwpwm + 16));
-@@ -103,7 +110,8 @@ static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 	if (fpc->soc->has_enable_bits)
- 		regmap_clear_bits(fpc->regmap, FTM_SC, BIT(pwm->hwpwm + 16));
- 
--	clk_disable_unprepare(fpc->ipg_clk);
-+	if (!fpc->suspended)
-+		clk_disable_unprepare(fpc->ipg_clk);
- }
- 
- static unsigned int fsl_pwm_ticks_to_ns(struct fsl_pwm_chip *fpc,
-@@ -301,6 +309,17 @@ static int fsl_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct pwm_state *oldstate = &pwm->state;
- 	int ret;
- 
-+	if (fpc->suspended) {
-+		if (newstate->enabled)
-+			return -EIO;
-+
-+		ret = regmap_set_bits(fpc->regmap, FTM_OUTMASK,
-+				      BIT(pwm->hwpwm));
-+		if (!ret)
-+			fpc->suspended_enabled &= ~BIT(pwm->hwpwm);
-+		return ret;
-+	}
-+
- 	/*
- 	 * oldstate to newstate : action
- 	 *
-@@ -476,9 +495,13 @@ static int fsl_pwm_suspend(struct device *dev)
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
- 	int i;
- 
-+	if (fpc->suspended)
-+		return 0;
-+
- 	regcache_cache_only(fpc->regmap, true);
- 	regcache_mark_dirty(fpc->regmap);
- 
-+	fpc->suspended_enabled = 0;
- 	for (i = 0; i < chip->npwm; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
- 
-@@ -490,10 +513,13 @@ static int fsl_pwm_suspend(struct device *dev)
- 		if (!pwm_is_enabled(pwm))
- 			continue;
- 
-+		fpc->suspended_enabled |= BIT(i);
- 		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
- 		clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
- 	}
- 
-+	fpc->suspended = true;
-+
- 	return 0;
- }
- 
-@@ -501,28 +527,67 @@ static int fsl_pwm_resume(struct device *dev)
- {
- 	struct pwm_chip *chip = dev_get_drvdata(dev);
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
--	int i;
-+	int i, ret;
-+
-+	if (!fpc->suspended)
-+		return 0;
- 
- 	for (i = 0; i < chip->npwm; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
-+		bool requested = test_bit(PWMF_REQUESTED, &pwm->flags);
- 
--		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
--			continue;
+diff --git a/Documentation/devicetree/bindings/mfd/lp3943.txt b/Documentation/devicetree/bindings/mfd/lp3943.txt
+deleted file mode 100644
+index ca5324ed0df4..000000000000
+--- a/Documentation/devicetree/bindings/mfd/lp3943.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-TI/National Semiconductor LP3943 MFD driver
 -
--		clk_prepare_enable(fpc->ipg_clk);
-+		if (requested) {
-+			ret = clk_prepare_enable(fpc->ipg_clk);
-+			if (ret)
-+				goto unwind;
-+		}
- 
--		if (!pwm_is_enabled(pwm))
-+		if (!(fpc->suspended_enabled & BIT(i)))
- 			continue;
- 
--		clk_prepare_enable(fpc->clk[fpc->period.clk_select]);
--		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+		ret = clk_prepare_enable(fpc->clk[fpc->period.clk_select]);
-+		if (ret) {
-+			if (requested)
-+				clk_disable_unprepare(fpc->ipg_clk);
-+			goto unwind;
-+		}
+-Required properties:
+-  - compatible: "ti,lp3943"
+-  - reg: I2C slave address. From 0x60 to 0x67.
+-
+-LP3943 consists of two sub-devices, lp3943-gpio and lp3943-pwm.
+-
+-For the LP3943 GPIO properties please refer to:
+-Documentation/devicetree/bindings/gpio/trivial-gpio.yaml
+-
+-For the LP3943 PWM properties please refer to:
+-Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
+-
+-Example:
+-
+-lp3943@60 {
+-	compatible = "ti,lp3943";
+-	reg = <0x60>;
+-
+-	gpioex: gpio {
+-		compatible = "ti,lp3943-gpio";
+-		gpio-controller;
+-		#gpio-cells = <2>;
+-	};
+-
+-	pwm3943: pwm {
+-		compatible = "ti,lp3943-pwm";
+-		#pwm-cells = <2>;
+-		ti,pwm0 = <8 9 10>;
+-		ti,pwm1 = <15>;
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/mfd/ti,lp3943.yaml b/Documentation/devicetree/bindings/mfd/ti,lp3943.yaml
+new file mode 100644
+index 000000000000..4bee4f4c3aaf
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/ti,lp3943.yaml
+@@ -0,0 +1,64 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/ti,lp3943.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+		ret = clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+		if (ret) {
-+			clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
-+			if (requested)
-+				clk_disable_unprepare(fpc->ipg_clk);
-+			goto unwind;
-+		}
- 	}
- 
- 	/* restore all registers from cache */
- 	regcache_cache_only(fpc->regmap, false);
--	regcache_sync(fpc->regmap);
-+	ret = regcache_sync(fpc->regmap);
-+	if (ret) {
-+		regcache_cache_only(fpc->regmap, true);
-+		regcache_mark_dirty(fpc->regmap);
-+		goto unwind;
-+	}
++title: TI/National Semiconductor LP3943 MFD driver
 +
-+	fpc->suspended = false;
-+	fpc->suspended_enabled = 0;
- 
- 	return 0;
++maintainers:
++  - Quchaosheng <quchaosheng000406@163.com>
 +
-+unwind:
-+	while (i--) {
-+		struct pwm_device *pwm = &chip->pwms[i];
++description:
++  LP3943 is an integrated device capable of driving LEDs. It contains two
++  sub-devices, lp3943-gpio and lp3943-pwm, which are instantiated by the MFD
++  core from the child nodes described below.
 +
-+		if (fpc->suspended_enabled & BIT(i)) {
-+			clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+			clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
-+		}
-+		if (test_bit(PWMF_REQUESTED, &pwm->flags))
-+			clk_disable_unprepare(fpc->ipg_clk);
-+	}
++properties:
++  compatible:
++    const: ti,lp3943
 +
-+	return ret;
- }
- #endif
- 
-
-base-commit: f0100363d8c374bd8e9ea7c9ba02744f0b802ca4
++  reg:
++    maxItems: 1
++    description: I2C slave address, from 0x60 to 0x67
++
++patternProperties:
++  "^gpio":
++    type: object
++    $ref: /schemas/gpio/trivial-gpio.yaml#
++
++  "^pwm":
++    type: object
++    $ref: /schemas/pwm/pwm-lp3943.yaml#
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        lp3943: gpio@60 {
++            compatible = "ti,lp3943";
++            reg = <0x60>;
++
++            gpio {
++                compatible = "ti,lp3943-gpio";
++                gpio-controller;
++                #gpio-cells = <2>;
++            };
++
++            pwm {
++                compatible = "ti,lp3943-pwm";
++                #pwm-cells = <2>;
++                ti,pwm0 = <8 9 10>;
++                ti,pwm1 = <15>;
++            };
++        };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt b/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
+deleted file mode 100644
+index f214305a8f5e..000000000000
+--- a/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
++++ /dev/null
+@@ -1,58 +0,0 @@
+-TI/National Semiconductor LP3943 PWM controller
+-
+-Required properties:
+-  - compatible: "ti,lp3943-pwm"
+-  - #pwm-cells: Should be 2. See pwm.yaml in this directory for a
+-                description of the cells format.
+-                Note that this hardware limits the period length to the
+-                range 6250~1600000.
+-  - ti,pwm0 or ti,pwm1: Output pin number(s) for PWM channel 0 or 1.
+-    0 = output 0
+-    1 = output 1
+-    .
+-    .
+-    15 = output 15
+-
+-Example:
+-PWM 0 is for RGB LED brightness control
+-PWM 1 is for brightness control of LP8557 backlight device
+-
+-&i2c3 {
+-	lp3943@60 {
+-		compatible = "ti,lp3943";
+-		reg = <0x60>;
+-
+-		/*
+-		 * PWM 0 : output 8, 9 and 10
+-		 * PWM 1 : output 15
+-		 */
+-		pwm3943: pwm {
+-			compatible = "ti,lp3943-pwm";
+-			#pwm-cells = <2>;
+-			ti,pwm0 = <8 9 10>;
+-			ti,pwm1 = <15>;
+-		};
+-	};
+-
+-};
+-
+-/* LEDs control with PWM 0 of LP3943 */
+-pwmleds {
+-	compatible = "pwm-leds";
+-	rgb {
+-		label = "indi::rgb";
+-		pwms = <&pwm3943 0 10000>;
+-		max-brightness = <255>;
+-	};
+-};
+-
+-&i2c4 {
+-	/* Backlight control with PWM 1 of LP3943 */
+-	backlight@2c {
+-		compatible = "ti,lp8557";
+-		reg = <0x2c>;
+-
+-		pwms = <&pwm3943 1 10000>;
+-		pwm-names = "lp8557";
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-lp3943.yaml b/Documentation/devicetree/bindings/pwm/pwm-lp3943.yaml
+new file mode 100644
+index 000000000000..8c91db9756a0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pwm-lp3943.yaml
+@@ -0,0 +1,80 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/pwm-lp3943.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TI/National Semiconductor LP3943 PWM controller
++
++maintainers:
++  - Quchaosheng <quchaosheng000406@163.com>
++
++description:
++  LP3943 has two internal PWM channels. Each channel can be routed to one or
++  more of the 16 outputs of the device.
++
++  Note that the hardware limits the period length to the range 6250~1600000.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    const: ti,lp3943-pwm
++
++  "#pwm-cells":
++    const: 2
++
++  ti,pwm0:
++    description: Output pin number(s) for PWM channel 0.
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    minItems: 1
++    maxItems: 16
++    items:
++      minimum: 0
++      maximum: 15
++
++  ti,pwm1:
++    description: Output pin number(s) for PWM channel 1.
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    minItems: 1
++    maxItems: 16
++    items:
++      minimum: 0
++      maximum: 15
++
++anyOf:
++  - required:
++      - ti,pwm0
++  - required:
++      - ti,pwm1
++
++required:
++  - compatible
++  - "#pwm-cells"
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        gpio@60 {
++            compatible = "ti,lp3943";
++            reg = <0x60>;
++
++            /*
++             * PWM 0 : output 8, 9 and 10
++             * PWM 1 : output 15
++             */
++            pwm {
++                compatible = "ti,lp3943-pwm";
++                #pwm-cells = <2>;
++                ti,pwm0 = <8 9 10>;
++                ti,pwm1 = <15>;
++            };
++        };
++    };
++...
 -- 
-2.50.1 (Apple Git-155)
+2.43.0
 
