@@ -1,322 +1,292 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11020079.outbound.protection.outlook.com [52.101.193.79])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr2-f33.google.com (mail-wr2-f33.google.com [74.125.225.97])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB1D1443C0B;
-	Wed, 23 Sep 2026 10:28:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.79
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790159318; cv=fail; b=XHcwcsG1mGzl04kxfHija8YaUtz65mpWQZMRp6R6TAEnTRRnkf/ZHxmX9IZ9STHiEEwGGxnJB2oSGJ/I1pETmxg5pgAFtNoPhMlRpVIV/vMm4h2ez3IcjCpBSO7FKLtmVs10WSbPRItUKX7L1fi9TpJPzaDp2oFu+J89b4RNx38=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790159318; c=relaxed/simple;
-	bh=k3Ru7neACwEMVX9RNR17OU/Q1VU/6X16/sjGy391XUE=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=fRBWTiZtChNsQRkpLiDy3iwhO8gCLeeveET8hH327a911zqy3DEOwfe3wn9V6IkM5Fb10TBgl2TD9OsCqGGLnkEjXMdUPmloBaYufzJoWVrQyI38ift1mPVz43dmkSHU92Llh2E7BXu61z8TRA+z0lSmm34t80HtQdjxAnnJn7o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=tZeMi3rL; arc=fail smtp.client-ip=52.101.193.79
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8F32521218
+	for <linux-pwm@vger.kernel.org>; Wed, 23 Sep 2026 12:48:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.97
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790167698; cv=none; b=IdkjEEpDfOADaWeX2qN1yOfiHqC1Ip3gLVm/njt4rVZZAAYUueuzzG1x8qMIJVwB1T71AQtH42T+sPrFHCTjSuqhSsjT+AlBZjPhGnRRKuqKWHDmp5IpvnciUpzG42rgobxZZIu0qLKRdXIzDYbRK/IstQ8xMiIDc9RS4f9Nlh0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790167698; c=relaxed/simple;
+	bh=jPNtavFMI4q+FGbI7qJEzIBWSIDqEWdTuyso7m6gikQ=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RMYluJRPKCYb5aKlRj3ryeXY0/vIgMtHnQfohknoP/a6m8keLuVlK/xEMr/BQiwsHui52s1lHMIUbbeLPOH8Bki7pAoBhfgJ+L9zh4uj8LhF/xstIFMU0w2BJNSWRaXVzy8L/jWvyDawkoneTb+hYR5oiNhMPFdf2JxuuE2h43A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=aP/REoU+; arc=none smtp.client-ip=74.125.225.97
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="tZeMi3rL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FOkydPepSueWC1RRLZcPRbJJJlathkdv0ZV+C8LFM/89RvT2bs4EnBKCBA5FwMnUKhhSZsGbQuPeycwSNAZjuMllHeIbKj5EgEYnwL6sfh6x9ZFxwJVRMcqwdYobzMUyKLO+CpbxxIsMIfWBThzy0XEYzMZMKjw499xxfYu61Zxi4AH3GNTCeyExHbhCC9NexqmQ7dfubgru0p0y48zhG+feDBOPtr0vTLLtN66V7UrIuvhf/49O6uAHIKglgOZNKmGZcTA9Na0ODVFiX4L8/Rq6iHGttixcgp6YwZGGMkwQeS0wvNlLMH04rOImk+20AkKVaJmwAJlIaxQpDwXITA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9e+pJHWWRnwxr71jaRDXKYTgvd1Bl4KjdqSDq+VXTD0=;
- b=KGSdRzAptsEAwuntFkJwIOklIL4QmScf1sC7rQe287sEP3C+2OKo9BPbUOdGo0f5IYxXpnT3ALQ2nwinFc6C3NCkq+Q051BAtCY5L8NitF2GMu1xQ5ZKJZ2Q+0BT7B1rBtrxdmeewgHX6JUX0oWaEudHcnOpDRqlKcsGuxorXXhEuqtpZ38JSohkXtOG4tSVjfOI81Nqi/EabrokOgN23K0BfTAQOnkebu5JduAM5tHQU+hs6n35gKE1RCNKw2jOxEvcp7drvRRnQPd93TSIrdUAqZ076lUkyeDTYUrYHUIHZ/8PoqTnNcUHTO7c7qwr264Nfuqnnllg8rpT2bePvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=axiado.com; dmarc=pass action=none header.from=axiado.com;
- dkim=pass header.d=axiado.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9e+pJHWWRnwxr71jaRDXKYTgvd1Bl4KjdqSDq+VXTD0=;
- b=tZeMi3rLmtdbBBWXUBaZQ++8MK788ZnmDs83RW/FHWU5erB2wjaj7zQX3N+RyA1h7dwYLD+js4jkXWdIkxYK6YSBTFCQNrQdBUxillCTSlawLcxmTpgW8gUGWYK1Zj6qbxEYU6Fi6LBmd27seD4LHonrh5qEQVFbBCQKnnGWJ9aZLMLn7XycYhCPc8Ihos3jJgWRo5FFYhsOFqc8VpwjXd0+1Laywxn7drPihYnqmgS+BAV84/yqhUPl7OsdGLykEWFVL/c7pQ0wR+F8+1hMmW4ntE3cnnPSb8PNwFASBf8s1PU7OsLicWgkP6JLLWShMRds0guvW3ga1wiRa0dmwA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=axiado.com;
-Received: from DM4PR18MB4144.namprd18.prod.outlook.com (2603:10b6:5:38b::8) by
- DM6PR18MB3524.namprd18.prod.outlook.com (2603:10b6:5:2a4::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.428.13; Wed, 23 Sep 2026 10:28:17 +0000
-Received: from DM4PR18MB4144.namprd18.prod.outlook.com
- ([fe80::cb97:ca8a:e55a:b11]) by DM4PR18MB4144.namprd18.prod.outlook.com
- ([fe80::cb97:ca8a:e55a:b11%6]) with mapi id 15.21.0451.014; Wed, 23 Sep 2026
- 10:28:16 +0000
-Message-ID: <69456648-cd41-4cf7-9df4-02237ec05953@axiado.com>
-Date: Wed, 23 Sep 2026 12:28:11 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 2/2] pwm: add Axiado AX3000 PWM driver
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: Akhila Kavi <akavi@axiado.com>, Prasad Bolisetty <pbolisetty@axiado.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
- linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- openbmc@lists.ozlabs.org
-References: <20260921-axiado-ax3000-pwm-v5-0-202aad28e129@axiado.com>
- <20260921-axiado-ax3000-pwm-v5-2-202aad28e129@axiado.com>
- <arFAy5wMZ2Rl7ubj@monoceros>
-Content-Language: en-GB
-From: Petar Stepanovic <pstepanovic@axiado.com>
-In-Reply-To: <arFAy5wMZ2Rl7ubj@monoceros>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR2P281CA0010.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::20) To DM4PR18MB4144.namprd18.prod.outlook.com
- (2603:10b6:5:38b::8)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="aP/REoU+"
+Received: by mail-wr2-f33.google.com with SMTP id ffacd0b85a97d-482f6351831so585961f8f.1
+        for <linux-pwm@vger.kernel.org>; Wed, 23 Sep 2026 05:48:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1790167695; x=1790772495; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ODeygWUoyfZFfVTkmoKD2nbDJdrzVQ9HvoPK8jlMnfI=;
+        b=aP/REoU+pbqj1Po5qdX43wyIII9rzCDorXWUCTz76wM00v/+d4SF+b/0wGeQ0eCilK
+         nrha7jo9IyTIKp3AF6E6B5WWr7N5fl/cv0YSO5gc7mYxKFy69fEQ4DDKgIxqMeIuPG9w
+         c3OW9bRhoPy6Tf2YJxdJUtXQafgNCY7rNIcySc0Pg9jhjkSg+xi1r1cbJbUHGglASqy4
+         8Og31XH4nEiLViQC4EUxaS9IblninMKhZ6bRdjtpiDmi8wfaBBY56N12cfmIQyvUqJJF
+         hCzKOjCjaiLl3gRsv25koO+lgPSrxD2YvUE86I6EaR3W0iZ+JetEKx79xLTALou8mGCf
+         1Xsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790167695; x=1790772495;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ODeygWUoyfZFfVTkmoKD2nbDJdrzVQ9HvoPK8jlMnfI=;
+        b=oER8xV8hhgqEo3XjBUZ2KIo/UDmrSWXnhpD2bk+kUTPGNui4ebwk1iqStHQVRDARWx
+         yThECOdXizryF4XWwVrRwj7SIeJ1L2rVSlAKCEBDWpMTzZX0c9ay2Z9JgCxCh+5MT6s1
+         Jn9YewiDVF/JRxCK33pplvvjXyYHTS6qjiNOTsgmMh+TD24j3rDy4cI9SjTSIlinYr3c
+         sDhBIzA1RXDFje00VVaWyI49h6iXZU7vSMzV912Isgf2lW+cdW06qKZ6/nqnFQiurypp
+         zuBl3ko7WnOYlUbr4ETeoe3h/3bJHRrVZeisb0wW+uoZRKgQMgYjEcyI7hIEPu/tMhs5
+         IOKA==
+X-Forwarded-Encrypted: i=1; AKwUvBxrXi2lO3MhdsQyQJHdSj1AAsawwBcsl6neY/MY0KYTXWwDzauI3dsvJ974UPgWPSqauXR0omphPe0=@vger.kernel.org
+X-Gm-Message-State: AFuF++mrNssZfIDdJaO0k1uK5WEuglj/9xgx9i6iC83LSGMuyea23Htc
+	i3j4G5GRVw1QWe6EJvtWM4qTRkxQc1ZlCK07BtcwcuEs2xQVv1NDVm5JCVLlxo2JMcA=
+X-Gm-Gg: AYBFou0FcKPfKTEOqve6yVu3/5SaI1LW9taum6oaL34zKbcy0UfqRc05bPOR49KCZGn
+	WuQlxlEaRHJOXO2l81wdiLjcrTXufyVvkdITGJ78VpeXtd5hh+Xw8avshRWPUmF3HqdOMFsuOfk
+	n/JPjDB0SVt6g80qFLp+TWeLuNV2D63/J8GBFLDdEfHStLRSs8X/IGzx5PbkxjJ3GLMxGYZP3Ki
+	IzPVQyPHkwiv7h36xVlJyb3IrH/I8uA0MBrtED9rt7R+bn/34kugDEFbJttU9xD8eE3iOnidc+b
+	mex6k3fAnNCI53hp1r2xTQ6zihYm9NdzVCn4ZNIOhz0zzV1rspPMAh8pWWkRwtfMpfrWShmINzI
+	xjt7RqEXh39laNODNBXyzv9eullz3Nlq8UsWr05Igkw6zIqqRG8nqHlIZ/WGfpo+jttVqiN99Vm
+	WdohV1NvIMxldh++3MgnQ3FgjIGDs0T3+Ixh1t/kubHj73d9bKrutNbtwWaq/A41XKpx8g2w==
+X-Received: by 2002:a05:6000:240d:b0:484:39b4:5bc9 with SMTP id ffacd0b85a97d-48867093ba7mr4171210f8f.26.1790167694853;
+        Wed, 23 Sep 2026 05:48:14 -0700 (PDT)
+Received: from localhost ([195.94.147.179])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4886876c267sm6932595f8f.16.2026.09.23.05.48.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Sep 2026 05:48:14 -0700 (PDT)
+From: Andrea della Porta <andrea.porta@suse.com>
+X-Google-Original-From: Andrea della Porta <aporta@suse.de>
+Date: Wed, 23 Sep 2026 14:51:55 +0200
+To: Gary Guo <gary@garyguo.net>
+Cc: Andrea della Porta <andrea.porta@suse.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Naushir Patuck <naush@raspberrypi.com>,
+	Stanimir Varbanov <svarbanov@suse.de>, mbrugger@suse.com,
+	Sean Young <sean@mess.org>, Julian Braha <julianbraha@gmail.com>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH v9 2/3] pwm: rp1: Add RP1 PWM controller driver
+Message-ID: <arPLa_g4mAg1t2rq@apocalypse>
+References: <cover.1789724999.git.andrea.porta@suse.com>
+ <22f454003902173a7230d0aee5fbd7261fcc163e.1789724999.git.andrea.porta@suse.com>
+ <DLM3VDAEVVEO.1STV7HI3M3YXK@garyguo.net>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR18MB4144:EE_|DM6PR18MB3524:EE_
-X-MS-Office365-Filtering-Correlation-Id: 69e48267-4ec4-421d-71c2-08df195d6168
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|376014|366016|10067099003|4143699003|3023799007|56012099006|6133799003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	6eUFuDdVTr+lTa8bb/BGDQ6PjVQyg9uS8dmTlLzr7BZN7Y93wDX5ldmIxENq83ctfkgc1xP1l3Ne9QYUGiMNfTz/fQMiFOBSGeevSAfMRBYOmizdF2YuD9XhYv+Fp6I7RpdvEe4wrm2WEHzVYg5xbf8+/MNUwaS7r4xL1qkskKluYYZNtFc+X9f0C6m1S5K7SiR18/n9HpreQ4gR35PqP9OzPZppwPZIX8/Xc5KvSKwHzH+w1E2ylk9xVSk13kIAbCr2TRhGEUMAO75B1jOWOwmwICD6mJwja8UfqJjv/odO7MlB6AFQy38H/7Y9pYvl7y+K7hn2mK/uidjy88FpKxWmjoQpl2txuyKEGjbVUksOwHLhEyfSfEoYIgfxTAXvwqMwFbp+wSZRsC6Ugef4V09T+XeKNgjBm7h1yxfmU7JURBD3ww6xTu23Av1MGjspEXTQ4uVzgI0ZQ5oKq+yww6p+6GjVXiA0jA2h6ezV5xdJN2D17ZXlWRTQIakNRCX3P127sSj00vFKA5xxwGf8JLbwKszxqwqWXoZobEiuUJIwoi6DHnr41gwa+SZrYzJ3/j5L5nWDtmuij2wcG/tCurMKpH0IM3eRhqia93Kki6hC4pFHJu0O9DdPkO2d8aSDYZEe/oNKC7BSbLfTm6AP3OggfhTsqcIEOTbRQltgM8Q=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR18MB4144.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(366016)(10067099003)(4143699003)(3023799007)(56012099006)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VzEyT3JaVUsyc0dudk8yTklXTG9vRUxvdDZmVlVPRlJCYkRuemcvLzMrVkVN?=
- =?utf-8?B?RE9Fd2o1MmREQWJXYmhpakZwcGxpZFlVYWZaWDFHQnllU0RnREoxWEdjWUE3?=
- =?utf-8?B?cUdNRkFDTlJoa2o3d2hSS0YwalVRSDZCMXdNaTdXeklyR25lNFZDVEEwVmtl?=
- =?utf-8?B?MU84Q0thWEZLZ3M0aG5ibHlwR04wUTZIZkpweG45cCtaSGtPSEdVMU5zTHA3?=
- =?utf-8?B?dzFpSHJ2YW9RZDlCRjZEditDRVY5N0h4MTcrOTJaeFpLUHVCbjd1WllKRlR2?=
- =?utf-8?B?Uk1OOVFtVkl4RkJ3Nkxoai9OVFVuMy9tcW0yUXhBOFpzM09Vc1pUemFUeDBH?=
- =?utf-8?B?STlkSE85eGFEVFlBeGhuOVY3MEpvaEhJeXFTdjBxZVlSQzExQ1RYVEpGbkNx?=
- =?utf-8?B?SG9TZlNHb0dDN2sySWptYlBtdFJKeTl4YmJBSmZ5dlUxMEhTM2RpSjY2a0VH?=
- =?utf-8?B?OTlNWEFZanZNL3R0KzRRWHgwUzZMdCtvMWZjR0VPbks3eGRsODI5c3BQdnkw?=
- =?utf-8?B?QmdPejZxZ1RIWXNXanYrWFJVNnozQ1BVeERlTG1uWk92MElyQ05HemVHVmxE?=
- =?utf-8?B?UFVvN3F2ZzJ4cjg4a3A5YUdaOGEwY3d4TVAxWmZVTlV6eTFiRTNwKzhTb0h6?=
- =?utf-8?B?WHF2aEF1anIyZXl3d0tWakhHdWRGbk1yQVhmNHd2ZlBaSEhDaXpidjBnd2lV?=
- =?utf-8?B?MVRGbEtnTk1pSXYyYVRweFlKVzNtUGplMElrUHNzaFhNUlFKbUpHS214cExD?=
- =?utf-8?B?bmM5cHUzV2lGNGtmajcwdGxreEhOWHFvSUV4QTlJbWpsSTJrZnBobFV5OUIy?=
- =?utf-8?B?QVF5a0FuSkFCR2wvUXdIUGV2eVlVK3NFTVhKTUxIU1FSN2UxZFJHNVkrSEhE?=
- =?utf-8?B?cno1OGlNWmFEdFR2Z2d0OWRFRVh1aHIwalZGcldJWmhxdlcxYXVoNEZjQ08y?=
- =?utf-8?B?MzBxaXl0dkpVaGtyNDgxMjZjOEZCTzFiR1BndzNYSHVqek5hMVZOTTJQRHIw?=
- =?utf-8?B?Nzc1dWxwbk9sWjhRam01bGVrNE91Mjg4Ynk5TmdPWVI4bHpSSU4zSVRTcnNu?=
- =?utf-8?B?RWRqMkEvckJxQWFyQTYrUnMzVExVZXExanNBNDlnN0FaUWlLQi9UT1pOc2Zm?=
- =?utf-8?B?SElhSDFtYWN2VnVTNDdjdEpMdnllWStQVCswaEpZTWUxQy9YbHRWbEJ6dHFM?=
- =?utf-8?B?bzFCUGp0OGFoNk1sb2Y0ZzA0RHR0bURXeE1oL2NueS83WGV2c0tiaDAwaGRs?=
- =?utf-8?B?MlQ5SkQvQ0ZJQWY5NFN3TUlDb3U2WjBCcHdIbWtiaDBvY1lQMDZXSFVpTU1k?=
- =?utf-8?B?Q2F5NFR2U1Y5QmNwK1U5Tm1OMkFzcHU3aFN1WVNNbW1PUGRpUG0vSzgySDBq?=
- =?utf-8?B?cVVOcHJEZGZyYnd3VjdPS0pIaG5zV05BVk9aUHErTFRjaU5qYVJqUkFOa0Rw?=
- =?utf-8?B?UFRiR2N0WlowdnlRL2NRb0QxQ3NUc2NON1QxMDgyL1ppNjZtSlZpZzBud3Fh?=
- =?utf-8?B?VUZpQ2JVRGxEbS8vNVVKR1c5TDYzQnlkUHR3RUpZOGpqL2t2ZU8xK05JSlJC?=
- =?utf-8?B?bCtZdGNrWkh6bk1HbExmTHpXUTFsUlVXRkhKZXRaQlpMN0Q1K3BMMUNDZjhw?=
- =?utf-8?B?N0grZGE4ckp6S0RGYTIvc2wzd21vb3M4MXNFdTlTUFQ0czhEMUV3WlU3czUw?=
- =?utf-8?B?SE5yTThyM0ppb2hWeUlaK1NGRFpGMGhkZXdycnVhWDhJYmYrVy91c1lFMXBk?=
- =?utf-8?B?T2xxRmVLUDFhVWYwV3ZHTDFzTCtKZmRvMU1nTUROWXVyd0tkTVRIaCtYWDNS?=
- =?utf-8?B?SDF5OTNFK1luMmR1dzlEc2ZXejYyOFRndkxFSXptMm9xS1Z2OVpVVXFTdzNl?=
- =?utf-8?B?TjJWLzQ3RkJ3YnlMaGZJNEFMZVVZa1NtQm4rcWZSK1U2NnlZdUQ0SUdJMXEv?=
- =?utf-8?B?RDJkVng1dWRUTDg5K2dDRjB6b0NpNHlLZG1RejJpRDlyOXlPN3VmUVEyOE9p?=
- =?utf-8?B?Tjc1c0lnZFRmdWVjZVdieG4zV1FkNnBUOERpbXBnMzVzb0k0RVFPU21YaDdS?=
- =?utf-8?B?WnJxOW5ZeUNoQzRtYnpBcEZYdEJ1Nkc2SlhaTVZKbW1KSWRwSCtPT2prYTVQ?=
- =?utf-8?B?alhLNHFOTWJ6NlZXemJQWnorNnRjWWt0WnNQaXJjUVlIZXA3cVY5L1FXbFpo?=
- =?utf-8?B?c01aVE91RUI4WkdhWDB1UFZtb2pXcnk4MTdVTUlJNGQxSktkN05jWmlzYm1S?=
- =?utf-8?B?cElSNHI4MzR2QitSeTlXcmpadmVUS05oNFdEL3kzTndRSUVLSUwvUHpHOTIy?=
- =?utf-8?B?dWlYeFJsM240WmM0WiswSFdYdEZ5eVhEU016SU0zWEY2NUhNdkhBZz09?=
-X-OriginatorOrg: axiado.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69e48267-4ec4-421d-71c2-08df195d6168
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR18MB4144.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2026 10:28:16.8409
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: ff2db17c-4338-408e-9036-2dee8e3e17d7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9U5vEtMB5yMhewfmWedATTtOvBTgpDNBAYEUWm4z0zKHDnmwtw3EoczLZ9GbARuI/580Tsjc0h91ZsM33Dqkdw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB3524
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DLM3VDAEVVEO.1STV7HI3M3YXK@garyguo.net>
 
+Hi Gary,
+thanks for your feedback!
 
-On 9/21/2026 4:48 PM, Uwe Kleine-König wrote:
-> On Mon, Sep 21, 2026 at 12:21:31AM -0700, Petar Stepanovic wrote:
->> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
->> index 0dc0d2b69025..4466a29e780a 100644
->> --- a/drivers/pwm/Makefile
->> +++ b/drivers/pwm/Makefile
->> @@ -8,6 +8,7 @@ obj-$(CONFIG_PWM_ARGON_FAN_HAT)	+= pwm-argon-fan-hat.o
->>  obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
->>  obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
->>  obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
->> +obj-$(CONFIG_PWM_AXIADO)	+= pwm-axiado.o
->>  obj-$(CONFIG_PWM_AXI_PWMGEN)	+= pwm-axi-pwmgen.o
->>  obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
->>  obj-$(CONFIG_PWM_BCM_IPROC)	+= pwm-bcm-iproc.o
->> diff --git a/drivers/pwm/pwm-axiado.c b/drivers/pwm/pwm-axiado.c
->> new file mode 100644
->> index 000000000000..781053e255f0
->> --- /dev/null
->> +++ b/drivers/pwm/pwm-axiado.c
->> @@ -0,0 +1,277 @@
->> +// SPDX-License-Identifier: GPL-2.0-or-later
->> +/*
->> + * SPDX-FileCopyrightText: 2021-2026 Axiado Corporation.
->> + */
->> +
-> Is there a public reference manual for that hardware? If so, adding a
-> link here would be awesome.
+On 20:51 Tue 22 Sep     , Gary Guo wrote:
+> On Fri Sep 18, 2026 at 10:59 AM BST, Andrea della Porta wrote:
+> > From: Naushir Patuck <naush@raspberrypi.com>
+> >
+> > The Raspberry Pi RP1 southbridge features an embedded PWM
+> > controller with 4 output channels, alongside an RPM interface
+> > to read the fan speed on the Raspberry Pi 5.
+> >
+> > Add the supporting driver.
+> >
+> > Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+> > Co-developed-by: Stanimir Varbanov <svarbanov@suse.de>
+> > Signed-off-by: Stanimir Varbanov <svarbanov@suse.de>
+> > Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
+> 
+> Put yourself a Co-developed-by perhaps? You made significant changes.
 
-Unfortunately, there is currently no publicly available reference manual for this hardware.
+Ack.
 
+> 
+> I've tested the device on my Pi 5, and the fan is indeed spinning now :)
+
+Nice! Thanks for testing it :)
+
+> 
+> > ---
+> >  drivers/pwm/Kconfig                       |   8 +
+> >  drivers/pwm/Makefile                      |   1 +
+> >  drivers/pwm/pwm-rp1.c                     | 499 ++++++++++++++++++++++
+> >  include/soc/bcm2835/raspberrypi-pwm-rp1.h |  10 +
+> >  4 files changed, 518 insertions(+)
+> >  create mode 100644 drivers/pwm/pwm-rp1.c
+> >  create mode 100644 include/soc/bcm2835/raspberrypi-pwm-rp1.h
+> >
+> > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> > index 7297760868790..e1baec8d294d1 100644
+> > --- a/drivers/pwm/Kconfig
+> > +++ b/drivers/pwm/Kconfig
+> > @@ -637,6 +637,14 @@ config PWM_ROCKCHIP
+> >  	  Generic PWM framework driver for the PWM controller found on
+> >  	  Rockchip SoCs.
+> >  
+> > +config PWM_RASPBERRYPI_RP1
+> > +	tristate "RP1 PWM support"
+> > +	depends on MISC_RP1 || COMPILE_TEST
+> > +	depends on HAS_IOMEM
+> > +	select REGMAP_MMIO
+> > +	help
+> > +	  PWM framework driver for Raspberry Pi RP1 controller.
+> > +
+> >  config PWM_SAMSUNG
+> >  	tristate "Samsung PWM support"
+> >  	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
+> > diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> > index 5630a521a7cff..c07fd24f69f39 100644
+> > --- a/drivers/pwm/Makefile
+> > +++ b/drivers/pwm/Makefile
+> > @@ -57,6 +57,7 @@ obj-$(CONFIG_PWM_RENESAS_RZG2L_GPT)	+= pwm-rzg2l-gpt.o
+> >  obj-$(CONFIG_PWM_RENESAS_RZ_MTU3)	+= pwm-rz-mtu3.o
+> >  obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
+> >  obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
+> > +obj-$(CONFIG_PWM_RASPBERRYPI_RP1)	+= pwm-rp1.o
+> >  obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
+> >  obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
+> >  obj-$(CONFIG_PWM_SL28CPLD)	+= pwm-sl28cpld.o
+> > diff --git a/drivers/pwm/pwm-rp1.c b/drivers/pwm/pwm-rp1.c
+> > new file mode 100644
+> > index 0000000000000..cfd38e46cc589
+> > --- /dev/null
+> > +++ b/drivers/pwm/pwm-rp1.c
+> > +
+> > +int rp1_pwm_read_tachometer(struct device *dev)
+> > +{
+> > +	struct pwm_chip *chip;
+> > +	struct rp1_pwm *rp1;
+> > +	u32 tach_val;
+> > +	int ret;
+> > +
+> > +	if (!dev)
+> > +		return -EINVAL;
+> > +
+> > +	device_lock(dev);
+> 
+> You should use the device link mechanism for synchronizing unbind / runtime PM.
+> That can be done in your RP1 fan driver, and it doesn't need locking on this
+> driver.
+
+This does not enforce the locking though. Is it enough to just rely on
+caller to create the device link in advance? IOW, just add a documentation
+comment to the exported function prologue stating that the consumer is
+responsible to sync via a device link is acceptable?
+Otherwise the only way I see to protect it in any scenario is via the mutex
+I've already implemented and a second flag for the removing path (device_lock
+will be dropped, of course).
+
+> 
+> So Sashiko is kinda reporting a false positive here.
+> 
+> > +
+> > +	chip = dev_get_drvdata(dev);
+> > +	if (!chip) {
+> > +		ret = -ENODEV;
+> > +		goto err_dev_unlock;
+> > +	}
+> > +
+> > +	rp1 = pwmchip_get_drvdata(chip);
+> > +	if (!rp1) {
+> > +		ret = -ENODEV;
+> > +		goto err_dev_unlock;
+> > +	}
+> > +
+> > +	mutex_lock(&rp1->lock);
+> > +	if (!rp1->clk_enabled) {
+> > +		ret = -EBUSY;
+> > +		goto err_clk_unlock;
+> > +	}
+> > +
+> > +	ret = regmap_read(rp1->regmap, RP1_PWM_PHASE(2), &tach_val);
+> > +	if (ret)
+> > +		goto err_clk_unlock;
+> > +
+> > +	ret = (int)tach_val;
+> > +
+> > +err_clk_unlock:
+> > +	mutex_unlock(&rp1->lock);
+> > +err_dev_unlock:
+> > +	device_unlock(dev);
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_NS_GPL(rp1_pwm_read_tachometer, "RP1_PWM_FAN");
+> > +
+> > +static int rp1_pwm_probe(struct platform_device *pdev)
+> > +{
+> > +	struct device *dev = &pdev->dev;
+> > +	unsigned long clk_rate;
+> > +	struct pwm_chip *chip;
+> > +	void __iomem	*base;
+> > +	struct rp1_pwm *rp1;
+> > +	int ret;
+> > +
+> > +	chip = devm_pwmchip_alloc(dev, RP1_PWM_NUM_PWMS, sizeof(*rp1));
+> > +	if (IS_ERR(chip))
+> > +		return PTR_ERR(chip);
+> > +
+> > +	rp1 = pwmchip_get_drvdata(chip);
+> > +	ret = devm_mutex_init(dev, &rp1->lock);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	base = devm_platform_ioremap_resource(pdev, 0);
+> > +	if (IS_ERR(base))
+> > +		return PTR_ERR(base);
+> > +
+> > +	rp1->regmap = devm_regmap_init_mmio(dev, base, &rp1_pwm_regmap_config);
+> > +	if (IS_ERR(rp1->regmap))
+> > +		return dev_err_probe(dev, PTR_ERR(rp1->regmap), "Cannot initialize regmap\n");
+> 
+> You mentioned "rework regmap error paths" in cover letter.
+> 
+> But the issue is that regmap doesn't need be used here at all. RP1 is on PCIe
+> so there is no need for bus abstraction, direct use of MMIO is sufficient.
+> MMIO accessors have no error paths, so you're saying yourself from having to
+> handle that, and also reduce the overhead by not having to go through an
+> abstraction w/ indirect funicton calls.
 >
->> +/*
->> + * Limitations:
->> + * - Only normal polarity is supported.
->> + * - The hardware has no shadow registers, so configuration changes take
->> + *   effect immediately without waiting for the current period to complete.
->> + * - The output is driven high while the hardware is disabled.
->> + * - Supported period range: 2 through 0xfffffffe PWM input clock cycles;
->> + *   0xffffffff is reserved by the hardware for a constant low output.
->> + *   Longer periods are clamped to the maximum.
->> + * - A 0% duty cycle is emitted using the constant low encoding because the
->> + *   hardware interprets a zero high time as a constant high output. The
->> + *   requested period is lost in that case and is reported as a single clock
->> + *   cycle.
->> + * - A 100% duty cycle is supported and emits a constant high output.
->> + */
->> [...]
->> +static int
->> +axiado_pwm_round_waveform_tohw(struct pwm_chip *chip,
->> +			       struct pwm_device *pwm,
->> +			       const struct pwm_waveform *wf,
->> +			       void *_wfhw)
->> +{
->> +	struct axiado_pwm_chip *axpwm = pwmchip_get_drvdata(chip);
->> +	struct axiado_pwm_waveform *wfhw = _wfhw;
->> +	u64 period;
->> +	u64 duty;
->> +	int ret = 0;
->> +
->> +	/* Encode a disabled request as a zeroed hardware waveform. */
->> +	if (!wf->period_length_ns) {
->> +		*wfhw = (struct axiado_pwm_waveform) { };
->> +
->> +		return 0;
->> +	}
->> +
->> +	period = mul_u64_u64_div_u64(wf->period_length_ns, axpwm->rate,
->> +				     NSEC_PER_SEC);
->> +	duty = mul_u64_u64_div_u64(wf->duty_length_ns, axpwm->rate,
->> +				   NSEC_PER_SEC);
->> +
->> +	if (!duty) {
->> +		/*
->> +		 * A zero high time makes the hardware emit a constant high
->> +		 * output, so use the constant low period encoding for a 0%
->> +		 * duty cycle. The high time must stay non-zero because it
->> +		 * takes precedence over that encoding. The requested period
->> +		 * is lost, .round_waveform_fromhw() reports a single clock
->> +		 * cycle instead.
->> +		 */
->> +		*wfhw = (struct axiado_pwm_waveform) {
->> +			.period = AXIADO_PWM_PERIOD_CONST_LOW,
->> +			.duty = AXIADO_PWM_DUTY_MIN,
->> +			.enabled = true,
->> +		};
->> +
->> +		/* That single cycle is longer than a sub-cycle request. */
->> +		return period ? 0 : 1;
->> +	}
->> +
->> +	if (period < AXIADO_PWM_PERIOD_MIN) {
->> +		period = AXIADO_PWM_PERIOD_MIN;
->> +		ret = 1;
->> +	} else if (period > AXIADO_PWM_PERIOD_MAX) {
->> +		period = AXIADO_PWM_PERIOD_MAX;
->> +	}
->> +
->> +	/*
->> +	 * Period clamping can leave the converted duty greater than the
->> +	 * final hardware period. In that case, clamp it to 100% duty.
->> +	 */
->> +	if (duty > period)
->> +		duty = period;
-> So with period in [AXIADO_PWM_PERIOD_MIN, AXIADO_PWM_PERIOD_MAX], duty =
-> period yields a constant high output? If so, why is there a special
-> encoding for const high?
+> I suppose regmap was used when syscon was there; but it's not needed anymore.
 
-Yes. With a normal period value, |duty == period| produces a constant-high
-output.
+True, and I don't have any issue in converting back to MMIO call and drop the conditional for
+error checking, but please consider the following, since the driver may be extended in the
+future to support more features:
 
-There isn't a separate constant-high encoding used by the driver. The unusual
-hardware behavior is that a zero high time also leaves the output high.
+- regmap gives you free debugfs view on the registers, which may be useful to test
+  the new features.
+- regmap_write/read may still return an error in case the passed register is not in range.
+  This will be trapped at runtime only, but could still be useful during development
+- I expect the PWM driver to be a access with very low frequency, so I guess the overhead 
+  imposed by regmap is negligible.
 
-To generate a constant-low output, the hardware provides a special encoding:
-the period register is set to |0xffffffff| while the high-time register remains
-non-zero. The driver uses that encoding for a 0% duty cycle because |duty == 0|
-would otherwise leave the output high.
+Since we already have it, I'd prefer to leave regmap if possible for the aforementioned reasons,
+but I'm obviously open to drop it in favor of direct MMIO calls in case you or anyone else are
+not seeing those as real benefits.
 
->
->> +	*wfhw = (struct axiado_pwm_waveform) {
->> +		.period = period,
->> +		.duty = duty,
->> +		.enabled = true,
->> +	};
->> +
->> +	return ret;
->> +}
->> +
->> +static int
->> +axiado_pwm_round_waveform_fromhw(struct pwm_chip *chip,
->> +				 struct pwm_device *pwm,
->> +				 const void *_wfhw,
->> +				 struct pwm_waveform *wf)
->> +{
->> +	struct axiado_pwm_chip *axpwm = pwmchip_get_drvdata(chip);
->> +	const struct axiado_pwm_waveform *wfhw = _wfhw;
->> +	u32 period = wfhw->period;
->> +	u32 duty = wfhw->duty;
->> +
->> +	if (!wfhw->enabled) {
->> +		*wf = (struct pwm_waveform) {
->> +			.period_length_ns = 0,
->> +		};
->> +
->> +		return 0;
->> +	}
->> +
->> +	/*
->> +	 * The constant low encoding doesn't hold a period. Report the
->> +	 * shortest one, the output is low for all of it either way.
->> +	 */
->> +	if (period == AXIADO_PWM_PERIOD_CONST_LOW) {
->> +		period = 1;
->> +		duty = 0;
->> +	} else if (duty > period) {
->> +		duty = period;
->> +	}
-> You don't handle wfhw->duty == 0 here. I think this is what Sashiko
-> pointed out. While .round_waveform_tohw() doens't produce this setting,
-> it would still be good to handle that in case the driver is loaded with
-> this setting applied in hardware.
+Many thanks,
+Andrea
 
-Yes, you're right. A zero high-time value results in a constant-high output, so
-|.round_waveform_fromhw()|should handle that case as well in case the hardware
-was configured before the driver was loaded.
-
-I'll update it to interpret |duty == 0|as a 100% duty cycle. I'll also check
-this before the constant-low period encoding, since a zero high time takes
-precedence over that encoding.
-
->> +	*wf = (struct pwm_waveform) {
->> +		.period_length_ns =
->> +			mul_u64_u64_div_u64_roundup(period, NSEC_PER_SEC,
->> +						    axpwm->rate),
->> +		.duty_length_ns =
->> +			mul_u64_u64_div_u64_roundup(duty, NSEC_PER_SEC,
->> +						    axpwm->rate),
->> +		.duty_offset_ns = 0,
->> +	};
->> +
->> +	return 0;
->> +}
-
-Best regards,
-Petar
-
+> 
+> Best,
+> Gary
+> 
+> > +
+> > +	rp1->clk = devm_clk_get(dev, NULL);
+> > +	if (IS_ERR(rp1->clk))
+> > +		return dev_err_probe(dev, PTR_ERR(rp1->clk), "Clock not found\n");
+> > +
+> 
