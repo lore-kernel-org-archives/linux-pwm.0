@@ -1,168 +1,182 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2400048551C;
-	Thu, 24 Sep 2026 15:15:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 025C838E12D;
+	Thu, 24 Sep 2026 16:35:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790262913; cv=none; b=GRYOLi22W5L1Y11DvXYl145w/4SQiJyV1pFYpOZuAsDlLXuJxq8kGAQs/YDYeI+O2iM9C4KROFDZFF1iHzaq4FzwW+o4nOVxgEsecdBQJ217ZPb+TbJgx4eaQNj2Hct/JUJ8sc4915hRY3dYYQ9sUdtQ/veNlhatHjbP4QV3vlA=
+	t=1790267717; cv=none; b=EdGvbcu3K4lAlpMFGv9zTTM/v20nIF+bK0Ln5srsMY8G1eh1H//YkHSI1CGG8ZkSLVeQNJ7GL8UaI+R78urG4hbBAaXcBmwb+c8D/41uT/Nrji13rE3plQFiUG+oqu910O3SAvcDupt32ntThaM65QaN6G5OfYx2btJI1qEvFak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790262913; c=relaxed/simple;
-	bh=mys8d0QyT1jeqfYTCqWxqyuhDyI86uP8AaBBHLjc8CU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=NNa2LogsFEtaDROACocw0ZqCPwmL8kYtpWSlzIEea5zlDZXs61Uq7DruE0wT7GP1KcEN/ByOoXGJaMAFmU/h0XyITRp5cXeGGLJ8RmRK5QvLotJuj8Y9eXFe7rxVtDHZN79zOSkHbHIpE4+XIWgLcEGaXmkjm5csXdr4fLPX3T8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GLcv5zNE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1790267717; c=relaxed/simple;
+	bh=uiRLL+CiEYwzXCUUI9gbvRuZN8jBA00Inc6AATY0gcw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=B0BIXU0OVEFnEfAM0FyYFJAi8EsvKklO+/1EEtmDPGwt5C6qxfOedk6967cjqMrtlSLQ3hetFfWZNs1Npq12TSWzOMiGVqsj0RUjikP6l26/JWjI2dSOXCl23s5SW6voGoSLyDT8o9lSn6I7qJMy/AHLaFFOPOZBKuMVYD9cPg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=krgJkDjS; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GLcv5zNE"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D11F9C2BCFD;
-	Thu, 24 Sep 2026 15:15:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1790262912;
-	bh=mys8d0QyT1jeqfYTCqWxqyuhDyI86uP8AaBBHLjc8CU=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=GLcv5zNEzPO2gi90jXUd2VHnrxBDTuvDNerSCbLCXaezFQ/uj+q9oTmyqN/nI2MRz
-	 ZbY1RA3914RyPqpTUI1Zx6/ux5U9M4aorEA0fanq/CRpPqCPK4x8RWqGL6kFGDFDdr
-	 4kVaCeOXl0WEp5iMG4UrZiqsoRY053tUJlKrm7fgoUGj9oi5Wvk0X/nWgpXvXLLWTA
-	 dRnb4A2aULq2wM7whNtepfsEEig/KNemcYc6ew+9eZk9slXEJLsHnK7Nx3tFjyIhA9
-	 k1yVZ+im+niSwZQ47ab9O2RxzmUkXPzUrt1JcGhq4MCN5cJjEQQSaaD0xaKPnb0LTf
-	 J++hWGiqJ1SRg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4633C9830E;
-	Thu, 24 Sep 2026 15:15:12 +0000 (UTC)
-From: Ronald Claveau via B4 Relay <devnull+linux-kernel-dev.aliel.fr@kernel.org>
-Date: Thu, 24 Sep 2026 17:14:30 +0200
-Subject: [PATCH 3/3] arm64: dts: amlogic: t7: Add core clock to PWM
- controller nodes
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="krgJkDjS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCC8D1F00893;
+	Thu, 24 Sep 2026 16:35:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790267715;
+	bh=uoAmk3wqtlAFZLLsvBCYCQm3vEyTOG8AHswxcziVCCI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=krgJkDjSbVkzY9W1gQBRw6y5foA5Kp9V4FZ62zmtf4P9B2qV+hCn2agi/dvhvyvc1
+	 RstWYFaXlmNgNSowtUS4whXUuSIo62BXJfUEUnyjKirdlkd0+1nq4iLnPDMi/BO2Md
+	 s5yVyQlfJGr8UKi+FWqsiA46ch2VAL+R1kDZ3B3xsoLSyIRsU1LkEsrYNKykrS3Hp7
+	 LqBVM40MlI04fNBqyDzsAT8jnB6E4rLzeamaBj7v7KMm6n2yYaxuWxiQDXj3vTGYCA
+	 2vhOuotbVQUDj+P6wSXsEddyx2MI93uWyKFFQLuPlNZbzSIo+/iYSv+kF4jdg8kTFr
+	 Vpva06qLTldUg==
+Date: Thu, 24 Sep 2026 17:35:10 +0100
+From: Conor Dooley <conor@kernel.org>
+To: linux-kernel-dev@aliel.fr
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Kevin Hilman <khilman@baylibre.com>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: amlogic: Add core clock for T7
+Message-ID: <20260924-reprimand-taste-3481319d9e31@spud>
+References: <20260924-add-t7-sys-pwm-clk-v1-0-05b91e87f0a9@aliel.fr>
+ <20260924-add-t7-sys-pwm-clk-v1-1-05b91e87f0a9@aliel.fr>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260924-add-t7-sys-pwm-clk-v1-3-05b91e87f0a9@aliel.fr>
-References: <20260924-add-t7-sys-pwm-clk-v1-0-05b91e87f0a9@aliel.fr>
-In-Reply-To: <20260924-add-t7-sys-pwm-clk-v1-0-05b91e87f0a9@aliel.fr>
-To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Heiner Kallweit <hkallweit1@gmail.com>, 
- Neil Armstrong <neil.armstrong@linaro.org>, 
- Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, 
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-amlogic@lists.infradead.org, 
- Ronald Claveau <linux-kernel-dev@aliel.fr>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3527;
- i=linux-kernel-dev@aliel.fr; h=from:subject:message-id;
- bh=iQJmhI6/rtcZ/olaoAWuBun4MGQh6or5yJDIWByo+Dg=;
- b=owGbwMvMwCWm1SvKXP3cUInxtFoSQ9ZWu5oJNSeOKn6LOfv3f4uUkMLnoCN/9Zo0pVNPv1+zn
- f9D2p3qjlIWBjEuBlkxRZb+uZYn3l0+eubrHvUUmDmsTCBDGLg4BWAilm8ZGe54Bpl9538c7vxM
- yuCD7IKqg5e8nXc8f83a9pMx4NZk5nSG/6Ws5c/5AxtVKi2NmyU3bpO3qSv8Meva6umsy6rWWTV
- v4AQA
-X-Developer-Key: i=linux-kernel-dev@aliel.fr; a=openpgp;
- fpr=DFD863F61375BF917F0012173953305EF1D0EC3E
-X-Endpoint-Received: by B4 Relay for linux-kernel-dev@aliel.fr/default with
- auth_id=744
-X-Original-From: Ronald Claveau <linux-kernel-dev@aliel.fr>
-Reply-To: linux-kernel-dev@aliel.fr
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="YEpPhNbtW+Xfzqe4"
+Content-Disposition: inline
+In-Reply-To: <20260924-add-t7-sys-pwm-clk-v1-1-05b91e87f0a9@aliel.fr>
 
-From: Ronald Claveau <linux-kernel-dev@aliel.fr>
+--YEpPhNbtW+Xfzqe4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Describe the system clock of each PWM controller (CLKID_SYS_PWM_*) as a
-third clock, and add the clock-names property expected by the updated
-binding: "clk_a", "clk_b" and "core".
+On Thu, Sep 24, 2026 at 05:14:28PM +0200, Ronald Claveau via B4 Relay wrote:
+> From: Ronald Claveau <linux-kernel-dev@aliel.fr>
+>=20
+> The T7 PWM controller has a system clock (the register access clock)
+> in addition to the two input clocks of channels A and B. Add it as a
+> third clock, named "core", for the amlogic,t7-pwm compatible, and
+> require clock-names for this SoC for clarity.
 
-Signed-off-by: Ronald Claveau <linux-kernel-dev@aliel.fr>
----
- arch/arm64/boot/dts/amlogic/amlogic-t7.dtsi | 28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
+What additional clarity does that actually bring? I think it's kinda
+less clear, because the git history is required to explain why drivers
+cannot fetch the existing clocks by name.
 
-diff --git a/arch/arm64/boot/dts/amlogic/amlogic-t7.dtsi b/arch/arm64/boot/dts/amlogic/amlogic-t7.dtsi
-index 8f3f1c0579a0f..83c597d418875 100644
---- a/arch/arm64/boot/dts/amlogic/amlogic-t7.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/amlogic-t7.dtsi
-@@ -692,7 +692,9 @@ pwm_ao_ef: pwm@30000 {
- 				compatible = "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
- 				reg = <0x0 0x30000 0x0 0x24>;
- 				clocks = <&clkc_periphs CLKID_PWM_AO_E>,
--					 <&clkc_periphs CLKID_PWM_AO_F>;
-+					 <&clkc_periphs CLKID_PWM_AO_F>,
-+					 <&clkc_periphs CLKID_SYS_PWM_AO_EF>;
-+				clock-names = "clk_a", "clk_b", "core";
- 				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
-@@ -701,7 +703,9 @@ pwm_ao_gh: pwm@32000 {
- 				compatible = "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
- 				reg = <0x0 0x32000 0x0 0x24>;
- 				clocks = <&clkc_periphs CLKID_PWM_AO_G>,
--					 <&clkc_periphs CLKID_PWM_AO_H>;
-+					 <&clkc_periphs CLKID_PWM_AO_H>,
-+					 <&clkc_periphs CLKID_SYS_PWM_AO_GH>;
-+				clock-names = "clk_a", "clk_b", "core";
- 				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
-@@ -715,7 +719,9 @@ pwm_ab: pwm@58000 {
- 				compatible = "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
- 				reg = <0x0 0x58000 0x0 0x24>;
- 				clocks = <&clkc_periphs CLKID_PWM_A>,
--					 <&clkc_periphs CLKID_PWM_B>;
-+					 <&clkc_periphs CLKID_PWM_B>,
-+					 <&clkc_periphs CLKID_SYS_PWM_AB>;
-+				clock-names = "clk_a", "clk_b", "core";
- 				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
-@@ -724,7 +730,9 @@ pwm_cd: pwm@5a000 {
- 				compatible = "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
- 				reg = <0x0 0x5a000 0x0 0x24>;
- 				clocks = <&clkc_periphs CLKID_PWM_C>,
--					 <&clkc_periphs CLKID_PWM_D>;
-+					 <&clkc_periphs CLKID_PWM_D>,
-+					 <&clkc_periphs CLKID_SYS_PWM_CD>;
-+				clock-names = "clk_a", "clk_b", "core";
- 				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
-@@ -733,7 +741,9 @@ pwm_ef: pwm@5c000 {
- 				compatible = "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
- 				reg = <0x0 0x5c000 0x0 0x24>;
- 				clocks = <&clkc_periphs CLKID_PWM_E>,
--					 <&clkc_periphs CLKID_PWM_F>;
-+					 <&clkc_periphs CLKID_PWM_F>,
-+					 <&clkc_periphs CLKID_SYS_PWM_EF>;
-+				clock-names = "clk_a", "clk_b", "core";
- 				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
-@@ -742,7 +752,9 @@ pwm_ao_ab: pwm@5e000 {
- 				compatible = "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
- 				reg = <0x0 0x5e000 0x0 0x24>;
- 				clocks = <&clkc_periphs CLKID_PWM_AO_A>,
--					 <&clkc_periphs CLKID_PWM_AO_B>;
-+					 <&clkc_periphs CLKID_PWM_AO_B>,
-+					 <&clkc_periphs CLKID_SYS_PWM_AO_AB>;
-+				clock-names = "clk_a", "clk_b", "core";
- 				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
-@@ -751,7 +763,9 @@ pwm_ao_cd: pwm@60000 {
- 				compatible = "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
- 				reg = <0x0 0x60000 0x0 0x24>;
- 				clocks = <&clkc_periphs CLKID_PWM_AO_C>,
--					 <&clkc_periphs CLKID_PWM_AO_D>;
-+					 <&clkc_periphs CLKID_PWM_AO_D>,
-+					 <&clkc_periphs CLKID_SYS_PWM_AO_CD>;
-+				clock-names = "clk_a", "clk_b", "core";
- 				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
+>=20
+> The other compatibles are left unchanged. Add an example showing the
+> T7 usage with its fallback to amlogic,meson-s4-pwm.
+>=20
+> Signed-off-by: Ronald Claveau <linux-kernel-dev@aliel.fr>
+> ---
+>  .../devicetree/bindings/pwm/pwm-amlogic.yaml       | 37 ++++++++++++++++=
++++---
+>  1 file changed, 33 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml b/Doc=
+umentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+> index c337d85da40f1..9212a40d9fe48 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+> @@ -62,7 +62,7 @@ properties:
+> =20
+>    clock-names:
+>      minItems: 1
+> -    maxItems: 2
+> +    maxItems: 3
+> =20
+>    power-domains:
+>      maxItems: 1
+> @@ -135,17 +135,38 @@ allOf:
+>        properties:
+>          compatible:
+>            contains:
+> -            enum:
+> -              - amlogic,meson-s4-pwm
+> +            const: amlogic,t7-pwm
+>      then:
+>        properties:
+>          clocks:
+>            items:
+>              - description: input clock of PWM channel A
+>              - description: input clock of PWM channel B
+> -        clock-names: false
+> +            - description: gate clock for the PWM controller
+> +        clock-names:
+> +          items:
+> +            - const: clk_a
+> +            - const: clk_b
 
--- 
-2.49.0
+I'd rather "channel-a" or similar, we try not to state the obvious in
+the names of clocks etc - of course this is a clock!
 
+> +            - const: core
+>        required:
+>          - clocks
+> +        - clock-names
+> +    else:
+> +      if:
+> +        properties:
+> +          compatible:
+> +            contains:
+> +              enum:
+> +                - amlogic,meson-s4-pwm
+> +      then:
+> +        properties:
+> +          clocks:
+> +            items:
+> +              - description: input clock of PWM channel A
+> +              - description: input clock of PWM channel B
+> +          clock-names: false
 
+Are you sure that the s4-pwm doesn't also have this core clock? Seems
+likely, no?
+
+Cheers,
+Conor.
+
+> +        required:
+> +          - clocks
+> =20
+>    - if:
+>        properties:
+> @@ -182,3 +203,11 @@ examples:
+>        clocks =3D <&pwm_src_a>, <&pwm_src_b>;
+>        #pwm-cells =3D <3>;
+>      };
+> +  - |
+> +    pwm@60000 {
+> +      compatible =3D "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
+> +      reg =3D <0x60000 0x24>;
+> +      clocks =3D <&clk_a>, <&clk_b>, <&core>;
+> +      clock-names =3D "clk_a", "clk_b", "core";
+> +      #pwm-cells =3D <3>;
+> +    };
+>=20
+> --=20
+> 2.49.0
+>=20
+>=20
+
+--YEpPhNbtW+Xfzqe4
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCarVRPgAKCRB4tDGHoIJi
+0qrvAQDzOljDwun39UgsyfijL72uq4IJ63XXhGMQL7O1stwipwEA12NojbsOpKfq
+H2MqdB9c+5gUZXemfAGmrG9+Hcf8lwo=
+=NsG0
+-----END PGP SIGNATURE-----
+
+--YEpPhNbtW+Xfzqe4--
