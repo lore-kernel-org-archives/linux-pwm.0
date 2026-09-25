@@ -1,50 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33DF24E2F14;
-	Fri, 25 Sep 2026 16:41:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD273E5A29;
+	Fri, 25 Sep 2026 17:21:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790354507; cv=none; b=G2w8xKFbp7dktqdJBay+ufwtfwCo9jB03i7PCYPHBuRq+fEpUhQj1fJnmBGJHwhkPzP/wRmIRzlyH24+7weJ2Ipjp6SwyQwwkpfuzEGahxW5nmkyPkMeJ1K7wS5rGB9C+VDWefr63Zxjp3ZrQ5P1kEmzkSHxbAM/Hx9C9yrXvoA=
+	t=1790356878; cv=none; b=PtPmL2fHtcxkukVhd1WgoNfivyMY58+3ul+K2toeRuk9JSohFQvcwZ8qWKBo0pdaqwQoHrMm+xgfaz6loXD/1+O7T1wWvrzoBeoFC3shiyTviwvT4BF1rbF0AVDDEf3Bx1J3R6+1wumX3efTqr7+1pCrOEbHK+GoKmPdtNR6pkY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790354507; c=relaxed/simple;
-	bh=+hgYVkwjUS6OAMRMWlL6QET5ZyFt41NiHPTiatbsabA=;
+	s=arc-20240116; t=1790356878; c=relaxed/simple;
+	bh=9nxjdweXkfbdFmcVmxCbVDT+ZNzgnb55FCH+39qpVTM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vBuiSdSRs6G0d0n4gE2MXXLq1c3AdSnDq2TwD9m2r3dHrhVkzcPoOf7QSPU6TJzlxpkHL7Mk3Vfmt1o6TwUxgFhMFrFKtywGfQvdJ8UH9jQkD1ZG1sBhoVQlD8+PhXo4A9hsgASFL9UeeE5ctbHsprhPRK77+dS17Ifpys+6kH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AiqBTp5P; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=GtFupJB86Mq/H1OYiLaye4Y4MKgy4lzuO/zqTl5qxR+6k8LfF7ssQhZJMWBkY+6fxJ1eb87EUyT+ds75eR8EqSP8gNvxMzVQI4CBYGgQjgxPJiIJ8BFmdqF1ENSgMoFVe04ueemQA5TrBEsu67XCbUzCZ3jbu1wJa+KdMC0u3eU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=avzssm6B; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AiqBTp5P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F342A1F000FF;
-	Fri, 25 Sep 2026 16:41:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="avzssm6B"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CAF501F000FF;
+	Fri, 25 Sep 2026 17:21:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790354484;
-	bh=WIumMAJNznQ9DrE7dU0GPomzZVcUJ+5wdY/jveeHliU=;
+	s=k20260515; t=1790356865;
+	bh=9nxjdweXkfbdFmcVmxCbVDT+ZNzgnb55FCH+39qpVTM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=AiqBTp5PJEFtVAgYEhZK1Kr/gPKKEYAFDuCmfKxZCB8XSEC2czAdfJwAUmVGRKUCH
-	 YDg/+OaB1pAejuH7Rlp6FuiXTjZoVUOBcdbGxCJ0adMEhg1ARtGJgWt1sTRhVw80wd
-	 D/glrHY73t8EcqAuZZlmOi9FQJEDABL2PQ4TRzi7xJm5w5qRCGWfaSEnqb5WTmbhEB
-	 3XS+TSWamdY6KcEGUaqgp3ixqzCkwuB8/spe5u7Ry8Lw/h9Fo92pGwsRZ8sJs8CBdA
-	 4NwoxU7Epd9fSPjbk9OAHiCbxC7creNtk39j4zTormttPoibj/plyefNMlqq0ltDOL
-	 Vtcb/JgEyz1Pw==
-Date: Fri, 25 Sep 2026 17:41:20 +0100
-From: Conor Dooley <conor@kernel.org>
-To: linux-kernel-dev@aliel.fr
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Jerome Brunet <jbrunet@baylibre.com>,
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-amlogic@lists.infradead.org
-Subject: Re: [PATCH v2 1/3] dt-bindings: pwm: amlogic: Add core clock for T7
-Message-ID: <20260925-facial-follow-032de22361c1@spud>
-References: <20260925-add-t7-sys-pwm-clk-v2-0-f23a22b71a5c@aliel.fr>
- <20260925-add-t7-sys-pwm-clk-v2-1-f23a22b71a5c@aliel.fr>
+	b=avzssm6B3ZmQ9maWQ3GcZtHsNF75TJPqMt3TMplCbByFHzu3y2S4FOf5a9GTqAm3o
+	 TJoaGTAJLEcrmd0WInIx6lEmlA9dvahyUZubgBiFmpbY3BJexYPXJtLQw4ddkr4SIy
+	 rl+yzVRU4lw0K90PN5vv0yhdVRVGkRp3PKSZe61TyERtMxh1mpj0oH0l5SfKWX6TUq
+	 Z1m6mlHEwGntuv3s7gk3OgupFyZJ8pO8ac93ZAmdQrh2YihlbK3/EwTWtawl+GiJF3
+	 FmVtBqZasBVyGt3l0qq82Ir0q226+v6xi9K8vBozQenTctcK1IT3ZZhv9We/4rfnsu
+	 k2gPnVP5dpoiQ==
+Date: Fri, 25 Sep 2026 19:21:02 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Thierry Reding <thierry.reding@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, driver-core@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, Thierry Reding <treding@nvidia.com>, 
+	Richard Weinberger <richard@nod.at>
+Subject: Re: [PATCH 1/2] driver: core: Allow drivers to opt out of
+ driver_override
+Message-ID: <araoY6u_A9Odej-G@monoceros>
+References: <20260922-driver-override-opt-out-v1-0-58c35ded3b83@nvidia.com>
+ <20260922-driver-override-opt-out-v1-1-58c35ded3b83@nvidia.com>
+ <2026092227-marbling-untying-c1df@gregkh>
+ <arJ6s51FV4T9IK5w@monoceros>
+ <arKLt__frMjzSA4t@orome>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -52,117 +49,61 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="i1HZVlWbgy+JhL9b"
+	protocol="application/pgp-signature"; boundary="bbtn3p6yjvnym6gs"
 Content-Disposition: inline
-In-Reply-To: <20260925-add-t7-sys-pwm-clk-v2-1-f23a22b71a5c@aliel.fr>
+In-Reply-To: <arKLt__frMjzSA4t@orome>
 
---i1HZVlWbgy+JhL9b
-Content-Type: text/plain; charset=us-ascii
+
+--bbtn3p6yjvnym6gs
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/2] driver: core: Allow drivers to opt out of
+ driver_override
+MIME-Version: 1.0
 
-On Fri, Sep 25, 2026 at 05:13:28PM +0200, Ronald Claveau via B4 Relay wrote:
-> From: Ronald Claveau <linux-kernel-dev@aliel.fr>
->=20
-> The T7, A1, C3, and S4 PWM controllers have a system clock in
-> addition to the two input clocks of channels A and B.
->=20
-> The channel clocks are acquired by index in the pwm driver,
-> where the core clock is fetched by name, with optional get
-> which is silent when not provided.
->=20
-> Require clock-names and minimum 3 items for T7, where the
-> PWM devices do not work without all 3 clocks.
->=20
-> Add an example showing T7 usage with its fallback to
-> amlogic,meson-s4-pwm.
->=20
-> Signed-off-by: Ronald Claveau <linux-kernel-dev@aliel.fr>
-> ---
->  .../devicetree/bindings/pwm/pwm-amlogic.yaml       | 33 ++++++++++++++++=
-++++--
->  1 file changed, 31 insertions(+), 2 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml b/Doc=
-umentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-> index c337d85da40f1..59320f288552b 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-> @@ -62,7 +62,7 @@ properties:
-> =20
->    clock-names:
->      minItems: 1
-> -    maxItems: 2
-> +    maxItems: 3
-> =20
->    power-domains:
->      maxItems: 1
-> @@ -140,13 +140,34 @@ allOf:
->      then:
->        properties:
->          clocks:
-> +          minItems: 2
->            items:
->              - description: input clock of PWM channel A
->              - description: input clock of PWM channel B
-> -        clock-names: false
-> +            - description: gate clock for the PWM controller
-> +        clock-names:
-> +          minItems: 2
-> +          items:
-> +            - const: channel-a
-> +            - const: channel-b
-> +            - const: core
->        required:
->          - clocks
-> =20
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: amlogic,t7-pwm
+Hello Thierry,
 
-Shouldn't this (based on your reply on the previous version) be s4?
+On Tue, Sep 22, 2026 at 04:09:25PM +0200, Thierry Reding wrote:
+> > Having said that I think there is only a handful of drivers that are
+> > actually supposed to work when used in a driver override (vfio stuff,
+> > spidev and i2c-dev come to mind), so I'd prefer that drivers opt-in
+> > instead of opt-out. Otherwise we yet another flag that drivers should
+> > set in general but don't because driver authors are not aware[1]. The
+> > few drivers that rely on driver overriding should be identified quickly,
+> > and if we miss one that doesn't result in a way to make the kernel oops.
+>=20
+> We could easily invert the logic in this patch to make this opt-in, but
+> it might be difficult to know exactly which ones want to opt-in, given
+> it's been enabled by default for a really long time.
 
-> +    then:
-> +      properties:
-> +        clocks:
-> +          minItems: 3
-> +        clock-names:
-> +          minItems: 3
-> +      required:
-> +        - clock-names
-> +
->    - if:
->        properties:
->          compatible:
-> @@ -182,3 +203,11 @@ examples:
->        clocks =3D <&pwm_src_a>, <&pwm_src_b>;
->        #pwm-cells =3D <3>;
->      };
-> +  - |
-> +    pwm@60000 {
-> +      compatible =3D "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
-> +      reg =3D <0x60000 0x24>;
-> +      clocks =3D <&channel_a>, <&channel_b>, <&core>;
-> +      clock-names =3D "channel-a", "channel-b", "core";
-> +      #pwm-cells =3D <3>;
-> +    };
->=20
-> --=20
-> 2.49.0
->=20
->=20
+I'd have the heart to do that in combination with a kernel parameter
+that allows to drop the strictness (and remove that after some time).
 
---i1HZVlWbgy+JhL9b
-Content-Type: application/pgp-signature; name=signature.asc
+Currently the only driver I'm aware of that is supposed to be used with
+driver_override is drivers/spi/spidev.c. AFAICT the i2c equivalent
+doesn't need driver overriding (as it attaches to a bus instead of an
+individual device) and vfio seems to work without overrides.
+
+I'm sure I missed some driver, but these can easily get fixed when users
+start wailing.
+
+Best regards
+Uwe
+
+--bbtn3p6yjvnym6gs
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCarakLwAKCRB4tDGHoIJi
-0o/hAPwOcNkaCJn01XPDJCbfkxs1yGaXBarwQvpIKVoyDyubpgEA1j5tZeRZl1nk
-y633urYORlZkdOprR8rhmpHztGEV/AQ=
-=noe3
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmq2rXwACgkQj4D7WH0S
+/k4y6Qf/WHpV211HunZ0wwB5h4C4fAGjvWqgqNBu/LmrhVTOIwaiuI5BxwV8OFhy
+E3F73Flg/ut4YI+HtlXg68LpqjmUSgcbiJEteZPCnIYYx25ktV5fi+urviBaUwtU
+a3bU80j+x4rzV6A9MZZFLgUkPAWWbFPNjftVouzBZFXQ2NClu9Tv1h2CiaLeM6em
+Bm6DIgjLlLvdcQT2eYzwvdPAYzA1OPbRRwUw/lxdTgi3hMInYXCGaz/UDeTYqQLm
+yqcVECMadseqEkk0p3lqkRB8WocIIJp709HFuV06UFcZ6oQci84s42mGGjERL6vj
+MZnhtS2j2oSCzR7r3ImzRZaaeEZBLg==
+=oN5m
 -----END PGP SIGNATURE-----
 
---i1HZVlWbgy+JhL9b--
+--bbtn3p6yjvnym6gs--
