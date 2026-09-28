@@ -1,160 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl2-f42.google.com (mail-dl2-f42.google.com [74.125.229.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 457E24EDCD0;
-	Mon, 28 Sep 2026 16:46:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 709B34E73B9
+	for <linux-pwm@vger.kernel.org>; Mon, 28 Sep 2026 17:55:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790613997; cv=none; b=CniwkbqLoz7+E8CIeaOpPQSjgiII9TZzw0f2ubtZVsutcvbj5XBaKXSQtsCwwBGcITo5LOlhok9zFDg2ADB/6xPSE3uBoUisXRwNG4DYqeNMCqkLAmPhxEA0cb0lIbJPppMAOd/ZqkU7jsv6uayvB41Eiy+W3qt54x45NpeqGsc=
+	t=1790618112; cv=none; b=bNHWKOMKyCXqckP2JN7ixHUR2+cbfjLQsdHsG9IKLFF8JaM8yIjArRfpmvb1i0wt5EicnQYorsxqQwCtY12Vbys6eANxLHo/TYZHNdc6tzT31HsQbZn3ByPLNOOD4Z3BVuQg4dRBhWqbtFEjkH2oEPUUXgvYJXVm/bhHs5Pk/vI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790613997; c=relaxed/simple;
-	bh=wESeYm1NEZEOQV3/9wrGqU7/i2/MTXSfeQ3kLceJ4YI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nCJYSSMRMzPaYh1XLiQWhM4ulkIjPnnEf0SmlVukwbTd1M+sYIM3GFqr+YVqYqGByrL+ElUmU4a1SqB52lTUgWmHVeQtPgR+J092yjbXJMB0ZRSqboYFLpx93t4jV/cr/3G+oVqconLeEfPSDIN1rgLBhaojm3u+/6ZzCSu4Qmo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kibERWQ7; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790618112; c=relaxed/simple;
+	bh=zs9gberxS0wRfNF8TSFnYf/aqe/VTj9M6kyeSUqMODA=;
+	h=Message-ID:MIME-Version:From:To:Cc:Date:Subject:Content-Type; b=Up5VYHQG6/uupbL/mX2vvb58IJ8FZp+tPNCKpYvl6AyUyfsNRimQtkOrWUINFWV76t9sFIRzXBsT9BrpG476wLFNIQKtQbw6NRW4boC+z6AzNaKik2kHqro9IZv8MtUqSdv9M2xtMmuKFJu8UXn18h1phCoEhKvVj4iVKHD555c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TfXSF6Z6; arc=none smtp.client-ip=74.125.229.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kibERWQ7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE241F000FF;
-	Mon, 28 Sep 2026 16:46:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790613996;
-	bh=OuEIbSM39AWn3fOJgnOsyJgctCK52FPvPnATEJOiJZY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=kibERWQ7ya9eZx0yUmrvPFr3QcQrB8256DiRNHXVkXTRCfmO19BrG9dEIT1hDSB9h
-	 X5bg0EOKOKoUm4Xx6tKtvs26iwkwQAlOWopPMVo9umQD8b5zTM/FY5etd+owpxmsUv
-	 TYZleYU1VKWaoaIYGSxS5LFTuOGZp+XSkKdgqahN3OWPawEPhTeVsFrs7EVc7ypfG/
-	 LZVxQJ4RbOva4eI6JOT/I6JiT6A4AlEvG0F9swMlOSveamz86iaLZ+bbaBc6liJYZv
-	 lrSSeOFTXjZ/0MsFjtdhhld0V6+IXCprrfZsKc55brla+vOnI91aKphTua0zlT6/Mk
-	 84MKCsRWNmRQg==
-Date: Mon, 28 Sep 2026 17:46:31 +0100
-From: Conor Dooley <conor@kernel.org>
-To: linux-kernel-dev@aliel.fr
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Jerome Brunet <jbrunet@baylibre.com>,
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-amlogic@lists.infradead.org
-Subject: Re: [PATCH v3 1/3] dt-bindings: pwm: amlogic: Add core clock for S4
- like
-Message-ID: <20260928-cardiac-relax-cdccdecdd4c2@spud>
-References: <20260927-add-t7-sys-pwm-clk-v3-0-18d66abea4d1@aliel.fr>
- <20260927-add-t7-sys-pwm-clk-v3-1-18d66abea4d1@aliel.fr>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TfXSF6Z6"
+Received: by mail-dl2-f42.google.com with SMTP id a92af1059eb24-144df39b6cfso2446501c88.1
+        for <linux-pwm@vger.kernel.org>; Mon, 28 Sep 2026 10:55:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790618110; x=1791222910; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:subject:date:cc:to:from
+         :mime-version:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wPllDjkKaargAUH1bmacsEz66q2/WWpXsBXhzb2KnrI=;
+        b=TfXSF6Z68VG1U3zTE0gSKk7aGui+JEgUU3E7lV79LOS2MX74ZU3LQOZDKVYO7pVnS6
+         DcG2Nwo2YSmbyUuVxQW/PSTDX9vgD6YCY/k4HbZD64UYjwFDmLLBL7p/P6yVRCXcicWD
+         U1wRGuLPHnsizDkXSx+KaobPBx7gb8MDcQcBrjLfCmCxezWF+sLg6MrRcHdOcKKvfEtL
+         m9Os/TLdEYuwUt12ysepaMZNQckBcFev87XVe/X18HxWO8tEtc9QB7j43PcCzaeMw1hZ
+         ahN3OiWiB831/wxGLfgaYmxNlN3ArUepv8gGOsSZbx5mR9bf0ohOAKeLAlEfHwcN0t7V
+         kVEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790618110; x=1791222910;
+        h=content-transfer-encoding:content-type:subject:date:cc:to:from
+         :mime-version:message-id:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=wPllDjkKaargAUH1bmacsEz66q2/WWpXsBXhzb2KnrI=;
+        b=yQH/xaQolKTH5FjrtHiVnYwowJfb0WL7pcWE1drtm+y7KsRubWkFqiDSt1GDUDjlai
+         gk/T4wCR5ERu/gFuB1Frd1TASK1QZg7VbY6b2iWpAoZ07GnF+1D4x9GdeSSS7Ti97OtN
+         4o1HxI3y8P2OT2Tg9y9EJkjp/r2UYtHEk94Y7fZ1XO5KQfitL+zTN8jx+tl8nkMIneVH
+         qMk1TbKYyfaXcSakDmc2nX8fJiq5KquX+hyv3VwhMw1u4DtQLim6rBfYqY8kld4Jpz5D
+         SU3o+b+dBW0J8hRutvPMHN+RWBRvQAXa10Yy2aQVTihI3rcLUGxfjpR9uiYv9rKNkrvF
+         iarQ==
+X-Gm-Message-State: AFuF++nYFdZvdhrKugaxCcZald8xexd99djV1FoZRgUF053IT2bYk7TK
+	2z/1MxoJKiPZlXSx0qPFvKCP6OwImtcLCtf3Qi5hn2t4yBzgkGsAZrrF
+X-Gm-Gg: AYBFou1OlJ51Ytu3/wuntsKZJVwpSse0I/gCNoEj/UNGTBi6Ri27afzNLHhm7rUSerI
+	CG5q/EFF8kzVB3B1njv7lR26FGeAivHYoDRiKQ2Jtf4K7MRs5LkYHM45EthLQwFemWlu93FiPiK
+	PDn0i+Sj0q50rrvLO32LtOfZX6TLJX2NP7Zuvv1WvwMM+TihX+p5JAwyy5qjL9Jr7dkSEgo/x6D
+	PGhvYbHEfxRAheaE8Fd6zN0nVJG/J6VDXqoOghDlUhLw4wn4LzsaeWcy9tXjBZKtMJkEy1tjf6i
+	0E4kfjDPdOk+0XXR4cZtAwFZ2JUfV/nJxC72g0CHC8PiQnQeXaa7ds3p4IMF7zlYtIbibtIdGGx
+	IE98o4GuOz9fc5wt/NigKmIDZsSmmy3OxPVKke0J4dVOxLrmZcQ8ra5ocL7KIicw13oLVkPiIIB
+	/4/y3vf40WjqYEX6Ofx1PRpfBKLBQLExY+E2XTa4K+jdGd2qGdRLGcXopxu3LIqBVDv15sPn8Ry
+	LBLqdJ6OPfc782HQovzq2HTqFxE3FWTyLZX79/GoU0j1wH01+HYRQkYq2VVL6KOk+2PuwhCHGiP
+	NA==
+X-Received: by 2002:a05:701b:455b:20b0:149:49c:21b with SMTP id a92af1059eb24-149049c0391mr5721949c88.20.1790618110171;
+        Mon, 28 Sep 2026 10:55:10 -0700 (PDT)
+Received: from manush ([2406:7400:94:b571:88c4:97ae:bb47:4040])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-146bb6551d9sm18462130c88.9.2026.09.28.10.55.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2026 10:55:09 -0700 (PDT)
+Message-ID: <6abaa9fd.8a95a640.187520.71d6@mx.google.com>
+X-Mailer: git-send-email 2.46.2.windows.1
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="NO7UUlGWjKuFSfWY"
-Content-Disposition: inline
-In-Reply-To: <20260927-add-t7-sys-pwm-clk-v3-1-18d66abea4d1@aliel.fr>
-
---NO7UUlGWjKuFSfWY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+From: "Manush Prajwal" <manushprajwal555@gmail.com>
+To: ukleinek@kernel.org
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: 28 Sep 2026 23:25:09 +0530
+Subject: [PATCH] pwm: tiehrpwm: fix copy-paste error in obsolete DT binding
+ fallback
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Sep 27, 2026 at 04:28:15PM +0200, Ronald Claveau via B4 Relay wrote:
-> From: Ronald Claveau <linux-kernel-dev@aliel.fr>
->=20
-> The T7, A1, C3, and S4 PWM controllers have a system clock in
-> addition to the two input clocks of channels A and B.
->=20
-> The channel clocks are acquired by index in the pwm driver,
-> where the core clock is fetched by name, with optional get
-> which is silent when not provided.
->=20
-> Require clock-names and minimum 3 items for S4, and devices
-> which fallback to S4, where the PWM devices do not work
-> without all 3 clocks.
->=20
-> Add an example showing T7 usage with its fallback to
-> amlogic,meson-s4-pwm.
->=20
-> Signed-off-by: Ronald Claveau <linux-kernel-dev@aliel.fr>
-> ---
->  .../devicetree/bindings/pwm/pwm-amlogic.yaml        | 21 +++++++++++++++=
-+++---
->  1 file changed, 18 insertions(+), 3 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml b/Doc=
-umentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-> index c337d85da40f1..e9cd5f1fdf264 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
-> @@ -62,7 +62,7 @@ properties:
-> =20
->    clock-names:
->      minItems: 1
-> -    maxItems: 2
-> +    maxItems: 3
-> =20
->    power-domains:
->      maxItems: 1
-> @@ -143,9 +143,15 @@ allOf:
->            items:
->              - description: input clock of PWM channel A
->              - description: input clock of PWM channel B
-> -        clock-names: false
-> +            - description: gate clock for the PWM controller
-> +        clock-names:
-> +          items:
-> +            - const: channel-a
-> +            - const: channel-b
-> +            - const: core
->        required:
->          - clocks
-> +        - clock-names
-> =20
->    - if:
->        properties:
-> @@ -179,6 +185,15 @@ examples:
->      pwm@1000 {
->        compatible =3D "amlogic,meson-s4-pwm";
->        reg =3D <0x1000 0x10>;
-> -      clocks =3D <&pwm_src_a>, <&pwm_src_b>;
-> +      clocks =3D <&pwm_src_a>, <&pwm_src_b>, <&pwm_src_core>;
-> +      clock-names =3D "channel-a", "channel-b", "core";
-> +      #pwm-cells =3D <3>;
-> +    };
-> +  - |
-> +    pwm@60000 {
+ehrpwm_pwm_probe() attempts to provide backward compatibility for=
+ older=0D=0Adevice trees where the functional clock "fck" was sup=
+plied by the parent=0D=0APWMSS device rather than within the PWM =
+child node itself.=0D=0A=0D=0AHowever, when devm_clk_get() for "f=
+ck" fails, the fallback checks:=0D=0A=0D=0A	if (of_device_is_comp=
+atible(np, "ti,am33xx-ecap")) {=0D=0A		dev_warn(&pdev->dev, "Bind=
+ing is obsolete.\n");=0D=0A		clk =3D devm_clk_get(pdev->dev.paren=
+t, "fck");=0D=0A	}=0D=0A=0D=0ABecause this logic was copied from =
+pwm-tiecap.c, it mistakenly checks for=0D=0A"ti,am33xx-ecap" inst=
+ead of "ti,am33xx-ehrpwm". An eHRPWM node matches=0D=0Aehrpwm_of_=
+match ("ti,am3352-ehrpwm" or "ti,am33xx-ehrpwm") and will never=0D=0A=
+be compatible with "ti,am33xx-ecap". Consequently, for any device=
+ tree=0D=0Ausing the obsolete "ti,am33xx-ehrpwm" binding, the fal=
+lback never triggers=0D=0Aand probe fails with "Failed to get fck=
+".=0D=0A=0D=0AFix the check to test for "ti,am33xx-ehrpwm" as int=
+ended.=0D=0A=0D=0ASigned-off-by: Manush Prajwal <manushprajwal555=
+@gmail.com>=0D=0A---=0D=0A drivers/pwm/pwm-tiehrpwm.c | 2 +-=0D=0A=
+ 1 file changed, 1 insertion(+), 1 deletion(-)=0D=0A=0D=0Adiff --=
+git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c=0D=0A=
+index 3a53489f0..40166c5c8 100644=0D=0A--- a/drivers/pwm/pwm-tieh=
+rpwm.c=0D=0A+++ b/drivers/pwm/pwm-tiehrpwm.c=0D=0A@@ -426,7 +426,=
+7 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)=0D=0A=
+ =0D=0A 	clk =3D devm_clk_get(&pdev->dev, "fck");=0D=0A 	if (IS_E=
+RR(clk)) {=0D=0A-		if (of_device_is_compatible(np, "ti,am33xx-eca=
+p")) {=0D=0A+		if (of_device_is_compatible(np, "ti,am33xx-ehrpwm"=
+)) {=0D=0A 			dev_warn(&pdev->dev, "Binding is obsolete.\n");=0D=0A=
+ 			clk =3D devm_clk_get(pdev->dev.parent, "fck");=0D=0A 		}=0D=0A=
+-- =0D=0A2.46.2.windows.1=0D=0A
 
-If you respin, drop the second example please, since it doesn't actually
-do anything different anymore.
-
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
-
-> +      compatible =3D "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
-> +      reg =3D <0x60000 0x24>;
-> +      clocks =3D <&channel_a>, <&channel_b>, <&core>;
-> +      clock-names =3D "channel-a", "channel-b", "core";
->        #pwm-cells =3D <3>;
->      };
->=20
-> --=20
-> 2.49.0
->=20
->=20
-
---NO7UUlGWjKuFSfWY
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCarqZ5wAKCRB4tDGHoIJi
-0ok+APwNheWAYEM9WF+sBQYkU6EVCY1bbe9VWk1PlHlrguTn7QD/byNsbcsFBPVx
-UFNlan7GYFGIaWMoGbPggPiiF1g1jwk=
-=Zdvc
------END PGP SIGNATURE-----
-
---NO7UUlGWjKuFSfWY--
