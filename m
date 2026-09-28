@@ -1,163 +1,160 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBB644DF4D7
-	for <linux-pwm@vger.kernel.org>; Mon, 28 Sep 2026 14:39:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 457E24EDCD0;
+	Mon, 28 Sep 2026 16:46:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790606358; cv=none; b=NCqwJyypz3dLfqamNPXFl8hfUlSBXwkqcOJRWG/Le1fdpRAjVgRt1tkb2wh0zjn7bdccJ9o98pe93a9e6x0cDELMFaRaQJ5qGnJq1R+Wu77YwYFn9zrwkAyBoHeeu7rcucwpg4vOAj6/7O/xqwwbKs2FKet00ehIabxgo5nLzpw=
+	t=1790613997; cv=none; b=CniwkbqLoz7+E8CIeaOpPQSjgiII9TZzw0f2ubtZVsutcvbj5XBaKXSQtsCwwBGcITo5LOlhok9zFDg2ADB/6xPSE3uBoUisXRwNG4DYqeNMCqkLAmPhxEA0cb0lIbJPppMAOd/ZqkU7jsv6uayvB41Eiy+W3qt54x45NpeqGsc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790606358; c=relaxed/simple;
-	bh=NyT3bvkYhBzVis/qc4NVpDUc0HxiHbXcgKHaKLAMasY=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=HaRPak8X5UNO5pY7pJP0owbNU22AoBHGV6uuhf9kneJR2xILv22nbEcYFRXbeQbQMWN/Binu/Y8o73C2UJrstRuobJnNcTauIKDSSu3e8jYip9sXvBGgl3tvXzM5loHsU4yseANJxX7lHqKjBFJ/mqdMD+oXrsR5mXDxJN6MBGg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=KqcgzHKD; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1790613997; c=relaxed/simple;
+	bh=wESeYm1NEZEOQV3/9wrGqU7/i2/MTXSfeQ3kLceJ4YI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nCJYSSMRMzPaYh1XLiQWhM4ulkIjPnnEf0SmlVukwbTd1M+sYIM3GFqr+YVqYqGByrL+ElUmU4a1SqB52lTUgWmHVeQtPgR+J092yjbXJMB0ZRSqboYFLpx93t4jV/cr/3G+oVqconLeEfPSDIN1rgLBhaojm3u+/6ZzCSu4Qmo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kibERWQ7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="KqcgzHKD"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e8185e037so17173945e9.3
-        for <linux-pwm@vger.kernel.org>; Mon, 28 Sep 2026 07:39:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1790606344; x=1791211144; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=RUWg5GWqhMeDrgGwJjMhc1B+7LHRy8TQo04xcORPTAE=;
-        b=KqcgzHKDDBm/b4WJUjDIMt86FwR/CBXjhn4V6gRougf/o5w4tMuSWnYsSlKwC9YLLG
-         T+EACmC0fv++9GNx83WPx70QTqOrlkIEPSEZLL8duyggTK+dVWXX70421xz+OPsMX2FN
-         v+3uo1hbiLruvi08FwS8nGa/UDQuTpM90JL2v5JCELvJ2Q/mewUkCji1Sxigbfefr31G
-         l916+y8ztW/uSayUkw8iaKpt/Mcwow6zHeEy1aJTM725yy/Hp0Y44dSeDkden5EkHodk
-         mbSmO5XHBncqajlTUkUQTYbKJZEYD8pWfqmCZ2IbbWzx6e5SIGiPIFVgZeSrk4fkXjWv
-         ptew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790606344; x=1791211144;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=RUWg5GWqhMeDrgGwJjMhc1B+7LHRy8TQo04xcORPTAE=;
-        b=m7PqOzCXIE9l4D+dAU8TRJIND96nZD3k6nL6pm9mdUaLY9P0zAm8KvOIP+HyLz9G+V
-         nBbv3J8idslkM0rTxARf7ku7l6y+k60RDh4UPyRlcDrn7Wkmyg4YXSOjSjz8L/pR6DTp
-         2+RZ7gWvDXydVllvs2qkth0SBnKUowDwaBCEXDzZDdDTlh1faWyV+Ppouq2VGxC+d/mQ
-         rZVf2EkXqrP99cwWxgal2Q5zzBkUY3p428jcqIh9iPwlNWWW09oPRYEvzj3nE0+CUqC7
-         +FCcP19YUlo/oc+f5XE/SC+Y2ZrXYY7yxsaI7OCBUZColcg7K5dj6MYECNbk4UXjMUuw
-         Qebg==
-X-Forwarded-Encrypted: i=1; AKwUvBxFdcF9leGiUNDpoTzSA8F96js94BRPYBsiFfTp7wsebOb4ZHMbBiWpbBN0SU99sw9L5i2a2GfTSiQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++kq937W0xA5SPIqf0V2cU9GO9wpAmI2bRSkLmFZiwAd3QVgf+xK
-	OzjcSgeowqVyHm6STa7ZuD7oDtl4DA2E0U5D9AiyKCFGaTnRrbXjIMDk4QzvKLpxTVE=
-X-Gm-Gg: AYBFou2MIVxwfSCF8pMSAFUDvsFZzwCpSkog3xIeOCnIcxO4ztpCg/KByIGpKNdpYhS
-	Idb7pPEJ/RYTzDKVB3lUNO/xzoHlosTQDFUn0aeCJfBfhK20j1T5caYfw6OJfVLhyeI1rXJUZbs
-	Ayf8MdbeAbKQCrizGmqMqPwjE2XZoh+fGcwcDaTGY1Id3uhMlawpekkpSgTlbH2LshZy33kv6W9
-	8TEBNSpi72en1muHgq3BXmZ2dD7otp7k8Har0V1PCPlbAjzEngjqE67ylksviny23SK+Z+pSZ03
-	idd/cVawJ8snVgUaABn5a1Da+NayEpibnuewOcSgcVO0G1xM0O4yfDOcLP5FvMYReewviB+Sg7w
-	t0aRp48jdIHOmjvJK2GHZfZvstsukITjktz1b9aib4rO4SEzvB36Tc+jajDRzN74E0ud0iBm+iO
-	fGizOnXviav3J1ODc92eKAxeMyojQ6RVDtkg0lM4WzxAqlf0cPDB52tpuZUbaWyYh7ZNeRKA==
-X-Received: by 2002:a05:600c:8718:b0:49c:fc6c:be08 with SMTP id 5b1f17b1804b1-49ff06f8316mr163210765e9.31.1790606344550;
-        Mon, 28 Sep 2026 07:39:04 -0700 (PDT)
-Received: from localhost ([195.94.147.179])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a0018f0e79sm233409295e9.7.2026.09.28.07.39.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2026 07:39:04 -0700 (PDT)
-From: Andrea della Porta <andrea.porta@suse.com>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	linux-pwm@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kibERWQ7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE241F000FF;
+	Mon, 28 Sep 2026 16:46:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790613996;
+	bh=OuEIbSM39AWn3fOJgnOsyJgctCK52FPvPnATEJOiJZY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=kibERWQ7ya9eZx0yUmrvPFr3QcQrB8256DiRNHXVkXTRCfmO19BrG9dEIT1hDSB9h
+	 X5bg0EOKOKoUm4Xx6tKtvs26iwkwQAlOWopPMVo9umQD8b5zTM/FY5etd+owpxmsUv
+	 TYZleYU1VKWaoaIYGSxS5LFTuOGZp+XSkKdgqahN3OWPawEPhTeVsFrs7EVc7ypfG/
+	 LZVxQJ4RbOva4eI6JOT/I6JiT6A4AlEvG0F9swMlOSveamz86iaLZ+bbaBc6liJYZv
+	 lrSSeOFTXjZ/0MsFjtdhhld0V6+IXCprrfZsKc55brla+vOnI91aKphTua0zlT6/Mk
+	 84MKCsRWNmRQg==
+Date: Mon, 28 Sep 2026 17:46:31 +0100
+From: Conor Dooley <conor@kernel.org>
+To: linux-kernel-dev@aliel.fr
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Andrea della Porta <andrea.porta@suse.com>,
-	devicetree@vger.kernel.org,
-	linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Naushir Patuck <naush@raspberrypi.com>,
-	Stanimir Varbanov <svarbanov@suse.de>,
-	mbrugger@suse.com,
-	Sean Young <sean@mess.org>,
-	Julian Braha <julianbraha@gmail.com>,
-	"Gary Guo" <gary@garyguo.net>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH v10 3/3] arm64: dts: broadcom: rpi-5: Add RP1 PWM node
-Date: Mon, 28 Sep 2026 16:42:42 +0200
-Message-ID: <ad9bc35d7c30f7925fed4c6621ed0f67c39c3f09.1790606188.git.andrea.porta@suse.com>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <cover.1790606188.git.andrea.porta@suse.com>
-References: <cover.1790606188.git.andrea.porta@suse.com>
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Kevin Hilman <khilman@baylibre.com>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH v3 1/3] dt-bindings: pwm: amlogic: Add core clock for S4
+ like
+Message-ID: <20260928-cardiac-relax-cdccdecdd4c2@spud>
+References: <20260927-add-t7-sys-pwm-clk-v3-0-18d66abea4d1@aliel.fr>
+ <20260927-add-t7-sys-pwm-clk-v3-1-18d66abea4d1@aliel.fr>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="NO7UUlGWjKuFSfWY"
+Content-Disposition: inline
+In-Reply-To: <20260927-add-t7-sys-pwm-clk-v3-1-18d66abea4d1@aliel.fr>
 
-From: Stanimir Varbanov <svarbanov@suse.de>
+--NO7UUlGWjKuFSfWY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The RP1 chipset used on the Raspberry Pi 5 features an integrated
-PWM controller to drive the cooling fan.
+On Sun, Sep 27, 2026 at 04:28:15PM +0200, Ronald Claveau via B4 Relay wrote:
+> From: Ronald Claveau <linux-kernel-dev@aliel.fr>
+>=20
+> The T7, A1, C3, and S4 PWM controllers have a system clock in
+> addition to the two input clocks of channels A and B.
+>=20
+> The channel clocks are acquired by index in the pwm driver,
+> where the core clock is fetched by name, with optional get
+> which is silent when not provided.
+>=20
+> Require clock-names and minimum 3 items for S4, and devices
+> which fallback to S4, where the PWM devices do not work
+> without all 3 clocks.
+>=20
+> Add an example showing T7 usage with its fallback to
+> amlogic,meson-s4-pwm.
+>=20
+> Signed-off-by: Ronald Claveau <linux-kernel-dev@aliel.fr>
+> ---
+>  .../devicetree/bindings/pwm/pwm-amlogic.yaml        | 21 +++++++++++++++=
++++---
+>  1 file changed, 18 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml b/Doc=
+umentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+> index c337d85da40f1..e9cd5f1fdf264 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-amlogic.yaml
+> @@ -62,7 +62,7 @@ properties:
+> =20
+>    clock-names:
+>      minItems: 1
+> -    maxItems: 2
+> +    maxItems: 3
+> =20
+>    power-domains:
+>      maxItems: 1
+> @@ -143,9 +143,15 @@ allOf:
+>            items:
+>              - description: input clock of PWM channel A
+>              - description: input clock of PWM channel B
+> -        clock-names: false
+> +            - description: gate clock for the PWM controller
+> +        clock-names:
+> +          items:
+> +            - const: channel-a
+> +            - const: channel-b
+> +            - const: core
+>        required:
+>          - clocks
+> +        - clock-names
+> =20
+>    - if:
+>        properties:
+> @@ -179,6 +185,15 @@ examples:
+>      pwm@1000 {
+>        compatible =3D "amlogic,meson-s4-pwm";
+>        reg =3D <0x1000 0x10>;
+> -      clocks =3D <&pwm_src_a>, <&pwm_src_b>;
+> +      clocks =3D <&pwm_src_a>, <&pwm_src_b>, <&pwm_src_core>;
+> +      clock-names =3D "channel-a", "channel-b", "core";
+> +      #pwm-cells =3D <3>;
+> +    };
+> +  - |
+> +    pwm@60000 {
 
-Add the corresponding DT node for this PWM controller.
+If you respin, drop the second example please, since it doesn't actually
+do anything different anymore.
 
-Signed-off-by: Stanimir Varbanov <svarbanov@suse.de>
-Co-developed-by: Andrea della Porta <andrea.porta@suse.com>
-Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
----
- arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts | 12 ++++++++++++
- arch/arm64/boot/dts/broadcom/rp1-common.dtsi     |  9 +++++++++
- 2 files changed, 21 insertions(+)
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
-index 0fc57e72632ed..748be8f1ee9e2 100644
---- a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
-+++ b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
-@@ -64,6 +64,12 @@ phy1: ethernet-phy@1 {
- };
- 
- &rp1_gpio {
-+	fan_pwm_default_state: fan-pwm-default-state {
-+		function = "pwm1";
-+		pins = "gpio45";
-+		bias-pull-down;
-+	};
-+
- 	usb_vbus_default_state: usb-vbus-default-state {
- 		function = "vbus1";
- 		groups = "vbus1";
-@@ -94,6 +100,12 @@ &rp1_i2c6 {
- 	pinctrl-names = "default";
- };
- 
-+&rp1_pwm1 {
-+	pinctrl-0 = <&fan_pwm_default_state>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
- &rp1_usb0 {
- 	pinctrl-0 = <&usb_vbus_default_state>;
- 	pinctrl-names = "default";
-diff --git a/arch/arm64/boot/dts/broadcom/rp1-common.dtsi b/arch/arm64/boot/dts/broadcom/rp1-common.dtsi
-index 16f5359395835..df4c2d09c8d34 100644
---- a/arch/arm64/boot/dts/broadcom/rp1-common.dtsi
-+++ b/arch/arm64/boot/dts/broadcom/rp1-common.dtsi
-@@ -99,7 +99,16 @@ rp1_i2c6: i2c@40088000 {
- 		clocks = <&rp1_clocks RP1_CLK_SYS>;
- 		i2c-scl-rising-time-ns = <65>;
- 		i2c-scl-falling-time-ns = <100>;
-+		status = "disabled";
-+	};
- 
-+	rp1_pwm1: pwm@4009c000 {
-+		compatible = "raspberrypi,rp1-pwm";
-+		reg = <0x00 0x4009c000  0x0 0x100>;
-+		clocks = <&rp1_clocks RP1_CLK_PWM1>;
-+		assigned-clocks = <&rp1_clocks RP1_CLK_PWM1>;
-+		assigned-clock-rates = <50000000>;
-+		#pwm-cells = <3>;
- 		status = "disabled";
- 	};
- 
--- 
-2.35.3
+> +      compatible =3D "amlogic,t7-pwm", "amlogic,meson-s4-pwm";
+> +      reg =3D <0x60000 0x24>;
+> +      clocks =3D <&channel_a>, <&channel_b>, <&core>;
+> +      clock-names =3D "channel-a", "channel-b", "core";
+>        #pwm-cells =3D <3>;
+>      };
+>=20
+> --=20
+> 2.49.0
+>=20
+>=20
 
+--NO7UUlGWjKuFSfWY
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCarqZ5wAKCRB4tDGHoIJi
+0ok+APwNheWAYEM9WF+sBQYkU6EVCY1bbe9VWk1PlHlrguTn7QD/byNsbcsFBPVx
+UFNlan7GYFGIaWMoGbPggPiiF1g1jwk=
+=Zdvc
+-----END PGP SIGNATURE-----
+
+--NO7UUlGWjKuFSfWY--
