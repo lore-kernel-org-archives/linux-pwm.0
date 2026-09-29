@@ -1,109 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy2-f43.google.com (mail-dy2-f43.google.com [74.125.229.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53DA4402422;
-	Tue, 29 Sep 2026 06:00:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C31F5501284
+	for <linux-pwm@vger.kernel.org>; Tue, 29 Sep 2026 10:06:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790661631; cv=none; b=E1fIYsUyLLG9HI20GGCgoou3lR/2J/ZKNUn3gEKnlKWyLgbkXFr7BqhoH8MAbif7xoEPFP6CluVw8i3Kl21KiR+d9uf1gHg7dNA2fXiP/zsd68uOuHj0/Ah+Vco1cwav0fkpQ5LdhE30xrlvIb+fZb/pjz0o0tavLosCIhBmb9E=
+	t=1790676418; cv=none; b=q6t6JtbBsiFnmn4IX5UigpyAggawLdEyl60NPX5WFzVLV/dvmgU1uiatamxm6Oxe5UXcHHlhT39BI2SrJqqY3qybKpwYh9PzZZ1Njhn8C15r4YDRDNZHMEjZyb5dF0aQ0nI5LTrkcYw3qCOT5ymQAMRibV3g2yUHbWKLRrvhcH0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790661631; c=relaxed/simple;
-	bh=MxIjbY+nCFDzb/mYxJRGXsjLBXyWtF3PH/c/tyPnNYg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n9s2Fxsmq5gUr2E/lZDsQfuPIgu4X6rB5PkXzRK7bcc1GDWN/czBlyWrgyfgC0OBX0p3fRSTda8IekD1icBTDXcyYSxCajMRKUhe3IcPZMSD6x0F6DUaAaBOzRg2gnFdoDU+g9wTnr7Sdn7wRBEHQd16KF/hhx2tsRDZmgkFGl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G1J1Klur; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790676418; c=relaxed/simple;
+	bh=M2+HHLFcYk7VtvS0Umt037Gs6V6AShQYZEnBPnokhyc=;
+	h=Message-ID:MIME-Version:From:To:Cc:Date:Subject:Content-Type; b=J1ucQ4xyuqk3C2d8iyS+Hucwk8ilC3/elfeVTf3HJApatUSUzL8ObExLPeP/F6hjBqGMm2c3i8Q7OwTL2E0LJ7nbtNhS3n+P6cS0CJdZX+gqYL62/obNUUDVLfcngBn/8aORaF3D/1z+7N+Ben+ZddvBsVBnLColyfpO6TidZO8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GtHYvsgx; arc=none smtp.client-ip=74.125.229.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G1J1Klur"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4262A1F000FF;
-	Tue, 29 Sep 2026 06:00:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790661629;
-	bh=NGAaPG7jRPlDWonCV4b+j4uXcMNeRtG8skJ3xbe0MqQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=G1J1KlurOMHR2PzfPmLqvKZVPWFENwQ7lGYp5wHCb6STEmfpu+YTIdGFm/P26tDer
-	 u9iLlW8TR3EqgH1goqWA4Y6RBjM/S4hoDQPnKwtZ4n85wrf5YJZMpXKi6MMtaHz2R7
-	 c/MaNz9qBFoA3yfgN4QGSGYFC1zUpPz9lQJZ5I1zUhm+GDdgY0fhww2WNOxEEOk9SN
-	 l9WCJzjspLycZ4ONuwCwBJQ+HM7/EkFVtx7P+Gw6+A+nca6fwnm/gWT4I2QJInGzMY
-	 qt2MMSQ/m32D1w7kTg0gwLw4xI9ONRjluFmOk3M9RaShB7si6G5HmylGvP+Z2mZSRT
-	 PaD+MaI/CdpQg==
-Date: Tue, 29 Sep 2026 08:00:26 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Manush Prajwal <manushprajwal555@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: tiehrpwm: fix copy-paste error in obsolete DT
- binding fallback
-Message-ID: <artTMprq3aNbVrLN@monoceros>
-References: <6abaa9fd.8a95a640.187520.71d6@mx.google.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GtHYvsgx"
+Received: by mail-dy2-f43.google.com with SMTP id 5a478bee46e88-34b3e517e6dso222859eec.1
+        for <linux-pwm@vger.kernel.org>; Tue, 29 Sep 2026 03:06:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790676401; x=1791281201; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:subject:date:cc:to:from
+         :mime-version:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=M2+HHLFcYk7VtvS0Umt037Gs6V6AShQYZEnBPnokhyc=;
+        b=GtHYvsgxqFb2t3A78+M3H3ME5PyfdB0PLiNaX/2MXG0i/TmNpnpUOO0ThAgNhwuBh+
+         6CSBb5WO/YhR1kHjV1bVXv/YPM1upfcJMXvrTZGyheqh9m/Yjy+lAvHJBNepyoJ/7kLc
+         If34+HdCbilSnVwi/mw6/2mI9LFqkE7jHtIRJkPmgI1Pi8XcwkADtioDWvXjuqSKZN3/
+         Jx6wV8qzHeIcfqRy8a31b60sgccAR0I3JdjGel5dlCsjh4qZjNusxq770PPWi7sobCPi
+         Nc1X/gkyf5vH0rsPdS0MHPlMZzZDf7PzXOD2ujTUTcH0znw9yAS5J1AyNHTIDPea007Z
+         yYtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790676401; x=1791281201;
+        h=content-transfer-encoding:content-type:subject:date:cc:to:from
+         :mime-version:message-id:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=M2+HHLFcYk7VtvS0Umt037Gs6V6AShQYZEnBPnokhyc=;
+        b=HB5ZLNHxUTR4FqqDweBD6Y+UCJAI4jBMKt4K7DqXsTq90ZtfmfUJRTEAT+V6dAp/LA
+         lI3O5JUX31xnh/JEe1D/Z6kVOkWqv66SpFA0Ra18QmEkkAZxjGQOiIuJkPIS1OXNHCge
+         qPssgOF/1FmoELwDTFP8nvUT1ZzBFoyEEo1Rgojqau1iDAsGK7A9j5S4B8DGiGOIe4T+
+         AhIb+pupivXFoODhJFJT80NtnAlq6R+bnynERda8TK3K3YNPv6ZkQxL6Ie8ktvE3ruwW
+         rKcTqgI/MeN7wnp+iUaVSSq4opjEtwjHFaeq1Lua6FAJ3fGWWgcjK02XgO1C/Er7s4GJ
+         3Ixw==
+X-Gm-Message-State: AFuF++lPHuVrxm9DYwI8sDF3pQMLs6NwFMue6niUJXiw9Ijy8U4aa5FR
+	HyWeEGVhn1ow8ZcFNqJhOfhl7tMTUxPGLiBsBM7iBVq3TXlG8SMDPiC1
+X-Gm-Gg: AYBFou33AYwwRFVX4yQxtZPbUDFxM898Y5ihNq2z+YiEegdmELrYcYQW/5NC4qQddjr
+	K0KQz2VrOKALOp2p3xx3/Fm9mBu0VkosooQIyjk5TeZSLIFI/DsfBwLxBfUioOZNNbiVXGgWUGW
+	vqI6mzsA700LExwt0ckyaEKxNY2crGA/N4BW8HJrx53PaExkb00wMWFGkhTxz0ZVXPvUGSvrvau
+	Z7KN5GZIBM/A38kmCXOOFdFXTeOoPMg/0dXhAi4TFOU6+EqOD2E3D/jSVTnprwzOzpLpnyevlYd
+	yPlNLxIHlkYMbxW9svTcCCMa/VWFfUuDUEvG7TswbxMpWNyGjnaqY+f2sYYw2OCs9w4VKiYLYUQ
+	GqPeKi/X/GI2Un7VY5ql+B7WvnifDAtUIxk2uBaoS2ptsHx+MdgliOSmY8Wg/Ods/Lwcf0IPx+R
+	bDYG3GGMHLgsTGdVLFJdlgztG3O9LjX3xdarVtNQ8z/WiQDBvIuIoalxGPfDrGnt26t2QlKYpmu
+	B3GhTuRHYRggIfNGYFmNZiqFpxYaSYaL3U8h/lEmcmcZUHCTwU2uTuNPx3ZR5akT04=
+X-Received: by 2002:a05:7301:da88:b0:33e:a173:4aab with SMTP id 5a478bee46e88-34270aad672mr11969632eec.14.1790676401025;
+        Tue, 29 Sep 2026 03:06:41 -0700 (PDT)
+Received: from manush ([2406:7400:94:b571:88c4:97ae:bb47:4040])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-34b7a4d1f42sm3244951eec.23.2026.09.29.03.06.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Sep 2026 03:06:40 -0700 (PDT)
+Message-ID: <6abb8db0.721b4d7a.30484d.cb00@mx.google.com>
+X-Mailer: git-send-email 2.46.2.windows.1
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="p4amw4ytnox6vduk"
-Content-Disposition: inline
-In-Reply-To: <6abaa9fd.8a95a640.187520.71d6@mx.google.com>
-
-
---p4amw4ytnox6vduk
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: "Manush Prajwal" <manushprajwal555@gmail.com>
+To: ukleinek@kernel.org
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: 29 Sep 2026 15:36:40 +0530
 Subject: Re: [PATCH] pwm: tiehrpwm: fix copy-paste error in obsolete DT
  binding fallback
-MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Hi Uwe,=0D=0A=0D=0AThanks for the quick review and for digging up=
+ the Fixes commit.=0D=0A=0D=0A> Looks right, I guess it needs:=0D=0A=
+> Fixes: ae5200d22716 ("pwm: pwm-ti*: Get the clock from the PWMS=
+S parent when using old bindings")=0D=0A> =0D=0A> I wonder: Did y=
+ou find this because you still use the old bindings, or=0D=0A> by=
+ code inspection somehow? If the latter, maybe it's time to drop =
+the=0D=0A> handling instead?=0D=0A=0D=0AThis was found purely by =
+code inspection during a review of the PWM=0D=0Adrivers, not from=
+ running older bindings on actual hardware.=0D=0A=0D=0AGiven that=
+ this fallback in pwm-tiehrpwm has been effectively broken ever=0D=0A=
+since commit ae5200d22716 was merged in 2014 without anyone notic=
+ing or=0D=0Areporting it, it seems very likely that nobody relies=
+ on this obsolete=0D=0Abinding anymore.=0D=0A=0D=0AI would be hap=
+py to send a patch dropping the obsolete binding handling=0D=0Ain=
+stead (from pwm-tiehrpwm, or from both pwm-tiehrpwm and pwm-tieca=
+p if=0D=0Ayou prefer keeping them consistent).=0D=0A=0D=0AOr if y=
+ou'd rather keep backward compatibility, I can send a v2 of this=0D=0A=
+fix with the Fixes: tag included.=0D=0A=0D=0AWhich direction woul=
+d you prefer?=0D=0A=0D=0ABest regards,=0D=0AManush
 
-On Mon, Sep 28, 2026 at 11:25:09PM +0530, Manush Prajwal wrote:
-> ehrpwm_pwm_probe() attempts to provide backward compatibility for older
-> device trees where the functional clock "fck" was supplied by the parent
-> PWMSS device rather than within the PWM child node itself.
->=20
-> However, when devm_clk_get() for "fck" fails, the fallback checks:
->=20
-> 	if (of_device_is_compatible(np, "ti,am33xx-ecap")) {
-> 		dev_warn(&pdev->dev, "Binding is obsolete.\n");
-> 		clk =3D devm_clk_get(pdev->dev.parent, "fck");
-> 	}
->=20
-> Because this logic was copied from pwm-tiecap.c, it mistakenly checks for
-> "ti,am33xx-ecap" instead of "ti,am33xx-ehrpwm". An eHRPWM node matches
-> ehrpwm_of_match ("ti,am3352-ehrpwm" or "ti,am33xx-ehrpwm") and will never
-> be compatible with "ti,am33xx-ecap". Consequently, for any device tree
-> using the obsolete "ti,am33xx-ehrpwm" binding, the fallback never triggers
-> and probe fails with "Failed to get fck".
->=20
-> Fix the check to test for "ti,am33xx-ehrpwm" as intended.
->=20
-> Signed-off-by: Manush Prajwal <manushprajwal555@gmail.com>
-
-Looks right, I guess it needs:
-Fixes: ae5200d22716 ("pwm: pwm-ti*: Get the clock from the PWMSS parent whe=
-n using old bindings")
-=2E
-
-I wonder: Did you find this because you still use the old bindings, or
-by code inspection somehow? If the latter, maybe it's time to drop the
-handling instead?
-
-Best regards
-Uwe
-
---p4amw4ytnox6vduk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmq7U/cACgkQj4D7WH0S
-/k5ovwf/f6jpWHuSdLq1BR8LCX/XnBPZPFkh+mDOzSq5xhz4IFCBIIEmJj06cJ9e
-s0NC/hBxiwNxqN25PVG87FCjkmOn5C8cBaKhYUdZxDIlnbHn/kcjjFuVV0bIzKue
-5Dc4N6v6WR1wSttsJ3pIO/LiEbD09BH1RDhT+2hhaWxgTantqW3Y1BEIcedjVPxB
-Cwb0xnXCgr+EANDMqsq/UDRYqtoapNxq4MSupNemOFPkjpbPe8xIjHfmGwPMXioN
-RiAGPYUH8RZJwfMFhJpJmALjO25ws/+R95uwwWQdM4aaKsTXRBo09pFxG2gXWsaZ
-+Qhb90NN2uYzCVTgtVrbTiQPrMC6xQ==
-=1zr6
------END PGP SIGNATURE-----
-
---p4amw4ytnox6vduk--
