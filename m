@@ -1,139 +1,124 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEBEE45D91B;
-	Wed, 30 Sep 2026 10:29:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B955D404BE3
+	for <linux-pwm@vger.kernel.org>; Wed, 30 Sep 2026 10:33:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790764186; cv=none; b=EJs8lLm5Mgb59yDzeKhTaVzdjf5l7VCZNj8bt39Htb7judQiO7E9FaR0N651eVrKwQKp3iELt3B0o7wELhJ5J1Hi7XqxBf/uBbecxdTiThfBS/iRwVX2/UAcc14+I7KtUlhWB3m+ncu2SbCPwxv5w2VCl+O+B0PqvjGzRB25RHg=
+	t=1790764407; cv=none; b=R31+Z32fr0fiiTqBI5fO8MbSu/DOes8xe6Atehxz1pwj0/gZwb+b+sjh1YEMYnrqYdOEudQ8/iXqf7iAPC62zfI/tqUU2mt0EA0AALwTEtL9iC5ByvSTot7Ic1xfECPLU5nuEf/tyajhZMAA8K0Vhc+ezE1B0HWZFzaXgZ//U2U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790764186; c=relaxed/simple;
-	bh=XypHvjK5uPib3gTzLMK3ROmEL2JUJgny3XWTGHw5q7U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m5v/DTg2gKtx6QecgoctSW+FIv0CUpgSpljwsCywegU3BVEivtXe9WiTs5/QF48w5/EbOreO8n+SAc6d58a/Qdoros98dIBdpgI03+hdoSXI4S5M7inhIuF/U59nR56vs/S81Hol3xHIAVcP+Oiigm7FbLmvpBMa3OMNLyMQsW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FAAUlSno; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790764407; c=relaxed/simple;
+	bh=Afge1VGxYThuk4VFTZQjrw9p5H+Ni7gcE5O2Mz88XpE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=brOlF55nET+KGt7Qa3n0wZeOsK8A9YrmDBynWepocAZUxVELJw3OyzTuvcwEXNWrjeMhKSy3od7gK7qkqGrj8yeAV4gB4hDdUIszh1XzRC+5Jm/oMPlKADn8v0Nl19bL/99rItWXMY1FGOHaNd53OdR/78ZQcvYZ+R7j/FKEiPY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=E2lOBVIo; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FAAUlSno"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC0451F000FF;
-	Wed, 30 Sep 2026 10:29:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790764184;
-	bh=XypHvjK5uPib3gTzLMK3ROmEL2JUJgny3XWTGHw5q7U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=FAAUlSnoYYurnCYex91tc1QBD3i/oUzFFyh2x73vvFgF4jP7xNvXO938l7CgsuQlg
-	 lGm5ZLeV21M9u/s6zEzBlvvXNONH9/QAxi4S0nvMJWNwFoLABFtUWwqKn0KxDkRAuT
-	 Y+1rr6fSdAZx4PfwALwUlkOoG4OoWFYzgQrY7+wjKFE54EqLYVFrIRWyZFqBTew79q
-	 ieZ4eSnDosiIY3ODS1QWftgZYFKIaZLphV9B7mUL8AK8vm5NV95clVDR45euA96ltT
-	 1paIxCfqSrTzEu7+9iT0HyWzuDHzZ0b2GgwqVucgVteKh8sbdkei/2kNe7xEbsvSgP
-	 iNRO7X1uLWFkw==
-Date: Wed, 30 Sep 2026 12:29:42 +0200
-From: Thierry Reding <thierry.reding@kernel.org>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	"Ola Chr. Vaage" <ola.christoffer.vage@scoutdi.com>
-Subject: Re: [PATCH v2 3/3] pwm: tegra: Implement .get_state()
-Message-ID: <arzjXtZj0hIf5iZU@orome>
-References: <cover.1789741839.git.u.kleine-koenig@baylibre.com>
- <b72b16cf704aa662a1b49805db284379d4fa4050.1789741839.git.u.kleine-koenig@baylibre.com>
- <arEAjOHU4rH5aGqb@orome>
- <arE932ZcHGB8RAN6@monoceros>
- <arJTSEfkILPQmqNV@orome>
- <arzcE4nVRTAK9C-X@monoceros>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="E2lOBVIo"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260930103316euoutp01b237ab9aeb016b85e3a1c93767a89220~aErsBqEAo2513325133euoutp01T
+	for <linux-pwm@vger.kernel.org>; Wed, 30 Sep 2026 10:33:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260930103316euoutp01b237ab9aeb016b85e3a1c93767a89220~aErsBqEAo2513325133euoutp01T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1790764396;
+	bh=FJ+htCVvKAhLkwC8CUAuytt3OB7IBWbiwLyL2rvPoSg=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=E2lOBVIo/7n1IPo2fFD6qsSxcKMCFCoNKB79E6YI9JVI3ET/dGqoHL7EsoEM5F3d2
+	 kV0R6PwC6d+dXDLN/0VgElM3s3wu40j9RkJIhNAlFWC2Q1xj1VfKbje48WvsZoDLm3
+	 zLk3l3+dXG+F6trEvKNgxC4KIAldNa7VQ0vVtGJ4=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260930103315eucas1p1dc6504dfed6803e1f6c1a9d4156e3da0~aErrrMstU2676926769eucas1p19;
+	Wed, 30 Sep 2026 10:33:15 +0000 (GMT)
+Received: from [192.168.1.44] (unknown [106.210.136.40]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260930103314eusmtip169db81e9f1c9f97f31c91e3ec55f06e6~aErqyiXeU0732407324eusmtip1b;
+	Wed, 30 Sep 2026 10:33:14 +0000 (GMT)
+Message-ID: <a95a44d9-6572-40f4-ab6d-1c160ecd5349@samsung.com>
+Date: Wed, 30 Sep 2026 12:33:14 +0200
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="x65eqfhbbjg6hmbn"
-Content-Disposition: inline
-In-Reply-To: <arzcE4nVRTAK9C-X@monoceros>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] pwm: th1520: Fix 32-bit build with COMPILE_TEST
+To: FUJITA Tomonori <tomo@flapping.org>, fustini@kernel.org,
+	guoren@kernel.org, ukleinek@kernel.org, wefu@redhat.com
+Cc: a.hindborg@kernel.org, acourbot@nvidia.com, aliceryhl@google.com,
+	bjorn3_gh@protonmail.com, boqun@kernel.org, dakr@kernel.org,
+	daniel.almeida@collabora.com, gary@garyguo.net,
+	linux-riscv@lists.infradead.org, lossin@kernel.org, ojeda@kernel.org,
+	tamird@kernel.org, tmgross@umich.edu, work@onurozkan.dev,
+	linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org, FUJITA Tomonori
+	<fujita.tomonori@gmail.com>, stable@vger.kernel.org
+Content-Language: en-US
+From: Michal Wilczynski <m.wilczynski@samsung.com>
+In-Reply-To: <20260930101257.1649945-1-tomo@flapping.org>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260930103315eucas1p1dc6504dfed6803e1f6c1a9d4156e3da0
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260930101334eucas1p2ec64abcf499a296767711f13ad70c486
+X-EPHeader: CA
+X-CMS-RootMailID: 20260930101334eucas1p2ec64abcf499a296767711f13ad70c486
+References: <CGME20260930101334eucas1p2ec64abcf499a296767711f13ad70c486@eucas1p2.samsung.com>
+	<20260930101257.1649945-1-tomo@flapping.org>
 
 
---x65eqfhbbjg6hmbn
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 3/3] pwm: tegra: Implement .get_state()
-MIME-Version: 1.0
 
-On Wed, Sep 30, 2026 at 11:54:03AM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> Hello Thierry,
->=20
-> On Tue, Sep 22, 2026 at 12:07:26PM +0200, Thierry Reding wrote:
-> > On Mon, Sep 21, 2026 at 04:26:03PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> > > On Mon, Sep 21, 2026 at 12:18:16PM +0200, Thierry Reding wrote:
-> > > > It feels like this has too many assumptions built-in. That's mostly=
- a
-> > > > predefined issue, but I think if we want to get accurate hardware r=
-ead-
-> > > > out, we need to address this.
-> > > >=20
-> > > > According to the register documentation, the PWM depth is 16 bits w=
-ide
-> > > > (on generations where it can be programmed). The value defaults to =
-255
-> > > > (which is n - 1 encoded, hence TEGRA_PWM_DEPTH), but it can technic=
-ally
-> > > > be reprogrammed to any 16-bit value, as far as I can tell.
-> > > >=20
-> > > > So I think for this to be correct we'd need to read out the actual =
-value
-> > > > before overwriting with TEGRA_PWM_CSR_0 contents above. At that poi=
-nt I
-> > > > think we'd need to either adjust the mask to be (2 * depth) - 1, or
-> > > > maybe better yet, avoid masking it out arbitrarily based on the dep=
-th
-> > > > and instead cap it at depth so we never exceed the 1:1 ratio for du=
-ty
-> > > > cycle vs. period.
-> > >=20
-> > > As long as .apply() also hardcodes TEGRA_PWM_DEPTH, it's IMO fine that
-> > > .get_state() does so, too.
-> >=20
-> > Okay, fair enough.
->=20
-> Is that an Ack then?
+On 9/30/26 12:12, FUJITA Tomonori wrote:
+> From: FUJITA Tomonori <fujita.tomonori@gmail.com>
+> 
+> Fix the following build error on 32-bit ARM with COMPILE_TEST:
+> 
+>   ERROR: modpost: drivers/pwm/pwm_th1520.ko: symbol '__aeabi_uldivmod' undefined!
+> 
+> The driver divides u64 values when it converts between nanoseconds and
+> clock cycles. On 32-bit ARM, these divisions are compiled to calls to
+> __aeabi_uldivmod, which the kernel does not provide.
+> 
+> The TH1520 is a 64-bit RISC-V SoC, so the driver is only used on
+> 64-bit kernels. There is no point in compile testing it on 32-bit.
+> Limit COMPILE_TEST to 64BIT instead of changing the arithmetic to use
+> the div64 helpers.
+> 
+> Fixes: 3c180003dffb ("pwm: th1520: Fix missing Kconfig dependencies")
+> Cc: stable@vger.kernel.org
+> Reported-by: Andreas Hindborg <a.hindborg@kernel.org>
+> Closes: https://rust-for-linux.zulipchat.com/#narrow/channel/291565-Help/topic/64bit.20division.20in.20.60pwm_th1520.2Ers.60/near/626825599
+> Reviewed-by: Andreas Hindborg <a.hindborg@kernel.org>
+> Reviewed-by: Gary Guo <gary@garyguo.net>
+> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
+> ---
+> v2:
+> - Fix a typo in the commit message
+> - Add Cc: stable, Reported-by and Closes tags
+> - Add Reviewed-by tags from Andreas and Gary
+> - Rebase on v7.3-rc5
+> 
+> v1: https://lore.kernel.org/all/20260929095612.1072417-1-tomo@flapping.org/
+> ---
+>  drivers/pwm/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 729776086879..abecd95b0c3c 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -772,7 +772,7 @@ config PWM_TEGRA
+>  
+>  config PWM_TH1520
+>  	tristate "TH1520 PWM support"
+> -	depends on ARCH_THEAD || COMPILE_TEST
+> +	depends on ARCH_THEAD || (COMPILE_TEST && 64BIT)
+>  	depends on RUST
+>  	depends on HAS_IOMEM && COMMON_CLK
+>  	select RUST_PWM_ABSTRACTIONS
+> 
+> base-commit: 72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
 
-I've been thinking about this some more and I don't know if it really
-makes sense to keep hard-coding TEGRA_PWM_DEPTH. If only .apply() uses
-it, then it's mostly fine, I suppose, because we don't care what the
-current (or initial) state is/was. So we either don't use the device or
-we overwrite it with a custom set of values.
+Reviewed-by: Michal Wilczynski <m.wilczynski@samsung.com>
 
-Once we add .get_state() into the mix, now we kind of have to care about
-the initial state, because we might end up using those values. If we did
-not care, what would be the point, right? Which means that if we read
-out wrong values, we, well, get wrong values. Which then may mean that
-we overwrite values that we shouldn't, etc.
-
-I suppose this would be okay if we reject any depth values other than
-the default as errors. But then we also significantly reduce the
-usefulness of this patch.
-
-Thierry
-
---x65eqfhbbjg6hmbn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmq85JYACgkQ3SOs138+
-s6GMSg/8CShCqOv5o6ZDmB+VHSaIQFFGttOeoXgmzAA2smnA4YfobLPobkLnCycp
-Jt9Nl1ks+s7Y7XilTXZxPjeg6a7vlKlNB1MPZZVfS7Me83rdJaw84jj92pVtl6Ar
-8nxcah0tE/jcbS+RS2A419cch5o9sS8RtaCqR84vyQwxiht/EqHLDjTXr1ysW1Yk
-2zcPgErdivSMfe9dipW9ZkmLSeZTVDHT9YMnC6/51C9wPfcSBqToiFXKRxpgMlw2
-SgRwmUWEp3m6CfumD5bQWJ2uPCkrIJu5PNy+MNcL9qQgtxslworz7FgeSpFCgCtr
-2JYyllAYKzHgrktKfMS3BYyRonfWzxTZ26JxZKgxRZKx6nKpDpqB/n4fp9cHf01i
-8m7M0gd6BKtSYcZ/jJcvhJTnyNS3hMbxjx4YVzwzZ+V4AJg6NJATFn6Z5R/Ov4bb
-/HKdZdajsmI2Rlr0JpX/z0gSInNnl/1bjB5u56dMdx0YE2VZqM92dNPqdIo1j4CW
-1Ar/kXTdJmeEnhI7teoaB1VAucD8H0masAOfLNmrxAnMMvLUU0HxA9+sQmrYeQq5
-SkImXEY2a3AjnVADJv9TVLtb84F6idEb7MumGTyasgwApf81ASPj85CAGxSL/oEl
-JFg1o7zJFEkvTfLtfB41fME8Wajus2WokswqmEh/2jkHNCO5ybo=
-=AW50
------END PGP SIGNATURE-----
-
---x65eqfhbbjg6hmbn--
