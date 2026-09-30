@@ -1,153 +1,128 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fout-b5-smtp.messagingengine.com (fout-b5-smtp.messagingengine.com [202.12.124.148])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D6493750CF
-	for <linux-pwm@vger.kernel.org>; Wed, 30 Sep 2026 17:05:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155B13B9D91;
+	Wed, 30 Sep 2026 22:02:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.148
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790787937; cv=none; b=WdYZCJAst0APjqK4p03uUmPuCB0sXrf4GQTuauU1Ken2/DS5kbQfjKAbbzhwNs01zkHUxb5NfHbAnvC165jLrWdvQwWBdT3liu1KwfsIIE37l4tkNbCPZ8ZQ/CPUeiepsmwduRyU1bY+pRHLw1QUFXcee9qHyDLltBKa4q6OjW0=
+	t=1790805746; cv=none; b=rskaUDnmnCNDAfMGh8NNV+se+kz0LopXgCto+kYthgedMk3x+IWMnhK8kcOVTDv+U7Pwrx11NMRLkZ4VKIVzOkDRMJGzHJ3lIFBnl1PkIVN4EJsuekVOUkhb9vUn3qxLEb0+vttrmg5QmrBEoEkWwvFZuG14HmYSHbX7/MZJonU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790787937; c=relaxed/simple;
-	bh=ZAUUIneOAYnu5HIH9P7hXzk9WJKgXOYtiwGV8misX4E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P+YAeRb+ex69txgxPoouD6pjoxwEw1fMj0EHLDeKXKAvWCqj5jyQduUHkL0zS3iayyi03tiswxHaUNBp8kVfR34IBSuh0fAz9mS+xliTLmhtpRb2w/WINZpv6DuTjTDdjIh7Z+m5ae5KXuGnzSNks8UdUNq3vYvzcZEPGp4uNaA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ZVWwwLUK; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1790805746; c=relaxed/simple;
+	bh=Pni3qt6SQR0WSSoYxhV/3fWi+ppfTQbsXTLwAc7Nkgs=;
+	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=nZDakSle2JNmAdAap/ENGtKEuX8Z0jF1sU5ilibbCWfEILpx9q+sOas9EBbzMMXe84+sMCkALQaLLaw5DVDKgb6MbZHWP7ileO+hu/yW2d/LdqysJtGJPZPx2cN9J6uoI+ADphh3YpzMbswZv3tIG1/e2Czd5Zl2o2xavrIAGDk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org; spf=pass smtp.mailfrom=flapping.org; dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b=hICjf1Gy; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=vLqhHXG3; arc=none smtp.client-ip=202.12.124.148
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flapping.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ZVWwwLUK"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e6c0fce17so30779465e9.1
-        for <linux-pwm@vger.kernel.org>; Wed, 30 Sep 2026 10:05:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1790787934; x=1791392734; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ZAUUIneOAYnu5HIH9P7hXzk9WJKgXOYtiwGV8misX4E=;
-        b=ZVWwwLUKySpTSjgnfZr09+nNgZkXpUBysyD+h4aUcIeyP3IuzzFdqzIiTFuTeZdYHN
-         RJbJvTCynxmEcSPHFTe1oVTfnEdUcCbPks2AtvOHNivW2bKOVP7a3c93nqcww/hnk7ID
-         3P9Y4HRa39NjCe9dKP/S1uzp590EUsV7fQ0wfSzGqEBB+Tis+ZfJLk89w8jFJlt0WyGN
-         +r56Ta4Lz+sIj1cXgx7EtA7orsAGqU6hDrmFkUsKZ31YJVaFmo1AkBKOHdw5HOfYiAEc
-         AFCMgh4f+Mlx2m1m/qAIiQV5QssJVOSdzYg/nEljpMIR2x4Mk61XYT0YSOlbYNO831xY
-         i16A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790787934; x=1791392734;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ZAUUIneOAYnu5HIH9P7hXzk9WJKgXOYtiwGV8misX4E=;
-        b=VulnJSRTh5qARaDtNyMEapskqqLSpsR2393NUeWeYBUDLEJaKFKT2gITcKPtEphUh0
-         2Q6BOBlZhT66dIB4enY1gWk3mA5rDc3JXzAwdVtaqc/lNyqCGOnDUmyRgvSMzHI7tvSt
-         2y97vtECK2pN0psAbprbFdFJgiDM9RXd014z/1xuEj6KAg0KvuiSrFBvOPHEFpbXLo1M
-         0Tr1ygx0ZHs7pV3588yp8i7LIvDsP6Ll+1WPRKOBm9McIjaM5QESE9N2gv9nqi0v3CN4
-         Ct+3w4dAdKPTFE251OWkhX3xSMuoMbZhNj6RACQdLF33reU/Vc8qAz6gXIXkj1vgnIxb
-         v3QQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwZ/6JiEisVv7tsiCLvBYm3eDDVWRJzn9S495Jm+7jkY2aoW53bojepOXlDhlOBFf/hqRJAPMR3/74=@vger.kernel.org
-X-Gm-Message-State: AFuF++luBSLqIhNq6K0FNOW5kvnmGDgAV0hYlQ0HYLbLjf3mXXHd9Wx6
-	3j2huVtx7ivc/DJhR8HpHB7CgVqSPGiWzkw6MLDzww4wjZpNd/cwQVO4X2BvDC2sHMI=
-X-Gm-Gg: AYBFou2XNVlCXR1xIoxmOeiO2PB2SAfvT6LLOLM31j/pjk4vjSh41QMEy+6AnJa8fdT
-	lENt8xjX6qjlFuHePW8sOhmqZa/L7T/AfnCjyuC5BiuKPN4zHiSHOkJBfWxBFXrdXSx+80KtW/T
-	q8U+kDtvewZUOisYjkgSMCcQouDPGm/Oa+0I6daVg7rsUOJN2YlMozTmrWwkINxxFf6SnuY2860
-	ini/tweJ8t4hqQy+RAGg+NbyefLsUn/ZPfYYKZthncWCioust8Hz9maWMinNZ6Xydv8tkjCtbIi
-	ZKr2aWiaytBYV9H68bn++wy13XcVYoXmXQotKo5P3perSuL/tLLtVo+Ji0IOkD8a9inLAq1Inl0
-	6Cv0eZKD2+X04jjWRm0DYjZ/SHG10FwpzCPudWyFqc18RPBOgoc2D+6Sx+ZmNGPsh2Vo4L43RBA
-	GZhrwJtsV1eBM8TyfAq1xw8+UTMqRLC9X3UrAUhGne1CeQ2lLGjYXCKiPUhJFPX2wuzcghgmILT
-	k3Np7vrFlsC6PZkTKMD1ow6473g+3W7qtakf9J1vwZdASBXkAabK3xJ7pSLU4c=
-X-Received: by 2002:a05:600c:1f87:b0:49d:174e:2a1e with SMTP id 5b1f17b1804b1-4a01afe1e05mr38534285e9.19.1790787933541;
-        Wed, 30 Sep 2026 10:05:33 -0700 (PDT)
-Received: from localhost (p200300f65f19a904e5d8cd228f56d36d.dip0.t-ipconnect.de. [2003:f6:5f19:a904:e5d8:cd22:8f56:d36d])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4a01ef9b996sm784555e9.1.2026.09.30.10.05.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 10:05:32 -0700 (PDT)
-Date: Wed, 30 Sep 2026 19:05:31 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Thierry Reding <thierry.reding@kernel.org>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>, 
-	Mikko Perttunen <mperttunen@nvidia.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] pwm: tegra: Check for match_data being NULL
-Message-ID: <ar1AKd2_V8FX_3V1@monoceros>
-References: <cover.1789741839.git.u.kleine-koenig@baylibre.com>
- <ed943d9be3b785514e0f65a5b8c13a78aba7a090.1789741839.git.u.kleine-koenig@baylibre.com>
- <arD7N6A6ncBNR1Jk@orome>
- <arE-s0zbTUn14aIr@monoceros>
- <arFYGka5NpcgJ8oQ@orome>
- <arI8vXaKTvEJi-Zd@monoceros>
- <arJRPVsReXWfUC_o@orome>
- <arz4S1-q7DXM8y4s@monoceros>
- <ar0JBTAxcXVmTx1b@orome>
+	dkim=pass (2048-bit key) header.d=flapping.org header.i=@flapping.org header.b="hICjf1Gy";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="vLqhHXG3"
+Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
+	by mailfout.stl.internal (Postfix) with ESMTP id AA5FB1D00060;
+	Wed, 30 Sep 2026 18:02:23 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-01.internal (MEProxy); Wed, 30 Sep 2026 18:02:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flapping.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1790805743;
+	 x=1790892143; bh=+7vzyzmPNyBsCrlSJl2Rf6M5M3oPOAwKb0gYKlfEvRU=; b=
+	hICjf1GyQ/UqyyDNFehn5s+vguTlIU89BjeIOAAz74NblGtZZ3s8WJoGmZp+N/fb
+	gzJjhvpntD0FvkOwsiHnZ4/NAfAKaFaAtnxm6K923Bub6XCiaG347ciF6rFcjf4r
+	EPR+ImEzAq6En1j95Wp/lvsGmYpZrDlawVDLN18dZJPlfGxoBr4DS49vUPRHIhpx
+	oSMRpOe6hnTOlVRoyEi2D97oSw/JS7i55gvmc5XcWYUBhorsMWuxFa4gpttSzds2
+	XETFQjc01F1bk7nlwe0iWPIs9B+z2eYSJQMyewLXA02gTGvSV7/JOuAIYNtPNyJp
+	WH3UzmzMXCXXvu0Lx3ewBQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1790805743; x=
+	1790892143; bh=+7vzyzmPNyBsCrlSJl2Rf6M5M3oPOAwKb0gYKlfEvRU=; b=v
+	LqhHXG3hwWHSqLdAQdxixh7PS/BdDA0eZVOa88zAHusLwDTcT3wu03qFuZ5UOByH
+	WyCsgLjjr2pr7AZoQjfEJs4qwXONXkROxjK3XtZAF3TLmdDm7INOH9/u16mu2abg
+	gFo2EuRUOHoxHf0Yp97JkwZmWIkygHOyoJFaWd8cpyFfQTueByrxPwQ1eZnv9juB
+	WpoErhUC70/Hzy7QpEXHfq5IBGxgxfWQJIzgtfVJzvIdQDigLEjOlCjR8//q6ldk
+	oSojeqX6c99hyPB0gG55uOE3NlMgOUy79i83ZwQ5HWuCQ346SRr2hd4P9Q7KRGas
+	V/f70B7l6O7rTb3eGmKXg==
+X-ME-Sender: <xms:74a9aoc5uF06efgQBMXQFmJ5FNynnWA-AM4KIxHLTOTDABfNDPC6EQ>
+    <xme:74a9auIPvlOYpXkA3TNoVHJCGTcNWdWryAPjFTr-0j7CmmbR1irZmcMsOKA-IQfrK
+    tQhQRWk8xcaAewgTvYP1Gljq9XR3qrwOj9Plyiwb8jlDtQXcCfycBoY>
+X-ME-Received: <xmr:74a9aiAPR1MHh3h4mZ4kYGjuJ9Mq2hPoCXZhdwIlssJoFhklqa41XBXLyZ6i6o_vZsRnAyqaT_TFjKY1_V9x5BEh>
+X-ME-Proxy-Cause: dmFkZTEh8a5mtMwJjm4OP/JFppemW1RPRtmhJ6QT5a6YrkqSaMjdfLQr1wK/lXFXXVqtLN
+    dfY5ZMQ533nSdgeO5vEeYT9mwMP0Grqc6B3CAICqST+5eeAq5FOxfz8ZHLeopm8rwIwKYp
+    AFGFm7XF+qXfB00CeOPH/mjk2W0d8pvz0382nekCbaDcgFuc83qPtWIQsuoA/Jc0eAC5mY
+    J4pzDFaTl00fjaYL2d3KgJvqxELXgjQP3vgY8op3EK5Eppion9z1GafN4NZljdrR34E1GG
+    Pl71NsKJMrjyw3U/dbnaJ3IiGmM8lnXBVyMfnSEIhCozL8tlU4XQH1yWzYqooyGK4qyPLL
+    MMgA2dDQtFM+R20LjuDrWtGDxiZ8N8TjjWTGyEGRRY7jMdJ8+3icRjXcsL6XplUizqBfey
+    y6sy180EWVponJsHkYa3L+aLaXe+aOfMUUtRniJ6xVk1YSp1cnG1HM1hLV1L0OQsyH/PSL
+    YHsrVMUu62G+jTtJSj5Y7/Vny24vPdVsVRepXpKC0IJAByo9s4p22bvWHCp4Tnkgkh+zJs
+    Tg4HZ6aSTqT7gZ0bVnk5vlBxxLAe8Xd4SDkpBWGVPfKe+STSALZySObNwsdY2djRk7KVxk
+    LBQ6ewd0BN92ObzVQL4Lw1kDQlQR91fxZ6ayOyMc2sFD/fPt9Z9xt//bBNBQ
+X-ME-Proxy: <xmx:74a9anhBNHB88LHwst52qfSLgee25CC83rWEMBkiKaLBmtWISFwTfA>
+    <xmx:74a9asMCevJLDsqFBWPyJgNAYbYFtuQ7DK19Ca3sO8z5oewGubaWJA>
+    <xmx:74a9auZwe4Ehqm-RoFo8rVkzkBJped0UgM-cY4FemIpKnMdh6mQMOQ>
+    <xmx:74a9ah_c9uDL884P0e1u19fneWBEhYj3z3xBmbBPwLjSzt2LI_5hzg>
+    <xmx:74a9ajrClykasys3hw2_ryqoUOh4n4UQLdNeRMA04s1D5lmidAs2sfK->
+Feedback-ID: i51fe4b43:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 30 Sep 2026 18:02:18 -0400 (EDT)
+Date: Thu, 01 Oct 2026 07:02:15 +0900 (JST)
+Message-Id: <20261001.070215.521963012921142699.tomo@flapping.org>
+To: ukleinek@kernel.org
+Cc: tomo@flapping.org, fustini@kernel.org, guoren@kernel.org,
+ wefu@redhat.com, a.hindborg@kernel.org, acourbot@nvidia.com,
+ aliceryhl@google.com, bjorn3_gh@protonmail.com, boqun@kernel.org,
+ dakr@kernel.org, daniel.almeida@collabora.com, gary@garyguo.net,
+ linux-riscv@lists.infradead.org, lossin@kernel.org,
+ m.wilczynski@samsung.com, ojeda@kernel.org, tamird@kernel.org,
+ tmgross@umich.edu, work@onurozkan.dev, linux-pwm@vger.kernel.org,
+ rust-for-linux@vger.kernel.org, fujita.tomonori@gmail.com,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v2] pwm: th1520: Fix 32-bit build with COMPILE_TEST
+From: FUJITA Tomonori <tomo@flapping.org>
+In-Reply-To: <arz487DLBlaBrWLN@monoceros>
+References: <20260930101257.1649945-1-tomo@flapping.org>
+	<arz487DLBlaBrWLN@monoceros>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="nf3fi52ehffm5ni5"
-Content-Disposition: inline
-In-Reply-To: <ar0JBTAxcXVmTx1b@orome>
-
-
---nf3fi52ehffm5ni5
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 2/3] pwm: tegra: Check for match_data being NULL
-MIME-Version: 1.0
 
-Hello Thierry,
+On Wed, 30 Sep 2026 13:57:31 +0200
+Uwe Kleine-K=F6nig <ukleinek@kernel.org> wrote:
 
-On Wed, Sep 30, 2026 at 03:14:35PM +0200, Thierry Reding wrote:
-> On Wed, Sep 30, 2026 at 01:55:59PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> > On Tue, Sep 22, 2026 at 12:06:14PM +0200, Thierry Reding wrote:
-> > > I have a prototype patch that I'm going to send out shortly (after
-> > > testing that it actually works). The problem ended up being that the
-> > > driver_override is a device attribute, so there's no good way to drop=
- it
-> > > based on a driver flag.
-> >=20
-> > Did you see that I sent such a patch already.
-> > https://lore.kernel.org/lkml/0f7446324f6a0c8f0153d6532d92a6eeecd6a308.1=
-790612298.git.u.kleine-koenig@baylibre.com/ .
-> > You were on Cc:, I thought this to be enough to make you aware and
-> > didn't mention it in this thread here.
-> >=20
-> > I hope to not have provoked much duplicate work.
->=20
-> Well, from the looks of it you ended up hijacking my earlier attempt
-> while it was being discussed. It's customary to ask before you do so,
-> specifically in order to avoid duplication of work. Or at least answer
-> on the original thread that you plan to take this in a different
-> direction so that people know what's going on.
+>> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+>> index 729776086879..abecd95b0c3c 100644
+>> --- a/drivers/pwm/Kconfig
+>> +++ b/drivers/pwm/Kconfig
+>> @@ -772,7 +772,7 @@ config PWM_TEGRA
+>>  =
 
-Yeah, sorry about that. On that other thread where we were discussing
-taints in context of driver_overrides the topics overlapped, so my idea
-was to get all the suggestions into a single place. It seems I failed to
-make you notice that in time. Mea culpa.
-=20
-> Anyway, I was still waiting for any conclusions on the original thread
-> and didn't spend any more time revisiting my original series, so no harm
-> done.
+>>  config PWM_TH1520
+>>  	tristate "TH1520 PWM support"
+>> -	depends on ARCH_THEAD || COMPILE_TEST
+>> +	depends on ARCH_THEAD || (COMPILE_TEST && 64BIT)
+>>  	depends on RUST
+>>  	depends on HAS_IOMEM && COMMON_CLK
+>>  	select RUST_PWM_ABSTRACTIONS
+> =
 
-=F0=9F=98=85
+> Can't we do better than that? For C code the right thing to do is to =
+use
+> one of the div helpers instead of a plain / for types bigger than lon=
+g.
 
-Best regards
-Uwe
+Indeed. Rust code already uses some div helpers. However, the kernel
+crate does not have Rust wrappers for the helpers this driver needs,
+such as mul_u64_u64_div_u64(), so we need to add them first. The
+changes would be too large for stable.
 
---nf3fi52ehffm5ni5
-Content-Type: application/pgp-signature; name="signature.asc"
+So how about merging this as a fix? I will work on patches to use div
+helpers in the driver.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmq9QVgACgkQj4D7WH0S
-/k7AYQf/R0QuF3d8jygNy6Q74jEavE/+xQpUO/OkuPVWoo1ffUcTPkFbc/w/3aHp
-TCHePWOpWTtt30u1KkpoSuYKvmPcjiCyVe307JmudFY77ChzXKLesRpVpcbngqQM
-epMp/MpTe2XWC1VDmflVe+vwIcjFMx/R+8h6w76uzfhkrdEhvkG9OqK+ID/Qce6K
-A2kyyRf3zFON/Ur5gTne+AEZAmVr4COpSnA9gIKrXqJHTrJ4/QwmQPCLKz0kMmau
-SDXy00x8z3X+qls2v8QJmiYrWqqyDGvHa6N+k7twp7cvgtvCTmpj9YqYXxbq7vZd
-TWyU+hdrFUQdqMYKX4uEvfgwaGMENg==
-=85ej
------END PGP SIGNATURE-----
-
---nf3fi52ehffm5ni5--
