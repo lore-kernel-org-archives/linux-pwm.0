@@ -1,347 +1,135 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F9730C630;
-	Wed, 30 Sep 2026 02:39:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 846682DEA95;
+	Wed, 30 Sep 2026 06:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790735991; cv=none; b=pXIf2Brw7IGTQmSIwPK4yBGKtM2NExqUYVRxi86QDQcMgCGkg0tisnt8Pq2G/LKT0i0Z1W8hMM5AV4B7ZCWmu2eMIj+eL/tPERrUi1RmH/gy73FvMMALHvdrHxBTvWCBz1x5i35A/O8ngI6aMxFqg2DtgcVB3BPhTzuy0v9dEmI=
+	t=1790749812; cv=none; b=dDgpaIqTJaiVpbS+ANyvHQEZgFd0ShWlO42xgUD2xja4tJloQFgXFopjkvc6lGIBa1Pbp0jPoGEXU5lPvs0qCM6En5c/JDermq6fCdUENb8ha57SLpu7PHQ7SoABjKgY6KrREdT200eS13UHFI8+N1e3FimCnaCPp+v9zZXogIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790735991; c=relaxed/simple;
-	bh=qDaZRO6Fbtq7pOrfZV+wp82DfniymbDqYaMQtKpQtB0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tAhrnDjaSrvy2LINutxAXmHJ5pvOfk62gFb41UsaQaDS3KbD3qHadKvZ+fqFfcMp/QcOCfl+CwS4Q0aqULUDQDW0dswSdvK9t2rzrtrA/tUUgRU1+6GjWvTu3U3G91IJ2+uzienx0aCKFbU6usF+EDp+1Ior1yNsxifiuYTyY9o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=bGPRXnc4; arc=none smtp.client-ip=220.197.31.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1790749812; c=relaxed/simple;
+	bh=7rNYBOqx3XnZb+WoYzEmnIy1vgKSnd8R8hItnEfyTNU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=H5nfHAO27Zn5BB0aFIhg6So24D2n7Dj+AGbWctlzo52O9y9tGu6XBj+xGLaa6phrNNkEU7orxMmLVETxzZLEMuQCtCcik+jWz16DWIrCQ0G+yhnHbdZgQ0EAzOBAzq2fGq71rGQswoXnxFWwkMTggkHq03z7XZvdrT/2fSrEePs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kP3OCpXE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="bGPRXnc4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=Mm
-	T2xbsRvOqcJ/C8k2zXlWpYuCrCMICQHUtG2mPInws=; b=bGPRXnc4qIa8Ddhd7h
-	GEhU34RAyXZRIU4VfyWYNz9btO4p6DHjzvEQHPNtqB87hO7ZThLVRdE2rdg2B+RJ
-	SxWiEN5cnbDNUJblfRD79jU5JNqPY+mP46a+B5stCmMkK+hDhTCYjZx/g/K/Si4/
-	lGUVc5OwauyR9NZPHmV5FPWyQ=
-Received: from chaosheng-ASUS-TUF-Gaming-F16-FX607JV-FX607JV.lan (unknown [])
-	by gzsmtp3 (Coremail) with SMTP id PigvCgDXv95bdrxq3COaCA--.37743S2;
-	Wed, 30 Sep 2026 10:39:24 +0800 (CST)
-From: Chaosheng Qu <quchaosheng000406@163.com>
-To: Lee Jones <lee@kernel.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	mfd@lists.linux.dev,
-	linux-pwm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3] dt-bindings: mfd: convert lp3943 to DT schema
-Date: Wed, 30 Sep 2026 10:39:23 +0800
-Message-ID: <20260930023923.49917-1-quchaosheng000406@163.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kP3OCpXE"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7ABA11F00899;
+	Wed, 30 Sep 2026 06:29:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790749795;
+	bh=R7J3iwD6KWda/SQTfq8T8o3Q28veXm0eblal/QRczQU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=kP3OCpXEZ3jGpkmEjE3O0eb7aKLM+3eGWf8axUgul8aDL13FDUINSl5C/l9C7+Q7c
+	 8dc0wHRRw5tAgQ96WGjn4plkyOBIlbbH/nQmX9ykb+gDLcIKz9MQtWMm0NxpoxYM3s
+	 8CalTmAVyq/89vHFMS12V2DWRPi8kPya/OPu3J+QNf0MiFJz3atzBu4TZCbGc4/Ydd
+	 C12yJ1m7h4dSNT4IkwY+qrObRxzKXJGpi4Fy4qx71rAxTG3J51UWX4+dcWvLw/OGt8
+	 qGa4pvi0KSoD0cHo86K6b82dczt0KRC0HFTAlDOhVmwb5c344u4sWsOB0uow7syX+A
+	 LAQKOsMtvcBKQ==
+Date: Wed, 30 Sep 2026 08:29:52 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: "A. Sverdlin" <alexander.sverdlin@siemens.com>
+Cc: linux-pwm@vger.kernel.org, "Philip, Avinash" <avinashphilip@ti.com>, 
+	Thierry Reding <thierry.reding@avionic-design.de>, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] pwm: tiehrpwm: Clear period on disable to allow
+ reconfiguration
+Message-ID: <aryop_9K29U4i5Sy@monoceros>
+References: <20260929120806.2790355-1-alexander.sverdlin@siemens.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:PigvCgDXv95bdrxq3COaCA--.37743S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxuFWkAFy3Kry3tryxAF18Xwb_yoWxKr1Upa
-	4kC34xtF1IqF13Kw4Iga18ZF13Wrn7A3W8KF17tr1jga95G3Zxtr13Kr90v3WfGFWxWay7
-	XF1a9r1rtw4kAw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UDwIgUUUUU=
-X-CM-SenderInfo: xtxfxtprvkv0bjqqikiqw6il2tof0z/xtbC5B1+82q8dl3yswAA3I
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="3hl5tnwt7bhfzvym"
+Content-Disposition: inline
+In-Reply-To: <20260929120806.2790355-1-alexander.sverdlin@siemens.com>
 
-Convert the LP3943 MFD binding from free-form text to DT schema.
 
-The LP3943 is an I2C LED driver with two sub-devices, lp3943-gpio and
-lp3943-pwm. The GPIO sub-device is covered by trivial-gpio.yaml, so only
-the PWM sub-device gets a schema of its own.
+--3hl5tnwt7bhfzvym
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] pwm: tiehrpwm: Clear period on disable to allow
+ reconfiguration
+MIME-Version: 1.0
 
-The PWM schema documents ti,pwm0 and ti,pwm1, which select the output pins
-of the two internal PWM channels and are read by pwm-lp3943.c with
-of_property_read_u32_array().
+Hello Alexander,
 
-Assisted-by: LLM
-Signed-off-by: Chaosheng Qu <quchaosheng000406@163.com>
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+On Tue, Sep 29, 2026 at 02:08:02PM +0200, A. Sverdlin wrote:
+> From: Alexander Sverdlin <alexander.sverdlin@siemens.com>
+>=20
+> Both channels share one period register, so ehrpwm_pwm_config() rejects a
+> period differing from the sibling's period_cycles[]. That value was clear=
+ed
+> only in .free(), not in .disable(), so a stopped channel kept blocking the
+> sibling from switching to a new frequency. Clear it in .disable() too.
+>=20
+> Testcase:
+>=20
+>   cd /sys/class/pwm/pwmchip0; echo 0 > export; echo 1 > export
+>   for p in pwm0 pwm1; do
+>     echo 1000000 > $p/period; echo 500000 > $p/duty_cycle
+>     echo 1 > $p/enable; echo 0 > $p/enable; echo 2000000 > $p/period
+>   done
+>   echo 1 > pwm0/enable	# before: -EINVAL, after: succeeds
+>=20
+> Fixes: 01b2d4536f02 ("pwm: pwm-tiehrpwm: Fix conflicting channel period s=
+etting")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@siemens.com>
+> ---
+>  drivers/pwm/pwm-tiehrpwm.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>=20
+> diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
+> index 3a53489f0b982..e3407d0a1f7fe 100644
+> --- a/drivers/pwm/pwm-tiehrpwm.c
+> +++ b/drivers/pwm/pwm-tiehrpwm.c
+> @@ -358,6 +358,9 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip,=
+ struct pwm_device *pwm)
+> =20
+>  	/* Disable clock on PWM disable */
+>  	pm_runtime_put_sync(pwmchip_parent(chip));
+> +
+> +	/* A disabled channel must not constrain the sibling's period */
+> +	pc->period_cycles[pwm->hwpwm] =3D 0;
+>  }
+> =20
+>  static void ehrpwm_pwm_free(struct pwm_chip *chip, struct pwm_device *pw=
+m)
 
----
+That looks right, applied to
 
-v3:
- - Use the full name in From: and Signed-off-by:, as requested. No content
-   change; the Reviewed-by from v1 is carried over.
+https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-=
+next
 
-v2:
- - Add Assisted-by and the Reviewed-by tag received on v1. No content change.
----
- .../devicetree/bindings/mfd/lp3943.txt        | 33 --------
- .../devicetree/bindings/mfd/ti,lp3943.yaml    | 64 +++++++++++++++
- .../devicetree/bindings/pwm/pwm-lp3943.txt    | 58 --------------
- .../devicetree/bindings/pwm/pwm-lp3943.yaml   | 80 +++++++++++++++++++
- 4 files changed, 144 insertions(+), 91 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/ti,lp3943.yaml
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.yaml
+as merge window material.
 
-diff --git a/Documentation/devicetree/bindings/mfd/lp3943.txt b/Documentation/devicetree/bindings/mfd/lp3943.txt
-deleted file mode 100644
-index ca5324ed0..000000000
---- a/Documentation/devicetree/bindings/mfd/lp3943.txt
-+++ /dev/null
-@@ -1,33 +0,0 @@
--TI/National Semiconductor LP3943 MFD driver
--
--Required properties:
--  - compatible: "ti,lp3943"
--  - reg: I2C slave address. From 0x60 to 0x67.
--
--LP3943 consists of two sub-devices, lp3943-gpio and lp3943-pwm.
--
--For the LP3943 GPIO properties please refer to:
--Documentation/devicetree/bindings/gpio/trivial-gpio.yaml
--
--For the LP3943 PWM properties please refer to:
--Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
--
--Example:
--
--lp3943@60 {
--	compatible = "ti,lp3943";
--	reg = <0x60>;
--
--	gpioex: gpio {
--		compatible = "ti,lp3943-gpio";
--		gpio-controller;
--		#gpio-cells = <2>;
--	};
--
--	pwm3943: pwm {
--		compatible = "ti,lp3943-pwm";
--		#pwm-cells = <2>;
--		ti,pwm0 = <8 9 10>;
--		ti,pwm1 = <15>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/mfd/ti,lp3943.yaml b/Documentation/devicetree/bindings/mfd/ti,lp3943.yaml
-new file mode 100644
-index 000000000..eff32b05c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/ti,lp3943.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/ti,lp3943.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TI/National Semiconductor LP3943 MFD driver
-+
-+maintainers:
-+  - Chaosheng Qu <quchaosheng000406@163.com>
-+
-+description:
-+  LP3943 is an integrated device capable of driving LEDs. It contains two
-+  sub-devices, lp3943-gpio and lp3943-pwm, which are instantiated by the MFD
-+  core from the child nodes described below.
-+
-+properties:
-+  compatible:
-+    const: ti,lp3943
-+
-+  reg:
-+    maxItems: 1
-+    description: I2C slave address, from 0x60 to 0x67
-+
-+patternProperties:
-+  "^gpio":
-+    type: object
-+    $ref: /schemas/gpio/trivial-gpio.yaml#
-+
-+  "^pwm":
-+    type: object
-+    $ref: /schemas/pwm/pwm-lp3943.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        lp3943: gpio@60 {
-+            compatible = "ti,lp3943";
-+            reg = <0x60>;
-+
-+            gpio {
-+                compatible = "ti,lp3943-gpio";
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+            };
-+
-+            pwm {
-+                compatible = "ti,lp3943-pwm";
-+                #pwm-cells = <2>;
-+                ti,pwm0 = <8 9 10>;
-+                ti,pwm1 = <15>;
-+            };
-+        };
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt b/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
-deleted file mode 100644
-index f214305a8..000000000
---- a/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
-+++ /dev/null
-@@ -1,58 +0,0 @@
--TI/National Semiconductor LP3943 PWM controller
--
--Required properties:
--  - compatible: "ti,lp3943-pwm"
--  - #pwm-cells: Should be 2. See pwm.yaml in this directory for a
--                description of the cells format.
--                Note that this hardware limits the period length to the
--                range 6250~1600000.
--  - ti,pwm0 or ti,pwm1: Output pin number(s) for PWM channel 0 or 1.
--    0 = output 0
--    1 = output 1
--    .
--    .
--    15 = output 15
--
--Example:
--PWM 0 is for RGB LED brightness control
--PWM 1 is for brightness control of LP8557 backlight device
--
--&i2c3 {
--	lp3943@60 {
--		compatible = "ti,lp3943";
--		reg = <0x60>;
--
--		/*
--		 * PWM 0 : output 8, 9 and 10
--		 * PWM 1 : output 15
--		 */
--		pwm3943: pwm {
--			compatible = "ti,lp3943-pwm";
--			#pwm-cells = <2>;
--			ti,pwm0 = <8 9 10>;
--			ti,pwm1 = <15>;
--		};
--	};
--
--};
--
--/* LEDs control with PWM 0 of LP3943 */
--pwmleds {
--	compatible = "pwm-leds";
--	rgb {
--		label = "indi::rgb";
--		pwms = <&pwm3943 0 10000>;
--		max-brightness = <255>;
--	};
--};
--
--&i2c4 {
--	/* Backlight control with PWM 1 of LP3943 */
--	backlight@2c {
--		compatible = "ti,lp8557";
--		reg = <0x2c>;
--
--		pwms = <&pwm3943 1 10000>;
--		pwm-names = "lp8557";
--	};
--};
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-lp3943.yaml b/Documentation/devicetree/bindings/pwm/pwm-lp3943.yaml
-new file mode 100644
-index 000000000..3da5cd4b2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-lp3943.yaml
-@@ -0,0 +1,80 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/pwm-lp3943.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TI/National Semiconductor LP3943 PWM controller
-+
-+maintainers:
-+  - Chaosheng Qu <quchaosheng000406@163.com>
-+
-+description:
-+  LP3943 has two internal PWM channels. Each channel can be routed to one or
-+  more of the 16 outputs of the device.
-+
-+  Note that the hardware limits the period length to the range 6250~1600000.
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: ti,lp3943-pwm
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+  ti,pwm0:
-+    description: Output pin number(s) for PWM channel 0.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 1
-+    maxItems: 16
-+    items:
-+      minimum: 0
-+      maximum: 15
-+
-+  ti,pwm1:
-+    description: Output pin number(s) for PWM channel 1.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 1
-+    maxItems: 16
-+    items:
-+      minimum: 0
-+      maximum: 15
-+
-+anyOf:
-+  - required:
-+      - ti,pwm0
-+  - required:
-+      - ti,pwm1
-+
-+required:
-+  - compatible
-+  - "#pwm-cells"
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        gpio@60 {
-+            compatible = "ti,lp3943";
-+            reg = <0x60>;
-+
-+            /*
-+             * PWM 0 : output 8, 9 and 10
-+             * PWM 1 : output 15
-+             */
-+            pwm {
-+                compatible = "ti,lp3943-pwm";
-+                #pwm-cells = <2>;
-+                ti,pwm0 = <8 9 10>;
-+                ti,pwm1 = <15>;
-+            };
-+        };
-+    };
-+...
+Looking at the driver, the check for the sibling running could be
+weakend a bit. So if the restriction by the other channel only results
+in a smaller period, configuration could continue.
 
+(But if you're looking for something to do, better invest the time and
+convert the driver to waveform.)
+
+Thanks,
+Uwe
+
+--3hl5tnwt7bhfzvym
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmq8rFwACgkQj4D7WH0S
+/k4TTwgArv0NwKldoNs/hKXexuaaE1nM/Q7mPxOvflY0aQKuW6m11St5L1xr0edW
+m1r4uJ6L0z0Cuu2MUBIvh9OLYL/SZIIM5xhp1hKkZyl3X67MHs0IPDZVGAxUG6ca
+ZDWLM+7SBZF1jlDyx4jh0iMuppzNngR+D3l3kFaAzDmZNJAF+7nurzzhJ8oJHTKC
+BQ20PODqQLnJDs8sd1lrYRFmolOWuHVTGFntM9BU6ZN4OBLPINPTcr6a79DBRTAm
+PrpoPqVOz8fC8ublbp3nVoTL0aKl4bRYpGd0IbHHjpBCXM2ulEkuB8LsiKlntbfF
+7Z57YejdNtzK708EXTxBo1OEWdLOcQ==
+=4VKG
+-----END PGP SIGNATURE-----
+
+--3hl5tnwt7bhfzvym--
