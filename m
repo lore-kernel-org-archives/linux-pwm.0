@@ -1,46 +1,46 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010040.outbound.protection.outlook.com [52.101.46.40])
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012026.outbound.protection.outlook.com [52.101.53.26])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADB1B4718F9;
-	Wed,  7 Oct 2026 09:07:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.40
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D6004A5C3C;
+	Wed,  7 Oct 2026 09:07:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.26
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791364125; cv=fail; b=ZjQRM62Db/3DJywBEp5PVEIJRMT29e076Q8nf34EcKt0KUffCeUVsLIgkS4dUxvpr/rlAizbRnZ68xAY0wKDGry4Dlv3sB6r6rkXo0JoFW/XPliMPcJ381TsOCiBeAElqy5VuezbpUT6jWQLbhgxEGe9YgGdJXMT1MeuUIJpkoc=
+	t=1791364136; cv=fail; b=d23dmCAQcfMiHv2xl8n5mZZuEZeWbbt6JXEEU3KUzOTDkH5ggLIvwTl3W/fRf/9KB26aZFbit/Q+5vBQ6gvsjf4oeG4/m2M9BTt4UOv981jWGbCDHiRJDeC1fVgwdaHk1rejpGxbrlEC4R7kXjmfsI186GCEhPqO7HSa+ny/VTQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791364125; c=relaxed/simple;
-	bh=rGz0hFZ+YZaMg2frX2Dy21gTIZBcxBh6XPqxSZIv9AI=;
+	s=arc-20240116; t=1791364136; c=relaxed/simple;
+	bh=rW6LgnjZdH3rnRnnAhyT9ZLFo+mU3rOsIzWy9rRYfa4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=eEhe0kleUmfbscpL4AeYe+royQPe65aymqZ45MaBOtMCklsYqi9apoUuI5dTCbP6kYuWExTZJdIi8pz6SFwVHzLp1WOeHd3tNoRyHAloBXU9FtZx+joqbh+BUgq3q3Ex3VJQNK525/bmX65dhHAGv4pYMUtfoyEYiLRD+K2UF6I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=K4lTfmIp; arc=fail smtp.client-ip=52.101.46.40
+	 In-Reply-To:To:CC; b=PrnJJVTMl4xusJ/t4Q/tKxUKaih1iyKdGn4uFUfw/ZqBh1LTEhVvbfmDASIJN3W6WRgCu4RkjQJV1B/ol/rSIr9eE685wCmoLdhF8NhPhcm4+4l5mB7PvAAgMae2kwaWUUDfFhSkB1qBUkTazIcMNA31sq7ILYIRVdfv2/lfmiI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=cJ34zqNF; arc=fail smtp.client-ip=52.101.53.26
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="K4lTfmIp"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="cJ34zqNF"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oyKlUVLqYbnZYNJ/3WCnxVNTFie87Eic3dugMrdQ9yUMp1pEL6igKttTe0jNw/WGmjG+GtpCqQrdzJ0zcZaRWPicAeSRldqbUV0BhJanPBA6GWesG5kEFIImVN4fMeJ0kTd7i555emRbmIacZgCmm3e8yO8QgwZPIRnACU5WGHgFyHRps24PvZWT1zi+h+0sfTTofdq37bcV2XfOtRzz+0vTNoWHctbIMG1sS/qqkm36njVluMBDPgCxd434vbRBBm4LUsyduHCvOefxJ2s2Yxd8R2l2Vz4Zrt6jDj8A0usRapUySKEz4GVzhdQYp0oD0kWZJjonxv8uvhjgzFppeQ==
+ b=se1OrsPYP1ewc35nrqsVf0XkzvrAav1blN1ixLQwEH2VuoFi1HpHvAAdW5GK1lqDfyCVHKkZcNlXXszXqnT3CiyGmI7WBQuFdCoPMPYYGXPuON5cnm+0dJJ5ZTZDeebEAgjc/UxUHfdbEGSJuKjhER974Rmv69m2UgsCwwYM4L9vvZ8COPzPHQrJGjpw+zJzIy6J+n0rm636V6bL0iigU4jUtORAiKgnOhwWtjir3A6ByNN/yeII8bourjeoABQYsLoGdoiKANEI/tHePzIs1ieHyU0zcFJ812Adbub6BOA3fFQbxgW/0m0icsTfIjxPttEgxnNI4ytjMz//7N/v8Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5AWAeAl5STl96JUdtyZrMoj3nuwBD0WNQoqVDvu4120=;
- b=eBz8rd0nGggs0E+QmBucHYv6cboFt5vZXyX6u2w6uDah3ff5gn7n6/4ABfI2uKrrFVQNEofANn4ldiO+WU5cil9hkFJ7At7K872JOKFddcy4cBxiWE2KxwUOnOhE5Kf8KOKg4UtpD2hWHggHeUyzwd45TAf2RxooebNPXhCDQlgW2pIWoDXXJ6mQPDxxo/GRa/EMSKIX7sAKXgLuXCbkS+t6Uhg3NGvfn9aHqwpAJ/i+MIaPYz0NRE+JFWdISofcTDoXnuWvco0DknoQf1t1dXJa0b7Qt79uATDPYO4Ew3IgC+L9op69PQnETEumkBBs8/JF2Z6+qNyARpOTaNdhxw==
+ bh=JKLpBVInE+oMVjCjXbwZVVGxTYTEaXBrUQZNoy7Mq9I=;
+ b=CPmmJScIBrTRCSTMBH2jZzG3enYy+6i98MPLo95w1nEPiSxfoEoJ0p1gu1yS3vFDT92ooOylHBashXMkFIFoYB8Sn52zbTDPdThzq7upIDFsaoMJ9hiLPxxH39ZAPmisC9ifMGuJz8KZBsVS8OUhUpKwUOgeGbV+fHxHkpCyCgBXLvh7YQkBBSqXnr6CwJ00cKaVy+RRZRMy/zuzImN36Ro71TwUNHLyeLAiIyHD95WvZMd55fH48fyKt1QzJRDsaewJJYsqO7lua72S+qRY1S05RWCDDKRNu54XMlZL9+ABXDFFApi5WlmXN38jSblOraY+EpgsSq1HU9u8pvErhw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.infradead.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5AWAeAl5STl96JUdtyZrMoj3nuwBD0WNQoqVDvu4120=;
- b=K4lTfmIpuvYqRAczimFExl8Xpl/sSCd64+DDqg2Zcs7PI+01V0qGIorIUsmg9vympKQApTLiIPLQHmbLunz+ndIRg732feVzh2M9cGxX+Bb0b7NigGTlCHpKkXswimufmOltz5Jm2zPk5ApmwNY9p96qcAVzdI1HEJWkHAOoh0Y=
-Received: from SJ0PR05CA0127.namprd05.prod.outlook.com (2603:10b6:a03:33d::12)
- by PH8PR12MB8431.namprd12.prod.outlook.com (2603:10b6:510:25a::9) with
+ bh=JKLpBVInE+oMVjCjXbwZVVGxTYTEaXBrUQZNoy7Mq9I=;
+ b=cJ34zqNFO1Mw3HqT+9+gH1HHW2+0HE9aRsK0k0huhCW5A8gQ+yDgv5DbR62L+4mMM1ejwmcJrEiVl8HMkL18oNhpRYD5v66/cCOtP7ui+Cs7owF7YR0aSQRiUXXEpcomKAhwTTL0K9KY/MVWSdnqydLnrspXOJZnvKVjl3NKi8U=
+Received: from SJ0PR13CA0070.namprd13.prod.outlook.com (2603:10b6:a03:2c4::15)
+ by SA1PR12MB7367.namprd12.prod.outlook.com (2603:10b6:806:2b5::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.19; Wed, 7 Oct
- 2026 09:07:35 +0000
-Received: from SJ1PEPF00002323.namprd03.prod.outlook.com
- (2603:10b6:a03:33d:cafe::36) by SJ0PR05CA0127.outlook.office365.com
- (2603:10b6:a03:33d::12) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Wed, 7 Oct
+ 2026 09:07:33 +0000
+Received: from SJ1PEPF00002327.namprd03.prod.outlook.com
+ (2603:10b6:a03:2c4:cafe::82) by SJ0PR13CA0070.outlook.office365.com
+ (2603:10b6:a03:2c4::15) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.496.5 via Frontend Transport; Wed, 7
- Oct 2026 09:07:35 +0000
+ Oct 2026 09:07:33 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,24 +48,23 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
 Received: from satlexmb08.amd.com (165.204.84.17) by
- SJ1PEPF00002323.mail.protection.outlook.com (10.167.242.85) with Microsoft
+ SJ1PEPF00002327.mail.protection.outlook.com (10.167.242.90) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.496.14 via Frontend Transport; Wed, 7 Oct 2026 09:07:35 +0000
-Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb08.amd.com
+ 15.21.496.14 via Frontend Transport; Wed, 7 Oct 2026 09:07:33 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Wed, 7 Oct
- 2026 04:07:34 -0500
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb10.amd.com
- (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
+ 2026 04:07:31 -0500
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Wed, 7 Oct
- 2026 04:07:33 -0500
+ 2026 04:07:30 -0500
 Received: from xhdtunimkar40.xilinx.com (10.180.168.240) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.49 via Frontend
- Transport; Wed, 7 Oct 2026 04:07:31 -0500
+ Transport; Wed, 7 Oct 2026 04:07:28 -0500
 From: Meher Thanmaiee <meherthanmaiee.vanukuri@amd.com>
-Date: Wed, 7 Oct 2026 14:37:01 +0530
-Subject: [PATCH 3/5] clocksource: timer-cadence-ttc: Refactor common TTC
- resource setup
+Date: Wed, 7 Oct 2026 14:37:00 +0530
+Subject: [PATCH 2/5] clocksource: timer-cadence-ttc: Allow deferred probing
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -74,7 +73,7 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20261007-cadence-ttc-pwm-v1-3-52a95a8d98b1@amd.com>
+Message-ID: <20261007-cadence-ttc-pwm-v1-2-52a95a8d98b1@amd.com>
 References: <20261007-cadence-ttc-pwm-v1-0-52a95a8d98b1@amd.com>
 In-Reply-To: <20261007-cadence-ttc-pwm-v1-0-52a95a8d98b1@amd.com>
 To: <michal.simek@amd.com>, <tglx@kernel.org>, <ukleinek@kernel.org>,
@@ -82,180 +81,123 @@ To: <michal.simek@amd.com>, <tglx@kernel.org>, <ukleinek@kernel.org>,
 CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
 	<git@amd.com>, <meherthanmaiee.vanukuri@amd.com>, <linux-pwm@vger.kernel.org>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791364043; l=4708;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791364043; l=3114;
  i=meherthanmaiee.vanukuri@amd.com; s=20261007; h=from:subject:message-id;
- bh=rGz0hFZ+YZaMg2frX2Dy21gTIZBcxBh6XPqxSZIv9AI=;
- b=bBI7O0x3zrbd8rSqYfrFoeBvu9n5Qbwyku7qQtoej03DP0m16HXARe7ubz/ifbzByoSbNtdwQ
- qXP/oQmakqUAzS7Vj594mRpuyBzYwcAs/zBJ8HDKHia1vBkfQ/B0VA4
+ bh=rW6LgnjZdH3rnRnnAhyT9ZLFo+mU3rOsIzWy9rRYfa4=;
+ b=SeI47opbGaAypV5PSIV/toYQwF/vRh3XISqhAa3D8Y276Oyn0umjiRmmoc1IiuDIimHPix14n
+ SoiIJE4jsZzAh2Yot6tr5RtVBj21vl9l1KufVDzFqrHJ/a+r7rSGK7V
 X-Developer-Key: i=meherthanmaiee.vanukuri@amd.com; a=ed25519;
  pk=m/+ON8/+ewj5VLb55p7J9gAopkLKj2mp7iobBZdhi0Y=
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00002323:EE_|PH8PR12MB8431:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7d874c53-d4c0-44e2-892a-08df24526db0
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00002327:EE_|SA1PR12MB7367:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2bc3365b-a605-4c3a-9bdd-08df24526c3a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|36860700016|82310400026|23010399003|56012099006|11063799006|10067099003|22082099003|18002099003;
+	BCL:0;ARA:13230040|36860700016|23010399003|1800799024|82310400026|376014|11063799006|56012099006|10067099003|22082099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	AWHafP9aEnZFmDqAN6c0z0Bk8B3pfU4wxy8bBZhf6lr2EZjqm+WRGCJJx+LQG6yGNcHCOFB4wmrhgYImOiADMxaMZGRBohl88HXqCq76Mm+hFCrRuf439bZ+Z+F0LL0wfpZuC6wUJF8vnrD4Yqqw+8/fBBAyXdNcWxGNEPM4/FhHL83kkSeZcI4ZBYilUXWxFwe3OBFTg6vDGp/XwmY10iA9gSf803Iz5KCMVUG4LHNkWOJxtot/IRoJ539oV9PZPsxFswpDPssgYtqo+jvjO0gVtVg3eWDnokr0hqfiKjXoFrJwEJwKe3/Oh6DbgWE5z47HMCTmtvKb31cSY8KfHTSjDfzC0yjHr6v3Sw1KeiC7ffSa5xqCwqrQiYFsAuMIqNNYXgnkwTa96Q+Nrow/7oCznSwr1WIiPp8m67faMZ7588Rl2CgZ6ZRMJRFchM0TbVVQVDihvUzTgvMRbeQ10CWKgIlYLLenEwOe6B2ODWwWgtrkjALO9D/hj6azF+rA+uH7krcWBNiaFtjNbBNWMRRxQW471NerLytU6pSNQ77aglKETbYfTlNdAcpQqnYUyjzoTKx0NpeNQcTS600QeZ8lLjB/n265Fo177ctTCPS88Yp9Xxq9/tTxmHq74EBoRIO8K0z1Vh8c5hbKAzzvwgw3PWurx1cwn9Pg9MKdtwYmHtFTCUC4E9xDZbGPsqItpe/oXoUQZciVBFkv33/YDg==
+	M0WQciQWG4ttLZ9dIzBLN1/MOLeubrSMFDiU5NLmsz/LzqS2wV6xSl5dVW+ufj/YHYzYAEnFX6/ExjmrIojgxl4rKJvbbELBeDv0qAOkEYoknXBZ8BtPguuKeU7L3gnqCm/igU0alcKVyKpTPMA/gPvNYj7cp/O4okIKkJhZq3k052DZ1CWHBUBLN7JFbCwmAeRIKBLXmKFl7t43lhZoJAx2h9vqN/bQfMmG2CJC3DAX4dkYxz29EXIlNLiqC//mrPlKYxPiYzzhMlCLY/2cynzPcUTWcYaWgSK81ojt1htGlppbJLlXJnY6Ue4udM79D80DQVeLn4m9g3glZcEBwvtTiN5V4ZdI0fXAbxro9P4VG/YmZyfx7raRixqzM3z8mj40wmRSmfYSPzxGAfXFcgQtYS63AAN4RXsIKjz5W+u2fqRiBPkPmbKYumH/1ghHm0IBPEjFF9juvlNJ7O/TiD0H//GXKRseqNjjvwIBbSXaS97T756c6COrJEFYeoKo9+XKMn2zIDNOPya5wW50/pMuGMmURiuZDYuMNYQRmyRh/n9UcJgVnOzDP35c1qEDmBpgeV8dcq+JLuppFlMdAG2EUiBg90kHSNto71i0PcErkbKXMGlLsThpejoZl4i35alAu7tSB/hiYkWlHYhXRvm/dCCo2FtTGUwFevhqEjPOjgvFuzProScpmIA4tEX3TDygPLFQmK5uJHPHQvlDFg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700016)(82310400026)(23010399003)(56012099006)(11063799006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(1800799024)(82310400026)(376014)(11063799006)(56012099006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	eBFmT389oXGGOC0/QyphK3oac/I8QfrPiiE4qzjUQPb753lT9GkgTgeYufzA8FjlInAgEFhqvxkXJANXXHFFPlc01va0N44Qe93BJJigV3XDt5IiKBDLqCPyGEvumu9NixeaRrTGsmT+kAxd4d5WRyqrMtDx3+IF2B0GoUENEFA3SDocNoMHcIysSSzC4DlLFCU0pQjctlHQBl/iNS31h9qSXLONrIOpzsdLHb/12ilh9PNRIffOvHhOYsRCxdQ1TP4FOP8XlwkEwwpRrEZLtsXj96Pur5pZLd8l16nB2q3mx1GTk+DWMZYmQKM4jIdTY2Tso6xLdtep/Cwms0gcXIaWRRmfk1mkrM2xt42oFbMrFFUlpW30ItDPSdstQHmWtNRUbzWXte/BYkv2sQXHKCQkO+lWKAmafc1aj976KmDYSuwW0J5JaOSUq4dHkMck
+	wcE+Ck57ofsGZbgLh71Fr+a6LEmkP/Y3DOQTU0KFsBvtMSi7Iwhij8dNpI3IKNC6DgIjFLc2MAoSSTOjQqv3V+31RXjGRSL2k23/9obp3rXV+hMvDWiZ8Ca/hgSjS8QVltbUPh/qFsZMyTeCAowuiKho8CGDZSRFjov3bcNo/D6MRJrB7VURgTKwW+W9+ev5oDuY60tx72ctJNU+sL9zaOA4lO3pKpEK+Fk8vrIDRsnZ6D3mZ+fYib9jdkoisyogE5efybMceonRtUUnhO4XRr1DLPHgBjRDlHYQ5POFmdeANgzuQfFTJNfDqm0Pqfl0rODUM8kc5QcfIXHsVzYUHd9ZSLsu2NOlrWH/4itFnCYs+tm7lOYo046P0GXN1Q9Hpql1jPmLTzsDWkpKHaNUwi/grkPggAGsv4XT5g4NgGNEbVzI4xnVv4dPPx15pWB9
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2026 09:07:35.5366
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2026 09:07:33.0921
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d874c53-d4c0-44e2-892a-08df24526db0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2bc3365b-a605-4c3a-9bdd-08df24526c3a
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00002323.namprd03.prod.outlook.com
+	SJ1PEPF00002327.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB8431
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7367
 
-Factor the TTC MMIO mapping and timer-width parsing in the timer probe
-path into a helper.
+Switch from builtin_platform_driver_probe() to builtin_platform_driver()
+to support deferred probing. The existing timer probe path calls
+of_clk_get(), which can return -EPROBE_DEFER when the clock provider is
+not yet available. builtin_platform_driver_probe() discards the probe
+callback after init and cannot retry probing, so switch to
+builtin_platform_driver(), which keeps it available. This requires
+removing the __init annotations from ttc_timer_probe(),
+ttc_setup_clocksource(), and ttc_setup_clockevent().
 
-As part of the refactor, switch the timer probe path from
-devm_of_iomap() to devm_platform_ioremap_resource(). This is safe
-because each Cadence TTC device tree node has a dedicated,
-non-overlapping MMIO resource.
-
-Also replace the hardcoded default timer width and channel stride with
-TTC_DEFAULT_TIMER_WIDTH and TTC_CH_OFFSET, and switch to
-device_property_read_u32() when reading timer-width.
-
-This prepares the timer driver for later reuse of the common resource
-setup by the PWM auxiliary-device path.
+Move the initialized flag assignment to after clocksource and
+clockevent registration succeeds so that a retried probe does not see
+initialized = true and return early before the timer is configured.
 
 Signed-off-by: Meher Thanmaiee <meherthanmaiee.vanukuri@amd.com>
 ---
- drivers/clocksource/timer-cadence-ttc.c | 49 ++++++++++++++++++---------------
- include/linux/timer-cadence-ttc.h       |  5 ++++
- 2 files changed, 32 insertions(+), 22 deletions(-)
+ drivers/clocksource/timer-cadence-ttc.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/clocksource/timer-cadence-ttc.c b/drivers/clocksource/timer-cadence-ttc.c
-index 75bc0af1fa9e..954a9b85a958 100644
+index 8be13d344007..75bc0af1fa9e 100644
 --- a/drivers/clocksource/timer-cadence-ttc.c
 +++ b/drivers/clocksource/timer-cadence-ttc.c
-@@ -8,16 +8,16 @@
-  */
+@@ -312,8 +312,8 @@ static int ttc_rate_change_clocksource_cb(struct notifier_block *nb,
+ 	return NOTIFY_DONE;
+ }
  
- #include <linux/clk.h>
--#include <linux/interrupt.h>
- #include <linux/clockchips.h>
- #include <linux/clocksource.h>
--#include <linux/of_address.h>
-+#include <linux/interrupt.h>
-+#include <linux/module.h>
- #include <linux/of_irq.h>
-+#include <linux/of_platform.h>
- #include <linux/platform_device.h>
--#include <linux/slab.h>
-+#include <linux/property.h>
- #include <linux/sched_clock.h>
--#include <linux/module.h>
--#include <linux/of_platform.h>
-+#include <linux/slab.h>
- #include <linux/timer-cadence-ttc.h>
+-static int __init ttc_setup_clocksource(struct clk *clk, void __iomem *base,
+-					 u32 timer_width)
++static int ttc_setup_clocksource(struct clk *clk, void __iomem *base,
++				 u32 timer_width)
+ {
+ 	struct ttc_timer_clocksource *ttccs;
+ 	int err;
+@@ -395,8 +395,8 @@ static int ttc_rate_change_clockevent_cb(struct notifier_block *nb,
+ 	}
+ }
  
- /*
-@@ -463,29 +463,36 @@ static int ttc_setup_clockevent(struct clk *clk,
+-static int __init ttc_setup_clockevent(struct clk *clk,
+-				       void __iomem *base, u32 irq)
++static int ttc_setup_clockevent(struct clk *clk,
++				void __iomem *base, u32 irq)
+ {
+ 	struct ttc_timer_clockevent *ttcce;
+ 	int err;
+@@ -463,7 +463,7 @@ static int __init ttc_setup_clockevent(struct clk *clk,
  	return err;
  }
  
-+static int ttc_init_common(struct platform_device *pdev,
-+			   void __iomem **base, u32 *timer_width)
-+{
-+	*base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(*base))
-+		return PTR_ERR(*base);
-+
-+	*timer_width = TTC_DEFAULT_TIMER_WIDTH;
-+	device_property_read_u32(&pdev->dev, "timer-width", timer_width);
-+
-+	return 0;
-+}
-+
- static int ttc_timer_probe(struct platform_device *pdev)
+-static int __init ttc_timer_probe(struct platform_device *pdev)
++static int ttc_timer_probe(struct platform_device *pdev)
  {
--	unsigned int irq;
-+	struct device_node *timer = pdev->dev.of_node;
+ 	unsigned int irq;
  	void __iomem *timer_baseaddr;
- 	struct clk *clk_cs, *clk_ce;
- 	static int initialized;
-+	unsigned int irq;
-+	u32 timer_width;
- 	int clksel, ret;
--	u32 timer_width = 16;
--	struct device_node *timer = pdev->dev.of_node;
- 
+@@ -476,8 +476,6 @@ static int __init ttc_timer_probe(struct platform_device *pdev)
  	if (initialized)
  		return 0;
  
--	/*
--	 * Get the 1st Triple Timer Counter (TTC) block from the device tree
--	 * and use it. Note that the event timer uses the interrupt and it's the
--	 * 2nd TTC hence the irq_of_parse_and_map(,1)
--	 */
--	timer_baseaddr = devm_of_iomap(&pdev->dev, timer, 0, NULL);
--	if (IS_ERR(timer_baseaddr)) {
--		pr_err("ERROR: invalid timer base address\n");
--		return PTR_ERR(timer_baseaddr);
--	}
-+	ret = ttc_init_common(pdev, &timer_baseaddr, &timer_width);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "failed to map timer registers\n");
- 
- 	irq = irq_of_parse_and_map(timer, 1);
- 	if (irq <= 0) {
-@@ -493,8 +500,6 @@ static int ttc_timer_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	of_property_read_u32(timer, "timer-width", &timer_width);
+-	initialized = 1;
 -
- 	clksel = readl_relaxed(timer_baseaddr + TTC_CLK_CNTRL_OFFSET);
- 	clksel = !!(clksel & TTC_CLK_CNTRL_CSRC_MASK);
- 	clk_cs = of_clk_get(timer, clksel);
-@@ -503,7 +508,7 @@ static int ttc_timer_probe(struct platform_device *pdev)
- 		return PTR_ERR(clk_cs);
- 	}
- 
--	clksel = readl_relaxed(timer_baseaddr + 4 + TTC_CLK_CNTRL_OFFSET);
-+	clksel = readl_relaxed(timer_baseaddr + TTC_CH_OFFSET + TTC_CLK_CNTRL_OFFSET);
- 	clksel = !!(clksel & TTC_CLK_CNTRL_CSRC_MASK);
- 	clk_ce = of_clk_get(timer, clksel);
- 	if (IS_ERR(clk_ce)) {
-@@ -516,7 +521,7 @@ static int ttc_timer_probe(struct platform_device *pdev)
+ 	/*
+ 	 * Get the 1st Triple Timer Counter (TTC) block from the device tree
+ 	 * and use it. Note that the event timer uses the interrupt and it's the
+@@ -522,6 +520,8 @@ static int __init ttc_timer_probe(struct platform_device *pdev)
  	if (ret)
  		goto put_clk_ce;
  
--	ret = ttc_setup_clockevent(clk_ce, timer_baseaddr + 4, irq);
-+	ret = ttc_setup_clockevent(clk_ce, timer_baseaddr + TTC_CH_OFFSET, irq);
- 	if (ret)
- 		goto put_clk_ce;
- 
-diff --git a/include/linux/timer-cadence-ttc.h b/include/linux/timer-cadence-ttc.h
-index 4f2b85e0ff78..37ac775d6d50 100644
---- a/include/linux/timer-cadence-ttc.h
-+++ b/include/linux/timer-cadence-ttc.h
-@@ -11,6 +11,11 @@
- 
- #include <linux/bits.h>
- 
-+#define TTC_DEFAULT_TIMER_WIDTH		16
++	initialized = 1;
 +
-+/* Per-channel register offset stride */
-+#define TTC_CH_OFFSET			0x04
-+
- /* Timer Register Offset Definitions of Timer 1 */
- #define TTC_CLK_CNTRL_OFFSET		0x00 /* Clock Control Reg, RW */
- #define TTC_CNT_CNTRL_OFFSET		0x0C /* Counter Control Reg, RW */
+ 	pr_info("%pOFn #0 at %p, irq=%d\n", timer, timer_baseaddr, irq);
+ 
+ 	return 0;
+@@ -541,9 +541,10 @@ static const struct of_device_id ttc_timer_of_match[] = {
+ MODULE_DEVICE_TABLE(of, ttc_timer_of_match);
+ 
+ static struct platform_driver ttc_timer_driver = {
++	.probe = ttc_timer_probe,
+ 	.driver = {
+ 		.name	= "cdns_ttc_timer",
+ 		.of_match_table = ttc_timer_of_match,
+ 	},
+ };
+-builtin_platform_driver_probe(ttc_timer_driver, ttc_timer_probe);
++builtin_platform_driver(ttc_timer_driver);
 
 -- 
 2.34.1
