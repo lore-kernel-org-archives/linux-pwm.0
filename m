@@ -1,63 +1,68 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C212437E5FD;
-	Thu,  8 Oct 2026 19:45:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89CC049D58C;
+	Fri,  9 Oct 2026 09:37:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791488752; cv=none; b=flkSsHlb9Ux3bwS752c64OPXTNMfXkrSZISoFZg7+FfKKRIwJOHdrMkI5RCu2ZBk0pvL2YQepCFus+aHoCJiMZHNVRqwuM/bie7RddS9jKGll0hJafBslCcg5fBLQ64+9MGv1CQDVbEsrThw9TypsNilEnl3bxJA9tOjiNPopmI=
+	t=1791538638; cv=none; b=KWl1fzQe8wO5C1212bvB0SwCQsFWWhKmOJaz0a4CQ8yBOeozZ32l86AcIEHkJFvbDMMy2J5HJEfRRpTz3O/5izxK0X3MQQJz7O/GfzE3fp/W7NxtF+hs5oglk1zkaR45BIbj//vqp+D7xt/0qFRI7P7jjOkVEXwgsGP7ataO48M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791488752; c=relaxed/simple;
-	bh=4UyLTIS/qxKCt1AXo4psa9BmH2o3OMVTVJCtzcrSsJ4=;
+	s=arc-20240116; t=1791538638; c=relaxed/simple;
+	bh=m+1Ufsv2pb7hP9CZNAQvnXYZqP7DdJlNt9aw77mIfeM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=no6TBu24ndzY96ynJRbqPc/RQYv/kMJaB0FmWyP7YsyIrbJtvbNIE1vw5BS4grArdGqXQ71skrw0GSRgy2Eu1DjBceST7JK2TCF+cFxuEeCkl8QkpUP/LiRc3sGp/xVgcKtG1Gloy2+fo+fgQ4iWBIQMR1fb2Lf4uBqSkk9Wx+o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mJ7v8JTK; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=nZaPKoksf8atcLKV4vSGZ+pqs7mtm3XeeuiAcM2pYLecK7JtZoo+z5ATNOmhq8K4Iy6PX0QeWTLHkar3zc9GHxHIGK8uSiW/9STRNNcZzfDfm0d6jvHWdv+4gVmNokoARBgIY98HBgQKwBhKFhK2JnDhRrzM2wLEw6QE61jvtU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Yr3rmCDn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mJ7v8JTK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E311F000FF;
-	Thu,  8 Oct 2026 19:45:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Yr3rmCDn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF2D81F000FF;
+	Fri,  9 Oct 2026 09:36:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791488751;
-	bh=q+Q6stYCq6cZJyDhEdIvVjO7t8cw3BzIFyIxVu6yjX0=;
+	s=k20260515; t=1791538619;
+	bh=aYLUSOcL+GNWQ1way1gFRJxNO/5DfmZAVAsPAx3h5Rc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=mJ7v8JTK0w2/G5CsjU6uURxIXMgNZXsxT4rY8s8Zoh+oQf3qwUovZu5EsU0asJeET
-	 5tSzG1uAu4u6XgbePbaAuG/DsMY62h//8TI1Kbwc5eMaFUAwpeeXJd/psQuw4W4wTz
-	 KJ3SSf3tjxzDox8N6YRCqVvV5on1Kj/DN6TIxstzqwOcRJ0wvc3YfNRDnD/l/QEIc8
-	 T8dQa4jvTncfKzIfVSuVNWexZBefKR/5z6TesWjw/J3VY2F/TLUY+lzZ34aI0W88lD
-	 UpAua6vZ0J6tkNL4x+sfbdVi3quExEJzfBgy4fPqXnLQz9LqPSHDKMWFM1Edr8NOEs
-	 hDVKmwOmeabYA==
-Date: Thu, 8 Oct 2026 14:45:50 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Varadarajan Narayanan <varadarajan.narayanan@oss.qualcomm.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	George Moussalem <george.moussalem@outlook.com>
-Subject: Re: [PATCH] dt-bindings: pwm: add IPQ5210 binding
-Message-ID: <179148874952.892086.1972349791589080283.robh@kernel.org>
-References: <20261008-pwm-v1-1-0b8776398632@oss.qualcomm.com>
+	b=Yr3rmCDnOT9O6fNGEAGZlLTDJtuu8/G0Am5sRnBPo5qssMLQ0AitrnGot3QMLTerX
+	 2ssp/7FIwdI5WQUWiyKUhZbdPwndPI3qLWMGTAD1df8I95mMX6zL5kDGvAiyj+1LmG
+	 7WiNBQv/+Hmsqfxlte4AqHF/mZ/7aUf/0M9ZMJUSYP7ByzHMojuWkfXCDqIgB4gapp
+	 roPWtqZPbE+1peGGJCzS53vY2umRTClcAfBskH1KZ+NI12Ty7oO15AeibWqlucQmay
+	 TZJ7JNtKrJyu9guI+Qy81NMnU6/CvZ5mon03u4BCGY/2fW2j8WOdShrpl7RvWBHvlt
+	 gCsXMMwlOMULw==
+Date: Fri, 9 Oct 2026 11:36:55 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Jeremy Dean <deaner92@yahoo.com>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: pwm: Convert NXP PCA9685 PWM controller to
+ DT schema
+Message-ID: <20261009-industrious-scrupulous-lyrebird-c4fa46@quoll>
+References: <20261006033518.34332-1-deaner92.ref@yahoo.com>
+ <20261006033518.34332-1-deaner92@yahoo.com>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261008-pwm-v1-1-0b8776398632@oss.qualcomm.com>
+In-Reply-To: <20261006033518.34332-1-deaner92@yahoo.com>
 
-
-On Thu, 08 Oct 2026 14:14:00 +0530, Varadarajan Narayanan wrote:
-> Add DT binding for the PWM block in Qualcomm IPQ5210 SoC with
-> qcom,ipq6018-pwm as the fallback.
+On Tue, Oct 06, 2026 at 03:35:18AM +0000, Jeremy Dean wrote:
 > 
-> Signed-off-by: Varadarajan Narayanan <varadarajan.narayanan@oss.qualcomm.com>
-> ---
->  Documentation/devicetree/bindings/pwm/qcom,ipq6018-pwm.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+> Assisted-by: LLM
+> Signed-off-by: Jeremy Dean <deaner92@yahoo.com>
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+...
+
+> +maintainers:
+> +  - Jeremy Clifton <deaner92@yahoo.com>
+
+I think we are done on these hallucinations.
+
+There is little point for beginner contributors to send us DT binding
+conversions generated by LLM.
+
+Best regards,
+Krzysztof
 
