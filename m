@@ -1,33 +1,33 @@
 Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43F6D3BE633;
-	Sat, 10 Oct 2026 17:11:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1982C23E334;
+	Sat, 10 Oct 2026 17:16:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.39.247.168
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791652306; cv=none; b=hGoWoK+sypHPuE+6ENXwmEPzjTpxaHGkoIXHj6k5l2WsELax1s1JVuiyo1d+Npws+lI0QgnmLijWmsMzcfYYepJB6rG84vZ+SeijbN8ATHQei1S20uMewUqMo3Pob4wJuskiaU5JLHs5v3zN24Mge1CVUZy7iseTVahrvEb+DEM=
+	t=1791652586; cv=none; b=LyeP50bmlkJ1OtlSXbBU8EQAiiih26k2AiTChAmafUDM6dz3hXuqhcPTaieA3+yWxbwUi92GjsQNqzeLr0nK+PBOSdUEeBeSWLGlrrEfkC+6pn6MiL4MBrDmq+4T4J1yhf14+VaLhiwc+gLKhCIFTOBNeN4025BB1KkpJExCFvc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791652306; c=relaxed/simple;
-	bh=8QGjyTRLdTBhk4Iz3QJMepcprxh+1GRSW1VXMEPmScI=;
+	s=arc-20240116; t=1791652586; c=relaxed/simple;
+	bh=fFT7o06p/hJpnx4rIn/RIknyy1WZ3+/NPjr+b+yBgJk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Qm21V41UiYvBj6cpoPrAVferpgOR+JPVPkMPP5nUAW11zxxwVZbO9i+e7cV2E0v7/AEpYINhNBdfNC7lwk7JBgPFsQGVZVVE2WHRUZz+eZj1CWdJgT95g2f/9cchT4C2zX4GvTXnDX2gsy0BnTlQf7zwrqjx+Q5kjTD36DKPlxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=maHCfN9r; arc=none smtp.client-ip=195.39.247.168
+	 In-Reply-To:Content-Type; b=gfPvpSY1Pe81AaQJeBIL5rrkvbFATCCUmyAygay3beKseyvNyV1FPtzyM78mK/AP9X73U+i4+i4Gu62lKvPk3e2ErglqobkSNZyy5lssLzYnJJH9uCSTWlK6l+ZiOZ9bB2+DDTXRVtPQQww54vcxn7VUP03FD9USCVLtDrbXUMc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev; spf=pass smtp.mailfrom=cyberchaos.dev; dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b=Zdm9Q81g; arc=none smtp.client-ip=195.39.247.168
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="maHCfN9r"
-Message-ID: <119cdaf0-e631-4d33-a7a1-85d10b87d78f@cyberchaos.dev>
+	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.b="Zdm9Q81g"
+Message-ID: <d3f9eb19-6d5f-4246-95e4-09e92e1d175f@cyberchaos.dev>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1791652303;
+	s=mail; t=1791652581;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=F5fZ9xMeWb13PFHx7PqGpTj4Gd+/TFWRgOl7WsIogwE=;
-	b=maHCfN9rFLAqX/oqjbAa8JPK8g5ikCzI3UD1ufj0d5LNm5EzndRpozUExeYoxkTEYtsYNu
-	Em7JvCyAm+KFKzUfeT5DtkovgSo+XLSmbvoO54148bxTtYAaH2LWNVg6l9oN3Midef0bpr
-	vrj2HAVqxD3XrtMVYnuC+SFZFwVHU6g=
-Date: Sat, 10 Oct 2026 19:11:39 +0200
+	bh=BRcYQiuliJ1CdaOaqf97NB/suFRAHUr80VIP8a+WeIU=;
+	b=Zdm9Q81gtriKJ0svM57CLsbj6ZQNDg4vjqskmZUts3SkfiRPgJiny0m0XLKpTabLpR68zS
+	7382gHybp6exR5/EyyLipW3IzRAC6LCfAJv0QE+EEeKXJDXwzzQevxNdpZ1c3vgQ7Ia1gC
+	9g3+Rs5C/R1BN1Fq+7kfV3YnlbsN8+c=
+Date: Sat, 10 Oct 2026 19:16:21 +0200
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -66,6 +66,12 @@ On 10/10/26 18:59, Yureka Lilian wrote:
 > Acked-by: Rob Herring (Arm) <robh@kernel.org>
 > Reviewed-by: Sven Peter <sven@kernel.org>
 > Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
+
+Apologies, the Acked-by and Reviewed-by were wrongly copy & pasted from 
+a previous commit. This commit was NOT acked or reviewed by anyone. I 
+had noticed this a few days before but somehow ended up sending out the 
+wrong version :/
+
 > ---
 >   Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml | 3 +++
 >   1 file changed, 3 insertions(+)
@@ -95,11 +101,6 @@ On 10/10/26 18:59, Yureka Lilian wrote:
 >                 - apple,t6020-aic
 >                 - apple,t6031-aic3
 > +              - apple,t6050-aic3
-
-As noted by Sashiko, this hunk does not belong in this commit. However, 
-apple,t6041-aic3 is intentionally not listed here, as there are no 
-multi-die t604x SoCs.
-
 >       then:
 >         properties:
 >           '#interrupt-cells':
