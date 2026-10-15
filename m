@@ -1,102 +1,72 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF716443AAF;
-	Thu, 15 Oct 2026 10:20:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A298B48EC72;
+	Thu, 15 Oct 2026 10:22:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792059658; cv=none; b=Gg8WDTSsVlVAvcUSAvExmQxtpt4F0glWL3ILKXVRRRc3cbKpQ6U59FT7KrJIcKhWgPUJ3hUfT7VQGIHEF+prz8b1ynsdLOzzBlMWZznT2O43qxFuG5ECz+pzC52aML+Gwa8VcVlHJc/RU4PmScVaS6LKe6PM3IxjTiEj1GaQouU=
+	t=1792059761; cv=none; b=KXY8731r5N7l4MiGdF08+xKP/XuYz/nRQMoUWFrhohNScNv9LifmUgbxvoirw5LPL8oRSARotYEiO5BsYXWR9SAsbp6ZCTUO48ag3oXj6wpRGaw043RDJEvbnQzgEHayuVe3ONDgGSJ0w8T930id8X+R+AWlJh1A5NJfIqPF+7M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792059658; c=relaxed/simple;
-	bh=D0r+ZRTQkqkB0PvtjFaudvTYR8y4LWIG502oxgstgys=;
+	s=arc-20240116; t=1792059761; c=relaxed/simple;
+	bh=vWQ4BZFKiw4ZdpGykk0WvHR+ocy0cnjiKh0h0P0Foq8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Bw2Js1FJbeHCImamy1TBxh0bHdsfnZJ+KWZgm27pYZPLfs/SGsAVDTxJyDHxvy0mptkf5LOtTfl3IuMnTpnWnFUD0wNS4YTZ6X1WrTkk5CDHxFPdgsviD3SRI3DEM4hoX7J/HsXaBbOysjnsm68WQxmK7MD/EFI46krgoLSxk+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YMAF15e9; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=aDWxdb2nS9aGHyhz3Je6bD9nZ5zFUp+GSoMJWIgqXlUh+OqMg3rss6J0oi10PobgDhL8nkKQKPR9LYklkoICzsYOr9hAYpgdQTAX0aR0HUpUkK6oCpYXRfVR/bOucsLTMr/7qCnhW7miGCsLO348pmfDpDz0P6qjz2lQsMb4Z6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h7hyC0PS; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YMAF15e9"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B210D1F000C4;
-	Thu, 15 Oct 2026 10:20:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h7hyC0PS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A49321F000C4;
+	Thu, 15 Oct 2026 10:22:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792059657;
-	bh=D0r+ZRTQkqkB0PvtjFaudvTYR8y4LWIG502oxgstgys=;
+	s=k20260515; t=1792059758;
+	bh=p7EZk+lzmJeE4LsSw3GX37rQBpfI6r8PK791dC690Ys=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=YMAF15e9HpVx9rUV375qLDuLoocXihQTYbIsrAc+lCMJL63FTwCyUsRZ04WSYPjQX
-	 zwtKLU2H2xJ8eLVzwusm2jmwae6eAR3Rat92Hl5XfjBYR3LFCvy0+S5gStDv/VhpZ4
-	 eDQQswq5CKF4USUF1+KnqR92yHKUekHyyadsZwP7uMnTYLs/PBcc0yA3DygL6FJ26C
-	 Cm8N//IvmVgTIu+AdQ87gwGjwsmv3NSILLI4gZg6zse0Az5NpJYtsd7DUcZWxWKWrt
-	 IxZl4kgHkAs9W0wOFGQgNecN5/cHcVsltQI8JYrS06hLbggZH1xmdp1nIGqm5opllP
-	 zj2f4K5uifOPw==
-Date: Thu, 15 Oct 2026 12:20:54 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Hal Feng <hal.feng@starfivetech.com>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor@kernel.org>, 
-	Emil Renner Berthing <emil.renner.berthing@canonical.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <pjw@kernel.org>, Albert Ou <aou@eecs.berkeley.edu>, linux-pwm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v23 1/2] dt-bindings: pwm: opencores: Update compatibles,
- examples and maintainers
-Message-ID: <atCos9UIaZoRs4N8@monoceros>
-References: <20261014110429.52762-1-hal.feng@starfivetech.com>
- <20261014110429.52762-2-hal.feng@starfivetech.com>
- <9c0737d8-455d-4025-8482-950b64029f35@kernel.org>
+	b=h7hyC0PSOMUerNNnkjhU/TJSkF39Piqr/V/PlCuAddZo8a5N8op1k8zN5aSMFQG4s
+	 2x/FRnIKtf2E3E+Rz6yt/bS7TLMNWPvSq69DheZPEjBQzdgoX1AuiZ3cMXG5lfIwMQ
+	 Tie17QNVvqnO8HSuwJtjRnjCQy51t0aEv3GsOgmaufyxj9dHOcio/e9kX64SpkhNqh
+	 r6NCMvdbjTTFkpC8Ruqc71yEp5suyxmdvjBRlXco6hG+F69rh82BTrGannRzy/yXwb
+	 g0acbs+f5wvA2FVbLe3UGElQIkSjTkyDdMKtZZwpWkaWgfyAAVvWDwUVpV1Ba8XQa5
+	 HXCCFGkg6Tx1g==
+Date: Thu, 15 Oct 2026 12:22:32 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Yureka Lilian <yureka@cyberchaos.dev>
+Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
+	Neal Gompa <neal@gompa.dev>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
+	Guenter Roeck <linux@roeck-us.net>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, Hector Martin <marcan@marcan.st>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Sasha Finkelstein <k@chaosmail.tech>, 
+	Linus Walleij <linusw@kernel.org>, Mark Kettenis <kettenis@openbsd.org>, 
+	Andi Shyti <andi.shyti@kernel.org>, asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH v2 05/10] dt-bindings: arm: apple: apple,pmgr: Add t6041
+ compatible
+Message-ID: <20261015-unselfish-camouflaged-ant-decc86@quoll>
+References: <20261014-apple-m4-pro-max-initial-devicetrees-v2-0-961edd8d661b@cyberchaos.dev>
+ <20261014-apple-m4-pro-max-initial-devicetrees-v2-5-961edd8d661b@cyberchaos.dev>
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ql4e5cupjoadxutu"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <9c0737d8-455d-4025-8482-950b64029f35@kernel.org>
+In-Reply-To: <20261014-apple-m4-pro-max-initial-devicetrees-v2-5-961edd8d661b@cyberchaos.dev>
 
+On Wed, Oct 14, 2026 at 08:56:12AM +0200, Yureka Lilian wrote:
+> The PMGR blocks on the Apple Silicon M4 Pro/Max SoCs (t604x) are
+> compatible with the previous M1-M4 SoCs. Add "apple,t6041-pmgr" as M4
+> Pro/Max specific compatible.
+> 
+> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
+> ---
+>  Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
---ql4e5cupjoadxutu
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v23 1/2] dt-bindings: pwm: opencores: Update compatibles,
- examples and maintainers
-MIME-Version: 1.0
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-Hello Krzysztof,
+Best regards,
+Krzysztof
 
-On Thu, Oct 15, 2026 at 11:01:29AM +0200, Krzysztof Kozlowski wrote:
-> On 14/10/2026 13:04, Hal Feng wrote:
-> > Remove the jh8100 compatible since the JH8100 SoC has been canceled and
-> > will not be released.
-> >=20
-> > Change the register size in examples to 0x10, since an OpenCores PTC IP
-> > has only 4 32-bit registers: CNTR, HRC, LRC and CTRL.
-> >=20
-> > I will maintain this pwm module in place of William.
-> >=20
-> > Tested-by: Maud Spierings <maud_spierings@hotmail.com>
->=20
-> Drop, did not happen. Is it so tricky to respond to the one patch here,
-> where the tag would be applicable, instead of replying to cover letter?
-
-I don't know what Maud did, but if they checked that the various dt
-linters are still happy, that doesn't deserve a Tested-by:?
-
-Best regards
-Uwe
-
---ql4e5cupjoadxutu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrQqQQACgkQj4D7WH0S
-/k7PIAf/X0MuEBIxbZRh0F/FP9Rs7R2pI9OL9EjSVgE6YYJ7giZMWHvgau/wK+oQ
-/1K2oRxxnBy1xHda1owC8LkERBHXpdZIPIWdDzgubjgzbE4TqHxsdWlPiNQ1znMO
-rZ2hAJQGXRpsZeWhAGfvJUOgh+hoTyp0TUDgN2qbewauiMRzEH28gx1FF4X4XFIu
-yUReIyoxZAa6yGVKNv17ygnWXx4WEpQEteGyQO9c4KMUXdEzDJIM6sa4fQAXP6OK
-C/82CB2/AEvO60ZXiZR6n1WFblFqvUCp4eNUGNcw83hjcTWEg0U8jskNm1u/U/VK
-q0n4iJMFE4bA4TYCgishZ6DTP/cdNA==
-=wAh6
------END PGP SIGNATURE-----
-
---ql4e5cupjoadxutu--
