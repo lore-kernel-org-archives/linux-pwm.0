@@ -1,163 +1,115 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CCF74DEC16
-	for <linux-pwm@vger.kernel.org>; Thu, 15 Oct 2026 08:53:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A35394B5CD0;
+	Thu, 15 Oct 2026 09:01:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792054443; cv=none; b=Iaf29yf+OnRrpR6Cdo2/6BvbKF7cg0Q1l+q18g5SlZkCuD1pj2rBZLXrTLx2ygsnzuCTedv6LMzauVRDzdnhFDNVfLmFzqVv0WbQQq1n8kkx8WAru530D/P72IVXxOaEbG1UZdffjs8EmV9gwbrZ9yY5jDqfWyMuWOZ3pp3WwdM=
+	t=1792054903; cv=none; b=UXkJRAb1k8pO58pJhrTdxWkTVI0823tbqdQuZHq4JgBnsSG4KOayQ45oHuI75Ws4kjI9Se3XG9pj6VFPMX6NZvFR+exYrdBaA/W2x8k8Laiw0JSuw+ppqSedhdm4QeldQI9mEZUutd0u169FStrF83onubDRTMho47lXtnVf8KU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792054443; c=relaxed/simple;
-	bh=b96pYTcMW63e49quyJO5xjiSMV8TZP92gd9i71el7b0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=McyybcXCiY4Jzwdzii/9l+/neu2k6TRiDnGCtGK+NresIeXyeVzfyK+Zxbc6W4XpbLeqmsWcIWdHQrfDp65WNFSMPK5pXN1diysVFJNZpuX96wRX0JAVwsNJvzz/9vqZbwflWdIrZqEuhppcLZNqDIu8iyMJEeUqIJEwKpNDlZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=f9wZCKCZ; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1792054903; c=relaxed/simple;
+	bh=mCJPH7EVD7s1ESUMTj9hagGTQte0u7kusN/qyF5/Vp8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=f5TGJUDfxo1haNG43+eaF0qCKEy8iBqw8imyvRjcJaiu5MuWxPXPUFxKETD3K/2yzPLHKmKrkD6ExlSUDdk6kHNe0ttzSrimQkK3PduFJbCiwI+jhPGmboU8TpfmlQwD831KHmJLYgH6My4e161Z4c6a6mQrxh1or5p7wPHGODo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VCXWMLF/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="f9wZCKCZ"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-48df54150dfso240125f8f.0
-        for <linux-pwm@vger.kernel.org>; Thu, 15 Oct 2026 01:53:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1792054433; x=1792659233; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=bqtoLOebW3MOpzoS9qJgbIfmlFf7fkdqcloPGFqkfJw=;
-        b=f9wZCKCZUphj7XKbyZNyAfAkowHrERTIpC8V7QKdZK5sQrvqm4Dzd7Km2I6e4F/hUV
-         mCJOTnHREyZcy99n/rah3jKjjBNoVQYrB/wBRDlPN5GIZKuXOZ3FyLB/ob0SvJoXdfdD
-         cEeq707eyuBHIVjs2WukkN9Yil82+HpK2mKw8PGuQ/4B7MCMDOGR2V8D8q88Akyl/8wi
-         pxLimomQZRIzMLVAkR4xzzSFF9dRKB3h01x1vEFDXTzyI9P1Z9rF/9L/zjv5YkrQ3MRc
-         gGl8QQ+ig4MTzy0pe/ExoNSPiA6TxvuQcfLlDVjrKdoHWisB+Hw+anHt9zTGP9laEMft
-         2rhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792054433; x=1792659233;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=bqtoLOebW3MOpzoS9qJgbIfmlFf7fkdqcloPGFqkfJw=;
-        b=c8/DeD6JOvLFRVPDjcXDaODEFt6R1V97xJAvMmoaDXLh1UAHoUfsK7FFQUNLdNcYBg
-         7hZrv4F2eDuu0QTjw+bALxHprCKd8ueFaZtMO8ieXSZLlCO0U7s1T4KC1UsveOEhKLPk
-         bnHfKiXcJimd8meS5x5rqdYsJk2IPJazkucou4n+PUjpbI7TrgrWxF0Z1RrtmBfdIBX1
-         lj69rzCjKpEqd6L3tilhTbNO7eaSLsDe/ZN/HG5CrAvjCU1y9L6XSYpEbn/6rABUbGJ1
-         rO4a+vJ0DLn6d+8NkyauwASSj+mDMp3Zd4VSU7qFOttTm3DWb30V7Sn3VULzAhs0e6RX
-         Mefg==
-X-Gm-Message-State: AFq9FYIXW9WiF4f+BEOtRmFmDMAqpzv9aOC20UBu7X4fsdUjHuuavqr7
-	FMU+z4O+MYAZnrsxJIfswcc5LOsXh99GJSLhufWUAXFRtOOcHpHKkqsGIDPLTmf2Bg8=
-X-Gm-Gg: AYBFou0tkg+Zsp1W86I+B9U+I/Fzv6XVdHUHaYaFExbs/LAYjF2VkH/hdN2cQXyEe6d
-	qK3bnExjfkCl7PfXe1oRfnqWwQF6J09oknEXEM78M++5R9g8QJ/oyf0OIRdnYpzTSfvJutb4TAl
-	WH4tFd4z6LyeofvPevQz6iCzmHFWJCYKAc9BaJQxouvl6C2EIDKR9Jk/BAl9QqU2F2D/hjpxoas
-	GfVUwzyIfLlkfRZMxoQ0wMs8owajlhvIYB/dUfW2WtJU/WAXT8sR2NGAWpQCKlDvA00GqV1r91/
-	iZ2rorBmTPNncZwMnYt+vTj6QFaqh2mPoCaGwrqI8TiUaEyMZeqfgifm4DjBQIAupAf/PmU5QdA
-	wXe/ho0VsDFVqjUMQMiuTh+OoGpTIvMfBC2WIV9B+B0FPx+/wt4REs2zq+aBLsHcXgCNgHeZlZz
-	SaBYKTYP6rXdKOg1a/T0rtzVMTQAYBPOonj/zgL3ULXdUG0U43HMDLbGLdHJej8hf6KjQIj5jcy
-	3EupTjyanSV0io/S+SYGM0icbEJLpgR4HtluIzAP//WWIacRUB6+F0SmMKFD3JDZ6a+z78W
-X-Received: by 2002:a5d:5386:0:b0:487:767:b301 with SMTP id ffacd0b85a97d-48dbacd94c0mr28298777f8f.57.1792054433004;
-        Thu, 15 Oct 2026 01:53:53 -0700 (PDT)
-Received: from localhost (p200300f65f19a90465ab3c5965b67ef9.dip0.t-ipconnect.de. [2003:f6:5f19:a904:65ab:3c59:65b6:7ef9])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-48df7bf4642sm1663459f8f.10.2026.10.15.01.53.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 01:53:51 -0700 (PDT)
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Thierry Reding <thierry.reding@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Mikko Perttunen <mperttunen@nvidia.com>
-Cc: linux-pwm@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Sashiko <sashiko-bot@kernel.org>
-Subject: [PATCH] pwm: tegra: Fix value discarding for duty and period
-Date: Thu, 15 Oct 2026 10:53:35 +0200
-Message-ID: <20261015085336.4181137-2-u.kleine-koenig@baylibre.com>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VCXWMLF/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 053AB1F000C4;
+	Thu, 15 Oct 2026 09:01:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792054899;
+	bh=flxF3rEmn6hNkTmfUMkUgpxI5WcrtuidvkUAWlOf0kc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=VCXWMLF/zjyojYl/CmFruqvkR5Q+nChMaz4BADPhH6ds+9uMugdjdr39QvbGnJitw
+	 28d9bZIeP/KeuuCb3+TsUESqOd3BEw2uv2gAfnrVCnAcWK8ZiOSgs4ZEB+KgmSW8ik
+	 jFPPuTe7pxs5cwqNBk2SG4pgHDHyBBWaaVaFyuCfJAYYMV1ibLM/0O28AEKw+2lHv7
+	 KtGbxfSyVOXBohu0hjyQ+HCRmy0AB/g6O4E3bxCyFltWhonkPWjL+Bvw8TXll+GvuE
+	 XYhx4jaZG6HOxmjqJPnWhJyWLnki+SD12ovI6J03WvIRmhQdU6gkT6U9zUqrZg872b
+	 tFtn1cVmHVfAg==
+Message-ID: <9c0737d8-455d-4025-8482-950b64029f35@kernel.org>
+Date: Thu, 15 Oct 2026 11:01:29 +0200
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v23 1/2] dt-bindings: pwm: opencores: Update compatibles,
+ examples and maintainers
+To: Hal Feng <hal.feng@starfivetech.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
+ Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
+ Albert Ou <aou@eecs.berkeley.edu>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20261014110429.52762-1-hal.feng@starfivetech.com>
+ <20261014110429.52762-2-hal.feng@starfivetech.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20261014110429.52762-2-hal.feng@starfivetech.com>
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3234; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=b96pYTcMW63e49quyJO5xjiSMV8TZP92gd9i71el7b0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBq0JSQABZzvkkCBCI1PN3uhG0gm4AQqjvYAZY0o kOEZeg4T5aJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCatCUkAAKCRCPgPtYfRL+ TtlyB/0cwvGxYVb9u+fbrW3AD2qOu4yAcu4vWMPwadvI21+ZiP3tIYAU0aera6GOC9c03gw7vRD p9BD0VPXN+r/Ev/jbFYhoSIwOvD2/U8VUH3WnTI6dXV+5Kgn4oKBksH8vSKlP93msUfAysDoMpS ZpcKfiqg8IhpdTgJM6P3AHrAF3/juh2e/s6iB/tHE/56FVYZECFbUY9IcaBNwYylAy8JNjDo+KD 0EZ6Nd1v0GP2zSFi+2dmne+nss1lMJZUxbzIIfqSxQW/cUJSo0I6HVQibA2Fp78+KvigQ3uFS99 tWdVG+4/eRlwfa2xsGMUr0gaowoP9Xdda7o0csBeh6tI5z/M
-X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-tegra_pwm_config() is called with u64 values passed for duty_ns and
-period_ns in tegra_pwm_apply(). Make these parameters u64 instead of int
-to not lose the upper bits for bigger values. If such a discard happens
-the values that are written to hardware become wrong, or (if the
-discarded period value becomes 0) a division by zero happens.
+On 14/10/2026 13:04, Hal Feng wrote:
+> Remove the jh8100 compatible since the JH8100 SoC has been canceled and
+> will not be released.
+> 
+> Change the register size in examples to 0x10, since an OpenCores PTC IP
+> has only 4 32-bit registers: CNTR, HRC, LRC and CTRL.
+> 
+> I will maintain this pwm module in place of William.
+> 
+> Tested-by: Maud Spierings <maud_spierings@hotmail.com>
 
-Adapt the math functions accordingly to not let the now potentially
-bigger values result in overflows.
+Drop, did not happen. Is it so tricky to respond to the one patch here,
+where the tag would be applicable, instead of replying to cover letter?
 
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Link: https://sashiko.dev/#/bug/linux-5c5b97d6-4da6-4d06-9dc7-957419dcd832
-Fixes: fd3ddd4355c0 ("pwm: tegra: Implement .apply() callback")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
----
-Hello,
-
-actually the Fixes: line isn't quite accurate. The problem that the
-arguments are cropped to int from u64 exists since v4.7-rc1 (commit
-5ec803edcb70 ("pwm: Add core infrastructure to allow atomic updates"))
-in the pwm core, but the blamed commit above is the commit where this
-problem was moved to the pwm-tegra driver and thus it's fixable there.
-The problem in the core doesn't exist any more since commit 0829c35dc534
-("pwm: Drop support for legacy drivers") in v6.0-rc1.
-
-Note this patch changes the rounding of the duty cycle (from somewhat
-round closest to somewhat round down). It would not be hard to keep the
-behaviour by introducing a variant of mul_u64_u64_div_u64() that rounds
-closest, but the rounding is spoiled anyhow by later rounding of the
-period. To actually fix that it would be best to convert the driver to
-the waveform callbacks.
-
-Example calculation: Let's assume an input clock (pc->clk_rate) of
-100000 Hz and a request with period_ns = 230399744 and
-duty_ns = 128249857. To translate that into register settings the
-DUTY_SHIFT values will be round down with both approaches and result in
-an actual duty_cycle of 127658000 ns (Δ = -591857 ns) while 128557000 ns
-(Δ = 307143 ns) would also be possible.
-
-Best regards
-Uwe
-
- drivers/pwm/pwm-tegra.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index 5cdbe120ba2d..8b5ed7998fdd 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -138,22 +138,21 @@ static inline void tegra_pwm_writel(struct pwm_device *pwm, unsigned int offset,
- }
- 
- static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			    int duty_ns, int period_ns)
-+			    u64 duty_ns, u64 period_ns)
- {
- 	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
--	unsigned long long c = duty_ns;
- 	unsigned long rate, required_clk_rate;
- 	u32 val = 0;
- 	int err;
-+	u64 c;
- 
- 	/*
- 	 * Convert from duty_ns / period_ns to a fixed number of duty ticks
--	 * per TEGRA_PWM_DEPTH cycles and make sure to round to the
--	 * nearest integer during division.
-+	 * per TEGRA_PWM_DEPTH cycles.
- 	 */
--	c *= TEGRA_PWM_DEPTH;
--	c = DIV_ROUND_CLOSEST_ULL(c, period_ns);
-+	c = mul_u64_u64_div_u64(duty_ns, TEGRA_PWM_DEPTH, period_ns);
- 
-+	/* The cast here is fine as c <= TEGRA_PWM_DEPTH */
- 	val = (u32)c << TEGRA_PWM_DUTY_SHIFT;
- 
- 	/*
-
-base-commit: 00e917df050d79ac26ec700717680ad6421d2808
--- 
-2.56.0.rc1
-
+Best regards,
+Krzysztof
