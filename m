@@ -1,148 +1,142 @@
-Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA98D4D09FB
-	for <linux-pwm@vger.kernel.org>; Fri, 16 Oct 2026 13:33:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D9D34C9DFF;
+	Fri, 16 Oct 2026 13:54:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792157585; cv=none; b=HV3NP5+oO04YYtNT8IOZyCTfQqoLOv/s8NHoN8ujwvjRQAiWwO/QUWgHwcRcMwBc2LWynDLb2XoIkWAvoVyRHqLZOvYKG4mtcGICVsWwVdhGgrnOC/a6fBnxrKndTNKgbQBooByROfplZPha0lINV+h2BKKmw7jziidjGlV+qkU=
+	t=1792158854; cv=none; b=aqnK8PHLXUL8Jh7/CyoJxDryt81tiEE1ynoxiDaqEErK+TomSBLl+ezhIHb9fl772O1r0azuLhuAeQttNVktTpsl7OchinPbbtmezajBQ3+DYyjiEcDysUY2FcsNTpop8Q55ThNZ9JsXivb8tNsG2o7sjV9wc6Gu3ntE5+rzssw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792157585; c=relaxed/simple;
-	bh=i95j2QTUxUV26LtH2QgoMoHAgaPIWZwAcc2BGKU59l0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ccgZurzYFLB69APY2E4eOuMTMm+qxEFFU0ZbOoRcCR4mEF/T+zYCA57RyE1hYsl69U7Xl/FblxxqSREqKRRTRnLHdOZjf6ysq01Ok0ckB2L5xvNz/VLrmcU5nyEbURqr5ekQFZyq8zKT2OMRmrCEHijjD5AvAXgT6dP/FYRrW/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UKUVLRIo; arc=none smtp.client-ip=74.125.82.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1792158854; c=relaxed/simple;
+	bh=6kG+pF2HuQmMTYJB21gFk7rSTC3Fb6zafxp8L/YZp7Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=P0euK7U3ywsHFcEOAeUPB9VpeXoGWYocM68/t16GoMtWHMbFSvSNLCtm7sWPI0iV3VEwJFyIphIP4aJn7r+o5Kh/apS0275AgGPiQY9BgtthTosDQklSTPgJBBawMdpcYiLEXcRK9w7eUchOdLYYeMOp98QqR3g1E5052f1Z9Mw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BDvVlEj1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UKUVLRIo"
-Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-35b2c599f43so303568eec.0
-        for <linux-pwm@vger.kernel.org>; Fri, 16 Oct 2026 06:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792157583; x=1792762383; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=FlBbDxtOReq89XnhI+hKh5wvHROzNIJb82m4kgAxxcQ=;
-        b=UKUVLRIoql6W06i8ezjS31iaAk7KvWBvGVOBgmvSXKrgPS9UCORkxEZPhZTx2PrqkV
-         GWRFfdosErzFasjwqAEteJdlfl/tIMz8cGrOcraO9m0SAtNwOPCU0RjOlNyZ7qIkFNjm
-         vGF6lmDP6TB/vh00Rjpm18Uo+GJA+dusPpEjFzUPH1FEqM5qoT/V3u1K5jHB+f0SArsR
-         gu4ykqKF1zwP70AOlxTl+OPoCakgHdWJdx3ukMcmyZOD2D/R1qRuAUXLPCyzIOxh8IFr
-         i8akSintCeOkUQm/fB7g3IQ6pZzs863gCThTA0J06z9J/sWzrdNvCQixogl47yvC4ziR
-         4Czw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792157583; x=1792762383;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=FlBbDxtOReq89XnhI+hKh5wvHROzNIJb82m4kgAxxcQ=;
-        b=m1NrPKe4w2Wbst5TqGTx9X4kffewKjbNE/+sFMoIR8fAcmqPtKRN6yCwTKA55Zy2ju
-         pCaO3SNZAgpIkFTxf11cx2Q9x78Hzq4Js/S6vk/2vbY5GAEvmUjFdYDo9VU9/UUICd6v
-         ViAfB4a5q+VyE/FIScZXAjb1fOVZ4ictRSzvOdf5bkBnrY9IqiYb9VOSSabKIN1H6io1
-         H2Qh5YG2Iiqs+h19KAR3joLgLnIE55NtTR2tWBtbfKJcmGXJbDUiGTShO9GETYwTuTFt
-         emACBaG2TTsbka8EqQMb8jOAwQBuTxEKdJJquwlRYRfttI2YcdaRVDr7aEOO6v/fTFqX
-         0lYg==
-X-Forwarded-Encrypted: i=1; AKwUvBxe6acnGTALEWxTJN4w71B1bJtNW17RrvJiHcSHPF7vICWEJeZpFMnzY0vmWDuNYK8ISncZ1FpNam0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLk6Vj+CB8UbnEs89AQZVwC6YQN0fyHhQ7m0kfSEqGmTKU9ly8K
-	WC9c4WQJ7P99tmqgK0mmSxP5LZm0KCWAVf9e6cRl5JHTL98DlbAQWyaH
-X-Gm-Gg: AYBFou23xZMkH9xJpyeIFKsaDNpuCekFnuxjcZwCL8exnUyLf5OUD4ivFTkmECQM1nF
-	xbVIZYK4IzqCxy9RnrUQgsjUxsl9EDGqMtLM+qbwC9oulQrYohg7UJXWsJUJTsJxCSfjkTXhCnu
-	XnWcLAvlT01wEjRxueDQZIYZ4pif75l6H2ZbnuTfzFe0aK5BobXLx4ouc7nj2UuIKyHe3AsEuJB
-	nRjUU3Eb0V9eYQVzNdaZ9b8+PesHMD+EuiC1yXoQIdXHW7iJPmmmANMTDGPkzcTaiosWT51vz7U
-	VO2RSOkgCUgxkwRPVk0w6uj3L7M0Do5UmbFH66k4cxNm3uYSnEoMIIIjZiyuXcbC3mlnVHAzI0A
-	wKiEAdQYmNtKud0EKjebIZe0r5gP6UQ+ripFEBuiF9C6Cjva0BdKh4+apSpeGG4NZgyYom/uoD6
-	wO4HYW5BAhIZzE4svLu7C+ZZuzR3jSoCOOatOyS2cgwYGWOG8LU6zBtkJMRoLH3v7tALJdJFkzx
-	RFaSOAT0eZ8FGjVoY9wb7ZJbodXDesH51uWtq8Rzsp3t/gVkl3MOQomgI7YZuehjY4g56bOLiI=
-X-Received: by 2002:a05:7300:ac81:b0:34d:de2e:1fca with SMTP id 5a478bee46e88-3537dff5a5cmr44216341eec.21.1792157582543;
-        Fri, 16 Oct 2026 06:33:02 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (158.95.44.30.netskope-rdns.com. [158.95.44.30])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-360813b792bsm6964225eec.5.2026.10.16.06.32.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2026 06:33:01 -0700 (PDT)
-Date: Fri, 16 Oct 2026 10:32:55 -0300
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, 
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, Olivier Moysan <olivier.moysan@foss.st.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH 02/10] iio: backend: add devm_iio_backend_get_optional()
-Message-ID: <qxuz5guawnr4higgwnwvbhag7zfw6d2derwy6j5dz2uhccevvc@dsucxvhq53ef>
-References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
- <20261015-ad9910-backend-support-v1-2-3c21648c8e26@analog.com>
- <atEeZPOLASHAcnjF@ashevche-desk.local>
- <atHjHqyxXj6jkObW@nsa>
- <w7waqang6lriwbcq6o5s5yuedouuwgacmnj55qsjpzjrv3jut2@cthvkakgyhpi>
- <atIkZa0noHjcl13X@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BDvVlEj1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CD051F000C4;
+	Fri, 16 Oct 2026 13:54:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792158853;
+	bh=UHZ/SHeI8w1oYO+zDsaR5bIADkRvUH7sd5yA2nNqtU8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=BDvVlEj18Fklfc/VqD+6Eum/IA/ddvxz+BekUEvaIyeg4vLk93kPYxzBlPFKgYea5
+	 EqSexdKDxu+7fHF+Lyw1CYqMlzgBhzlMEE9i6uOZRVoKecxXGXIDuKtX1w1s8iXlVY
+	 DbL6IeqsY9MkmdpH+Kpg37t5I5RGJ98OAk90pyIgrjs0+jE5pm5M/xLfK4aHBRSXqr
+	 vNmh3UruVyOBPtXs88qxmzU9EP5j5OGctddYRtYD8kmNfBLHkueVTqaF92c23jgOyz
+	 DC2n8hnxZ0FKF1t8yNvipuQS6dPcgEYpXiu2KKlc3K98p3OIIkFXZsD2kEr482gJNF
+	 WjNJ149Cf70aw==
+Message-ID: <f052b1b3-87fe-48e6-aa02-df47517ef8d0@kernel.org>
+Date: Fri, 16 Oct 2026 15:54:07 +0200
 Precedence: bulk
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v23 1/2] dt-bindings: pwm: opencores: Update compatibles,
+ examples and maintainers
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Hal Feng <hal.feng@starfivetech.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
+ Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
+ Albert Ou <aou@eecs.berkeley.edu>, linux-pwm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+References: <20261014110429.52762-1-hal.feng@starfivetech.com>
+ <20261014110429.52762-2-hal.feng@starfivetech.com>
+ <9c0737d8-455d-4025-8482-950b64029f35@kernel.org>
+ <atCos9UIaZoRs4N8@monoceros> <20261015-poised-modest-leech-4decf5@quoll>
+ <atH4DnTWVZPkaO2C@monoceros>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <atH4DnTWVZPkaO2C@monoceros>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <atIkZa0noHjcl13X@ashevche-desk.local>
 
-On 16/10/26 16:19, Andy Shevchenko wrote:
-> On Fri, Oct 16, 2026 at 08:18:08AM -0300, Rodrigo Alencar wrote:
-> > On 16/10/26 09:45, Nuno Sá wrote:
-> > > On Thu, Oct 15, 2026 at 09:41:40PM +0300, Andy Shevchenko wrote:
-> > > > On Thu, Oct 15, 2026 at 01:49:42PM -0300, Rodrigo Alencar via B4 Relay wrote:
-> > > > 
-> > > > > Frontend devices might not need a backend driver to rely on. An IIO device
-> > > > > that supports backends can behave differently when they are not available
-> > > > > and that should be acceptable. Such parts may provide basic functionality
-> > > > > solely using the control interface (SPI for instance), being able to have
-> > > > > extended features when a backend is present.
-> > > > > 
-> > > > > Add devm_iio_backend_get_optional(), which returns NULL when the backend
-> > > > > is not described in firmware, i.e., when the io-backends property is not
-> > > > > present or, for a named lookup, when the name is not listed in the
-> > > > > io-backend-names property. Other errors, such as probe deferral, are
-> > > > > still returned.
-> > > > > 
-> > > > > To make that possible, a named lookup that does not match any entry of
-> > > > > io-backend-names now fails with -ENOENT, the same error returned when the
-> > > > > io-backends reference is missing. Also, the missing reference is no longer
-> > > > > logged as an error, leaving that to the caller.
+On 16/10/2026 14:55, Uwe Kleine-König wrote:
+> Hello Krzysztof,
 > 
-> ...
+> On Thu, Oct 15, 2026 at 12:27:16PM +0200, Krzysztof Kozlowski wrote:
+>> On Thu, Oct 15, 2026 at 12:20:54PM +0200, Uwe Kleine-König wrote:
+>>> Hello Krzysztof,
+>>>
+>>> On Thu, Oct 15, 2026 at 11:01:29AM +0200, Krzysztof Kozlowski wrote:
+>>>> On 14/10/2026 13:04, Hal Feng wrote:
+>>>>> Remove the jh8100 compatible since the JH8100 SoC has been canceled and
+>>>>> will not be released.
+>>>>>
+>>>>> Change the register size in examples to 0x10, since an OpenCores PTC IP
+>>>>> has only 4 32-bit registers: CNTR, HRC, LRC and CTRL.
+>>>>>
+>>>>> I will maintain this pwm module in place of William.
+>>>>>
+>>>>> Tested-by: Maud Spierings <maud_spierings@hotmail.com>
+>>>>
+>>>> Drop, did not happen. Is it so tricky to respond to the one patch here,
+>>>> where the tag would be applicable, instead of replying to cover letter?
+>>>
+>>> I don't know what Maud did, but if they checked that the various dt
+>>> linters are still happy, that doesn't deserve a Tested-by:?
+>>
+>> No. Why would compilation be called testing?
 > 
-> > > > >  		ret = device_property_match_string(dev, "io-backend-names", name);
-> > > > > +		if (ret == -EINVAL || ret == -ENODATA)
-> > > > > +			return ERR_PTR(-ENOENT);
-> > > > 
-> > > > No. Please, use device_property_present() instead.
-> > > 
-> > > Oh right! Totally forgot about that internally :). And it fits into my
-> > > internal point where I don't agree much in treating -ENODATA the same
-> > > way as property does not exist.
-> 
-> +1
-> 
-> > Say a frontend consumes multiple backends, but some of them are optional.
-> > If we care only about the presence of the property we would fail when
-> > trying to acquire the optional ones when the required ones are defined.
-> > am I thinking correctly?
-> 
-> If there is an empty property for names, shouldn't we simply fail? I rather
-> would consider the firmware table to be broken in such a case.
+> I'd call the task of checking if anything breaks with the proposed
+> changes testing. For changes to .c files that most likely requires
+> complilation and running the resulting code on a machine. For dt binding
+> changes it means "testing" if all the existing device trees still
+> conform to the new binding because you cannot compile and run the
+> binding specifications. So in my mind this is still testing and a
+> Tested-by trailer is ok and welcome for me.
 
-Not exactly for an empty property case (or not only for that),
-but for a match_string() error:
+Running standard build process tools, like checkpatch, sparse,
+gcc/clang, dt-validate is not testing.
 
-https://elixir.bootlin.com/linux/v7.3-rc7/source/drivers/base/property.c#L539
-
--- 
-Kind regards,
-
-Rodrigo Alencar
+Best regards,
+Krzysztof
