@@ -1,47 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792499961;
-	b=T29vDlRPbaEkqOjSNTvuqAnR6GZ2ZUxXbD3ZGNBIMYVa4/ic6K/uVyQNqhwqrzbRHDut
-	 UiV65l6bHPPRd3TENGqkXEWYjkXYM/6wXD16q1o5N8RJvzNWi1iorTSUr0/qT43LKZAZi
-	 gcgP+wsS+iKubMn4GvkWrxy4yyhsyU/RzFezVw3xUpkz3tEniLRW29OHf9PvSYJRjoOtN
-	 yyTWYTwzpGGw6ULyJI2+/g/SdSt7l73NEO4LUWblhCPG1luskC4nE/uvh/V5Hh16y2JgE
-	 oxau8B62ekePaaLckWgx76s3VxsCE1Zvb7rN9y+r+BkGMlGibiRWE0+LUz5l6smejFg==
+	t=1792500203;
+	b=Jr8cHXDtKdNPSYQp1vWRtguPrP4EecEpaudaQguWb43qfJ//2JpIFbbU8iIqVdUCS4Cf
+	 xZ4uEcL+IG+Vru8Cq9nAcyNvIaCIOg8+iMLysQV6uzIRYsKpAkqzN2k8z2Gv8M3L8od7r
+	 LP16jbWfmL7rjni4CKyi93BPAuL11/HAO8US+sXuDfikthv0H/zYLteLC9oT6Rhf1/9+e
+	 R+VIZisCVBlEEikcKL7j2B53cdM0oe4Fyn6m6tplWWQl1s9CeZ9AMXe2Q0Vs0cdfyPyFv
+	 YoJnrDR+6uHZakfVNEMfFCRfpycMFG9+NQF4WYu58aiEGiuurgvQcWoelO2Ws1X8+Bg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792499961;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=fPyspVFbPKIDQ4LqkzeoiuA1iNZYYjJnNTZsI6hWXKY=;
-	b=Xpl6TIDNMy4XZlyBfD4KTFs7EbT4uFi+RMenV8GPdUH/mFnkAJfyr4Y5qJz21aON9hWx
-	 DZxADrqMDM/hzYcgWM2dMdvEebiJb5tyoOQyVBx8gn+aVXQCPGUHg8O1RF1YFAqul8C4U
-	 2guGU2KsvXvchqd+XX53WHU67oqsBp25WuEkxGA3xDJa21G4zXpVTAaWBs5XCEsr+pHwb
-	 Zt1j6EMnfidsEJ0mOa2Yep0cBkpc6ZBTFyLHA2bwNG7B0tEv/0+V9hyupO4QvkkXFcTMu
-	 IJ9Wf1Q8QoEtq/Yi+zR3fyPBZiFtcpu3eCs61XHzH1OxEyTO3Kbi6599xthTvs0l8EA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792500203;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To;
+	bh=ADOCDelITMEX4p4h4TfmU1ayoJRVyWEUw/EIxGZkeis=;
+	b=qSzVICdUhUOCir4RDW4HUL65We18XcREI+GS1uO4vYI85SjUH9mzYyw+/TX2/GJ2EjrQ
+	 FLJ1ha2WgxEhN5FTmzcCofpWqzyMGP7TjrTDbHIJNKGYRCHJQsH+LQDJNtv440uJYhw4X
+	 PwoDJ1+nT8Sb28ut1PiAd2E9hIZnp2D7JXJlSdo8nxAP4hjgC8Kab5hCMjfWksYLFS6Es
+	 7BQkIoUhEMvyKh5aYtlw8mWE4XI5wwUHrs4sTS6+4SDkZDwQExrYrkeM3NjVP/MiFVEmu
+	 KR2WB40mc1cGR5/OZxeqPY8Z635alZ1cN1pUOl1G9gwNxUdTf30/swOSBkor+vuqTrQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=amzA5L5b;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=iBE7MP4L;
+	arc=none smtp.remote-ip=74.125.82.181
+Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 748F4606A319;
-	Tue, 20 Oct 2026 12:39:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7813F606A325
+	for <linux-pwm@vger.kernel.org>; Tue, 20 Oct 2026 12:43:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7813F606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=amzA5L5b
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 842ED1F000C7;
-	Tue, 20 Oct 2026 12:39:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792499961;
-	bh=fPyspVFbPKIDQ4LqkzeoiuA1iNZYYjJnNTZsI6hWXKY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=amzA5L5bHG9DIriq3h2b/Os91GZsZpLn91eYSpfkQFR/nuyPRfhB5bvbe7uirA8wO
-	 6nELKuRj3I5YIGVsNJmNeCRy6nzvOnZzaPPhlU6O0ySEfqQqBnJki0cY6UL84G9+Bm
-	 yUOIutEKrklpRWrwmx4KO8LWEEUeN5JPuas8BQaRC10oBysGHcpDc4zn1QrqSHVqsr
-	 4y1pBb75Hwpegkl5gGBipGGBtTwWl3r920zMGwUlxNWTsvO8grapN7oTzeN9jQWdr6
-	 F54ozaeXyHlEyKA1vOR5jborJ2CXdjHKTIYqZsVSOqhrl7eAUD+Mxn1Yjy7uBeCRKu
-	 2RD27EsLe4rfw==
-Date: Tue, 20 Oct 2026 14:39:18 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: rodrigo.alencar@analog.com
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=iBE7MP4L
+Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-35b2c599f43so587432eec.0
+        for <linux-pwm@vger.kernel.org>; Tue, 20 Oct 2026 05:43:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792500202; x=1793105002; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:date
+         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ADOCDelITMEX4p4h4TfmU1ayoJRVyWEUw/EIxGZkeis=;
+        b=iBE7MP4LiiXqwWMF8SJq2RfYIZ2T7MJv8zOoaiOFkLAV1WuVTpqMVKlupysFYR9agD
+         JoIUmQsM2Wd+Jr1zPqhHEqXgvd8LIP0lBJOxxr0v3fo3flQ7529Ib/Xi4OR89hlo8lqf
+         Dxd3GUFj1P5Ej+lsMC82WQKoc+HsZxvIpghogS7SsPkwm06fuPr5T8/Gm/N7/u4H8qCu
+         qahCwD73SDmXZB+GPZ2IKk2ROTHCQL0k+Pyw+T3Mwnb3VB1aVYDmNAH1yAE2PBU7au5L
+         ywiezeq5X35K+GTEhYn4Q+rUR8qPttM0Gogem86PxNmwgMQksM51g2JBijd5II/rMhB0
+         edxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792500202; x=1793105002;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:date
+         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=ADOCDelITMEX4p4h4TfmU1ayoJRVyWEUw/EIxGZkeis=;
+        b=UyqFxZNZ+7GktKm4Z+XeUfh3gSRM89zIIlBHOs2iGbCLwD4d4u74IqoVa2v4GUL0Pa
+         K4Pv87Mipv+mmgeR2XYYff0srxspMa2en2xu90y5RWwXhluBmLG4JcB/tk1ZfB2PRV/p
+         hH8K/MC4ZhFyOv+n2+XPWPo30vvOnPFiAIFa9QbupDABD5kT/CahA/izNh+Diz/LLDL6
+         RFy25pHvqHjheJADnqcrWsEoaF5HryCOOSB+1E+kiapRqcH0pWFfpnEiVUF/gIScN0y9
+         CzsEhoA8mmrwU5Q9DxwHhRktVMHbGjNIN1gAX8ObIp4Z17lUOX4x5qobjnOcVcrNxNOl
+         5J6Q==
+X-Forwarded-Encrypted: i=1; AKwUvBxwVlk+jpgp/KyL2mEJWo8B1Klb9OgDt13eUvCQ6HJQ/xKB4XWOmbzmi5nnMw5QxC0bar/zYJYvRxQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKoYbiUQ/K8KzvVugypMDaCS0O+P/Mo916qExTgeD6hm2jb3AHK
+	g3uJ9Vx9C+qt6BahLINQrsDvVgAqJA6qfZph317Ty/NaHRgg2pzvd9LQ
+X-Gm-Gg: AYBFou33kHXcIh3c+miEX3PKPICLThsNWxEY0mrtj3YoO+AW5yTA7A/uoPg3q+MOL8G
+	jtD3km+t8wTZjwLANPhdmr4QY5DIhvqN3SCdL27hBgot2zk5yB0gLhKThUQ/IkzfjZNAntFqhdF
+	l1tNMTyz1XAnEHl/41NkB7DDdB45ps++g2ncXTe2Isb87mM9Ah5GNAYSafBvEQNSaz3/ZB4p63f
+	zav5NaO9eR/KmOVEGDgDzvAeqJcxwpUZXlozA//CknqNWx7gQlKMouJHCI1AWUFSAf1o6HvrQ+b
+	4UmFTX9eOxM/r5qZjZrla2wd/ZB4ELMSRkHGYqKQRpo2MNOGJDuYhwj382NiKOi/1gtREXqV2Ft
+	R0hy0rs2YhwTvbenkej1Asehcmm6g3W4y4nDOyNx1r1RGiz8XQqb4UKQzMNh7Rvy84KK8icxvvT
+	Di7fDmkZUau7d8adsIojBdjVJb3pp+Oan0K5gsVLv4IJcOH2YpU8UKHM0UtfE/w29CdY6rzfVW0
+	XMZInj8XO/uuZxzqEHQQJPbDdrFnX5PjHkFVZivO2uy7GyXajmaJ260/lZs7GgL3eaS2LyUHEgG
+	hQD+
+X-Received: by 2002:a05:7300:de49:b0:35a:7020:c08a with SMTP id 5a478bee46e88-361a186094cmr14849051eec.19.1792500202072;
+        Tue, 20 Oct 2026 05:43:22 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (158.95.44.31.netskope-rdns.com. [158.95.44.31])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-360820a79c7sm40204577eec.18.2026.10.20.05.43.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Oct 2026 05:43:21 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Date: Tue, 20 Oct 2026 09:43:07 -0300
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
 	linux-doc@vger.kernel.org, Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, 
@@ -51,10 +93,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
 	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
 	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH 06/10] iio: frequency: ad9910: add axi backend driver
-Message-ID: <atddZ9KZkXwgv2IA@monoceros>
+Subject: Re: [PATCH 07/10] iio: frequency: ad9910: support drctl control
+Message-ID: <v5meo6y3jn6vcmv7kqtbqqv3bq36xb6pk2kysdwpwkfvixtqzl@rojpaxrte4sw>
 References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
- <20261015-ad9910-backend-support-v1-6-3c21648c8e26@analog.com>
+ <20261015-ad9910-backend-support-v1-7-3c21648c8e26@analog.com>
+ <atdcOsaDbtaQJd-9@monoceros>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -64,164 +107,90 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="hepozkqd53cm62gy"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261015-ad9910-backend-support-v1-6-3c21648c8e26@analog.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <atdcOsaDbtaQJd-9@monoceros>
 
+On 20/10/26 14:23, Uwe Kleine-König wrote:
+> On Thu, Oct 15, 2026 at 01:49:47PM -0300, Rodrigo Alencar via B4 Relay wrote:
+> > +static int ad9910_drctl_sync(struct ad9910_state *st)
+> > +{
+> > +	struct pwm_state state;
+> > +	bool ndh, ndl;
+> > +	int ret;
+> > +
+> > +	if (!st->drctl_pwm)
+> > +		return 0;
+> > +
+> > +	ndh = FIELD_GET(AD9910_CFR2_DRG_NO_DWELL_HIGH_MSK,
+> > +			st->reg[AD9910_REG_CFR2].val32);
+> > +	ndl = FIELD_GET(AD9910_CFR2_DRG_NO_DWELL_LOW_MSK,
+> > +			st->reg[AD9910_REG_CFR2].val32);
+> > +
+> > +	pwm_init_state(st->drctl_pwm, &state);
+> > +
+> > +	if (!ndh && ndl) {
+> > +		state.duty_cycle = st->ramp_down_time_ns / 2;
+> > +		state.period = st->ramp_down_time_ns;
+> > +		state.polarity = PWM_POLARITY_INVERSED;
+> > +	} else if (ndh && !ndl) {
+> > +		state.duty_cycle = st->ramp_up_time_ns / 2;
+> > +		state.period = st->ramp_up_time_ns;
+> > +		state.polarity = PWM_POLARITY_NORMAL;
+> > +	} else if (!ndh && !ndl) {
+> > +		state.duty_cycle = st->ramp_up_time_ns;
+> > +		state.period = st->ramp_up_time_ns + st->ramp_down_time_ns;
+> > +		state.polarity = PWM_POLARITY_NORMAL;
+> > +	} else {
+> > +		state.duty_cycle = 0;
+> > +		state.period = st->ramp_up_time_ns + st->ramp_down_time_ns;
+> > +		state.polarity = PWM_POLARITY_NORMAL;
+> > +	}
+> > +
+> > +	if (!state.period) {
+> > +		pwm_disable(st->drctl_pwm);
+> > +		return 0;
+> > +	}
+> > +
+> > +	state.enabled = true;
+> > +	ret = pwm_apply_might_sleep(st->drctl_pwm, &state);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = pwm_get_state_hw(st->drctl_pwm, &state);
+> > +	if (ret)
+> > +		return ret;
+> 
+> Does enabling the PWM have any side effects? Are you doing that only to
+> be able to call pwm_get_state_hw() and thus find out what the resulting
+> output looks like? In that case, pwm_round_waveform_might_sleep() might
+> be your friend.
 
---hepozkqd53cm62gy
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH 06/10] iio: frequency: ad9910: add axi backend driver
-MIME-Version: 1.0
+Thanks for pointing this out, will look into that.
 
-Hello,
+> 
+> > +
+> > +	if (!ndh && ndl) {
+> > +		st->ramp_down_time_ns = state.period;
+> > +	} else if (ndh && !ndl) {
+> > +		st->ramp_up_time_ns = state.period;
+> > +	} else if (!ndh && !ndl) {
+> > +		st->ramp_up_time_ns = state.duty_cycle;
+> > +		st->ramp_down_time_ns = state.period - st->ramp_up_time_ns;
+> > +	}
+> 
+> So the configuration depends on the previous state of the
+> AD9910_REG_CFR2 register? That's a recipe for surprises?!
 
-On Thu, Oct 15, 2026 at 01:49:46PM -0300, Rodrigo Alencar via B4 Relay wrote:
-> +static int ad9910_axi_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> +				const struct pwm_state *state)
-> +{
-> +	struct ad9910_axi_state *st = pwmchip_get_drvdata(chip);
-> +	u64 period, duty;
-> +	int ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	period = mul_u64_u64_div_u64(state->period, st->pd_clk_freq_uhz,
-> +				     1ULL * NANO * MICROHZ_PER_HZ);
+Expect not surprises. It depends on the current state of the
+no-dwell modes, which defines bidirectional, ramp-up or
+ramp-down behavior.
 
-Does st->lock protect st->pd_clk_freq_uhz? If not, the lock can be taken
-later.
+That is documented in a later patch. ad9910_drctl_sync() is
+called when dwell_en or integration_time attributes are changed.
 
-> +	period = min(period, U32_MAX);
-> +	duty = mul_u64_u64_div_u64(state->duty_cycle, st->pd_clk_freq_uhz,
-> +				   1ULL * NANO * MICROHZ_PER_HZ);
-> +	duty = min(duty, period);
-> +
-> +	if (state->polarity == PWM_POLARITY_INVERSED)
-> +		duty = period - duty;
-> +
-> +	ret = regmap_write(st->regmap, AD9910_AXI_REG_DRCTL_PERIOD, period);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(st->regmap, AD9910_AXI_REG_DRCTL_WIDTH, duty);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->pwm_polarity = state->polarity;
+-- 
+Kind regards,
 
-An inversed polarity waveform isn't the same as just inverting the
-duty length. So this is cheating. The right thing to implement here
-might be inconvenient, but you shouldn't implement .apply() anyhow and
-the waveform stuff has saner semantics.
-
-> +	if (state->enabled)
-> +		return regmap_set_bits(st->regmap, AD9910_AXI_REG_DRG,
-> +				       AD9910_AXI_REG_DRG_TOGGLE_EN_MSK);
-> +
-> +	return regmap_clear_bits(st->regmap, AD9910_AXI_REG_DRG,
-> +				 AD9910_AXI_REG_DRG_TOGGLE_EN_MSK);
-> +}
-> +
-> [...]
-> +static const struct pwm_ops ad9910_axi_pwm_ops = {
-> +	.apply = ad9910_axi_pwm_apply,
-> +	.get_state = ad9910_axi_pwm_get_state,
-
-Please use the waveform callbacks instead of .apply() and .get_state().
-
-> +};
-> +
-> +static int ad9910_axi_setup(struct ad9910_axi_state *st)
-> +{
-> +	int ret;
-> +
-> +	st->pd_clk_freq_uhz = AD9910_AXI_PD_CLK_MAX_FREQ_HZ * MICROHZ_PER_HZ;
-> +
-> +	ret = regmap_set_bits(st->regmap, AD9910_AXI_REG_RESET,
-> +			      AD9910_AXI_REG_RESET_CORE_MSK);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_clear_bits(st->regmap, AD9910_AXI_REG_RESET,
-> +				 AD9910_AXI_REG_RESET_CORE_MSK);
-> +}
-> +
-> +static int ad9910_axi_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct ad9910_axi_state *st;
-> +	struct pwm_chip *pwm;
-
-the name `pwm` is usually only used for variables of type struct
-pwm_chip *. Please call this `chip` as it is done in the rest of the
-driver.
-
-> +	void __iomem *base;
-> +	struct clk *clk;
-> +	int ret;
-> +
-> +	pwm = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*st));
-> +	if (IS_ERR(pwm))
-> +		return PTR_ERR(pwm);
-> +
-> +	st = pwmchip_get_drvdata(pwm);
-> +
-> +	base = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(base))
-> +		return PTR_ERR(base);
-> +
-> +	clk = devm_clk_get_enabled(dev, NULL);
-> +	if (IS_ERR(clk))
-> +		return dev_err_probe(dev, PTR_ERR(clk), "failed to get clock\n");
-> +
-> +	st->dev = dev;
-> +	st->regmap = devm_regmap_init_mmio(dev, base,
-> +					   &ad9910_axi_regmap_config);
-> +	if (IS_ERR(st->regmap))
-> +		return dev_err_probe(dev, PTR_ERR(st->regmap),
-> +				     "failed to init register map\n");
-> +
-> +	ret = devm_mutex_init(dev, &st->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ad9910_axi_setup(st);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to setup device\n");
-> +
-> +	pwm->ops = &ad9910_axi_pwm_ops;
-> +
-> +	ret = devm_pwmchip_add(dev, pwm);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Could not register PWM chip\n");
-> +
-> +	return devm_iio_backend_register(dev, &ad9910_axi_back_info, st);
-
-It's unclear to me what is the relation between that iio backend and the
-PWM. If .set_sample_rate() is called for the iio device, does that
-change the output of the PWM? If yes, that's bad and needs fixing.
-
-> +}
-
-Best regards
-Uwe
-
---hepozkqd53cm62gy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrXYPIACgkQj4D7WH0S
-/k6k2wgAuvlnAI/8NOCk6w1mONb4/gMLWFBN4F+WgeB5WFVR3x8A3lRZV6iReu8D
-iCcoiU3RCCXjd4Onz+dKx2R7RmAaOCpf2dRz5iDpAvmJvMh0zC0s55VfUZrLcyUF
-JM28ZnzWgt1gMMjoTdUZ0DcsCMTmhXqqXcUNpF4vmq2mzNB4yx70sCBSc/H1jQQe
-ajzKNjCLVpS9FkF/KsEpp7Lx9m/fUrr4TF5oZCxoc/FH9FNRgNCSErDoNkN5oR08
-mA71Eots59CAPLd8w5PXmYoahVmKKAkxUyowR9AbcS0fDJWiJOPXc/mI8zxE7OKL
-3eE8Yj21x7Rx+jeZMlfdcPBSRDjHKQ==
-=VZx8
------END PGP SIGNATURE-----
-
---hepozkqd53cm62gy--
+Rodrigo Alencar
