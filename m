@@ -1,79 +1,63 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.6.134.41
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792509218;
-	b=octa1/q7MQeKRTk0OfFN87z896a8b0C+eGOSH90FbpYRgB0bboPj6qkAupuSCShqqM+p
-	 4WMNCpGCO2mwoi2VPJoXUbpgVPIS1hNUCuI4r8H1/m/e9B5BFTe0sHRDDS2k+VaG6JDu8
-	 CVshwzvgWhDFLWnRfOkFqAKFjr5iFBAm8svgEeQw4tgYJSwhztOo9uHzcN2qzjsX94GXd
-	 pCHlorj8vRZ/XdtZ0Ughqa83Lel4ETjN+UdvgiE74pyvE3jqe9cZaH0xiR2bSkFc7GiMK
-	 Njr3ANyXY++NoATKh7W7DH6NAPFuC7yi3gvVEZP9XCUqzn2qDsiGcqouulAf4AeCTVg==
+	t=1792561939;
+	b=PbUyqAIH4kIRzlMXE0wLOVH3f8NIMB8efxfT/ENdJnfnRXjvMPMkRsp93npHfnUan4bl
+	 9trPYlFnNSXnUyCjMbsgp0+tgxahlYTja67Rs8VWvgxQFRIZOq1/J6goFmUmi4mcGxGoN
+	 ORYZfibQnijnB1vbUVGDhxRtuUmfTkLGD4tlR8rujCt8oV+AuF1rVjG9SkHmeuGzmz9CR
+	 CRdtE1uwjrwrsyQVR+PldFyYZmENB0yDhQP7XlB/rK3CAnFgvvJvvi6Yl9if21dc/rB/m
+	 cMxLs01srvb/LVPTeqjfDeBrvieQ+/kcEtMX8IXQDjL770IQqxd2PEO85YEdRkoXRGg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792509218;
-	h=DMARC-Filter:DKIM-Signature:X-SONIC-DKIM-SIGN:X-YMail-OSG:X-Sonic-MF:
-	 X-Sonic-ID:Received:Received:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-Mailer;
-	bh=gW7rrrhTvNhaJ7ABkNTgkXkWHwGvVO8uazQn6vOaTgU=;
-	b=OHQnR76xr3JcjL8oUCdyaeCLLosau6Gmr4HxZax13fMVdyUWdGJZHQVbmpdCKnSQhB05
-	 A+0ZDnSQ/sH8E2F5Ci/g6tdatJ3DSoXSE1XUbwfBtsa/JryAbGb0hsgsiAAFMghuZQSCm
-	 Km084CGylG2LjnNqecZfVYBNxComi0LusVKgI/50w7PpMP6ufZmQpIfpaX7UbVRlF1wiH
-	 dElStiEi6k1QjepISchmDP2k0RP3tMVinAFD/Y8N+R99eNykbC7IVyBRi5WMlq3qVthqA
-	 jqAWtoH0+w4etf2E/XlNX+jEHPnOnqgTGwaUYgt6buEEbvE/Efp+8RVUEeY4dPt2K+Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792561939;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=5OeiZ8L6d4vX+l8Io/5jcUBoP3Wnj3/+D42Y2ecgSAM=;
+	b=QVOHjAornST/nx3MfBKY21zDGNhj51yYAS+S82lJtrGVJkoAt1FqnH8hNnp+Vwrw8QSr
+	 UgoGRWY8p8kgFGeI9C9wq41Rb8x1N7S6rb27B5dD/oydzZk9eOOl0zS0EvbJ1pPDT9iIu
+	 7hrnltyoQn2xZUd5sNZDgPLemdSegQjjX4dhFX6FbDKM2UrQ61qj7xFzOb5A9HE9bO6D0
+	 c+jm5c0465cFEHH/hYKVcsHC8UMy7pZRoBmevEG4I9nXangKouyQ9mY4lqSMviVf33Tpz
+	 1WYB8yBGTiiEQX+e6pfPflfBgPfrS598FhPAE4gb4hXAWRu4ot4TdapDQnCJ4DhDBRw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=yahoo.com;
-	spf=pass smtp.mailfrom=yahoo.com;
-	dkim=pass header.d=yahoo.com header.i=@yahoo.com header.a=rsa-sha256 header.s=s2048 header.b=Zg2jwCsp;
-	arc=none smtp.remote-ip=74.6.134.41
-Received: from sonic307-2.consmr.mail.bf2.yahoo.com (sonic307-2.consmr.mail.bf2.yahoo.com [74.6.134.41])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PjDJYkQB;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0769F60A262A
-	for <linux-pwm@vger.kernel.org>; Tue, 20 Oct 2026 15:13:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0769F60A262A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id C9282606A31A;
+	Wed, 21 Oct 2026 05:52:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=yahoo.com header.i=@yahoo.com header.a=rsa-sha256 header.s=s2048 header.b=Zg2jwCsp
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1792509217; bh=gW7rrrhTvNhaJ7ABkNTgkXkWHwGvVO8uazQn6vOaTgU=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=Zg2jwCsp3P4iMf6pRdIUeLBSunTiSsyewr0xl+jmQAnHdf/piFw174yUvzoRExzOFK+i4/f6bUtWVgKgc7oGbFdQBCFJq7rxoa2WobQmoVRwEL53hHj2PxSbV7p/xfm/1xGkjxI8Qcpc0MdV4Z7IQTAkgTuxPCkJLS0bAC5X1P7fGRJVjTWP1Ta/5wjgoalO8l0cJPk8+Cc4Ug4LpCIm+ZTfO0gERO4MaXmQgsi3ymsGYli/iASTIQlP+/txsAuw5O7axIQQr6n0kGBB3Eqbx7n+pI+bWby2c9SwlR42RqXVYfVVirgf+19EPCOjWSTGChKtr84tvGtWpoTNi/CoLQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1792509217; bh=gmW+bm26geerfJCjP9YQbjYnU5IJ4Zl4rDpAZaWUBKV=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=jnM2lNgJTnGWuKgQrtlNTcRKAYpKff0QTk5gJ9nlofuddaYs6U25QyNv+2SYyci4MLEOtqmAmYmIgnCrFJLbyxgEaTn8VvVVJ8V5DuJNXVsmSJIRF9ZIEge3S7t0FRUOE96UuvuzJIA1lqV+cfjgPpsnWsscXQoQ6v6bsY9E/ZRuNZZ5epy/l6QLYsV6FyjaMueibfBhCwY2oEXQddT987cmqSc4cKE05TKeYbbLSzd1Q1NnOUdATpml5rOy7rAf21zF38XNKid6r4nbbq2s3ql7IxM7h390va2FN3dioTWEn3K7GrH7IuGuiNTvSYp4qqTLYZ0rgxQohyFP9VeNLg==
-X-YMail-OSG: jCdKiA4VM1m7zt4OsFSXXgI_fAwkzi5Zm5csGs4LKuPiAa01PuRLbKdHG_Webvs
- j2CosCrrbIcRxC5XmAys1VOYgDiUQ24TBm2.rDg3FRmivj8U1cKWwdMseRzOOT7rEgZXwutuu9Kv
- y57cciW9USvDkiPX2uIFFpEI7XZ9EY.uoo50Ykmq0PklddEkV70f44_qLEwOACwhE.uWvRccuRPh
- q_9KKlGvOcV_7gyLim5eXA36w_FDNQAfcpsnNgEbthL8.pmlAOWdt9eWkAbh4Ac0dLmawscnwzAi
- wFQpMUAW9uRLjHDx6uiMdWdvttV169PFa01A42VBwmLUuMpRLPLvMNQVUgfugAA2iw0877JkxSae
- h2KW8BmwruY6jBF2ORvlTOhwFMm7.QyVNqSRyXDAJQho9xT2lTPcnZ_SBw5QucqSqxX_Dl0e4wBa
- yhm0ezh.DCt6MWEcAHTxwcQLShTTC7ImR6fzwqwpYE6fnp5l5tMdUhll.6Lwxaa9aLvy7P8bGWX6
- cKmjhG0w493LIRe7I7OZJEElN6WFvaLO0xxPVAPFcNaFCJUsK2Z_bINKpe6LsJq7_m5nXfxLz3nD
- 0zIaeOhJ6JFOulsnXb2NXV8onDLl4LjIgXbbHPjtd.W_WsSwH4oCqgLmoWabhceLXJ5EvGvzZ.jf
- W7MLyOAT2w2a6naK2DYP0h2purBRJJiweaKJuOKkPYLjq9GQnKja2D3rEPLGmTMvG1tmdfAlbRRe
- SERUsUIg5EncnbetEEKcvuy4PuTexNE7TWXXym6.2t_QOrs3y4Ngvi5MPgAonNIK8PMvKjJJ1Pk1
- 7.ylkOLoBT15HnezKrbK6mcI4aZ3Kbb4N8HKNm1ELJnwp5.W_gnaWqCxuUDiNVN4du2tHg2w7tnO
- A66sY82iIGHG2wttqCV0EACsopUL2sJkRq_N3CSfM8jzzdq9YFPDwlx7chwvhEPri46SPQG95lk_
- TkHgcu2kNWch7EMi3_Z2L4tnAl0R01l509D2PzyM1YKvmY_SMoZQ0m7fHao.jbr0CV8ke8_SsVUc
- E_d.4Lh8r9srRrx0j3khLLfCOLZ3DVqZUPL7l.lggzNtpyA67IDkOlr8nNF58l5mtpBud9i681px
- U5Pp8p.dexvPAGhjbQ0fhXCYSUExBmNubDMP363WFz3Q8rjR9gE8lTbrja3Q2PfeRaTXEM2c9Bnn
- XnYUwrP_2U8x.jt2g_lbfDez.H5KsS5fVuwM5XBSujsl0AlUQeceHtdk4c_i_wyJxFZSBce.jxGP
- n1SAw68CK49JwUq0yw7_CLK3aLk4ul7DhIINnNRhHxb64Ki1VQsgDX5Hnz2WoqXRzB2I5iUNlJTO
- eGoOSDk6ogmDPP2.p.t9Q1YLel3UOmD3y2n691jeINSlnkZ56nD4LOHaiaBGACAMXlCPYPn7BfCf
- 4bQ8d2Merjk4X67Jgn9rg3e1_R3g.98EqskjY010vmEeGBJIL5y4pgFsJkeHHW10DZzmDGMcnRhB
- OuUHcm7ZQZ7Twtf2uKQhe0cSWuw13d_DoPN0SrYtatam61XRsDp7ShW6DZ3VKQC4fo0Xs_ZcGmE2
- O4QRLgPfcUSynoZg0NUj0xy0NgHzyUIjo5onPbidnygCnKXSmKI5v7znzX5PduFBl9PDd_8l1WO_
- YHJg8.pfjoIsClik8GKgWO1ZZf_n39k9Q0fgFbTZbvjb4pgjqN6rfM_OXCZ8yAJptI7kWs3kqJPK
- gk7NMUuNvdQXD.ENewdEvCflU9WxkNzJ.hRS7Kcz7Po3XlVeqQMIGJ2OAQ2BLyxBZN8vllNEpvY_
- lUXsESPI.aB18Gtov.FrY_HyLPfARXQe.5iIFprw2Y.per9BTzDiuinhu80p1iue5CXood2C0XPI
- jldgJLzcc7aGBkhhQAHGOmKSC8Ymu9nsV3bLgdWPM.uih_76SAmkSsvLWQdUjCmAdLdrEh3vdawh
- sddnTdgmkFC8DQ5d1utVDD4leOhREQ7l6fFNpf7TS90zfRUh.q02RSnDl.rJMGvl2mRXJ0HXPNsi
- jeKDbS4mbT_KB.C3bXJW_6JS4gJ0DHtTS8lFOfB2vw6e0AcZ8iwFcXp.zqjFu_54MusaKN5MtYyK
- EXT9LTXsPWHzfctZp_.aKOxiNKMU6tvrRfE.kc2bGD7cbthqjH373fxgHfSvtLrZfZ8ipmFKFQoD
- cV2cnfasJiDG4tg8vkAcYdyNH40myIYfYDjV.4FLngWbKgNbLW2a2HRl5brAqE3ZhaQP9u7KmR6m
- ZZTqPOXRTew52tJsE6FyHibhOc41Qkw--
-X-Sonic-MF: <deaner92@yahoo.com>
-X-Sonic-ID: bd98e620-d938-40c4-8a3f-5b21ebedd5ce
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.bf2.yahoo.com with HTTP; Tue, 20 Oct 2026 15:13:37 +0000
-Received: by hermes--production-bf1-6d6877594b-4fmm8 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID c27b5baec59ebcab6bc6425e1a3166a1;
-          Tue, 20 Oct 2026 15:13:32 +0000 (UTC)
-Message-ID: <8365f405-2686-4ea3-b216-7928b826f6a1@yahoo.com>
-Date: Tue, 20 Oct 2026 09:13:26 -0600
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PjDJYkQB
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BA0201F000CA;
+	Wed, 21 Oct 2026 05:52:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792561938;
+	bh=5OeiZ8L6d4vX+l8Io/5jcUBoP3Wnj3/+D42Y2ecgSAM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=PjDJYkQBPUKVWb6J82o69/SAzYF2+ziRUPPW3POgQFvjioitwO2sCNuAsp5I9D1X2
+	 EPNvo/oUi+q3pWcm92Q4WFIlhSVXTGB9EgoGq/xT/q6hNi7BbcEXlrikyxZUKbDQlQ
+	 iPNk0PH6nLGijisS/cWVSozRC2uZt9s9qAnMblmQR094fsfUcdsk5eAGN6xEQ99uN5
+	 oUBI/rFKIZgVUDy3qloqeiNtD8bukaE1CxL/tH/j2A2HjkIIRh+Rh8Ew3rDEXuQpta
+	 THjL3WpqTkPaovJeHVIZoEQVzdeCsYw91mg1du+5uYGaXnAmBCsxtO8RzCtZIb53ZA
+	 3GX3b/hHKOjFg==
+Date: Wed, 21 Oct 2026 07:52:15 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Daniel Almeida <daniel.almeida@collabora.com>
+Cc: Maurice Hieronymus <mhi@mailbox.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, 
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
+	Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
+	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, 
+	Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>, Fu Wei <wefu@redhat.com>, 
+	Michal Wilczynski <m.wilczynski@samsung.com>, Brian Masney <bmasney@redhat.com>, linux-clk@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v4 0/2] rust: clk: Add ExclusiveClk and use it in
+ pwm-th1520
+Message-ID: <athSw4qQ0k76HCGB@monoceros>
+References: <20260711-rate-exclusive-get-th1520-v4-0-8244a0666a71@mailbox.org>
+ <atdlfNRiza3gA1iD@monoceros>
+ <8625DA25-1F59-4175-81A6-BAA16C961557@collabora.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -83,42 +67,52 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] dt-bindings: pwm: Convert NXP PCA9685 PWM controller
- to DT schema
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-pwm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261012140346.3065-1-deaner92.ref@yahoo.com>
- <20261012140346.3065-1-deaner92@yahoo.com> <atH835VJLqo_mdjY@monoceros>
-Content-Language: en-US
-From: Jeremy Clifton <deaner92@yahoo.com>
-In-Reply-To: <atH835VJLqo_mdjY@monoceros>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.26740 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="d5taxqcx64zj5tfv"
+Content-Disposition: inline
+In-Reply-To: <8625DA25-1F59-4175-81A6-BAA16C961557@collabora.com>
 
-On 10/16/26 4:33 AM, Uwe Kleine-König wrote:
-> Hello Jeremy,
-> 
-> On Mon, Oct 12, 2026 at 02:03:46PM +0000, Jeremy Dean Clifton wrote:
->> +maintainers:
->> +  - Jeremy Dean Clifton <deaner92@yahoo.com>
-> 
-> What kind of commitment do you plan for this maintainer role? Do you
-> have the hardware?
-> 
 
-I don't have the hardware, but I'm willing to get it and test on
-it if it comes to that. I'm glad to answer questions about the binding
-and to review future changes to it, also.
+--d5taxqcx64zj5tfv
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v4 0/2] rust: clk: Add ExclusiveClk and use it in
+ pwm-th1520
+MIME-Version: 1.0
 
-If you'd rather have someone closer to the driver listed as maintainer
-instead, that's fine with me too. I'm happy with either possibility.
+Hello Daniel,
 
-Jeremy
+On Tue, Oct 20, 2026 at 10:03:47AM -0300, Daniel Almeida wrote:
+> > On 20 Oct 2026, at 09:59, Uwe Kleine-K=F6nig <ukleinek@kernel.org> wrot=
+e:
+> > I didn't track these dependencies, but the change looks fine for me. Who
+> > is supposed to merge it? I can take it via pwm, but I guess a rust tree
+> > is more appropriate?!
+>=20
+> Please no,
+>=20
+> See [0] instead, which also includes a newer version of this patch.
 
-> Best regards
-> Uwe
+OK, discarded the original thread from the pwm patchwork. Thanks for the
+hint.
 
+Best regards
+Uwe
+
+--d5taxqcx64zj5tfv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrYUvEACgkQj4D7WH0S
+/k5BPwf+Mub/CREsHBzcLJx7ot56RM02mFrhVHCqQ2zYrWrPQF5W/p2XGfJBgK4u
+p2Z0UzftLcSU83u3FxMDwlkpZQvboFMcfVuV4bsMLavUcogQiz3N9yJ5TfOwUjzQ
+xHL/mmYVCs8FUsPPIX/VMMwB7Y6E+Is8D3GCZ717rMwH9DpBKUqDy3XIvLVxyzZ0
+KzvbWzYUNHuYsQlWq04o+GVOBMUe2V2qxXfldRjtflP1aN+uepE7rqfOyWaCAfY9
+mJm4X7e8MCyFwSRCbtP+2LI4v8MgSP90UW5SXVezn2lpd6Rmp5LtRkqm4Atgcv41
+HYJMY8t2pkKYmVOlfH4CSUG7oJm/YA==
+=x355
+-----END PGP SIGNATURE-----
+
+--d5taxqcx64zj5tfv--
