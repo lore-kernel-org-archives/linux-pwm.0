@@ -1,63 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792561939;
-	b=PbUyqAIH4kIRzlMXE0wLOVH3f8NIMB8efxfT/ENdJnfnRXjvMPMkRsp93npHfnUan4bl
-	 9trPYlFnNSXnUyCjMbsgp0+tgxahlYTja67Rs8VWvgxQFRIZOq1/J6goFmUmi4mcGxGoN
-	 ORYZfibQnijnB1vbUVGDhxRtuUmfTkLGD4tlR8rujCt8oV+AuF1rVjG9SkHmeuGzmz9CR
-	 CRdtE1uwjrwrsyQVR+PldFyYZmENB0yDhQP7XlB/rK3CAnFgvvJvvi6Yl9if21dc/rB/m
-	 cMxLs01srvb/LVPTeqjfDeBrvieQ+/kcEtMX8IXQDjL770IQqxd2PEO85YEdRkoXRGg==
+	t=1792562213;
+	b=ihvWf1gtw/R2wNEPl9fdjDz7xaoFGXr/Oh1SUFXk3CoMglI9pVlTElVwuz4ydkwP2fkd
+	 jBl1+EKovq02xYIEFchmxP2Ip95uIwK8+1v07mehRpVucWA42RbzG8Cel8FmDMQadePMt
+	 wdahXpMiKifXf5npmxE1ULm4BOnfThaYSiNYMAliKQnIGzBbABq8AiO/v2UG0QXBGpPQs
+	 ARPpmfKsdfOtwSSt1LsrfkQueBftoAA4R06qoRLLbctOKHsaM6Jb0uLjmGR+pBqX/Hndg
+	 JVCyEocHRn67w5drt4vguoxeoofm33GM4R4CqLGkawQ79nCf/viMq9oDKbh5U7KTRHA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792561939;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792562213;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=5OeiZ8L6d4vX+l8Io/5jcUBoP3Wnj3/+D42Y2ecgSAM=;
-	b=QVOHjAornST/nx3MfBKY21zDGNhj51yYAS+S82lJtrGVJkoAt1FqnH8hNnp+Vwrw8QSr
-	 UgoGRWY8p8kgFGeI9C9wq41Rb8x1N7S6rb27B5dD/oydzZk9eOOl0zS0EvbJ1pPDT9iIu
-	 7hrnltyoQn2xZUd5sNZDgPLemdSegQjjX4dhFX6FbDKM2UrQ61qj7xFzOb5A9HE9bO6D0
-	 c+jm5c0465cFEHH/hYKVcsHC8UMy7pZRoBmevEG4I9nXangKouyQ9mY4lqSMviVf33Tpz
-	 1WYB8yBGTiiEQX+e6pfPflfBgPfrS598FhPAE4gb4hXAWRu4ot4TdapDQnCJ4DhDBRw==
+	bh=MTbIxTNS0QjE67ZaDxgS9Re+qV8N/0eZ/bqAXOZ7dY0=;
+	b=XUhNwiD4vvild07orN3gtLZhARoSX2JNCqLdmEze0H2v1TMy/cqfGI8R26C+//+dbzEz
+	 VGyYADJLlRt8owEVLZ4qiPPduB/Y6PeFqQ1svizwuQ4BujwQpWxkwLL1kli6Hg8H3lyEX
+	 0RL8JhR8x5SSnkvjQNE0ANOCe1T4ZdOEMHwXnAg7qbtGvI4XIcFSibN+fk1gjUnIGfFaW
+	 HGl9d9GpWykxL4aMKRkuRtrQ+3pytBaUvxLN9xv5Tn8tYwMRuJXq0RIDKrKLM7LucMJ7U
+	 I7Hjumgz3NqKFTpn27b6pN6EyhtJ14uHPm9NrQa9I8iU4cYyl3jVw1JbBvZnt4HiqAA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PjDJYkQB;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UOe4QjfT;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id C9282606A31A;
-	Wed, 21 Oct 2026 05:52:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 94A76606A319;
+	Wed, 21 Oct 2026 05:56:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PjDJYkQB
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BA0201F000CA;
-	Wed, 21 Oct 2026 05:52:17 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UOe4QjfT
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9196F1F000C9;
+	Wed, 21 Oct 2026 05:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792561938;
-	bh=5OeiZ8L6d4vX+l8Io/5jcUBoP3Wnj3/+D42Y2ecgSAM=;
+	s=k20260515; t=1792562213;
+	bh=MTbIxTNS0QjE67ZaDxgS9Re+qV8N/0eZ/bqAXOZ7dY0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=PjDJYkQBPUKVWb6J82o69/SAzYF2+ziRUPPW3POgQFvjioitwO2sCNuAsp5I9D1X2
-	 EPNvo/oUi+q3pWcm92Q4WFIlhSVXTGB9EgoGq/xT/q6hNi7BbcEXlrikyxZUKbDQlQ
-	 iPNk0PH6nLGijisS/cWVSozRC2uZt9s9qAnMblmQR094fsfUcdsk5eAGN6xEQ99uN5
-	 oUBI/rFKIZgVUDy3qloqeiNtD8bukaE1CxL/tH/j2A2HjkIIRh+Rh8Ew3rDEXuQpta
-	 THjL3WpqTkPaovJeHVIZoEQVzdeCsYw91mg1du+5uYGaXnAmBCsxtO8RzCtZIb53ZA
-	 3GX3b/hHKOjFg==
-Date: Wed, 21 Oct 2026 07:52:15 +0200
+	b=UOe4QjfTU4OOEa+CAU1yKrhxQbg0isE2+JARHhCnMhd5bZMgm58z41Bqfqea+d603
+	 BcN+UtdSCNIdiY2RLDJLA+bhYNMNn27w8SYoYV41ykwZyI/30kqeJtxwBQxYZkjf8Y
+	 dkgV5yAuMm1tOLMIkhutZFa0HCZpuFKkeKz8nt94/XnvgmB+wcUFbuXRaZLLqvcCvK
+	 WSoEICeTFecmyixM+MogX10mZNto20xtpoCmO7Gm4sx1pKTpzWAQtJioyLtd8IQl/8
+	 29a5F0tfQ44v2FIyzwIc4sWs8G1kR7nFYORqFTTTE/CPFfN3NK8YZoEYbHp7WEjbi6
+	 cGOiEKrVzhGoQ==
+Date: Wed, 21 Oct 2026 07:56:50 +0200
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Daniel Almeida <daniel.almeida@collabora.com>
-Cc: Maurice Hieronymus <mhi@mailbox.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, 
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
-	Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
-	Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, 
-	Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>, Fu Wei <wefu@redhat.com>, 
-	Michal Wilczynski <m.wilczynski@samsung.com>, Brian Masney <bmasney@redhat.com>, linux-clk@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] rust: clk: Add ExclusiveClk and use it in
- pwm-th1520
-Message-ID: <athSw4qQ0k76HCGB@monoceros>
-References: <20260711-rate-exclusive-get-th1520-v4-0-8244a0666a71@mailbox.org>
- <atdlfNRiza3gA1iD@monoceros>
- <8625DA25-1F59-4175-81A6-BAA16C961557@collabora.com>
+To: Jeremy Clifton <deaner92@yahoo.com>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-pwm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] dt-bindings: pwm: Convert NXP PCA9685 PWM controller
+ to DT schema
+Message-ID: <athTVpsanlK9_mVJ@monoceros>
+References: <20261012140346.3065-1-deaner92.ref@yahoo.com>
+ <20261012140346.3065-1-deaner92@yahoo.com>
+ <atH835VJLqo_mdjY@monoceros>
+ <8365f405-2686-4ea3-b216-7928b826f6a1@yahoo.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -68,51 +62,59 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="d5taxqcx64zj5tfv"
+	protocol="application/pgp-signature"; boundary="jkh4uyc73dal4si7"
 Content-Disposition: inline
-In-Reply-To: <8625DA25-1F59-4175-81A6-BAA16C961557@collabora.com>
+In-Reply-To: <8365f405-2686-4ea3-b216-7928b826f6a1@yahoo.com>
 
 
---d5taxqcx64zj5tfv
+--jkh4uyc73dal4si7
 Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v4 0/2] rust: clk: Add ExclusiveClk and use it in
- pwm-th1520
+Subject: Re: [PATCH v3] dt-bindings: pwm: Convert NXP PCA9685 PWM controller
+ to DT schema
 MIME-Version: 1.0
 
-Hello Daniel,
+Hello,
 
-On Tue, Oct 20, 2026 at 10:03:47AM -0300, Daniel Almeida wrote:
-> > On 20 Oct 2026, at 09:59, Uwe Kleine-K=F6nig <ukleinek@kernel.org> wrot=
-e:
-> > I didn't track these dependencies, but the change looks fine for me. Who
-> > is supposed to merge it? I can take it via pwm, but I guess a rust tree
-> > is more appropriate?!
+On Tue, Oct 20, 2026 at 09:13:26AM -0600, Jeremy Clifton wrote:
+> On 10/16/26 4:33 AM, Uwe Kleine-K=F6nig wrote:
+> > On Mon, Oct 12, 2026 at 02:03:46PM +0000, Jeremy Dean Clifton wrote:
+> > > +maintainers:
+> > > +  - Jeremy Dean Clifton <deaner92@yahoo.com>
+> >=20
+> > What kind of commitment do you plan for this maintainer role? Do you
+> > have the hardware?
 >=20
-> Please no,
+> I don't have the hardware, but I'm willing to get it and test on
+> it if it comes to that. I'm glad to answer questions about the binding
+> and to review future changes to it, also.
 >=20
-> See [0] instead, which also includes a newer version of this patch.
+> If you'd rather have someone closer to the driver listed as maintainer
+> instead, that's fine with me too. I'm happy with either possibility.
 
-OK, discarded the original thread from the pwm patchwork. Thanks for the
-hint.
+I want that role combinded with the driver maintenance, so for now let's
+put me. If you want to take a responsibility here, please start working
+on it. With a track record you can take maintainership at a later point
+in time.
 
 Best regards
 Uwe
 
---d5taxqcx64zj5tfv
+
+--jkh4uyc73dal4si7
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrYUvEACgkQj4D7WH0S
-/k5BPwf+Mub/CREsHBzcLJx7ot56RM02mFrhVHCqQ2zYrWrPQF5W/p2XGfJBgK4u
-p2Z0UzftLcSU83u3FxMDwlkpZQvboFMcfVuV4bsMLavUcogQiz3N9yJ5TfOwUjzQ
-xHL/mmYVCs8FUsPPIX/VMMwB7Y6E+Is8D3GCZ717rMwH9DpBKUqDy3XIvLVxyzZ0
-KzvbWzYUNHuYsQlWq04o+GVOBMUe2V2qxXfldRjtflP1aN+uepE7rqfOyWaCAfY9
-mJm4X7e8MCyFwSRCbtP+2LI4v8MgSP90UW5SXVezn2lpd6Rmp5LtRkqm4Atgcv41
-HYJMY8t2pkKYmVOlfH4CSUG7oJm/YA==
-=x355
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrYVB8ACgkQj4D7WH0S
+/k7pEAf8C5DkbXD/rKIzHbriFFgtFCNfsfB8Cj7qYxhfo/EfOQ9BipWA7HRcbeJb
+DmB9/WG/ICDjOKESpzRvDn7VL28ePR/FZXU6GGTv1UczfRAMcJsGQlkKODqfr5d2
+2PkFoGoXmfclGnVChtzTv4PMBkvu5vqEw8oBNlKbz2ubojbStFMhoY8fkE4Cici6
+heUm/gUmq+g+KysxLAy4E0O73ovlVsTqwv+Yrfc4CTy18+tna9u4eslG97ufoc/C
+AZaF5Mmm8kUDhul/PMcJIx4tvc6wExxsQraGq18JQRmXfYwS/A85Am9AzXu5prPn
+EC6cm0BoObjs2E3xi1EkyQiaOWGX3Q==
+=syrI
 -----END PGP SIGNATURE-----
 
---d5taxqcx64zj5tfv--
+--jkh4uyc73dal4si7--
