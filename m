@@ -1,79 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792682351;
-	b=I3W1fTemq+9aCBsUtJXVvy1outmHpi7h69gSPiEQ44BLjJZLXyrmG1qifxGUV5T/WXLa
-	 zhi5c2G4d/4kLQF4gXMTxRkjCXVze+cFkJi75GM6Ho4rwAQFJkNVZM7yG2amcp960wn8y
-	 KAeQEpkWeUfcHoWe/bQlk4KY92lsETw5xWMI5vP4olZuBQ8vPLyxqRFxulf8N26OgYmao
-	 RpzkSy6JfEhU/i0wiWjVn7Z4zaG0G1ejs58iuv5lhJmwj2WScllKkNUkJo1DFlvMNtU8O
-	 0oqDhhIA/SQ4ZXMsj7JyhZ3LfrOSeaf1ne3tyXQg1jyw2OByzn82gigmzyLQe0nc+jg==
+	t=1792682350;
+	b=XrZuHQ1l8W6YGdEq/UP8YGU+VR9fGEelAm2ZEv1bwp4y9lmscSEQbRsSeJkMs2C46mHB
+	 xWcEz+l0e+2BX7YFtqGv1gKX+P78twcSzPHZcH4vBnbQns6ar0B2zJX5pLZNgZr03n76X
+	 1Bv24h0Nro6FyLDHziLAeIYIVpYeNn4JYLo9ycu07ea4JnmmwlRSIExgRu7+yUCyUNQLJ
+	 SvrphK7HayrUufYimleiHtjrgbW1ePYveFb2NCtLzIIarByClTOYxFbt5QwLDasLQXsT2
+	 n3f/cgUv7ZBjfwQCDjEhi7b6PD286zTL45xOX3NroK00H4N1oldFH5k72azifmnnRzQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792682351;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792682350;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=mgr3ZBUadswlY0m18RoK45iupDXQ8OR9+gCMQmzuBbo=;
-	b=UvSG34QLNqsxgOoQ74y+xZQoVEoJ3tmgCrNWhYEz1P0D7qd3nNHdItnlqiH3Owc5dwOy
-	 ErGcrbNkV4Lz1TGqzbcqEm02i34FLyhcKTRKd/h+PzFWsdt2QsfTCph5EkagL13JrddkA
-	 0oZAmROhncXIaCGu1FwEOwl07miR1tT1EpO0jx95ir0uD1tBSgDLQUDEWGRtRComdqJCz
-	 TUyoMglDngSiCdXnDqiGqevRIMgJbit+mnIAk6U418RMMn8iwssK2HoiG9Mg+jL/OMLAw
-	 7uto8XFW3bbx8BQWgn9nZhXPEGz08M9auEto8WiuapbH2H+QR0v+pOm53J/DQvazsew==
+	bh=fvStjk2P5Y/1Jdt3vgXWKnB8BBjsKIf7mXeprvth/xQ=;
+	b=2B/4hqSQGkGxVc7sr+iPQCxomLW0iz6jCh8ejSd5fCNP5wkGzm6008ZQXa2RW+aZ//mY
+	 fCmEe7EPlolnkP5yc5QJzcOJ5RgKevKr+JN0itKXmcVi1mWeTi6HYzdDgd9t5q5tJ8yNI
+	 kLpvhOPCGnh9cLC7fOtD+Pw2pXltiwceK0aqq06fhZEgSedJNDIWrqApRgJOWpgpvENAF
+	 x0jMKVoKd+3Yf9jjjpsnLE5bmKT2uCv9Fm3BhHZBGQpIZmo0V+wXGKximiqnLrfrm50mC
+	 pni2Y5Ow0UgWessLDkv+lVgesnFtFeXmfnqR0ltBDeKtDfuik5qd/y4BUrC8gbhEhMA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEFt0zHa;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bpN75crW;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCFB4606CC5A;
-	Thu, 22 Oct 2026 15:19:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE715606CC43;
+	Thu, 22 Oct 2026 15:19:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEFt0zHa
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bpN75crW
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1792682350;
-	b=tAHIoPT4yQYa5WD5VzurJM3c2a31QKk+fxh3JrxlIInJiLQtWsjlQdZt96/Yp0dW9pDk
-	 WFKuSkwgXSYm8W9oTRWFH2JxtHqMA7lHDT4cVWla83CMD+blHQncKaRQMsnfPJf3lJe1F
-	 zH9nHN4t0PHUc0rGHm05n2oIEQmFOMBrpQSerFfvv8ka3MowseYumloDzttjO5XW5F0t8
-	 sid21JgR+i7WZ0yuiMVGyZ8qq4530tPD01ZApgO1P3zbCl5eG6SHAzGBvYJG4YuRdAWPr
-	 MW5NEI0pTqt48pAmnctyThQZxLzkwQ0Ns1qOHXRhxc4d2O7Wxw2rDPetldxK6yBCmQA==
+	t=1792682349;
+	b=ifgZGx5BiqBeTWrnFqt60Jghy8Nmkx6IVCE06RKhauZjg3sjTQY//JbK3PkEK+FLNKdI
+	 aQldORaOpDWsbG0hCvdj+1bL8rU6kqB35Wu+MoGrQ6blELP0HUPlBr7zNts/TRp3xRWNp
+	 O+WfD0xwtHl8Qj1LKkkADl3pQohi/IYBT4Vjk1cb0pu5nwGuGATvrajibWyotOxFWUGUX
+	 M8bBG1ajlVepHSqQK6qw/vgk9vtUe2HbCdLbERsZFOcZHgy/41LC1BPZNJ9/BN/CbyfrL
+	 8zKplgxz0zJNUm2H+TMXvmWMGiktMAk3TXDbKChHeZ3aIEWKbH/UI8nszzTEGM7y3XQ==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1792682350;
+	c=relaxed/relaxed; t=1792682349;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=mgr3ZBUadswlY0m18RoK45iupDXQ8OR9+gCMQmzuBbo=;
-	b=1e1a3N96K8qD2LQAMSXQhDigwpOGHakkxOg5ZdEsysbw24x4Flp5adNINH3HOkPqA9YC
-	 x5Qz/eoXIL+BJSAStpNrNnyDOuI4lDcJcLMQ62CFzV3nJUGgADFVvGm+ivFzttbhAgjID
-	 FncvtU8mEl31dWOXdVS/51ghT6XRHb9gmDgpExIqFNv24PP5tGjGlBxnlKp6/Gm7Po9Uk
-	 d1jJSjKEnoYyS2VXcnGiVSXt5pACwh7i2hss+aP8hfwFzooyh0M+x2SwAb15kaGOVTQKG
-	 T1yus0oWWGrfo86obBBlWiNCpeiX38V/TIGR0UcoamwUGaFC6iytYvWUR33IL3qq8hQ==
+	bh=fvStjk2P5Y/1Jdt3vgXWKnB8BBjsKIf7mXeprvth/xQ=;
+	b=ge8RgnS0yBXSczKI6iEjndzjeP3KjlIO1VfV8bL+scxcI7VGz/uVLH9oGEunsCBF35rl
+	 KDo7D9qnZB/AEym2bo2pbSZVY0EoAN6vMDCMhoVx0UjQCTOI62+8cCYiApg6i9k37Eei8
+	 siVrITt1UQm1aQdutsM/FskMY5RJj9LuwMCSlvl7oyhQ0fTt/JHmqodOkD3GjuTfE+6Ar
+	 zDxV3uXZiSwbD9D7Tf/OT6s/7AYKJERCGewO10BHHOhOMqnRA7b3CuQd9UQNpmAt3KxLp
+	 QxUVWtKQ4n9pXpzGbhYdD/aees7n8SJK1PM+MWiK/thJtRKmn0CgoOD5KQXZs10efqA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 00A701F031E0;
-	Thu, 22 Oct 2026 15:19:09 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id E5F141F01828;
+	Thu, 22 Oct 2026 15:19:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792682350;
-	bh=mgr3ZBUadswlY0m18RoK45iupDXQ8OR9+gCMQmzuBbo=;
+	s=k20260515; t=1792682349;
+	bh=fvStjk2P5Y/1Jdt3vgXWKnB8BBjsKIf7mXeprvth/xQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=IEFt0zHaSNUWl/E5sitxQcOI6HRlusm66q/3D22+EwobWGHwkBg3CW/PitV8DKqsz
-	 DRkBhKTQvllN4fwzSuMtreGs7LiCaEBeSdih5RS+SRcorjxrHuPqhRWTDRjnBwb3JX
-	 DBWyzZSfx9sZ49crCLGzKQY1HEPkSIB1YqhF1i6muC9S3mEOMsMwqv6DVBFy62g7PQ
-	 RQGMVpNV6//xtwN1vnd7lJVYlo6T5VnBaP8NCEEuotbk8KapnbueIwDwBjTLnJ9qqL
-	 dh+kxo5JxPw3iIxAq65xKDuba2+OCEltjeqGqiOVOjouYlckoh7mSIXtAx92H0DN7w
-	 +zNcjGd6tWa0A==
+	b=bpN75crWXyrGU6vEOJo0LqBTP6TdhqcZnzgM391FOlb4yY8nfvmSJpWOUZmeCGbnG
+	 +glc9v9xl9IEOc96rPOvAM1VkD3uwS7HvQBRFtgpnNWczuJ/CokH59mFv0Z7kb3HKC
+	 mRdUFztPbPAu8dSaJo1+z7mRUL5EkHGYnCQaa0wP2tDEHQZAKItxYlTAIIASZkhxQi
+	 ojvd5JXTGGVgGlmd08A8YJgqg2NAROodQ+lQ9tiJxnPL6QBqBxmeJ0mgWdTSZb6Sx/
+	 cGuWA6G/k4JX0hxSCSDAOcc8xPZKxahWz6WjkqDn5jNnhUrMfYnm2FT7mBazAsDoy/
+	 ocH3KxyjvaQ1Q==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 7E68441E52;
+	by lkml.kernel.org (Postfix) with ESMTP id 6F94241E4E;
 	Thu, 22 Oct 2026 15:19:08 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 22 Oct 2026 12:19:01 -0300
-Subject: [PATCH v2 03/10] dt-bindings: iio: frequency: add
- adi,ad9910-axi-backend
+Date: Thu, 22 Oct 2026 12:18:59 -0300
+Subject: [PATCH v2 01/10] iio: frequency: ad9910: powerdown fix
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -84,7 +83,7 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261022-ad9910-backend-support-v2-3-0ff7f0bff326@analog.com>
+Message-Id: <20261022-ad9910-backend-support-v2-1-0ff7f0bff326@analog.com>
 References: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
 In-Reply-To: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -102,128 +101,75 @@ Cc: Olivier Moysan <olivier.moysan@foss.st.com>,
  Randy Dunlap <rdunlap@infradead.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792682347; l=3683;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792682347; l=2077;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=CY1SqfatwESZkmEigRY0fdqsP8jg+f3FT7aQydkMpu0=;
- b=oI+lu8LbTOa5A6uaf9OYIuX4y81mOUXtMN/wKCdcC1YNfsNQkrOSbWCPrVI6U8OWrnOPgJPKy
- 9F4hXqVq0vZAMv7vRARXh22XzTJpNGwoCWVbyO2/DO/H8ETPZ4TtVbZ
+ bh=aJtPIXmw5LGBhO6Ijl0bIJNuEuTO3aFnvbkzsDyxwGs=;
+ b=h3/LsJueV0GYhI7rqbtQOzAPYVcgKAo9BSKeRCo5KLWK8yJL0GnbnqX/uFiGyviY7amK/iPGg
+ PYwPjp03N+PCCISoO1mXYvzrxcH4l1STar1V3ZEXXKWlpRZI8N8QOxb
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
  with auth_id=561
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
-interfaces with the data and control pins of the AD9910 DDS, streaming
-data from memory via DMA into the 18-bit parallel data port (F[1:0] and
-D[15:0] pins), which is clocked by the PDCLK output of the device. It
-also drives the PROFILE[2:0] pins and the DRCTL pin, which controls the
-slope direction of the digital ramp generator (DRG). The DRCTL pin is
-driven by a PWM generator, so the IP core is described both as an IIO
-backend and as a PWM provider.
+Enable the software powerdown on all the applicable CFR1 register bits at
+once with an IO update.
 
+It turns out that DIGITAL and REFCLK_INPUT powerdown do need an IO update
+when enabling the powerdown, but that is not the case when powering it up
+again. It is an asymmetric behavior, which was observed while profiling
+power consumption in the lab.
+
+Fixes: 22452fe6cd08 ("iio: frequency: ad9910: initial driver implementation")
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../iio/frequency/adi,ad9910-axi-backend.yaml      | 74 ++++++++++++++++++++++
- MAINTAINERS                                        |  1 +
- 2 files changed, 75 insertions(+)
+ drivers/iio/frequency/ad9910.c | 26 ++++++++------------------
+ 1 file changed, 8 insertions(+), 18 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
-new file mode 100644
-index 000000000000..20c45fbaf945
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
-@@ -0,0 +1,74 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910-axi-backend.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD9910 AXI Backend IP core
-+
-+maintainers:
-+  - Rodrigo Alencar <rodrigo.alencar@analog.com>
-+
-+description:
-+  FPGA IP core that interfaces with the data and control pins of the AD9910
-+  Direct Digital Synthesizer. The SPI bus is used as the control interface
-+  of the AD9910 device, while this IP core streams data from memory via DMA
-+  into the 18-bit parallel data port (F[1:0] and D[15:0] pins), which is
-+  clocked by the PDCLK output of the AD9910. The IP core also drives the
-+  PROFILE[2:0] pins for profile selection and provides a PWM generator that
-+  drives the DRCTL pin, controlling the digital ramp generator (DRG) slope
-+  direction.
-+
-+  https://developer.analog.com/docs/hdl/latest/library/axi_ad9910/index.html
-+
-+properties:
-+  compatible:
-+    const: adi,ad9910-axi-backend
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+    description: AXI bus clock (s_axi_aclk).
-+
-+  dmas:
-+    maxItems: 1
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+
-+  '#io-backend-cells':
-+    const: 0
-+
-+  '#pwm-cells':
-+    const: 3
-+    description:
-+      The first cell must be 0, as only the DRCTL PWM output is available.
-+      The second cell is the PWM period in nanoseconds and the third cell
-+      holds the PWM flags.
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - dmas
-+  - dma-names
-+  - '#io-backend-cells'
-+  - '#pwm-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    ad9910_backend: dds-backend@44a00000 {
-+        compatible = "adi,ad9910-axi-backend";
-+        reg = <0x44a00000 0x10000>;
-+        clocks = <&clkc 15>;
-+        dmas = <&tx_dma 0>;
-+        dma-names = "tx";
-+        #io-backend-cells = <0>;
-+        #pwm-cells = <3>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 52024397dc78..351ec0bca477 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1731,6 +1731,7 @@ S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/ABI/testing/debugfs-iio-ad9910
- F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
-+F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
- F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
- F:	Documentation/iio/ad9910.rst
- F:	drivers/iio/frequency/ad9910.c
+diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
+index 04a4e184b873..8bc24d0b7442 100644
+--- a/drivers/iio/frequency/ad9910.c
++++ b/drivers/iio/frequency/ad9910.c
+@@ -621,26 +621,16 @@ static int ad9910_sw_powerdown_set(struct ad9910_state *st, bool enable)
+ 	if (ad9910_sw_powerdown_get(st) == enable)
+ 		return 0;
+ 
+-	/*
+-	 * When powering down, the DAC and AUX_DAC (SW1) must be powered down
+-	 * first, as they require an I/O update to take effect. The opposite is
+-	 * true when powering up, the DAC and AUX_DAC must be powered up last,
+-	 * i.e., after the DIGITAL and REFCLK_INPUT (SW0) power up.
+-	 */
+-	if (enable) {
+-		ret = ad9910_reg32_update(st, AD9910_REG_CFR1,
+-					  AD9910_CFR1_SW1_POWER_DOWN_MSK,
+-					  AD9910_CFR1_SW1_POWER_DOWN_MSK,
+-					  true);
+-		if (ret)
+-			return ret;
+-
++	if (enable)
+ 		return ad9910_reg32_update(st, AD9910_REG_CFR1,
+-					   AD9910_CFR1_SW0_POWER_DOWN_MSK,
+-					   AD9910_CFR1_SW0_POWER_DOWN_MSK,
+-					   false);
+-	}
++					   AD9910_CFR1_SW_POWER_DOWN_MSK,
++					   AD9910_CFR1_SW_POWER_DOWN_MSK,
++					   true);
+ 
++	/*
++	 * When powering up, the DIGITAL and REFCLK_INPUT (SW0) must be powered
++	 * up first, as they do not require an I/O update to take effect.
++	 */
+ 	ret = ad9910_reg32_update(st, AD9910_REG_CFR1,
+ 				  AD9910_CFR1_SW0_POWER_DOWN_MSK, 0, false);
+ 	if (ret)
 
 -- 
 2.43.0
