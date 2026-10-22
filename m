@@ -1,55 +1,62 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792655584;
-	b=bUoYz6crIc4ZEnpV42DY2u50EObwlUdJFWS826IufxvjYeJ7V+bp0VoC+npUCBg5CI3f
-	 00/2rmvr4GWfmdEjjwvdo1lHRDqmEXjReUn1XUnZve0FW58BILnDSI4MdBf/n1URBRm18
-	 EF67VThZgBku5braKGtks2PYzEH6h63IndxZJzHvT5w9lS/Gr9sFYBHsCqXl4TeC3YiMj
-	 RG9IvF52ez2kckaJv9cdzzd9XlAYom57FZCbNvEUfOjiupBPqFyg6PCDiHqlT6a5NBQZn
-	 q2wfBygjibwKbgXKl1zg9VDwuK6OdIGZpSEK/LV5RmD6p30ie4uDXAs+ZzcAdjKf6yg==
+	t=1792656817;
+	b=QOxlbDSFWF5yfm/+jw3Xnd16BcIRSyXW52R49XR2XcVoyR3mWiV0cNcaf8vXM8I3hZM8
+	 6RoFNYw9rxTEXGxo9cipQUPqPDfpe4zIVfV1gGDy1u5M6egBzybEHDAgD/6BOEzbyJhxQ
+	 EKxRh4PABCdx9zou1LPcuCIVyhOmAjvZLsrl0PQnVJ14h21k73L3aCBTqlmy4Vz2rtcUg
+	 TVqVeAWLLLw4S7EoiaDBBfFJwXrGVGtpkBkYh8XQEM0UZ+hBiRl9m5T+Air2C7Ld14VYF
+	 BvVulvL3f2182z/K58D62ONrL0XQtChNNhVSjJKIEHJ7KDZ3NMSi2dVZY9CtvQ7nvfA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792655584;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792656817;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=peIS3XmmxGgb2VftyqIcwa5RMLKvJgxv8+DHxwLnM+E=;
-	b=Pp6Lus3iCk7AS8LaVoEFQ/14gwbiBsVtd5zvS18tKIBAHtVxROn8WWKBEtIPKyL2X1H+
-	 k0MDl07iubNCh/lp6O+O7fBgS/CSJcyTTh6bDrIirH3jXeTZ8pqA2I3T/0tq+IodBFD07
-	 Uic8b0uBXbV7Gl1SKSOfhyOcjAZN/lr/UoGAjUCTIDDovFlF+42d+LhAm7/ZmSfoA9fAS
-	 jq63N8t//sLtQQgKIUO7CkOui7xXFTLMidUU8ufkiORabgEtq3lYMCRzoCqFBmEOWdKAQ
-	 POTgcuSOSCTNif8kJknyCNcfptVQwl2LOF+P3mBl85P7Lm38jpLMf4A46YmN7F5idLg==
+	bh=Hn94stfKvj8i1droBHm2wo/E94pjMfGrEhOxZCqr07Q=;
+	b=tKmxjZC24kDmTXnDmRiwL7AWfA/RmB2l51WKu6Jp8yYGLlWWHmpebHG9orDOq6nVgS1B
+	 sHdY5dRZ1NSNrmsTHQAlknEYe2DFg1DR3Vrltb4j5JbZVhLK+/laHoitB09QX9t+7Rpxn
+	 mMjEdjwyocgT09IF+iTLqCD6GG9iIBv0h3+dsdztV79SFHCFUCpelmTelA6Gt0aYy585M
+	 8Wd4hagUjko8sp0DivqLvTEwhePluuLmj/y59SoWVSuwt22+7bYkuLMXLfkZxzQ9R+vMC
+	 Pp2TplnfDy0ZKoXG+F7v6VaemiPQmanW8HsM5p6DK8gUAUcqrTT4PDdm9+gj4zEwVOg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ljDDfNRO;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="e6bexpq/";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id AD343606A32E;
-	Thu, 22 Oct 2026 07:53:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 6F450606A31A;
+	Thu, 22 Oct 2026 08:13:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ljDDfNRO
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 07A0C1F000C4;
-	Thu, 22 Oct 2026 07:53:02 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e6bexpq/
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7D5251F000C1;
+	Thu, 22 Oct 2026 08:13:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792655583;
-	bh=peIS3XmmxGgb2VftyqIcwa5RMLKvJgxv8+DHxwLnM+E=;
+	s=k20260515; t=1792656817;
+	bh=Hn94stfKvj8i1droBHm2wo/E94pjMfGrEhOxZCqr07Q=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ljDDfNROZhbo8MD4r5QKIKpoDQu07l5UUDD7Teoc61YlMTG3yyg6l98wCcRgxFHi8
-	 BoqaLZZoQHOkxk4NQfJMyZZINn3rDg5AE7MAvUCD9Ob8JbRaHFNOwhYICns4T3m8jO
-	 g35oy8cRQqvl13gQMfkPhRI4Y54PY1cdaGtHa2BlkMqMvnXcsAy1xR/G4DS2XFDvPC
-	 i4531NG6awNMdwKRY5b3pxtupgoMfnipGNA8AKry1eE5tQAyhnQwjRVf+DeQ46V7Qk
-	 Am9akY3B70WOTrzNGJ8GwaqrXX4qFlQCmvKGlFOl5+t9YgcoykHf3JZ66TdTNp9xAB
-	 yfZLvJsXFvDxQ==
-Date: Thu, 22 Oct 2026 09:53:01 +0200
+	b=e6bexpq/OSf3BBoP7uOF2ezUjDjBfCFCCf+BXPvdMlg8K31ht7ddkAYHlX17CtxsW
+	 YyUgfuoGa7cOE0J8McUX/pvAuzOcDiFpXnGNABSkkuOVzrEY06ipiRoWVfZqwG0T9M
+	 bD08UF1z5+pAFsit4iF3DLzO3IXqZFnEOzrGyuN6tGqXGArpgGMVF4cF7m4/MyiZwQ
+	 drki+9JXWoLPTnx59YWeFfsihkHuKQ/J0GucjFpgyoEZXBjquaIg3TIwORKi+diRZG
+	 JwfzwnnrDo3Gzse5mghzFcm1cN3h6Xhaw3TollKVnMLXj9Fz7QyW9S/EtAuFaPLb2l
+	 r/K1Bv9XKECLQ==
+Date: Thu, 22 Oct 2026 10:13:34 +0200
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Jeremy Dean Clifton <deaner92@yahoo.com>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-pwm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] dt-bindings: pwm: Convert NXP PCA9685 PWM controller
- to DT schema
-Message-ID: <atnAaDo0fy7Az_eg@monoceros>
-References: <20261022000029.125691-1-deaner92.ref@yahoo.com>
- <20261022000029.125691-1-deaner92@yahoo.com>
+To: Ernest Van Hoecke <ernestvanhoecke@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, 
+	"Miquel Raynal (Schneider Electric)" <miquel.raynal@bootlin.com>, Frank Li <Frank.li@oss.nxp.com>, 
+	Kieran Bingham <kieran.bingham@ideasonboard.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
+	Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>, 
+	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
+	Herve Codina <herve.codina@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Geert Uytterhoeven <geert@linux-m68k.org>, Leonardo Costa <leonardo.costa@toradex.com>, 
+	Frieder Schrempf <frieder.schrempf@kontron.de>, devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Ernest Van Hoecke <ernest.vanhoecke@toradex.com>, stable@vger.kernel.org, 
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Subject: Re: [PATCH v3 0/8] of: property: Make fw_devlink follow GPIO, PWM
+ and clock nexus maps
+Message-ID: <atnE_Brn9gxwO3q7@monoceros>
+References: <20261020-fw-devlink-nexus-ready-v3-0-fd6f1c17e16d@toradex.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -60,72 +67,84 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="g43lc2iaky2qbag4"
+	protocol="application/pgp-signature"; boundary="ofdufvh7sevdvg3p"
 Content-Disposition: inline
-In-Reply-To: <20261022000029.125691-1-deaner92@yahoo.com>
+In-Reply-To: <20261020-fw-devlink-nexus-ready-v3-0-fd6f1c17e16d@toradex.com>
 
 
---g43lc2iaky2qbag4
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+--ofdufvh7sevdvg3p
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v4] dt-bindings: pwm: Convert NXP PCA9685 PWM controller
- to DT schema
+Subject: Re: [PATCH v3 0/8] of: property: Make fw_devlink follow GPIO, PWM
+ and clock nexus maps
 MIME-Version: 1.0
 
-Hello Jeremy,
-
-On Thu, Oct 22, 2026 at 12:00:28AM +0000, Jeremy Dean Clifton wrote:
-> Convert the NXP PCA9685 PWM controller binding to DT schema format.
+On Tue, Oct 20, 2026 at 03:00:11PM +0200, Ernest Van Hoecke wrote:
+> This series fixes an fw_devlink supplier-resolution problem reported by
+> Leonardo Costa while using a Devicetree nexus to describe GPIO and PWM
+> resources routed through an LVDS connector. Consumers referencing the
+> nexus could remain deferred because fw_devlink linked them to the nexus
+> rather than to the providers selected by gpio-map and pwm-map. [1]
 >=20
-> Changes from the text binding:
+> GPIO, PWM and clock consumer APIs use of_parse_phandle_with_args_map()
+> to resolve specifiers through gpio-map, pwm-map and clock-map
+> properties. The corresponding fw_devlink parsers use direct phandle
+> parsing instead. Given a consumer which references a nexus, the consumer
+> API and fw_devlink therefore resolve the reference to different nodes:
 >=20
-> Document the 'reg' property and make it required. It was missing
-> from the text binding, although the example used it and the device
-> cannot work without the I2C address.
+>   consumer API:  consumer -> nexus -> mapped provider
+>   fw_devlink:    consumer -> nexus
 >=20
-> Rename the example node to the generic 'pwm', as required by
-> pwm.yaml.
+> A nexus is a translation node rather than the resource provider and need
+> not have a driver. The link to it can consequently remain unresolved and
+> defer the consumer even though the mapped provider is available.
 >=20
-> Describe both cells of the PWM specifier, and state that 'invert'
-> and 'open-drain' apply to all outputs, as per the datasheet (INVRT
-> and OUTDRV bits in MODE2).
+> Make the fw_devlink GPIO, PWM and clock parsers use the same map-aware
+> resolver as their consumer APIs. The resolver also handles valid direct
+> references by returning the original provider when no map is present.
+> Use dedicated exact-name and suffix declaration macros to opt these
+> bindings into map-aware parsing without changing unrelated property
+> parsers. Retain GPIO's existing exclusions and compatibility handling.
 >=20
-> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
-> Signed-off-by: Jeremy Dean Clifton <deaner92@yahoo.com>
+> Since fw_devlink runs the resolver for every consumer when its device is
+> created, patch 1 first fixes a stack buffer overflow in the resolver
+> when the provider referenced by the consumer has more than
+> MAX_PHANDLE_ARGS cells.
+>=20
+> The regression tests call the OF add_links operation and verify that a
+> mapped reference creates exactly one link to the provider selected by
+> the referenced map entry, not to the nexus. They also cover valid direct
+> references. The GPIO tests exercise all property spellings recognized by
+> fw_devlink, including the deprecated singular and unprefixed forms.
+>=20
+> The clock patch fixes aacc54c67869 ("clk: Add support for clock nexus dt
+> bindings"), which has been in clk-next and linux-next with the same hash
+> since next-20260907. There is no build-time dependency on it, but the
+> clock patch should not reach mainline before it. The series applies to
+> next-20261014.
 
-Applied to
-https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-=
-nexxt
-as 7.5 material.
+Acked-by: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
 
-> +  "#pwm-cells":
-> +    const: 2
-> +    description:
-> +      The first cell is the PWM channel index, from 0 to 15, or 16 for t=
-he
-> +      ALLCALL channel, which sets all PWM channels at the same time. The
-> +      second cell is the PWM period in nanoseconds.
+I guess this will be merged via a dt tree and so doesn't need further
+action from my side.
 
-If you want to work on that binding, you can deprecate #pwm-cells =3D <2>
-and make <3> the right value.=20
-
-Best regards
+Best regards and thanks for caring about this issue,
 Uwe
 
---g43lc2iaky2qbag4
+--ofdufvh7sevdvg3p
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrZwNoACgkQj4D7WH0S
-/k6GCwgAl+ddqWnOwDugPpLaeoaVsF2mwRuGmkXN0oG/RyMPtyHwg31ghV/5PW2z
-xfVfQRxckDF57wW6MThzOtnXMdTapjNy+Mco8IAgxC7e/7bnk3WUXjQ6EKwGqz5j
-7FiwU/TB513tDXzVrHb7VuqA0GfBnBvhsFj1ddE6XMumsV+L1Y9hG1FtnmKsBQ9v
-c7JmQUvOKdMhI7XmSjyqnaUGXXGvqZDKgsKb77Kulvv756LPpteQYYG+NwPvBc+8
-WWqoWeewvOLwon17yT7KZup0NC2sb6ECeC+vuKMa76iARAPzRlWubdrSeVR2qYh/
-9zQjAiK540d9fx6qtKDHhFZA1FomZA==
-=C2fv
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrZxasACgkQj4D7WH0S
+/k7skgf/RTyRTIhl9ulgELoJGvcHQK0j20ck1KxPZOtdE/7JrK//4vSgIVtc6FCJ
+PsUbu+0pHi2uumsVa1WEtpuopPIk9sMCn3yAIvgklhYXllmwvG0pZkKt38XXX9Lt
+ShhE7/oKXv226oZOb7QWgcrpk9flhB2z+ljA/gNricSibhdP08U3Gice3AFahNKq
+EzAtKrWVd1SQcVlahBgpcWdDqc/nY2ysM7SN01dDPr8UU6KX4cH6/OjjxaVrc25d
+2eIdyCpbJ2PzBQhbiMnmd8pQtrsAeWmph6uevsyYeCQLf85SYCsuKgRmvGjh7JdU
+QS7OBnpPYdXuPVj/fbJQ3257d4cOzQ==
+=v5/K
 -----END PGP SIGNATURE-----
 
---g43lc2iaky2qbag4--
+--ofdufvh7sevdvg3p--
