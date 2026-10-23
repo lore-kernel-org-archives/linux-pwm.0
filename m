@@ -1,114 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792750352;
-	b=ccztECZZATJPT02971db0TQxq9zHRonGPDAdZ02fN7LAYTAU+a9zmx0TB/bS/bRkoYQw
-	 AyOffmH6UHiHrerL+ZhYuxUGcAhXA3NY7zuMFgyCrTiZq/WoCFc8ZqX7rLtwzd2yvYYrK
-	 Gwv6s0i6xmeagHbsBivuPzcOIiVdEtPhmmky70UHDadH33K0GCvhb8dUKlLZ/jh40Yv6+
-	 TWSBdDZQ/nvppmSvVJ032tF42Gh8amxWGXMdCn/pLoCNxATpWFrDobQHvXUm6dWikigbC
-	 3sWvTxF0z635tNirpgQPSWpegFlIxer2cwwZVcYmOXlBx37/pTA8c3wN2rjuyUktKgw==
+	t=1792752045;
+	b=TyuLdWTdpWFJU2D7YTxnEBk5zFpgilVnus38BgTDpEg2gChjqSYWksyAwJD/u82rEPv+
+	 dH/rxzFeZ/J4qQl4NOsnUxhCLhAmCiJtBidgyalbAnv61jym/Pg4ejYJIXAwufwrhI6Uc
+	 Gm6Ntz/T63Akh+64fjgPsTEZ0wn2GHr4KU+83H3jpwc+Ewdk47opoNFvp6I60Sp8M4XW2
+	 XiCHJcgoh6Ld+SdJhiYDxs4ZnKVJMkhMabF53wAyHRdCfdQlYmFWomKiwp/LwntZZ3nBP
+	 eo/4Fyl1TEmPMKTqQelH/OMJehiCvsFaeLP7etri7sFh0a4tSJoMnANwLiBusR47QXg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792750352;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792752045;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=is7L+B2RN443PYwwoWeq+UVhGmTjVPpzuTGcDZVXmgU=;
-	b=aZxdC5102Aq9wNg0OyAGllHNbkdVblU6zpuFNnoKAOSgfWQzp+mGISp6Uv7yBHhJKHDg
-	 sJXm+H+xJcE3ST5xPoCYgi/92iBsVhAi8aKhf1KMujC32qL9tOeyIZ704g6Ud5y4KRJR7
-	 /jga7tRRqYf8UsUgRml5RlKi2VAJc6DxWVpzBWr1knUAV3oYjbdWzsicOlgAztk0J9JYw
-	 sQRtJ5knbVnS+DNiCfTDVX/ebY8V+Nmp4y4gaQw9kI813/MeueNXyF7wmuQFsht9dYsGL
-	 Z7nmxLueRPHAUraYgo0X/efWbl4Q8yd4wrVOlVaSuB2mGRbIhvkv1XeoRyHsFSUB0PQ==
+	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=PU3pthY8C33I9auXpGTnmiUI6trGGQ/gwWp/L1g0V2U=;
+	b=HtIG3ufCR6WNEBDAj0AfNhlJJTDYjQSR4aUtcs8zPRd7DxWFHcm23mxbYpCxWtEzS96s
+	 Z0oPxVpKgE14qrIxEsuiNrcg4Zy7VD4P6VX9N43Aieza8BPS4YIvJwN8+PfAdEyPlhXqX
+	 Eom5Xp/63G4YQSnkweVlzV6/RmlcwxYakNEq2C+zF+xp2jOoVa0WcLUZ0Oin0+VK69JOc
+	 C8eEkbXtKxUduqh87zca0kkXiHFhbjLOPdbEhVBVZJ/8QjLN4EDMGIlppIArr4g8uGyE+
+	 NHzCxtDfGeSP1wzYU83UqoevaHU7gFqSzbdTf3YEdnsQJoyvCNK4dkHJg/PfzXcNb4g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=suse.com;
-	spf=pass smtp.mailfrom=suse.com;
-	dkim=pass header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=TXZQvtD7;
-	arc=none smtp.remote-ip=209.85.128.51
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qDHUhalw;
+	arc=none smtp.remote-ip=209.85.221.181
+Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ECDB60A261D
-	for <linux-pwm@vger.kernel.org>; Fri, 23 Oct 2026 10:12:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4ECDB60A261D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA7A1606A323
+	for <linux-pwm@vger.kernel.org>; Fri, 23 Oct 2026 10:40:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AA7A1606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=TXZQvtD7
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a1fbd52ab6so4316555e9.0
-        for <linux-pwm@vger.kernel.org>; Fri, 23 Oct 2026 03:12:17 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qDHUhalw
+Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-5eac319a6c2so784979e0c.0
+        for <linux-pwm@vger.kernel.org>; Fri, 23 Oct 2026 03:40:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1792750336; x=1793355136; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=is7L+B2RN443PYwwoWeq+UVhGmTjVPpzuTGcDZVXmgU=;
-        b=TXZQvtD7jcqOHabVOR/WQ+U/XG+v8vjWM/Qmsl/q6MzNZD7uqig8eGptjZOesICJ+P
-         ScR9lJVpLDAQrN6bNGDoIzP2zfnTu0iNIW4E5ihRHRNcomwDgzhBfltCJErnLQgizFnP
-         S00llh1bjJPqLGcEzS6ZFocGV5WDpL85Le2xfNFTfrCNSstwYtpe0mbeJ7qhc2DHuvOL
-         Bcjx2MtcWUMSzpiVgxQRtlhn14/FrOMDJtRIiMOO9EZURIdpIZTJR+t7d2Y9KJAc7J6f
-         3cj1tMnVc+viMiKK80xqhvsvmQcodKjtbWVwwE2w7iHG+6KbtBrtw84P6UpgGVAD0/Er
-         MGqw==
+        d=gmail.com; s=20251104; t=1792752044; x=1793356844; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=PU3pthY8C33I9auXpGTnmiUI6trGGQ/gwWp/L1g0V2U=;
+        b=qDHUhalwvENGkYicXhp/819z0Cb38eGLFlBd2GcJ+kd+woA2F1L8l9kYdTAygGzV41
+         jjsjJKPrcmEv5ryCEEnITghJ9icCuEe79uAC2TIerrCYohBBHBLTZiMIiSOnL7RgoXOc
+         q6Gpso+ZmXyHzx5yBUnX/tlI6/9r0A95XfDV3X7yX3MMwNrPcA9L+Z8BuguX0OIOAqlt
+         JHwbigQt7F23Hncc/dEgAZqZdYcICFBMwluD4DA7c4nwdtfDwE9g22DxGn7k0FaCEkPY
+         uTBI9O6EHgKlpntPbaAxkPlFVAJrawT3KfULj/F4BGcIPiZqEfUbhbaRfaayJgz0OljI
+         ukyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792750336; x=1793355136;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=is7L+B2RN443PYwwoWeq+UVhGmTjVPpzuTGcDZVXmgU=;
-        b=mO7qlS/Fd6S+CUwKfNpLF5U8eJkVPWg3Xrvi6LD6RCiSk3Nr4OFtvpIAKFggxst7Jk
-         dGXn3FGJ3giEXpI4Snx9s7/Ku7utr+Z+BqWZLoBxHsI//TB8ZyUyvQLVW0pknwyCzCBN
-         sqmYai8Ly+Q72+9ABeEGQoGi9Oo9hC0gqeOR9Fl1EkztJ3CdRcc4sXuGUQKzQTDX5PL6
-         mZ9RvQ7Mt0MT5NIl5L4qOURxhiKXt9rPkpM6yOSh3VZjXLCUkeMpJtC8TZqMfUUtL93B
-         z3rER88JGpiiU/Vt+YFQy8vkYpWCo/5JwXQ42KofQAjn7xOQBzHjCsbudqUyrnBCL1FP
-         OS0g==
-X-Forwarded-Encrypted: i=1; AKwUvBzqKVjHqvb/jQPztJ5w92inj9G693DQKIXDsaazfZ+dlQVKjd9X6XASNYWaIPkgIBvVDPOX7IYY1to=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKO6Vhf9AVtdgrQm+IJa95COvpwEZlsuEiqB7z7lNofMpgOsRrl
-	OO5smMjvxM66UIrtg00ks1lHLMPWrtwPbEmUqxrQQKs9P12Y3Hlcrf/tfDwKOOQoHbw=
-X-Gm-Gg: AYBFou0vU7JzL7ATYm4BzUJwzkwcT1+7xkYFS+bIk8OLzf9MnOSqDXZrtlHYjdivi9+
-	GJwdkck0ruwMQzSP4RdKA8bXHsj31SRrxMpACMdPcygsYBCPOqbvOYFFg9UmKsUtB03QQL9Seo/
-	oiaFz+OkaXGIuMHZy9K09zap+gRxj1/4mfO+KAYPvPxxbUr9fMLnftakGt6Y5iwm7YlfNKjpWhf
-	SrXOhisNSKzlCOXHz8sH1tKJxDbmlj5Vp3kBYljm+CtWrC8gjCJBPpJkUoo3oD+SHcL1Ia1Djfy
-	j7+tR2C7CVMnVPSH0lRtFZGmQlCmrRUo1xQcj9h/KZQU0DcibwkwW6ypunxeVVOA/sOsjWdunf3
-	LJ/up+5kjbldGtZTU2+jC6a3EOpN0VMjdCNk23Hi1w+uOCjYKT/6GmtBd4n6AM8ApQTbXLHoCvL
-	lXAob6GFaAHISWy60OPW08b3d/h2uso3CL8oKaBDicRvlwovcqax72PVNbK6EESNSMePpxqDuui
-	KQYMO5KQ6YknePRCtbJIRV29bp7NETD8CMlLnTSA1E9AoCOn/Vrv/8umtf1AqkkUgYH4Lg5uixU
-X-Received: by 2002:a05:600c:3514:b0:49d:1fa8:b266 with SMTP id 5b1f17b1804b1-4a211ed7602mr26707515e9.26.1792750335754;
-        Fri, 23 Oct 2026 03:12:15 -0700 (PDT)
-Received: from localhost ([82.192.120.214])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a211b89beasm57982975e9.5.2026.10.23.03.12.15
+        d=1e100.net; s=20260707; t=1792752044; x=1793356844;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=PU3pthY8C33I9auXpGTnmiUI6trGGQ/gwWp/L1g0V2U=;
+        b=pKzk3QP/SY3WdIec0SAT2cZQuVleIKDCnD8CLLdsYXzshi5jhVzoHx4IAhj3eWCb7v
+         0Xe/qGQ+yE5Latc0EUXE/rtckCcAQub0a1IX2Xrlc8+RN+1BotAfZdOzqYYECnj8td/4
+         mWdICwB7n32OWh6e6j7wM2S/P7NMbzhCLpCcdVoETotMBjtKVTd0RQVpTE7kv4HY5sOY
+         QB7R5mddmreGd0t1yeXedBHD9VEG9B0ljHIhTdMmj1vK4EIpnpFXSbaNmpvyPDB644XW
+         rvjKVeW4eTVGwqzdeKRV+OdfGeJHGrLldF9Gg8l1TPdR7FnVG30fLZlKzzfEeUiUKqyb
+         btLQ==
+X-Forwarded-Encrypted: i=1; AKwUvBy/pmkzAebz7mygzq0JakXKJdiVVvq7tarKuP162TPUCTLOHFmS31BK13GSgbCMBDd4fmcRfhaaqaQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJiWcem+zkzYu423SKZ38V2ORYK95P2OFCpXYnwRsl3uqQuHQ8i
+	1YgoaHGDyNl69214LOwcJ/w/DCostqeQ3d2tJQ6ywSgdBRdX/XQlfcxK
+X-Gm-Gg: AYBFou2Belvpy8HZGAAPJT0SVrrM4v1eiCV/pu2aGoeGl3sEqq4u0VbMbqQcyuheqM/
+	H7HNSaO6EOEn4oQUHjYWaYcvn89U0QprtK7pU4djft8UuYsVXRPf3L/vUf8YPY2iFB0rcT0CLJv
+	RXuyjzq+hsp4jftsP8kZHLV5suVyvcTJr+X2VE2vjQ5Dy67dHCjThOr0XfzeYXFaD0NqwptmdVp
+	ODYtcyh2GVNwPljhU/JOv+gxVi1Mc6POd2Dsxou2WQ2p/DpOF+fv1OD9JfmBVYmvs9hLYVqzl4B
+	uGpSVeWLFAMN4YJfkjhFCaXAU7FTjVdZkcqYXzv9O0SR2MRtXx/eQEIazNoXtX05gTYKQW1CowP
+	1xLqaEjha2Ut67WmrNVO5MdE75cQjYgusMraQEIYjR4alP/oSN+PZkzDNsIeh/O7i/XSP0qrlnf
+	ufBORTENyDt5rZDHmtUNtTaNYc/jxE+iQtJZ5NCGUcpMnLX/+rvGtF72fp/ptCfhcrw/hnmNDnq
+	sLkb9wrUgdSmA4N9Uu6msmRxeVpZ/J+iUj78lEY7fJKTcKv8+UsZWyCJ/zAf61nt68OmgLH4EcJ
+	cVGFIywXLEH7NOt0qQHOvpbB2UaM4txq0it4lcw75bAIDoUEKKs=
+X-Received: by 2002:a05:6102:41a1:b0:7cb:bda3:27ab with SMTP id ada2fe7eead31-7ccc32eac6amr858728137.13.1792752043685;
+        Fri, 23 Oct 2026 03:40:43 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (158.95.44.30.netskope-rdns.com. [158.95.44.30])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ec13deaba5sm1974736e0c.1.2026.10.23.03.40.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 03:12:15 -0700 (PDT)
-From: Andrea della Porta <andrea.porta@suse.com>
-To: Guenter Roeck <linux@roeck-us.net>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Andrea della Porta <andrea.porta@suse.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	Gregor Herburger <gregor.herburger@linutronix.de>,
-	Stanimir Varbanov <svarbanov@suse.de>,
-	linux-hwmon@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-pwm@vger.kernel.org,
-	Gary Guo <gary@garyguo.net>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH RFC 4/4] arm64: dts: broadcom: bcm2712-rpi-5-b: Add RP1 fan tachometer node
-Date: Fri, 23 Oct 2026 12:15:57 +0200
-Message-ID: <f00b7ccef721c7120ac10a9507ab211773787aeb.1792748691.git.andrea.porta@suse.com>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <cover.1792748690.git.andrea.porta@suse.com>
-References: <cover.1792748690.git.andrea.porta@suse.com>
+        Fri, 23 Oct 2026 03:40:42 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Date: Fri, 23 Oct 2026 07:40:32 -0300
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	linux-doc@vger.kernel.org, Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Cc: Olivier Moysan <olivier.moysan@foss.st.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v2 07/10] iio: frequency: ad9910: support drctl control
+Message-ID: <pg7pcjaaxuu6vmi4qowgaefyo3mynrvmiu6iazzormyvc5kiat@4hiqrtwbw2gg>
+References: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
+ <20261022-ad9910-backend-support-v2-7-0ff7f0bff326@analog.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -118,37 +105,55 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261022-ad9910-backend-support-v2-7-0ff7f0bff326@analog.com>
 
-Add the hwmon fan node for the Raspberry Pi 5 to expose the cooling fan
-speed (RPM) to userspace.
+On 22/10/26 12:19, Rodrigo Alencar wrote:
+> The DRCTL pin controls the slope direction of the AD9910 digital ramp
+> generator (DRG). When dwell is enabled at a ramp limit, the DRG holds
+> that limit until the next DRCTL transition, so the sweep pattern is
+> defined by the waveform applied to that pin, which can be generated by
+> a PWM.
+> 
+> Get the optional "drctl" PWM and expose the integration_time attribute
+> in the DRG ramp up and ramp down channels, which sets the time interval
+> assigned to each ramp direction while the sweep parameter is accumulating.
 
-The fan tachometer is managed internally by the RP1 PWM controller.
-This node uses the 'raspberrypi,pwm-tachometer' property to link the
-rp1-fan hwmon driver to the existing RP1 PWM controller, enabling
-RPM reporting via sysfs.
+...
 
-Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
----
- arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts | 5 +++++
- 1 file changed, 5 insertions(+)
+> +	st->drctl_pwm = devm_pwm_get(dev, "drctl");
+> +	if (IS_ERR(st->drctl_pwm)) {
+> +		ret = PTR_ERR(st->drctl_pwm);
+> +		if (ret != -ENOENT && ret != -ENODEV)
 
-diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
-index 748be8f1ee9e2..9bc6d0e9da1b5 100644
---- a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
-+++ b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
-@@ -16,6 +16,11 @@ / {
- 	aliases {
- 		ethernet0 = &rp1_eth;
- 	};
-+
-+	fan-tach {
-+		compatible = "raspberrypi,rp1-fan";
-+		raspberrypi,pwm-tachometer = <&rp1_pwm1>;
-+	};
- };
- 
- &pcie2 {
+Sashiko points out the problem with passing a non-nul con_id to devm_pwm_get(),
+which would get us EINVAL or ENODATA from of_property_match_string(), and that
+would break the intent here for an optional pwm. Similar to what we tried to
+achieve with an optional IIO backend. I wonder what is the best strategy here
+(ascending order of complexity):
+
+* Use con_id = NULL as DRCTL is the only pwm signal being considered at this point.
+* Local workaround by checking for EINVAL and ENODATA too
+* Convert error codes from of_property_match_string() in of_pwm_get()
+  implementation and create a devm_pwm_get_optional(), which would only check
+  for ENODEV and ENOENT.
+
+The pwm is optional as the digital ramp generator is one of the possible modes
+to be used.
+
+> +			return dev_err_probe(dev, PTR_ERR(st->drctl_pwm),
+> +					     "failed to get drctl pwm\n");
+> +		st->drctl_pwm = NULL;
+> +	} else {
+> +		ret = devm_add_action_or_reset(dev, ad9910_drctl_disable_action,
+> +					       st->drctl_pwm);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "failed to add drctl disable action\n");
+> +	}
+
 -- 
-2.35.3
+Kind regards,
 
+Rodrigo Alencar
