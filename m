@@ -1,68 +1,114 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792694338;
-	b=4ShJYxXboH+vbYvgIuk5PY1d2p5WrL6Djcc7gIxdSsXWQFs7xpj2UHWHJ7DA9G+QG6ly
-	 qPh4bUyZDlt/6Vain2IYSCav5pbC/C8o3Pp6N8L++cGKAVILksyt+woeewxMm205dBWyB
-	 IwfqC+vQnmsQv+BhaL/BNAdBeiIAGGC2hDkM94+ndBafal/OwmbVtlP8zwlcmr8w+JgTB
-	 h66PryEKspTlZyzjVx0J/GsiCF+yvUiWSKMArPJnw5CET1NyzoRG76AAUVyARW7vw244B
-	 7Ex09NEPlB3hZtNl2Gdi4+bWoPuJfwO7subXfmn//QO6y9UjQqYpee4hGuX/MAu1skA==
+	t=1792750334;
+	b=c5w5rPMW3BF9I4a4dMP3LRDco6/pcQ4rGuqibPse64tSoM2lX5n4r+EP0v7cvqtvjGd8
+	 1yLOQtJ0TWzGXwnV0AZpH7pyZEabzOYKZCEGl4FkYBSFISWR5bjePCRhuZEK3JEHmg4y+
+	 +jkS4Dp/am25jEwNT2Jza7mgaU0rsqqlazqJjWJ3c3ZGdoldBkAbU2hK1gt5Mib6TZu/+
+	 lZc4ErZC0hI+9CSlSOe11hNJ/ESEyTjxDuml74O3GlirpHubxKs/55mk7gfY7Q6brfiUM
+	 qeCtAf01HYeRySCRG3MGidEuYtnxQRb6S/OlWqgRsgWJCCAZU/t2Xv7+AODrul9p+zw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792694338;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=RP33vO+e+kcFqrmiKrJlwuCPkEWPh+ZrwQ3D6/xs7uA=;
-	b=BenkCXKquZPhoQm3Ydeq1hGZnCbnQ+Q72ETnvMkVWKkufP0PS0HQ0v89bq6RIDM5wuwa
-	 qHgEHW9NpKikpZOI2C9b00ZNnWBHt9JMiEOaLHjRDnvWSWFF1JD97LKQxtZfvgnRITCOa
-	 VZi51wRjT1sGyBFKQTbnNlFW/O2hoPYoKcHhzSO3Fr6039RRGyXM1qLkXZaWfeXA98I1E
-	 k4YLyU6Z4Pp277DRPVvT6h2VrhQLImvh2s5FgqqBjLqcLN9aen44+OMp9yP7qTt9zu+hK
-	 E+phcKnnA83/4/ZyzOdSljCqDDkKYiHDvb4djP/JwaS1yrNCXvLlq2gRRC1VMBgd8ew==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792750334;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=HgzAQ6yNXJm+/JMG+P/joeDeoINHIroQeqY0i4kBEKE=;
+	b=sxe2/nSmwoz8WUGT17wid4gBhhMr28ofH1L7eE36UhCyhAi3bTzwPJjj2lgN6kSUSi6O
+	 X42fD/IgA2tiXCh9j64dmnyxOSzcWnnrAB1oZmzeJlKjqXnUawmm/Af0UBoNfKdcuTpLz
+	 nJnx3E9Foxfc+pd7/nHnMvM0PGUOHBBMU1KfKaAkwRmZpCykh3tHGY3g6ITo007ITzg1W
+	 4YiqAmtjSV/3RHCQECnazwQ/KFWzJTvQeZTgCv92D1lLEN99RFzwfXLlwK+2Ugwc8S/ls
+	 vRoULGHce6nLbFhL7y/fdWPqAZCzsmNDtRQduLNg+vXigWOshGQ0YlEG6+OYS256IbQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gDxx2KAo;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=suse.com;
+	spf=pass smtp.mailfrom=suse.com;
+	dkim=pass header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=LWfiKVqh;
+	arc=none smtp.remote-ip=209.85.128.50
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B36B606A7B6;
-	Thu, 22 Oct 2026 18:38:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0016F606A31E
+	for <linux-pwm@vger.kernel.org>; Fri, 23 Oct 2026 10:12:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0016F606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gDxx2KAo
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 466A51F01825;
-	Thu, 22 Oct 2026 18:38:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792694338;
-	bh=RP33vO+e+kcFqrmiKrJlwuCPkEWPh+ZrwQ3D6/xs7uA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=gDxx2KAoT9zJgXhfY+LDU2eh64sg62D/2W5lAtApH5/SPvjtvGTl+AQrQQoD5tT+/
-	 UBpygU1NE+eAfnLL7wLPJDEZKBv9QOQ+l6wDPbq4dkwkwjWJkXHQQ6JZXxRuvkBW3c
-	 syUfevjDMJRImGzo9+wP4LjcR5DAAzF24sfEaRS1MbOUSID8Xkepf3YYj45stIyiRN
-	 eyILUcGLlgEPQQ6J7J3WlAgyKdQHUrt//OEmKPrsrkN1D+yz7WqwUjqDdk/JZhyWiR
-	 5UYRuOj92PMz2w6o1VCyi5FEox3s1CNM9Ol5th5nNVQRGCXme2SMrqj93jtnjHk96G
-	 b5ATT7j3fBOpQ==
-Date: Thu, 22 Oct 2026 19:38:52 +0100
-From: Conor Dooley <conor@kernel.org>
-To: rodrigo.alencar@analog.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux@analog.com, devicetree@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+	dkim=pass (2048-bit key, unprotected) header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=LWfiKVqh
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4a218c463d1so1423055e9.0
+        for <linux-pwm@vger.kernel.org>; Fri, 23 Oct 2026 03:12:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1792750332; x=1793355132; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=HgzAQ6yNXJm+/JMG+P/joeDeoINHIroQeqY0i4kBEKE=;
+        b=LWfiKVqhmmXyEgNLRl+/C9XxyyHrtX3XJxz7QlLPo6BSfYPzmOYZSFeTiheWHrUhzH
+         QjhvtYZYrPEWbkjbY1IMhMh/EUH03ooaDaV3y/BfjwI/jvWysK5CqALqSz6cOwpxeEWr
+         W3CeY8yYzmhoJrfW4Yut7z3W2vzB7lInKU24/eqK9AovJaotN+/FIGYMN/2pQwAdcX/r
+         ZE4qfqyr2DFT3aHmso2MT8v5JN/U7HYinGLz6fDHI4sHG3tCYETxt64aiLX25AyMptsX
+         fuWiMcLnxm05tm5nWV8MHm/v8B3IJPIkbF4QtiI/rlx335gwb18RaGxwGHTe5M31cKd5
+         6Sbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792750332; x=1793355132;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=HgzAQ6yNXJm+/JMG+P/joeDeoINHIroQeqY0i4kBEKE=;
+        b=ZI1oPziCgwfBdzxREQtaJB4mFs3jDS7HaXqohRQYaBzUWm4nG8ErZq70Goc8TmO8o3
+         piuzs3UI08Syft8BdJFOs/dgD17HneCiS29SbwrcXbuMoxmWLIigFyvhxuJdTUOru5EK
+         ti+CiEzk20unoMtRACrDpQZiEug3CJEsmHYf4No4BAJ/IU9IQg6NUXXjRvr8TQj6tYnN
+         wbb+Y9tYweeqCEHk7akfkfIuSNpD46lilOzxg9opMFwVo8zSS2ufjN15gFyHybarNA8h
+         4rrLOO5oFMwWcv3hB13Lnnjy3W99YfsiZ9+cLWXRgHEQrUe16ZXKKP2JRc1cU/0bVX8t
+         T98Q==
+X-Forwarded-Encrypted: i=1; AKwUvBxZYpjockoT7SbA8Y8mLNxxslgdsHpdMFrMyXCg1rRIQmc0ikDItnqdmsf6wSQ37Tiz2toc+SgbdlM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIlP7o9FReYD3kjWsRIgvnNR59j5O+Y+yG0qEMFEcliDtTfTNbV
+	v9FNUL/fjXwJRa9HUXAWzZDmzQM4MyJDZsvAyDBecx4zEgQF7a/uZ5iTjJI3mpVtdnY=
+X-Gm-Gg: AYBFou0H8mU5L/9dLgXLXYbc2um2gsVgYxmYtTE2N8ZKwYLAdXVSb7tfDBN0pm+eKsR
+	cTHK2k03sLnklQrGL1fduL0zO5y7/PXsLtm47iz71DqSb0tGSVgPMjYCfUHw4ivvAsy6SZLrTpo
+	NO0cc3CcTL1oRSmOMw/GC4KflK7EGclcPv+9/dKBTzX+vlYlKVPoXsUsYay/Y+hXJp7CgXVfkXM
+	rrZNIn/SwaV5AGg7GxZx7OJHpQoPD6+AX+XAomE0OmjrvXLSEv0qce4BGahZ9SCrrolVVD/CIa3
+	KrRHXYxCCC2rku7nyrYQ6lkVZCcu281rXPcfNiKMGmtdEubkE2iM45LJv1CSr+8VCD6fyFDLW32
+	Fj6rFcdIsnB2uKWsbQC6xA6hP+eXYyGjwXnC6jW2UVsbyiqS6UTaRxzCGS/X5fmikYWkHmy6j6x
+	pxY1QoTODzQg07Obzn2lMgHcKGXbtYLTxmZHMmhXReVupPZor+NP0NZnyIhMQJyIbH61CvqZv7E
+	DFoN7wvoZr31PX/L6pR2q4KABdyHawVsPwRpgA3a64df6ZfunA2++c=
+X-Received: by 2002:a05:600c:4e8a:b0:4a1:d675:b031 with SMTP id 5b1f17b1804b1-4a211eeea21mr27725575e9.6.1792750332157;
+        Fri, 23 Oct 2026 03:12:12 -0700 (PDT)
+Received: from localhost ([82.192.120.214])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a21047b2absm62807825e9.13.2026.10.23.03.12.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2026 03:12:11 -0700 (PDT)
+From: Andrea della Porta <andrea.porta@suse.com>
+To: Guenter Roeck <linux@roeck-us.net>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
 	Jonathan Corbet <corbet@lwn.net>,
 	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v2 03/10] dt-bindings: iio: frequency: add
- adi,ad9910-axi-backend
-Message-ID: <20261022-banish-scenic-030717ca503e@spud>
-References: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
- <20261022-ad9910-backend-support-v2-3-0ff7f0bff326@analog.com>
+	Randy Dunlap <rdunlap@infradead.org>,
+	Andrea della Porta <andrea.porta@suse.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Gregor Herburger <gregor.herburger@linutronix.de>,
+	Stanimir Varbanov <svarbanov@suse.de>,
+	linux-hwmon@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-pwm@vger.kernel.org,
+	Gary Guo <gary@garyguo.net>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH RFC 1/4] pwm: rp1: Export helper to read fan tachometer RPM
+Date: Fri, 23 Oct 2026 12:15:54 +0200
+Message-ID: <a565aa38de650596daf04f3bc21a724e21c826f9.1792748690.git.andrea.porta@suse.com>
+X-Mailer: git-send-email 2.51.0
+In-Reply-To: <cover.1792748690.git.andrea.porta@suse.com>
+References: <cover.1792748690.git.andrea.porta@suse.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -72,159 +118,92 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="fkpbZrR5UrdritMv"
-Content-Disposition: inline
-In-Reply-To: <20261022-ad9910-backend-support-v2-3-0ff7f0bff326@analog.com>
+Content-Transfer-Encoding: 8bit
 
---fkpbZrR5UrdritMv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On the Raspberry Pi RP1 southbridge, the internal PWM controller hardware
+block houses a register associated with fan tachometer monitoring. The
+tachometer pulses are measured by firmware running on the RP1 Cortex-M
+core, which periodically writes the calculated RPM values directly into
+dedicated MMIO registers within the PWM block.
 
-On Thu, Oct 22, 2026 at 12:19:01PM -0300, Rodrigo Alencar via B4 Relay wrot=
-e:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->=20
-> Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
-> interfaces with the data and control pins of the AD9910 DDS, streaming
-> data from memory via DMA into the 18-bit parallel data port (F[1:0] and
-> D[15:0] pins), which is clocked by the PDCLK output of the device. It
-> also drives the PROFILE[2:0] pins and the DRCTL pin, which controls the
-> slope direction of the digital ramp generator (DRG). The DRCTL pin is
-> driven by a PWM generator, so the IP core is described both as an IIO
-> backend and as a PWM provider.
->=20
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  .../iio/frequency/adi,ad9910-axi-backend.yaml      | 74 ++++++++++++++++=
-++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 75 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-a=
-xi-backend.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad991=
-0-axi-backend.yaml
-> new file mode 100644
-> index 000000000000..20c45fbaf945
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-back=
-end.yaml
-> @@ -0,0 +1,74 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910-axi-backend.=
-yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD9910 AXI Backend IP core
-> +
-> +maintainers:
-> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
-> +
-> +description:
-> +  FPGA IP core that interfaces with the data and control pins of the AD9=
-910
-> +  Direct Digital Synthesizer. The SPI bus is used as the control interfa=
-ce
-> +  of the AD9910 device, while this IP core streams data from memory via =
-DMA
-> +  into the 18-bit parallel data port (F[1:0] and D[15:0] pins), which is
-> +  clocked by the PDCLK output of the AD9910. The IP core also drives the
-> +  PROFILE[2:0] pins for profile selection and provides a PWM generator t=
-hat
-> +  drives the DRCTL pin, controlling the digital ramp generator (DRG) slo=
-pe
-> +  direction.
-> +
-> +  https://developer.analog.com/docs/hdl/latest/library/axi_ad9910/index.=
-html
-> +
-> +properties:
-> +  compatible:
-> +    const: adi,ad9910-axi-backend
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +    description: AXI bus clock (s_axi_aclk).
-> +
-> +  dmas:
-> +    maxItems: 1
-> +
-> +  dma-names:
-> +    items:
-> +      - const: tx
-> +
-> +  '#io-backend-cells':
-> +    const: 0
-> +
-> +  '#pwm-cells':
-> +    const: 3
-> +    description:
-> +      The first cell must be 0, as only the DRCTL PWM output is availabl=
-e.
+Because the Linux PWM framework currently does not provide an abstraction
+or API to report hardware-calculated tachometer readings to consumer
+drivers, a direct accessor is needed by the companion hwmon fan driver
+to read these values.
 
-I was about to ack this, but the wording here caught my eye. Are there
-other PWMs that are unavailable?
+Add and export rp1_pwm_read_tachometer() to allow consumer drivers to
+retrieve the fan speed from the PWM MMIO registers. To prevent polluting
+the global kernel symbol namespace and restrict access to intended
+consumers, export the function under the 'RP1_PWM' symbol namespace.
 
-> +      The second cell is the PWM period in nanoseconds and the third cell
-> +      holds the PWM flags.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - dmas
-> +  - dma-names
-> +  - '#io-backend-cells'
-> +  - '#pwm-cells'
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    ad9910_backend: dds-backend@44a00000 {
-> +        compatible =3D "adi,ad9910-axi-backend";
-> +        reg =3D <0x44a00000 0x10000>;
-> +        clocks =3D <&clkc 15>;
-> +        dmas =3D <&tx_dma 0>;
-> +        dma-names =3D "tx";
-> +        #io-backend-cells =3D <0>;
-> +        #pwm-cells =3D <3>;
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 52024397dc78..351ec0bca477 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1731,6 +1731,7 @@ S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/ABI/testing/debugfs-iio-ad9910
->  F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
-> +F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backen=
-d.yaml
->  F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
->  F:	Documentation/iio/ad9910.rst
->  F:	drivers/iio/frequency/ad9910.c
->=20
-> --=20
-> 2.43.0
->=20
->=20
+Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
+---
+ drivers/pwm/pwm-rp1.c                     | 27 +++++++++++++++++++++++
+ include/soc/bcm2835/raspberrypi-pwm-rp1.h | 10 +++++++++
+ 2 files changed, 37 insertions(+)
+ create mode 100644 include/soc/bcm2835/raspberrypi-pwm-rp1.h
 
---fkpbZrR5UrdritMv
-Content-Type: application/pgp-signature; name=signature.asc
+diff --git a/drivers/pwm/pwm-rp1.c b/drivers/pwm/pwm-rp1.c
+index d4b13fba8d236..79d65f332dd30 100644
+--- a/drivers/pwm/pwm-rp1.c
++++ b/drivers/pwm/pwm-rp1.c
+@@ -49,6 +49,7 @@
+ #include <linux/pwm.h>
+ #include <linux/units.h>
+ #include <linux/spinlock.h>
++#include <soc/bcm2835/raspberrypi-pwm-rp1.h>
+ 
+ #define RP1_PWM_GLB_CTRL			0x000
+ #define RP1_PWM_GLB_CTRL_CHANNEL_ENABLE(chan)	BIT(chan)
+@@ -286,6 +287,32 @@ static const struct pwm_ops rp1_pwm_ops = {
+ 	.write_waveform = rp1_pwm_write_waveform,
+ };
+ 
++int rp1_pwm_read_tachometer(struct device *dev)
++{
++	struct pwm_chip *chip;
++	struct rp1_pwm *rp1;
++
++	if (!dev)
++		return -EINVAL;
++
++	if (!of_device_is_compatible(dev_of_node(dev), "raspberrypi,rp1-pwm"))
++		return -EINVAL;
++
++	chip = dev_get_drvdata(dev);
++	if (!chip)
++		return -ENODEV;
++
++	rp1 = pwmchip_get_drvdata(chip);
++	if (!rp1)
++		return -ENODEV;
++
++	if (!rp1->clk_enabled)
++		return -EBUSY;
++
++	return (int)readl(rp1->base + RP1_PWM_PHASE(2));
++}
++EXPORT_SYMBOL_NS_GPL(rp1_pwm_read_tachometer, "RP1_PWM");
++
+ static int rp1_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+diff --git a/include/soc/bcm2835/raspberrypi-pwm-rp1.h b/include/soc/bcm2835/raspberrypi-pwm-rp1.h
+new file mode 100644
+index 0000000000000..3be0892da667e
+--- /dev/null
++++ b/include/soc/bcm2835/raspberrypi-pwm-rp1.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef __SOC_RASPBERRY_PWM_RP1_H__
++#define __SOC_RASPBERRY_PWM_RP1_H__
++
++#include <linux/device.h>
++
++int rp1_pwm_read_tachometer(struct device *dev);
++
++#endif /* __SOC_RASPBERRY_PWM_RP1_H__ */
+-- 
+2.35.3
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatpYPAAKCRB4tDGHoIJi
-0rARAQDdnLOWa2ND/sj89km2o8Q1E0l12aIxbl9XxRyMeUBMcwD8C3d+7j30TNco
-We3rundA62FLb/kQnm0WrJKGv8KgAQ0=
-=QdtC
------END PGP SIGNATURE-----
-
---fkpbZrR5UrdritMv--
