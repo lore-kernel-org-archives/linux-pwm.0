@@ -1,70 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792777157;
-	b=FMP3VvdIf6zNHFSlDqLWYW4cq70EERYMRQA64fo/puZ4eYUFuGmFel8j/ahJVmDe1qKf
-	 bBRs4a7hWDEdMttzWm+00ygMw4vBSO+eIN8G2yuaAy3iezdS6mvsEKDDTv1/usMKVf0Pd
-	 DrprNUJ+FZkYMM62K43D8DGKOHoapGGsf8CIr2nXIOMViP01s69fB4beILQlxe2UpDJSW
-	 VOOCJtZ7M/eQFsXIzFPZ6qHBmK3F12HzdKcsV9TtVV4bc9B+DMR75F5IWdt0nBnPEZ/K2
-	 k2dsuc01kn20RU3onqXAoscI5W7blIz2tFHvz3mZHE1g3Ih5Emet4nPclAuXyRJfB+w==
+	t=1792826202;
+	b=Q8vGXEtFzUJWrNLrLfQc0lZjqU1KSn+CM9SKvgmP3ooONNnhE9z2iCRIGCSba9SddoVv
+	 rV2JNcuOReDU4tyokB93aKTWWpktTiYed7cvwzCTsrP6OwSR7RZxkfGbOE7ICjjCyBRP3
+	 paLEeuoMyGGYwffyqmOhWl+/PKO2Apqq5IN8wtBhNzzSdqqxyvVnzMFy//V07zoA0/4ev
+	 UHyA7peW079ePzYW3ebqYYPC227c/5bZcupnzzDNLxouzo+ZpNPfCCGYcFPx+Q11FwWLM
+	 kTQ0kZe+zHmfiWoNFyznvGs/KZrcu9MrpB7DJtgtAlOQxbpPmqddRMa0TY2UOHCNH4g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792777157;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=sPGd9aFROxOhz1KFda6cV3QjwhmfwJ0s75CjYBEyrrk=;
-	b=z4ZJZbFuOhmk1atl+7KgAgmz92O/TGthE3f5gpUq0r87nXzO1rG9ESAOFodKh4aK/uL8
-	 uxjSuAFfr6ZLQ5ghXf59Gc73LGCyaxT4jRtF7Kl8cN4mi9dAfuwe1KS1ev3he590vnOHe
-	 MUIhXUxVezW/mv2+5jmxxniMY+lwkwb/olZF+k1IZ5dqk/I2uxkJxQb2zCkZFcoZzmAR2
-	 Z3u+S1So2/22uMjhRYmYGPtIXnIfcSTuYJrTNUSxV8u00nIf/8VVHs+q7kRQwXy2U82Te
-	 Key3tbgPyqEU0jtwQEfEH6Eo/DUL9puQSrlBs2QRO0naE0dCmLOYqpgt4aU291+FrwQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792826202;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=kh/xa8HGjahPAuh2OoEJ1AULPxuRAadGF7CKojxM7CU=;
+	b=4bwgYstcQrtogxnRqejVmijLwEDJA4wBLOH7VoNp8REgfETA4Rw90HLEb8J5rYZcom2d
+	 MWtIdvu+5WpWCyHg3wVFR8TDk+CeZ+pQMb9l8vx3LJrV5z0Yo4O4TYHWwbxZs5GXSM4Z3
+	 4uHuuhdykN4BT3Jou5QvAERYX3LmapUgPyeJeq/gLTx4Zf8EFSH8+LNOb/kBkYCiheZRn
+	 BrndBtATeAQMKgnEE+SOL+9yFaBGB8Gt3CwfZ+yC99l/2DO7rDeHtm0XjCDVqPAzn/zvk
+	 9L9BhW7b265Aw+eYgo2gjL2qnBhkevZL5WCN7df3EJylEmMWmzY4nqxWAoE3d9iguTA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WYqvYP6Z;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=J6x8Z0je;
+	arc=none smtp.remote-ip=209.85.221.42
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CAD3606A31A;
-	Fri, 23 Oct 2026 17:39:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A4B606A31A
+	for <linux-pwm@vger.kernel.org>; Sat, 24 Oct 2026 07:16:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C3A4B606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WYqvYP6Z
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0831F01825;
-	Fri, 23 Oct 2026 17:39:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792777156;
-	bh=sPGd9aFROxOhz1KFda6cV3QjwhmfwJ0s75CjYBEyrrk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=WYqvYP6ZKJ4Y4UemFOE4AuTFrSWI3JomDirAvL9Da3Ke2KrGDRXWjZVhzuziC4ORR
-	 Tm2vFQZ9NRMxUiC3qA2csJDV2of7uuHDPiB+rSHJeHYht6zoZtepfwnJgMJNG8xyuG
-	 CMfl4k2/3k0xnisEvDIomqBheiUSsxTABdeC/oLDyzwevo6U7YSvuZExkZhAm0Y/qM
-	 9lUKLzh/yIabOUIayzJC8gG/XhZSqEg2p2B4B/JdRBgWtNjr8kLwuhbQsVw4Ef6Q6+
-	 g+9kW9a5ceQh28XoSBqJIXmDwl3qUecAEWBMWye0HRuIB89cQN+LiAfrus0tPr5Nco
-	 P5TXLa0cMjhQA==
-Date: Fri, 23 Oct 2026 18:39:11 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux@analog.com, devicetree@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v2 03/10] dt-bindings: iio: frequency: add
- adi,ad9910-axi-backend
-Message-ID: <20261023-boss-matriarch-a1953ccaf539@spud>
-References: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
- <20261022-ad9910-backend-support-v2-3-0ff7f0bff326@analog.com>
- <20261022-banish-scenic-030717ca503e@spud>
- <hx6lt2u5j5yh3iez5zimolukip4a6ak36rdqridrvaz7bb25hw@6blwtzy2iuat>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=J6x8Z0je
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-48b042c0759so995043f8f.2
+        for <linux-pwm@vger.kernel.org>; Sat, 24 Oct 2026 00:16:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792826200; x=1793431000; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=kh/xa8HGjahPAuh2OoEJ1AULPxuRAadGF7CKojxM7CU=;
+        b=J6x8Z0jeMfuArj7rumhIDG6cWCktj7G61rH0jgf4TRBjj12ZaqUyFKLmuBADUPowgL
+         mLAnqb2h2/22xpyVKDpDDjGFYXxsP2cdWjX7kbaOZVb/MsvoOY8/PNXzkh7/taXFfV66
+         MAxXK9DwrU+aLCMCyxjzbmCPVbBQJ5et1kOqzFbhFmoFxXStp8pz9GgGoUqXEdHAAaRC
+         exq2qwPxw0z2w2H4z8qRvW/6DNpM2CvjJceWpGZcwhE83P8VYWG+WjGxPM2jddC+Luis
+         aQZP7gWPjJaVhbipkyD9w8RiCEYKPF8k9PDmZrM0FGaLATPoHV+08VXJid9rGq9lIxq3
+         zXmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792826200; x=1793431000;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=kh/xa8HGjahPAuh2OoEJ1AULPxuRAadGF7CKojxM7CU=;
+        b=TxCPUXe203Fh0UhKLRSbPUbYuzFmskeGlY9AeI033pBPh++EAqTxz51wdRSg6xbtQA
+         4szWKWzoDnKK1s/hl94bja5LzihYvOBSguH4s7TbJmkIrDzp38ozSjTvB/ocl/6pIqdK
+         FIB4nOuwcUy/DnZz5fO3SbUZ7u4JxAfgVq5YHRu+JmpEoP9uli6x1p3QR4kXtTQBfV2L
+         vrVQ/bpMS0vcmQtHPBsXlZGn6E9+GrDZF+dRL9Qj7DGiRC4boGM16Glw5zM7zzR2cBOc
+         91n6bA0j1A6tHsMu4JdhGwWJG3AaRjCk2x5ptRAj4HmSXEo5fH4PtsM4gI+iISCSKwbo
+         c5kQ==
+X-Forwarded-Encrypted: i=1; AKwUvByc2GtsqO22NejTfy2r85hAuqOZVggb7hp2FSCK2lK8GsvCr4DJxunzi6F0jpD4zveWh8csKpVbI7k=@vger.kernel.org
+X-Gm-Message-State: AFq9FYL+N+dkptw3rsd6TWB5FvDIB0IkNMO0SHYPbbQbCHrBuBe8VMQ7
+	WzKPllhWil1Re/bLif7WXySImPf70uZDQooBWkpFcW5b2D6EVciN48qgRaRF3A==
+X-Gm-Gg: AYBFou3GgJf3xNxh9Q6+Kjah/Im1g7zTFbNya2rHlnwksaIfexk8Oy/HXFbyRN2nTGc
+	ZJLobdKyJypZ72DapvS4kx8wcYxa3G7GLDnmGR1i5xksDjLWvo5xt4334peACphwLhby3n/UxBG
+	ffizYwnQjtfesNcTiJ1lIDhYH/7deFumU59wISAbkiR4OUi9bqqk+gRNNvxIMb8VaTW2s122yHP
+	gpLtW/Z2J4aarlrUuTz1s9htdroV0xTuiZjchl/zNFRTvTskH4fXrrEEWEEKeofeKwZYOZN/sge
+	T3bh6gT65TTt1yp2OzrlyayOSi0i+6bQjs6lGM0ahpuvq6t0DlhSegYIadW3lYPXMZOUn35UL7y
+	+CF8aT+2zRu43b/k4IwUr/KP9iDkVvTgAqkab09mxjI2uYVUpLUAtkMglJ2LCg+G3fEIkZlw4JF
+	ai81zZBjIkWiM+7r96ScI0NVsLfDIsLxbxjDEvRN55gddFnr5mHyiaw3DsnYm6D8ixfj40jg0a6
+	L4jhTwf7I+qF3hZHE3ewL+Y7PfXdZHUlw+gYIRbfreoGZlOxx9OGrJI8+bdhGUzfP3+9PeH6ghp
+	qMUF8FEHLgwopKboyhJ2xZPhJyxUwCMg+yabGntbHSJmkeI2MFhFfqvqsPy3BSKc7W6mBGnAPuo
+	2Bhgsg63QQM4FQm/qwtpYvcpFuOdltjJFiLwKmj/kbwYyiJ65+IcoCOisOQ==
+X-Received: by 2002:a05:6000:46d4:b0:48c:6fa4:fc89 with SMTP id ffacd0b85a97d-48e3eb8672amr976542f8f.12.1792826199930;
+        Sat, 24 Oct 2026 00:16:39 -0700 (PDT)
+Received: from unknown748F3CBA5068 (dynamic-2a02-3100-9da9-5f01-d5f0-7ecf-afa4-4bc6.310.pool.telefonica.de. [2a02:3100:9da9:5f01:d5f0:7ecf:afa4:4bc6])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebd4d8dsm2794954f8f.36.2026.10.24.00.16.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Oct 2026 00:16:39 -0700 (PDT)
+Date: Sat, 24 Oct 2026 09:16:37 +0200
+From: Karl Mehltretter <kmehltretter@gmail.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Claudiu Beznea <claudiu.beznea@tuxon.dev>, 
+	Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] pwm: atmel: Fix prescaler for periods of 2^32 clock
+ cycles or more
+Message-ID: <atxaqNeZdj_-gAKM@gmail.com>
+References: <20261016161221.16553-1-kmehltretter@gmail.com>
+ <atnHHaOwTkI78_tc@monoceros>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -74,79 +102,40 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="lGRIL5kI7ggZQ17D"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <hx6lt2u5j5yh3iez5zimolukip4a6ak36rdqridrvaz7bb25hw@6blwtzy2iuat>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <atnHHaOwTkI78_tc@monoceros>
 
---lGRIL5kI7ggZQ17D
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Uwe,
 
-On Fri, Oct 23, 2026 at 08:15:07AM -0300, Rodrigo Alencar wrote:
-> On 22/10/26 19:38, Conor Dooley wrote:
-> > On Thu, Oct 22, 2026 at 12:19:01PM -0300, Rodrigo Alencar via B4 Relay =
-wrote:
-> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > >=20
-> > > Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
-> > > interfaces with the data and control pins of the AD9910 DDS, streaming
-> > > data from memory via DMA into the 18-bit parallel data port (F[1:0] a=
-nd
-> > > D[15:0] pins), which is clocked by the PDCLK output of the device. It
-> > > also drives the PROFILE[2:0] pins and the DRCTL pin, which controls t=
-he
-> > > slope direction of the digital ramp generator (DRG). The DRCTL pin is
-> > > driven by a PWM generator, so the IP core is described both as an IIO
-> > > backend and as a PWM provider.
->=20
-> ...
->=20
-> > > +  '#io-backend-cells':
-> > > +    const: 0
-> > > +
-> > > +  '#pwm-cells':
-> > > +    const: 3
-> > > +    description:
-> > > +      The first cell must be 0, as only the DRCTL PWM output is avai=
-lable.
-> >=20
-> > I was about to ack this, but the wording here caught my eye. Are there
-> > other PWMs that are unavailable?
->=20
-> Not for this version of this core. Other signals to control the DDS could=
- be
-> modeled as PWM, e.g. DRHOLD, PROFILE0, OSK... but that is not being consi=
-dered
-> at this stage.
+On Thu, Oct 22, 2026 at 10:29:42AM +0100, Uwe Kleine-König wrote:
+> >  
+> >  	if (shift > PWM_MAX_PRES) {
+> >  		dev_err(pwmchip_parent(chip), "pres exceeds the maximum value\n");
+> 
+> just above this code snippet there is:
+> 
+> 	unsigned long long cycles = state->period;
+> 
+>         /* Calculate the period cycles and prescale value */
+>         cycles *= clkrate;
+>         do_div(cycles, NSEC_PER_SEC);
+> 
+> there is another overflow happening here if state->period * clkrate
+> doesn't fit into an u64. A complete fix converts that to:
+> 
+> 	cycles = mul_u64_u64_div_u64(state->period, clkrate, NSEC_PER_SEC);
+> 
+> which prevents an overflow if clkrate ≤ NSEC_PER_SEC.
+> The latter can be asserted by checking that at probe time after calling
+> clk_rate_exclusive_get().
+> 
+> The options now are I apply your patch anyhow and the above can be
+> addressed later, or you rework your patch to a complete fix. What is
+> your preference?
+> 
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+Good point. I took a look at this and will send an improved patch soon. 
 
-(But maybe consider rewording so that it doesn't sound like there are
-other PWMs that cannot be used)
-
->=20
-> >=20
-> > > +      The second cell is the PWM period in nanoseconds and the third=
- cell
-> > > +      holds the PWM flags.
->=20
-> --=20
-> Kind regards,
->=20
-> Rodrigo Alencar
-
---lGRIL5kI7ggZQ17D
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatubvgAKCRB4tDGHoIJi
-0vKSAQDQFFHMyIEfY+UgNmbkTiIL1nyt6ylahe3+fmkcT8fIxAD/Tcw/FliHpwOB
-As/ewbCO71uqlme5mpXhT1RCHhK8qgw=
-=moiI
------END PGP SIGNATURE-----
-
---lGRIL5kI7ggZQ17D--
+Karl
