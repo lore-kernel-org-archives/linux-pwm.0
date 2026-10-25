@@ -1,84 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792918009;
-	b=ZCeYkTiceIhiCdQrWSk3MdfqBRWR+JMfewYy7XnEJ/Ey2yVPPVKuR5l2MC8YYpI6GU5F
-	 Fk4kNVXQ4pmhBDCxmEm2OqAMtkcPdgCYSk3Zy1U3szHqYP5yGuVOnAkhll59OI4IPSWtr
-	 T3Cn7TqgvMRuRC3+RlyZmJ+faay+B5it0F9TXRDqz2OmeNWAblTqxQgpJVpLFyDDvHIeY
-	 AyAuApbkS58WJ5lqE7dMwwVPcXJSXJ0wb5tHa6b0OHkpd4GHBETOoqRWTC/ceZgEA8Pqk
-	 2z4juVgQtOv2NhBZL1XsfzVkFfNRuL4/prTxpJPxqXTUy59j6Yuc9hmXB6gO0qjwwUw==
+	t=1792955788;
+	b=0UOvOYb9l7C1MJ0UeQDN0J14uPeKgTOe9CEGOftQhNuPD8O3gZSozCikZIerKWi3KxSt
+	 ok/0XCOeMo4TsUhXc3r7ktV4j3I3rxs+oV1OUMeLbso8Fu1B/kWc60H8e3zKL6kQqioS/
+	 zN1iTt+yQ+Dh7r+PBRgPQcCSa9WkHy13tW+PZ1wyHiPuSOlmdC76DZd/FSX8H7nThiXtU
+	 IvoW3+c+HO/tyoRqFFPqiIbMUmqMfzEhOw5t7M9/uoNXzAELkzbksF4Avq19i9ZxE5dLW
+	 VRaHMumgmOB1NxQ6Ni01Gv6tk40W2/i84m3OIZudm1S2zv9YYlCx1g9OCJUSP9xQVlQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792918009;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792955788;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=pSPsp8WYgTyYIXd11T+owTDZiioNpZlULQUYbYv9uh8=;
-	b=dkMUVGg6TGRfhWikW0dYw2Pz5ItIwkU6dLQSchDpeYA+TagOX5Iww2CFTcrRaAwgG1zB
-	 rl/x4YqCMhJ9C7WW97uo1Og45G0dKMprN+RPWfAJ8cc4Ef2HK0u7toTYq5XXzMRWQAAk1
-	 EUWVlgDZ5lDd20UcwTOG04fAmkGeQC0wBVwkd7rsCaSjmOT3wzznpq1YyaZwC7UtoNNVf
-	 jU9RMXoQbR+TSrXquKIjZQROXveHHU0K7eTPqLJiAORqhYtonX+Iwauin/r5RLtULfaNx
-	 bCFAASDlvioYbr9jcqfJjpWYVc4DR9ZoZVbxEUPqVavgnAvH7a3JMAe3MtsNaMYAq5Q==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=dsKEoWn0J6eZRSfAvhzwhCyUkWA5eiqJ4y72mpKVBNU=;
+	b=L4H3YEksaLqWGa+d5v3JsLl/Lj648WiC47pWXIvXMe9/u2hn6ultpxX0/zTHcAlV0paL
+	 SKoNM9ZOfYw0HdMqVJV3jWH9DE5gYkZFb/tH7+dW5sESx8TGioYZYbj73vJbYk5VwBJFo
+	 Cv8hKkZsUkjoLd61nNEadsU3CDHjIm/sdxq/7hLYo3xuFcaLKtiYa8fT63kfWaGEL+bv+
+	 mFXqRGyfzsoHwmLnadlzyo3VWYwT1nruIT50XXJxqj+knuggyKiffo7rbv61DEgRLv24Y
+	 FVqzWuxKds1Sud6fD9kopJ/4ttbdfE+6a7HxSQr7uwD4nuI3OAZdnE7EU2mnkgcANJg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=fail header.from=mgcrea.io;
 	spf=pass smtp.mailfrom=mg-crea.com;
-	dkim=pass header.d=mg-crea-com.20251104.gappssmtp.com header.i=@mg-crea-com.20251104.gappssmtp.com header.a=rsa-sha256 header.s=20251104 header.b=GglVcgwI;
-	arc=none smtp.remote-ip=209.85.221.49
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	dkim=pass header.d=mg-crea-com.20251104.gappssmtp.com header.i=@mg-crea-com.20251104.gappssmtp.com header.a=rsa-sha256 header.s=20251104 header.b=VTvXvSik;
+	arc=none smtp.remote-ip=209.85.221.54
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90084606A324
-	for <linux-pwm@vger.kernel.org>; Sun, 25 Oct 2026 08:46:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90084606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95B18606A31A
+	for <linux-pwm@vger.kernel.org>; Sun, 25 Oct 2026 19:16:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95B18606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=mgcrea.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mg-crea.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=mg-crea-com.20251104.gappssmtp.com header.i=@mg-crea-com.20251104.gappssmtp.com header.a=rsa-sha256 header.s=20251104 header.b=GglVcgwI
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-48e04773687so641645f8f.2
-        for <linux-pwm@vger.kernel.org>; Sun, 25 Oct 2026 01:46:47 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=mg-crea-com.20251104.gappssmtp.com header.i=@mg-crea-com.20251104.gappssmtp.com header.a=rsa-sha256 header.s=20251104 header.b=VTvXvSik
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-48e4831c028so731779f8f.0
+        for <linux-pwm@vger.kernel.org>; Sun, 25 Oct 2026 12:16:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mg-crea-com.20251104.gappssmtp.com; s=20251104; t=1792918006; x=1793522806; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=pSPsp8WYgTyYIXd11T+owTDZiioNpZlULQUYbYv9uh8=;
-        b=GglVcgwIKfAuJzhKvif1QWUuF1DmaBjTPt73jnHhBWyFQGu9HtWWP6M2Tz+X96NCD5
-         T54adqHu+0zbxD/MI23x4hZTgKLQ/89mWBumVhcq3Bq7KBtQo8hsBKF72Tol3A1Fo49s
-         MnPnsbVy5gmajXbl8wvpi9uUcTJpvb9Am1YQrIskxtNpz1XmWUMWvWi4sG6+h01t8jKu
-         mW5Q9EHUpw4MeWGCe3bWziK4S7W/GF3BvX8PYIeTrctEE8cKFQ+GEIYT3dJ0r8bnSm/a
-         YeNhHaZAVgRYEPVANK9zwMcPLZexrkAz5cRXuEgqjYU1fbxPN/hmC3+Noy8aTJktNeF1
-         +3mA==
+        d=mg-crea-com.20251104.gappssmtp.com; s=20251104; t=1792955786; x=1793560586; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=dsKEoWn0J6eZRSfAvhzwhCyUkWA5eiqJ4y72mpKVBNU=;
+        b=VTvXvSikLfJGslamcvpxzCJTu9WkCqjiJqpiEmRb3NyqMiAEDAZqGiMJOtgonAhvVe
+         ghVqAx1FnE16xEaww+LmUM3JTFBWGkrjBFsQlyG/IdXi2YGFwzny5206DDVamb8N1MGh
+         cAfRYHnoGVF63+UjNmuJm0Sn3D99fSfvJFaUV2DjMknY2UjvCIJL4FyhRSOrznDeFOBV
+         liWh36MSsxs/4AcMi2HmaxivN7SLlfqr/r5HQIp+4u0Asqk/CSyU+BluZIGLCmNB28TC
+         YEoChXByW7WkhkxR9+w3vExNtNv2TtfBR9fafQblnxFRZfD7O5NPhGQo187Ak4APjsFn
+         sBxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792918006; x=1793522806;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=pSPsp8WYgTyYIXd11T+owTDZiioNpZlULQUYbYv9uh8=;
-        b=sl+/gTgZp86sNj78509nYgWg+awZ+MIjZeif7Go01eN8Y9y4Tye1NlwhVWJbOMsxlJ
-         ZVdkrnctLXV8zqM9tjso/hdB+qLPpAXfpP9hSWRpECBBWY3p37b5TsEnoxGxcviSSgHd
-         +86QL+6nZJgCCN7wLCCnfuDyopIazRU50N6TCwKlnHmlaishqqoCLptXqkzpkf8uAQsX
-         5qAhI/kXHfhCjGdR06VPvPt8qcaIXcr/KHdeSXNteL6pAoPeiKvJIufYc9lrLCtu2ppR
-         SwgGhwU15TBYavxYkOh/exkQ/Yr3VQED/QoFwlZqQmjlxtC+lulIACjw2pXxOHP0dbGW
-         H64g==
-X-Forwarded-Encrypted: i=1; AKwUvBwMKQyOQFN+t0XZFiOqOcH8ng6JSLvEjzcKDwIFRALLG7rozQcMlEfRRAyXppQnZtqiTYDSqVaS0aw=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKfRCoGp4iLgqYDYoAtoOaHOu9oq/ybQOlIi+Piq1VjCleGD0bC
-	MWv3A6mpSNzWnAcmpJyR3yFCQWc9auMsyOyzbvot5h27dJ2j56PsaPmaXmfZYxmBUg4=
-X-Gm-Gg: AYBFou371jF5ds/9Mt35G1i1lOAI+0gInigvZfsDVMQrRx1ja3u57uTS5IeFrrIuW52
-	IALLDhFDz/70b9AOfu/Kc5Iyx4TKPDV6vVeAYacfa7yXvN2dQv9apv2HaIil9IFMXxyhBPb9t+y
-	hIdYQu6NIxkBxIXBp5K1MgN0imvH1BLbLtHTPnq9TxsnFuHkgYB7p/pJJkvKTiH8WBrcZxE+znj
-	2B/eyK1eGw7mWPdfFt4MCx/Jg8DOe+pAfxMPna96v8ymBQhQOl4bUL2YQ/7HgMylFre63zKeHuh
-	y3CiZda5PadO+XekURsgwzUt1sK3IbGf07aqHvDzFJBzkoKYJeCvCMhB4f+CKgi5Pb5kCKm7wlH
-	xRQ0hxdh7VCPdmuKY7EV7fXkfyU1anHCBLIUqEYcxjug04/U5dk5H8SmKlJXiCFU8uoYLtPMyVM
-	UDB9Cm/ycMlPrG/DqmP/HDmhrbVg3IqjP1fIv2t+uGq9P75adJkkgZ2cCZXe+4/yQYxkf+0G8Md
-	OK7ddUa7ZjsxojW2eLhiykleWrP2z8hTInPHA+qsCuEBt+QWi08L6saRGav9x3nWdo9NMsdjfqn
-	mEmRuH9mPS3p1Xgh4bcs7XNtUB6nhsnC3uKbm5ik7/46/PG/nUne0xc5KXMid1/Sbvgsgna+ug=
-	=
-X-Received: by 2002:a5d:6f0b:0:b0:48d:f488:f32a with SMTP id ffacd0b85a97d-48e3eb8e5f6mr6646358f8f.56.1792918005553;
-        Sun, 25 Oct 2026 01:46:45 -0700 (PDT)
-Received: from localhost.localdomain (2a01cb060184ad00bcfbae5efa3e0f0b.ipv6.abo.wanadoo.fr. [2a01:cb06:184:ad00:bcfb:ae5e:fa3e:f0b])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebcb99esm8616707f8f.23.2026.10.25.01.46.45
+        d=1e100.net; s=20260707; t=1792955786; x=1793560586;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=dsKEoWn0J6eZRSfAvhzwhCyUkWA5eiqJ4y72mpKVBNU=;
+        b=bbSVXr5eo5T1VasBadiw1RRuONdcTgHoD2BdETEpYLq6gdqNnLXRO3mZ0FL5RHbnHO
+         rUfTh9Kor2zm/ES7o1yUF+ofFQdcIsIB0ClEADXoyjpD5PI/wTrQfEb6tOEfCs0HkliQ
+         7IYBdommEja7X1OOvmF5tO4diHGJS85wAr/KiomA7OigzOSceGB1mLd0BVtjhrke8PPJ
+         bHSZfgl5pr5YjnIb0DtJ24Q4nXgxflMnfGX/krfskfKnBPSODZqZTozK6j7VJnoNycJn
+         61aCxWxA+/RdyK+vhLXvSZbsluLUPf6KdCTQMZQ7XIEIVUG5Yt7bY9P2ZRoPKYn0oK0c
+         2rmQ==
+X-Forwarded-Encrypted: i=1; AKwUvBz2PXYuWKdwAJSGRam1kxkKO8dRdJNfh7YdlE/M8KqB9yP+kZIyQvJUgUMEbXFn3vHlsrUK6vQB1XA=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKpc1o3b0T6CDxgBcP0htfPnbIocyhg3qpXZ2/NQxLrPSpkKEjZ
+	JQvjqA/IcKmX/fU+hkeCcTDRyKXf5plk4LzqzQ2K5jiv1kVtmPSr61pReqp1rg0zBKU=
+X-Gm-Gg: AYBFou0UOXLRZQvzHBuotd4UMJK5CpMrundme4rpTwACuGqZkQW0ExThj+JzEN0vpEH
+	CgGqyYHN92qM8XpasvtmjC1Mr3tonmYEV1uJTsphCnrrHT++eJ8x1DpNoD0ExV1MZfJA6bJ1RNx
+	+IMYV/PuSLnLQm0a5kXHTkI21/ze/dCLo3LqeGcryyL0XVIAdPbwzJ1JjhimH56fLK9H2C4hwOv
+	v4d6/cCO+IVTFJnqR5t+XG9eS0O4ROxmqtWpbl1ZiKSmMMWmZ4XbfQeWYyt/XloqVt6SiZK84Y8
+	saey67ESOw5ooDY9tsozDhv3TYdQcXLanaTqHSzmzHbrt4/8iS4l7GsegMgPnJv/SsIhf2YDtAb
+	Bn1s3udr4NeuZklJciGrnukCmG/oLaPkiNEidxCN5oDf0GknZtXcifFebWXhONMKGTlF02vWwGR
+	ZQlWdjq75NFcPEzFhu7GtfsuRcNxNIUFwoDSufUdhvXXvlYwsd8ILcC7ggP50tweKciHxTMNTac
+	d894FbUp97HFsjyAg3g/U1gBpkQR8q0UNDWr5K2nbR+JlXFS3E6CoNcxgWI61JbcFbFIotylWLH
+	izjw1cFjORCJpgzJwwSl54XW39d3pTNYLQM=
+X-Received: by 2002:a05:6000:4b04:b0:48d:fbe1:bb17 with SMTP id ffacd0b85a97d-48e3eb7ca4emr8944736f8f.41.1792955785830;
+        Sun, 25 Oct 2026 12:16:25 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:e0a:9d2:5a71:6dfc:5715:ead7:7540])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebc3bcdsm10082051f8f.13.2026.10.25.12.16.25
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 25 Oct 2026 01:46:45 -0700 (PDT)
+        Sun, 25 Oct 2026 12:16:25 -0700 (PDT)
 From: Olivier Louvignes <olivier@mgcrea.io>
 To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 Cc: Rob Herring <robh@kernel.org>,
@@ -91,12 +89,10 @@ Cc: Rob Herring <robh@kernel.org>,
 	linux-mips@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Olivier Louvignes <olivier@mgcrea.io>
-Subject: [PATCH 1/2] dt-bindings: pwm: Add the Ingenic X1600 PWM controller
-Date: Sun, 25 Oct 2026 09:46:42 +0100
-Message-ID: <20261025084643.93167-2-olivier@mgcrea.io>
+Subject: [PATCH v2 0/2] pwm: Add the Ingenic X1600 PWM controller
+Date: Sun, 25 Oct 2026 20:16:22 +0100
+Message-ID: <20261025191624.9219-1-olivier@mgcrea.io>
 X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20261025084643.93167-1-olivier@mgcrea.io>
-References: <20261025084643.93167-1-olivier@mgcrea.io>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -108,86 +104,50 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The X1600 has an eight-channel PWM controller of its own, separate from
-the TCU timers that drive the PWMs of earlier Ingenic SoCs
-(ingenic,tcu.yaml), so it gets a binding of its own.
+The Ingenic X1600 has a PWM controller of its own, separate from the TCU
+timers that pwm-jz4740 drives on the earlier Ingenic SoCs. This adds its
+binding and a driver built on the waveform callbacks.
 
-Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
----
- .../bindings/pwm/ingenic,x1600-pwm.yaml       | 47 +++++++++++++++++++
- MAINTAINERS                                   |  5 ++
- 2 files changed, 52 insertions(+)
+Changes in v2 (both found by the Sashiko review of v1):
+- A channel that is off with both counts still loaded, as one stopped
+  behind the driver's back leaves it, now reads back as disabled. v1 read
+  it as running, so asking for the same waveform again didn't switch it
+  on. A channel off with one count zero is how 0 and 100% are written; the
+  idle level gives which.
+- A clock rate of 0 is refused with -EINVAL when rounding a waveform and
+  when writing one, instead of switching the channel off silently or
+  dividing by zero in the update timeout.
+
+Tested on a HiBy R1 (X1600), whose backlight is channel 0, through
+pwm-backlight: brightness 1, 25, 50, 60 and 100% give the expected high and
+low counts, 0 and 100% switch the channel off at the right idle level,
+and an inversed 250 us of 1 ms on channel 1 reads back as INL 0, LOW
+9375 then HIGH 28125 with the clock divided by 8. PWM_DEBUG stayed
+silent. For v2 also: channel 1 running 250 us of 1 ms, switched off
+through ENC directly, then requested again through sysfs, reads back as
+disabled, and the same waveform asked again switches it back on; v1's
+driver read it as enabled and left it off.
+
+The X1600 has no device tree upstream yet; its support is being posted
+one subsystem at a time.
+
+v1: https://lore.kernel.org/r/20261025084643.93167-1-olivier@mgcrea.io
+
+Olivier Louvignes (2):
+  dt-bindings: pwm: Add the Ingenic X1600 PWM controller
+  pwm: Add a driver for the Ingenic X1600 PWM controller
+
+ .../bindings/pwm/ingenic,x1600-pwm.yaml       |  47 +++
+ MAINTAINERS                                   |   6 +
+ drivers/pwm/Kconfig                           |  11 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-ingenic-x1600.c               | 280 ++++++++++++++++++
+ 5 files changed, 345 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/ingenic,x1600-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-ingenic-x1600.c
 
-diff --git a/Documentation/devicetree/bindings/pwm/ingenic,x1600-pwm.yaml b/Documentation/devicetree/bindings/pwm/ingenic,x1600-pwm.yaml
-new file mode 100644
-index 000000000000..3ecaa92a5ca2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/ingenic,x1600-pwm.yaml
-@@ -0,0 +1,47 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/ingenic,x1600-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Ingenic X1600 PWM controller
-+
-+maintainers:
-+  - Olivier Louvignes <olivier@mgcrea.io>
-+
-+description:
-+  The eight-channel PWM controller of the Ingenic X1600 SoC, separate from
-+  the TCU timers that drive the PWMs of earlier Ingenic SoCs.
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: ingenic,x1600-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - "#pwm-cells"
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    pwm@134c0000 {
-+        compatible = "ingenic,x1600-pwm";
-+        reg = <0x134c0000 0x200>;
-+        clocks = <&cgu 21>;
-+        #pwm-cells = <3>;
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3a19da74d00c..c905aa13bcbc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12878,6 +12878,11 @@ F:	include/linux/mfd/ingenic-tcu.h
- F:	sound/soc/codecs/jz47*
- F:	sound/soc/jz4740/
- 
-+INGENIC X1600 PWM DRIVER
-+M:	Olivier Louvignes <olivier@mgcrea.io>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/pwm/ingenic,x1600-pwm.yaml
-+
- INJOINIC IP5xxx POWER BANK IC DRIVER
- M:	Samuel Holland <samuel@sholland.org>
- S:	Maintained
+
+base-commit: 00e917df050d79ac26ec700717680ad6421d2808
 -- 
-2.54.0
+2.39.5
 
