@@ -1,55 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792990471;
-	b=IB/pxFjjV2KjjB3RIaxl6sZnSNBlIGT2bZScqeBMSiXlaJJ5Rv/iOr5zV3lNxnGUw73m
-	 l6KsPIf4uWW1oet2WTnL8jrEwOcitB6KBD757wJx7IlqPZ2QYmaTDc/XShzG5uYKXjj3K
-	 hkgCYFv5UiWc5w9dBI9jKqmyiSjU4mjbMgng9weW6BmlEGGVFBs2a2fWeQ6aoHFCYcmLK
-	 ilzXXz+negRWe8kho2izL33zRM1/H1h5NrwL6KRRB8MLrpPdSYe7sVIlgdps4ClBZuNRK
-	 8vRYpRNHVgja1GXsT5s8MXheArmqf/3S1SRoZcZfvf5Lumhi3jzBFAsTOX3bn/kLr3g==
+	t=1792990790;
+	b=4UYgE4bU8ZJiQTU0fIur4dN6uPPabqZTQ+kwaUwwwDAYTQ9MjXFZTor2won3hv6q4Tdz
+	 QiK4manxLe7kK5+++ZY/t+DK3dGjoetpXvrgyxvQYnNRrJ9wiHioFthGtypjxP9c4DU2r
+	 3NDntGOwc3KgOfaQYWHrPBnup6++OTSToxEFV2MrIw36GD+aPX8sYJTjirlrysJztALah
+	 XUrmgMo9IqIudPphO2rltu8RyfIROJjc/FpmKpF9fto1S+RELDC+zU+N5s8PZLm2CE1P5
+	 9CTj8fSglmH2URJoMGBwpnR7vwfuJW6ylxw+NDii50OX2/7EHt14ofWdSP+sxLZlNiA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792990471;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792990790;
 	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
 	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
 	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
 	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=d+db6cO4/znRKfCwcArWJfMZVzu/oUp97IX1g7WQ5po=;
-	b=Gh4vzW7QOH6g3P/3You//xzLavYR1+Xkvieq7GGNAb8zFqsAxmUSSlPrxJ9vLqzx5Fdp
-	 GMMa1Ko/du7hw3ZkoS8+IYUeJBeV+6X0oBFLEDTsuPLA60LBWRdMkhGoA3AGrdEbCvgZU
-	 kHyiTlyYvaEGJn75JMFvrM4rnTEBtfMlXJsTbCGKdaniJfH/U2u8DnrTpJ5n5v6ickMnA
-	 A0BTM66lm0YDF2zguEJPfalWVeNmtiPM2NqnqcFsNIn4Q9DinY0+1pRK73wVK64m/shn5
-	 ol5FXO7mx/KZAEMgdoYxRTPWUGQEWXdDOOGoqc0qs1PTeWSFXiWtug+9GXWU9euFvtg==
+	bh=NLmt/AZKtREcaDKgDQ5NlYZMhl4LgJCsucH6I4F3Shw=;
+	b=GaZvjeTdJjqRzaup1NzDWRqzLPqBd9jdoqJvMpHn8L0NxE/6jOWAWMkcLx5oLHM2qBRz
+	 Hj2Qq6OA90abOd7bEpbwPwEbO6TU0ENEA8lednVOxS8DDi5uvA2RUTb2qMoW5MhaRIiaz
+	 p3YAU1zXXsgDjC8kHEYENK2PiCNs35PvgXejpLS0vcMWdqu+yNPDbJWT94ssm1VACdT/s
+	 cz9puRq2W20uh9iEZwbZX2kETFcZdr8f2oB0w6IP4Pq1E/V+nvP/EWfM2DiY/Swor6jv5
+	 a9vKmCRqjVWSS4mn5fmk8tPglQBMoW5dhAYP9NHzz33qNAmRByfRrz/m+g+1GnTqnrw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PSRPfVy4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EWdb2xS9;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3293606A31B
-	for <linux-pwm@vger.kernel.org>; Mon, 26 Oct 2026 04:54:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C395606A31B
+	for <linux-pwm@vger.kernel.org>; Mon, 26 Oct 2026 04:59:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PSRPfVy4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 892F11F031EE
-	for <linux-pwm@vger.kernel.org>; Mon, 26 Oct 2026 04:54:30 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EWdb2xS9
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C2701F031E7
+	for <linux-pwm@vger.kernel.org>; Mon, 26 Oct 2026 04:59:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792990470;
-	bh=d+db6cO4/znRKfCwcArWJfMZVzu/oUp97IX1g7WQ5po=;
+	s=k20260515; t=1792990789;
+	bh=NLmt/AZKtREcaDKgDQ5NlYZMhl4LgJCsucH6I4F3Shw=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=PSRPfVy4z2jMdwgAqoA9TAR+1OUd38kw40YdqDTDNSfNd/wSSLHr+JkGCOkg8eQ+6
-	 FYGh7UDIxv0rakCO2oPE0lI7Ag5TXyfS6fo3mpLCfLrJ2scvLJKULqcne0kXeRDqRK
-	 t81jcTSqcPe+Xns6wS7WNEvMN4eluGs78bfIQf8jkOc5oBzsovXTropD2oUQ3W30IS
-	 N8D0mj2zytaYs1AHegst1Tv4qGwqp96r74ACYxgOhVPXT1JYbDUrbm/Zvm5xaCNQtB
-	 f2QJSIMlZuhbK/0+igkTg6+qA7NWe8qmzdLd8GxBOwwLWXiVXZLZCEYfi6Q0eXUNHl
-	 vLQ0XI4a2IpIg==
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6b21cf1a580so3107929a12.1
-        for <linux-pwm@vger.kernel.org>; Sun, 25 Oct 2026 21:54:30 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvByP3FKyhlQ7gsSOuG74X8XAfENuXKgL/hHrEKfHlCsnBWxB0rscxh8DxDB5HQqQi/jnUuDujMeJD4c=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKLdcq+rzDHZm+BDM500Ij1P8weACUkVjvKTXn2S8YSWHW5BY2h
-	cD3Ln5RCOZnaS6VWOw9+6GiSFZ0u7Uy5qIV6fjwqWYXxVU7xwBD7x0W9xMfMQF2ZU0syBXDH2s+
-	FICf+2wCdRMUlNsiF4G5vGYIINXegDJQ=
-X-Received: by 2002:a05:6402:1945:b0:6b3:f7f6:649e with SMTP id
- 4fb4d7f45d1cf-6b44311a75emr6070392a12.7.1792990469315; Sun, 25 Oct 2026
- 21:54:29 -0700 (PDT)
+	b=EWdb2xS9oApBjg6p4ixceDJP4tSn2ThGDTvC15VYpUt6HTPFG9HSua/JRoRQNf4Ad
+	 3my1oSTlvTDcqr8JI93hLcbdXxMRWE9BIrWViKyhR5jfvH3eK1uxm+DrsxvIg4HXkg
+	 aezUSpZffI7eKg/WRfU3ofk156e7lKFohlPpmyJWGacg2TvhjZj4Kn1kun4EOXQRa6
+	 d4NTypTpEM6qYx6WL2BqtZkS/yB5mVfbSCS1lyXlaQ4ZBIutquqh7yJ67GmiSGPPGM
+	 htxDsN03VPFt1kvtZfqd21a5ruB8iMryMsqBBOQ8UAfN+haQfbeBbc+ttWkmCeEaKp
+	 UTv5C+Omv/Kzg==
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6acb9c018ffso3697032a12.1
+        for <linux-pwm@vger.kernel.org>; Sun, 25 Oct 2026 21:59:48 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBx7Rbbo2SCFN7n7i1vnfFEm0hxsguE1vcrSln1N8LFqXjxOSZzVH/pT8sOWJI5GLC2ebmPjTcehWOU=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJn3OKmMYD2mK4tN7gdwxRGvEiQ+MXl6PKFOe452j7AHVddNvhC
+	bLd591x+bfoTfTN4M/IpvgnhaCPoWLPQTLkfBmsXyJshyN2r+jl2I2sx6Cds7JwS04/jeM3Wz9f
+	p+NNMQw1fp4Quay9PswyXiF2/ND7yvs8=
+X-Received: by 2002:a05:6402:e08:b0:6b4:1eed:b9f2 with SMTP id
+ 4fb4d7f45d1cf-6b443a2fee7mr6790635a12.10.1792990787933; Sun, 25 Oct 2026
+ 21:59:47 -0700 (PDT)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -59,14 +59,15 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261020-fw-devlink-nexus-ready-v3-0-fd6f1c17e16d@toradex.com> <20261020-fw-devlink-nexus-ready-v3-4-fd6f1c17e16d@toradex.com>
-In-Reply-To: <20261020-fw-devlink-nexus-ready-v3-4-fd6f1c17e16d@toradex.com>
+References: <20261020-fw-devlink-nexus-ready-v3-0-fd6f1c17e16d@toradex.com>
+In-Reply-To: <20261020-fw-devlink-nexus-ready-v3-0-fd6f1c17e16d@toradex.com>
 From: Saravana Kannan <saravanak@kernel.org>
-Date: Sun, 25 Oct 2026 21:54:17 -0700
-X-Gmail-Original-Message-ID: <CACRMN=eGqVa8ObETW8x_EVPzn6kY=kKGyOqAj5Et8iy_yVY75A@mail.gmail.com>
-X-Gm-Features: AclHuK9taTxVHM675uQiYSXXFu84ZUo78YYFrIOFAacwqHamv6y8a9Wqx5PMgKU
-Message-ID: <CACRMN=eGqVa8ObETW8x_EVPzn6kY=kKGyOqAj5Et8iy_yVY75A@mail.gmail.com>
-Subject: Re: [PATCH v3 4/8] of: unittest: Test fw_devlink with GPIO nexus maps
+Date: Sun, 25 Oct 2026 21:59:36 -0700
+X-Gmail-Original-Message-ID: <CACRMN=cR0P0ETKLKkM2k67Kuv5oe4+gz8vY8DhhuZGZ6LiCGhQ@mail.gmail.com>
+X-Gm-Features: AclHuK9u7vjAQCLxUR5sEBpiJHi39rWIfcPdQhFAQgsEzk2KJz-ZGO2-0-6Y7xs
+Message-ID: <CACRMN=cR0P0ETKLKkM2k67Kuv5oe4+gz8vY8DhhuZGZ6LiCGhQ@mail.gmail.com>
+Subject: Re: [PATCH v3 0/8] of: property: Make fw_devlink follow GPIO, PWM and
+ clock nexus maps
 To: Ernest Van Hoecke <ernestvanhoecke@gmail.com>
 Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, 
 	"Miquel Raynal (Schneider Electric)" <miquel.raynal@bootlin.com>, Frank Li <Frank.li@oss.nxp.com>, 
@@ -80,6 +81,8 @@ Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
 	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
 	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	Ernest Van Hoecke <ernest.vanhoecke@toradex.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
+	stable@vger.kernel.org, 
 	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -87,210 +90,117 @@ Content-Transfer-Encoding: quoted-printable
 On Tue, Oct 20, 2026 at 6:00=E2=80=AFAM Ernest Van Hoecke
 <ernestvanhoecke@gmail.com> wrote:
 >
-> From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+> This series fixes an fw_devlink supplier-resolution problem reported by
+> Leonardo Costa while using a Devicetree nexus to describe GPIO and PWM
+> resources routed through an LVDS connector. Consumers referencing the
+> nexus could remain deferred because fw_devlink linked them to the nexus
+> rather than to the providers selected by gpio-map and pwm-map. [1]
 >
-> Add OF unit tests that call the fw_devlink add_links operation for GPIOs
-> routed through nexus maps. Verify that each mapped consumer has exactly
-> one link to the final GPIO provider rather than to the nexus.
+> GPIO, PWM and clock consumer APIs use of_parse_phandle_with_args_map()
+> to resolve specifiers through gpio-map, pwm-map and clock-map
+> properties. The corresponding fw_devlink parsers use direct phandle
+> parsing instead. Given a consumer which references a nexus, the consumer
+> API and fw_devlink therefore resolve the reference to different nodes:
 >
-> Also cover direct references and all GPIO property spellings recognized
-> by fw_devlink, including the deprecated singular and unprefixed forms.
+>   consumer API:  consumer -> nexus -> mapped provider
+>   fw_devlink:    consumer -> nexus
 >
-> The gpio-map routes its entries to different providers so that selecting
-> the wrong entry is caught as well.
+> A nexus is a translation node rather than the resource provider and need
+> not have a driver. The link to it can consequently remain unresolved and
+> defer the consumer even though the mapped provider is available.
 >
-> Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-> Reviewed-by: Linus Walleij <linusw@kernel.org>
+> Make the fw_devlink GPIO, PWM and clock parsers use the same map-aware
+> resolver as their consumer APIs. The resolver also handles valid direct
+> references by returning the original provider when no map is present.
+> Use dedicated exact-name and suffix declaration macros to opt these
+> bindings into map-aware parsing without changing unrelated property
+> parsers. Retain GPIO's existing exclusions and compatibility handling.
+>
+> Since fw_devlink runs the resolver for every consumer when its device is
+> created, patch 1 first fixes a stack buffer overflow in the resolver
+> when the provider referenced by the consumer has more than
+> MAX_PHANDLE_ARGS cells.
+>
+> The regression tests call the OF add_links operation and verify that a
+> mapped reference creates exactly one link to the provider selected by
+> the referenced map entry, not to the nexus. They also cover valid direct
+> references. The GPIO tests exercise all property spellings recognized by
+> fw_devlink, including the deprecated singular and unprefixed forms.
+>
+> The clock patch fixes aacc54c67869 ("clk: Add support for clock nexus dt
+> bindings"), which has been in clk-next and linux-next with the same hash
+> since next-20260907. There is no build-time dependency on it, but the
+> clock patch should not reach mainline before it. The series applies to
+> next-20261014.
+>
+> Tested with:
+>   - The CONFIG_OF_UNITTEST cases under QEMU/x86_64: all passed. With the
+>     fw_devlink parser changes reverted, exactly the six mapped consumer
+>     cases fail.
+>   - W=3D1 builds of each patch on arm64, including the OF unittest data
+>   - Toradex Verdin iMX8M Plus hardware using a connector nexus for the
+>     display GPIO and PWM resources (v2, same fw_devlink changes): the
+>     display probes successfully
+>
+> [1] https://lore.kernel.org/all/juuc4af7ndbajcl7gzf4tg5qz2q2j5tt3rvql4jba=
+uradujrre@gc5nbdhhixaf/
+
+Thanks for the patch series to keep this updated! Took a close look at
+all the patches and they mostly look good.
+
+Left some minor comments. Should be easy to address/clarify.
+
+When they are addressed:
+Reviewed-by: Saravana Kannan <saravanak@kernel.org>
+
+Thanks,
+Saravana
+
+>
 > Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+>
 > ---
-> v3: Route gpio-map entries to two providers, use a middle entry (Herve)
-> v2: https://lore.kernel.org/r/20260910-fw-devlink-nexus-ready-v2-3-17ac82=
-dbe226@toradex.com
+> Changes in v3:
+> - New patch 1 fixing a stack overflow in
+>   of_parse_phandle_with_args_map() (Uwe)
+> - Tests: route map entries to different providers and reference a
+>   non-first entry with non-zero cells (Herve)
+> - Collected R-b tags
+> - Rebased onto next-20261014
+> - Link to v2: https://lore.kernel.org/r/20260910-fw-devlink-nexus-ready-v=
+2-0-17ac82dbe226@toradex.com
+>
+> Changes in v2:
+> - Split the unit tests into per-resource follow-up commits
+> - Added clock nexus as well because the clock nexus series was merged:
+>   https://lore.kernel.org/all/20260807-schneider-v7-2-rc1-eip201-upstream=
+-v5-0-8785f9531cf0@bootlin.com/
+> - Link to v1: https://lore.kernel.org/r/20260902-fw-devlink-nexus-ready-v=
+1-0-68fe1996e78a@toradex.com
+>
 > ---
->  drivers/of/unittest-data/tests-phandle.dtsi | 39 +++++++++++++++
->  drivers/of/unittest.c                       | 75 +++++++++++++++++++++++=
+> Ernest Van Hoecke (8):
+>       of: base: Fix stack overflow in of_parse_phandle_with_args_map()
+>       of: property: fw_devlink: Follow GPIO nexus maps
+>       of: property: fw_devlink: Report unsupported supplier linking
+>       of: unittest: Test fw_devlink with GPIO nexus maps
+>       of: property: fw_devlink: Follow PWM nexus maps
+>       of: unittest: Test fw_devlink with PWM nexus maps
+>       of: property: fw_devlink: Follow clock nexus maps
+>       of: unittest: Test fw_devlink with clock nexus maps
+>
+>  drivers/of/base.c                           |  5 ++
+>  drivers/of/property.c                       | 53 ++++++++++++++-----
+>  drivers/of/unittest-data/tests-phandle.dtsi | 81 +++++++++++++++++++++++=
 ++++++
->  2 files changed, 114 insertions(+)
+>  drivers/of/unittest.c                       | 79 +++++++++++++++++++++++=
++++++
+>  4 files changed, 205 insertions(+), 13 deletions(-)
+> ---
+> base-commit: d419d682257d813f6cb7a28e42b35d0edf4ad038
+> change-id: 20260901-fw-devlink-nexus-ready-c859706b019d
 >
-> diff --git a/drivers/of/unittest-data/tests-phandle.dtsi b/drivers/of/uni=
-ttest-data/tests-phandle.dtsi
-> index 554a996b2ef1..f5d7ee072c90 100644
-> --- a/drivers/of/unittest-data/tests-phandle.dtsi
-> +++ b/drivers/of/unittest-data/tests-phandle.dtsi
-> @@ -79,6 +79,45 @@ consumer-b {
->                                 phandle-list-bad-args =3D <&provider2 1 0=
->,
->                                                         <&provider4 0>;
->                         };
-> +
-> +                       fw-devlink-tests {
-> +                               gpio_provider_a: gpio-controller-a {
-> +                                       #gpio-cells =3D <2>;
-> +                               };
-> +
-> +                               gpio_provider_b: gpio-controller-b {
-> +                                       #gpio-cells =3D <2>;
-> +                               };
-> +
-> +                               fwdevlink_nexus: nexus {
-> +                                       #gpio-cells =3D <2>;
-> +                                       gpio-map =3D <1 0 &gpio_provider_=
-a 3 0>,
-> +                                                  <2 0 &gpio_provider_b =
-5 0>,
-> +                                                  <3 0 &gpio_provider_a =
-7 0>;
-> +                                       gpio-map-mask =3D <0xffffffff 0>;
-> +                                       gpio-map-pass-thru =3D <0 0xfffff=
-fff>;
-> +                               };
-> +
-> +                               gpio-compat-consumer {
-> +                                       gpios =3D <&fwdevlink_nexus 2 1>;
-> +                               };
-> +
-> +                               gpio-compat-singular-consumer {
-> +                                       gpio =3D <&fwdevlink_nexus 2 1>;
-> +                               };
-> +
-> +                               gpio-consumer {
-> +                                       test-gpios =3D <&fwdevlink_nexus =
-2 1>;
-> +                               };
-> +
-> +                               gpio-direct-consumer {
-> +                                       test-gpios =3D <&gpio_provider_a =
-1 0>;
-> +                               };
-> +
-> +                               gpio-singular-consumer {
-> +                                       test-gpio =3D <&fwdevlink_nexus 2=
- 1>;
-> +                               };
-> +                       };
->                 };
->         };
->  };
-> diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-> index e255f54f4d76..f15c110dbf4d 100644
-> --- a/drivers/of/unittest.c
-> +++ b/drivers/of/unittest.c
-> @@ -10,6 +10,7 @@
->  #include <linux/dma-direct.h> /* to test phys_to_dma/dma_to_phys */
->  #include <linux/err.h>
->  #include <linux/errno.h>
-> +#include <linux/fwnode.h>
->  #include <linux/hashtable.h>
->  #include <linux/libfdt.h>
->  #include <linux/of.h>
-> @@ -710,6 +711,79 @@ static void __init of_unittest_parse_phandle_with_ar=
-gs_map(void)
->         }
->  }
->
-> +static void __init of_unittest_fw_devlink_supplier(struct device_node *t=
-ests,
-> +                                                  const char *consumer_n=
-ame,
-> +                                                  const char *supplier_n=
-ame)
-> +{
-> +       struct device_node *consumer, *supplier;
-> +       struct fwnode_handle *consumer_fwnode;
-> +       struct fwnode_link *link;
-> +       unsigned int link_count =3D 0;
-> +       bool found =3D false;
-> +       int rc;
-> +
-> +       consumer =3D of_get_child_by_name(tests, consumer_name);
-> +       supplier =3D of_get_child_by_name(tests, supplier_name);
-> +       if (unittest(consumer && supplier, "missing consumer %s or suppli=
-er %s\n",
-> +                    consumer_name, supplier_name))
-> +               goto put_nodes;
-> +
-> +       consumer_fwnode =3D of_fwnode_handle(consumer);
-> +       fwnode_links_purge(consumer_fwnode);
-
-Why this line? Aren't you controlling the exact set of properties in
-the test nodes?
-
--Saravana
-
-> +       rc =3D fwnode_call_int_op(consumer_fwnode, add_links);
-> +       if (rc =3D=3D -EOPNOTSUPP) {
-> +               pr_info_once("fw_devlink tests skipped: OF supplier links=
- are not supported\n");
-> +               goto purge_links;
-> +       }
-> +       if (unittest(!rc, "failed to add links for %pOF: %d\n", consumer,=
- rc))
-> +               goto purge_links;
-> +
-> +       /*
-> +        * The suppliers list should normally be accessed with fwnode_lin=
-k_lock
-> +        * held, but that lock is private to the driver core. These test =
-nodes
-> +        * are isolated and have no concurrent link updates.
-> +        */
-> +       list_for_each_entry(link, &consumer_fwnode->suppliers, c_hook) {
-> +               link_count++;
-> +               if (link->supplier =3D=3D of_fwnode_handle(supplier))
-> +                       found =3D true;
-> +       }
-> +
-> +       unittest(link_count =3D=3D 1, "%pOF has %u suppliers, expected 1\=
-n", consumer, link_count);
-> +       unittest(found, "%pOF is not linked to supplier %pOF\n", consumer=
-, supplier);
-> +
-> +purge_links:
-> +       fwnode_links_purge(consumer_fwnode);
-> +put_nodes:
-> +       of_node_put(consumer);
-> +       of_node_put(supplier);
-> +}
-> +
-> +static void __init of_unittest_fw_devlink(void)
-> +{
-> +       static const struct {
-> +               const char *consumer;
-> +               const char *supplier;
-> +       } cases[] =3D {
-> +               { "gpio-compat-consumer", "gpio-controller-b" },
-> +               { "gpio-compat-singular-consumer", "gpio-controller-b" },
-> +               { "gpio-consumer", "gpio-controller-b" },
-> +               { "gpio-direct-consumer", "gpio-controller-a" },
-> +               { "gpio-singular-consumer", "gpio-controller-b" },
-> +       };
-> +       struct device_node *tests;
-> +       int i;
-> +
-> +       tests =3D of_find_node_by_path("/testcase-data/phandle-tests/fw-d=
-evlink-tests");
-> +       if (unittest(tests, "missing fw_devlink test data\n"))
-> +               return;
-> +
-> +       for (i =3D 0; i < ARRAY_SIZE(cases); i++)
-> +               of_unittest_fw_devlink_supplier(tests, cases[i].consumer,=
- cases[i].supplier);
-> +
-> +       of_node_put(tests);
-> +}
-> +
->  static void __init of_unittest_property_string(void)
->  {
->         const char *strings[4];
-> @@ -4533,6 +4607,7 @@ static int __init of_unittest(void)
->         of_unittest_dynamic();
->         of_unittest_parse_phandle_with_args();
->         of_unittest_parse_phandle_with_args_map();
-> +       of_unittest_fw_devlink();
->         of_unittest_printf();
->         of_unittest_property_string();
->         of_unittest_property_copy();
->
+> Best regards,
 > --
-> 2.43.0
+> Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
 >
