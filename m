@@ -1,55 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792990790;
-	b=4UYgE4bU8ZJiQTU0fIur4dN6uPPabqZTQ+kwaUwwwDAYTQ9MjXFZTor2won3hv6q4Tdz
-	 QiK4manxLe7kK5+++ZY/t+DK3dGjoetpXvrgyxvQYnNRrJ9wiHioFthGtypjxP9c4DU2r
-	 3NDntGOwc3KgOfaQYWHrPBnup6++OTSToxEFV2MrIw36GD+aPX8sYJTjirlrysJztALah
-	 XUrmgMo9IqIudPphO2rltu8RyfIROJjc/FpmKpF9fto1S+RELDC+zU+N5s8PZLm2CE1P5
-	 9CTj8fSglmH2URJoMGBwpnR7vwfuJW6ylxw+NDii50OX2/7EHt14ofWdSP+sxLZlNiA==
+	t=1793001890;
+	b=rIxEg1/ms4/c4RpxjD2hcw/zsnJYvrVlwGqZN+0Mv4WByIh2/kECPyb9I5Kf+9ad4uQo
+	 jWE8GQTcXilRBloC5CyJkjdK9wgX8GB/icvXMb5Xy8+nJ4EgFp2lrOP4Q5/cHBGU6e2NB
+	 DltxVEyqOaF3hcy6kqscARCvB+SODeDqoxiLK0KI0KtkNcr26AFKDUTZFQuorWX3scrBu
+	 rAjj3W8HXGV9LO2CYaVwc/x5o7LOypJ4uD9XV+l42046f7tTGfsjlRNA6IWidJMHC+On7
+	 TB5TlhGZcGiVfu+zMPftYJZCXHgzDRSwZ5+IXIy95G/xexi5pryIjjJCNNTgENGkz/A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792990790;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=NLmt/AZKtREcaDKgDQ5NlYZMhl4LgJCsucH6I4F3Shw=;
-	b=GaZvjeTdJjqRzaup1NzDWRqzLPqBd9jdoqJvMpHn8L0NxE/6jOWAWMkcLx5oLHM2qBRz
-	 Hj2Qq6OA90abOd7bEpbwPwEbO6TU0ENEA8lednVOxS8DDi5uvA2RUTb2qMoW5MhaRIiaz
-	 p3YAU1zXXsgDjC8kHEYENK2PiCNs35PvgXejpLS0vcMWdqu+yNPDbJWT94ssm1VACdT/s
-	 cz9puRq2W20uh9iEZwbZX2kETFcZdr8f2oB0w6IP4Pq1E/V+nvP/EWfM2DiY/Swor6jv5
-	 a9vKmCRqjVWSS4mn5fmk8tPglQBMoW5dhAYP9NHzz33qNAmRByfRrz/m+g+1GnTqnrw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793001890;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=qMXorstH88NzCoqjhGn94czvAmwVFQSOFUerq46d0UU=;
+	b=h1RR9VtiAbJiNKcgkmD2slGxedfiHTqbhRlbDdWbZGtvaeBTm4K1z7J/+a+XMl35hYgA
+	 e5pZOsAh/WDDDnmrriV4+LBwetF09uwAGDVo54ewiZJOZhv7aKBI7p9HkOLPfHGrcR+5R
+	 a9Uyn1WcN/m3Iy4C6c4TPEjnbx47s0lwAJ0GMhGAOsgwpHAnb9CAfGyTiJ5a4v8kKn1cB
+	 q8Ezz0419CEUFIPu8EtsHeTjD16pUpCFz+XJQAGkpPKv4BEEjqzP67W0FY517mbqAio1b
+	 GgYiMTfIxcE2OCz2DEn9RrxMg0K9dOplTjXysVrFfM8WD3Ytd0UJc2eVN3u307GihFA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EWdb2xS9;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=H1ORCFoI;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C395606A31B
-	for <linux-pwm@vger.kernel.org>; Mon, 26 Oct 2026 04:59:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 6288B606A31B;
+	Mon, 26 Oct 2026 08:04:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EWdb2xS9
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C2701F031E7
-	for <linux-pwm@vger.kernel.org>; Mon, 26 Oct 2026 04:59:48 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=H1ORCFoI
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 698791F01828;
+	Mon, 26 Oct 2026 08:04:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792990789;
-	bh=NLmt/AZKtREcaDKgDQ5NlYZMhl4LgJCsucH6I4F3Shw=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=EWdb2xS9oApBjg6p4ixceDJP4tSn2ThGDTvC15VYpUt6HTPFG9HSua/JRoRQNf4Ad
-	 3my1oSTlvTDcqr8JI93hLcbdXxMRWE9BIrWViKyhR5jfvH3eK1uxm+DrsxvIg4HXkg
-	 aezUSpZffI7eKg/WRfU3ofk156e7lKFohlPpmyJWGacg2TvhjZj4Kn1kun4EOXQRa6
-	 d4NTypTpEM6qYx6WL2BqtZkS/yB5mVfbSCS1lyXlaQ4ZBIutquqh7yJ67GmiSGPPGM
-	 htxDsN03VPFt1kvtZfqd21a5ruB8iMryMsqBBOQ8UAfN+haQfbeBbc+ttWkmCeEaKp
-	 UTv5C+Omv/Kzg==
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6acb9c018ffso3697032a12.1
-        for <linux-pwm@vger.kernel.org>; Sun, 25 Oct 2026 21:59:48 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBx7Rbbo2SCFN7n7i1vnfFEm0hxsguE1vcrSln1N8LFqXjxOSZzVH/pT8sOWJI5GLC2ebmPjTcehWOU=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJn3OKmMYD2mK4tN7gdwxRGvEiQ+MXl6PKFOe452j7AHVddNvhC
-	bLd591x+bfoTfTN4M/IpvgnhaCPoWLPQTLkfBmsXyJshyN2r+jl2I2sx6Cds7JwS04/jeM3Wz9f
-	p+NNMQw1fp4Quay9PswyXiF2/ND7yvs8=
-X-Received: by 2002:a05:6402:e08:b0:6b4:1eed:b9f2 with SMTP id
- 4fb4d7f45d1cf-6b443a2fee7mr6790635a12.10.1792990787933; Sun, 25 Oct 2026
- 21:59:47 -0700 (PDT)
+	s=k20260515; t=1793001890;
+	bh=qMXorstH88NzCoqjhGn94czvAmwVFQSOFUerq46d0UU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=H1ORCFoIc3gGnXRd10aLcQTBIUK4BT+KWLhGynt7HP9NgWC0xaOaJi0AS5PND9xUy
+	 7zyCQQ3MG9fiydxYR7DjMTkiB4C5F67tHc/GlnNPVs48T7cxpTd0eYOSdjqU9SE76t
+	 8qhTtZc3n0qeFNBeQB8+foTvfXqf3cpGhZj3lnteYMHVP+1oz/ADM/uw0xUOEv3yXq
+	 vdtHdRSPt7fN96QSTtWU7TCUMsq9AXtCJtfqMFVBsU3p167Kk59m8bsWPFFmkEAl39
+	 ovsFTIfg5xdBA7MiIVa5tbYLRCvPi4cyW+i/By6q0W5ALZy5q8ZDbrNDDF3tBTczU8
+	 YDzY4LvSbmKSw==
+Date: Mon, 26 Oct 2026 09:04:47 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Olivier Louvignes <olivier@mgcrea.io>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Paul Cercueil <paul@crapouillou.net>, "H . Nikolaus Schaller" <hns@goldelico.com>, 
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] pwm: Add a driver for the Ingenic X1600 PWM
+ controller
+Message-ID: <at7-o4S_3DQE-sqs@monoceros>
+References: <20261025191624.9219-1-olivier@mgcrea.io>
+ <20261025191624.9219-3-olivier@mgcrea.io>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -59,148 +61,401 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261020-fw-devlink-nexus-ready-v3-0-fd6f1c17e16d@toradex.com>
-In-Reply-To: <20261020-fw-devlink-nexus-ready-v3-0-fd6f1c17e16d@toradex.com>
-From: Saravana Kannan <saravanak@kernel.org>
-Date: Sun, 25 Oct 2026 21:59:36 -0700
-X-Gmail-Original-Message-ID: <CACRMN=cR0P0ETKLKkM2k67Kuv5oe4+gz8vY8DhhuZGZ6LiCGhQ@mail.gmail.com>
-X-Gm-Features: AclHuK9u7vjAQCLxUR5sEBpiJHi39rWIfcPdQhFAQgsEzk2KJz-ZGO2-0-6Y7xs
-Message-ID: <CACRMN=cR0P0ETKLKkM2k67Kuv5oe4+gz8vY8DhhuZGZ6LiCGhQ@mail.gmail.com>
-Subject: Re: [PATCH v3 0/8] of: property: Make fw_devlink follow GPIO, PWM and
- clock nexus maps
-To: Ernest Van Hoecke <ernestvanhoecke@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, 
-	"Miquel Raynal (Schneider Electric)" <miquel.raynal@bootlin.com>, Frank Li <Frank.li@oss.nxp.com>, 
-	Kieran Bingham <kieran.bingham@ideasonboard.com>, 
-	Pengutronix Kernel Team <kernel@pengutronix.de>, Stephen Boyd <sboyd@kernel.org>, 
-	Brian Masney <bmasney@redhat.com>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Herve Codina <herve.codina@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Leonardo Costa <leonardo.costa@toradex.com>, 
-	Frieder Schrempf <frieder.schrempf@kontron.de>, devicetree@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Ernest Van Hoecke <ernest.vanhoecke@toradex.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
-	stable@vger.kernel.org, 
-	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="gwycectjexu4oivb"
+Content-Disposition: inline
+In-Reply-To: <20261025191624.9219-3-olivier@mgcrea.io>
+
+
+--gwycectjexu4oivb
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v2 2/2] pwm: Add a driver for the Ingenic X1600 PWM
+ controller
+MIME-Version: 1.0
 
-On Tue, Oct 20, 2026 at 6:00=E2=80=AFAM Ernest Van Hoecke
-<ernestvanhoecke@gmail.com> wrote:
->
-> This series fixes an fw_devlink supplier-resolution problem reported by
-> Leonardo Costa while using a Devicetree nexus to describe GPIO and PWM
-> resources routed through an LVDS connector. Consumers referencing the
-> nexus could remain deferred because fw_devlink linked them to the nexus
-> rather than to the providers selected by gpio-map and pwm-map. [1]
->
-> GPIO, PWM and clock consumer APIs use of_parse_phandle_with_args_map()
-> to resolve specifiers through gpio-map, pwm-map and clock-map
-> properties. The corresponding fw_devlink parsers use direct phandle
-> parsing instead. Given a consumer which references a nexus, the consumer
-> API and fw_devlink therefore resolve the reference to different nodes:
->
->   consumer API:  consumer -> nexus -> mapped provider
->   fw_devlink:    consumer -> nexus
->
-> A nexus is a translation node rather than the resource provider and need
-> not have a driver. The link to it can consequently remain unresolved and
-> defer the consumer even though the mapped provider is available.
->
-> Make the fw_devlink GPIO, PWM and clock parsers use the same map-aware
-> resolver as their consumer APIs. The resolver also handles valid direct
-> references by returning the original provider when no map is present.
-> Use dedicated exact-name and suffix declaration macros to opt these
-> bindings into map-aware parsing without changing unrelated property
-> parsers. Retain GPIO's existing exclusions and compatibility handling.
->
-> Since fw_devlink runs the resolver for every consumer when its device is
-> created, patch 1 first fixes a stack buffer overflow in the resolver
-> when the provider referenced by the consumer has more than
-> MAX_PHANDLE_ARGS cells.
->
-> The regression tests call the OF add_links operation and verify that a
-> mapped reference creates exactly one link to the provider selected by
-> the referenced map entry, not to the nexus. They also cover valid direct
-> references. The GPIO tests exercise all property spellings recognized by
-> fw_devlink, including the deprecated singular and unprefixed forms.
->
-> The clock patch fixes aacc54c67869 ("clk: Add support for clock nexus dt
-> bindings"), which has been in clk-next and linux-next with the same hash
-> since next-20260907. There is no build-time dependency on it, but the
-> clock patch should not reach mainline before it. The series applies to
-> next-20261014.
->
-> Tested with:
->   - The CONFIG_OF_UNITTEST cases under QEMU/x86_64: all passed. With the
->     fw_devlink parser changes reverted, exactly the six mapped consumer
->     cases fail.
->   - W=3D1 builds of each patch on arm64, including the OF unittest data
->   - Toradex Verdin iMX8M Plus hardware using a connector nexus for the
->     display GPIO and PWM resources (v2, same fw_devlink changes): the
->     display probes successfully
->
-> [1] https://lore.kernel.org/all/juuc4af7ndbajcl7gzf4tg5qz2q2j5tt3rvql4jba=
-uradujrre@gc5nbdhhixaf/
+Hello,
 
-Thanks for the patch series to keep this updated! Took a close look at
-all the patches and they mostly look good.
+On Sun, Oct 25, 2026 at 08:16:24PM +0100, Olivier Louvignes wrote:
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 729776086879..244c8f4f140e 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -381,6 +381,17 @@ config PWM_JZ4740
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-jz4740.
+> =20
+> +config PWM_INGENIC_X1600
 
-Left some minor comments. Should be easy to address/clarify.
+Alphabetic ordering please.
 
-When they are addressed:
-Reviewed-by: Saravana Kannan <saravanak@kernel.org>
+> +	tristate "Ingenic X1600 PWM support"
+> +	depends on MACH_INGENIC || COMPILE_TEST
+> +	depends on COMMON_CLK && OF && HAS_IOMEM
+> +	help
+> +	  Generic PWM framework driver for the PWM controller of the
+> +	  Ingenic X1600.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-ingenic-x1600.
+> +
+>  config PWM_KEEMBAY
+>  	tristate "Intel Keem Bay PWM driver"
+>  	depends on ARCH_KEEMBAY || COMPILE_TEST
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 5630a521a7cf..5c59b54e0029 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -31,6 +31,7 @@ obj-$(CONFIG_PWM_IMX_TPM)	+=3D pwm-imx-tpm.o
+>  obj-$(CONFIG_PWM_INTEL_LGM)	+=3D pwm-intel-lgm.o
+>  obj-$(CONFIG_PWM_IPQ)		+=3D pwm-ipq.o
+>  obj-$(CONFIG_PWM_IQS620A)	+=3D pwm-iqs620a.o
+> +obj-$(CONFIG_PWM_INGENIC_X1600)	+=3D pwm-ingenic-x1600.o
 
-Thanks,
-Saravana
+Alphabetic ordering please.
 
->
-> Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
->
-> ---
-> Changes in v3:
-> - New patch 1 fixing a stack overflow in
->   of_parse_phandle_with_args_map() (Uwe)
-> - Tests: route map entries to different providers and reference a
->   non-first entry with non-zero cells (Herve)
-> - Collected R-b tags
-> - Rebased onto next-20261014
-> - Link to v2: https://lore.kernel.org/r/20260910-fw-devlink-nexus-ready-v=
-2-0-17ac82dbe226@toradex.com
->
-> Changes in v2:
-> - Split the unit tests into per-resource follow-up commits
-> - Added clock nexus as well because the clock nexus series was merged:
->   https://lore.kernel.org/all/20260807-schneider-v7-2-rc1-eip201-upstream=
--v5-0-8785f9531cf0@bootlin.com/
-> - Link to v1: https://lore.kernel.org/r/20260902-fw-devlink-nexus-ready-v=
-1-0-68fe1996e78a@toradex.com
->
-> ---
-> Ernest Van Hoecke (8):
->       of: base: Fix stack overflow in of_parse_phandle_with_args_map()
->       of: property: fw_devlink: Follow GPIO nexus maps
->       of: property: fw_devlink: Report unsupported supplier linking
->       of: unittest: Test fw_devlink with GPIO nexus maps
->       of: property: fw_devlink: Follow PWM nexus maps
->       of: unittest: Test fw_devlink with PWM nexus maps
->       of: property: fw_devlink: Follow clock nexus maps
->       of: unittest: Test fw_devlink with clock nexus maps
->
->  drivers/of/base.c                           |  5 ++
->  drivers/of/property.c                       | 53 ++++++++++++++-----
->  drivers/of/unittest-data/tests-phandle.dtsi | 81 +++++++++++++++++++++++=
-++++++
->  drivers/of/unittest.c                       | 79 +++++++++++++++++++++++=
-+++++
->  4 files changed, 205 insertions(+), 13 deletions(-)
-> ---
-> base-commit: d419d682257d813f6cb7a28e42b35d0edf4ad038
-> change-id: 20260901-fw-devlink-nexus-ready-c859706b019d
->
-> Best regards,
-> --
-> Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
->
+>  obj-$(CONFIG_PWM_JZ4740)	+=3D pwm-jz4740.o
+>  obj-$(CONFIG_PWM_KEEMBAY)	+=3D pwm-keembay.o
+>  obj-$(CONFIG_PWM_LOONGSON)	+=3D pwm-loongson.o
+> diff --git a/drivers/pwm/pwm-ingenic-x1600.c b/drivers/pwm/pwm-ingenic-x1=
+600.c
+> new file mode 100644
+> index 000000000000..5865ff0cf298
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-ingenic-x1600.c
+> @@ -0,0 +1,280 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * PWM controller of the Ingenic X1600
+> + *
+> + * Copyright (c) 2026 Olivier Louvignes <olivier@mgcrea.io>
+> + *
+> + * Eight channels, each with a power-of-two clock divider and a waveform=
+ word
+> + * holding the counts at the high and at the low level; the channel's in=
+itial
+> + * level picks which comes first (X1600 programming manual, chapter 13).=
+ Unlike
+> + * the JZ47xx and X1000, whose PWMs are TCU timer channels (pwm-jz4740),=
+ the
+> + * X1600 has this separate controller.
+
+A link to a reference manual would be awesome (if available).
+
+> + * Limitations:
+> + * - The duty offset is 0 or period - duty (the high level last).
+> + * - Neither count may be zero, so a duty cycle of 0 or 100% switches the
+> + *   channel off and holds its output at the idle level instead.
+
+That reads like 100% wasn't possible, but looking at the code it is?!
+
+> + * - A disabled channel drives its idle level, low.
+> + * - Changing the divider or the initial level stops the channel first, =
+which
+> + *   cuts the current period short.
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/clk.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/math64.h>
+> +#include <linux/minmax.h>
+> +#include <linux/mod_devicetable.h>
+
+That is wrong, of_device_id is already provided by
+<linux/platform_device.h> and <linux/mod_devicetable.h> pulls in many
+unneeded dependencies. So just drop the latter.
+
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/time.h>
+> +#include <linux/types.h>
+> +
+> +#define X1600_PWM_ENS			0x00	/* write 1: switch a channel on */
+> +#define X1600_PWM_ENC			0x04	/* write 1: switch a channel off */
+> +#define X1600_PWM_EN			0x08	/* the channels switched on */
+> +#define X1600_PWM_UPT			0x10	/* write 1: load the waveform word */
+> +#define X1600_PWM_BUSY			0x14	/* a load is pending */
+> +#define X1600_PWM_MS			0x20	/* 0: waveform word, 1: DMA */
+> +#define X1600_PWM_INL			0x24	/* the level a period starts with */
+> +#define X1600_PWM_IDL			0x28	/* the level while off */
+> +#define X1600_PWM_CCFG(n)		(0x40 + 4 * (n))
+> +#define X1600_PWM_WCFG(n)		(0x80 + 4 * (n))
+> +
+> +#define X1600_PWM_CCFG_PRESCALE		GENMASK(3, 0)	/* divide by 2^PRESCALE */
+> +#define X1600_PWM_WCFG_HIGH		GENMASK(31, 16)
+> +#define X1600_PWM_WCFG_LOW		GENMASK(15, 0)
+> +
+> +#define X1600_PWM_NUM			8
+> +#define X1600_PWM_MAX_COUNT		0xffff
+
+This can be determined from X1600_PWM_WCFG_HIGH and/or
+X1600_PWM_WCFG_LOW using FIELD_MAX().
+
+> +#define X1600_PWM_MAX_PRESCALE		7
+
+Why are there 4 register bits to store a value in the range [0 .. 7]?
+
+> +struct x1600_pwm {
+> +	void __iomem *base;
+> +	struct clk *clk;
+> +};
+> +
+> +struct x1600_pwm_wfhw {
+> +	u32 wcfg;
+> +	u8 prescale;
+> +	bool enabled;
+> +	bool inl;
+> +	bool idl;
+> +};
+> +
+> +static u64 x1600_pwm_counts(u64 ns, unsigned long rate, unsigned int pre=
+scale)
+> +{
+> +	return mul_u64_u64_div_u64(ns, rate, (u64)NSEC_PER_SEC << prescale);
+> +}
+> +
+> +static u64 x1600_pwm_ns(u64 counts, unsigned long rate, unsigned int pre=
+scale)
+> +{
+
+Please add a comment about the ranges of `counts` and `prescale` here to
+make it clear that there are no problems with overflows.
+
+> +	return DIV64_U64_ROUND_UP((counts * NSEC_PER_SEC) << prescale, rate);
+> +}
+> +
+> +static int x1600_pwm_round_waveform_tohw(struct pwm_chip *chip, struct p=
+wm_device *pwm,
+> +					 const struct pwm_waveform *wf, void *_wfhw)
+> +{
+> +	struct x1600_pwm *x =3D pwmchip_get_drvdata(chip);
+> +	unsigned long rate =3D clk_get_rate(x->clk);
+> +	struct x1600_pwm_wfhw *wfhw =3D _wfhw;
+> +	u64 period, high, offset;
+> +	unsigned int prescale;
+> +	int ret =3D 0;
+> +
+> +	*wfhw =3D (struct x1600_pwm_wfhw){ };
+> +	if (!wf->period_length_ns)
+> +		return 0;
+> +
+> +	if (!rate)
+> +		return -EINVAL;
+> +
+> +	for (prescale =3D 0; prescale < X1600_PWM_MAX_PRESCALE; prescale++)
+> +		if (x1600_pwm_counts(wf->period_length_ns, rate, prescale) <=3D
+> +		    X1600_PWM_MAX_COUNT)
+> +			break;
+
+I'm sure prescale can be calculated without a loop.
+
+> +	period =3D min(x1600_pwm_counts(wf->period_length_ns, rate, prescale),
+> +		     X1600_PWM_MAX_COUNT);
+
+After determining prescale, you might already have calculated period.
+
+> +	if (period < 2) {
+> +		period =3D 2;
+> +		ret =3D 1;
+> +	}
+> +	high =3D min(x1600_pwm_counts(wf->duty_length_ns, rate, prescale), peri=
+od);
+> +	offset =3D x1600_pwm_counts(wf->duty_offset_ns, rate, prescale);
+> +
+> +	wfhw->prescale =3D prescale;
+> +	wfhw->wcfg =3D FIELD_PREP(X1600_PWM_WCFG_HIGH, high) |
+> +		     FIELD_PREP(X1600_PWM_WCFG_LOW, period - high);
+> +	wfhw->enabled =3D high && high < period;
+> +	/* Low first only if the requested offset reaches period - duty. */
+> +	wfhw->inl =3D !wfhw->enabled || offset < period - high;
+> +	wfhw->idl =3D high =3D=3D period;
+
+inl and idl are the levels before and after the (potential) mid-period
+edge, right? Doesn't idl need to depend on offset, too?
+
+> +	return ret;
+> +}
+> +
+> +static int x1600_pwm_round_waveform_fromhw(struct pwm_chip *chip, struct=
+ pwm_device *pwm,
+> +					   const void *_wfhw, struct pwm_waveform *wf)
+> +{
+> +	struct x1600_pwm *x =3D pwmchip_get_drvdata(chip);
+> +	unsigned long rate =3D clk_get_rate(x->clk);
+> +	const struct x1600_pwm_wfhw *wfhw =3D _wfhw;
+> +	u32 high =3D FIELD_GET(X1600_PWM_WCFG_HIGH, wfhw->wcfg);
+> +	u32 low =3D FIELD_GET(X1600_PWM_WCFG_LOW, wfhw->wcfg);
+> +
+> +	*wf =3D (struct pwm_waveform){ };
+> +
+> +	/*
+> +	 * A channel that is off drives its idle level. Both counts set means
+> +	 * it was stopped with a waveform still loaded: it is off. One count
+> +	 * zero is how 0 and 100% are written, and the idle level says which.
+> +	 */
+> +	if (!wfhw->enabled && high && low)
+> +		return 0;
+
+The comment doesn't really match the code, does it? The return value
+only ever says 0% relative duty, but the comment also talks about 100%.
+
+> +	if (!rate)
+> +		return -EINVAL;
+> +
+> +	wf->period_length_ns =3D x1600_pwm_ns(high + low, rate, wfhw->prescale);
+> +	if (!wfhw->enabled) {
+> +		wf->duty_length_ns =3D wfhw->idl ? wf->period_length_ns : 0;
+
+That is wrong if idl =3D inl?
+
+> +		return 0;
+> +	}
+> +
+> +	wf->duty_length_ns =3D x1600_pwm_ns(high, rate, wfhw->prescale);
+> +	wf->duty_offset_ns =3D wfhw->inl ? 0 : x1600_pwm_ns(low, rate, wfhw->pr=
+escale);
+> +
+> +	return 0;
+> +}
+> +
+> [...]
+> +static int x1600_pwm_write_waveform(struct pwm_chip *chip, struct pwm_de=
+vice *pwm,
+> +				    const void *_wfhw)
+> +{
+> +	struct x1600_pwm *x =3D pwmchip_get_drvdata(chip);
+> +	const struct x1600_pwm_wfhw *wfhw =3D _wfhw;
+> +	unsigned long rate =3D clk_get_rate(x->clk);
+> +	struct x1600_pwm_wfhw cur;
+> +	unsigned int ch =3D pwm->hwpwm;
+> +	u32 busy;
+> +
+> +	if (!rate)
+> +		return -EINVAL;
+> +
+> +	x1600_pwm_read_waveform(chip, pwm, &cur);
+> +
+> +	/*
+> +	 * Running with the same divider and initial level: load the new word,
+> +	 * which the channel takes at the end of its period.
+> +	 */
+> +	if (cur.enabled && wfhw->enabled && cur.prescale =3D=3D wfhw->prescale =
+&&
+> +	    cur.inl =3D=3D wfhw->inl) {
+
+You also need cur.idl =3D wfhw->idl I think.
+
+> +		writel(wfhw->wcfg, x->base + X1600_PWM_WCFG(ch));
+> +		writel(BIT(ch), x->base + X1600_PWM_UPT);
+> +		return readl_poll_timeout(x->base + X1600_PWM_BUSY, busy,
+> +					  !(busy & BIT(ch)), 10,
+> +					  DIV_ROUND_UP_ULL(2ULL * USEC_PER_SEC *
+> +							   (X1600_PWM_MAX_COUNT << cur.prescale),
+> +							   rate));
+
+What is the rationale here? You can return without waiting here even if
+the setting isn't active yet. But maybe you have to delay writing if the
+busy bit is still set on the next invocation of .write_waveform().
+
+> +	}
+> +
+> +	/* The idle level first, so that stopping holds the right level. */
+> +	x1600_pwm_set_bit(x, X1600_PWM_IDL, ch, wfhw->idl);
+> +	if (cur.enabled)
+> +		writel(BIT(ch), x->base + X1600_PWM_ENC);
+> +
+> +	/* The prescaler only changes while the channel is off. */
+> +	writel(FIELD_PREP(X1600_PWM_CCFG_PRESCALE, wfhw->prescale),
+> +	       x->base + X1600_PWM_CCFG(ch));
+> +	x1600_pwm_set_bit(x, X1600_PWM_INL, ch, wfhw->inl);
+> +	writel(wfhw->wcfg, x->base + X1600_PWM_WCFG(ch));
+> +	x1600_pwm_set_bit(x, X1600_PWM_MS, ch, false);
+> +
+> +	if (wfhw->enabled)
+> +		writel(BIT(ch), x->base + X1600_PWM_ENS);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct pwm_ops x1600_pwm_ops =3D {
+> +	.sizeof_wfhw =3D sizeof(struct x1600_pwm_wfhw),
+> +	.round_waveform_tohw =3D x1600_pwm_round_waveform_tohw,
+> +	.round_waveform_fromhw =3D x1600_pwm_round_waveform_fromhw,
+> +	.read_waveform =3D x1600_pwm_read_waveform,
+> +	.write_waveform =3D x1600_pwm_write_waveform,
+> +};
+> +
+> +static int x1600_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev =3D &pdev->dev;
+> +	struct pwm_chip *chip;
+> +	struct x1600_pwm *x;
+> +
+> +	chip =3D devm_pwmchip_alloc(dev, X1600_PWM_NUM, sizeof(*x));
+> +	if (IS_ERR(chip))
+> +		return PTR_ERR(chip);
+> +	x =3D pwmchip_get_drvdata(chip);
+> +
+> +	x->base =3D devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(x->base))
+> +		return PTR_ERR(x->base);
+> +
+> +	x->clk =3D devm_clk_get_enabled(dev, NULL);
+> +	if (IS_ERR(x->clk))
+> +		return dev_err_probe(dev, PTR_ERR(x->clk), "Unable to get clock\n");
+
+Please make use of clk_rate_exclusive_get().
+
+If you can write a new configuration even if the busy bit is active you
+can also call clk_get_rate() here, cache the result and then set
+chip->atomic.
+
+> +
+> +	chip->ops =3D &x1600_pwm_ops;
+> +	return devm_pwmchip_add(dev, chip);
+> +}
+> +
+> +static const struct of_device_id x1600_pwm_of_match[] =3D {
+> +	{ .compatible =3D "ingenic,x1600-pwm" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, x1600_pwm_of_match);
+> +
+> +static struct platform_driver x1600_pwm_driver =3D {
+> +	.driver =3D {
+> +		.name =3D "ingenic-x1600-pwm",
+> +		.of_match_table =3D x1600_pwm_of_match,
+> +	},
+> +	.probe =3D x1600_pwm_probe,
+> +};
+> +module_platform_driver(x1600_pwm_driver);
+> +
+> +MODULE_AUTHOR("Olivier Louvignes <olivier@mgcrea.io>");
+> +MODULE_DESCRIPTION("Ingenic X1600 PWM driver");
+> +MODULE_LICENSE("GPL");
+> --=20
+> 2.39.5
+>=20
+
+--gwycectjexu4oivb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrfCZwACgkQj4D7WH0S
+/k6XzAgArGS2AVhf28L25Jx3rrX2VDiu/3osTCvpW3QwkjrzTA+rFT8G8OUvjiCM
+EGOFA/QJsqfMBpmU2GwiiBymt17QLSkBl9j3U+48+kFnEgVtwhf1VeiaTdEHtVuI
+OkiBpFBHXpfoS0osIJH+UgrtbvZ5iU2lOW7Y03YMfFP51qmQntZL1FF7wxYVJdNW
+mzhTsWuv+iOVVIiPkf9Q7O3fGkLtuRJIZQgAb6+dX8FhftNh6vMim3R7lrYEqCsi
+2J1OfDz5iiiX0p8DOjmdLPNvrKH4Uh3zk6+oXT5WJZv3yuvry4XNAHFbF8KCTgxQ
+2AxjpaQl/nM2+I/C5p7qloC0K++dPg==
+=6OP/
+-----END PGP SIGNATURE-----
+
+--gwycectjexu4oivb--
