@@ -1,72 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.89.44.35
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793031871;
-	b=nOWXZG3VMjv6c7bVGfKcDG83ZysfN7dwNStKjY9qKvnKVn47bbllbsSsM1GPxCzqbKiu
-	 9N+pEM1MpJA0FkOcTJUwRIJCzMiD5aXvrY8DBvaWhFZtbdiBPvu9go2BErOGRN8QQcM1Y
-	 UdW2x15g+ZqfCfHGBTV89q6OoljVcZQZwjdU5AFSUWACI60z/Me0sZn6p1lMxvZk4Bd/4
-	 S+JW6yEql2cc/+QHJcz+Gi7GFb80w5rgKFWMos69apDB1Qa8j/sIajAoQQxWKwvpmR4VO
-	 kjMIqk6SAj636gq7vi9pQ7qzOlfYyuHPeifGK8QXPebs/DwjIrRCwr2gjJuLDQDX05Q==
+	t=1793068172;
+	b=oLeTAxCJGqCRTq/d9hEYn/H16EJoQ3/T8OjmkdM6hndIZ63Ilbaai+84E14tOwEMfONL
+	 ygb8KvTAZ9NTMEqfhth9n01dSUIoozWYziwyrebb9y8AFGZPwzNgHOYsX8fMNSLbYD+Sz
+	 gaGU86X5keWQwqxziIJFtTLaVfbhzVQWHlcD41BWrfajASYl5kMK17rKqaA9nzzZNOOQi
+	 akqst8vHEj6jOqPRZDiQfwMs04AgBcFI/rn5VY/9xExxHwRg6NLgIB2r2mQ0YJoBXr+tL
+	 l3Okg1oeZfuifbm83+36H8d5laHXlk3Km/USo4DXTE0r7h+glipUw3GArKQZEeLPeHQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793031871;
-	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
-	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:
-	 References:Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
-	 X-AntiAbuse:X-AntiAbuse:X-BWhitelist:X-Source-IP:X-Source-L:X-Exim-ID:
-	 X-Source:X-Source-Args:X-Source-Dir:X-Source-Sender:X-Source-Auth:
-	 X-Email-Count:X-Org:X-Source-Cap:X-Local-Domain:X-CMAE-Envelope;
-	bh=DajPTuRGlwcD4J4PQkOl0tYDfpyADr1jZ7qC3/V/b3M=;
-	b=wtSaUUxN4xifLI4DAO16whdvdGmRPryv/vM/eBJ0XHU4IyyxRAniCVZk4g8NP9UddFUD
-	 RTvE32VZKJQFIBkXiaxGChx9tJn+0Fk+gwCWv35kkIclQxUxC2T57XKhHK0H6mtRhp4OP
-	 QyCVr5E7O9i2qxkTTz0dvZ2QgTEnLAVd+sy4c97yCKOp82uYs8rxPVGJSCO5lGXRsz/Vu
-	 ZZDYlB6VTkDhJEXVMsY7xXDqA/ovmSBfr5Q7/0bupZyBYnmKKO4pdu5uJzH5NFouuO85a
-	 dQv3FtcpoOSF1IV2BOTj7DAbOc8XPCCNZYXHmPi2YUsMPcmjIIkhlBBxsRNVamsVebA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793068172;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=AuJpX+R1ikkgXuJg24CUYJMUBGehOWyuliZWHlt8VIY=;
+	b=2rfWRYrUA6GlEKXUiYaHvLl9oQU2y1CZQYDwA0qJ9kRyLJlLOPywtUcjTxlUhREf2ZLJ
+	 RbQN7cHuWFr75o5dEms4l9cohRKAj41ZCFaEYp5vpcS987VNwuu/+e75CaV2HpYHFOMP6
+	 kbljx0wrpkhmqKaU0fgUFjbT27yPuAWv1MXA+s3BYDqrEM7ptJcZyxSFhA4OZ3o3/KTeY
+	 L7SVEjYLhnnty40A1D0bVJ7WAyVCd6SuF1+iH7YKK5fPiprhJH1KtkLfNz6xrdsq9KAlX
+	 lPbh5KRLxqNZDcDrJNgNFKdWfC5adBhC/vLv5KgmRzPGV6Q+1Xdt02+EeNGS9Tn26dg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=roeck-us.net;
-	spf=fail smtp.mailfrom=roeck-us.net;
-	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=lsNrZREB;
-	arc=none smtp.remote-ip=35.89.44.35
-Received: from omta36.uswest2.a.cloudfilter.net (omta36.uswest2.a.cloudfilter.net [35.89.44.35])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=DbZORDq5;
+	arc=none smtp.remote-ip=209.85.128.43
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 476BE606A329
-	for <linux-pwm@vger.kernel.org>; Mon, 26 Oct 2026 16:24:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 476BE606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2DF0606A31B
+	for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 02:29:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F2DF0606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=lsNrZREB
-Received: from eig-obgw-6003b.ext.cloudfilter.net ([10.0.30.175])
-	by cmsmtp with ESMTPS
-	id LNFExjSJjusRSLNUmxsi8U; Mon, 26 Oct 2026 16:24:24 +0000
-Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
-	by cmsmtp with ESMTPS
-	id LNUlxKZ2o7CfWLNUmxj5Tc; Mon, 26 Oct 2026 16:24:24 +0000
-X-Authority-Analysis: v=2.4 cv=Z8HsHGRA c=1 sm=1 tr=0 ts=6adf7eb8
- a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
- a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=M0FbrtG7MMAA:10 a=VwQbUJbxAAAA:8
- a=iox4zFpeAAAA:8 a=tt6zo4tp7eAlrjPKee4A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=WzC6qhA0u3u7Ye7llzcV:22 a=KPbNTLLc3YvdawN95zVk:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
-	List-Archive; bh=DajPTuRGlwcD4J4PQkOl0tYDfpyADr1jZ7qC3/V/b3M=; b=lsNrZREBaNyV
-	34I/2MbZZFS63thif2qT+LwMsLC5dLGoqiCLbUJia0eyD7/PVaTnwaZHHWBpIRHUpZ+kP/A9qlsnH
-	LqSVDEQc4PwHDdqZElYdGktKtpvwrnoiWjROMvd4FIMmyEezANBlLwMHzae7YjSJjqa2NJ5umz4wc
-	+NYwr866ZOiDKLpxuf7nDfNXJm6ykgXrQNvHi5lixAMBJC6/MC9cpSZc1vt4cFDy7cGaWf7O/RPLN
-	UDkdRAa2PNjqUHhh3tLciDF5bwZZUKJjwIEzW3utdUXbkZoSkLtEUaSrtcIUnP+M2iPZOOkdGWCNC
-	LOnjiQRDB+ichCBDvYCJDA==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:55640)
-	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <linux@roeck-us.net>)
-	id 1xLNUh-00000000J3G-11yk;
-	Mon, 26 Oct 2026 21:54:19 +0530
-Message-ID: <7df58d42-517c-4936-88b0-9d044d30882c@roeck-us.net>
-Date: Mon, 26 Oct 2026 09:24:16 -0700
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=DbZORDq5
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4a2000d5fb1so24563405e9.1
+        for <linux-pwm@vger.kernel.org>; Mon, 26 Oct 2026 19:29:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1793068169; x=1793672969; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=AuJpX+R1ikkgXuJg24CUYJMUBGehOWyuliZWHlt8VIY=;
+        b=DbZORDq5AiubwyjDXTjfusmrCpGrjrHPIfkmc/I3M2s4ChF1YwXLXq07UiJtP1eZkj
+         3kTv+zMiGVmJ9VZVJx5T774C5/cdDGDFA26IoBfuaKTc5DcRAo2RV/Lo+DboKBN9SJDr
+         sGHCWiaVkpVOeISEegQYs/ehQM0fJY539Emd74GXHT9L06X+ju044jAgfWAj7G40507H
+         c68wqbinZcoWx/PhiiESB+TZjMNe8XcrHLO2QMM96N/ZEJRBWNQT8ABehmIwUhGX6dDf
+         acUgNiGV0a0oAmth1z5O8a7gYiq0TGObGCbTgvv1BdjkaKh0aQEtlbDk4fwou4m9bebT
+         ktkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793068169; x=1793672969;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=AuJpX+R1ikkgXuJg24CUYJMUBGehOWyuliZWHlt8VIY=;
+        b=LdAsWFz2/W2OhA7tIfPpNSkgnx7kGPxQ+f1x2aGXwG2Zg1wKwOwFX1JOzzc0gJdV+U
+         DtHo5Dg2Lenke/WhiNIdse3nIDvi1pww4sCcxGX17Xr0gaysiN7gmteiW7RdOpTmfrGp
+         NZjWDjAy+XyBLO4yK0Vmdcb8kp2UapkMXvgWirC4mmGtlzpOWUvL9oJ4iKQVKTSQ4Wuo
+         EQsKhmCIVPHNLCZQEBbe3wpFjZaKIwSL5Il66oeAjxJ/JgViy5Z6IY3XHjbzbFVUO58M
+         KkSG80Vl1lewkbz6JuyP98I81V+1wWfh+dYWmk91XosPTd8BevWtfu2knCpfQE7nhX6b
+         5l2w==
+X-Forwarded-Encrypted: i=1; AKwUvBz4yiQEuf+ztwjUQI30lA8rBiOskedQX/IjFN1vrTm5bebscpVB+jy7VX/70Est9w0m2O42t6YNcCU=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLoZQRo9FPHlZxLX3afi2sFHUo6macCaF7ikmgCLji/zdxv0NFj
+	3JYGK3sC38+G838VJ2e0EJNPX1vyqrqRz8y7rrhVUTfaO6cPJA9buoN+
+X-Gm-Gg: AYBFou3pUn7caTVdGcbxh4LMP9txPL9nlDlbletBf2t84Czre40Ra5a5VRu3duFLR8k
+	aepxTqtD9CLaIZXZbreGS/HtQF3RpVVI+Zxm6E9VYB6yXI9joHOOK41xhtu+46eeS0ZyEi8ptV8
+	TkpU/XKF/WbnvROyS23VNj5gd2DDSq1HL+9WXU2ypi46XqBtQX2nu4TmvxVL3xpmrcjjPLFoyeI
+	wuszXAqFRo5dWWYuoJkYip1bDpJprRKV8x/wl6swELi70J7Wa4PNTq+actZUyt2b/XgopCtgVok
+	YQnvl58MNlC7d3JsayuOfJq51OHZafKx3AiBxIgA+ollQN8afe/8QQ4d6yQPl1iRO0ip28cpeai
+	yDpdKi4Di3J/JYwJUP70GefsO7iYjpuo1OiKu9iDJsRvtsKoHtL1CuzFXnHN//lRPehwJsfdeYh
+	7hU96Fhk8epIiCsFZC2GipMCRCzrIrJm3C4ZMIG91hyIZZh8YQi3ilvj/LwB+x4n2PuD7/L3Icu
+	EHbcXblDzYNF9nS0ioxgu4K2k8cKDZjXPgrKrKVFjuHyag4fK9HtiRRJ+eo+j2Uvj2eDMfM2kr1
+	Rhi8ET1ZWBae7151MRgRoufGrinEmal16nfOiosvZs1SBMZip0o131JwN793Eu9bLz1taqzDEr/
+	6xqkPa2O7W2b9T3f0vgFwktlKpcy6xR7yBsBi4y5o
+X-Received: by 2002:a05:600c:3b8a:b0:4a2:d:5ccc with SMTP id 5b1f17b1804b1-4a35ac99e81mr157824335e9.10.1793068169174;
+        Mon, 26 Oct 2026 19:29:29 -0700 (PDT)
+Received: from localhost.localdomain (dynamic-095-117-118-122.95.117.pool.telefonica.de. [95.117.118.122])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3eb8f305sm18341906f8f.3.2026.10.26.19.29.26
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Mon, 26 Oct 2026 19:29:27 -0700 (PDT)
+From: Karl Mehltretter <kmehltretter@gmail.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Cc: Karl Mehltretter <kmehltretter@gmail.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	linux-pwm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3] pwm: atmel: Fix arithmetic overflows for long periods
+Date: Tue, 27 Oct 2026 03:27:55 +0100
+Message-Id: <20261027022755.52912-1-kmehltretter@gmail.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+In-Reply-To: <20261016161221.16553-1-kmehltretter@gmail.com>
+References: <20261016161221.16553-1-kmehltretter@gmail.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -76,192 +104,178 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 0/4] hwmon: Add fan tachometer support for Raspberry
- Pi RP1
-To: Andrea della Porta <andrea.porta@suse.com>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
- <rdunlap@infradead.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- Gregor Herburger <gregor.herburger@linutronix.de>,
- Stanimir Varbanov <svarbanov@suse.de>, linux-hwmon@vger.kernel.org,
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
- Gary Guo <gary@garyguo.net>,
- Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-References: <cover.1792748690.git.andrea.porta@suse.com>
-Content-Language: en-US
-From: Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- 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
- np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
-In-Reply-To: <cover.1792748690.git.andrea.porta@suse.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1xLNUh-00000000J3G-11yk
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:55640
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 15
-X-Org: HG=direseller_whb_net_legacy;ORG=directi;
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfGXBBNiaq4ZUf4Yvx+/nyrCT4rOfzMzweHISG89Avl2U8dhdoum/HJqaU8VVs7S7akZ16OhGzzL+l/rfgSfFKpxoYsofHywdxekJvs2YM6UPi7jRXxkf
- gbIZSVcs8YcgoXmCirMDfv+0XvFR6BRK3Ow09HL3m2NBjWN1j9RR4AZmnw2xtGEpcKfKdXW4oDMyOhtAhBQs7j4fE9cEzvEnBT/HA4rmDnz9ewKsqU4zK7I5
 
-On 10/23/26 03:15, Andrea della Porta wrote:
-> Hi,
-> 
-> This patch series adds fan tachometer / RPM monitoring support for the
-> Raspberry Pi RP1 southbridge found on the Raspberry Pi 5.
-> Please note that the patchset in [1] is a prerequisite for this one.
-> 
-> On the Raspberry Pi RP1, the active cooling fan speed is controlled via
-> the RP1 PWM controller. In addition to generating PWM signals, the RP1
-> monitors fan tachometer pulses. The pulse measurement and RPM calculation
-> are performed autonomously by the RP1's onboard Cortex-M microcontroller
-> core, which periodically writes the computed RPM value directly into
-> dedicated MMIO registers located within the RP1 PWM hardware block.
-> 
-> During earlier discussions, Uwe Kleine-König explicitly indicated a
-> preference to keep the core PWM controller driver (drivers/pwm/pwm-rp1.c)
-> focused strictly on PWM duties, rather than bloating it by registering an
-> hwmon device directly from within the PWM driver (see [2]).
-> 
-> Because the Linux PWM subsystem currently lacks a generic framework or
-> consumer API for reporting hardware-calculated tachometer readings, this
-> series implements a standalone hwmon driver (rp1-fan) using the following
-> structure:
-> 
-> -  The PWM driver exposes and exports rp1_pwm_read_tachometer() within a
->     dedicated symbol namespace ('RP1_PWM') to read the RPM value from
->     the MMIO block.
-> -  A companion DT binding (raspberrypi,rp1-fan.yaml) introduces a vendor
->     property, 'raspberrypi,pwm-tachometer', to link the fan node to the
->     PWM controller node without overloading or abusing the standard 'pwms'
->     property.
-> -  The rp1-fan hwmon driver parses this phandle, establishes a device link
->     for proper runtime and unbind dependency management, and registers the
->     standard hwmon 'fan1_input' sysfs attribute.
-> 
-> An alternative architectural approach to the DT phandle + exported helper
-> method would be to model the tachometer as a child device using the
-> auxiliary bus framework (drivers/base/auxiliary.c). In that model, the RP1
-> PWM driver would instantiate an auxiliary device for the tachometer, and
-> the hwmon driver would bind to that auxiliary bus device without requiring
-> a separate DT node.
-> 
-> However, adopting the auxiliary bus would require a more significant
-> rework and refactoring of the existing RP1 PWM driver.
-> 
-> I'd appreciate any feedback on whether the current companion driver with
-> a dedicated DT property is acceptable, or if an auxiliary bus-based
-> refactoring of the PWM driver is the preferred upstream path.
-> 
-> Patch Breakdown
-> ---------------
-> Patch 1: pwm: rp1: Export helper to read fan tachometer RPM
-> Patch 2: dt-bindings: hwmon: Add Raspberry Pi RP1 fan binding
-> Patch 3: hwmon: Add driver for Raspberry Pi RP1 fan tachometer
+atmel_pwm_calculate_cprd_and_pres() first multiplies the requested
+period by the clock rate in a u64 and only then divides by
+NSEC_PER_SEC. The product can overflow even when the quotient and the
+resulting hardware configuration are representable.
 
-This seems conceptually wrong.
+For example, at 12 MHz a 1600 s period has 19.2 billion clock cycles
+and fits with prescaler 3, but the intermediate product exceeds U64_MAX.
+It wraps and the driver programs a period of about 62.8 s instead. This
+remains broken after changing fls() to fls64(). The duty-cycle
+calculation has the same overflow.
 
-Have you considered implementing the hwmon driver as auxiliary driver
-and accessing the register in question through regmap ?
+Use mul_u64_u64_div_u64() for both conversions and use fls64() when
+deriving the prescaler. The multiply/divide result cannot overflow if
+the clock rate is at most NSEC_PER_SEC, so hold the clock rate exclusive
+and validate it at probe time.
 
-> Patch 4: arm64: dts: broadcom: bcm2712-rpi-5-b: Add RP1 fan tachometer node
-> 
-> Thanks,
-> Andrea
-> 
-> 
-> LINKS:
-> [1] - https://lore.kernel.org/all/cover.1790686331.git.andrea.porta@suse.com/
-> [2] - https://lore.kernel.org/all/adLTwOTbkJ0VQXy6@monoceros/
-> 
-> Andrea della Porta (4):
->    pwm: rp1: Export helper to read fan tachometer RPM
->    dt-bindings: hwmon: Add Raspberry Pi RP1 fan binding
->    hwmon: Add driver for Raspberry Pi RP1 fan tachometer
->    arm64: dts: broadcom: bcm2712-rpi-5-b: Add RP1 fan tachometer node
-> 
->   .../bindings/hwmon/raspberrypi,rp1-fan.yaml   |  39 +++++
->   Documentation/hwmon/index.rst                 |   1 +
->   Documentation/hwmon/rp1-fan.rst               |  41 ++++++
->   MAINTAINERS                                   |   1 +
->   .../boot/dts/broadcom/bcm2712-rpi-5-b.dts     |   5 +
->   drivers/hwmon/Kconfig                         |  11 ++
->   drivers/hwmon/Makefile                        |   1 +
->   drivers/hwmon/rp1-hwmon.c                     | 136 ++++++++++++++++++
->   drivers/pwm/pwm-rp1.c                         |  27 ++++
+The reverse conversion in atmel_pwm_get_state() can overflow too: it
+multiplies CPRD or CDTY by NSEC_PER_SEC and then shifts the u64 by the
+prescaler. Convert the scaled clock ticks with the overflow-safe,
+round-up helper instead. Explicitly saturate values that cannot be
+represented by the u64 nanosecond API, rather than relying on the
+architecture-specific helper's quotient-overflow behaviour.
 
-Either case, there is no such driver in mainline or linux-next.
+Fixes: a9d887dc1c60 ("pwm: Convert period and duty cycle to u64")
+Cc: stable@vger.kernel.org
+Reported-by: Uwe Kleine-König <ukleinek@kernel.org>
+Link: https://lore.kernel.org/r/atnHHaOwTkI78_tc@monoceros
+Suggested-by: Uwe Kleine-König <ukleinek@kernel.org>
+Assisted-by: LLM
+Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+---
+Changes in v3:
+- Use mul_u64_u64_div_u64() for the period conversion as suggested by
+  Uwe, and for the analogous duty-cycle conversion.
+- Fix the corresponding overflow in the get_state() conversion and
+  explicitly saturate results that cannot be represented in nanoseconds.
+- Hold the clock rate exclusive and validate the rate bound required by
+  the arithmetic.
+- Rebase onto v7.3-rc7.
 
-Guenter
+Testing:
+- Built an ARM zImage with clang 22.1.8 and W=1.
+- Passed 14 host boundary tests, 53 oracle-checked SAM9X75 QEMU boots,
+  and all 20 PWM device-model qtests.
+- Passed 89/89 checks on a physical SAM9X75, including overflow cases.
+  A 69.175-second period measured 69.210 seconds between interrupts; no
+  kernel errors were found.
 
->   include/soc/bcm2835/raspberrypi-pwm-rp1.h     |  10 ++
->   10 files changed, 272 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/hwmon/raspberrypi,rp1-fan.yaml
->   create mode 100644 Documentation/hwmon/rp1-fan.rst
->   create mode 100644 drivers/hwmon/rp1-hwmon.c
->   create mode 100644 include/soc/bcm2835/raspberrypi-pwm-rp1.h
-> 
+ drivers/pwm/pwm-atmel.c | 46 +++++++++++++++++++++++++++++------------
+ 1 file changed, 33 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 86918523d8..db7a14c66a 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -23,6 +23,7 @@
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
++#include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+@@ -183,19 +184,18 @@ static int atmel_pwm_calculate_cprd_and_pres(struct pwm_chip *chip,
+ 					     unsigned long *cprd, u32 *pres)
+ {
+ 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
+-	unsigned long long cycles = state->period;
++	unsigned long long cycles;
+ 	int shift;
+ 
+ 	/* Calculate the period cycles and prescale value */
+-	cycles *= clkrate;
+-	do_div(cycles, NSEC_PER_SEC);
++	cycles = mul_u64_u64_div_u64(state->period, clkrate, NSEC_PER_SEC);
+ 
+ 	/*
+ 	 * The register for the period length is cfg.period_bits bits wide.
+ 	 * So for each bit the number of clock cycles is wider divide the input
+ 	 * clock frequency by two using pres and shift cprd accordingly.
+ 	 */
+-	shift = fls(cycles) - atmel_pwm->data->cfg.period_bits;
++	shift = fls64(cycles) - atmel_pwm->data->cfg.period_bits;
+ 
+ 	if (shift > PWM_MAX_PRES) {
+ 		dev_err(pwmchip_parent(chip), "pres exceeds the maximum value\n");
+@@ -218,12 +218,23 @@ static void atmel_pwm_calculate_cdty(const struct pwm_state *state,
+ {
+ 	unsigned long long cycles = state->duty_cycle;
+ 
+-	cycles *= clkrate;
+-	do_div(cycles, NSEC_PER_SEC);
++	cycles = mul_u64_u64_div_u64(cycles, clkrate, NSEC_PER_SEC);
+ 	cycles >>= pres;
++
+ 	*cdty = cprd - cycles;
+ }
+ 
++static u64 atmel_pwm_ticks_to_ns(u64 ticks, unsigned long rate)
++{
++	u64 max_ticks;
++
++	max_ticks = mul_u64_u64_div_u64(U64_MAX, rate, NSEC_PER_SEC);
++	if (ticks > max_ticks)
++		return U64_MAX;
++
++	return mul_u64_u64_div_u64_roundup(ticks, NSEC_PER_SEC, rate);
++}
++
+ static void atmel_pwm_update_cdty(struct pwm_chip *chip, struct pwm_device *pwm,
+ 				  unsigned long cdty)
+ {
+@@ -352,24 +363,22 @@ static int atmel_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (sr & (1 << pwm->hwpwm)) {
+ 		unsigned long rate = clk_get_rate(atmel_pwm->clk);
+ 		u32 cdty, cprd, pres;
+-		u64 tmp;
++		u64 ticks;
+ 
+ 		pres = cmr & PWM_CMR_CPRE_MSK;
+ 
+ 		cprd = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
+ 					  atmel_pwm->data->regs.period);
+-		tmp = (u64)cprd * NSEC_PER_SEC;
+-		tmp <<= pres;
+-		state->period = DIV64_U64_ROUND_UP(tmp, rate);
++		ticks = (u64)cprd << pres;
++		state->period = atmel_pwm_ticks_to_ns(ticks, rate);
+ 
+ 		/* Wait for an updated duty_cycle queued in hardware */
+ 		atmel_pwm_wait_nonpending(atmel_pwm, pwm->hwpwm);
+ 
+ 		cdty = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
+ 					  atmel_pwm->data->regs.duty);
+-		tmp = (u64)(cprd - cdty) * NSEC_PER_SEC;
+-		tmp <<= pres;
+-		state->duty_cycle = DIV64_U64_ROUND_UP(tmp, rate);
++		ticks = (u64)(cprd - cdty) << pres;
++		state->duty_cycle = atmel_pwm_ticks_to_ns(ticks, rate);
+ 
+ 		state->enabled = true;
+ 	} else {
+@@ -487,6 +496,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct atmel_pwm_chip *atmel_pwm;
+ 	struct pwm_chip *chip;
++	unsigned long rate;
+ 	int ret;
+ 
+ 	chip = devm_pwmchip_alloc(&pdev->dev, 4, sizeof(*atmel_pwm));
+@@ -507,6 +517,16 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(atmel_pwm->clk),
+ 				     "failed to get prepared PWM clock\n");
+ 
++	ret = devm_clk_rate_exclusive_get(&pdev->dev, atmel_pwm->clk);
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret,
++				     "failed to get exclusive PWM clock rate\n");
++
++	rate = clk_get_rate(atmel_pwm->clk);
++	if (!rate || rate > NSEC_PER_SEC)
++		return dev_err_probe(&pdev->dev, -EINVAL,
++				     "invalid PWM clock rate %lu Hz\n", rate);
++
+ 	chip->ops = &atmel_pwm_ops;
+ 
+ 	ret = atmel_pwm_enable_clk_if_on(chip, true);
+
+base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
+-- 
+2.39.5 (Apple Git-154)
 
