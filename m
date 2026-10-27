@@ -1,87 +1,110 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.196.110
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793111852;
-	b=mpSLMC9Idkfs+De2vKmudos31/5fZn4VWdU4EWTKFF2Sr4h4k1ty4wXly5cl4cKLZV1b
-	 PhUTmKSR2u1qduFFDdY9Z/rJtJJyVs2W+kPg6N7G1mkdwpdxq2KUnhrV7AlbfgcSOKBbp
-	 t2FRp9IbvUqs4+Dhhb/HS/EcMSDA1vpto0BA0k22TWCp9VPjG+zzoLRL8l4S2KwXplfR/
-	 CKbfUq+h30CBUvz2ty/OjfFbDzuAahnyk7FmopxY6kpkpDOjXNR6umMxtlhnkF8aWOsAv
-	 OzlIihiY701NwNufHcseitMZuZhLb8ChNZZy0pgtU0obCj/zbioYZ5i7CHELEwqyCAQ==
+	t=1793112702;
+	b=E2GDXeS2/XJl8LJxPNNGZUWpf4/AKnRjf4JO9bkEZSgu9PrJmdcGn6FAigrMYSvgipAe
+	 WnLBlsekzAcf+aMJJsKQTVUkRHGFADsBAj7d0nbNGNpU3v8FMBNRWo1Y8uei4ez8lac79
+	 NkeC3nt623K4NGSpwJEUYNRFpFnFZwxtSWLlkN18EEfytpq6ArX9YU8Z7dtZcGi6uOZWn
+	 GgFNsCUdjhej2aaEG4foGXE39I4Zyc4dXvNdayqv9j2K5bNQo2mL37b8kn4rWgnTloArq
+	 +3Kz3+uCW+HC7bbNNISfASIwQR3J/RcQTyxogqayFh8ZI+kNrI3jJdgdwlZUGItellw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793111852;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=NMImbodtkJkJh1MOcuRbaVEWTAwXNEwUi7aWVqU7WBI=;
-	b=DMI/x/N+oYWmvlgQG628YQ8Lzg8mT4ygY3C7KxPf0eSC66A5eEgSP18XRGk1c0SsAm63
-	 sz7qxFK20B9OylEglUUyHmon/eab5XWodngwX9xpzpod9/3jYHL4wUTpPpWt3zwIO9gAB
-	 hHTF7q+rDToi2joLMtpg5+6Lo9qpSuoyxA8rBubsn7ZNSss3vIKJkmN5R0VmErZI2Y6SS
-	 5lDu8kvI0oumHSjb5Hq9Kmpvgs7QcXN4Qms22RvFRwgQ56qGidkHvSjou+3s/0UL8feZF
-	 VFNWQaTQjaPMggXnpED3anzh/hAp3zXzJLUenpCaLRq6Z0TjvCOv9KpcKbSHA9VYxrA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793112702;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 Content-Transfer-Encoding:Content-Type:Date:Message-Id:From:To:Cc:
+	 Subject:X-Mailer:References:In-Reply-To:X-ClientProxiedBy:
+	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=W0tAYPaDOA4f756PfZHjoOunZ++lQmvM3dsZP3bK4pQ=;
+	b=mcf5e7zP4W+bJKbMBYa99hGjR+F0+QkaRr3VvJxnkuZku+yRXDoPe6rP+UBbqJJOVLg7
+	 lbC29NxBd9LHWn32DILsuveOcZFK8VkWFHyl/rtFWt3oFE41mnj/+jNwN/mfzzefrKHiu
+	 PQtKKs8WjaJToKjBlmE6gH/qtKcT/tHDDqvtI3n5gALH4bapWBu0S8RpXo060HsJzTl52
+	 eq66nN/vSa+CC2ESEghJan+7+It1dRTkt+wbrYUsaFj+oBIruV0VC8YPcWelSAF0Rk1/9
+	 PUvcrGfolL29K3cglEmpFtFUIMP8in04Q8g2cJPpMnCyYRwpZYAYrBcj663cL7fXDXA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IyKQb0iy;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=garyguo.net;
+	spf=pass smtp.mailfrom=garyguo.net;
+	dkim=pass header.d=garyguo.net header.i=@garyguo.net header.a=rsa-sha256 header.s=selector1 header.b=iWv9x1NB;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.196.110
+Received: from LO3P265CU004.outbound.protection.outlook.com (mail-uksouthazon11020110.outbound.protection.outlook.com [52.101.196.110])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A953C606A31D;
-	Tue, 27 Oct 2026 14:37:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA606606A31A;
+	Tue, 27 Oct 2026 14:51:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EA606606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IyKQb0iy
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793111851;
-	b=AwXOdctHJXQ/oUR1JXMSuBVdwuyrK2qzpGNTK17R1AgtLDL4NXDiHesd8L8ELp1GeeFC
-	 FZ2/rHc4CbKxWXJzvgL6y3Cb9ftk6uD+iSsRbfVJqKIkk6wXz1MkagjXcsPijuDnYVBAp
-	 IwmLsy78Fz/NMooplVi3TnXst26xLEiaeGFHPvoVIfgW9Fs/O0FbhzPbgQ/WlP8A1ms6f
-	 jQZEtFaGsLAOyfSjprJeqWrLb6IYPq70wSd6tjQ8kCfg1CATNIU9NNX+jrm0j2y6pExdK
-	 MigPHD15XT4FfXb0B25QvL4jbJI1cdUUdRnJQZfra4gobRELpAX2wHtDpaskq/Fps4w==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793111851;
-	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=NMImbodtkJkJh1MOcuRbaVEWTAwXNEwUi7aWVqU7WBI=;
-	b=ELFbFwnYAnYXDERa7iyf0OCK708//rYBUAJIm9/BkpDriNmOs9N0gDAQEVTIvLN50ECE
-	 1L7TzzUMjf82dMN3oygrPDXuMBiHejesfZ8jZTekaBz0PfWuCpyVtv6uI9waqGUQwyzp6
-	 FM7aaTpjWs7XF3NWo1Th/dvGp+Jz5ZwM6MnO8nMARWyK+k9eDzgtHYHWFLvky487/3tld
-	 v7+TfZRR2mMv2OBWGrqXsmWdSL5e72xLDuvWiO+42nE+FfnLmwDjjM+kjipacVP3yfRGx
-	 U/nEz/qktU/7+rxjH6bWxNQuAiUP4D8+bqH1XRipn36enl+ne1oMqLOOtxOc9SAH0QQ==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=90.182.112.124
-Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id 3E5571F01829;
-	Tue, 27 Oct 2026 14:37:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793111851;
-	bh=NMImbodtkJkJh1MOcuRbaVEWTAwXNEwUi7aWVqU7WBI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=IyKQb0iyKSDfYMT0RltEAcUJLHPltJvuIiCZgOhJ++6cje0ODzwRSHnk6Lj5/bK+g
-	 +kV7CET6neNfrhn62LzWB0eZaxoQN2Dldn6bZAHhCu/674KufhHGBSvwFq8bF1kxRG
-	 nyDHAKv2acO9vdHRBi36hZPZH3IZdnsSQ2blpriwMv8kKwwC/LoCCtunogEmeu+aGX
-	 jQoWiugunmV2TgbVrdYysEJbXH4upWzT2yRSALOf0z2nSebI9rROxCpG53lszpVJwa
-	 M4/aTSZ+J4C0TFXfoh5KyExCIxs6Thb5SabTMXXeYL+7LOaH2jHtq3SWO7rmuWrMVU
-	 0cy+xrV6AS+Jw==
-Date: Tue, 27 Oct 2026 15:37:13 +0100
-From: Joshua Crofts <crofts@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Sergiu Cuciurean <sergiu.cuciurean@analog.com>, Jonathan Cameron
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?ISO-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: adc: add ltc2387 driver
-Message-ID: <20261027153713.000066ce@kernel.org>
-In-Reply-To: <20261027134409.76824-3-Nicolae-daniel.Deaconescu@analog.com>
-References: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
-	<20261027134409.76824-3-Nicolae-daniel.Deaconescu@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (1024-bit key, unprotected) header.d=garyguo.net header.i=@garyguo.net header.a=rsa-sha256 header.s=selector1 header.b=iWv9x1NB
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=lKDhRteJa7sXN1uXZ/fwYB3wxLEOznMWnvLKavl6ugWisX7nBD5jTj6M+sR7sMaUF+kZ215jLM23WGCNKvX4XyQXIRLwYXa3+Q89Uq9jKinWXyEb/6Xf4lOlCxWOJhDLchPQ/hoin9sRm0mUKZOMcVk+VgtcCfB43ymgqPbnj0DUrnWo5vQvCBH/ryQtHOViwE8WwY5/7ZQehVmkCWCS5qZxbRDInro21T1pxoCyCXqz19ARyiG4DGhxTk+0Z70qBcCuk/qp1JbVnYrxYbBaWHVk+/jEKLNKLGd5c0hz/RdRO4F7mQjQA0PBXJyWByZpRHTh+C3eEdk+NboKGbWzvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W0tAYPaDOA4f756PfZHjoOunZ++lQmvM3dsZP3bK4pQ=;
+ b=KLUA+rGJjZZ9yHPrSZy8pT+lsarOotfbQAF/Rfj5gdcrVMssEBDtmMTiOD6q2u+tfkCsD9XeRq+Xgg6JgIwDB7ihpgGOy3zEZWy+lrxifuCWZdKB8WLocBFYXd7kzOV8CplMvhnF9U5HwG3MDAkDDwQU/Yp8sC07c1dv9A8+97zo+2hqrRi2sjh1pr7MPuL1XOzWd1e3Y9wFLXtHGT66F2LkohCBJg3182hXOedr0Gzw+/Iq56MUOvCmI/RT+mBKjdrONiZH4Dhm63yHM1aTUOyiRTljyT54+oC8OudDhkK8mjhIuk5ICaDoqtcFXYytYgvzOjOd4/yw1zwcG+LNNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
+ dkim=pass header.d=garyguo.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W0tAYPaDOA4f756PfZHjoOunZ++lQmvM3dsZP3bK4pQ=;
+ b=iWv9x1NB2cqjb7vKnPd2exvfbKN1Xdu33WhnvQwDcXEYXpjskwXTi1+rj5z75yzNMrhOh8plX25hhyQ27cNUIqerpOJjssdbIaQN2U8LTiBrd3xtjKdCpa5DWFtXhSWEWdg7A5CScMGqCigXcrA8yu2dOco7Pc77m0/tgvQ2bzU=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=garyguo.net;
+Received: from CWLP265MB6051.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:1cb::9)
+ by LO3P265MB1961.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:bc::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Tue, 27 Oct
+ 2026 14:51:35 +0000
+Received: from CWLP265MB6051.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::55f6:f98b:7fad:c6e3]) by CWLP265MB6051.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::55f6:f98b:7fad:c6e3%2]) with mapi id 15.21.0546.021; Tue, 27 Oct 2026
+ 14:51:35 +0000
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 27 Oct 2026 22:51:15 +0800
+Message-Id: <DMFPE71J8205.3FZKD5BKW3U7C@garyguo.net>
+From: "Gary Guo" <gary@garyguo.net>
+To: "Guenter Roeck" <linux@roeck-us.net>, "Andrea della Porta"
+ <andrea.porta@suse.com>
+Cc: "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
+ <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "Florian
+ Fainelli" <florian.fainelli@broadcom.com>, "Broadcom internal kernel review
+ list" <bcm-kernel-feedback-list@broadcom.com>, "Jonathan Corbet"
+ <corbet@lwn.net>, "Shuah Khan" <skhan@linuxfoundation.org>, "Randy Dunlap"
+ <rdunlap@infradead.org>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, "Ray Jui" <rjui@broadcom.com>, "Scott Branden"
+ <sbranden@broadcom.com>, "Laurent Pinchart"
+ <laurent.pinchart@ideasonboard.com>, "Gregor Herburger"
+ <gregor.herburger@linutronix.de>, "Stanimir Varbanov" <svarbanov@suse.de>,
+ <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-rpi-kernel@lists.infradead.org>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+ <linux-doc@vger.kernel.org>, <linux-pwm@vger.kernel.org>, "Gary Guo"
+ <gary@garyguo.net>, "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH RFC 0/4] hwmon: Add fan tachometer support for Raspberry
+ Pi RP1
+X-Mailer: aerc 0.22.0
+References: <cover.1792748690.git.andrea.porta@suse.com>
+ <7df58d42-517c-4936-88b0-9d044d30882c@roeck-us.net>
+ <auBzvB8TsvIK8Hik@apocalypse>
+ <53a4b4bb-271c-4d2d-a9e4-cec4e0ce214b@roeck-us.net>
+In-Reply-To: <53a4b4bb-271c-4d2d-a9e4-cec4e0ce214b@roeck-us.net>
+X-ClientProxiedBy: TY6P301CA0007.JPNP301.PROD.OUTLOOK.COM
+ (2603:1096:405:3be::17) To CWLP265MB6051.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:400:1cb::9)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -91,483 +114,152 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CWLP265MB6051:EE_|LO3P265MB1961:EE_
+X-MS-Office365-Filtering-Correlation-Id: 54fb2695-c3d5-4e74-dcf7-08df3439cbfc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|366016|23010399003|10070799003|376014|1800799024|18002099003|22082099003|261026140227099003|261021121427099003|56012099006|4143699003|10067099003|261021123027099003|261009223027099003|261022105027099003|261026121527099003|260925021911599003|260925022911599003|260925021311599003;
+X-Microsoft-Antispam-Message-Info:
+	maYIBDOfQfFGMxIM5Irf4+rEPPxj7BXTbLUoyn+css2gqcvevKbYZPhbd/RzPbno567Y/Rl3Mu1WQG/6h1bhb+Jn8el2mhgigBUQXpXcRBw5YLZ4aBR5XFSMF8/oZL4W38ovSOgMGyGwtgBy5usNgesZeBzJJPODUZjBGfpM3xIf6czXfz861a8udpzjouMLy/q9wQYYIJ7CpJ0Ldf6K1QV7CWnoJmEV/3rIeFQFaXpdGCsiTICLNQuoPn+i2vpO8gqiOgWh21YVIljCDPdDLv+nPzJP8omqjN5fGrN9QpmHYsjkhNaqEED3smvTj+kQ8KugCANu612EQxokPSF9Fm41q8kwjOTpTJyub1XBWG9HxAXZjbb32SJmCCGiUbxx1aGvV7gk6ATuNe3SgO6J/tBORaA8jqHjOGKs1fe9AYHdDq7yeDK3rBQk3IpNrG0mkHbD2Yy57FPQuYQx1mEwvb10HhP0c9LIMwYG25/8AAzIStdh75BkAYsSM01dekrScm61rj/7mkWjEmVsrBdz2YCPbx9X5wENK7YxeYKkSRAWINwpCvZUlT6Lj7CVx55qrt4LfEp4FxARpdlc8t5/jP2FrJdyD/XfxWUlGBQ11mNrDICj8Ot6D0DTY8QiA63A
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP265MB6051.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(7416014)(366016)(23010399003)(10070799003)(376014)(1800799024)(18002099003)(22082099003)(261026140227099003)(261021121427099003)(56012099006)(4143699003)(10067099003)(261021123027099003)(261009223027099003)(261022105027099003)(261026121527099003)(260925021911599003)(260925022911599003)(260925021311599003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?T0JVWUx2RlJGY251djdNckY2b1M1ZUk0SjlSSWVyVzBRRUlwdDJaYzBIZFJU?=
+ =?utf-8?B?RllDZ3d0a3Y3ZE9rUnJROTFKUGVJczFoRHk2N1F3L1ltZ0w3OWQ1d00vbk12?=
+ =?utf-8?B?T0RmVUU3aHJBRFhpWlBVU1dtMTdBbElJVHpkWHMvd0I0L3RmVXp6eUV1L2V0?=
+ =?utf-8?B?M0RBZTlRcTlkb1dTVkhuajFuUloveWZublNxZGs5K09MbVBGTVhPZTdkTVhk?=
+ =?utf-8?B?dGxwK0lTek50cFZqZVA1dHA5VzFTNG85TmswSjl5bEdsM3pRT3puR3UxRDZz?=
+ =?utf-8?B?NnFKaDNJN0RYQW4wSEVwdDVWQy9NY1I2Qk1ZUHI1QUdJWU5nMi8yRXVBNE54?=
+ =?utf-8?B?ZzdLd3I3ZTI0dm94dWRuUTJVdGtZWWN1QTBaZjZJSWxMZ0hEbGdoSkhnQVZI?=
+ =?utf-8?B?RTJFRzFtdCtaSHVVeFdPS0dwbzFFM0YyZHoybTVwV3ZLQWxNb3RWSElqY2lZ?=
+ =?utf-8?B?ZjJ5Vy9QWFNvejBCbnZia1FhZkgzZEttVnphSnhZekFmVkQvRGt3YzhrZUIz?=
+ =?utf-8?B?NVEzbEpJcG0zcTIyYUdjSjFyUGNpTzlBeTlXZnRuaE0zK2RObEI1bnFVN2da?=
+ =?utf-8?B?Z3UySEtpQjlCZW5xU0tpNE04bDdvSmkyTXdod25TUGlwSFpEUTZ5aU1IQTRR?=
+ =?utf-8?B?RjRxcFJyWjJiSUtVdEEzYSsyalliMGllRGYrUVVmUXNNVWN6OWpnUlNyQmVy?=
+ =?utf-8?B?MkVXaDRUemVtN2MrTUhxRDZrNXgvc0pqamREQk1YQVh0RlVlemVGbllJaVZL?=
+ =?utf-8?B?blA0KzNZNzliNTFyZUxpd3J2RnMzTFV0bXQxZHEvYzVrekhPV1JOM0NxS3Fy?=
+ =?utf-8?B?T0lhcFZydUFrOHA3Yk5neExlak5zdzd4NG5KSU9sS0N2WWttcEpLeUwzN05F?=
+ =?utf-8?B?RS85N0lDclZkRDBaMWJRZTR1QVE2NzNpWDR0ZEYvT3FFaC9lYjRPekw4S1Va?=
+ =?utf-8?B?UjlzZUtPaFArZVVqZnlvSEF1UTg3M1JXUnFVM3YwRTM2VlBjRWZVTnM0QThm?=
+ =?utf-8?B?R1VDTWd6YnptQmNWQzJjWXZTYnN5NmpqMCsyampBYXRCZ3RzZzMwa0EyYnpT?=
+ =?utf-8?B?aUVrV01ZdEcxbE05aWVzSlZDd21GRVpCc3A3d000TERneHByVlJJdllGcnBL?=
+ =?utf-8?B?Ry8xTStZTTQrWEp2MUhjU1Z2MUtsaGJwcWlRUlFBRG92Qy9mY0NLeEVXeVlK?=
+ =?utf-8?B?K0dJTU82TWttcyt0ZTdEaElkOGxhV1RreVI3NGtHRG9RNHZ3MUJRYTdUU0dB?=
+ =?utf-8?B?Sjh4cWZNT0I1Q2FmRjlUa3dTZ0ZEQmlZRTQwZVJ3ZmFBTzI0dGVXODZSbTlE?=
+ =?utf-8?B?RmxUZVR5WmxGaFozYmRNUEJZejluZjFKNFZvbzM5MWdFdkY3TEkwRThuR1VC?=
+ =?utf-8?B?bjJKc3JiZmxiQ1NVSlVnTzdKZmR2ZVNrclNuOVpvTUF3V2pJQ1Nyelc1Z0NB?=
+ =?utf-8?B?RklLSnVmYXhtTks1WlNaUUl0T3JKT3FDVmd4a1ZoZ29ibFZ4Qm44bkF3cmdQ?=
+ =?utf-8?B?OHorbXl6Nm9NaDV5ZDJUbUhsMlE3eitnVldHQzUzejNwU29YUXBlTENzeUcw?=
+ =?utf-8?B?endVeVlsRStyN2MwSU1PTTkvUzBueXgyaWFwTk9BdU5YUUNLSmFpNXV0Qy9h?=
+ =?utf-8?B?bXBBeW9SN05ZOFZaWHJMR2RXRkhJcXpxYjFoT0JlRXlXM2xnbFJBWmhyMlFG?=
+ =?utf-8?B?bUoyRmNMRlFLNFZuUzE5c1B6SGNOWUxMbTVkVGljelJ5THgvK0JLRHpsblZC?=
+ =?utf-8?B?TDdFTFRTRFVNU1R2Y3FtWlc0RFZmcmdaS3NTYjcyOTRNbTJWL1RKci9VbTJO?=
+ =?utf-8?B?bUZXS010QXlOYi8wd3F1UVhOcE1TVVZWMUZYajhZOVVlckhDcXB6L2djTmhX?=
+ =?utf-8?B?bHR3K2JLWWV1L2Q0VW1TekNlZk14MUFNaUhNMnd0cHU3d0FuUndLQ3BlN3U3?=
+ =?utf-8?B?UGhpVHc4TVpkaTBVRlNlbkcxNjN2d3VFMmwwSkhXcXFEdFNFN3UzNHhNY2xE?=
+ =?utf-8?B?and3blZvSEUrc0pqejlKcWJldG05L0NQRE1QTTRzQ2Z3MTRvNnNJWklDdXlh?=
+ =?utf-8?B?TW80LzZQdXNlZ09OMTllS0xtNEpyRVNMOU9wN2JpWnZRS1dmektSbk9UQjE2?=
+ =?utf-8?B?QklIalo3c0tkczNPWHFzK2VDZU90Q1RSQ0JmUlpRNTV2T0NPTFBTbkxxbnV2?=
+ =?utf-8?B?VVJVYlhWVjNtSDhqeGhWVExrOG9pdFlRUUpQalc2MFFLRkExd1NhdjJienJN?=
+ =?utf-8?B?aG1ISDNlTDZ2OVg1UXk5RkkzMUM2eGNIS3RZZXFMMFNuQzNRVld5dTg1aUR2?=
+ =?utf-8?B?UGZkQkpLS3g4eTlkWWl0Nzg2ZXBKaDVjb3ZUYVVnRzlRdjhMS0pIa3k5SzB3?=
+ =?utf-8?Q?+qpSlrfEfBnvQH2gRWSaMMWkXoR6VoBoRFcqv?=
+X-OriginatorOrg: garyguo.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54fb2695-c3d5-4e74-dcf7-08df3439cbfc
+X-MS-Exchange-CrossTenant-AuthSource: CWLP265MB6051.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2026 14:51:35.3511
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6yc9wjNsAOubu3nRK7HzqJLoNdm2s3mjDDJ43sxPofnXPx6rHZXb0zWLBCxgh53wz8ecN4DD4JI7iuBXXFfxtQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO3P265MB1961
 
-On Tue, 27 Oct 2026 15:44:09 +0200
-Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com> wrote:
+On Tue Oct 27, 2026 at 9:48 PM CST, Guenter Roeck wrote:
+> On Tue, Oct 27, 2026 at 10:49:48AM +0100, Andrea della Porta wrote:
+>> Hi Guenter,
+>>=20
+>> Yes, I also proposed that in the cover letter because auxbus seems also =
+a viable
+>> solution.
+>>=20
+>> The current implementation is a consequence to the discussion about the =
+companion
+>> PWM driver, from here (and the revisions that followed):
+>>=20
+>> https://lore.kernel.org/all/cover.1775223441.git.andrea.porta@suse.com/
+>>=20
+>> To give a short and hopefully coherent view of the decisions, here's a b=
+reakdown:
+>>=20
+>> - first proposal: PWM driver + fan hwmon (to read the RPM), all in the s=
+ame driver
+>>=20
+>> - V2: Uwe preferred to split the PWM driver from the hwmon one, so the h=
+wmon was
+>>   dropped from teh PWM driver in favor of a future (fan) driver. To acco=
+mplish this,
+>>   I moved from readl/writel to regmap + syscon.
+>>=20
+>> - V8: Gary proposed to export a function to read the fan RPM as a viable
+>>   solution. As a result, the regmap/syscon was dropped as it was no long=
+er needed
+>>   and the function has been exported from the PWM driver
+>>=20
+>> - new patchset for fan driver: the now independent hwmon moodle just cal=
+l the
+>>   exported function from thw PWM driver.
+>>=20
+>> If the auxiliary bus is indeed the preferred approach, I'd like to ensur=
+e we are
+>> all aligned, as this would also require refactoring the PWM driver.
+>>=20
+>
+> Let's say it that way: If you don't want to implement the auxiliary drive=
+r,
+> and you insist using the exported function, I would prefer for you to go =
+back
+> to the first solution. The one thing I really dislike is conceptually bro=
+ken
+> code, and I consider the current approach broken. Your call, but the one =
+thing
+> I won't accept is the code with the exported function.
 
-> From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
->=20
-> Add a driver for the LTC2387-16/18 and the ADAQ23875/23876/23878.
+I agree on the auxiliary driver part. However, I don't think EXPORT_SYMBOL_=
+NS is
+an issue, and regmap is not the right fit here:
 
-Hi, some comments from me. Additionally, please check out what
-Sashiko says:
+- Previous version of the PWM1 patch series publish regmap using
+  of_syscon_register_regmap, but this cannot be undone -- which needs to ha=
+ppen
+  on PWM device unbind (the RP1 PWM device is itself platform device, but R=
+P1
+  chip itself is PCIe device which must be removable).
 
-https://sashiko.dev/#/patchset/20261027134409.76824-1-Nicolae-daniel.Deacon=
-escu%40analog.com
+- The tachometer register is not its own separate register, but rather (re)=
+using
+  the phase control register. The phase control is not implemented in the R=
+P1
+  PWM driver on the list yet, so this is currently a simple register read -=
+- I
+  can see that RP1 PWM driver need to take special care to about the tachom=
+eter
+  reading if the phase control is implemented.
 
+  For the two reasons above, I think the way that tachometer is read should
+  really be an implementation detail of the PWM driver and not for the hwmo=
+n
+  driver to worry about, so I suggested using EXPORT_SYMBOL_NS.
 
-> The driver generates CNV and the gated data clock with two PWM
-> channels, timed against the reference clock to meet t_FIRSTCLK, and
-> gets sample data through the IIO backend framework from the AXI ADC
-> core. It supports one-lane and two-lane output and reports the
-> sampling frequency the PWMs produce after rounding to whole reference
-> clock cycles. in_voltage_scale is referred to the analog input, so on
-> the ADAQ parts it is divided by the front-end gain.
->=20
-> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> Co-developed-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@ana=
-log.com>
-> Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analo=
-g.com>
-> Assisted-by: Claude:claude-opus-5-5
+- EXPORT_SYMBOL_NS is the documented way for exposing functionality from pa=
+rent
+  device to auxiliary drivers: https://docs.kernel.org/driver-api/auxiliary=
+_bus.html
 
-Drop this tag, it has been deprecated.
+Best,
+Gary
 
-> diff --git a/drivers/iio/adc/ltc2387.c b/drivers/iio/adc/ltc2387.c
-> new file mode 100644
-> index 000000000000..c236b99baa4a
-> --- /dev/null
-> +++ b/drivers/iio/adc/ltc2387.c
-> @@ -0,0 +1,482 @@
-> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-> +/*
-> + * Linear Technology LTC2387 ADC driver
-> + *
-> + * Copyright 2022 - 2026 Analog Devices Inc.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/iio/backend.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-
-Better to have the iio specific headers separately after the generic
-linux headers.
-
-> +#include <linux/kernel.h>
-
-No, do not use this header for new drivers. Use the IWYU principle when
-deciding what to include.
-
-> +#include <linux/math64.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/property.h>
-> +#include <linux/pwm.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/mod_devicetable.h>
-
-Drop this header, it's included by platform_device.h
-
-+ you're missing additional headers, e.g. types.h
-
-> +
-> +#define LTC2387_VREF		4096
-> +#define LTC2387_T_CNVH		8
-> +
-> +/*
-> + * Minimal value for t_{FIRSTCLK} according to
-> + * https://www.analog.com/media/en/technical-documentation/data-sheets/2=
-38718fa.pdf
-> + * is 65 ns. Add some slack because there is some rounding involved in t=
-he PWM
-> + * driver. With the PWM driver rounding to the nearest possible value, t=
-argeting
-> + * 70 ns works for input clk rates >=3D 100 MHz.
-> + */
-> +#define LTC2387_T_FIRSTCLK_NS	70
-> +
-> +#define KHz 1000
-
-We have units.h for this.
-
-> +#define MHz (1000 * KHz)
-> +
-> +#define LTC2378_MULTIPLE_CHAN(_idx, _storagebits, _realbits, _shift)	\
-> +	{								\
-> +		.type =3D IIO_VOLTAGE,					\
-> +		.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),\
-> +		.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),\
-> +		.indexed =3D 1,						\
-> +		.channel =3D _idx,					\
-> +		.scan_index =3D _idx,					\
-> +		.scan_type =3D {						\
-> +			.sign =3D 's',					\
-> +			.storagebits =3D _storagebits,			\
-> +			.realbits =3D _realbits,				\
-> +			.shift =3D _shift,				\
-> +		},							\
-> +	}
-> +
-
-...
-
-> +struct ltc2387_dev {
-> +	const struct ltc2387_info *device_info;
-> +	enum ltc2387_lane_modes lane_mode;
-> +	unsigned long ref_clk_rate;
-> +	struct iio_backend *back;
-> +	struct pwm_device *clk_gate;
-> +	struct regulator *vref;
-> +	struct pwm_device *cnv;
-> +	struct clk *ref_clk;
-> +
-> +	unsigned int vref_mv;
-
-_mV
-
-> +	u32 sampling_freq;
-> +	u32 gain_milli;
-> +};
-> +
-> +static int ltc2387_set_sampling_freq(struct ltc2387_dev *ltc, int freq)
-> +{
-> +	unsigned long long ref_clk_period_ns;
-> +	struct pwm_waveform clk_gate_wf =3D { }, cnv_wf =3D { };
-
-Reverse xmas tree please.
-
-> +	unsigned long long period_cycles;
-> +	int ret, clk_en_time;
-> +	u32 rem;
-> +
-> +	if (freq <=3D 0 || freq > ltc->ref_clk_rate)
-> +		return -EINVAL;
-> +
-> +	ref_clk_period_ns =3D DIV_ROUND_UP(NSEC_PER_SEC, ltc->ref_clk_rate);
-> +
-> +	cnv_wf.duty_length_ns =3D ref_clk_period_ns;
-> +
-> +	/*
-> +	 * The goal here is that the PWM is configured with a minimal period not
-> +	 * less than 1 / freq (with freq measured in Hz).
-> +	 *
-> +	 * When a period P (measured in ns) is passed to pwm_apply_state(), the
-> +	 * actually implemented period is:
-> +	 *
-> +	 *      round_down(P * R / NSEC_PER_SEC) / R
-> +	 *
-> +	 * (measured in s) with R =3D ltc->ref_clk_rate. So we have:
-> +	 *
-> +	 *        round_down(P * R / NSEC_PER_SEC) / R =E2=89=A5 1 / freq
-> +	 *      =E2=9F=BA round_down(P * R / NSEC_PER_SEC) =E2=89=A5 R / freq
-
-Ehhh, not really sure about these non-standard characters in the comments.
-Had to check lore to see what this renders to. Wouldn't it be easier to use
-a trigraph <=3D>? Same for the digraph stuff you have.
-
-> +	 *
-> +	 * With the LHS being integer this is equivalent to:
-> +	 *
-> +	 *        round_down(P * R / NSEC_PER_SEC) =E2=89=A5 round_up(R / freq)
-> +	 *      =E2=9F=BA P * R / NSEC_PER_SEC =E2=89=A5 round_up(R / freq)
-> +	 *      =E2=9F=BA P =E2=89=A5 round_up(R / freq) * NSEC_PER_SEC / R
-> +	 */
-> +
-> +	cnv_wf.period_length_ns =3D
-> +		div_u64_rem((u64)DIV_ROUND_UP(ltc->ref_clk_rate, freq) * NSEC_PER_SEC,
-> +			    ltc->ref_clk_rate, &rem);
-> +	if (rem)
-> +		cnv_wf.period_length_ns +=3D 1;
-> +
-> +	/* Gate the active period of the clock (see page 10-13 for both LTC's) =
-*/
-> +	if (ltc->lane_mode =3D=3D TWO_LANES)
-> +		clk_en_time =3D DIV_ROUND_UP_ULL(ltc->device_info->resolution, 4);
-> +	else
-> +		clk_en_time =3D DIV_ROUND_UP_ULL(ltc->device_info->resolution, 2);
-> +
-> +	clk_gate_wf.duty_length_ns =3D ref_clk_period_ns * clk_en_time;
-> +	clk_gate_wf.duty_offset_ns =3D LTC2387_T_FIRSTCLK_NS;
-> +
-> +	if (cnv_wf.period_length_ns < clk_gate_wf.duty_length_ns)
-> +		cnv_wf.period_length_ns =3D clk_gate_wf.duty_length_ns + ref_clk_perio=
-d_ns;
-> +
-> +	clk_gate_wf.period_length_ns =3D cnv_wf.period_length_ns;
-> +
-> +	if (clk_gate_wf.duty_offset_ns >=3D clk_gate_wf.period_length_ns)
-> +		div64_u64_rem(clk_gate_wf.duty_offset_ns,
-> +			      clk_gate_wf.period_length_ns,
-> +			      &clk_gate_wf.duty_offset_ns);
-> +
-> +	ret =3D pwm_set_waveform_might_sleep(ltc->cnv, &cnv_wf, false);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret =3D pwm_set_waveform_might_sleep(ltc->clk_gate, &clk_gate_wf, false=
-);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	period_cycles =3D mul_u64_u32_div(cnv_wf.period_length_ns,
-> +					ltc->ref_clk_rate, NSEC_PER_SEC);
-> +	if (!period_cycles)
-> +		return -EINVAL;
-> +
-> +	ltc->sampling_freq =3D DIV_ROUND_CLOSEST_ULL(ltc->ref_clk_rate,
-> +						   period_cycles);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ltc2387_setup(struct iio_dev *indio_dev)
-> +{
-> +	struct ltc2387_dev *ltc =3D iio_priv(indio_dev);
-> +	struct device *dev =3D indio_dev->dev.parent;
-> +
-> +	if (device_property_present(dev, "adi,use-two-lanes"))
-> +		ltc->lane_mode =3D TWO_LANES;
-> +
-> +	return ltc2387_set_sampling_freq(ltc, 15 * MHz);
-> +}
-> +
-> +static int ltc2387_read_raw(struct iio_dev *indio_dev,
-> +			    const struct iio_chan_spec *chan,
-> +			    int *val, int *val2, long info)
-> +{
-> +	struct ltc2387_dev *ltc =3D iio_priv(indio_dev);
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val =3D ltc->sampling_freq;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* Referred to the SMA input, so divided by the front-end gain. */
-> +		*val =3D ltc->vref_mv * 2 * 1000;
-
-vref_mv * 2 * MILLI;
-
-> +		*val2 =3D ltc->gain_milli << chan->scan_type.realbits;
-> +		return IIO_VAL_FRACTIONAL;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ltc2387_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long info)
-> +{
-> +	struct ltc2387_dev *ltc =3D iio_priv(indio_dev);
-> +
-
-Probably add a mutex here to protect writing, ideally in guard() form.
-
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		return ltc2387_set_sampling_freq(ltc, val);
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static void ltc2387_pwm_disable(void *data)
-> +{
-> +	pwm_disable(data);
-> +}
-> +
-> +static void ltc2387_regulator_disable(void *data)
-> +{
-> +	regulator_disable(data);
-> +}
-> +
-> +static void ltc2387_clk_disable(void *data)
-> +{
-> +	clk_disable_unprepare(data);
-> +}
-> +
-> +static const struct iio_info ltc2387_info =3D {
-> +	.read_raw =3D ltc2387_read_raw,
-> +	.write_raw =3D ltc2387_write_raw,
-> +};
-> +
-> +static const struct of_device_id ltc2387_of_match[] =3D {
-> +	{
-> +		.compatible =3D "lltc,ltc2387-16",
-> +		.data =3D &ltc2387_infos[ID_LTC2387_16]
-> +	}, {
-> +		.compatible =3D "lltc,ltc2387-16-x4",
-> +		.data =3D &ltc2387_infos[ID_LTC2387_16_X4]
-> +	}, {
-> +		.compatible =3D "lltc,ltc2387-18",
-> +		.data =3D &ltc2387_infos[ID_LTC2387_18]
-> +	}, {
-> +		.compatible =3D "lltc,ltc2387-18-x4",
-> +		.data =3D &ltc2387_infos[ID_LTC2387_18_X4]
-> +	}, {
-> +		.compatible =3D "adi,adaq23875",
-> +		.data =3D &ltc2387_infos[ID_ADAQ23875]
-> +	}, {
-> +		.compatible =3D "adi,adaq23876",
-> +		.data =3D &ltc2387_infos[ID_ADAQ23876]
-> +	}, {
-> +		.compatible =3D "adi,adaq23878",
-> +		.data =3D &ltc2387_infos[ID_ADAQ23878]
-> +	},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, ltc2387_of_match);
-
-Have the device tables after the probe() function.
-
-> +
-> +static int ltc2387_probe(struct platform_device *pdev)
-> +{
-> +	struct iio_dev			*indio_dev;
-> +	struct ltc2387_dev		*ltc;
-> +	int				ret;
-
-Maybe unify the style you define variables? (aligned vs. non-aligned).
-
-> +
-> +	indio_dev =3D devm_iio_device_alloc(&pdev->dev, sizeof(*ltc));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	ltc =3D iio_priv(indio_dev);
-> +
-> +	ltc->vref =3D devm_regulator_get_optional(&pdev->dev, "vref");
-> +	if (!IS_ERR(ltc->vref)) {
-> +		ret =3D regulator_enable(ltc->vref);
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "Can't enable vref regulator\n");
-
-dev_err_probe() instead of dev_err()
-
-> +			return ret;
-> +		}
-> +		ret =3D regulator_get_voltage(ltc->vref);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		ltc->vref_mv =3D ret / 1000;
-
-ret / (MICRO / MILLI)
-
-> +		ret =3D devm_add_action_or_reset(&pdev->dev,
-> +					       ltc2387_regulator_disable,
-> +					       ltc->vref);
-> +		if (ret)
-> +			return ret;
-> +	} else {
-> +		if (PTR_ERR(ltc->vref) !=3D -ENODEV)
-> +			return PTR_ERR(ltc->vref);
-> +
-> +		ltc->vref_mv =3D LTC2387_VREF; /* Internal vref is used */
-> +	}
-> +
-> +	ltc->ref_clk =3D devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(ltc->ref_clk))
-> +		return PTR_ERR(ltc->ref_clk);
-> +
-> +	ret =3D clk_prepare_enable(ltc->ref_clk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret =3D devm_add_action_or_reset(&pdev->dev, ltc2387_clk_disable,
-> +				       ltc->ref_clk);
-> +	if (ret)
-> +		return ret;
-
-+ blank line.
-
-> +	ltc->ref_clk_rate =3D clk_get_rate(ltc->ref_clk);
-> +
-> +	ltc->clk_gate =3D devm_pwm_get(&pdev->dev, "clk_gate");
-> +	if (IS_ERR(ltc->clk_gate))
-> +		return PTR_ERR(ltc->clk_gate);
-> +
-> +	ret =3D devm_add_action_or_reset(&pdev->dev, ltc2387_pwm_disable,
-> +				       ltc->clk_gate);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ltc->cnv =3D devm_pwm_get(&pdev->dev, "cnv");
-> +	if (IS_ERR(ltc->cnv))
-> +		return PTR_ERR(ltc->cnv);
-> +
-> +	ret =3D devm_add_action_or_reset(&pdev->dev, ltc2387_pwm_disable,
-> +				       ltc->cnv);
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	ltc->device_info =3D device_get_match_data(&pdev->dev);
-> +	if (!ltc->device_info)
-> +		return -EINVAL;
-
-return -ENODATA;
-
-> +
-> +	ltc->gain_milli =3D ltc->device_info->default_gain_milli;
-> +	device_property_read_u32(&pdev->dev, "adi,gain-milli", &ltc->gain_milli=
-);
-> +	if (!ltc->gain_milli)
-> +		return dev_err_probe(&pdev->dev, -EINVAL,
-> +				     "adi,gain-milli must be nonzero\n");
-> +
-> +	indio_dev->channels =3D ltc->device_info->channels;
-> +	indio_dev->num_channels =3D ltc->device_info->num_channels;
-> +	indio_dev->dev.parent =3D &pdev->dev;
-> +	indio_dev->name =3D ltc->device_info->name;
-> +	indio_dev->info =3D &ltc2387_info;
-> +
-> +	ltc->back =3D devm_iio_backend_get(&pdev->dev, NULL);
-> +	if (IS_ERR(ltc->back))
-> +		return dev_err_probe(&pdev->dev, PTR_ERR(ltc->back),
-> +				     "failed to get IIO backend\n");
-> +
-> +	ret =3D devm_iio_backend_request_buffer(&pdev->dev, ltc->back, indio_de=
-v);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret =3D devm_iio_backend_enable(&pdev->dev, ltc->back);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* axi_ltc2387 has a single capture channel carrying every scan element=
-. */
-> +	ret =3D iio_backend_chan_enable(ltc->back, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret =3D ltc2387_setup(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "\nltc2387 setup failed\n");
-
-Why the additional \n at the beginning.
-> +		return ret;
-> +	}
-> +
-> +	return devm_iio_device_register(&pdev->dev, indio_dev);
-> +}
-> +
-> +static struct platform_driver ltc2387_driver =3D {
-> +	.probe          =3D ltc2387_probe,
-> +	.driver         =3D {
-> +		.name   =3D "ltc2387",
-> +		.of_match_table =3D ltc2387_of_match,
-> +	},
-> +};
-> +module_platform_driver(ltc2387_driver);
-> +
-> +MODULE_AUTHOR("Sergiu Cuciurean <sergiu.cuciurean@analog.com>");
-> +MODULE_DESCRIPTION("Linear Technology LTC2387 ADC");
-
-The description should be the same as what's in the Kconfig tristate entry.
-
-> +MODULE_LICENSE("Dual BSD/GPL");
-> +MODULE_IMPORT_NS("IIO_BACKEND");
-
-
-
---=20
-Kind regards,
-Joshua Crofts
