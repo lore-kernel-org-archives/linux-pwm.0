@@ -1,38 +1,38 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.39.247.168
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1793088220;
-	b=NA7INKZ9t/P7/uqHhK6bV729tinOq1o+w59+PdERExZ7XsNu7UXGCpcEfkz02/ZXx3UR
-	 cSXc6lOKCFiTlXLMlghtjhlG+Ezai5vMCdp7CNH5VCjhFe2u94+K5HscA8l45xxBYwpU6
-	 5AhQkT1Gknz8hK8cY0zDU0w91ePVamsSiZsPxq7ZySXJueMyprXOs+5y+Jjj1afgC/zrv
-	 vUzuXar8aWlx+jBl3ifal5LSalFRRJKDOkuXDsJzHHhxUDo1uMC5ZTxCpAa8leW5AlYmi
-	 I5rkwD2INCu/08wi0x+RsjRvZJ6sftDpDRracz6jGe3ux64eGMtZJ0TDsXjmqpH3DBA==
+	b=h0EXtVwpx9UCQHWBHFiVEwvWczYLkWYAxO79GD87MjeroySsVBDabSrowkYTNcSdC1DE
+	 PC9GZi2aTcyruxytsHPKRQboa7xYOT6Sks9umYeno5nFbaH5sJZ9mcLRNxDkWRLLxBNBD
+	 2T7SWJKKQdr8DsUWBc2yBav4i5OlEfkUcffUk7RKBJ1+ucNtsBP5HKrSQ/M+uS4sQg6f9
+	 EX0P2JlEa+a+F9B515p5jHodgPoPGbXWVZa5d+0vkjoprhwMDoXk7ZJQ36ugjSgkB+wbI
+	 pQ97iU1Gu8m/C1qHP0G9hlC9cn6ELsdApCj4EmH6jTsnMCCff5d9FteGdwqgKyuwQVg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793088220;
 	h=DMARC-Filter:From:DKIM-Signature:Date:Subject:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc;
-	bh=c7x3BJ6jlesjIm6zIfL80Mk7VDOu/GvYzZE/1SSRn+g=;
-	b=eSsdBSOoFTVfYBhBWUPfQP59wtaVCt+D1x8gjMS6NJ2iou4XTaBtdiIstiJKqI7nyNMb
-	 N7aqTnU4lcrVWogp3S9QltXI5jBWyGI/5j5HJ0VVHpmm+nfoXz9htl4yT8ydB/nkKDhyr
-	 Yr9kiG1k3/lj6og4zhIy2BuNZD/vTfyyqIFaPbWuh/rrMy7gBadl1UqZoKLDKexW4+GDz
-	 uUNMutpl/19P+kKWJHm2fn84hRhB6Tv9HcLHFZNxXJvlgJxr87nEEdqTmad7Mn77r+D98
-	 h/eNffhc+m2hM3ve6hiPnPRV2ojY4tH9KiYEAqLlvqOdgSXlCP3SqQsTppg1s0YkiDw==
+	bh=s+K8NyCu+xAAM0MSCNFGH1id4owFp+f6RDQzhLFB72I=;
+	b=HwPP75c2IEjIByk8GbO2UUW2XE2VaQqKW93cgwZ1RkLy/yju7kPXIyckj1iXBxLFlD4X
+	 pkYGuAy8vYv9/pWGrs0mAQQmFeY3Z2I1ACUSqkrb3pPRh1Alt7gPaDkL1EztMPzaU4c6P
+	 htAQ7SKxanEGiM7MpJGFKSlwwamqBO7w795zAeWCbaae6Qydji6QxNaIvBzackc9mSs68
+	 hs7x2PlNJtF84ywcf/rc7sBTsx4imSxGL6cX5yQUMGtChKYZMise5g2R68LsujgRkwOBK
+	 8fckNMaklJF40GGijriM06GnGB40pa0ZrqD1F0+52ap6DjcxjgYL71d4pfzJy1WEEsg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=cyberchaos.dev;
 	spf=pass smtp.mailfrom=cyberchaos.dev;
-	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=upMebKaJ;
+	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=gspxbl9o;
 	arc=none smtp.remote-ip=195.39.247.168
 Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5127060A260A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 505BE60A2609;
 	Tue, 27 Oct 2026 08:03:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5127060A260A
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 505BE60A2609
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=upMebKaJ
+	dkim=pass (1024-bit key, unprotected) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=gspxbl9o
 From: Yureka Lilian <yureka@cyberchaos.dev>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
 	s=mail; t=1793088214;
@@ -40,13 +40,12 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=c7x3BJ6jlesjIm6zIfL80Mk7VDOu/GvYzZE/1SSRn+g=;
-	b=upMebKaJKW+tF/NpJ6u3Ifuw3BYG8mi9BNULoWUytrDcSHUQ2+FzroDxY/NbGWw5uQEv0p
-	Of56kx3Q75KsEQwn41qnH/70HBZaUzEflsQ8bL2aHoWxp7QtOEkWTQJ84xPMx/ip8W3ztv
-	4f9MHnXBHDvCulJuN0s8Yhs4HgDFIXg=
-Date: Tue, 27 Oct 2026 09:03:27 +0100
-Subject: [PATCH 07/10] dt-bindings: pinctrl: apple,pinctrl: Add t8142
- compatible
+	bh=s+K8NyCu+xAAM0MSCNFGH1id4owFp+f6RDQzhLFB72I=;
+	b=gspxbl9oSXOyEPw+2xqiQJ2MtZli5Ne5dG0dWhEF/DdKfasU+mvusZNaZ/KS4LeiQ1sesl
+	Qllr+dGyVX7Rxsu8Z507py97eP5HMWiPTCa5K9ZI3o6VAzDeN1WGx/SbLH0Ly3lmfrtYyM
+	N0TNdViKmcLv6vv9ftiXXClJinCmTc0=
+Date: Tue, 27 Oct 2026 09:03:28 +0100
+Subject: [PATCH 08/10] dt-bindings: i2c: apple,i2c: Add t8142 compatible
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -58,7 +57,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261027-apple-m5-initial-devicetrees-v1-7-1356181bc50d@cyberchaos.dev>
+Message-Id: <20261027-apple-m5-initial-devicetrees-v1-8-1356181bc50d@cyberchaos.dev>
 References: <20261027-apple-m5-initial-devicetrees-v1-0-1356181bc50d@cyberchaos.dev>
 In-Reply-To: <20261027-apple-m5-initial-devicetrees-v1-0-1356181bc50d@cyberchaos.dev>
 To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
@@ -77,27 +76,25 @@ Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
  Yureka Lilian <yureka@cyberchaos.dev>
 
-The pin controller on the Apple Silicon T8142 (M5) SoCs is compatible
-with t8140. Add "apple,t8142-pinctrl" as SoC specific compatible under
-"apple,t8140-pinctrl".
+The i2c block on the Apple Silicon T8142 (M5) SoC is compatible with
+t8103. Add "apple,t8142-i2c" as SoC specific compatible under
+"apple,t8103-i2c".
 
 Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
 ---
- Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/i2c/apple,i2c.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-index 0984e4e58af3..a4a15b117035 100644
---- a/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-@@ -17,6 +17,9 @@ description: |
- properties:
-   compatible:
-     oneOf:
-+      - items:
-+          - const: apple,t8142-pinctrl
-+          - const: apple,t8140-pinctrl
-       - const: apple,t8140-pinctrl
+diff --git a/Documentation/devicetree/bindings/i2c/apple,i2c.yaml b/Documentation/devicetree/bindings/i2c/apple,i2c.yaml
+index b817a8f0a9df..e7ed1efb7b64 100644
+--- a/Documentation/devicetree/bindings/i2c/apple,i2c.yaml
++++ b/Documentation/devicetree/bindings/i2c/apple,i2c.yaml
+@@ -30,6 +30,7 @@ properties:
+               - apple,t8122-i2c
+               - apple,t8132-i2c
+               - apple,t8140-i2c
++              - apple,t8142-i2c
+           - const: apple,t8103-i2c
        - items:
            - enum:
 
