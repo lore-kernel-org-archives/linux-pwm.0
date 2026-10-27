@@ -1,54 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793123588;
-	b=Py97XjF3AGCmCEASvFgiDLLzUTHa6EX2pKXo/tsKbWR52a41WxA8jk5CRcP3LlPGyr1s
-	 RuGSRgoxPc63aDnOf8n5+MpWi8qHO1x4eILYeVUVdD+u7IWQT7eDDWUebUy9ZQGO7vXp2
-	 fLjxY7PnK+ZhI5L2mj7Xy7ycPrUHgd3hsKfzi59PyXDg5pnHaOEMZkbkDGvkvLce4SjGX
-	 PkOM7sF+spP0ws/BjuefHco5KdmAl+7Z4nPcUvZggP97CXVmBv5foDUcHHXOHrSx14jeQ
-	 ghiTeUQK7pPGRDWJkBvIWiMpFyeBNC8Ke9raqV0kM+gxQiyyq8/gS+Y1ifFCBJuEwMw==
+	t=1793125720;
+	b=W0Mm20OYiDNJQGh76wSogPsSrVprYyPOTTk47UL13MB4arnXkdCxJSb4ZgNKz//tYQBQ
+	 d5rtoyDN/TnWioyyJmp5PwH525bLSGu4jOVP5FQUg4xvw/w/SaDmgjR1dVUMxrWTXM8n/
+	 RdGmaGeMDAe+wc1XEftKCIWBsTBYqKpEqxE6+uUJrCNC5exby8xtLs+2U3TpHqIFRlwsk
+	 3a9AEexIQaCnn0+33O5EIBZJ8lNbX7w+ifaiVoK2n6QM2DuuD2cnOR94EaoWJfrN7waXg
+	 sGnbfZgkNcx1HvQ8daDixHOw/YyB8tRij7ZBXI4Xw3FJjkSLpMrREZ9REOeqEhee1NA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793123588;
-	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:Mime-Version:
-	 Content-Type:Date:Message-Id:Cc:Subject:From:To:X-Mailer:References:
-	 In-Reply-To:X-Last-TLS-Session-Version;
-	bh=b3m0F+WvDuJINnJ7GkvHTx0Xqp13L22xT4XAuXwi3ok=;
-	b=BQSP931tJhBnHbimsuZITLwGdrx6xr733rztaeSbGVTEdPAq8u155Y2eE9C8Gf5zfnU9
-	 NVVeqClPB1Qs7HiazY+aYEk5tmsQMeMd8pCsutf0yGHKhzq9IlXx7zPZwnFrTfqjykn4B
-	 6MeEnEE6/XOWOHUaiJq9/CXdf1i365FYvI7eh9E2b3VlENsER+6D02VaEmsaDdR009bvv
-	 iaXygzuwUbCOj+/dWE+hTDOJijTAAMpR+53Wwvk84j0TWyALfPLBMUFkG+YLA07MyvxrV
-	 0o212GxkS5awS5s9NSGbZuhLRMU+GQb1je8VOtSaLRZl+qnhHLvdq0AgEuHHKTK9GTw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793125720;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=qmTkjhfRVZXBH3VauU4MsoTCHvTi7jHmC9yQvfjqtMk=;
+	b=lkDim+1s1fiXJVRH6ekxO7zbZ/58ZHENqpVWUrXnA2XmcFPZnWaODvgo2LbNDzlGQi/Z
+	 EGKTEzo/0TQczBNv50Ed5XL+cx7IjsoinDM7FhN1HN4/rJYb94MWKnPids6NaV6Jf0dcI
+	 vherwUiPwEL2HhB5uH5vQlW6EwHFGrxawQ/Iq55Id+WI2FpJs9T9JKzW/jk3LatvCG4tJ
+	 +bBUPKJe8xFFzkZJ9JFKFqpYOTeIGRI3pS5D9CZ2tloNHuogB85+9n64P4Wxp7gqsXhyq
+	 8nWaXw3CMIf1YX8GqIWhrbkQ7rI1U8xge4mpp0cBGMlzGGTrRlCxttgRCSadNtozYvA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=bootlin.com;
-	spf=pass smtp.mailfrom=bootlin.com;
-	dkim=pass header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=k8I5eHhx;
-	arc=none smtp.remote-ip=185.171.202.116
-Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UJr+iHiI;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E06D4606A31F;
-	Tue, 27 Oct 2026 17:53:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E06D4606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 339EB606A31A;
+	Tue, 27 Oct 2026 18:28:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=k8I5eHhx
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-04.galae.net (Postfix) with ESMTPS id 99088C79AB6;
-	Tue, 27 Oct 2026 17:54:04 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id D887E603BD;
-	Tue, 27 Oct 2026 17:53:02 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id D509F1032907F;
-	Tue, 27 Oct 2026 18:52:53 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1793123577; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=b3m0F+WvDuJINnJ7GkvHTx0Xqp13L22xT4XAuXwi3ok=;
-	b=k8I5eHhxIwSbD6Mv8BfBl1QaWaWFOcWbwTOqJSkQth16cxa936Hx52QgdUzyWJQ/n4kcur
-	gJCY4sONExuYE9K4z0oRam20yS+jp/5YKoHVUN6g83mEYG44G8++o1o4nS6vXj9PDqR6eT
-	ClVhpeXa+9EjzvZo5+U0kX6pqJ0tLR73RaUPQNuXg+L+v9JBqYt1ZsbmJNNpfhY36NFrau
-	jKOoMOJi5lfBwp1fEFfHqRNneSv67OdGGLpuQ3lH/t7Q5IvvQXqRNtBGDCkfF+ZEQYOpHi
-	HEEp2Psgk5Q1qN0kdCLBpjYNUtYrSY1MKjh4Pe1EOWXZN82n3JfBWYcF6xwmFg==
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UJr+iHiI
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C201F01825;
+	Tue, 27 Oct 2026 18:28:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793125719;
+	bh=qmTkjhfRVZXBH3VauU4MsoTCHvTi7jHmC9yQvfjqtMk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=UJr+iHiIfOZ7o5mFrf4QdKdBqCq5SUsq48wJw1mpVi3v4Klbu5UKZiA2xajQRk610
+	 DUldXfqm5y5X6yLyvtKR9DpfkgrloEGtS7dJg9A1w3F21tCVlSg+BmL/ukkpVryAjM
+	 pOQotDbtzy1QPpPzAELFTsDFgo4Rt+FYW9LxuzykHOUKMUL7uZxnakMpp13+auwV5G
+	 cuNmxW9oN+KhuB+9d6OG5XLVEj901Vt75Gjjs8Ifuu9aLMCtvjFlfxdpoP5nGpgaFM
+	 u0dTgv0Bo+mv4ExDjGYgKRKkgTq8F9Fqhn89la/8sRA0dncqxwv2zmk8RCq5t5hGXd
+	 KyJhQYazeyN4w==
+Date: Tue, 27 Oct 2026 18:28:34 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+Cc: Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
+Message-ID: <20261027-attic-collector-cb4ffdb5cf82@spud>
+References: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
+ <20261027134409.76824-2-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -57,188 +64,253 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0
-Content-Type: multipart/signed;
- boundary=466219900224659f40c92d0c0f2d2ecfa86efcc1b91140ad1780941a0644;
- micalg=pgp-sha512; protocol="application/pgp-signature"
-Date: Tue, 27 Oct 2026 18:52:48 +0100
-Message-Id: <DMFT97DWMREU.2S2E4MOTT54I7@bootlin.com>
-Cc: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, "Rob Herring"
- <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
- Dooley" <conor+dt@kernel.org>, "Chen Wang" <unicorn_wang@outlook.com>,
- "Inochi Amaoto" <inochiama@gmail.com>, "Thomas Petazzoni"
- <thomas.petazzoni@bootlin.com>, =?utf-8?q?Miqu=C3=A8l_Raynal?=
- <miquel.raynal@bootlin.com>, <linux-pwm@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <sophgo@lists.linux.dev>,
- <linux-kernel@vger.kernel.org>, "Jingbao Qiu" <qiujingbao.dlmu@gmail.com>,
- "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v8 0/2] riscv: pwm: sophgo: add pwm support for CV1800
-From: "Thomas Bonnefille" <thomas.bonnefille@bootlin.com>
-To: "Hiago De Franco" <hfranco@baylibre.com>, "Thomas Bonnefille"
- <thomas.bonnefille@bootlin.com>
-X-Mailer: aerc 0.22.0-0-gc2f86b7abde3
-References: <20250509-pwm_sophgo-v8-0-cfaebeb8ee17@bootlin.com>
- <auCsaQt0kda01tZ4@hiagonb>
-In-Reply-To: <auCsaQt0kda01tZ4@hiagonb>
-X-Last-TLS-Session-Version: TLSv1.3
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="kalH6PIzx3Y4bVJp"
+Content-Disposition: inline
+In-Reply-To: <20261027134409.76824-2-Nicolae-daniel.Deaconescu@analog.com>
 
---466219900224659f40c92d0c0f2d2ecfa86efcc1b91140ad1780941a0644
+--kalH6PIzx3Y4bVJp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
 
-Hello !
+On Tue, Oct 27, 2026 at 03:44:08PM +0200, Nicolae-Daniel Deaconescu wrote:
+> From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+>=20
+> Add bindings for the LTC2387-16 and LTC2387-18, 15 Msps SAR ADCs with
+> an LVDS data interface, and for the ADAQ23875, ADAQ23876 and ADAQ23878
+> uModule ADCs, which pair an LTC2387 die with a fully differential
+> amplifier front end.
+>=20
+> Conversion start (CNV) and the gated LVDS clock are driven by two PWM
+> channels. Sample data is captured by an AXI ADC IP core, referenced
+> through io-backends. adi,use-two-lanes selects two-lane output, and
+> adi,gain-milli gives the front-end gain: fixed at 2 on the ADAQ23875,
+> set by pin strapping on the ADAQ23876 and ADAQ23878.
+>=20
+> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+> Co-developed-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@ana=
+log.com>
+> Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analo=
+g.com>
+> Assisted-by: Claude:claude-opus-5-5
+> ---
+>  .../bindings/iio/adc/lltc,ltc2387.yaml        | 138 ++++++++++++++++++
+>  MAINTAINERS                                   |   8 +
+>  2 files changed, 146 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/lltc,ltc238=
+7.yaml
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml =
+b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
+> new file mode 100644
+> index 000000000000..f912260c8f79
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
+> @@ -0,0 +1,138 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright 2022 Analog Devices Inc.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/lltc,ltc2387.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Linear Technology / Analog Devices LTC2387 ADC
+> +
+> +maintainers:
+> +  - Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+> +  - Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+> +
+> +description: |
+> +  The LTC2387-18 is a low noise, high speed, 18-bit 15Msps
+> +  successive approximation register (SAR) ADC ideally
+> +  suited for a wide range of applications.
+> +
+> +  https://www.analog.com/media/en/technical-documentation/data-sheets/23=
+8718fa.pdf
+> +  https://www.analog.com/media/en/technical-documentation/data-sheets/23=
+8716f.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,adaq23875
+> +      - adi,adaq23876
+> +      - adi,adaq23878
+> +      - lltc,ltc2387-16
+> +      - lltc,ltc2387-16-x4
+> +      - lltc,ltc2387-18
+> +      - lltc,ltc2387-18-x4
 
-> On Fri, May 09, 2025 at 11:45:42AM +0200, Thomas Bonnefille wrote:
->> The Sophgo CV1800 chip provides a set of four independent
->> PWM channel outputs.
->> This series adds PWM controller support for Sophgo cv1800.
->>=20
->> Signed-off-by: Jingbao Qiu <qiujingbao.dlmu@gmail.com>
->> [Thomas since v8]
->> Signed-off-by: Thomas Bonnefille <thomas.bonnefille@bootlin.com>
->
-> I see this series is abandoned. I worked on a patch to enable PWM for
-> cv1800b reusing pwm-sophgo-sg2042.c driver [1], as Uwe asked.
->
-> Is it ok if I take over this patch?
->
-> If yes, I will wait v7.4-rc1 and send the new series.
-
-Yes of course go ahead, I already worked on something like this but never
-had the time to send it :
-https://github.com/Taumille/linux/commits/b4/pwm_sophgo/
-
-Best regards,
-Thomas
-
-> [1] https://github.com/hiagofranco/linux/tree/v7.3-milkv-duo-pwm
->
->> ---
->> Changes in v8:
->> - Rewrote supported frequency
->> - Hardcoded HLPERIOD_BASE and PERIDO_BASE
->> - Change usage of update_bits to set/clear bits when needed
->> - Rewrote construct of enablement of PWM
->> - Fixed OE activation
->> - Fixed hw state modification in case where pwm value cannot be reached
->> - Renamed variables
->> - Errors out for new cases
->> - Reworded some comments
->>=20
->> v7: https://lore.kernel.org/linux-pwm/20240501083242.773305-1-qiujingbao=
-.dlmu@gmail.com/
->>=20
->> Changes in v7:
->> - add detailed Limitations
->> - using BIT(n) instead BIT(0) << n
->> - use 0 instead of disable macro
->> - modify OE judgment criteria
->> - add devm_regmap_init_mmio error message
->> - delete unused variable
->>=20
->> v6: https://lore.kernel.org/all/20240406063413.3334639-1-qiujingbao.dlmu=
-@gmail.com/
->>=20
->> Changes in v6:
->> - delete the OE function because we plan to use the counter subsystem
->>   instead of capture, so there is no need to reuse this code.
->> - fix set polarity reverse error.
->>=20
->> v5: https://lore.kernel.org/all/20240314100131.323540-1-qiujingbao.dlmu@=
-gmail.com/
->>=20
->> Changes in v5:
->> - drop filename
->> - fix macro
->> - optimize cv1800_pwm_set_polarity()
->> - optimize cv1800_pwm_set_oe()
->> - add comment for cv1800_pwm_set_oe()
->> - use ticks replace tem
->> - fix duty_cycle larger than period_val
->> - use devm_clk_rate_exclusive_get() replace
->>   clk_rate_exclusive_get()
->> - map linux polarity to register polarity=20
->>=20
->> v4: https://lore.kernel.org/all/20240304085933.1246964-1-qiujingbao.dlmu=
-@gmail.com/
->>=20
->> datasheet Link: https://github.com/milkv-duo/duo-files/blob/main/duo/dat=
-asheet/CV1800B-CV1801B-Preliminary-Datasheet-full-en.pdf
->> page 614
->>=20
->> Changes in v4:
->> - use macro instead of npwm number
->> - add support for polarity feature
->> - add support for Output-Enable/OE feature
->>=20
->> v3: https://lore.kernel.org/all/20240223082014.109385-1-qiujingbao.dlmu@=
-gmail.com/
->>=20
->> Changes in v3:
->> - use 0x08 instead of macro
->> - split if statements based on conditions
->> - in order to round up, first calculate the
->>   number of high-level cycles, then subtract
->>   it from the PERIOD to obtain the number of HLPERIOD
->> - use new pwmchip_alloc() API instead of old style
->>=20
->> v2: https://lore.kernel.org/all/20240212121729.1086718-1-qiujingbao.dlmu=
-@gmail.com/
->>=20
->> Changes in v2:
->> - drop full stop from subject
->> - re-order maintainers and description
->> - pass checkpatch.pl --strict
->> - fix naming errors
->> - add "Limitations" section
->> - use a driver specific prefix for all defines
->> - using bool instead u32 in cv1800_pwm_enable
->> - check and set state->polarity
->> - use mul_u64_u64_div_u64
->> - use clk_rate_exclusive_get(), balance with clk_rate_exclusive_put()
->> - using macro definitions instead of shift operations
->> - remove shift operation on 0
->> - use priv replace cv_pwm
->> - hardcode npwm
->> - set atomic to true
->> - remove MODULE_ALIAS
->>=20
->> v1: https://lore.kernel.org/all/20240207055856.672184-1-qiujingbao.dlmu@=
-gmail.com/
->>=20
->> ---
->> Jingbao Qiu (2):
->>       dt-bindings: pwm: sophgo: add pwm for Sophgo CV1800 series SoC
->>       pwm: sophgo: add pwm support for Sophgo CV1800 SoC
->>=20
->>  .../devicetree/bindings/pwm/sophgo,cv1800-pwm.yaml |  45 ++++
->>  drivers/pwm/Kconfig                                |  10 +
->>  drivers/pwm/Makefile                               |   1 +
->>  drivers/pwm/pwm-cv1800.c                           | 294 ++++++++++++++=
-+++++++
->>  4 files changed, 350 insertions(+)
->> ---
->> base-commit: 0af2f6be1b4281385b618cb86ad946eded089ac8
->> change-id: 20250407-pwm_sophgo-5032b3858c27
->>=20
->> Best regards,
->> --=20
->> Thomas Bonnefille <thomas.bonnefille@bootlin.com>
->>=20
->
-> Best regards,
+Why are we getting new devices with linear vendor prefixes? My
+understanding was that new devices from ADI subsidiaries were to use the
+adi vendor prefix.
 
 
+> +
+> +  clocks:
+> +    description: Sampling clock
+> +    maxItems: 1
+> +
+> +  pwms:
+> +    maxItems: 2
+> +    description:
+> +      PWM signals used to synchronize the sampling procedure
+> +
+> +  pwm-names:
+> +    items:
+> +      - const: cnv
+> +      - const: clk_gate
 
---466219900224659f40c92d0c0f2d2ecfa86efcc1b91140ad1780941a0644
-Content-Type: application/pgp-signature; name="signature.asc"
+Hmm, ltc2387-16 does not appear to have these signals?
+Well, it has "cnv" but "cnv" has "sample clock" as the input name so is
+the clocks property above and pwm-clock can be used if the provider is a
+pwm?
+
+Either there's some mutual exclusion missing here or the modelling in
+incorrect.
+
+"clk_gate" doesn't appear in either of the datasheets I looked at, what
+does that actually do?
+
+pw-bot: changes-requested
+
+> +
+> +  io-backends:
+> +    description:
+> +      The AXI ADC IP block (axi_ltc2387) that captures the LVDS data str=
+eam.
+> +    maxItems: 1
+> +
+> +  vref-supply:
+> +    description:
+> +      External voltage reference. When absent the device's internal 4.09=
+6 V
+> +      reference is assumed.
+> +
+> +  adi,use-two-lanes:
+> +    description: The device uses two lanes for data transfer
+> +    type: boolean
+
+Please explain how this is not determinable from the compatible.
+
+Cheers,
+Conor.
+
+> +
+> +  adi,gain-milli:
+> +    description:
+> +      Gain of the fully-differential amplifier that the ADAQ2387x modules
+> +      integrate ahead of the LTC2387 die, expressed as gain * 1000. It is
+> +      fixed on the ADAQ23875 and set by pin strapping on the ADAQ23876 a=
+nd
+> +      ADAQ23878, so it must match the board. The bare ltc2387-* parts ha=
+ve
+> +      no amplifier.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [370, 730, 870, 1380, 2000, 2250]
+> +
+> +required:
+> +  - compatible
+> +  - clocks
+> +  - io-backends
+> +  - pwms
+> +  - pwm-names
+> +
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - lltc,ltc2387-16
+> +              - lltc,ltc2387-16-x4
+> +              - lltc,ltc2387-18
+> +              - lltc,ltc2387-18-x4
+> +    then:
+> +      properties:
+> +        adi,gain-milli: false
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: adi,adaq23875
+> +    then:
+> +      properties:
+> +        adi,gain-milli:
+> +          const: 2000
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - adi,adaq23876
+> +              - adi,adaq23878
+> +    then:
+> +      properties:
+> +        adi,gain-milli:
+> +          enum: [370, 730, 870, 1380, 2250]
+> +      required:
+> +        - adi,gain-milli
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    adc {
+> +            compatible =3D "lltc,ltc2387-16";
+> +            clocks =3D <&clk 0>;
+> +            io-backends =3D <&axi_adc>;
+> +            pwms =3D <&pwm 0 0>, <&pwm 1 0>;
+> +            pwm-names =3D "cnv", "clk_gate";
+> +            vref-supply =3D <&vref>;
+> +    };
+> +  - |
+> +    adc {
+> +            compatible =3D "adi,adaq23878";
+> +            clocks =3D <&clk 0>;
+> +            io-backends =3D <&axi_adc>;
+> +            pwms =3D <&pwm 0 0>, <&pwm 1 0>;
+> +            pwm-names =3D "cnv", "clk_gate";
+> +            vref-supply =3D <&vref>;
+> +            adi,use-two-lanes;
+> +            adi,gain-milli =3D <870>;
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 52024397dc78..b871d7f25d76 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15529,6 +15529,14 @@ W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+>  F:	drivers/iio/adc/ltc2378.c
+> =20
+> +LTC2387 IIO ADC DRIVER
+> +M:	Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+> +M:	Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Supported
+> +W:	https://ez.analog.com/linux-software-drivers
+> +F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
+> +
+>  LTC2664 IIO DAC DRIVER
+>  M:	Michael Hennerich <michael.hennerich@analog.com>
+>  M:	Kim Seer Paller <kimseer.paller@analog.com>
+> --=20
+> 2.34.1
+>=20
+
+--kalH6PIzx3Y4bVJp
+Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQTQT2V0EKPIM2RnVpHcsfBJI7PEOgUCauDk8AAKCRDcsfBJI7PE
-OgofAQDybuOAzQehyj4uWoDlxxAhJvgAFUSOFKewcZ3kbWlx/QEAv1EmaRDiVfoW
-l/I1vmcaueNFxv6Vc3wZOvObW7w9zQM=
-=5e20
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauDtUgAKCRB4tDGHoIJi
+0mhqAP412YGM8tjEuoPHIpRc3MotpTsdTFAtTjKi6T98iyNx6QEAp/G1BrLrISod
+4STFsH+BlH9SpK8CcvKlU77TLfLSVgk=
+=TQny
 -----END PGP SIGNATURE-----
 
---466219900224659f40c92d0c0f2d2ecfa86efcc1b91140ad1780941a0644--
+--kalH6PIzx3Y4bVJp--
