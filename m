@@ -1,108 +1,107 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793108690;
-	b=abEsj9g0YiU/X9Ol2K6THiMFvy/uDChbwkldJKRNOxjezTzia/LD46omcBwDIGq3MTeU
-	 9NO4OlL/KqtMveeJf/6yyMSLgfQ14jtKxTx2i26to7QuZzq2kBT1+kIuhIN0+2jc2dJDN
-	 LJt+PLkA4m6oGSWJVYHX5IMy0632rd2gIedS/HtlITjr8tIzUr+MPF4vlx+4n+MEYkccm
-	 5jcBGfJQ5uxCXm/U4olb13vSFIfxJ5rZ6GuJq1RsyE2RcuV6RxBjGk2Mh0QRgwICg6Rlz
-	 L1CkmrLhOn8JuC1HxIy2uM9PfrRSm2+NEJj8HYPxHcpvhlgQCsDh7g7Uu+cf5TJ+aVQ==
+	t=1793108688;
+	b=PNqLUmC7iCYuFdDUrTxKJIP4IejPVXBRs3Oz48wGvukUFTfpxsUU3s3XyDiIM0TJh/v5
+	 b5+Map2Ih9FLgCNf3+xyHT4QEUwOzuxLdu1ZXCEHaDPubznYTSqWhAJ5qD3XDxbT1xbIj
+	 U91d16P6vZUTYbeyN9/uhdZIo5eGUmdFmXLQyFpb13UMZhiLSOPK+ZyY8zjb4uouLLutP
+	 nh+nM3P+xs+FNs+jk731HRbezOOuefQzuYv1GnDSLSNCyV5QinycGXTBdWDsGZ9vw2GHO
+	 qk0K1utTcEHRD3pmrZ716Zcw9tlwGDomtYuKx4lABwEG7vWFswHVmMCe/YBIx7MfujA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793108690;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793108688;
 	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
+	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding:
+	 Content-Type:X-ADIRuleOP-NewSCL:X-Authority-Analysis:
 	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-GUID:X-Authority-Analysis:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=7iG2dAXaCmn3nofuG3SiIR/ELKN4rErCeOd4ojR6DRc=;
-	b=3K4ha+oaO28ALz12LMQCw1Zb70ekVRaq6nd78XskjRbJJ9jsSSkhCN967oYOInGc6V+0
-	 oRQVO0g7/FrpO+GdkqXKixwM9aQZmbFKNHRvM9iUgmCt7nfdmoCa82oDxSMekQHs0kHJd
-	 u7yFvM0e6OBTFZay8bKyxnssUAgPo8SBTpyG+3ZoaexQr2a0yWvs54HGWqlju850Fx/Kg
-	 EMo7TSGTphmp9555K/ZAdA+n+ModXSVINl15XHWyAKiG+ose8YIyRgMlJ97xnD1t8JfJF
-	 V4EKPvC503UCe1zpN6FDrBGeb04XvcSGtwCs6MtQOCdsOUzcMLz5lX9rCnyMK/Oqv4g==
+	 X-Proofpoint-GUID:X-Proofpoint-Spam-Info:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=FSelX1DXeZ34wltl4hnyDZJzfe3lOpYTnObA/WQbkb8=;
+	b=i/Z2E2kcEmYfO4810kGqHORB/PgjbJjGpdLSI6//xSJGeeKHsNnpBk+uI86fCttYOfyW
+	 VcGbvQknHBNsATyVF6KLsV9wynOtQ8LOWFK6eFVF5OQ9VJ8OsQwdvxSanZJMLQRQy3MBk
+	 Vm0NdbPs2ZUmy4fhlusASXYFOX0E4fCQkpf3KbOHgh492Rbd4oJtEBQHyeJYyUvw3lPGu
+	 7GQ4xQ6MCJTSaXFoVbj/rkbDhHi/Ox8x+fCH7QMU302T5nGdtJWQPaY7Z9HI3RFnSYBQ4
+	 vSIAwNhKuYfXHauQJ4nt9PnvLiaImsqc9F274m/W1JAcJiKwS10Cuhh7xLPCOZkG++w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=analog.com;
 	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=VHVTTKQv;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=0sU8x4p8;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=aiS21hNN;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=1EIUXxKs;
 	arc=none smtp.remote-ip=148.163.135.77
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1DEF606A32F;
-	Tue, 27 Oct 2026 13:44:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D1DEF606A32F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1442A606A31B;
+	Tue, 27 Oct 2026 13:44:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1442A606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=VHVTTKQv;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=0sU8x4p8
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69RBinTj3119842;
-	Tue, 27 Oct 2026 09:44:41 -0400
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=aiS21hNN;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=1EIUXxKs
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69RDRKRW490055;
+	Tue, 27 Oct 2026 09:44:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=7iG2dAXaCmn3nofuG3SiIR/ELKN4rErCeOd4ojR6DRc=; b=VHVTTKQ
-	vmMrTSenr0qnwCw042wIrzvAWQ1r2odxvqKACw58RXZ68g2EMp6oyTug9sqf5UwZ
-	IThtQynAG84G+oEEx49BWWtY0ikcR2uYohx1NaA6qlF27bBMnP7DRbWjoQmNPz5P
-	DAWhVJjMi162wedSrPbW0BVnQWjRhHo9xNhX5zXF+8W3nSDFnjxL01gk9+e9VKwm
-	zJTpwvczkWiOJtnogynJTauDdM1QXgg0SO5NQsj0hBsTLKN1Gd5CIc5THIx8btrz
-	KrkOjdf80LLu4O6EJW70IWEPgBg5Lb4b39YcZjecOD2uatTZxTzincSdIRjHaWTb
-	jSS9utTaUyJZI2g==
+	:message-id:mime-version:subject:to; s=DKIM; bh=FSelX1DXeZ34wltl
+	4hnyDZJzfe3lOpYTnObA/WQbkb8=; b=aiS21hNN1WAW85VGOMlc4aYX/8TZ0NIB
+	hqSPv/glSTffbXxVUgoT0zqpjmQbu5ncdiXe0HxFpOIA3emnoMCQXw2H/5lv/Ksx
+	wbWUm9rxyHv3FPMNuaI9Unr0OJQ0nmwHCBYDgE1h6Fz65FsWlAPwN151NGuN4dro
+	yLqgZR2ap8wn6BRNhi3TmXqCjPzQSaalEUT4WT0eppVvet+93DjP+rYo9MSvXvTD
+	34xxDJgBMnkkisdWLSQa9Qp6TIEUeqEnl3sh+Cn3ktTdeWMbUQ83kK375xlIEg/9
+	oy4xPMIsz7bUwJBemgomtFQU3lw17GCKbqxNwSfV1lB74sH4/3Gxww==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=7iG2d
-	AXaCmn3nofuG3SiIR/ELKN4rErCeOd4ojR6DRc=; b=0sU8x4p84nFIaZO0SsEC/
-	W+ZSvBbtNvdLA8uVJRzr3d7r4tDvy2szGOn41sCqeSoZfb//uVPa1b78VLxJEdvg
-	sAgHBCuig3m6g5U9e/PUkgOmdeP0iHJtizvdp5gNERHzKOE2PRBBKeqQFWp7k2LC
-	AH3F9+u91tQGE/ibXUOXTBwcWrTd7+nII81Pu4J9yJKLOQ6l5qmhvyYUbOk8aWWc
-	fnMtQZt+c5jb4mvtFHd4yOcX4rJXSfPxGL4dTx1615iJRxiAt5JkxZacaz6yA22E
-	q08Zed6UmFG2E6zwbFAbP3TpUbUNf6+xNNbo3xSdZ9vKl/beICODLajo8t6nufdo
-	w==
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=FSelX1DXeZ34wltl4hnyDZJzfe3
+	lOpYTnObA/WQbkb8=; b=1EIUXxKs4VJFU3RJZvbsDk+MbbIljCGoiDdyCzMKK6t
+	gF+lxAzhpC1Up3DJ1DowBUiclfnmMhkPodPLXXiApxr2q56UzPWzXTerUMgb+03K
+	nnjWkmEuMlTBr3Y/MU965c/PUD+FOZfPVe9ni7PUudhkbZ52s2Cl9V2pBMvj61fZ
+	qOQ+vzrNtHZvo5MI+OsR34LEbIfw4KiaytF0umNnNsTMwybmHlx+cnOjBOSWJmKs
+	Jl2dFYpF/C0VuRCQlNd+eu3aiGbWs0WNGfXnk9oVtK+EzMc8IsV4BNELL6vLvtni
+	gVUtXkN8eI/Ahq3kBlVYIyDZHUeZx7etRRAdc/jSi1g==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hjjct3m1h-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hjqj81vh7-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 27 Oct 2026 09:44:41 -0400 (EDT)
+	Tue, 27 Oct 2026 09:44:38 -0400 (EDT)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69RDieLH039580
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69RDibgt039577
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 27 Oct 2026 09:44:40 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 27 Oct
- 2026 09:44:40 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 27 Oct 2026 09:44:39 -0400
+	Tue, 27 Oct 2026 09:44:37 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 27 Oct 2026 09:44:37 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 27 Oct 2026 09:44:37 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Tue, 27 Oct 2026 09:44:37 -0400
 Received: from HYB-aFjnqsVU6Ag.ad.analog.com ([10.66.6.192])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69RDiPUP014649;
-	Tue, 27 Oct 2026 09:44:33 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69RDiPUO014649;
+	Tue, 27 Oct 2026 09:44:28 -0400
 From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
 To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>,
-        Sergiu
- Cuciurean <sergiu.cuciurean@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        "Sergiu
+ Cuciurean" <sergiu.cuciurean@analog.com>,
+        Jonathan Cameron
+	<jic23@kernel.org>,
         David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?=
-	<nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<ukleinek@kernel.org>
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-Subject: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
-Date: Tue, 27 Oct 2026 15:44:08 +0200
-Message-ID: <20261027134409.76824-2-Nicolae-daniel.Deaconescu@analog.com>
+Subject: [PATCH 0/2] iio: adc: add LTC2387 and ADAQ2387x support
+Date: Tue, 27 Oct 2026 15:44:07 +0200
+Message-ID: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
-References: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -115,219 +114,83 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: MTSh9iOnxiIK04auZ3ppzhXVjlrcWfu-
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI3MDA1NCBTYWx0ZWRfX40ud7bwVItcb
- qWhSvE9iLcBRwWvzAXWqAlvDnztme9ctdLXixgZP4B9vppzOrED1fpLNlqfB5p20k5+GC2vQCQt
- TdQHeaCR7lTRZGhqut2TnLMbkwLWxFjj5ovC2n2lwUIQuuh7R5tz7Op1JcpCCANuV5XEvcn0fVa
- BUxsjf8GgbWUFTuwxvMEvvWgkXvLitr75Jx1SKX9v6KciWPfyW7zEWm4Sm/ph7X8F6aZkA12rF5
- 3ZotqK21lj/KZMC2dQVbsu3+Q7yrZAlgg5zdc+znYCOakWQfWPV/pjr4JhKuBcXPpLfaoWs1jQH
- CSH/pkB/+EvLyTEeakGcRrS2rlRDpeHUee4wJ62ClgIyLS+et7iRsfE9xG4ODCBz5r6/ktK1bEW
- 0ritYzOyO1j9pEYAKRxbKc/GS1rlrT5QFRQ2q0vwJd/+ZyS8JfaFlp1Xck8qoquxDOZqlvrC9ZY
- NOu9GeeGYYfuLJfg5Pg==
-X-Proofpoint-GUID: MTSh9iOnxiIK04auZ3ppzhXVjlrcWfu-
-X-Authority-Analysis: v=2.4 cv=HtPjiETS c=1 sm=1 tr=0 ts=6ae0aac9 cx=c_pps
+X-Authority-Analysis: v=2.4 cv=bLCDs/+Z c=1 sm=1 tr=0 ts=6ae0aac6 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
- a=1yO_MxKN9ett4E4Me8EA:9 a=sptkURWiP4Gy88Gu7hUp:22 a=BmoiQ_kLkyt6usnitrTQ:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI3MDA1NCBTYWx0ZWRfX7HQ0m9wxcR2H
- ICrXBjjjN8vgnUgBSJVot5plarzLWyPrtGPgzWG4z4jnV/6G6b6jGZ23I2iCYo8cP5NB29VldPa
- CeCcnbi9gBxov7yoeW7dHTZzea2DhJfg4vxgGGTpeR2dO04j6Itu
+ a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=wI1k2SEZAAAA:8
+ a=QsWrtFZefnq_ch6bf4EA:9 a=qcg49hLlgF0N60+LroqrWnV/Vu4=:19
+ a=6HWbV-4b7c7AdzY24d_u:22
+X-Proofpoint-ORIG-GUID: xIxxDTYMy4jjHiD5PTQa5MaACnhU4w2H
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI3MDA1NCBTYWx0ZWRfX8GlgHAZeVjh/
+ iF89JYT6dlltb4OJRUuP6OQAZGF7vyrpTa/h2cO6JxtWMbpkrT1fPfdWVrERPdMcKdM/1GvHust
+ uMHBweAlnvZNjNzjvvFYRC/BTI2jjnttljqxZ8U0WyeDYZLVviEBaeM4s84CAiv/j3sGAxQtXzV
+ fp0H98qk47u5BjLVs8Ohs4gdn3NkMEvQAGEkCQRIezSr5dAEIL86ehuoAJqQj9cvSlGWlMV9Z37
+ YyrE1I5CnSSaKlV10h3UgplqIiwUmP3j9TDgRqvzDMwTQ+01GkUq1fm2DHoNO9i/QGGY1bpQowK
+ otP5Zi+OSQamYkS7upW1JvRsvAMD7FIVEgBE1SjkqQbnrtofvDqTpR72JWICecPoECsQ2WV5+N7
+ yR2Rkmvc+HpYxhoCiPuIFgK8yXufu8jXER1gON8DQnsemrkZqCTyhQPOfgp82DaZOm2qxHoAgGR
+ hYlUtEbPdwP+5fb/Sig==
+X-Proofpoint-GUID: xIxxDTYMy4jjHiD5PTQa5MaACnhU4w2H
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI3MDA1NCBTYWx0ZWRfX7opiVJN5yj4I
+ YPS2jqdKdKReKKjrBXj7DF1Ixjm9dkS3KVI6tZ0g9Dlv7Uhp9s/4HIJ08zpQupf02kvGqnl6bou
+ VOPWKnZ4Z24IYoip9Rwn6XrnB8Sj3jmPoc6TuXC7v50eKUjW57YN
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
  definitions=2026-10-27_02,2026-10-21_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 lowpriorityscore=0 bulkscore=0 adultscore=0 clxscore=1015
- suspectscore=0 malwarescore=0 spamscore=0 phishscore=0 priorityscore=1501
+ impostorscore=0 suspectscore=0 adultscore=0 phishscore=0 lowpriorityscore=0
+ clxscore=1011 malwarescore=0 bulkscore=0 priorityscore=1501 spamscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610270054
 
-From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-
-Add bindings for the LTC2387-16 and LTC2387-18, 15 Msps SAR ADCs with
+This series adds a driver for the LTC2387-16/18, 15 Msps SAR ADCs with
 an LVDS data interface, and for the ADAQ23875, ADAQ23876 and ADAQ23878
 uModule ADCs, which pair an LTC2387 die with a fully differential
 amplifier front end.
 
-Conversion start (CNV) and the gated LVDS clock are driven by two PWM
-channels. Sample data is captured by an AXI ADC IP core, referenced
-through io-backends. adi,use-two-lanes selects two-lane output, and
-adi,gain-milli gives the front-end gain: fixed at 2 on the ADAQ23875,
-set by pin strapping on the ADAQ23876 and ADAQ23878.
+Conversion start (CNV) and the gated LVDS data clock are generated by
+two channels of an AXI PWM generator. Sample data is captured by the
+AXI ADC IP core and reached through the IIO backend framework. The
+front-end gain of the ADAQ parts is described with adi,gain-milli
+(fixed at 2 on the ADAQ23875, pin-strapped on the ADAQ23876/78) and
+applied to in_voltage_scale.
 
-Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-Co-developed-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Assisted-by: Claude:claude-opus-5-5
----
- .../bindings/iio/adc/lltc,ltc2387.yaml        | 138 ++++++++++++++++++
- MAINTAINERS                                   |   8 +
- 2 files changed, 146 insertions(+)
+Tested on an EV-ADAQ23875FMCZ on a ZedBoard running the adaq2387x HDL
+project in two-lane, 16-bit mode: probe, in_voltage_scale,
+sampling_frequency (writes, rounding and range checks), buffered
+capture up to 1M samples, and unbind/rebind. The bare LTC2387
+variants, one-lane mode and the -x4 variants were not tested on
+hardware.
+
+Datasheets:
+  https://www.analog.com/LTC2387-16
+  https://www.analog.com/LTC2387-18
+  https://www.analog.com/ADAQ23875
+  https://www.analog.com/ADAQ23876
+  https://www.analog.com/ADAQ23878
+
+Evaluation board:
+  https://www.analog.com/EVAL-ADAQ23875
+
+HDL reference design and IP cores:
+  https://analogdevicesinc.github.io/hdl/projects/adaq23875/index.html
+  https://analogdevicesinc.github.io/hdl/library/axi_ltc2387/index.html
+  https://analogdevicesinc.github.io/hdl/library/axi_pwm_gen/index.html
+
+Sergiu Cuciurean (2):
+  dt-bindings: iio: adc: add lltc,ltc2387
+  iio: adc: add ltc2387 driver
+
+ .../bindings/iio/adc/lltc,ltc2387.yaml        | 138 +++++
+ MAINTAINERS                                   |   9 +
+ drivers/iio/adc/Kconfig                       |  11 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/ltc2387.c                     | 482 ++++++++++++++++++
+ 5 files changed, 641 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
+ create mode 100644 drivers/iio/adc/ltc2387.c
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-new file mode 100644
-index 000000000000..f912260c8f79
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-@@ -0,0 +1,138 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright 2022 Analog Devices Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/lltc,ltc2387.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Linear Technology / Analog Devices LTC2387 ADC
-+
-+maintainers:
-+  - Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-+  - Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-+
-+description: |
-+  The LTC2387-18 is a low noise, high speed, 18-bit 15Msps
-+  successive approximation register (SAR) ADC ideally
-+  suited for a wide range of applications.
-+
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/238718fa.pdf
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/238716f.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adaq23875
-+      - adi,adaq23876
-+      - adi,adaq23878
-+      - lltc,ltc2387-16
-+      - lltc,ltc2387-16-x4
-+      - lltc,ltc2387-18
-+      - lltc,ltc2387-18-x4
-+
-+  clocks:
-+    description: Sampling clock
-+    maxItems: 1
-+
-+  pwms:
-+    maxItems: 2
-+    description:
-+      PWM signals used to synchronize the sampling procedure
-+
-+  pwm-names:
-+    items:
-+      - const: cnv
-+      - const: clk_gate
-+
-+  io-backends:
-+    description:
-+      The AXI ADC IP block (axi_ltc2387) that captures the LVDS data stream.
-+    maxItems: 1
-+
-+  vref-supply:
-+    description:
-+      External voltage reference. When absent the device's internal 4.096 V
-+      reference is assumed.
-+
-+  adi,use-two-lanes:
-+    description: The device uses two lanes for data transfer
-+    type: boolean
-+
-+  adi,gain-milli:
-+    description:
-+      Gain of the fully-differential amplifier that the ADAQ2387x modules
-+      integrate ahead of the LTC2387 die, expressed as gain * 1000. It is
-+      fixed on the ADAQ23875 and set by pin strapping on the ADAQ23876 and
-+      ADAQ23878, so it must match the board. The bare ltc2387-* parts have
-+      no amplifier.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [370, 730, 870, 1380, 2000, 2250]
-+
-+required:
-+  - compatible
-+  - clocks
-+  - io-backends
-+  - pwms
-+  - pwm-names
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - lltc,ltc2387-16
-+              - lltc,ltc2387-16-x4
-+              - lltc,ltc2387-18
-+              - lltc,ltc2387-18-x4
-+    then:
-+      properties:
-+        adi,gain-milli: false
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: adi,adaq23875
-+    then:
-+      properties:
-+        adi,gain-milli:
-+          const: 2000
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,adaq23876
-+              - adi,adaq23878
-+    then:
-+      properties:
-+        adi,gain-milli:
-+          enum: [370, 730, 870, 1380, 2250]
-+      required:
-+        - adi,gain-milli
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    adc {
-+            compatible = "lltc,ltc2387-16";
-+            clocks = <&clk 0>;
-+            io-backends = <&axi_adc>;
-+            pwms = <&pwm 0 0>, <&pwm 1 0>;
-+            pwm-names = "cnv", "clk_gate";
-+            vref-supply = <&vref>;
-+    };
-+  - |
-+    adc {
-+            compatible = "adi,adaq23878";
-+            clocks = <&clk 0>;
-+            io-backends = <&axi_adc>;
-+            pwms = <&pwm 0 0>, <&pwm 1 0>;
-+            pwm-names = "cnv", "clk_gate";
-+            vref-supply = <&vref>;
-+            adi,use-two-lanes;
-+            adi,gain-milli = <870>;
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 52024397dc78..b871d7f25d76 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15529,6 +15529,14 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
- F:	drivers/iio/adc/ltc2378.c
- 
-+LTC2387 IIO ADC DRIVER
-+M:	Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-+M:	Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-+
- LTC2664 IIO DAC DRIVER
- M:	Michael Hennerich <michael.hennerich@analog.com>
- M:	Kim Seer Paller <kimseer.paller@analog.com>
+
+base-commit: 43ffda3c7f8456bbe641ae8249a077a361b97880
 -- 
 2.34.1
 
