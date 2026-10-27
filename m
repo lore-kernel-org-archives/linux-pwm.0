@@ -1,82 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.89.44.37
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793116613;
-	b=enxksDrTlBdrOLS2jGP0UYGX82CWM2QV2V4SM3qyPOvBZ/KN5OnTgglZyyQLIVgZ9vsY
-	 D6dLrOMaoZqTa0+IP5YZxVQJEWtx6fm+NHoiNcK8XScpSbNihN2FXxeuxS2TT1H4i+yPg
-	 tm4k9ycIkQVjR8zpbaKocJpAaXJPtd6JeufFmPst7bH60g/a9YX5Gtn6UXA/MUuGZdVi1
-	 cHDbard3vQrfVg401wGcAxZE+Jr6nkOHs7Ne/2EtGX2j+fikIbr8Fk8QRIH/+2XfRP0SX
-	 ziPq6+6XE5wlsue/LbX2T0x0+ayEu+3FXWNwa+IbasAaOEs7iHY0xFFg4ADhW5WXgsQ==
+	t=1793117615;
+	b=3vO069ZN4FYc99bsuKg+0TxLpUOE/+6rT7CbrrRA1iAlFtIM/NeceKPN5ogD0fW995X5
+	 0+DQhVmhJYQwlOTXVsqc2gS5T7OwWYOxYXTe2q2yS46IRTy0uCAgXYdp3ONR8HPEXHVUf
+	 m0jpW1oGrN9D6bcdha+Pd8+4R7BOL5Xqu+CIrvXwcWxV1LuxD698fDWkYZXBhhjXsHS5v
+	 t/as/Dmd5jVVsbPVei8PUnoWgddia4iEZS6EroqmNgpjPOnnIRflI5dKavja/9E7iEhjI
+	 d5uQbWVGGyrKv6YnIJj6reZFVJ+nXAP8kXfwBCXymsUno38Dv87WTrmsfgrtPLZz7CQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793116613;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=/CdPFDOoxpgoh2yXSNqWXWRmNvIL8+vC07dIdltlu8k=;
-	b=KWo+LA2iWJgB8j7XLyE4RV8utjltofe/u48/u6iI2Fy3WonFuSuXXD0HLyAF8PkpYlX9
-	 KR7gOI+I3BnFLiBQNBLNnIF5b6eN1GTuJTZlACF/gFCLj2Bhul9cf8Rk5V2j3B9wKhPkZ
-	 ioNd/H4jWsiz1ThGMHIh49DCTi4uUmTZRYV2ZtNHhhDJ0OF60MdleIF5FP29ud8yvRRU/
-	 lGj6QZxD/iUs0VXKtkef7jgoPA5qk+cC09Cxts5vVywGGwwlg02+uFVvglpbEvQtKeUaW
-	 33BLXiXa+lDa6Hgzw2ILLeMT7IOtdRyejXQM60AJrZEXJUXIy6lEiJExFpFIEOsWLgw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793117615;
+	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To:X-AntiAbuse:X-AntiAbuse:
+	 X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:X-BWhitelist:X-Source-IP:
+	 X-Source-L:X-Exim-ID:X-Source:X-Source-Args:X-Source-Dir:
+	 X-Source-Sender:X-Source-Auth:X-Email-Count:X-Org:X-Source-Cap:
+	 X-Local-Domain:X-CMAE-Envelope;
+	bh=5G3ZmT86d3fe1rJiM6b5mr2ay0ue+O83AEJqLc41Pes=;
+	b=M+DZDk9COHGqxc2XfcPI0jcx58TYRD21sE8JgWLEptOWY5UOubB5jleK8ONyLUY4oQ6B
+	 beBFfZAhOP1HTOjKzOzRzIdSHsOdFRSK4Vs7L1+NeIgOsQMuCKeCS6zMSE1XxHVrpSmJr
+	 xts+rmaTCzeNGTD0cGPejSIXqAARTKCxusPkADjCXgMfC0beEgaAZdyxmEcbPD+pdLO4c
+	 CfLV1tejKZqfirXMxQAu11SwkUIUyUbPaEZjPj9JHx6iN5hB2TmTlAL2ml44XGbTGy8ph
+	 n0RicBKJlOLTWwgeAnpMfF1Nb6PgX7SGBkCxq0b2qmIohvzPWa925X/khlu0pIHeITg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WmAXM45m;
-	arc=none smtp.remote-ip=198.175.65.19
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	dmarc=none header.from=roeck-us.net;
+	spf=fail smtp.mailfrom=roeck-us.net;
+	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=0bRG5pWu;
+	arc=none smtp.remote-ip=35.89.44.37
+Received: from omta38.uswest2.a.cloudfilter.net (omta38.uswest2.a.cloudfilter.net [35.89.44.37])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38274606A31B;
-	Tue, 27 Oct 2026 15:56:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 38274606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EE98606A321
+	for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 16:13:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5EE98606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WmAXM45m
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793116611; x=1824652611;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SkBs68L4h4eRhe+r9S7dFAfJLJyj5ClSDPWOzR+e3Kk=;
-  b=WmAXM45mxeRCXvKmguoSh7o+MeV0Bj3h3sJzLmDhbqqSXWgDaHNaUtqC
-   04+2kQbc0kGEkp9kGSufIxDisA9IX/28/E0ak96K7OC9lzFwEnoGk7sJe
-   ndj7snELUgPVvd8lxzcxj2XwgP2z/lF53EfAe0Z1hqtW/XzTFt1bo6Tkt
-   HIOFp/Z1OO2gZh/k7wXyz5OUbXIFEUQMgt0EJNxzE/R6xWn+OcxHAPcLy
-   /SxZJqvwlKXkQ5Dzt7yqixvZjpbmr+KbQJTRBepBQu50EziItsd7D0SGH
-   dsVpcqFYpj+Voni1l6jrEdgUDfzTHtOkVMu01ggUMxBeXkxc0DC+YrIMS
-   A==;
-X-CSE-ConnectionGUID: 4N0lUIChTWipP+VPGH/YtQ==
-X-CSE-MsgGUID: qQVXpKHsThe5/heoMOiIYQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11948"; a="1844674"
-X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="1844674"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 08:56:49 -0700
-X-CSE-ConnectionGUID: CGSCTBepT+23PrMwzs56OQ==
-X-CSE-MsgGUID: yGG9dL5gSK6Y0aqQEaodAQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="4650687"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 08:56:46 -0700
-Date: Tue, 27 Oct 2026 17:56:43 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	dkim=pass (2048-bit key, unprotected) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=0bRG5pWu
+Received: from eig-obgw-5002b.ext.cloudfilter.net ([10.0.29.226])
+	by cmsmtp with ESMTPS
+	id LdyNxwpZ2v0ndLjnrxLaW7; Tue, 27 Oct 2026 16:13:35 +0000
+Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
+	by cmsmtp with ESMTPS
+	id LjnpxlXWxCWbvLjnqxJkt6; Tue, 27 Oct 2026 16:13:34 +0000
+X-Authority-Analysis: v=2.4 cv=bNEWIO+Z c=1 sm=1 tr=0 ts=6ae0cdae
+ a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
+ a=kj9zAlcOel0A:10 a=660iZSQnnn4A:10 a=M0FbrtG7MMAA:10 a=VwQbUJbxAAAA:8
+ a=iox4zFpeAAAA:8 a=lMUDpl8nYqh3M6R7ydkA:9 a=CjuIK1q_8ugA:10 a=LP3-5Lh9zdkA:10
+ a=WzC6qhA0u3u7Ye7llzcV:22 a=KPbNTLLc3YvdawN95zVk:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+	:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+	:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=5G3ZmT86d3fe1rJiM6b5mr2ay0ue+O83AEJqLc41Pes=; b=0bRG5pWuLiZXHXqJQvNggCWlNQ
+	GbtulZEHDb8sReMmPpD9jeLOPqZQkvsmUB1QF/eaKJBgihsBywZ3ulNPnxshEjknN4c31xvSydrof
+	G8UKnkf5xfgnI69nY3a4sNA9bFAtUL8L0JA58uLhKUpMYHBBJ0OrdJplBMt99zyuCp21tdFaUrvXc
+	Rj/BTRRnkXIIxr7cfp1yIvTqmh6CwL7GsO4UOrGrFPKoB3lE61ZgXnJN1tKcwjo/RzpYUatrMH8pN
+	s0ztAID6NGI3HShJw5b84D//CWybXdMw56O+bg8PoNsDOWiW4Y6p1JVP8bF+MAB+WQBG2bEK7fw3K
+	OgN2UsKg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:37196 helo=server.roeck-us.net)
+	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.100.1)
+	(envelope-from <linux@roeck-us.net>)
+	id 1xLjnm-00000000huz-1JIR;
+	Tue, 27 Oct 2026 21:43:30 +0530
+Date: Tue, 27 Oct 2026 09:13:29 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Gary Guo <gary@garyguo.net>
+Cc: Andrea della Porta <andrea.porta@suse.com>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
 	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 0/2] iio: adc: add LTC2387 and ADAQ2387x support
-Message-ID: <auDJu8u85flQ9bjo@ashevche-desk.local>
-References: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Gregor Herburger <gregor.herburger@linutronix.de>,
+	Stanimir Varbanov <svarbanov@suse.de>, linux-hwmon@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH RFC 0/4] hwmon: Add fan tachometer support for Raspberry
+ Pi RP1
+Message-ID: <b02b4f0b-ad2c-453a-b69c-a0865a333d62@roeck-us.net>
+References: <cover.1792748690.git.andrea.porta@suse.com>
+ <7df58d42-517c-4936-88b0-9d044d30882c@roeck-us.net>
+ <auBzvB8TsvIK8Hik@apocalypse>
+ <53a4b4bb-271c-4d2d-a9e4-cec4e0ce214b@roeck-us.net>
+ <DMFPE71J8205.3FZKD5BKW3U7C@garyguo.net>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -88,34 +105,89 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <DMFPE71J8205.3FZKD5BKW3U7C@garyguo.net>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1xLjnm-00000000huz-1JIR
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (server.roeck-us.net) [108.223.40.66]:37196
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 26
+X-Org: HG=direseller_whb_net_legacy;ORG=directi;
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfNh4RTl6dWBGXKJchGshqWH1QVh8WtGeFBiet04m259jJ/hg0aChAnMEWutWIsVEtQKkMXXRXu2gDFxWW3ipelh/JykunBmlvDBN878GbtXVW4e2BDbl
+ R1YS6RH3BNOhliCI2T+1zkrFS491+3LJzNvYY6Czp/4XIvYO9nuPyK7HzTFdQ1QAb1yZj5ApkA4DJ/wJljJBHFCjMjrtT3stbZ7Xb0dx7XZ3Hh5MsIDsYVd1
 
-On Tue, Oct 27, 2026 at 03:44:07PM +0200, Nicolae-Daniel Deaconescu wrote:
-> This series adds a driver for the LTC2387-16/18, 15 Msps SAR ADCs with
-> an LVDS data interface, and for the ADAQ23875, ADAQ23876 and ADAQ23878
-> uModule ADCs, which pair an LTC2387 die with a fully differential
-> amplifier front end.
-
-Why have you written a brand new driver?
-
-> Conversion start (CNV) and the gated LVDS data clock are generated by
-> two channels of an AXI PWM generator. Sample data is captured by the
-> AXI ADC IP core and reached through the IIO backend framework. The
-> front-end gain of the ADAQ parts is described with adi,gain-milli
-> (fixed at 2 on the ADAQ23875, pin-strapped on the ADAQ23876/78) and
-> applied to in_voltage_scale.
+On Tue, Oct 27, 2026 at 10:51:15PM +0800, Gary Guo wrote:
+> On Tue Oct 27, 2026 at 9:48 PM CST, Guenter Roeck wrote:
+> > On Tue, Oct 27, 2026 at 10:49:48AM +0100, Andrea della Porta wrote:
+> >> Hi Guenter,
+> >> 
+> >> Yes, I also proposed that in the cover letter because auxbus seems also a viable
+> >> solution.
+> >> 
+> >> The current implementation is a consequence to the discussion about the companion
+> >> PWM driver, from here (and the revisions that followed):
+> >> 
+> >> https://lore.kernel.org/all/cover.1775223441.git.andrea.porta@suse.com/
+> >> 
+> >> To give a short and hopefully coherent view of the decisions, here's a breakdown:
+> >> 
+> >> - first proposal: PWM driver + fan hwmon (to read the RPM), all in the same driver
+> >> 
+> >> - V2: Uwe preferred to split the PWM driver from the hwmon one, so the hwmon was
+> >>   dropped from teh PWM driver in favor of a future (fan) driver. To accomplish this,
+> >>   I moved from readl/writel to regmap + syscon.
+> >> 
+> >> - V8: Gary proposed to export a function to read the fan RPM as a viable
+> >>   solution. As a result, the regmap/syscon was dropped as it was no longer needed
+> >>   and the function has been exported from the PWM driver
+> >> 
+> >> - new patchset for fan driver: the now independent hwmon moodle just call the
+> >>   exported function from thw PWM driver.
+> >> 
+> >> If the auxiliary bus is indeed the preferred approach, I'd like to ensure we are
+> >> all aligned, as this would also require refactoring the PWM driver.
+> >> 
+> >
+> > Let's say it that way: If you don't want to implement the auxiliary driver,
+> > and you insist using the exported function, I would prefer for you to go back
+> > to the first solution. The one thing I really dislike is conceptually broken
+> > code, and I consider the current approach broken. Your call, but the one thing
+> > I won't accept is the code with the exported function.
 > 
-> Tested on an EV-ADAQ23875FMCZ on a ZedBoard running the adaq2387x HDL
-> project in two-lane, 16-bit mode: probe, in_voltage_scale,
-> sampling_frequency (writes, rounding and range checks), buffered
-> capture up to 1M samples, and unbind/rebind. The bare LTC2387
-> variants, one-lane mode and the -x4 variants were not tested on
-> hardware.
+> I agree on the auxiliary driver part. However, I don't think EXPORT_SYMBOL_NS is
+> an issue, and regmap is not the right fit here:
+> 
+> - Previous version of the PWM1 patch series publish regmap using
+>   of_syscon_register_regmap, but this cannot be undone -- which needs to happen
+>   on PWM device unbind (the RP1 PWM device is itself platform device, but RP1
+>   chip itself is PCIe device which must be removable).
+> 
+> - The tachometer register is not its own separate register, but rather (re)using
+>   the phase control register. The phase control is not implemented in the RP1
+>   PWM driver on the list yet, so this is currently a simple register read -- I
+>   can see that RP1 PWM driver need to take special care to about the tachometer
+>   reading if the phase control is implemented.
+> 
+>   For the two reasons above, I think the way that tachometer is read should
+>   really be an implementation detail of the PWM driver and not for the hwmon
+>   driver to worry about, so I suggested using EXPORT_SYMBOL_NS.
+> 
+> - EXPORT_SYMBOL_NS is the documented way for exposing functionality from parent
+>   device to auxiliary drivers: https://docs.kernel.org/driver-api/auxiliary_bus.html
+> 
 
--- 
-With Best Regards,
-Andy Shevchenko
+Let's agree to disagree, and keep the code in the pwm subsystem.
 
-
+Thanks,
+Guenter
