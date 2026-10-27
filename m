@@ -1,112 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.41
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793094358;
-	b=Q94CHxkBFYoNZLEgaAL3JYkfz1rlUjKLfY3ipYsu8nl8AZmwkU6EVaZ5oPBupKJlNbSQ
-	 gOCexBKfWSOkYXsfvQf/K4lkfZDV7wnYJROil4MZrnhYf8SC91m2Cm2HG2ICq7p9EVBL1
-	 JaR+AS1EYoudggOyBttn0zrrlCEGpkl0kyeLyeeKoYx/xM1n4wzWUy1abGWPflfsn83cS
-	 nx6eZlbAbYu46Yve6MzKWtb5BOfvaMpn02g2as2NLvHQbQF9Wfyr6r05elcajQR/VYlsS
-	 UdWUrL+jIbbEQ02dpi6CqJRmBX0BR9yoMuo1Ou0QgEzQzdltFro/ecEqGFYZ/3wBZ6A==
+	t=1793108557;
+	b=QX0y6eC+VBGT37iIGAhAM6Ndnq0pKdgAeGWadxSrvx6jARN13Wrr0W9xNA//GimDbyze
+	 OawzZdSemefGueviHZ3duUmJryUmY9PulF1eUXJmwMIn0uv2T6ATuCoWGRHGW32vA/+as
+	 iosefpMC5nnI8rD3MC2SPyKCCCz8L1HbkzKR1dWwFxfx1wei9wJn2UQvyRyCT9w+4YbGM
+	 Blm311ZIFz7XF7KW1t7W9FcX5ScBBsE/sKd0gP8gITDBTie5of/y2D38LO0/9u2V5mxTl
+	 i7X7APjlNP5VakWAMRwdqredRNykJ0pQ5+RroKmteMu0ipymk4COCIriv4jMmSNyiYg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793094358;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793108557;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To;
-	bh=kxDEiSmJOiwfSYua1Zz9+AGsc9tKlOqwY2WHmMR/V1I=;
-	b=FvRFi7c4lpFQZgHvYHrL0QFKBUJA8yDbU7SbyzvWRREV1f+Cw0yTStT8CgxwlIWRrzDd
-	 ag/coxmx0SqYpejpnClzOFX76SvxJfwdvnuMJLfDBv/DpLFBCCXjzaGBopF+Lj/5kpw9y
-	 nCzaGUm2fCznUGkKdyAREFZKvY3w75lgm0n0ph1+Ln5DEguG0AYCMbuKinTze9OcFWDq/
-	 6yos83bfcismahaNd/fghtib59kIcbwHf2UB82cLT2BAGluG2yyoKi4k9LLieTHgwO2g6
-	 0s+/kgK9l5/nnezKy4DQnikkXh5is/0eNMgnKHXe0Xj1vRUYVAV8F0Ut8vs6CQENTtg==
+	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=VOv2hj4TqzHbEep3nPGzgUbHv1sJOMyDv++GUr8JGyk=;
+	b=3igDZh9SJ3mWoKqMAk+NJpb6hF6RC6qW6RO9U1BDzuWKAgKbNWPMoCMr+L4fgO/KsknI
+	 yQXjKoDCrcPHaE8J3lq1C6gSVuPSqnBK8ugWIbuoPKH/BidqK116ili1oP0vtY9XJFnaW
+	 NZe+uwgwYLzvWEcHsxiVNA7U0VX46fiGZCBef53Y3KZcQRmn1U0c2wIbHuHSpoPiUJiZ5
+	 a9dhHUsVKAornbHLeDvWl7RP6CWWbGtxUJgpEkEyx7YDlbtf0ebDeeqxBpSsNH/LXn/45
+	 T+Rir6b9AZk3TlfcS98+jtwuwCQfpPYoAUyVZoKWmbz9iwPiQ30uYeay5eV+Lap2/ag==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=suse.com;
-	spf=pass smtp.mailfrom=suse.com;
-	dkim=pass header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=foXTMIMq;
-	arc=none smtp.remote-ip=209.85.128.54
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=J0BqDMIu;
+	arc=none smtp.remote-ip=209.85.128.41
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC606606A31B
-	for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 09:45:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DC606606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C9F2606A31A
+	for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 13:42:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2C9F2606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=foXTMIMq
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4a208d93758so44925155e9.3
-        for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 02:45:57 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=J0BqDMIu
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a5720b0a57so6028765e9.0
+        for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 06:42:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1793094356; x=1793699156; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:date
-         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=kxDEiSmJOiwfSYua1Zz9+AGsc9tKlOqwY2WHmMR/V1I=;
-        b=foXTMIMqZgAtLBq9U6Ye5Y5BEyzAFblKZjMqyPIiGxW0GYSUWzFinU/uKs9vprN6Ye
-         Hz/ClFy9OizHTRH5VyRnVcxo5LRCHq7k+nDdzYf3BcrgdxoIMjpDLN7sR8P1dfxW8GlM
-         Prw4tjEQSlDYcv+4KVQ/R+2qfvyN5r93DDysB+0pt8EoK+BXRwBx5nWWIx4bq3Q7lXB/
-         5U0pymYRzO/nQFKCWbevF/E3kqjzK6yxzrphZXdk0iTzLuEZiWNuQhxk3QDJC9HMyEEa
-         YBRbtfB4dfeU5rHkUnSMNO4xtvfkAh7JjrjmBtJxPlgn7QIzfkhgXHrwW1f9OrBppYAR
-         toyQ==
+        d=gmail.com; s=20251104; t=1793108554; x=1793713354; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=VOv2hj4TqzHbEep3nPGzgUbHv1sJOMyDv++GUr8JGyk=;
+        b=J0BqDMIuKcGFkQ15hjMJuYOaQ6ujmXm/YHH4R7te1jWudJwMM+XoDkHU4ivM6hUrAj
+         59XjzhHlXReepZQW0FuHb4x6Qx7EZWq9vqz46S65NOR1Jt6yfiUiTmdBPD8VoREJv34s
+         aSz/A+RnG2yhgVSWN/2+8BbethaO5y7B9KsYLXL6Wz7HIntCc9GGts/y9XP2wXgVr5cv
+         J0//Qsa5+OByrVqqN87/F3uGlxfdtT1QAWlisIIxhXgLQsFpGp86fUk6GwFURKMJSToo
+         hLIRXsRm/t3eeapb3MP/P+FjNCkGEIony60OEhwsSHDIklqM3ew5Bjn4Ybe0AQ9uBCSH
+         Y9kA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793094356; x=1793699156;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:date
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=kxDEiSmJOiwfSYua1Zz9+AGsc9tKlOqwY2WHmMR/V1I=;
-        b=hLo6o+GaU0paaUGdiQuDtRp8PCF/gccXf/k2DVgXcV3pbmNkO0nDSSNNGMz+iHmcsY
-         CcrGfN3rX1mlIvC8ZW2dj/IgLLA7F8ty0CBFgKTwA5l3jjcLOqMoH2FZ5gZ8r8CeUQLf
-         5mo1PgrpOCo0Nts1YWV2AfZN+MVaTv8OkRBKJMvtaqowU962RCeO9YtJr1vEmcguNTn8
-         XAMZpnm6Ka6HHmoZQP4nSluzsSm6TMEF/6E8vAS2d4dt1aTVRboWagbdkUKN9zi3LO2S
-         hrHirradgEN26fpdi0ijw7ZXYtDQEsBzghkDVz88drTeMZr3ImVjQRiCS4YAEopgKDzH
-         bDOw==
-X-Forwarded-Encrypted: i=1; AKwUvBy50Cs/TX85WFNHjYE9RgGhO+nkqqM1AmW/XHTm5qf+sk+aIHfdB1dM8Ju6lSz/cyY1UzhuINCH6VA=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIW04TEv7rikBQd/SQ1Slrglc0qCOg5u47/dyrY1Mjj8/IjBAiM
-	ESSeBVGJBBqJRtYe0sEl2Aj7t2AKEcedWtwMyxMb8JBpBxHb6+X99nH5Kmu9thKLzq4=
-X-Gm-Gg: AYBFou2d1CUCRaGo2Dca9iTQCj8tRWVv0wawMNqIHLdSX8kCzevhKWot3qawXrYfPjS
-	t9IkcseOsw5KDBIBOKLIt/FZAgasUFQV1LtjYHbR/KYHkJ0nAxQJuQy1xG3D/p7vuHrO7BopaTf
-	uFFYtzunw2HCDuwfWrrqUKUB3SVcKjp6ABnIIAm2bvim0e4aCGiPMKhNKMhrdADEtLB0FiGBER9
-	zbdrnggn4C3bwQnoFgRpOO3JiUCDozepbZSeLQ4hY0VqcsnVAWUdst3OSGxqK+dbAPmEErJdSTU
-	aFrGgMmw8UuB7e2YrO+PzJnEY0SkSNn7m+tu5OvqSh10KKLcr14h8HMYtgmQQg2zqjwM3F+BUNB
-	Vjap6kKqdrFRBG5grGak9fKRZDTjP2aroPtEwNqH87Zk8jRr3ekOcsy4AlkZdszSl68GfIHZx6S
-	nq+PLd6FQWdIp6tlQTHMKJ5RJL1EFADyFdhgH3+Hb5cEZj4CLkO/Abk2AFRRMfQfVYlB2hKVXdg
-	bhFoyHu/9+iOPwyUJouukTbbxyf60vJt00/BT43HXgg7/0qmiy60ko=
-X-Received: by 2002:a05:600c:4f0f:b0:4a0:27eb:49b with SMTP id 5b1f17b1804b1-4a35acba87fmr202982885e9.30.1793094356233;
-        Tue, 27 Oct 2026 02:45:56 -0700 (PDT)
-Received: from localhost ([82.192.120.214])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a2d9280sm251609365e9.13.2026.10.27.02.45.55
+        d=1e100.net; s=20260707; t=1793108554; x=1793713354;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=VOv2hj4TqzHbEep3nPGzgUbHv1sJOMyDv++GUr8JGyk=;
+        b=KGClOK1It/EcKCroTkKTkmChvRQSfU+iaK/+bB7nE+FBGzRnfTIhGeacIG8gkyigg7
+         FQnX3VOlHH6M9Bu3405olnD3QLciJWeFco1AegcFbCdiNZly/nJJdlk6qdPlMZiY4IPz
+         QbjvBtZ5o02CCCf3/JdE4DErl4IvaTAe/sr3UrJ1XDw1GVIXxgm/tGvji3XMkWRhP6hG
+         xRg4I8ZEJUxiK37wxCn0YtSOyUZ8j126T0Jaxtu+w692ld3kayInSPytm0EqhwFuO1BN
+         bJHIPAbWd5/x5HMeZ+pIEQM9/5/ou0b0lx2woINjmo2VAQgiIwxKiCnexI+HTHcWq23f
+         L78w==
+X-Forwarded-Encrypted: i=1; AKwUvBwnig3wJDDYxgsP1fEc9slalz0hKmtt27y1ATBW97dcUJrMFOvw09fuj51P9WsrS/9cV/DnP2K+6tM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJ7petdEvnGnGzPjY+Lj4lAud1zoz6cj0mnXImHRcGLu7NvcAZ+
+	SVG3+LjoAaUPo41/06lIFOKUqVNAAI63jTpN+cZ/ZXXL/MXXTg0mDzN/6n0iYyAw
+X-Gm-Gg: AYBFou05K1dbETBmbj0cCTInX7BiRpuayLdVbzU+1/KSwLp7c69OaBHiJwVhDfikq9w
+	//+uSNMnVjpsLK9NtsNnnhi2QLqfsefVJSCsIXY7dNKaCx7a1jd/sBWraNT7kjK7a6r2SbQZ7Va
+	YF9iTzBVGMm+KfwOPlBY/h7hfEYzuqadOH5giMRSTi1i0cpumHgxGrBWykTooAs9Sxb/G2fJ5SX
+	QMVEFTHDQKUhYF5NSye4VK9MyhQwn7LnHdkca9JkZZfzCMZcDGZ+Es66mJIe8WBpaNR7TmNK8Bm
+	Cnz+21aaIrwerH1rdz7kb+hj4zjjXSpFaF1XlYcnn1qzgTRquSgE6j1kGObWnPHGsp7A2/kTzBf
+	l7J3Rb4uqZIhUZiA8mMCxbYRM1WQHhK1u82wSx2AkmbYswoGp/t45gOL0G3PqorCXI33IhMZ8ke
+	jDQ/crIW2P5dFWiqcAIk1BquvdFXqlflf96T2YfLCPvZBoK31QFFaD4cJMUonHa6IdDP4VXt2Mh
+	pegWM94Z9IGH/KNQ/n0EddGMRVF0se5J9RQpWozyMKy2HDPGSNWZGCMB4Cg4BCNf8ZU8+/aD6dN
+	m/FrkPeVSAx30zax
+X-Received: by 2002:a05:600c:3c98:b0:4a0:20b4:ba93 with SMTP id 5b1f17b1804b1-4a7c1c845a2mr60104605e9.16.1793108554418;
+        Tue, 27 Oct 2026 06:42:34 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a04ad39sm696126435e9.1.2026.10.27.06.42.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2026 02:45:55 -0700 (PDT)
-From: Andrea della Porta <andrea.porta@suse.com>
-X-Google-Original-From: Andrea della Porta <aporta@suse.de>
-Date: Tue, 27 Oct 2026 10:49:48 +0100
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Andrea della Porta <andrea.porta@suse.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	Gregor Herburger <gregor.herburger@linutronix.de>,
-	Stanimir Varbanov <svarbanov@suse.de>, linux-hwmon@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
-	Gary Guo <gary@garyguo.net>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH RFC 0/4] hwmon: Add fan tachometer support for Raspberry
- Pi RP1
-Message-ID: <auBzvB8TsvIK8Hik@apocalypse>
-References: <cover.1792748690.git.andrea.porta@suse.com>
- <7df58d42-517c-4936-88b0-9d044d30882c@roeck-us.net>
+        Tue, 27 Oct 2026 06:42:34 -0700 (PDT)
+Date: Tue, 27 Oct 2026 13:42:33 +0000
+From: David Laight <david.laight.linux@gmail.com>
+To: Karl Mehltretter <kmehltretter@gmail.com>
+Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Claudiu
+ Beznea <claudiu.beznea@tuxon.dev>, Nicolas Ferre
+ <nicolas.ferre@microchip.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] pwm: atmel: Fix arithmetic overflows for long
+ periods
+Message-ID: <20261027134233.3f1e030a@pumpkin>
+In-Reply-To: <20261027022755.52912-1-kmehltretter@gmail.com>
+References: <20261016161221.16553-1-kmehltretter@gmail.com>
+	<20261027022755.52912-1-kmehltretter@gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -116,142 +103,201 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7df58d42-517c-4936-88b0-9d044d30882c@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi Guenter,
+On Tue, 27 Oct 2026 03:27:55 +0100
+Karl Mehltretter <kmehltretter@gmail.com> wrote:
 
-On 09:24 Mon 26 Oct     , Guenter Roeck wrote:
-> On 10/23/26 03:15, Andrea della Porta wrote:
-> > Hi,
-> > 
-> > This patch series adds fan tachometer / RPM monitoring support for the
-> > Raspberry Pi RP1 southbridge found on the Raspberry Pi 5.
-> > Please note that the patchset in [1] is a prerequisite for this one.
-> > 
-> > On the Raspberry Pi RP1, the active cooling fan speed is controlled via
-> > the RP1 PWM controller. In addition to generating PWM signals, the RP1
-> > monitors fan tachometer pulses. The pulse measurement and RPM calculation
-> > are performed autonomously by the RP1's onboard Cortex-M microcontroller
-> > core, which periodically writes the computed RPM value directly into
-> > dedicated MMIO registers located within the RP1 PWM hardware block.
-> > 
-> > During earlier discussions, Uwe Kleine-König explicitly indicated a
-> > preference to keep the core PWM controller driver (drivers/pwm/pwm-rp1.c)
-> > focused strictly on PWM duties, rather than bloating it by registering an
-> > hwmon device directly from within the PWM driver (see [2]).
-> > 
-> > Because the Linux PWM subsystem currently lacks a generic framework or
-> > consumer API for reporting hardware-calculated tachometer readings, this
-> > series implements a standalone hwmon driver (rp1-fan) using the following
-> > structure:
-> > 
-> > -  The PWM driver exposes and exports rp1_pwm_read_tachometer() within a
-> >     dedicated symbol namespace ('RP1_PWM') to read the RPM value from
-> >     the MMIO block.
-> > -  A companion DT binding (raspberrypi,rp1-fan.yaml) introduces a vendor
-> >     property, 'raspberrypi,pwm-tachometer', to link the fan node to the
-> >     PWM controller node without overloading or abusing the standard 'pwms'
-> >     property.
-> > -  The rp1-fan hwmon driver parses this phandle, establishes a device link
-> >     for proper runtime and unbind dependency management, and registers the
-> >     standard hwmon 'fan1_input' sysfs attribute.
-> > 
-> > An alternative architectural approach to the DT phandle + exported helper
-> > method would be to model the tachometer as a child device using the
-> > auxiliary bus framework (drivers/base/auxiliary.c). In that model, the RP1
-> > PWM driver would instantiate an auxiliary device for the tachometer, and
-> > the hwmon driver would bind to that auxiliary bus device without requiring
-> > a separate DT node.
-> > 
-> > However, adopting the auxiliary bus would require a more significant
-> > rework and refactoring of the existing RP1 PWM driver.
-> > 
-> > I'd appreciate any feedback on whether the current companion driver with
-> > a dedicated DT property is acceptable, or if an auxiliary bus-based
-> > refactoring of the PWM driver is the preferred upstream path.
-> > 
-> > Patch Breakdown
-> > ---------------
-> > Patch 1: pwm: rp1: Export helper to read fan tachometer RPM
-> > Patch 2: dt-bindings: hwmon: Add Raspberry Pi RP1 fan binding
-> > Patch 3: hwmon: Add driver for Raspberry Pi RP1 fan tachometer
-> 
-> This seems conceptually wrong.
-> 
-> Have you considered implementing the hwmon driver as auxiliary driver
-> and accessing the register in question through regmap ?
+> atmel_pwm_calculate_cprd_and_pres() first multiplies the requested
+> period by the clock rate in a u64 and only then divides by
+> NSEC_PER_SEC. The product can overflow even when the quotient and the
+> resulting hardware configuration are representable.
+>=20
+> For example, at 12 MHz a 1600 s period has 19.2 billion clock cycles
+> and fits with prescaler 3, but the intermediate product exceeds U64_MAX.
+> It wraps and the driver programs a period of about 62.8 s instead. This
+> remains broken after changing fls() to fls64(). The duty-cycle
+> calculation has the same overflow.
+>=20
+> Use mul_u64_u64_div_u64() for both conversions and use fls64() when
+> deriving the prescaler. The multiply/divide result cannot overflow if
+> the clock rate is at most NSEC_PER_SEC, so hold the clock rate exclusive
+> and validate it at probe time.
+>=20
+> The reverse conversion in atmel_pwm_get_state() can overflow too: it
+> multiplies CPRD or CDTY by NSEC_PER_SEC and then shifts the u64 by the
+> prescaler. Convert the scaled clock ticks with the overflow-safe,
+> round-up helper instead. Explicitly saturate values that cannot be
+> represented by the u64 nanosecond API, rather than relying on the
+> architecture-specific helper's quotient-overflow behaviour.
 
-Yes, I also proposed that in the cover letter because auxbus seems also a viable
-solution.
+Personally I think mul_u64_u64_div_u64() should return ~0ull on both
+overflow and divide by zero.
+While a valid result, any code that expects it can pretty certainly
+also get 'a bit more' so including ~0ull in the 'overflow' values
+doesn't really do any harm.
+But someone insisted on in faulting - even though there has been
+a patch to x86-64 to recover from the fault.
 
-The current implementation is a consequence to the discussion about the companion
-PWM driver, from here (and the revisions that followed):
+>=20
+> Fixes: a9d887dc1c60 ("pwm: Convert period and duty cycle to u64")
+> Cc: stable@vger.kernel.org
+> Reported-by: Uwe Kleine-K=C3=B6nig <ukleinek@kernel.org>
+> Link: https://lore.kernel.org/r/atnHHaOwTkI78_tc@monoceros
+> Suggested-by: Uwe Kleine-K=C3=B6nig <ukleinek@kernel.org>
+> Assisted-by: LLM
+> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+> ---
+> Changes in v3:
+> - Use mul_u64_u64_div_u64() for the period conversion as suggested by
+>   Uwe, and for the analogous duty-cycle conversion.
+> - Fix the corresponding overflow in the get_state() conversion and
+>   explicitly saturate results that cannot be represented in nanoseconds.
+> - Hold the clock rate exclusive and validate the rate bound required by
+>   the arithmetic.
+> - Rebase onto v7.3-rc7.
+>=20
+> Testing:
+> - Built an ARM zImage with clang 22.1.8 and W=3D1.
+> - Passed 14 host boundary tests, 53 oracle-checked SAM9X75 QEMU boots,
+>   and all 20 PWM device-model qtests.
+> - Passed 89/89 checks on a physical SAM9X75, including overflow cases.
+>   A 69.175-second period measured 69.210 seconds between interrupts; no
+>   kernel errors were found.
+>=20
+>  drivers/pwm/pwm-atmel.c | 46 +++++++++++++++++++++++++++++------------
+>  1 file changed, 33 insertions(+), 13 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index 86918523d8..db7a14c66a 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/delay.h>
+>  #include <linux/err.h>
+>  #include <linux/io.h>
+> +#include <linux/math64.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/platform_device.h>
+> @@ -183,19 +184,18 @@ static int atmel_pwm_calculate_cprd_and_pres(struct=
+ pwm_chip *chip,
+>  					     unsigned long *cprd, u32 *pres)
+>  {
+>  	struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
+> -	unsigned long long cycles =3D state->period;
+> +	unsigned long long cycles;
+>  	int shift;
+> =20
+>  	/* Calculate the period cycles and prescale value */
+> -	cycles *=3D clkrate;
+> -	do_div(cycles, NSEC_PER_SEC);
+> +	cycles =3D mul_u64_u64_div_u64(state->period, clkrate, NSEC_PER_SEC);
+> =20
+>  	/*
+>  	 * The register for the period length is cfg.period_bits bits wide.
+>  	 * So for each bit the number of clock cycles is wider divide the input
+>  	 * clock frequency by two using pres and shift cprd accordingly.
+>  	 */
+> -	shift =3D fls(cycles) - atmel_pwm->data->cfg.period_bits;
+> +	shift =3D fls64(cycles) - atmel_pwm->data->cfg.period_bits;
+> =20
+>  	if (shift > PWM_MAX_PRES) {
+>  		dev_err(pwmchip_parent(chip), "pres exceeds the maximum value\n");
+> @@ -218,12 +218,23 @@ static void atmel_pwm_calculate_cdty(const struct p=
+wm_state *state,
+>  {
+>  	unsigned long long cycles =3D state->duty_cycle;
+> =20
+> -	cycles *=3D clkrate;
+> -	do_div(cycles, NSEC_PER_SEC);
+> +	cycles =3D mul_u64_u64_div_u64(cycles, clkrate, NSEC_PER_SEC);
+>  	cycles >>=3D pres;
+> +
+>  	*cdty =3D cprd - cycles;
+>  }
+> =20
+> +static u64 atmel_pwm_ticks_to_ns(u64 ticks, unsigned long rate)
+> +{
+> +	u64 max_ticks;
+> +
+> +	max_ticks =3D mul_u64_u64_div_u64(U64_MAX, rate, NSEC_PER_SEC);
+> +	if (ticks > max_ticks)
+> +		return U64_MAX;
 
-https://lore.kernel.org/all/cover.1775223441.git.andrea.porta@suse.com/
+I'm not sure how often this is called, but it might be worth caching
+max_ticks during the probe.
+(and maybe even the clock rate itself - I doubt it can change.)
 
-To give a short and hopefully coherent view of the decisions, here's a breakdown:
+David
 
-- first proposal: PWM driver + fan hwmon (to read the RPM), all in the same driver
+> +
+> +	return mul_u64_u64_div_u64_roundup(ticks, NSEC_PER_SEC, rate);
+> +}
+> +
+>  static void atmel_pwm_update_cdty(struct pwm_chip *chip, struct pwm_devi=
+ce *pwm,
+>  				  unsigned long cdty)
+>  {
+> @@ -352,24 +363,22 @@ static int atmel_pwm_get_state(struct pwm_chip *chi=
+p, struct pwm_device *pwm,
+>  	if (sr & (1 << pwm->hwpwm)) {
+>  		unsigned long rate =3D clk_get_rate(atmel_pwm->clk);
+>  		u32 cdty, cprd, pres;
+> -		u64 tmp;
+> +		u64 ticks;
+> =20
+>  		pres =3D cmr & PWM_CMR_CPRE_MSK;
+> =20
+>  		cprd =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
+>  					  atmel_pwm->data->regs.period);
+> -		tmp =3D (u64)cprd * NSEC_PER_SEC;
+> -		tmp <<=3D pres;
+> -		state->period =3D DIV64_U64_ROUND_UP(tmp, rate);
+> +		ticks =3D (u64)cprd << pres;
+> +		state->period =3D atmel_pwm_ticks_to_ns(ticks, rate);
+> =20
+>  		/* Wait for an updated duty_cycle queued in hardware */
+>  		atmel_pwm_wait_nonpending(atmel_pwm, pwm->hwpwm);
+> =20
+>  		cdty =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
+>  					  atmel_pwm->data->regs.duty);
+> -		tmp =3D (u64)(cprd - cdty) * NSEC_PER_SEC;
+> -		tmp <<=3D pres;
+> -		state->duty_cycle =3D DIV64_U64_ROUND_UP(tmp, rate);
+> +		ticks =3D (u64)(cprd - cdty) << pres;
+> +		state->duty_cycle =3D atmel_pwm_ticks_to_ns(ticks, rate);
+> =20
+>  		state->enabled =3D true;
+>  	} else {
+> @@ -487,6 +496,7 @@ static int atmel_pwm_probe(struct platform_device *pd=
+ev)
+>  {
+>  	struct atmel_pwm_chip *atmel_pwm;
+>  	struct pwm_chip *chip;
+> +	unsigned long rate;
+>  	int ret;
+> =20
+>  	chip =3D devm_pwmchip_alloc(&pdev->dev, 4, sizeof(*atmel_pwm));
+> @@ -507,6 +517,16 @@ static int atmel_pwm_probe(struct platform_device *p=
+dev)
+>  		return dev_err_probe(&pdev->dev, PTR_ERR(atmel_pwm->clk),
+>  				     "failed to get prepared PWM clock\n");
+> =20
+> +	ret =3D devm_clk_rate_exclusive_get(&pdev->dev, atmel_pwm->clk);
+> +	if (ret)
+> +		return dev_err_probe(&pdev->dev, ret,
+> +				     "failed to get exclusive PWM clock rate\n");
+> +
+> +	rate =3D clk_get_rate(atmel_pwm->clk);
+> +	if (!rate || rate > NSEC_PER_SEC)
+> +		return dev_err_probe(&pdev->dev, -EINVAL,
+> +				     "invalid PWM clock rate %lu Hz\n", rate);
+> +
+>  	chip->ops =3D &atmel_pwm_ops;
+> =20
+>  	ret =3D atmel_pwm_enable_clk_if_on(chip, true);
+>=20
+> base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
 
-- V2: Uwe preferred to split the PWM driver from the hwmon one, so the hwmon was
-  dropped from teh PWM driver in favor of a future (fan) driver. To accomplish this,
-  I moved from readl/writel to regmap + syscon.
-
-- V8: Gary proposed to export a function to read the fan RPM as a viable
-  solution. As a result, the regmap/syscon was dropped as it was no longer needed
-  and the function has been exported from the PWM driver
-
-- new patchset for fan driver: the now independent hwmon moodle just call the
-  exported function from thw PWM driver.
-
-If the auxiliary bus is indeed the preferred approach, I'd like to ensure we are
-all aligned, as this would also require refactoring the PWM driver.
-
-> 
->  > Patch 4: arm64: dts: broadcom: bcm2712-rpi-5-b: Add RP1 fan tachometer node
-> > 
-> > Thanks,
-> > Andrea
-> > 
-> > 
-> > LINKS:
-> > [1] - https://lore.kernel.org/all/cover.1790686331.git.andrea.porta@suse.com/
-> > [2] - https://lore.kernel.org/all/adLTwOTbkJ0VQXy6@monoceros/
-> > 
-> > Andrea della Porta (4):
-> >    pwm: rp1: Export helper to read fan tachometer RPM
-> >    dt-bindings: hwmon: Add Raspberry Pi RP1 fan binding
-> >    hwmon: Add driver for Raspberry Pi RP1 fan tachometer
-> >    arm64: dts: broadcom: bcm2712-rpi-5-b: Add RP1 fan tachometer node
-> > 
-> >   .../bindings/hwmon/raspberrypi,rp1-fan.yaml   |  39 +++++
-> >   Documentation/hwmon/index.rst                 |   1 +
-> >   Documentation/hwmon/rp1-fan.rst               |  41 ++++++
-> >   MAINTAINERS                                   |   1 +
-> >   .../boot/dts/broadcom/bcm2712-rpi-5-b.dts     |   5 +
-> >   drivers/hwmon/Kconfig                         |  11 ++
-> >   drivers/hwmon/Makefile                        |   1 +
-> >   drivers/hwmon/rp1-hwmon.c                     | 136 ++++++++++++++++++
-> >   drivers/pwm/pwm-rp1.c                         |  27 ++++
-> 
-> Either case, there is no such driver in mainline or linux-next.
-
-As stated in the cover letter, the pwm driver comes from the prerequisite in [1].
-
-Many thanks,
-Andrea
-
-> 
-> Guenter
-> 
-> >   include/soc/bcm2835/raspberrypi-pwm-rp1.h     |  10 ++
-> >   10 files changed, 272 insertions(+)
-> >   create mode 100644 Documentation/devicetree/bindings/hwmon/raspberrypi,rp1-fan.yaml
-> >   create mode 100644 Documentation/hwmon/rp1-fan.rst
-> >   create mode 100644 drivers/hwmon/rp1-hwmon.c
-> >   create mode 100644 include/soc/bcm2835/raspberrypi-pwm-rp1.h
-> > 
-> 
