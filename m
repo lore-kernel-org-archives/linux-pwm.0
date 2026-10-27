@@ -1,96 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=44.202.169.35
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793108928;
-	b=QF+x1XdfAkupMmv+UaYAmgc0aVaPE+yENTA/ciFjClboBsd4vlr/H1a/4tZrj3hdbiuW
-	 /D4i1ZLrGMySGvcBVE1WSGI8xfL4lFSiH8rP28nLIJ16wJjA2jZu1PmQckqyRhRwH5z85
-	 Whf+6AwbVSOLbH9898wyb714WvhztAP3Bg/zcG/EyY1GrW6JSSXJb/m/rjoDDCLqw5nba
-	 wR8HM9w3r2i4U4JqSu12XqdxEWN87aIHmi9zihtgi2RNyJLutY1IVw9fkW4tz+B6luNFF
-	 3Vmh2tjiMNSq45iD2vSZtTUuwks7gIgZbicChv5eqScKGVmJntrt8aO51H9v0rPeK8Q==
+	t=1793109464;
+	b=GaeDBpydKtk8hPjOtVVkHi06ndBmeLyUWNTfXiGlUuQOtobW6NWbYMBuBcUw+YMEcODc
+	 66XuxzqVWIm+IaKPivEy/mvnrP0co4d3SzuYNVqTVqE7gM5OIjjAvh9M/Ftm9944+7Ti+
+	 KSJ045xaZwRHQfjPFzgJp+bnxfc7oyitU74Zd1zqFXwX7ehT7LzZrAiKwcImbBIlib2zZ
+	 TS/BbrWYZqgKwAaUgrB+5hwfUvPdqm5AsqIPLzVZWSVQZNhylhiIRE18n/JW2x8o5W8Iu
+	 xOCo1EWfBgTyDVkMwfXOxQQiqtjRZq3lCND0DM2Zp80jEifajjadL6KNfR1y9ho9kOQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793108928;
-	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
-	 X-AntiAbuse:X-BWhitelist:X-Source-IP:X-Source-L:X-Exim-ID:X-Source:
-	 X-Source-Args:X-Source-Dir:X-Source-Sender:X-Source-Auth:
-	 X-Email-Count:X-Org:X-Source-Cap:X-Local-Domain:X-CMAE-Envelope;
-	bh=xnmTt7xAHrUILK2F5tw9jpxyescs2qacR8TokbmgBtk=;
-	b=hflbJIb9OpO49WGs1+dh6TTB/UVLQB9i65e4eHnTnTY1PYBtSyMzoViNWOL7IM4GUowG
-	 pxciL/L9yyCP010IAgoQx10QHLrLvKJo7PpK9teQaVjnsCBCbLv5h4AhLfkEYs0KzWui4
-	 JmRYhrvoWBfOBNvUd/GCG7FP/1qpum4CBgScqv5SIqRvmV6l6FIoAqVp/wNkals2Vqu8L
-	 DK6IKUdFP7IiqgotImWrbRXm5Y/c9YfloxZZa2s6z6EKzZY0n6i4RlnXss7qu1HgC+PPZ
-	 guoicm8QPjhgLJLrameCcA+0Y/dsgO3Jmb+nuL2egJdzVzbZuojLYf/zQxMPb0l5pDw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793109464;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=XNC5//Bd5KQNucbkx3QsmmiwGgEOwdHKbps9MXx0uvM=;
+	b=T+tIFWDKiCPmMm3SKybtNgUvCbXCCY1N5Xa/0kMsDLbj8FQfApOVOMsAbAQ4Oj29klTh
+	 FukOSpl3COrJSAmQtMK/grDVo95M6/YABxRcoRbkPPMvsnUyYFnjb5o5EN6aJh6AhlBof
+	 +Dje8paXnLTx50hIgFrPnTGQd3mtUIPn/QexmYFJw8U0xYi6OB/8+If7iN8LEa7RcbSE6
+	 ZXutNoYzo8nfTDqm+b4Cht4KR0sYRufRSCHCuWzn9qxargPRgpj7cdcxT1AkipRxhLt4u
+	 f9IFp7dyVFiyp0NFSvFji3zRJ79pDAHA+h9cMHHtxrim1WE5Y45O6JVNBe1IZRuTTpg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=roeck-us.net;
-	spf=fail smtp.mailfrom=roeck-us.net;
-	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=SpXCwzbR;
-	arc=none smtp.remote-ip=44.202.169.35
-Received: from omta036.useast.a.cloudfilter.net (omta036.useast.a.cloudfilter.net [44.202.169.35])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=baylibre.com;
+	spf=pass smtp.mailfrom=baylibre.com;
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=TkbsQAyX;
+	arc=none smtp.remote-ip=209.85.221.179
+Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F78F606A31D
-	for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 13:48:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2F78F606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC07D606A31B
+	for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 13:57:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EC07D606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=SpXCwzbR
-Received: from eig-obgw-5001b.ext.cloudfilter.net ([10.0.29.181])
-	by cmsmtp with ESMTPS
-	id LeuQx7z4TLvgbLhXjxu6PC; Tue, 27 Oct 2026 13:48:47 +0000
-Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
-	by cmsmtp with ESMTPS
-	id LhXixKFntp4IlLhXixLbvo; Tue, 27 Oct 2026 13:48:47 +0000
-X-Authority-Analysis: v=2.4 cv=X59SKHTe c=1 sm=1 tr=0 ts=6ae0abbf
- a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
- a=8nJEP1OIZ-IA:10 a=660iZSQnnn4A:10 a=M0FbrtG7MMAA:10 a=VwQbUJbxAAAA:8
- a=iox4zFpeAAAA:8 a=SGJkWrW82lNR26rtH8EA:9 a=3ZKOabzyN94A:10 a=wPNLvfGTeEIA:10
- a=WzC6qhA0u3u7Ye7llzcV:22 a=KPbNTLLc3YvdawN95zVk:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=roeck-us.net; s=default; h=In-Reply-To:Content-Transfer-Encoding:
-	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-	Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
-	List-Archive; bh=xnmTt7xAHrUILK2F5tw9jpxyescs2qacR8TokbmgBtk=; b=SpXCwzbRcHVw
-	N2YxxPeLLeWmEdPesF9F/Tvwg3/Ur+cwc0BNs5PkwRihIB8ZMpHxkfenhxHZpiilczHaa4BtNtJ1l
-	MQnh1TC5aAZMz+jcAA5b/5ruWpsHOZrFPKBcqgrpVB3caHvWBe1ZNul0by2cPjbo+g7bcc2QVh+57
-	V6+/SqH5BLHSkzcWPPnOglmu2ivP6fkSwwKLoaDhSDx727CnyZj1Tp4091tI/+Uj6SFEuba4GhaTl
-	igg3Fb3jjUNUqPtxHIgSUTYnREXjUpO4E5Wjps/Jf4KT2tqED6oeLR6WZpxmMaRsTbbMxiLK7yK0h
-	Q6z0bqsN0q8zSZQDFgNCgQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:34878 helo=server.roeck-us.net)
-	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <linux@roeck-us.net>)
-	id 1xLhXf-00000003hnK-28cN;
-	Tue, 27 Oct 2026 19:18:43 +0530
-Date: Tue, 27 Oct 2026 06:48:42 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Andrea della Porta <andrea.porta@suse.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	Gregor Herburger <gregor.herburger@linutronix.de>,
-	Stanimir Varbanov <svarbanov@suse.de>, linux-hwmon@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
-	Gary Guo <gary@garyguo.net>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH RFC 0/4] hwmon: Add fan tachometer support for Raspberry
- Pi RP1
-Message-ID: <53a4b4bb-271c-4d2d-a9e4-cec4e0ce214b@roeck-us.net>
-References: <cover.1792748690.git.andrea.porta@suse.com>
- <7df58d42-517c-4936-88b0-9d044d30882c@roeck-us.net>
- <auBzvB8TsvIK8Hik@apocalypse>
+	dkim=pass (2048-bit key, unprotected) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=TkbsQAyX
+Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-5ec20398b05so2068074e0c.1
+        for <linux-pwm@vger.kernel.org>; Tue, 27 Oct 2026 06:57:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1793109462; x=1793714262; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=XNC5//Bd5KQNucbkx3QsmmiwGgEOwdHKbps9MXx0uvM=;
+        b=TkbsQAyXGKVOh4P3gGZJI3I5gIw8bdysgrfJs2qaOq5U87UCo/FrqhcislapkmmaJK
+         yl5BH3bbzhb75Sbi9Z+GxS0lf9Irzn2mIqo5OcjlZowzCldQCBzz0W9naKDbEu/OlkwL
+         8drVocRWTD3jV7+RG4lY2vpoL0vzyLROw4V04gVEr7wvsdUlc0GMwX7KWRgvPzysN45/
+         +rH2u92AQMv0X1jRcNjIkiKr2wEo5jwTeLGGJv8u3/Ao7Bz0/3xTYwsFpdh4XgiL/kPO
+         xvpsZemcTVp/ZpF6rqG3JMsFYiSkVTRs3fxCXL6z3VNXzRA7pPlTuQcPULdsmIzLaBE+
+         oUGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793109462; x=1793714262;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=XNC5//Bd5KQNucbkx3QsmmiwGgEOwdHKbps9MXx0uvM=;
+        b=CukD/OammlxBGDj/OYcldyqc0itHn+Y99yWIhlfEcsfW+lnoFB57KDFLvyXoJim3wE
+         TSY7K+X4HgMo0McPtI9E2OL2Mh9FWi4zGku7tTPSnZYj40irMfIF3WCuZQTMCuXYN/Og
+         1zAXe+O49CxHNh1inKzcFlip6Ke0KS62cxNzEfH7gSXD1mfTN/EfzxXLsH23ED4xZYid
+         yfq73SNQvqCJQ/HyTBXKWUskhlki+Zj1/O4TAqmFFl/aUu716zUyEU83+KFd2b6ZwR4R
+         7+tR42aIid7JIb797tZlwTamDPvMGCTlJR/Jed4XLtq3bwx6P8zgayXX1ZV26sjUdaBF
+         Ekcw==
+X-Forwarded-Encrypted: i=1; AKwUvBxY3fGRZkOGkxq7pCZP7d4aFNXg2Nr2Y1eUol8i4GuToVcGhSYnF5Ax60f3ThJmU3YFvnRLr0YbRWA=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJDCDjbFTWGfKZQn+HMgOEmjG5uQf8uvjOkcOO5HXXXy3d7F7JF
+	ypR/FzFi6POFT9vE1MTQq9QJLStdvlg6pRpCMymeMhMB+94SiomAv5tas7DmLy+KYno=
+X-Gm-Gg: AYBFou0sh2ijU5cL7xfJ3cwHKwsmTEfgtwq5H0eMPfQOycJtVDI9r6fDJ6cL40KuCTa
+	Y72iV+joM74IoB6rXakXYZMFu5Qj1WbWksuOFbVjoZzTdUX81Q+2k/Jg9BNZEWnWvKRB/bxX5VU
+	0VlZYDTliakt9H2NhhbYqEglhe/gPxFVMY0vc7VUs+J0z65vN3XpT6TJNJp5t6QRXPr9e0Yr38G
+	yTh6OgMoxw7kmoDwQE0tIHeydMjGojhRMkq9ISKPeieTqNfTS0k7qcWOtxYAaby/9db9tKGr97b
+	rLdisfsqiMgg9Fpzk5i+AKWvVwFBN1Mf2WJpOpN8g1RBUL7d5iZLnDTIh1JTf1EdOa8KMrDsSdT
+	h715W5CY6INbSKk23C5P+8bfLgEzC5G8TztsooG7kk6OjnnoMnbFQIuSeu01BWRKpOVa1NTi+J2
+	cb9mZ7ORKFdH0aT4hTaloMIvcHmerCUFoKpLUcpQMaypj7IKWOAeYqaVnES7ERa3nJgV91xp5bp
+	mHWQ9YQzs02AMoJP1AIYZhVCzqZB3KIuut22EVO3GFcYNOlgyGWEyr6z+bFPqUANwaQZAC8oCeQ
+	U+L+nDxayQF+aQ==
+X-Received: by 2002:a05:6122:1c07:b0:5ea:a1ad:6376 with SMTP id 71dfb90a1353d-5ec230a26b8mr4056026e0c.1.1793109461968;
+        Tue, 27 Oct 2026 06:57:41 -0700 (PDT)
+Received: from hiagonb ([2804:14c:4c5:8bf0::33ca])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ec2343a846sm11578284e0c.10.2026.10.27.06.57.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 06:57:41 -0700 (PDT)
+Date: Tue, 27 Oct 2026 10:57:29 -0300
+From: Hiago De Franco <hfranco@baylibre.com>
+To: Thomas Bonnefille <thomas.bonnefille@bootlin.com>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Chen Wang <unicorn_wang@outlook.com>, 
+	Inochi Amaoto <inochiama@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
+	=?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, 
+	sophgo@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Jingbao Qiu <qiujingbao.dlmu@gmail.com>, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v8 0/2] riscv: pwm: sophgo: add pwm support for CV1800
+Message-ID: <auCsaQt0kda01tZ4@hiagonb>
+References: <20250509-pwm_sophgo-v8-0-cfaebeb8ee17@bootlin.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -100,126 +101,134 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <auBzvB8TsvIK8Hik@apocalypse>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1xLhXf-00000003hnK-28cN
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (server.roeck-us.net) [108.223.40.66]:34878
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 4
-X-Org: HG=direseller_whb_net_legacy;ORG=directi;
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfGtWfMx4SB+ptxnQ9x1ly5Efm16NnL6vyWUycO7QVUJzR4S+dBe1NAvKJYDFrBRbwck4UpGJGrRsC9iWg5FYwQGXoo7VdyermppJmluvWFJo2j9eR5Dt
- dfDiR8xkTND8Na2eUI0bulB0U6pIFFFlq4NzW7oLpMHQs6rIx8FPFcAXR2woPql9o9XjdoRDa6lVhPOed0SIpeOPj8Wxu7sXjaYy8DBgQasVH+jxETGP4D4P
+In-Reply-To: <20250509-pwm_sophgo-v8-0-cfaebeb8ee17@bootlin.com>
 
-On Tue, Oct 27, 2026 at 10:49:48AM +0100, Andrea della Porta wrote:
-> Hi Guenter,
+Hello all,
+
+On Fri, May 09, 2025 at 11:45:42AM +0200, Thomas Bonnefille wrote:
+> The Sophgo CV1800 chip provides a set of four independent
+> PWM channel outputs.
+> This series adds PWM controller support for Sophgo cv1800.
 > 
-> On 09:24 Mon 26 Oct     , Guenter Roeck wrote:
-> > On 10/23/26 03:15, Andrea della Porta wrote:
-> > > Hi,
-> > > 
-> > > This patch series adds fan tachometer / RPM monitoring support for the
-> > > Raspberry Pi RP1 southbridge found on the Raspberry Pi 5.
-> > > Please note that the patchset in [1] is a prerequisite for this one.
-> > > 
-> > > On the Raspberry Pi RP1, the active cooling fan speed is controlled via
-> > > the RP1 PWM controller. In addition to generating PWM signals, the RP1
-> > > monitors fan tachometer pulses. The pulse measurement and RPM calculation
-> > > are performed autonomously by the RP1's onboard Cortex-M microcontroller
-> > > core, which periodically writes the computed RPM value directly into
-> > > dedicated MMIO registers located within the RP1 PWM hardware block.
-> > > 
-> > > During earlier discussions, Uwe Kleine-König explicitly indicated a
-> > > preference to keep the core PWM controller driver (drivers/pwm/pwm-rp1.c)
-> > > focused strictly on PWM duties, rather than bloating it by registering an
-> > > hwmon device directly from within the PWM driver (see [2]).
-> > > 
-> > > Because the Linux PWM subsystem currently lacks a generic framework or
-> > > consumer API for reporting hardware-calculated tachometer readings, this
-> > > series implements a standalone hwmon driver (rp1-fan) using the following
-> > > structure:
-> > > 
-> > > -  The PWM driver exposes and exports rp1_pwm_read_tachometer() within a
-> > >     dedicated symbol namespace ('RP1_PWM') to read the RPM value from
-> > >     the MMIO block.
-> > > -  A companion DT binding (raspberrypi,rp1-fan.yaml) introduces a vendor
-> > >     property, 'raspberrypi,pwm-tachometer', to link the fan node to the
-> > >     PWM controller node without overloading or abusing the standard 'pwms'
-> > >     property.
-> > > -  The rp1-fan hwmon driver parses this phandle, establishes a device link
-> > >     for proper runtime and unbind dependency management, and registers the
-> > >     standard hwmon 'fan1_input' sysfs attribute.
-> > > 
-> > > An alternative architectural approach to the DT phandle + exported helper
-> > > method would be to model the tachometer as a child device using the
-> > > auxiliary bus framework (drivers/base/auxiliary.c). In that model, the RP1
-> > > PWM driver would instantiate an auxiliary device for the tachometer, and
-> > > the hwmon driver would bind to that auxiliary bus device without requiring
-> > > a separate DT node.
-> > > 
-> > > However, adopting the auxiliary bus would require a more significant
-> > > rework and refactoring of the existing RP1 PWM driver.
-> > > 
-> > > I'd appreciate any feedback on whether the current companion driver with
-> > > a dedicated DT property is acceptable, or if an auxiliary bus-based
-> > > refactoring of the PWM driver is the preferred upstream path.
-> > > 
-> > > Patch Breakdown
-> > > ---------------
-> > > Patch 1: pwm: rp1: Export helper to read fan tachometer RPM
-> > > Patch 2: dt-bindings: hwmon: Add Raspberry Pi RP1 fan binding
-> > > Patch 3: hwmon: Add driver for Raspberry Pi RP1 fan tachometer
-> > 
-> > This seems conceptually wrong.
-> > 
-> > Have you considered implementing the hwmon driver as auxiliary driver
-> > and accessing the register in question through regmap ?
+> Signed-off-by: Jingbao Qiu <qiujingbao.dlmu@gmail.com>
+> [Thomas since v8]
+> Signed-off-by: Thomas Bonnefille <thomas.bonnefille@bootlin.com>
+
+I see this series is abandoned. I worked on a patch to enable PWM for
+cv1800b reusing pwm-sophgo-sg2042.c driver [1], as Uwe asked.
+
+Is it ok if I take over this patch?
+
+If yes, I will wait v7.4-rc1 and send the new series.
+
+[1] https://github.com/hiagofranco/linux/tree/v7.3-milkv-duo-pwm
+
+> ---
+> Changes in v8:
+> - Rewrote supported frequency
+> - Hardcoded HLPERIOD_BASE and PERIDO_BASE
+> - Change usage of update_bits to set/clear bits when needed
+> - Rewrote construct of enablement of PWM
+> - Fixed OE activation
+> - Fixed hw state modification in case where pwm value cannot be reached
+> - Renamed variables
+> - Errors out for new cases
+> - Reworded some comments
 > 
-> Yes, I also proposed that in the cover letter because auxbus seems also a viable
-> solution.
+> v7: https://lore.kernel.org/linux-pwm/20240501083242.773305-1-qiujingbao.dlmu@gmail.com/
 > 
-> The current implementation is a consequence to the discussion about the companion
-> PWM driver, from here (and the revisions that followed):
+> Changes in v7:
+> - add detailed Limitations
+> - using BIT(n) instead BIT(0) << n
+> - use 0 instead of disable macro
+> - modify OE judgment criteria
+> - add devm_regmap_init_mmio error message
+> - delete unused variable
 > 
-> https://lore.kernel.org/all/cover.1775223441.git.andrea.porta@suse.com/
+> v6: https://lore.kernel.org/all/20240406063413.3334639-1-qiujingbao.dlmu@gmail.com/
 > 
-> To give a short and hopefully coherent view of the decisions, here's a breakdown:
+> Changes in v6:
+> - delete the OE function because we plan to use the counter subsystem
+>   instead of capture, so there is no need to reuse this code.
+> - fix set polarity reverse error.
 > 
-> - first proposal: PWM driver + fan hwmon (to read the RPM), all in the same driver
+> v5: https://lore.kernel.org/all/20240314100131.323540-1-qiujingbao.dlmu@gmail.com/
 > 
-> - V2: Uwe preferred to split the PWM driver from the hwmon one, so the hwmon was
->   dropped from teh PWM driver in favor of a future (fan) driver. To accomplish this,
->   I moved from readl/writel to regmap + syscon.
+> Changes in v5:
+> - drop filename
+> - fix macro
+> - optimize cv1800_pwm_set_polarity()
+> - optimize cv1800_pwm_set_oe()
+> - add comment for cv1800_pwm_set_oe()
+> - use ticks replace tem
+> - fix duty_cycle larger than period_val
+> - use devm_clk_rate_exclusive_get() replace
+>   clk_rate_exclusive_get()
+> - map linux polarity to register polarity 
 > 
-> - V8: Gary proposed to export a function to read the fan RPM as a viable
->   solution. As a result, the regmap/syscon was dropped as it was no longer needed
->   and the function has been exported from the PWM driver
+> v4: https://lore.kernel.org/all/20240304085933.1246964-1-qiujingbao.dlmu@gmail.com/
 > 
-> - new patchset for fan driver: the now independent hwmon moodle just call the
->   exported function from thw PWM driver.
+> datasheet Link: https://github.com/milkv-duo/duo-files/blob/main/duo/datasheet/CV1800B-CV1801B-Preliminary-Datasheet-full-en.pdf
+> page 614
 > 
-> If the auxiliary bus is indeed the preferred approach, I'd like to ensure we are
-> all aligned, as this would also require refactoring the PWM driver.
+> Changes in v4:
+> - use macro instead of npwm number
+> - add support for polarity feature
+> - add support for Output-Enable/OE feature
+> 
+> v3: https://lore.kernel.org/all/20240223082014.109385-1-qiujingbao.dlmu@gmail.com/
+> 
+> Changes in v3:
+> - use 0x08 instead of macro
+> - split if statements based on conditions
+> - in order to round up, first calculate the
+>   number of high-level cycles, then subtract
+>   it from the PERIOD to obtain the number of HLPERIOD
+> - use new pwmchip_alloc() API instead of old style
+> 
+> v2: https://lore.kernel.org/all/20240212121729.1086718-1-qiujingbao.dlmu@gmail.com/
+> 
+> Changes in v2:
+> - drop full stop from subject
+> - re-order maintainers and description
+> - pass checkpatch.pl --strict
+> - fix naming errors
+> - add "Limitations" section
+> - use a driver specific prefix for all defines
+> - using bool instead u32 in cv1800_pwm_enable
+> - check and set state->polarity
+> - use mul_u64_u64_div_u64
+> - use clk_rate_exclusive_get(), balance with clk_rate_exclusive_put()
+> - using macro definitions instead of shift operations
+> - remove shift operation on 0
+> - use priv replace cv_pwm
+> - hardcode npwm
+> - set atomic to true
+> - remove MODULE_ALIAS
+> 
+> v1: https://lore.kernel.org/all/20240207055856.672184-1-qiujingbao.dlmu@gmail.com/
+> 
+> ---
+> Jingbao Qiu (2):
+>       dt-bindings: pwm: sophgo: add pwm for Sophgo CV1800 series SoC
+>       pwm: sophgo: add pwm support for Sophgo CV1800 SoC
+> 
+>  .../devicetree/bindings/pwm/sophgo,cv1800-pwm.yaml |  45 ++++
+>  drivers/pwm/Kconfig                                |  10 +
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-cv1800.c                           | 294 +++++++++++++++++++++
+>  4 files changed, 350 insertions(+)
+> ---
+> base-commit: 0af2f6be1b4281385b618cb86ad946eded089ac8
+> change-id: 20250407-pwm_sophgo-5032b3858c27
+> 
+> Best regards,
+> -- 
+> Thomas Bonnefille <thomas.bonnefille@bootlin.com>
 > 
 
-Let's say it that way: If you don't want to implement the auxiliary driver,
-and you insist using the exported function, I would prefer for you to go back
-to the first solution. The one thing I really dislike is conceptually broken
-code, and I consider the current approach broken. Your call, but the one thing
-I won't accept is the code with the exported function.
-
-Guenter
+Best regards,
+-- 
+Hiago
