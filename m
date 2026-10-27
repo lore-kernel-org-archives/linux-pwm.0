@@ -1,52 +1,52 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.39.247.168
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793088217;
-	b=USGLAreICKgn/NF2qIMQcDAwBC/6huCr4YgQ+oiDGc+NayoZc5xdVAYH8hU9nvKe20ej
-	 BqAnN9pSOCKojKq5lIDKhmYcGs+uAfpagPYTO5uL08nMKaRW5ASWi6Ocica+TI4WJWL13
-	 FFE+4FOIxDi+gUu/BLuD8i7fg5WA5HOADdifq6+NKFCm4whLI9ayVwhOM7pqxVlat+GoY
-	 ckrQTCjDR33hIJO4crWlRT8mFuO9Sp0j1T85vnNrblBlkFLUSryRoUxzE9otoOAOy2Ps1
-	 HKIiEUgVdlX2VIC2BdKjGvcMq0A/24MgENBmH+n/cjUD3Ya9FqTCAxPfuciTvHCMy2A==
+	t=1793088219;
+	b=kK9atvXiMVQ2IMLMvxrom8QlIdjGZjphXKcPYSqatseJPtwXywZxLaApMjdXekI3ZOx8
+	 2hzEpS0LTCLDNSfYgCL3Mj6e/f0HO60qz4kXbmIvxxoc7rZxwIAf7SGEOVU0Khi/U6MSw
+	 gle7myAGtHpeEmYbLgI9xrCqjMdLqfr6wqT6cv9JFhCj2FLIyj/IuW+YrUZZ7mxOUTkvx
+	 B8ilSnEa/IqhCy2dddk4uql+W8YoReF0u/rEu5uHDQfBleetCssCWMrAgMUfB5yJXQtuM
+	 IdulXKBlnuItuqW/fmxorGS2mLS9LviKMH/YJFgI92U6nF3VRQgRSPCLheWobyV9s/w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793088217;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793088219;
 	h=DMARC-Filter:From:DKIM-Signature:Date:Subject:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc;
-	bh=dn+ttLjJ/5MynkGaqKFazCfLlj9psHNlnn9E9KLcwZw=;
-	b=ffZztV+cBHBOEUm+JuJLoXyjLpaUdwcV8MOz2GeKzGm1ymG4wNVgwwisHL9Ls7dUxamB
-	 7shNHZfiN4hIBYE1uwCseLhqPnXRO+u1/4/QzAj5D3P7wmUBP30TYvHQecH4GTqQVT8Zp
-	 Gu6etTyWjoYtU43NzlunlcdIzgn9nTlOScfsFRcfx0YNmdZSgrtbDENH1yXfBQIGp+3E6
-	 NAUWaA9k9K/lj54pGPA9MPDTShUaioGqpq138seg6KUx4KKq+KFpGKx3HYog6mypbkc+j
-	 nU6xk32pjvlurRX8BXGivulqE6/kxuNm6Appezl/+IGN+1Q5sXxZxIXrJZk7mzxKTfA==
+	bh=OvRAW5jWXAqOgYFFCKh4yUQJFXVArQqv2tM8QSxA/7E=;
+	b=0Tso0rLsrWKd35G7yL1pF1AEtraGMEeXb9aBlrW9gO5+Xns7YXCFWdVYgAbzECUpSTsY
+	 d5ZN1LIuZa+XURm+ESY5wkRIh0kganY+fBHvKku81AHqGluoZM9+7X3soQd3o8rF6JYed
+	 bozkTT4QbCcBuEB2fwo3JC1HFfsZy8aJW/+cpG4LQUOn8o/EQ24FH7sKCYEXoTEOvSJSk
+	 Tf+gpH3nTMWIWXF1J0OGOB2YFmmqbaIaImKoeJoMSrP/mVJBE3sNrgFw+1BAgmijMyvvD
+	 eU34t7azLS9TZNAFUV7p8wFCLaYLsrloKn658eNCRrClttS4gkQnh29BXH7Vhu7aikw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=cyberchaos.dev;
 	spf=pass smtp.mailfrom=cyberchaos.dev;
-	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=RhsTqH4v;
+	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=hU7Wm6go;
 	arc=none smtp.remote-ip=195.39.247.168
 Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BB27606A31D;
-	Tue, 27 Oct 2026 08:03:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2BB27606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BFD1606A336;
+	Tue, 27 Oct 2026 08:03:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1BFD1606A336
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=RhsTqH4v
+	dkim=pass (1024-bit key, unprotected) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=hU7Wm6go
 From: Yureka Lilian <yureka@cyberchaos.dev>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1793088209;
+	s=mail; t=1793088211;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=dn+ttLjJ/5MynkGaqKFazCfLlj9psHNlnn9E9KLcwZw=;
-	b=RhsTqH4vn2aLEFAkDrnxn8OxHKSXJXesZNA9xgKwxrzq5QmvOKqy8hqbpKv5WYf0t0Mit4
-	8lcEf4FAp3yI54NGMYkzFLRtxLwFDyziUW1DTfWEXt7vzjOoGTw5UL1lulTGFBwwOv3iGs
-	Yp6YQArFZuc3HcAqpZ5c8cfN1c8Jsjk=
-Date: Tue, 27 Oct 2026 09:03:21 +0100
-Subject: [PATCH 01/10] dt-bindings: watchdog: apple,wdt: Add t8142
- compatible
+	bh=OvRAW5jWXAqOgYFFCKh4yUQJFXVArQqv2tM8QSxA/7E=;
+	b=hU7Wm6goihcwaiFPvNDQmNagCPPBiB2424huaCjAhpUn75tb8dKyR9+vZYkVk2rzesedAN
+	ljLKAqepiU3P19/MyzSF8sLlWCy6C+eVBZ34yw0UNlSoAMnHiDz0N0FDiJ92+zT6rTRhh9
+	IN73x+o5FEmXrS6259UH/eTpqd22rNg=
+Date: Tue, 27 Oct 2026 09:03:24 +0100
+Subject: [PATCH 04/10] dt-bindings: arm: power: apple,pmgr-pwrstate: Add
+ t8142 compatible
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -58,7 +58,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261027-apple-m5-initial-devicetrees-v1-1-1356181bc50d@cyberchaos.dev>
+Message-Id: <20261027-apple-m5-initial-devicetrees-v1-4-1356181bc50d@cyberchaos.dev>
 References: <20261027-apple-m5-initial-devicetrees-v1-0-1356181bc50d@cyberchaos.dev>
 In-Reply-To: <20261027-apple-m5-initial-devicetrees-v1-0-1356181bc50d@cyberchaos.dev>
 To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
@@ -77,26 +77,27 @@ Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
  Yureka Lilian <yureka@cyberchaos.dev>
 
-The watchdog on the Apple t8142 (M5) SoC is compatible with the M1-M4
-SoCs. Add "apple,t8142-wdt" as SoC specific compatible.
+The device power state management of the PMGR blocks on the Apple
+silicon M5 SoC (t8142) is compatible with the M1-M4 SoCs.
+Add "apple,t8142-pmgr-pwrstate" as M5 specific compatible.
 
 Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
 ---
- Documentation/devicetree/bindings/watchdog/apple,wdt.yaml | 1 +
+ Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/watchdog/apple,wdt.yaml b/Documentation/devicetree/bindings/watchdog/apple,wdt.yaml
-index 00b0f2ec2bdb..8dc71a79af88 100644
---- a/Documentation/devicetree/bindings/watchdog/apple,wdt.yaml
-+++ b/Documentation/devicetree/bindings/watchdog/apple,wdt.yaml
-@@ -24,6 +24,7 @@ properties:
-               - apple,t8122-wdt
-               - apple,t8132-wdt
-               - apple,t8140-wdt
-+              - apple,t8142-wdt
-           - const: apple,t8103-wdt
-       - items:
-           - enum:
+diff --git a/Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml b/Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml
+index a37a837a4eac..451f2a80f844 100644
+--- a/Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml
++++ b/Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml
+@@ -51,6 +51,7 @@ properties:
+               - apple,t8122-pmgr-pwrstate
+               - apple,t8132-pmgr-pwrstate
+               - apple,t8140-pmgr-pwrstate
++              - apple,t8142-pmgr-pwrstate
+           - const: apple,t8103-pmgr-pwrstate
+ 
+   reg:
 
 -- 
 2.56.0
