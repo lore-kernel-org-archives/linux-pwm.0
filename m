@@ -1,66 +1,66 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.233.34.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.233.34.146
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793265762;
-	b=z62UXctMb4Q6DctbFQHXaUHhrv9Co/PyWx/uaUpRf8ibm0v1fuhTYOeO0JreHTiavEQy
-	 zMPT+9XJXLlV0GZqSq3BR15d5m5HXnkvb+ISwaKS6ZUyTsTzxgvfOz6wVUnaqbopHIIZA
-	 OWAUQ8hxr2WsGAumiH+vXvG4XuThmEXnh3kpK6Y4Se+YvEergQg1mYq404m6tY56EbZyZ
-	 BFM6Lf7Bprp09R8ZrKLpbjeQ93CPjpi5NlL1sT/hxX8ZF9MQTGcj7BRiZ5YcjgW/DOD3v
-	 QPAyf5Hc+5zSDMNMKw+NI5Pj5/Q6bzWvnNtbqn5p+MRKsyQe5FhkVrTmDjMjdisgeog==
+	t=1793265932;
+	b=PFG/TVQIH4D0C3d6D/WtjeeUgy9h0kXIdbIJQEzmYyiwyCwyl9f01f/X8SsiiCa/wMJU
+	 JjF23JYIvbDYrrIHGwfCRMeco6tKgB7PnZ0fr29gidHXEg5cs01CpZ5oZjb+20vcT9Z62
+	 VIB+NXpNgNAUUbpak/XmudzAMyUaJCCq9bX9eXtMnK+MF3xSDTAfl2DQm1DwnbNnbtL/0
+	 JBNw6QOEGqsr6wIy3UtMHRYx3RAhu1sbED0DXtZ7xu+6vCeWvp/+/CSpVKuE0Puj0ZIbE
+	 usxPb/MAdXlhepDf0EpxsSLBT5XF26ZDplU98hAktstE/twWhFv61/Vite/8hfe+zow==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793265762;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793265932;
 	h=DMARC-Filter:Received:Received:DKIM-Signature:X-CM-Envelope:
-	 X-Soverin-Id:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-Soverin-Id:Received:Date:From:To:Cc:Subject:Message-ID:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To:References:
 	 X-Spampanel-Class;
 	bh=lmBuoMUfPtdILzvdThWk+I2StXUMo6PgR05OK0TYJQ4=;
-	b=w1xPIeRs8zpfmLoOaV93bu+u56PSV5jVry8iPpLAjPaSRqxH/lSPtBeb9isUmr/7u1Ke
-	 /g5rpTUZRH0Wvttix3umnbB+b88VvceJFzcOU7uqLKrXoR5Zk1SSnZNhgfjbIjZDO6NBC
-	 JDXj3dFLInVKsQLAQWEF412PXyc/SEomi+3yeS+sVBLBLBXHrIsnV0RAv1C29fFGv+fAf
-	 5NWy9MLMurz+QfDuJWH/IHFRZWZGqgPZAOCKdubFNliLXtvh1xJqNfRnJ3dsFfM2ZF8gl
-	 8DoekMmP1NkfkdDGUAo1sVD12ygU4mmLaQLvL9SXx8QaimaD8Ly3McSjMvUuiTh2pFA==
+	b=cMZcTLYm9GaMVGyDUBCtmImVLKr9hC2eQTCXkgMn7MSPB0e2LDwhLhixuz16sd0IrSoJ
+	 +iuXO1IJIYjH0b/T58jpcGlC1shTbIlav5TuGjADRBdv9NAlqMu+Jo8zKu7JCB7eKXPOD
+	 NxzepA/zqfV5IV4Mvb3tJwuw1qHR65haanmPNVJ55hJoWDSQxSwYeqn+9WgKbd0m9scDO
+	 zDDOHRwdETKNb4OK1vHrK2dSw9O1bPt/GcF8epJgxKzMRFV2HGcv7qi455ESanN4TLfEw
+	 35eAIP5ndE9EUl4RLOBU5ZmO1M+5r1nQ3FgeKkb2AywNJIZd+iQ34UrTWwl1HHEgQyQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=blackstar.nl;
 	spf=pass smtp.mailfrom=blackstar.nl;
-	dkim=pass header.d=blackstar.nl header.i=@blackstar.nl header.a=rsa-sha256 header.s=soverin header.b=Xp9mItBp;
-	arc=none smtp.remote-ip=185.233.34.18
-Received: from outbound.soverin.net (outbound.soverin.net [185.233.34.18])
+	dkim=pass header.d=blackstar.nl header.i=@blackstar.nl header.a=rsa-sha256 header.s=soverin header.b=brejh+2y;
+	arc=none smtp.remote-ip=185.233.34.146
+Received: from outbound.soverin.net (outbound.soverin.net [185.233.34.146])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AAFF606A31C;
-	Thu, 29 Oct 2026 09:22:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3AAFF606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1A48606A31A;
+	Thu, 29 Oct 2026 09:25:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D1A48606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=blackstar.nl
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=blackstar.nl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=blackstar.nl header.i=@blackstar.nl header.a=rsa-sha256 header.s=soverin header.b=Xp9mItBp
-Received: from smtp.freedom.nl (unknown [10.103.10.152])
+	dkim=pass (2048-bit key, unprotected) header.d=blackstar.nl header.i=@blackstar.nl header.a=rsa-sha256 header.s=soverin header.b=brejh+2y
+Received: from smtp.freedom.nl (unknown [10.102.10.153])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by outbound.soverin.net (Postfix) with ESMTPS id 4jFdzq0gk6z1NH0;
-	Thu, 29 Oct 2026 09:22:31 +0000 (UTC)
-Received: from smtp.freedom.nl (smtp.freedom.nl [10.103.10.152]) by freedom.nl (Postfix) with ESMTPSA id 4jFdzp5lKJz1DBX;
-	Thu, 29 Oct 2026 09:22:30 +0000 (UTC)
+	by outbound.soverin.net (Postfix) with ESMTPS id 4jFf374QNPzXTT;
+	Thu, 29 Oct 2026 09:25:23 +0000 (UTC)
+Received: from smtp.freedom.nl (smtp.freedom.nl [10.102.10.153]) by freedom.nl (Postfix) with ESMTPSA id 4jFf372mfvz1Fmh;
+	Thu, 29 Oct 2026 09:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=blackstar.nl;
-	s=soverin; t=1793265751;
+	s=soverin; t=1793265923;
 	bh=mPcH9yUJR8Lq6Viwwx8vM8rEwIePxRgjFV0ZYkyNql4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Xp9mItBpjh/pxgWpegBfAurtunamUF70aud0SJXY9Su4c+7JsT/e8y/cqUeqKd+WU
-	 p57x/IAFLS+azpdboKNGY0uxbYhS3pvlYBzWoKSspz7CS3xwAuh93FrsqhVj8suk9/
-	 sFFCD8XHHlFURy1WeXSGryw/gmpKvoiRiC15Icdy3SCl7BKmiROPBfRYd24bFpWzl0
-	 7x31PUXCncoy0PBd8k+G/BYabWRez5vORbqned7QVLs6NOOdEDJ0CNjWoOIlnC1e7G
-	 qgebL2cSyRgA3CZKbJofmA7zfYvRAVVbMHmSx1u1Ug/eHlXrO//HzQJHiNMW/8rdpq
-	 fSIDE0ig6Iu9A==
-X-CM-Envelope: MS4xfMVHYTJlhsrIp3dayFAJ3bdUU8/zYSur98eWcaQArq5n3dIy5cT3GmElwlcF0CZwaDmoiVrHOC4X7Y+eNno2nm2LxBbzj6+glBi0ALh20Iq1ZEPu4pnt aEtV9HJ39eO1tmeyKJ8cgSFehOjFn+FEfovV4DU9VF3bYnckXaDoavC0D4mcXAhTFSFK6JZL7tj3h5fKNiwNRwjwunif7636U3QX0oxMlRZuJSC0yCjYwWfS km3XEDhpGtRSBIpSewYboplHIPVQvYRv5kUfVck7EMjD4CYRxGOEyxkEZ6bj/Tx9F/BxMNlL+62KmsXwVvbSfVXJr9QNEb0+89tnVPtFmooP6tgLdTd8soJi YA4FZoSnlbxiH0U2BkmqMD++I5qQaGenpfi1/kxEVW8sHCQndU+urRLHzBFT/Xb7dvBf06jKNTi6jvGG3KfryjhaCsvyjwfNAKW2GZmnHex+ejxtPahMxE0e Cquv5lHigwcW2heGXACdzbe/mfSe7xO/8ymECn2X1Izf0kTcgA1fOE/6aYP9/undzFzE9Hw+Frk2B26n+13y3NLbh6ZenVmCrkcF7Q==
-X-Soverin-Id: 01a186f7-cff0-7f6d-b1a2-6ab1d5091462
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=brejh+2y6hqzLX63zDzi34bIaFMOoIaGxFxKN004YKZYe6T781WtXEBsBxzh4JngI
+	 vDrq7TrjL7vdRIrFGCovZEkLztHmXohw5vzR1n+bwKG+utErYgagnbsv9tlGubtPtY
+	 J+7wWtv857qeUglV2a6IIYvCvHn+c69ygv3ND2XwZZAKix09uB/2seIw54qIdlPE0N
+	 qnZv9GTksozeX2ZDezQFqOh6fk1rkj0ENXziA/EM+z6vG5QG6inwrgnkm5kDi/g2yb
+	 MXosi3dwDPlEcM3iqf0t+KR+qER4uvZis+qsmV4OPvqjbkwLUozWtTMqEC08Y8zQUc
+	 McDKK2REC/Ajg==
+X-CM-Envelope: MS4xfGhtgRHNjV/Y7PxulfcY31YnGRcDgXHoO4rsoQgcrPSH0vjkd497HF5N09wbnKa1pajdJ3yXRPC7uB2oXcwkwc10CtIJctelfMKsSxVM/nNRNfxsYsoE pEeYLSJO93yUjgo2RZCih2k8DQMD2FY2xMcuNVUIYccNxbSvUUp1RP3ilLye104ZS+eihWnyanA5MO1bXaxu9vNu/KZxXspU9kDs+UUd4P05h/eHJsjLRdHV Bja6idH+BZvVH6eUPq8ZvvY2Ykr3hfUMIF0S16WX48wkQjT4Mf4wddyGFv4x+HRbBbdbPmTnGSlBCPyMCtWe5+bTjGMEDJBxsD9JpliG83fD0r57n8mph5yM slIS+XHpu1mNzP3YRpA1zuLhrhw26aDCqBYtpTsU9rqX+hYcupADjws9aZQirCzNxPglggvWbypQkYn7SbU7pidrftqFRDg9LCigCoyPzr6gzKH6evQC73Vc lOrtnPG58TRoIkpN9MySt3/by57f0eJeZZ8oOBetOrTSlf1o3QqLmzvyFOztrbZl45fxBt3L2EV7Fgapnbe9nRXgs+ZBh4BQ9ASGdQ==
+X-Soverin-Id: 01a186fa-73b8-7625-910d-49e7a653716d
 Received: from blackstar.nl (m17r5.blackstar.nl [192.168.3.127])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange secp256r1 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.blackstar.nl (Postfix) with ESMTPS id 1C5CA3FA91;
-	Thu, 29 Oct 2026 10:22:30 +0100 (CET)
-Date: Thu, 29 Oct 2026 10:22:30 +0100
+	by mail.blackstar.nl (Postfix) with ESMTPS id CE5A63FA91;
+	Thu, 29 Oct 2026 10:25:22 +0100 (CET)
+Date: Thu, 29 Oct 2026 10:25:22 +0100
 From: Bas Vermeulen <bas.vermeulen@blackstar.nl>
 To: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
 Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
@@ -69,9 +69,7 @@ Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
 	linux-pwm@vger.kernel.org, linux-rockchip@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v5 3/6] pwm: Add rockchip PWMv4 driver
-Message-ID: <auMQVkm3liY6C2GU@blackstar.nl>
-References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
- <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
+Message-ID: <auMRAj9wGYmH6ZI1@blackstar.nl>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -84,6 +82,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
+References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
+ <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
 X-Spampanel-Class: ham
 
 Hi Nicolas,
