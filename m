@@ -1,102 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=213.167.242.64
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793354917;
-	b=zReVz1s6HmpokVYfYHm57q2aN6jRQR/kMmOBa3Af8hbAe4Drg6l5b5mnwPJKgvB13Omp
-	 CRWP7sKF+bTDNZOZF9liFB38t5LXXryhNaF0g+V87GIn7hz3gt8eJLQE5DDfEBrGAHkYS
-	 OYSLzNIR7ZHzvaYij5K9zcyIrThEsPo/gIRh7/gmlavtACY0Upt7XqFEKQOO2eJb0Miw9
-	 p7qz2/EruOBPMD/x6kdgcME+XhHWuvaoHiR7t2S9nQZfB5POrJcPm3Jt5dKQh/EP0NFlZ
-	 SMmHUq0adeS81vKOj/2YY/OSXq8+LOPJdj1pSKv7JXKg3XcJlW37OHBItrVSMrtt4Xw==
+	t=1793359398;
+	b=fpOJPDBwNnK+FcHHZxxlUcCrdBm9KXe7ggVJJd6OXMwjkBernfxq+SIgXfr5/hN/0kws
+	 FSqtiurxRw3I3lh/Jtt0GeFyn0W3QP8RB3GdRsAaoRCaQxo4j6XR1V8cuPhoiRSYzLSi6
+	 +B1ZWgQ898dcVzYN55EO21DUenNfcmKA+B0ejS0h8i/bkRrbUqimDun4Ad/GL4S5Y569R
+	 b8QGDEnGeXIyo7ZG7sFL4jorK5XOriWcF8sNAfeTLl+WuBzs5fUWqvYnWc+KjnexMHbxc
+	 Z40shyXi+7JrVXGGNtYF/7EF2rHhsboI70cI3iWtGKdZSXeqH8x5l2jiCPCAQNlRyWg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793354917;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
-	 X-Proofpoint-ORIG-GUID:X-Authority-Analysis:X-Proofpoint-GUID:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=rB83N3gV3BeJ5vg2nmtSPJxp4JMkDHnYRcorV3eP9TQ=;
-	b=AJeaJ3vAkEEulJucdydbeWFRD6PQP9Q5AsItoE0JFxD1kIybkVi1eRgK2YDp97gK0yMH
-	 RAi+iNrb4AB8BMdu/HPWZOjAV5xmAy6ERf7C90MPtJeirDr4tEOToyZ+wa8CPWG7VrjS3
-	 MduT2zJHop3Z+FHw3CzlR4NxlxEkqiPZTR+kQsprAnNm8/EOadp5k611DYUpWnF2SpcnH
-	 eisIZJP7RaHu+1O8i3pfEQ5XPVsRzB5C8oRtvp0qeXgPZP5OG0Vy2enAyrtDwyh60KkbO
-	 SdRrROvFMSddtpPhbdF1dn4MTb1HksJoLEPmtgaAniySObMpXklHJm/CYUjO2abpoDA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793359398;
+	h=DMARC-Filter:Received:DKIM-Signature:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To;
+	bh=GqD8gV1VbR94HboJm2ZWYB3hzF1YyVBGt4mXsTw30gc=;
+	b=0K5jzIX4tjpgTh6UvAIibohCzyU2L6x1RKfVxUHh+LU4nrQVmU9xk5WDbWQuKOQvP0Ud
+	 qMMBc66Es8IuSnyOIRH93BdyDY2529xI4vBcLtyncdUbuWUo8oXWKDhcZs6NjS/Vubjdz
+	 HaArkmxwsYEjwz4IAdWa15Ju6hQUJzj50JYxA1iWAHvwAinMbkrsc2i3eCnaPeQ70myJc
+	 Ok3+FWnYzwYHtc9Lbo23/0M8mfwQpLHUtc8Dh6JpFM8pmGoMfo//sDudT/+aoubLf6hkM
+	 fmaGNwDe+UEiySQd718REM8YiAGiA8wUskcAWIR3Vz3Rc0LwXaXxdnc/hiS1qRuG5UQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b="o/PJ5Mcp";
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=CmuYqQ53;
-	arc=none smtp.remote-ip=148.163.135.77
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	dmarc=pass header.from=ideasonboard.com;
+	spf=pass smtp.mailfrom=ideasonboard.com;
+	dkim=pass header.d=ideasonboard.com header.i=@ideasonboard.com header.a=rsa-sha256 header.s=mail header.b=o5D5kxem;
+	arc=none smtp.remote-ip=213.167.242.64
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF95606A31C;
-	Fri, 30 Oct 2026 10:08:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0FF95606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB942606A31C;
+	Fri, 30 Oct 2026 11:23:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BB942606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ideasonboard.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=o/PJ5Mcp;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=CmuYqQ53
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69U8H635602163;
-	Fri, 30 Oct 2026 06:08:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=rB83N3gV3BeJ5vg2nmtSPJxp4JMkDHnYRcorV3eP9TQ=; b=o/PJ5Mc
-	pjaHb/X6EI3oPQuxxA+GEz3s6qqHmxg7FpgKMI9/rUBt2y91JlmXC4OG8Dvat8dh
-	w5/6y9xQjbTBg1fdL8T59Dpsr0QhltFxxp5bN6698rt5/hkwrzG/dXz4KCpwVJdZ
-	V1TwSXLWfJJvugGXTIsTvQS5JIUlS0vlIYPsBZDMmKirkqmHTqDhhIc+FTLD/L5y
-	MHTdboWJQHryMRi4pi5S1A5hNHrhh3C6+jFKr2Rb13Md+wSyeQIg6WvibAnWLS7a
-	dYForgNn1pEgQ1sBsCi/QXOWuZxdhGJm5EU4Wx45sRGYkvU8hJLFUQiHQllFFum4
-	ZrN6VPFARI+1bOw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=rB83N
-	3gV3BeJ5vg2nmtSPJxp4JMkDHnYRcorV3eP9TQ=; b=CmuYqQ53BKrE2PwWZyoIJ
-	NwmJZjDoOcKGFiBUfevb6y4EKAzaf5WYiZCYSl8lE4EElw0IiB68T5ddBV9AVGLn
-	HgeY2zEDjzHiaFEpHsnK/A0RiXbZgtufSat0Hu/wNAbbAQ49qjrWCpmEzMNiInLm
-	coFmfxJ/ODTZdWdT4CtZwzITn4VWAISy9bRnBak6zm5ccVEzEd+2SxQ4qAsFC7ph
-	EHsthd1Xon76+cO3zah7xtHdl1qwzrEmJFr4cmDBNBqkf5ehCqEuholNuonvSScv
-	q01l/WsSDe0XTiOT7yp3xFya+Kv3idkDI8ZMN8YXJ9LQHE4dbvgb2FOMPXi30GwR
-	w==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hme7d3d98-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Oct 2026 06:08:32 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69UA8VGL001023
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 30 Oct 2026 06:08:31 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 30 Oct 2026 06:08:31 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 30 Oct 2026 06:08:31 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 30 Oct 2026 06:08:31 -0400
-Received: from HYB-aFjnqsVU6Ag.ad.analog.com ([10.66.6.190])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69UA8EL5029419;
-	Fri, 30 Oct 2026 06:08:17 -0400
-From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-To: <andriy.shevchenko@intel.com>
-CC: <sergiu.cuciurean@analog.com>, <jic23@kernel.org>, <dlechner@baylibre.com>,
-        <nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <ukleinek@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH 0/2] iio: adc: add LTC2387 and ADAQ2387x support
-Date: Fri, 30 Oct 2026 12:08:08 +0200
-Message-ID: <20261030100808.217874-1-Nicolae-daniel.Deaconescu@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <auDJu8u85flQ9bjo@ashevche-desk.local>
-References: <auDJu8u85flQ9bjo@ashevche-desk.local>
+	dkim=pass (1024-bit key, unprotected) header.d=ideasonboard.com header.i=@ideasonboard.com header.a=rsa-sha256 header.s=mail header.b=o5D5kxem
+Received: from killaraus.ideasonboard.com (2001-14ba-70f3-e800--a06.rev.dnainternet.fi [IPv6:2001:14ba:70f3:e800::a06])
+	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 591D063C;
+	Fri, 30 Oct 2026 12:21:01 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+	s=mail; t=1793359261;
+	bh=YhQvMqYGsNMsZuibcxcTlPG0LBgEnS9OCb4qiH2A3k8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=o5D5kxemIEyF4yBozq8fTa89N+/Wzi7bA2crxPUq3aQMTLzQTw99Sb6nDDnqw9qgT
+	 CqMocAYB/EhZvwAYDNsDIBALcnb8qTsfL4n+sAl6utPey5FtX50WFnc1McEqHyXZLN
+	 Wx7iZIJMZpdljOlh+sxtXnuau6u1gCM4Y/306WrA=
+Date: Fri, 30 Oct 2026 13:23:14 +0200
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+	Brian Masney <bmasney+clk@redhat.com>,
+	Jerome Brunet <jbrunet+clk@baylibre.com>,
+	Ulf Hansson <ulfh@kernel.org>, Magnus Damm <magnus.damm@gmail.com>,
+	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-pm@vger.kernel.org
+Subject: Re: [PATCH 07/11] dt-bindings: clock: renesas,r8a78000-cpg: Add PWM
+ clocks
+Message-ID: <20261030112314.GD2587681@killaraus.ideasonboard.com>
+References: <cover.1793026273.git.geert+renesas@glider.be>
+ <e723696e02cfb34fb808e2ae3ccb6faf68528c00.1793026273.git.geert+renesas@glider.be>
+ <20261028132937.GL15441@killaraus.ideasonboard.com>
+ <CAMuHMdXycpJ6COtiAA-2oRRfHSfLK40n2cacStW15QJRN3EfLQ@mail.gmail.com>
+ <20261028163940.GA2673734@killaraus.ideasonboard.com>
+ <CAMuHMdVOT+DTZum525kmYfP+jzzPrxMnEeRAkapxOMGz4XMHBA@mail.gmail.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -106,43 +76,134 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: Y9IXxxQKZsSwnW_0Rvg35XwwaMMAEpyA
-X-Authority-Analysis: v=2.4 cv=Yt2a1IYX c=1 sm=1 tr=0 ts=6ae46ca0 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=OmVn7CZJonkx5R5zMQLL:22 a=2yiQNUo5oANuN7_DN_sA:9 a=TUjgQ2XdYqcA:10
-X-Proofpoint-GUID: Y9IXxxQKZsSwnW_0Rvg35XwwaMMAEpyA
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMwMDA0MCBTYWx0ZWRfXy9dkJ7CHkft5
- GBT2+96oS21doNcjvaGPqAK6tkZS+CoAbzqdfs0JbzPT3K6+KrMYL1TlDwyIiiIcmxgUqQ/VgZ1
- 735GdTzacKp0hRWZnKdB0U4BxJB/AC4c4X7YniH66y/e9ZUDZptmySQkygNj4sroYR+KH/f7K1/
- 7VHNHJ53oSBAn3jCJNsW2dezTIMQgeHc3sQBekYM4L8ApHqbtdRIlyUmxf50ESiaNypNDMI40pS
- 309YrSAHmaN2o+fZpitj+GwbsDMrD+he1Uv16Vw/TQ2lH/jaktDNc3VbVr9vlS/8CqlyElkQ4I5
- mp+J5ZJ1bosifmuj+oB+pXaFH1f1dYQskXXKme33YgpHBMJ6YIW99309nb5zViufB4bFgloWxYH
- uSjyDKQk0dvE/K3skFTFGAK+uRDh+2UF6xJAjHtQoempkEY9megyzjwAdAF6/ZgYeo9UWxsL34+
- i/60lvvRyK7cGc7lxhg==
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMwMDA0MCBTYWx0ZWRfX41MKkoPiFGbl
- GK+PYXPwUZ24EaeqL5wIqJtwqQSbgBbvXJlHDB2p0Kp7XnwYVw4ak48CWrfuqZBccwe2Y0dpQfq
- Ez64uakrPlePqqrKWAf2IuwEB0zG6WznfD9aUklncsGj6WHH+t+U
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-30_03,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 clxscore=1011 priorityscore=1501 phishscore=0 malwarescore=0
- adultscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610300040
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdVOT+DTZum525kmYfP+jzzPrxMnEeRAkapxOMGz4XMHBA@mail.gmail.com>
 
-On Tue, Oct 27, 2026 at 17:56:43 +0200, Andy Shevchenko wrote:
-> Why have you written a brand new driver?
+On Thu, Oct 29, 2026 at 10:08:28AM +0100, Geert Uytterhoeven wrote:
+> On Wed, 28 Oct 2026 at 17:39, Laurent Pinchart wrote:
+> > On Wed, Oct 28, 2026 at 03:43:42PM +0100, Geert Uytterhoeven wrote:
+> > > On Wed, 28 Oct 2026 at 14:29, Laurent Pinchart wrote:
+> > > > On Mon, Oct 26, 2026 at 03:55:23PM +0100, Geert Uytterhoeven wrote:
+> > > > > Add definitions for the clocks used by the PWM modules on R-Car X5H:
+> > > > >  - R8A78000_CPG_SGASYNCD16_PERW_MAIN,
+> > > > >  - R8A78000_CPG_S0ASYNCD8_PERW_MAIN.
+> > > > > Include R8A78000_CPG_SGASYNCD8_PERW_MAIN for ordering consistency.
+> > > > >
+> > > > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > >
+> > > > > --- a/include/dt-bindings/clock/renesas,r8a78000-cpg.h
+> > > > > +++ b/include/dt-bindings/clock/renesas,r8a78000-cpg.h
+> > > > > @@ -28,5 +28,8 @@
+> > > > >  #define R8A78000_CPG_SGD8_PERW_BUS           18
+> > > > >  #define R8A78000_CPG_SGD32_PERW_BUS          19
+> > > > >  #define R8A78000_CPG_S0D24_HSCN_OTHER                20
+> > > > > +#define R8A78000_CPG_SGASYNCD8_PERW_MAIN     21
+> > > > > +#define R8A78000_CPG_SGASYNCD16_PERW_MAIN    22
+> > > >
+> > > > Could you also add R8A78000_CPG_SGASYNCD4_PERW_MAIN and
+> > > > R8A78000_CPG_SGASYNCD32_PERW_MAIN for ordering consistency ? The
+> > > > dependency patch should then also include R8A78000_CPG_SGD4_PERW_BUS and
+> > > > R8A78000_CPG_SGD16_PERW_BUS, as well as
+> > > > R8A78000_CPG_S0D{1,2,4,8,12,16}_HSCN_OTHER.
+> > >
+> > > I could add them, but do you have any need to refer to them from DT?
+> > > So far I only added clocks that are listed as clock supplies of on-SoC
+> > > modules, e.g. R8A78000_CPG_SGASYNCD8_PERW_MAIN is supplied to the
+> > > Timer Unit (TMU)).
+> >
+> > So we have two conflicting goals here. One of them is to only add clocks
+> > that we have validated to exist (and ideally work as documented). The
+> > other is to keep renesas,r8a78000-cpg.h readable. We won't be able to
+> > satisfy them both fully.
+> >
+> > I think we previously discussed adding whole groups of dividers in one
+> > go, as some sort of middle-ground approach. Those are clocks that are
+> 
+> That is what did in this and the previous patch: we need
+>   - R8A78000_CPG_SGASYNCDn_PERW_MAIN for n=16, and added the one for
+>     n=8, too.
 
-ad7625 is the closest existing driver, and it shares the transport:
-CNV PWM, clk_gate PWM and the AXI ADC backend. The converters differ
-in a few ways though. For instance, the LTC2387 is DDR on one or two
-lanes. ad7625 is one bit per clock on one lane. Also, the ad7625
-clamps the period to 100 ns (10 MSPS). The LTC2387 runs at 15 MSPS.
+That's missing n=4 and n=32. While SGASYNCD32 isn't referenced in the
+datasheet, SGASYNCD4 is (in SCIF and HSCIF). Maybe that's just an
+oversight ?
 
-Thanks,
-Daniel
+>   - R8A78000_CPG_SCPBUSDn_SCP_MAIN for n=16, and added the ones for
+>     n=1,2,4,6,8,32, too.
+>   - R8A78000_CPG_S0Dn_PERE_MAIN for n=24, and added the ones for
+>     n=1,2,3,4,8, too.
+>   - R8A78000_CPG_SGDn_PERW_BUS for n=32, and added the ones for n=8,
+>     too.
+> 
+> I did not includes clocks with values for n that exist according to
+> the documentation, but are not used as suppliers for modules.
+> Of course the documentation may be incorrect or incomplete, and we may
+> need to add them later. As IDs are ABI and the list is append-only,
+> they must be added at the end, which could indeed lead to not all
+> clocks of the same group being located together.  From an ABI point
+> of view that is OK, but from a human-readability point of view it is
+> indeed suboptimal.
+> 
+> Before, we tended to add all clocks from the clock tables listed the
+> documentation upfront, ignoring clocks that are clearly internal-only.
+> Some of them turned out not to exist later.
+> Some new clocks had to be added when the documentation was updated.
+> Nothing new here, except that the list of clocks on R-Car X5H is an
+> order of magnitude longer.
+> 
+> Note that we don't use a linear array of clocks indexed by clock ID
+> in the R-Car X5H CPG driver (yet), so large holes of unused clocks do
+> not hurt (they do hurt in the SCMI driver ;-)
+> 
+> > not directly controllable. There's a risk of adding clocks that don't
+> 
+> FTR, the xDn clocks are not directly controllable; clocks like
+> R8A78000_CPG_MSO_SCP_MAIN are.  We know the latter exist, as they
+> are used.
+
+Yes, I was talking about the clocks documented in the various
+non-PLL "hierarchy" sections.
+
+> > exist, or clocks that we won't need to reference from DT (because
+> > they're only used as parents of the MDLC-controlled module clock). Do
+> 
+> The direct parent of an MDLC-controlled module clock should be in DT.
+
+An additional difficulty is that we don't actually know what clocks the
+MDLC gates :-/
+
+> Higher-up parents should not be needed iff the SCMI firmware exposed
+> and/or implements the proper clock hierarchy (which it does not at
+> the moment).
+
+A big *iff* :-)
+
+Even in that case, we'll have (at least) two issues:
+
+- Some modules may need to know the rate of the functional clock gated
+  by the MDLC. As those clocks are controlled through power domains,
+  they are only specified as the last cell of the power-domains
+  property, and are not listed in the clocks property. How do you
+  envision this to work ?
+
+- When multiple clocks derive from the same PLL, it's common for the PLL
+  rate to be specified through assigned-clock-rates. If we want to
+  continue doing that, we need to to make the whole clock hierarchy
+  available to DT.
+
+> Still, they can be internal enum, starting after the last
+> DT clock, like we did in other R-Car clock drivers.
+> 
+> > you think that's an issue, could it cause ABI problems in the future ?
+> 
+> An ABI problem appears only when you refer in DT to a clock that does
+> not exist in hardware.  This should be caught by testing before the
+> DT user is added.
+
+So we could add e.g. SGASYNCD32 already, as long as we don't reference
+it in DT without testing.
+
+-- 
+Regards,
+
+Laurent Pinchart
