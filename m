@@ -1,23 +1,22 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.201.7
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.57.114
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793339672;
-	b=hKAuQvn68V3X0VQxNsmuelfs8uWDg9SnP2odReUw8TarZ+S0aHPuZv/2niqTF/uBHCQh
-	 +thvrMcW0SF+xdyzOYLCbl65J72cqyqTxulcJeYtqilOk0MpnLjegAS5NihT+hdin1np6
-	 zgGeuNuc+n0yD/8goaQrWqXxXDlaCB6JnLn7iu+OC5zjPTDyGFRV9uB9VPfemft1g0Qt9
-	 tgr9OFDuXwxGzocMoxdGRH6dYxKCq5Tx+kpiI5CNpYVyrJsmA3QB5TCji3Njrf7KPNn1p
-	 r2gQeQ/LHsr5vZ9+5sfG0/IZfV4XcbFWLNYZZ7H9LgxtmDBGa+xgO7o2Jp+OPWZDd0g==
+	t=1793348506;
+	b=hvNAPfopoO2yPOcPpbtqwWDrjRoNjay8E5bh6tlUkoASYAHYrUaeE5DGRphSAnnNgUA5
+	 +eLU6zZiuUIaNP3+yRVOeEQWhpvKM6F1Y/VtHTxxyWsGJu0ZvPjKiuOMmY0KbTZ0DGMxB
+	 0DrvT6exXG8Z4yHov80xjdtP3UiYk3xf180kpkmFGWI/S/ujKsvxSBV06W6K5pm4qvCOq
+	 WPi9DL9pZpjccVlyIdHK2V2OZlKQQXkRjeQV3TvLGrsBB4z+Xp7SViuNnq1amllM0KWbN
+	 xDbPxl4uBrWI4f5iI++bwB3TElIETCn8EfPR0OL2lX/3p/AqWUmaEe8q7rklB2CDL4g==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793339672;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:In-Reply-To:References:Content-Transfer-Encoding:
-	 Content-Type:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
+	a=rsa-sha256; c=relaxed/relaxed; t=1793348506;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
 	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:
-	 X-MS-Exchange-AntiSpam-MessageData-1:X-OriginatorOrg:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
 	 X-MS-Exchange-CrossTenant-Network-Message-Id:
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
@@ -25,70 +24,74 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=6c7mfjgmLyONW+xIuA/jSg3iAP9gcKq8eJTuPXfk9jc=;
-	b=YCzMwlf42A03PyLeFyINhrC1WKIYdqbXg9/Sv9h4rjhh7KQaFrTAJ9jHht0+ovUWA3XZ
-	 LJdnx+7A9RHF6bSHZru7l7RRUzklLJQGnqvGaed5FGvb8R9L7w7C9UIMTgLKu5yQXBr+w
-	 YNsNrqyjaj8N52+ozjpkCbpTrSjFIP3BAWDZbyYcBlYPa86EMOSyANg212Eazo51s1ToG
-	 Zbyv+foXeAwFig17eUb3szUaKDCLuZB64xylHf+GZjowJJHy5GNHYG8nf4AsoUp5i/Ovw
-	 NLRuKXR8eABvdzyMr7IUIgc47597jizYfVk5hyHeNvmd3RYX3GADIUrZ06ulj4HQ5mg==
+	bh=fjp1wlnWwOw8wGx8lThl4QeJ7Y8SWXt6f5lFwTqOHrI=;
+	b=VJD74PeMWPdKgN5YpbzJB33w+qLPJWi+2NrpG7PaegYsd83aPyKRaXA85wUYuJanRiDI
+	 chXWA8VSdtybqnYAQDTK4jYOBwAWYcDNfdfhiI0S+PyACuJRGglsPY1CRJjMqMaCAW9pe
+	 YkpYBdKHT8tpzZJ0LI5+JprPw3LY/XYbMlShsRRkfVxqzRqO1M6j2fgdNppl0hz2T9tdI
+	 YBbtkKYlGIoJV7+7EMkxI/p3rL0WlR320MVX2MVZIPZ8ZKgiEZc9EE0t/osDcvXyIIcRd
+	 wh3b06ffI5Oe8/yJqebQA+0k/H/95H6GbiobANdO9CBhtUrhEuQNAOGqCTlJSNDZQCA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=oHA8A7UH;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.201.7
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013007.outbound.protection.outlook.com [40.107.201.7])
+	dmarc=none header.from=axiado.com;
+	spf=pass smtp.mailfrom=axiado.com;
+	dkim=pass header.d=axiado.com header.i=@axiado.com header.a=rsa-sha256 header.s=selector1 header.b=h9hEDDAX;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.57.114
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11021114.outbound.protection.outlook.com [52.101.57.114])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8412A606A31F;
-	Fri, 30 Oct 2026 05:54:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8412A606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C067606A31C;
+	Fri, 30 Oct 2026 08:21:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0C067606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=oHA8A7UH
+	dkim=pass (2048-bit key, unprotected) header.d=axiado.com header.i=@axiado.com header.a=rsa-sha256 header.s=selector1 header.b=h9hEDDAX
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Cqv4S4JE1xlIIfhvfjTE4v7wLNxRYhCTtalOb8Ujpbqp4rdbb+MfrH4g+kBwHGYSF5gtQTRaGlXy+1dvcG/bltOVlu6CAdw2E3vsdnCpf+Ur+MPmOtODYBidB/oBNTywV37570Aar8yDfVLNamAi1JsghKqSpRtrPjAB8n503EtKTzYR745sg+CY8K5SDWY75b4n8sCJZBCQWQwqvcSBOmtu5B0wQhtFeF++6wxME8AYr2opTlDOJVSAsriBo1+L/dlAxWuIedctNGhBkzxG2Pq5z33aUdVzYZ1vz8HLcsBvzDhgP6EUUCldCjupDJZFoerJ/9fODn6TVv4hfIfBYg==
+ b=RNEDKJfZVZ1nwiS+VmI4cPplPwaEnjQFCuLyaXa/nwP7ebDuqNRWjzi4rPZzDQdSvD1srzR93WEnI+apy7DTiRm7eX+Oh4eYxekCkZKh4V2AX41H4WSVgHNZGmPhUaA7/GunsNDOmM3MVUTICNFJRFfhPuPv9Oh1Ci5cm8xaU9dxTUx7I3jugMY6n7t7i0CKr2Ev8wifc26ab59DFM36aSkvwNvVZTOD2thoC3T3RnFKU6UQlkcZl/kvwL8nHJjsWf+8n6ad7BQW8NctE1ppq/0LR4s8nWkApoNT7uYgcBh5v5OuUrps0LtyLd6x1yUvvK4jFfHFvh5qmkjw67MfbA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6c7mfjgmLyONW+xIuA/jSg3iAP9gcKq8eJTuPXfk9jc=;
- b=csp2a0UUxKnI1vVPYao8Z5VIPnPpFjSulMlwQvtySVcl9w4zgOnuclHcCdAnGIHGC0qFtBdsBUgCgfPgq+Q8tzqF+Hf+HC57hoXfzgB20v0Xg9wtnuXYxfLTV1MpvlJ3c4WMHZroBjp1j41C5GEMWdPH05V0cKYLX2ZCyN9xNjt13IVk4LOq0vJMHRMmAk9tp7IaSGDjsJkUjpzwBrzShOpkkjM0pJbZaSF8UoT+w/HNrYEdYUej1l9N7ERT1ZpsKUFuH95kagq+emR6A3OeXtv0V+2FOgm/fCX+SMjmhgeerpqGq1We1f58T76mF+5Tm81NFBbL2xXms+dUNmHjqA==
+ bh=fjp1wlnWwOw8wGx8lThl4QeJ7Y8SWXt6f5lFwTqOHrI=;
+ b=XCpgYR/wWtNeDm2DLOVBqgMo3Sm0ik4L5IeEA0mbvo49pb9BfUuj51NKjSFlnGJmOeAOttf1/T3E0yvjjkFc05UD12Z42wQOdwv+LgraJBAfSV02n0CPnS/bwYkRkAUU8L9dssqgHfgCQBnfN8wGAoJr4P6vCrCA1k9jZ3bC4655JrwbW3Ai7sOpvkwSlxGkTQZYLyVRRpXfie9K8Yv6mwRtxD/GdQHhUMDsgQHFXFejVpFFdemuKAX4/dhWCjuJ1oT4U2XomwLzM9D+DUYsuHtxR2AdgqkJQ5IaAM8d/i5OmIqCGCDpwFQFSx9p1956EBXKTlEWjocYfvS9Z4JsjQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=axiado.com; dmarc=pass action=none header.from=axiado.com;
+ dkim=pass header.d=axiado.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6c7mfjgmLyONW+xIuA/jSg3iAP9gcKq8eJTuPXfk9jc=;
- b=oHA8A7UHMZ8epxuwdkRLVXyfA3iJhK6v+Cdz9n+QT/mV/T6GMT9rEdIAWfLNB+MKUSwGByNjWTQQg9Jgr8HhhT/GWGTH0e7qq0djaYiJqgAOioGSslSbfXUs1Wyx05vnlhp+hVsGG7bBtlcJzFfnigUbbGdjAZnV76cU5t8KL72fAid7FDJ4wl8rvbul06/14pOeos70kra7a3p2Hbc5rSI/XsWQqapBjwzk2K4cC7WH0TZpjZWZar+O6SIz8g/QzlK55gfmi7w/O3XuJlOEisGFp0yKEFBX4OZJSkEUD/EIqO8IYLDMS0m23Ht61UcgkkNOw3ZIoXGFzTIPIfVTpQ==
+ bh=fjp1wlnWwOw8wGx8lThl4QeJ7Y8SWXt6f5lFwTqOHrI=;
+ b=h9hEDDAX1Mx7QcrV76jwUxKplVBRi+WSZHzcp5i6/ZnJ7xNMyhTHAvzlR4VO5QJiiyghwF40MCFWSa4qLWRysZ6ywFSQquPMRSsr1kZoR6ah5EM4b5oWrvePaxF/8MMsqkDRCno49eAsfMWipzXa2RUl/ZPzmOVI7uz1rko1/GCy4WZS2VsQfAh9wOhFFsbMNqQH7zTNFKzA66Z46KQmghp+k+wpEWZEkSk2kT1Ll5BHEjDYU6dG8lnuVguAdDCkRsJc9oLEhofCzcU99MDFJk78BlleQHjt9jY9YtvV1VjxXy8gZilu+W7JGW8nnUJpykxzM6tHzhxRTGMbi2cKSQ==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
- by DS0PR12MB6582.namprd12.prod.outlook.com (2603:10b6:8:d2::14) with
+ header.d=none;dmarc=none action=none header.from=axiado.com;
+Received: from DM4PR18MB4144.namprd18.prod.outlook.com (2603:10b6:5:38b::8) by
+ IA0PPFF4890666F.namprd18.prod.outlook.com (2603:10b6:20f:fc04::c50) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Fri, 30 Oct
- 2026 05:54:26 +0000
-Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
- ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
- ([fe80::d9d1:8c49:a703:b017%5]) with mapi id 15.21.0569.008; Fri, 30 Oct 2026
- 05:54:26 +0000
-From: Mikko Perttunen <mperttunen@nvidia.com>
-To: Thierry Reding <thierry.reding@kernel.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, linux-pwm@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org,
- linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
- Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v2] pwm: tegra: Fix value discarding for duty and period
-Date: Fri, 30 Oct 2026 14:54:03 +0900
-Message-ID: <Zd2GpvGWSu-r_sJpx49U1g@nvidia.com>
-In-Reply-To: <20261020133938.191013-2-u.kleine-koenig@baylibre.com>
-References: <20261020133938.191013-2-u.kleine-koenig@baylibre.com>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-ClientProxiedBy: OS7PR01CA0166.jpnprd01.prod.outlook.com
- (2603:1096:604:24c::13) To SJ2PR12MB9161.namprd12.prod.outlook.com
- (2603:10b6:a03:566::20)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.10; Fri, 30 Oct
+ 2026 08:21:42 +0000
+Received: from DM4PR18MB4144.namprd18.prod.outlook.com
+ ([fe80::cb97:ca8a:e55a:b11]) by DM4PR18MB4144.namprd18.prod.outlook.com
+ ([fe80::cb97:ca8a:e55a:b11%6]) with mapi id 15.21.0569.009; Fri, 30 Oct 2026
+ 08:21:42 +0000
+Message-ID: <0979887c-0924-4bc7-a9d0-cbd2b95bf459@axiado.com>
+Date: Fri, 30 Oct 2026 09:21:34 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 0/2] pwm: add Axiado AX3000 PWM support
+To: Akhila Kavi <akavi@axiado.com>, Prasad Bolisetty <pbolisetty@axiado.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ openbmc@lists.ozlabs.org, Conor Dooley <conor.dooley@microchip.com>
+References: <20261005-axiado-ax3000-pwm-v6-0-7feecd0087e4@axiado.com>
+Content-Language: en-GB
+From: Petar Stepanovic <pstepanovic@axiado.com>
+In-Reply-To: <20261005-axiado-ax3000-pwm-v6-0-7feecd0087e4@axiado.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AS9PR04CA0044.eurprd04.prod.outlook.com
+ (2603:10a6:20b:46a::22) To DM4PR18MB4144.namprd18.prod.outlook.com
+ (2603:10b6:5:38b::8)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -99,197 +102,196 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|DS0PR12MB6582:EE_
-X-MS-Office365-Filtering-Correlation-Id: 297e0268-b42f-4f99-0750-08df364a411c
+X-MS-TrafficTypeDiagnostic: DM4PR18MB4144:EE_|IA0PPFF4890666F:EE_
+X-MS-Office365-Filtering-Correlation-Id: 37c40f8d-9a0a-457e-474d-08df365ed3fc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|10070799003|376014|1800799024|23010399003|366016|11063799006|10067099003|261021123027099003|261022075727099003|56012099006|261021121427099003|261009223027099003|22082099003|18002099003|3023799007|6133799003;
+	BCL:0;ARA:13230040|23010399003|376014|7416014|1800799024|366016|260925022911599003|260925021911599003|260925021311599003|56012099006|261009223027099003|261026140227099003|261026121527099003|261028144727099003|261021121427099003|261022105027099003|261022075727099003|10067099003|22082099003|18002099003|6133799003|3023799007;
 X-Microsoft-Antispam-Message-Info:
-	b7309WSttcAkhv3fr8yiR/adw620W5lecoRebK5fgOkXutz2OBy5ZAY/IW80rRlr2+pmSl3wQQJUVOFH/Ap4VSlSrPEIw/lP6rHh3w+4nQCn0Tluqvr8olMcr3QZ2ht1r8eB3fIlx5nGbuJ9cI6iQFDwlLEl7jpy0A8FH3tOo83gmvjxPqAp+djkuxiooawuQAByNGeWQfTgBBYqL4PTA+5ARgGCt9NcPMjkzDZuAibmX/rJnV9uiHgQVr1WmmUN/UD6cz6qRq7fIJpMl+X6qKzk4JFsqri76lL7lSvFGTeseLASxfVBJvHiZyQ5rV/skeZcCnnQKth0LOPnO3ExBSLRonSDKa3sdQtyuFpkSf22H7FuC4CD+ihbDfEcYejNQCYeIjXpTicN3mdoyWKIk9aoZPT8QBurf9CokElRFioErM7J5HfAL7pTF7/LYU0XeUR1jUoRhAWgZpedkTN5pPt1ZwVGA5hg9u0kQiBsv2P6LDRYosNgsUy1BNgjhyXYsmHxCMJdL3bm0AybLJBAzzpJc1pAsBaB925JmjBeAjrstRylIVNrC2lotNw3hIzY2yjkCd761i6K3UiX4Oggwhl0HyN2u5XJ5JqR1ZEuy7n7YliL7bTJYW+/A05KxRGq5+C6Qsld31p10b8RCM3FBDTakX0YvPavR2/r6CGAneA=
+	V3cOMRgUA0J/jjAcwDgC7Y6zQljnl98lmj0aJEe4YijrBecS1qXXmcxE3WTY3Nawnvn6J1dZMAROiuPwTi1ASzVluXNnIF0OSlEDDu+krYTpUo7BFKW4/3Q14ygIEZuaNEpwCcEIbyoFx/j/33dmHUXO0qPk39nvF7FDRucB8vWK0o8VInkAiIFWHio2Kr5/F8Jv0rrlyi3ulGTmUnXYv5TiPz7QAM4ThTe6UHPlPzy70UVOeIiPU8Nx7oMF82unPEOoT2KqVXR/xsTCfWClqMUVrPhMhMAeOOYP/zF15IYPsbwdbj1IuR4JhNbmNf59hFzpw8vwYLWR9fvtaGScLuPOHeTySZSjGBjnkp6c2qkVLRUhxdza2etouXqucBJtjRKEWEu4oD5N//Bg+m2+ij0duYa2aSjo+Vt2eyJ4mIFRwcRLEEBaRfFJyxFpV2t2xlW8fk/wN5+gBVrmijZV6biDsGTqvgST+V6AP8SQUziQobXqDwsXa4OtP5cIo57tLnfoB583PBZSVq/ZkrSAuTANxFBLEnnt19jJU751wEakj0+Xv6FhmfKk42GzJHxxFkI8Ekj8ea1+iWlwXZGXMXuHTzzK66BxELWU8tYtAAc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(376014)(1800799024)(23010399003)(366016)(11063799006)(10067099003)(261021123027099003)(261022075727099003)(56012099006)(261021121427099003)(261009223027099003)(22082099003)(18002099003)(3023799007)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR18MB4144.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(7416014)(1800799024)(366016)(260925022911599003)(260925021911599003)(260925021311599003)(56012099006)(261009223027099003)(261026140227099003)(261026121527099003)(261028144727099003)(261021121427099003)(261022105027099003)(261022075727099003)(10067099003)(22082099003)(18002099003)(6133799003)(3023799007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VjFLTDlDTFZJYXEzTVd1MFhhL00xVjhZRUdkcjdRUUQvaWdYV0I2MFpSVmVR?=
- =?utf-8?B?SjJYQm83dVkyeWEybE9oWUYzZCtFM1M5SHE5bnlDbEtiQ2ZLMmVQeWVwYi9N?=
- =?utf-8?B?WDRLNEdpZldQZEJKdXNGTElzeGdnMjhPajNmWGR6VEowOXhHZDNrQXRoWUxP?=
- =?utf-8?B?THZwUzVQWHdOSy82L0lvVGNPR0Z1RnlVdU8zVmVxNjFCa3NXNzVsdHNKMGox?=
- =?utf-8?B?NCtXZkhvRmpQYmtLOUFGTlJCSy9pWlU4R2RJc29mRE5jbTlFbTVIS3ZrbzRX?=
- =?utf-8?B?NVUxVnZ4ZFFyODI3RVdabUFFbVFZUzhYTmRvVnpaL3dCQXhqd2pUZjJsMlFl?=
- =?utf-8?B?VFp4MHNzSDBoZUxSZ0F3RldEYTVrSHpLSE54OXFlNFJqMWoySGZ0Tlo3Q3gx?=
- =?utf-8?B?UERXWGF1MjhOZDB4dU9hRGV6T0lQOU5ZOEp1R2dSY0lVcjFsbndnTEVMbVR3?=
- =?utf-8?B?cjRiMGFnczd2N0Q5THN6Yk5zWUZTaVlvTjdjSFlhVVNVMFVQbmNrVjJud2Fi?=
- =?utf-8?B?b0svVURTenlVRWpXemRhRGpPTFlwakVIMU1rckVqdzNsMStBSUVUTGQ0RFY0?=
- =?utf-8?B?bExRV3g5aGt3Z3UzR3dOWE94dzM3MmpkL1V4Rm5FaGc5UFJFZ2NaT24zTDBo?=
- =?utf-8?B?UXlyU21kOFltRWVpTHZhR3c1M2laV3ZkYzRCWERORDlhUTJFYWxIMWFyYjhs?=
- =?utf-8?B?ek5DNWsrdCtUV1RNNlRCdjc1aE4wVEJVMG9sYmZQV2hadWFLaENlazgyc052?=
- =?utf-8?B?cDFSZ2dWcE55cExnMEtlc1k5TFFseGZKOVMzb1IvLy9iM3hxN0kzc2NOYlZI?=
- =?utf-8?B?NzY3WG1seFhneUtLUHpLeVhCTktXUXNtalYrdzJvMWRoRk84WFF4UERKaTJU?=
- =?utf-8?B?VGFJdGU3b2hrMk1WQnRvTFFlTVdzZVM5OW9kTjR1V3pwSmxvTSsrQjl2N1ln?=
- =?utf-8?B?Y01sTzV5aU5jWEFvQXNFRkFTYnhKZkxhWDZZczJPVWJsVGwrbHJwMG5neDh1?=
- =?utf-8?B?NWhNNjBmT1BTKzJBaXJ6MC9DemY5Z09CNVk2cUVlRFc0Nk93dHhlaFlBd0pl?=
- =?utf-8?B?eWFUZ1pLaDlnQUpBbWxHMzdIelFFdXFiTGcreUhWdEdFU3M5ZlpYMVpPVXhz?=
- =?utf-8?B?bVBnZmN4R0hOWVYvZkx2ZXIxb3lOWTAyUjZMSDhib0pzQWF0RXVzN0tkMURR?=
- =?utf-8?B?dzJWdjFiV2NrMmNPbFZjRkExUFNRUFUxTFZEaTB2V3dramlNR3V4ZmlRQjJP?=
- =?utf-8?B?aHg4Z21TWG9FZXJ4eTRhVzNKVHBoNFJpRlV1dmZKUWVidzI0bXYzcDFnbE1N?=
- =?utf-8?B?ZkM0cklYMkhkdWRoRTUxS3I4SWUwZ3d6ci8yVDlFY3RIaEtGbFMzVjZMZXFT?=
- =?utf-8?B?eEhhbzFYTThtTDl5UXU5aTlCUTc4cWowSjFDVGRYb2dlTnhrQ041NU1MWEVH?=
- =?utf-8?B?RjZjUlAzbWQzd2YydkU4U2l2MWFHbDFiMDFBdENUOVdPOEdVTTRIZlIwaHM0?=
- =?utf-8?B?RlN3UVlWUFBUZU13MlExVjM2SWNnYkM4bEhLL2VwNThWOUJZdTNHVERJN1Yy?=
- =?utf-8?B?WFpkOHRERHcyaFQwNmh2MlRXUlFrRGJNOCs3cjZMZllDcVFPcGZHenlndlp5?=
- =?utf-8?B?emQ4VXh1QnZFTDNHOEdLYk4wdGcyM0I5ZG5NVXRJZXFmbEpPUkdHbmFBMWk4?=
- =?utf-8?B?eVNIcXVVYzFtZVYzbW5FQUJKakc2MkJkTHBSZ3c1ODFNSlNLQlNJU2xaWkpj?=
- =?utf-8?B?cSt0UngwdUdjS2dmNFRRemdVclNkUlFpdmV2S0JyODRQZHVFeUZyOHlVV2FX?=
- =?utf-8?B?dzNldkFNZm1rMS9JaHo4NzhGSDVIVy8rQ29xVWY2NUxFU1doam9sSjR2UzFR?=
- =?utf-8?B?M0owcVhtcmZkVitFSmNTWlREOUVYVzRXSG81NzN2bDJkbStsRlBpTnFUK1NY?=
- =?utf-8?B?YUpqWTdwckhjV05KYjlUWjMwQ0tlVkVEQkhsKzUvaDFsZDR5eHVVdndyZzN6?=
- =?utf-8?B?bXBNZHdqamhZY1FMMUNHSTdUb0pyOW9LMXVkK0ZWMWxNbm5RTU9yVnc3Wlo0?=
- =?utf-8?B?aUl4U3ozTm9lV0tlcnRzVmlRY1M0T2dhMTVCR3kzSGoyNGJLZ0VjeE1vV3Ro?=
- =?utf-8?B?TjcwUTFuWFF1WnFKZUxUMENpR0FDNnhiYkxFTGJoMlRYa3BQelU4cEdMYjE4?=
- =?utf-8?B?V3NQSUVzQ1BaaGxYVTVwd0h2VEkxSHZ2djlCUHFDd2l4N2ttMmYrNFd4MjUw?=
- =?utf-8?B?YlBHTUhheXJrR3JGKzdDcGdUd1IxeEZVOU1ESnVhK0x5SEVyTEtaQXJETG1Q?=
- =?utf-8?B?eHdWejFDaHZjd1dEUHpaOXBiZWVIQ2VHQUdkYkxkd2MyWk5pbzdBeXVTNmFI?=
- =?utf-8?Q?NmdB/ZTZE8t+QOHxNWj2iY4R6sca5te79vAQJF709nvGc?=
-X-MS-Exchange-AntiSpam-MessageData-1: km00QbAGNPEn+g==
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 297e0268-b42f-4f99-0750-08df364a411c
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
+	=?utf-8?B?M2QyMFlEY2FrVUtlODcrcFFQMisvcmk0MzkzWFhqbHBnalE5eE9xbGFJVXYy?=
+ =?utf-8?B?UEErQTk0UzV0Z2hvMHROSDdjTlArSFFrSFZ6YitnaFRQdUpTakFFbzZvbGNV?=
+ =?utf-8?B?RjNkbi8zMDc1SkVoSEMyS2l1UThqMHJTbWtGVXgvYWRVNFpId281MzMzNEx3?=
+ =?utf-8?B?ZDF5ZGtQZFhVZkpBalRrdEZVVTZxQlNmanZrMEtHM3A1UGw3ZHNrbzk0UzNq?=
+ =?utf-8?B?QklXckdEcDZWYVR1cGdSQm8rbllralFzRUxoZzM0YktPaUpRSkh4VkU2SXJH?=
+ =?utf-8?B?eCtWeVN4L2UvTiswZVZTRC9jV3Z6a0FjbHlQTDhOYVlPYWtSalJVdGNQaHhV?=
+ =?utf-8?B?TmEwZWpFcFkwSVYxMnBDbUdGdndxb2ZiYyt0SGExb05vdmxYUnFGb1NOVlRx?=
+ =?utf-8?B?NkhBSXh5QVQyK0xSbEJVUVFFYWxUbWRQdHY0MGRZMlNqdVFCcjI5SHVuRjl2?=
+ =?utf-8?B?SXdGRkJMSnVaVUkrVCs1UlprRGt6c2gxM25XOUphQXlMUHg5Y2RKa3ZZbUpk?=
+ =?utf-8?B?Rzc5a1BJa3d0WUpWT2owRWN1K292NzBiQVdkV2pNOHVlakx3QW1pOGszeDYv?=
+ =?utf-8?B?V3A5V2FUUDNGei85aStBS2QyMnFNYzhROHpFREJ3elFYZ3RPUytZYzhVQVJ0?=
+ =?utf-8?B?SDNwdHZNSU5HcWZidW1PWm0vZCtSU1VvKzFmZjc0R1lkUkgwc0ZLd20zUjBl?=
+ =?utf-8?B?blJYTG0zMHNkY05GNWRYTC9IN0tFQmtibElSc2VpNVc4RWxRZW1IR1o4aDR4?=
+ =?utf-8?B?T2wzNys2M0RtNFp5aEVlcmhPRWNZbXdVZHRWZXN2dW40Q0wvNkhhSU9kS3Jh?=
+ =?utf-8?B?NlpydXNYQmlOQWIzVVFnREw1K0k0VC9vN1ZCMWZIVGV5ZURhRlUxRHlYM2Z5?=
+ =?utf-8?B?cno4Mmo2bTZPdmt5Y0pPclk0ZHFBSVV0TytucGJxR3YxYjhDQmg1K0E1SXVt?=
+ =?utf-8?B?NmVaZlVtelc1MGd0UkdibzA0Mk5NK0VwRFEvMEZNWFRmaWxwait0SHYwVXZu?=
+ =?utf-8?B?UkZGK2J0dVdCOG5pSDc5L3YyaGkvOGk5cmI0eUxleHJpQkdlMmZQdWRJTWRn?=
+ =?utf-8?B?WWIrc0x2d2FHdVlmWlB3S0dvQ0hxWFpkREovODJ2anlMWDQ1TE1qQXBUNW9m?=
+ =?utf-8?B?OTA4dWFvZVlIVzdKTXFOVTBVd0U3WDZPazJoNWs3RDFhblJsenN2VjFpTUZ0?=
+ =?utf-8?B?cWFSdmprK1YvSkFDa0ZiSjFtemE4K0EvM1FQYnFaVCtOenVGTGw0Y2hYY25r?=
+ =?utf-8?B?MFZwVytFc2txM1BsNjNLU1hORVByRklxQ3V1Qi8wZjRFK2plUzcrOUZKQVJM?=
+ =?utf-8?B?ZGlUcGYxckRVckoyZlNwVWQ2WUMyTytZbUphYkVHV2NlY2RTV3NKRHdHTVMw?=
+ =?utf-8?B?cEFJVjJVeGdqNjlkTXFpelBVdm9ZZ0VtczJuN0x0WUFFNkZ2ZUN3WEpneXdD?=
+ =?utf-8?B?dFFSb2RjQStPak5GYXNSZ0NNM3FocUxEbjVtYWNwMks0OWh0Sk55ckJkS3Iv?=
+ =?utf-8?B?alIybm4vTys0QUJ1bWJ4UnFNTUsrUmJJaERULzRhcG15YkxwaTRoTytHN0tK?=
+ =?utf-8?B?eVh0Yzl1Yi9XWVpoTUFiQkdwRTBVQXRVOTB0N0c4VFJvYmpaQ0h2OUJDaDRx?=
+ =?utf-8?B?RFZPK05pd2N6bXpnL3dLdlJrYzBSRWFOVEFocnFwcnNUUzBoTURzc1hVZUtv?=
+ =?utf-8?B?RGZTOXg3NTJ6bWtQaHhJYkhBSjM1TnhqMG9Da0NFL3Y5bEMrWG1aaFpiWk1t?=
+ =?utf-8?B?V1QvWjYwdDZZZElXeHcwVmRuUW5qRkRyd3NjSVhsbG8xQ1JiWGFpM3RjZHFk?=
+ =?utf-8?B?bS9RTjh0WWd6b29FWTErWnh2djczL0tRU3kyL1F0MXRPblhmMUwxaUE3ZWxE?=
+ =?utf-8?B?WHJPb0tLd1ZWNmg1K1FkNTdoYTZUanRMTjJoL2wvVjJ5aWYyWWo2Mjg3TWF3?=
+ =?utf-8?B?U1NoUE5oTDdySlVuVEF1MUZlWlJVTHBLNEVZRytJbnByRTdGTXpWZDJWSE9G?=
+ =?utf-8?B?eFlVVmJ4YUREUmI3ZllYelgydHVtTFB6aHBXcC9xcVdoTmozN29KL2pock9y?=
+ =?utf-8?B?dHR0elNWRVpKQW9HekluUSs5akVLTytHL0xGRmxNQ0FXMENLWGhydjZwZDky?=
+ =?utf-8?B?TFo0Qlg2ay9oSk9HVjJoemdjTnVkTlZrOVZtNHo0bDdraHNkTjhZVmU5RkNn?=
+ =?utf-8?B?eXowcEZGOUs5RE8zUUMzK2xZdlAxalFxbHkrU201TWFEaDlqNlhwdnl1QjFj?=
+ =?utf-8?B?K2gwYmV0VDdlc2xTNWFCZmFPbGRxcU1UVXVYY25vMUJHNitLcTBPTG4wR1Nl?=
+ =?utf-8?B?V0hEV1FoQmw2UHdaY1k1QUVDcExLeGV6N01TQ3JacGZJSUcySHFxdz09?=
+X-OriginatorOrg: axiado.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37c40f8d-9a0a-457e-474d-08df365ed3fc
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR18MB4144.namprd18.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2026 05:54:25.9571
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2026 08:21:42.3679
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: ff2db17c-4338-408e-9036-2dee8e3e17d7
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: P6P9W6128d5uL/V2rKgEFdm0F+yEc/EHcR63vfkKCgn1jRMlJWK36Gc8thHvsYPowj2vUbxh6uLFZFU4Wuawow==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6582
+X-MS-Exchange-CrossTenant-UserPrincipalName: yX8zRBgr3FRUC+OkFaXKewEOtptZbuH2S46QsCZ/7GC7F7Tbsy99bT3KALyY2wDdbY6pah+o91e/lKug1vID0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PPFF4890666F
 
-On Tuesday, October 20, 2026 10:39=E2=80=AFPM Uwe Kleine-K=C3=B6nig wrote:
-> tegra_pwm_config() is called with u64 values passed for duty_ns and
-> period_ns in tegra_pwm_apply(). Make these parameters u64 instead of int
-> to not lose the upper bits for bigger values. If such a discard happens
-> the values that are written to hardware become wrong, or (if the
-> discarded period value becomes 0) a division by zero happens.
->=20
-> Adapt the math functions accordingly to not let the now potentially
-> bigger values result in overflows. While touching these, also limit the
-> scope of the required_clk_rate variable.
->=20
-> Reported-by: Sashiko <sashiko-bot@kernel.org>
-> Link: https://sashiko.dev/#/bug/linux-5c5b97d6-4da6-4d06-9dc7-957419dcd83=
-2
-> Fixes: fd3ddd4355c0 ("pwm: tegra: Implement .apply() callback")
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
+
+On 10/5/2026 9:46 AM, Petar Stepanovic wrote:
+> This series adds support for the PWM controller found on Axiado
+> AX3000 and AX3005 SoCs.
+>
+> A new driver is needed because this PWM controller is a SoC-specific
+> hardware block used on Axiado SoCs. It has its own register layout,
+> enable control, period configuration, duty-cycle configuration, and
+> does not match any existing upstream PWM driver.
+>
+> The controller provides configurable PWM output signals. The driver
+> exposes the controller through the Linux PWM framework and supports
+> period and duty-cycle configuration.
+>
+> The driver converts the requested period and duty cycle from nanoseconds
+> to hardware clock cycles based on the input clock rate.
+>
+> The datasheet is not publicly available. Public high-level product
+> information is available at:
+>
+> https://axiado.com/products/#AX3080
+>
+> The register definitions and programming sequence used by this driver
+> are based on Axiado internal SoC documentation.
+>
+> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
 > ---
-> Hello,
->=20
-> Compared to (implicit) v1
-> (https://lore.kernel.org/linux-pwm/20261015085336.4181137-2-u.kleine-koen=
-ig@baylibre.com):
-> this adds more adaptions to handle the bigger variable types, as found
-> by both Sashiko and Mikko. I didn't think a lot about the
-> required_clk_rate calculations, but I guess the saturating math I
-> implemented should be fine.
->=20
-> Best regards
-> Uwe
+> Changes in v6:
+> - Use 3 PWM cells and add the flags cell to PWM consumers.
+> - Fix readback of the constant-high hardware state when the high-time
+>   register is zero.
+> - Link to v5: https://patch.msgid.link/20260921-axiado-ax3000-pwm-v5-0-202aad28e129@axiado.com
+>
+> Changes in v5:
+> - Use the hardware disable state directly instead of emulating a
+>   disabled
+>   PWM with the constant-low representation.
+> - Remove driver-side cached period and logically-disabled state.
+> - Handle 0% duty cycle using the hardware constant-low representation
+>   during waveform rounding.
+> - Decode the constant-low representation as 0% duty with a
+>   one-clock-cycle
+>   period on readback.
+> - Simplify waveform read/write handling and remove redundant validation.
+> - Update the driver limitations documentation.
+> - Link to v4: https://patch.msgid.link/20260908-axiado-ax3000-pwm-v4-0-19a03671cd5b@axiado.com
+>
+> Changes in v4:
+> - Corrected the AX3005 compatible ordering to list
+>   axiado,ax3005-pwm before its axiado,ax3000-pwm fallback.
+> - Changed the disabled-state handling to program a constant-low
+>   waveform,
+>   because disabling the hardware controller drives the output high.
+> - Added software state tracking so readback reports this constant-low
+>   hardware representation as a logically disabled PWM.
+> - Link to v3: https://patch.msgid.link/20260811-axiado-ax3000-pwm-v3-0-6ceaccd812cf@axiado.com
+>
+> Changes in v3:
+> - Express AX3005 compatibility with AX3000 using a fallback compatible.
+> - Update the Devicetree binding example accordingly.
+> - Add 0% duty-cycle support using the hardware constant-low encoding.
+> - Cache the rounded period for 0% duty-cycle waveform readback.
+> - Allow sub-cycle duty requests to round down to 0% instead of rounding
+>   up to one clock cycle.
+> - Normalize high-time values greater than the period to 100% duty.
+> - Drop the redundant AX3005 OF match entry and use the AX3000 fallback.
+> - Clarify comments and PWM hardware limitations.
+> - Link to v2: https://lore.kernel.org/r/20260723-axiado-ax3000-pwm-v2-0-22002f0b281d@axiado.com
+>
+> Changes in v2:
+> - Migrated the driver from the legacy apply/get_state API to the new
+>   waveform ops API (round_waveform_tohw/fromhw, read/write_waveform).
+> - Cache the clock rate at probe and lock it with
+>   devm_clk_rate_exclusive_get() instead of reading it on every op.
+> - Improved rounding: clamp period/duty to hardware limits, reject
+>   non-zero duty offset, preserve exact 100% duty, round sub-cycle duty
+>   up to the minimum.
+> - Added a "Limitations" comment block documenting hardware constraints.
+> - Renamed macros from AX_PWM_* to AXIADO_PWM_* and dropped unused ones.
+> - DT binding: dropped clock-names, made #pwm-cells required, and
+>   updated the description and compatible list to cover both the AX3000
+>   and AX3005 SoCs.
+> - Added axiado,ax3005-pwm to the driver's OF device match table.
+> - Link to v1: https://lore.kernel.org/r/20260618-axiado-ax3000-pwm-v1-0-c9797a909414@axiado.com
+>
+> To: Petar Stepanovic <pstepanovic@axiado.com>
+> To: Akhila Kavi <akavi@axiado.com>
+> To: Prasad Bolisetty <pbolisetty@axiado.com>
+> To: Uwe Kleine-König <ukleinek@kernel.org>
+> To: Rob Herring <robh@kernel.org>
+> To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+> To: Conor Dooley <conor+dt@kernel.org>
+> To: Harshit Shah <hshah@axiado.com>
+> Cc: linux-pwm@vger.kernel.org
+> Cc: devicetree@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+>
+> ---
+> Petar Stepanovic (2):
+>       dt-bindings: pwm: add Axiado AX3000 PWM
+>       pwm: add Axiado AX3000 PWM driver
+>
+>  .../devicetree/bindings/pwm/axiado,ax3000-pwm.yaml |  53 ++++
+>  MAINTAINERS                                        |   9 +
+>  drivers/pwm/Kconfig                                |  11 +
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-axiado.c                           | 282 +++++++++++++++++++++
+>  5 files changed, 356 insertions(+)
+> ---
+> base-commit: 368d34807e6d04bb2089918383b58abf40e720a0
+> change-id: 20260518-axiado-ax3000-pwm-cd7c346849f1
+>
+> Best regards,
+> --  
+> Petar Stepanovic <pstepanovic@axiado.com>
 
-Reviewed-by: Mikko Perttunen <mperttunen@nvidia.com>
-Tested-by: Mikko Perttunen <mperttunen@nvidia.com> # Jetson AGX Thor (fan)
+Hi,
 
->=20
->  drivers/pwm/pwm-tegra.c | 34 ++++++++++++++++++++++++----------
->  1 file changed, 24 insertions(+), 10 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-> index 5cdbe120ba2d..6d468a673ded 100644
-> --- a/drivers/pwm/pwm-tegra.c
-> +++ b/drivers/pwm/pwm-tegra.c
-> @@ -138,22 +138,23 @@ static inline void tegra_pwm_writel(struct pwm_devi=
-ce *pwm, unsigned int offset,
->  }
-> =20
->  static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pw=
-m,
-> -			    int duty_ns, int period_ns)
-> +			    u64 duty_ns, u64 period_ns)
->  {
->  	struct tegra_pwm_chip *pc =3D to_tegra_pwm_chip(chip);
-> -	unsigned long long c =3D duty_ns;
-> -	unsigned long rate, required_clk_rate;
-> +	u64 c, rate;
->  	u32 val =3D 0;
->  	int err;
-> =20
->  	/*
->  	 * Convert from duty_ns / period_ns to a fixed number of duty ticks
-> -	 * per TEGRA_PWM_DEPTH cycles and make sure to round to the
-> -	 * nearest integer during division.
-> +	 * per TEGRA_PWM_DEPTH cycles.
->  	 */
-> -	c *=3D TEGRA_PWM_DEPTH;
-> -	c =3D DIV_ROUND_CLOSEST_ULL(c, period_ns);
-> +	c =3D mul_u64_u64_div_u64(duty_ns, TEGRA_PWM_DEPTH, period_ns);
-> =20
-> +	/*
-> +	 * The cast here is fine as c =E2=89=A4 TEGRA_PWM_DEPTH given that we h=
-ave
-> +	 * duty_ns =E2=89=A4 period_ns above.
-> +	 */
->  	val =3D (u32)c << TEGRA_PWM_DUTY_SHIFT;
-> =20
->  	/*
-> @@ -176,6 +177,7 @@ static int tegra_pwm_config(struct pwm_chip *chip, st=
-ruct pwm_device *pwm,
->  	 * dynamically (e.g. Tegra186 or Tegra194).
->  	 */
->  	if (pc->soc->num_channels =3D=3D 1) {
-> +		u64 required_clk_rate;
->  		/*
->  		 * Rate is multiplied with TEGRA_PWM_DEPTH so that it matches
->  		 * with the maximum possible rate that the controller can
-> @@ -187,10 +189,18 @@ static int tegra_pwm_config(struct pwm_chip *chip, =
-struct pwm_device *pwm,
->  		 * source clock rate as required_clk_rate, PWM controller will
->  		 * be able to configure the requested period.
->  		 */
-> -		required_clk_rate =3D DIV_ROUND_UP_ULL((u64)NSEC_PER_SEC * TEGRA_PWM_D=
-EPTH,
-> -						     period_ns);
-> +		required_clk_rate =3D mul_u64_u64_div_u64_roundup(NSEC_PER_SEC, TEGRA_=
-PWM_DEPTH,
-> +								period_ns);
-> =20
-> -		if (required_clk_rate > clk_round_rate(pc->clk, required_clk_rate))
-> +		/*
-> +		 * clk_round_rate() and dev_pm_opp_set_rate() both take an unsigned
-> +		 * long as frequency parameter, so cap required_clk_rate
-> +		 * accordingly.
-> +		 */
-> +		if (required_clk_rate > ULONG_MAX)
-> +			required_clk_rate =3D ULONG_MAX;
-> +
-> +		if (required_clk_rate > clk_round_rate(pc->clk, required_clk_rate)) {
->  			/*
->  			 * required_clk_rate is a lower bound for the input
->  			 * rate; for lower rates there is no value for PWM_SCALE
-> @@ -201,6 +211,10 @@ static int tegra_pwm_config(struct pwm_chip *chip, s=
-truct pwm_device *pwm,
->  			 */
->  			required_clk_rate *=3D 2;
-> =20
-> +			if (required_clk_rate > ULONG_MAX)
-> +				required_clk_rate =3D ULONG_MAX;
-> +		}
-> +
->  		err =3D dev_pm_opp_set_rate(pwmchip_parent(chip), required_clk_rate);
->  		if (err < 0)
->  			return -EINVAL;
-> --=20
-> 2.56.0.rc1
->=20
->=20
+Just following up on this patch series, as it has been over three weeks since v6 was submitted.
 
+The latest revision addresses the feedback received on previous versions, and the DT binding already has an Acked-by.
 
+Are there any remaining concerns or changes needed, or is the series ready to be picked up?
 
+Thanks for your time.
+
+Best regards,
+Petar
 
