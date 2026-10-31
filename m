@@ -1,56 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793393416;
-	b=qinaGOaJN7R+PYH9R+s2oKab2FBBjpVaqBHe0MjgJsU2BiXP3rGCXo+TchojZlcgbTsb
-	 TRzUW+KtGG4B4F6s+AIBtypRK4VyzMI47iGO3EsYecrfOy/Zu2KpNjoVukVJMhnakHG2D
-	 z8l8VveVS7K7XOPk0xGKm5IHXayL53saKlx/c/0sVNuY1dMzb+moFszT9kRFf58iCMK4u
-	 uvejnQUT/xOxtPwCWrt+9WMFPO/wzkILoenN2QDGlDUPVuAngF660NFRg8yTdX/jbT52z
-	 P61G/TL5DmMD4ds4ee5ntWQrcYW+CdLdiZ/It71Obujl1hn6KxtqCLXuQH8TMUybT1Q==
+	t=1793435796;
+	b=kf2nxK/dvpY9AEh1lIT+puQ9RzJHnuTg7eQIC+Tptsv2pslR82uWeskNz9mIz4/tvAV/
+	 JFx+ZAff67FuAym9e84bJ8le/+TiBhVQQi4li1WTFQGDlfNYFc/2NxznWyNV9G9MoIb3D
+	 7sLXdGgi0ZESwY5IfjXnm4hUCwtoYzmnfykwP7o+fmZT+xTFIrl9LL1uD5BS6ptWWyzir
+	 ddsK4kqJyutNJBtx77ATJRK4ebPKQVu5t6ev2xH6plRvqnYiKnqibN22tTR0aIr+kbOGG
+	 UmYvYC78wVVGm1+cBO868347a2MgnoaIcrqLueeiifeMdNkGwx/G+JDF3pxfq2s+f0w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793393416;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=8UQfLMqON5p9ekAUB7Y3vPF1E10i6/apVL01RDKA+Kg=;
-	b=ipHNgOiFQNX6gFkpZjrdqBP4R0LarARU1VCHx0zRfWPRpDWjcohP+w7sO7nlXho3AZaq
-	 EYort17o8rQFFDQtDYGLMQnrESZ+T1vZRKtUx5UJurvuT1xsuNsCuYmpFEfhpOjoRn3FV
-	 lRqtkDBqlCjnyEXS54wow7UkX0XIyMIelTok46ZKEkhDYB1svseSDU7vloylNcZq++kpQ
-	 WOnc/vRrFWqXIuXHIBqy6oJjFXYlPJXz9CjEopC7wuByLK881Vce7DXmm6meJ0H4rjGTl
-	 +09IfLCw9ROgg2jzKVFqBTb7x75AqLqhEQu8AlCDHNNmh+MgYGAfu9ts89Oa1UBwz2Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793435796;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=ZDn6PjUrK/EzlgfA37JZOLf1C7W2oa4qATBOjD5IS7Y=;
+	b=JlAzj6EkN+kGPD6FV+EosRyiqDBqN5W5YnOXK4Gpn/qh6n7E4mOFHGlUItcEFjc76idL
+	 PM2jDwfl0/1ZCd6oYQUEuvyB8GXqTf1niZG2hMHD8n39W5xPJbm0sMnBsYz8JnMYtGmpt
+	 U+0hgxOphhhuUAPhHJ41zNhj9eTbIk8QPoqdxSZL4q9/S2+T88THRYVgFe513n6IRZGO/
+	 /riqXK2oIGLTil0ZjnKEohvJa9KdroQ1ZuZXDi5N2UAHwRcw5lrDClPW3QieQZRDDvq+l
+	 CVG1E0wG82CAa+NtvZCQ8TmFrNu9QP5DJ2OlpyfkMonXWEeovsHejq81+VXwfCzSBqg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jawp8oRp;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YmJpl17c;
+	arc=none smtp.remote-ip=192.198.163.10
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BE43606A31C;
-	Fri, 30 Oct 2026 20:50:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6DB9606A31D;
+	Sat, 31 Oct 2026 08:36:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C6DB9606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jawp8oRp
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71861F0093A;
-	Fri, 30 Oct 2026 20:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793393416;
-	bh=8UQfLMqON5p9ekAUB7Y3vPF1E10i6/apVL01RDKA+Kg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=jawp8oRpq1WL06JzKEhpmxNHNXrWNVgEeMA5zOR6qX9ipJ11xiOaghlRu4h9WT/43
-	 dCdjlQ4xGlC9orKn/e5XdNamymg4R2tprNRF4STYwZS55QJkFmbcvSoK6Ihbnyz9yb
-	 SmiVIZDnrWN6iO9+T8rAw8XsX5e1bt0j3QsrNYJGwNIy59Nr33vihmaA0JmO3I6GUY
-	 ssgJ5A3nxKimbVwfnqzuAudA9IgceKo4PKAwMnVWLBoXVTY6Ddufs3x86rpHSZUeHi
-	 z/lOaNItIPqNjD8CwWq8vLtgGLiDkIqdvODe963ciHT7zS02jDjdHQhLrSs3siO4jf
-	 ILWTpAb24lqeA==
-Date: Fri, 30 Oct 2026 20:50:11 +0000
-From: Conor Dooley <conor@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YmJpl17c
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793435794; x=1824971794;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HNFiIEi640fafEaGc3EFx5z+gYIxLguCaOvEPMDuqz8=;
+  b=YmJpl17cPuKjDH1ImuQ/zjpErL92s+03AIhoAkConSRXTS8ng1g2qKIk
+   t+5N4gNe/y82sPR9YeFpjcR2KNa9s7tI+DR0HSOkYlx1FogP7XSJ0I9JW
+   54zzOJybmC3UHyLK/F5F0nDkXEl+yMffmCjf+ljFUBpG33HUgbQaROqOz
+   r4KuT6nLTlBSqto2iM0ClwvDpRwxYGQN3JZ9PnTHmzSoIQCjhyp9C7qkA
+   bzj6KUN6a1kKWJmol9XmOk58hkiliK0Fsm81BGETmTcwh2VVL+nxBh5bn
+   MMhnfeG89WlxK6vzk6UGaAuxc6pDzvE3R/eqZov8S9WdCKzQJmeo4akDl
+   Q==;
+X-CSE-ConnectionGUID: g5usi5Y/T+SAj7s1eT/usw==
+X-CSE-MsgGUID: KQ63dNC2Szurz00wRP0QMA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2094786"
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="2094786"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 01:36:33 -0700
+X-CSE-ConnectionGUID: R98IForARe2BSfo+qCYvUQ==
+X-CSE-MsgGUID: AKZzIbkzTA228RgkANMMSQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="5502417"
+Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.127])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 01:36:30 -0700
+Date: Sat, 31 Oct 2026 10:36:27 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
 Cc: sergiu.cuciurean@analog.com, jic23@kernel.org, dlechner@baylibre.com,
 	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
 	krzk+dt@kernel.org, conor+dt@kernel.org, ukleinek@kernel.org,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
-Message-ID: <20261030-scientist-puzzle-ab2c668b6e27@spud>
-References: <20261027-attic-collector-cb4ffdb5cf82@spud>
- <20261030120205.269090-1-Nicolae-daniel.Deaconescu@analog.com>
+Subject: Re: [PATCH 0/2] iio: adc: add LTC2387 and ADAQ2387x support
+Message-ID: <auWoi0Vad8F-aTmJ@ashevche-desk.local>
+References: <auSsl5_xQNXCNphJ@ashevche-desk.local>
+ <20261030150705.411102-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -60,84 +82,40 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="1kUioFkg2UPifayy"
-Content-Disposition: inline
-In-Reply-To: <20261030120205.269090-1-Nicolae-daniel.Deaconescu@analog.com>
-
---1kUioFkg2UPifayy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20261030150705.411102-1-Nicolae-daniel.Deaconescu@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Oct 30, 2026 at 02:02:05PM +0200, Nicolae-Daniel Deaconescu wrote:
-> On Tue, Oct 27, 2026 at 18:28:34 +0000, Conor Dooley wrote:
-> > Why are we getting new devices with linear vendor prefixes?
->=20
-> I'll fix this in v2. The binding file will be adi,ltc2387.yaml.
-> The -x4 compatibles will also be dropped, because they described
-> four devices sharing one AXI ADC.
+On Fri, Oct 30, 2026 at 05:07:05PM +0200, Nicolae-Daniel Deaconescu wrote:
+> On Fri, 30 Oct 2026 16:41:27 +0200, Andy Shevchenko wrote:
+> > But these difference doesn't explain why you need a brand new driver.
+> > Is hard to configure this at run-time by choosing the respective driver
+> > data based on the compatible string?
+> 
+> Looking at ad7625.c again, most of it can come from chip data,
+> like the driver already does for max_sample_freq_hz. The lack of
+> en pins could probably also be parametrized.
+> 
+> However, doing it this way would risk clashing with the sampling
+> path of the existing driver. Keeping it separate would make testing
+> easier, as well as isolating drivers for unrelated families, which
+> might be out of scope for this.
 
-Please retain more context than this, it's not enough to just have what
-you're replying to. I see so many patches that I will have completely
-forgotten what you're doing by the time I get to the next day.
+> Ultimately I think keeping them separate would be simpler, but
+> I'll integrate it if you believe it's worth it. We might also 
+> need to consult with the authors of the original driver, as I
+> haven't worked with the ad7625 before. 
 
-> > Hmm, ltc2387-16 does not appear to have these signals?
-> > Well, it has "cnv" but "cnv" has "sample clock" as the input name so is
-> > the clocks property above and pwm-clock can be used if the provider is a
-> > pwm?
->=20
-> The LTC2387-16 datasheet has these pins: CNV+/CNV- (pins 27/28), which
-> is the conversion-start input; CLK+/CLK- (pins 23/24), which is an
+If there is no big differences on RTL or programming flow, no need to create
+a brand new driver. Even if there are some differences which are minor, we
+may quirk that in the code. See infamous drivers/gpio/gpio-pca953x.c for how
+many similar, but not fully chips are supported. With your elaboration above
+I believe we may join these drivers to the existing one.
 
-Ahh, I see that now. The symbolic diagram on page one confused me and I
-didn't look much further.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> externally applied clock that shifts out the result; and DCO+/DCO-,
-> the echoed clock. There is no clk_gate pin.
 
-Then there should not be a clk_gate pwm for this device.
-
-> The part needs a burst of 8 CLK pulses per conversion in one-lane mode
-> (4 in two-lane), starting t_FIRSTCLK =3D 65 ns after CNV and ending
-> within t_LASTCLK =3D 49 ns of the next CNV. So the CLK input cannot run
-> freely: the clk_gate PWM gates the host clock into that burst. That is
-> why the clock needs a PWM and not a plain pwm-clock, which would give
-> a continuous clock. The clocks property is the reference clock the PWM
-> generator runs from, and the driver needs its rate to compute the
-> waveforms.
-
-Then you've got a "layering" violation of some kind here. If this clock
-is consumed by the PWM generator, it should be an input to the pwm
-generator not this adc.
-
-The second pwm should then just be called "clk", because that's the
-input(s) that it represents.
-
-I want to see what the dts you have for a complete setup of this device
-looks like, including the backend and pwm generator.
-
->=20
-> > Please explain how this is not determinable from the compatible.
->=20
-> TWOLANES is a digital input on the chip. High selects two-lane output,
-> two bits per clock on DA and DB; low selects one-lane output. Both
-> modes exist on every part, and the pin is set by how the board is
-> wired, so the compatible does not say which mode is used.
-> v2 will contain more detail in the description.
->=20
-> Thanks,
-> Daniel
-
---1kUioFkg2UPifayy
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauUDAwAKCRB4tDGHoIJi
-0tQoAP4izLcxISMIO9hhxqgUNHToGy/iMA8wqihVLgj2tQ+KFgEAqbqokbXFRrNP
-n5wXUsHpOWS1rTi4qsuPBHNsU0LWCA0=
-=NVgP
------END PGP SIGNATURE-----
-
---1kUioFkg2UPifayy--
