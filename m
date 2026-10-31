@@ -1,78 +1,115 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.229.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793435796;
-	b=kf2nxK/dvpY9AEh1lIT+puQ9RzJHnuTg7eQIC+Tptsv2pslR82uWeskNz9mIz4/tvAV/
-	 JFx+ZAff67FuAym9e84bJ8le/+TiBhVQQi4li1WTFQGDlfNYFc/2NxznWyNV9G9MoIb3D
-	 7sLXdGgi0ZESwY5IfjXnm4hUCwtoYzmnfykwP7o+fmZT+xTFIrl9LL1uD5BS6ptWWyzir
-	 ddsK4kqJyutNJBtx77ATJRK4ebPKQVu5t6ev2xH6plRvqnYiKnqibN22tTR0aIr+kbOGG
-	 UmYvYC78wVVGm1+cBO868347a2MgnoaIcrqLueeiifeMdNkGwx/G+JDF3pxfq2s+f0w==
+	t=1793443066;
+	b=bDBvA5YC7BG9oXXOg4+A0SmCoF4TCfRIEmoUb/t4vNXF+qvH15nH96on6MnCXM6N+9RS
+	 7R/ONR7lTt3oITv1qDSCByFJhCEt51x/Uj4b45cUyXOclWWCYbpacQjYp5daTaGMYqUyo
+	 8tzJXoJuBRo0p6+F5ZM9mgTPTrU3nDrpZn3RfE2srwFCftUzKGvY4zfLyPxUTt2j6r+DF
+	 KkvF01EnuH0WokNTW8th4utRiz9Izbcbtmm1QQ0s5lBYRTGcxgP/Z3KWfEWkySspRE2Ad
+	 maFF6lOxrv5EvY0JCMQA4p2K5My/Wu3ZOBBXw0tAIAhW6GPhMtUINIapX6qlfvY7y+Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793435796;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=ZDn6PjUrK/EzlgfA37JZOLf1C7W2oa4qATBOjD5IS7Y=;
-	b=JlAzj6EkN+kGPD6FV+EosRyiqDBqN5W5YnOXK4Gpn/qh6n7E4mOFHGlUItcEFjc76idL
-	 PM2jDwfl0/1ZCd6oYQUEuvyB8GXqTf1niZG2hMHD8n39W5xPJbm0sMnBsYz8JnMYtGmpt
-	 U+0hgxOphhhuUAPhHJ41zNhj9eTbIk8QPoqdxSZL4q9/S2+T88THRYVgFe513n6IRZGO/
-	 /riqXK2oIGLTil0ZjnKEohvJa9KdroQ1ZuZXDi5N2UAHwRcw5lrDClPW3QieQZRDDvq+l
-	 CVG1E0wG82CAa+NtvZCQ8TmFrNu9QP5DJ2OlpyfkMonXWEeovsHejq81+VXwfCzSBqg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793443066;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
+	 Content-Type:MIME-Version:Content-Transfer-Encoding;
+	bh=51xyznyCe9WelvYeEXo4BU/h4Ecjz+qWRQ0TYPxSgHU=;
+	b=k4KgnYTSuB1LKenWjjVhgNzEOpru4j+cYb3rrhNxM1JE2CykQ+Id6bXgqWjumsFOz7sG
+	 HdNfqSfAj3g+DrqoRMrbSkRNUoMsoCMnksi/hSZCKl83UyM55J6BIIbpO8PLS40rN6Y7U
+	 4I35AMxYVvYJgD9Er9Zo6J2+tuIgXP+Nbb2Mf11n/iO7quNC+4L06WHULvQnbW2bKKBv1
+	 x8hqLx+0ooTUmWOQGcqrYhcgWqlGWeYl96Kh9c9JgWgSFRAnDeEwc61qgbkyjirzkha0H
+	 K5z1DrkhzacujliZyIULFxLQgIBVuaj3zj9Ppr/uUeEiJ0t/+wLhctz2rdd+Dg9KuJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YmJpl17c;
-	arc=none smtp.remote-ip=192.198.163.10
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dPQjtw2S;
+	arc=none smtp.remote-ip=74.125.229.8
+Received: from mail-dy2-f8.google.com (mail-dy2-f8.google.com [74.125.229.8])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6DB9606A31D;
-	Sat, 31 Oct 2026 08:36:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C6DB9606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D459B606A31A
+	for <linux-pwm@vger.kernel.org>; Sat, 31 Oct 2026 10:37:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D459B606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YmJpl17c
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793435794; x=1824971794;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HNFiIEi640fafEaGc3EFx5z+gYIxLguCaOvEPMDuqz8=;
-  b=YmJpl17cPuKjDH1ImuQ/zjpErL92s+03AIhoAkConSRXTS8ng1g2qKIk
-   t+5N4gNe/y82sPR9YeFpjcR2KNa9s7tI+DR0HSOkYlx1FogP7XSJ0I9JW
-   54zzOJybmC3UHyLK/F5F0nDkXEl+yMffmCjf+ljFUBpG33HUgbQaROqOz
-   r4KuT6nLTlBSqto2iM0ClwvDpRwxYGQN3JZ9PnTHmzSoIQCjhyp9C7qkA
-   bzj6KUN6a1kKWJmol9XmOk58hkiliK0Fsm81BGETmTcwh2VVL+nxBh5bn
-   MMhnfeG89WlxK6vzk6UGaAuxc6pDzvE3R/eqZov8S9WdCKzQJmeo4akDl
-   Q==;
-X-CSE-ConnectionGUID: g5usi5Y/T+SAj7s1eT/usw==
-X-CSE-MsgGUID: KQ63dNC2Szurz00wRP0QMA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2094786"
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="2094786"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 01:36:33 -0700
-X-CSE-ConnectionGUID: R98IForARe2BSfo+qCYvUQ==
-X-CSE-MsgGUID: AKZzIbkzTA228RgkANMMSQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="5502417"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.127])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 01:36:30 -0700
-Date: Sat, 31 Oct 2026 10:36:27 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: sergiu.cuciurean@analog.com, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, ukleinek@kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 0/2] iio: adc: add LTC2387 and ADAQ2387x support
-Message-ID: <auWoi0Vad8F-aTmJ@ashevche-desk.local>
-References: <auSsl5_xQNXCNphJ@ashevche-desk.local>
- <20261030150705.411102-1-Nicolae-daniel.Deaconescu@analog.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dPQjtw2S
+Received: by mail-dy2-f8.google.com with SMTP id 5a478bee46e88-36a24f47293so897350eec.0
+        for <linux-pwm@vger.kernel.org>; Sat, 31 Oct 2026 03:37:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793443065; x=1794047865; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:content-type:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=51xyznyCe9WelvYeEXo4BU/h4Ecjz+qWRQ0TYPxSgHU=;
+        b=dPQjtw2SACLf3ETR8QxkgR7Te92fDh1hjirWXN2bkWeNt6pLlVwx0jkz2uxXVdSy2y
+         ZfSbPGx7c7cuhDDPh0dOiWeHrgZM3AWu7uztKwIHin9UcHol3WqUuw8qalRqiUf0EfYQ
+         JblG3WKndZMaKJElZJLujp/KUnXKp/NS8oJyNyIllfNP7rYT7BqqErkZmKOKNSQC21Tg
+         xXI/FuWmlDZuLDMkCxI97IUgfbybSoAHJBW+Fiww9FJ2sQY6+Qkv5WP+KVqf0UISDGkg
+         n4qBEg5fhJXOtqpk7wVABCK1hGu7SutDoHp2DKvKHROUlsRhM3d1G3zrAL+7AgLmoxqx
+         pPQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793443065; x=1794047865;
+        h=content-transfer-encoding:mime-version:content-type:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=51xyznyCe9WelvYeEXo4BU/h4Ecjz+qWRQ0TYPxSgHU=;
+        b=L0ohoWNOvYis2LKQ7kQZnLRuQdW+WrvL7mMW/FSf7HFIQZS6poImFfud37JgEFz1s2
+         KB3GVreY3yTyW1GK4wlTKluFlbZ54DkVWaxNrnFKsgZUDRntJf32kxUfb5foTEYpMDeM
+         d9oJwN5E9U7Pdmx5B+u7+TtZFggBsKXsBwql8C27j6Vi5OJsgy8pPBYsjADDwIoeGgW5
+         RfEichjFVVNk3ol0D/n9WulJwEPhy8/GwIf10zvBUmP3f5OVrH7xN8T5J9ZpwGPlC+Mn
+         LzWlv/5dPJkNUU9lomm8uDnRtd7/3xicjOn+9BQLrSh2Z/8lmtG2lxlv4Lr/SaQjM6U2
+         mdNw==
+X-Forwarded-Encrypted: i=1; AKwUvBwH9GnTi4Jl1ksUETWzl8b9KFEDFFwHGIZ6YDY5Jxsy7HlY8iCHQTJZ5BTCY+UIYdg9q/epxmXyHAU=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJMt+GIt7P8mE8C1pQXdxQG77PjRrklq6odZcGGfugT7EAVnPQk
+	NG0s76Fo/awoSNF9LcDLDOt+yhFze3vUGesGHaAZsgRFlW42kfl4Ps4=
+X-Gm-Gg: AYBFou0fyOswIXTJBDH9UDX/lg4FGEN1fXsr/zQhIqn8M5BEe6sxg+lsxp3MzFeb3QA
+	BhW1ULmPCCHJTFYY9PnzWiwtatNmXn8qfOfxEnavsndNN0pQJSmNWuit0v/MdxqPKVtREOMcC/X
+	Zu8JaLmIunRkPaMSEg0WblEUxi35nxlzI5l+thPR6e7qd7RD99bOY/+9yViRIQ8qnIfgP4varIz
+	xeh0nuyALXJAZQKE1rYQatf42kOOpAm2L43UsvTiaXlvtB9q2AoiPZhZcCdZxgy980EkRXNb9Xh
+	By2m9fna0gnENagjXZErYzd2b2J+2Jo8ZEGHKzZlOnYNsbViEG2zroauhtMJA/O4uboWNiSYtnG
+	FWmUS0Dipm8MuXX4i+ITGsLXhL164gtiWhcAcIODrx5usKJCzpQQi3u+OQkhHBl9hOk/lEW4Ja2
+	NB5/hrKejPdksPkF6WOjdtfRRBEMYqfaB8MnA8PmyrmRgmKrwFbYdDiT+kXA6Xoog2zmBhnAYV7
+	c7oRTKIeEKZ31s7tvOPZ/hBG4ZgTtFaGQ9KQk2xL9CpWqVWwa6Xc+b9ttrmo4buq2kcAkgQ5018
+	SnTpeKVArc5QIGetBpVBpH+P3+Mrhfvm3IWLZwvMcDdJjkf47n07qserdBufyQ==
+X-Received: by 2002:a05:7300:ce08:b0:343:ff9f:26f3 with SMTP id 5a478bee46e88-36a42401de6mr6495441eec.9.1793443064825;
+        Sat, 31 Oct 2026 03:37:44 -0700 (PDT)
+Received: from WIN-2DEDQG69EF6.localdomain ([2a13:a5c6:1ff1:280f:be24:11ff:feb0:8690])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a42669128sm17019810eec.3.2026.10.31.03.37.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 31 Oct 2026 03:37:44 -0700 (PDT)
+From: chenhan <chenhan0017.work@gmail.com>
+To: FUJITA Tomonori <tomo@flapping.org>
+Cc: fustini@kernel.org,
+	guoren@kernel.org,
+	ojeda@kernel.org,
+	ukleinek@kernel.org,
+	wefu@redhat.com,
+	a.hindborg@kernel.org,
+	acourbot@nvidia.com,
+	aliceryhl@google.com,
+	bjorn3_gh@protonmail.com,
+	boqun@kernel.org,
+	dakr@kernel.org,
+	daniel.almeida@collabora.com,
+	gary@garyguo.net,
+	linux-riscv@lists.infradead.org,
+	lossin@kernel.org,
+	m.wilczynski@samsung.com,
+	tamird@kernel.org,
+	tmgross@umich.edu,
+	work@onurozkan.dev,
+	linux-pwm@vger.kernel.org,
+	rust-for-linux@vger.kernel.org,
+	FUJITA Tomonori <fujita.tomonori@gmail.com>
+Subject: Re: [PATCH v3 0/2] pwm: th1520: Fix 32-bit build with COMPILE_TEST
+Date: Sat, 31 Oct 2026 18:37:34 +0800
+Message-Id: <20261031103734.24734-1-chenhan0017.work@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261030020209.3833766-1-tomo@flapping.org>
+References: <20261030020209.3833766-1-tomo@flapping.org>
+Content-Type: text/plain; charset="utf-8"
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -82,40 +119,25 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261030150705.411102-1-Nicolae-daniel.Deaconescu@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Oct 30, 2026 at 05:07:05PM +0200, Nicolae-Daniel Deaconescu wrote:
-> On Fri, 30 Oct 2026 16:41:27 +0200, Andy Shevchenko wrote:
-> > But these difference doesn't explain why you need a brand new driver.
-> > Is hard to configure this at run-time by choosing the respective driver
-> > data based on the compatible string?
-> 
-> Looking at ad7625.c again, most of it can come from chip data,
-> like the driver already does for max_sample_freq_hz. The lack of
-> en pins could probably also be parametrized.
-> 
-> However, doing it this way would risk clashing with the sampling
-> path of the existing driver. Keeping it separate would make testing
-> easier, as well as isolating drivers for unrelated families, which
-> might be out of scope for this.
+Hi Tomonori,
 
-> Ultimately I think keeping them separate would be simpler, but
-> I'll integrate it if you believe it's worth it. We might also 
-> need to consult with the authors of the original driver, as I
-> haven't worked with the ad7625 before. 
+Thanks for CC'ing me.
 
-If there is no big differences on RTL or programming flow, no need to create
-a brand new driver. Even if there are some differences which are minor, we
-may quirk that in the code. See infamous drivers/gpio/gpio-pca953x.c for how
-many similar, but not fully chips are supported. With your elaboration above
-I believe we may join these drivers to the existing one.
+> Both series use the same module header, so whichever
+> is applied later needs only a small rebase.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Agreed. My div64_s64() and div_s64_rem() can share math.rs with your
+div64_u64() and div64_u64_round_up(). If your series lands first, I will
+rebase patch 3 onto that module, preserving your unsigned helpers and
+the common module header.
 
+I have now posted v5 [1], which only changes the SAFETY comments relative
+to v4. The first two patches still fix Delta independently of the math
+module, so the behavior fix can be taken separately from the extraction.
 
+[1] https://lore.kernel.org/rust-for-linux/20261031103206.24051-1-chenhan0017.work@gmail.com/
+
+Best regards,
+chenhan
