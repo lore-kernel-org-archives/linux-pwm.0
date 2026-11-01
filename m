@@ -1,115 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.229.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793443066;
-	b=bDBvA5YC7BG9oXXOg4+A0SmCoF4TCfRIEmoUb/t4vNXF+qvH15nH96on6MnCXM6N+9RS
-	 7R/ONR7lTt3oITv1qDSCByFJhCEt51x/Uj4b45cUyXOclWWCYbpacQjYp5daTaGMYqUyo
-	 8tzJXoJuBRo0p6+F5ZM9mgTPTrU3nDrpZn3RfE2srwFCftUzKGvY4zfLyPxUTt2j6r+DF
-	 KkvF01EnuH0WokNTW8th4utRiz9Izbcbtmm1QQ0s5lBYRTGcxgP/Z3KWfEWkySspRE2Ad
-	 maFF6lOxrv5EvY0JCMQA4p2K5My/Wu3ZOBBXw0tAIAhW6GPhMtUINIapX6qlfvY7y+Q==
+	t=1793503622;
+	b=hF2ePfOVg7UEHUGHdiniY9M+dN2wfSk73QPsMXRFrP4JTQmHKUaMWl0adp8HgspXkG3e
+	 7M2W59vHDqsE3030eLLbHYH+GaNvteQcAkm9hdR0NW+CHSamYXhFfpNb7ufRiDU7MlLzh
+	 rzFJFfRSfzgvMw13m4aliQcRwn1uKvuY/+oJSr6f7mNrA2BgOtAR/LtRE9cNoRDcUNH/M
+	 0NoX/tWWFxHJq1ABmgHUmxJpYp3kaw88vmkzLIIbD6BlundnIWrevNFlO3jX4y3cmaYcI
+	 5isn6G9gLQc+1At7dlx/JGxoBvvWFCMpzW+5Uu6yLSc+U8NBW02jOtm57ifuyUtvO0w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793443066;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793503622;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 Content-Type:MIME-Version:Content-Transfer-Encoding;
-	bh=51xyznyCe9WelvYeEXo4BU/h4Ecjz+qWRQ0TYPxSgHU=;
-	b=k4KgnYTSuB1LKenWjjVhgNzEOpru4j+cYb3rrhNxM1JE2CykQ+Id6bXgqWjumsFOz7sG
-	 HdNfqSfAj3g+DrqoRMrbSkRNUoMsoCMnksi/hSZCKl83UyM55J6BIIbpO8PLS40rN6Y7U
-	 4I35AMxYVvYJgD9Er9Zo6J2+tuIgXP+Nbb2Mf11n/iO7quNC+4L06WHULvQnbW2bKKBv1
-	 x8hqLx+0ooTUmWOQGcqrYhcgWqlGWeYl96Kh9c9JgWgSFRAnDeEwc61qgbkyjirzkha0H
-	 K5z1DrkhzacujliZyIULFxLQgIBVuaj3zj9Ppr/uUeEiJ0t/+wLhctz2rdd+Dg9KuJw==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=Z+poO6efwcGNj69j/DfV8JX7ZC/OFlxZpiE6eh71TzA=;
+	b=TdHNOFmspJ7kxKe2j+XsOOceQ9xiL8h0ecclDsUeb3f9TV2U0nYKtOUunMjMf9xYE1s0
+	 usCgIQbTgcET62Lkxro07Ah77LfiL3dTCppQeGZWl51Eb1W15Vm1tiqr/n8qkyqXY9Wn/
+	 GcIlyu112/pT5PqIyWOkblCXcjkowE4/TGLm6m6OQ0VMv2XqEsptrN3YqSq61K21eklV7
+	 UT6QYorED6RfgtfRvukhzKXE5IGfn88CfZZR1gOWMhXmyI7qvR5BX5YKPbV0bh87tTOM5
+	 y0kp2hglz9YDqkF5BzHygvJdvW9SttXRc0xtWmo3UWd5Q1ZMaVfslmAT5f9y/cTC0ow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dPQjtw2S;
-	arc=none smtp.remote-ip=74.125.229.8
-Received: from mail-dy2-f8.google.com (mail-dy2-f8.google.com [74.125.229.8])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EP0qY+sw;
+	arc=none smtp.remote-ip=209.85.214.174
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D459B606A31A
-	for <linux-pwm@vger.kernel.org>; Sat, 31 Oct 2026 10:37:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D459B606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44E23606A326
+	for <linux-pwm@vger.kernel.org>; Sun,  1 Nov 2026 03:27:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 44E23606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dPQjtw2S
-Received: by mail-dy2-f8.google.com with SMTP id 5a478bee46e88-36a24f47293so897350eec.0
-        for <linux-pwm@vger.kernel.org>; Sat, 31 Oct 2026 03:37:45 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EP0qY+sw
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2e99b1e5b4cso11907505ad.0
+        for <linux-pwm@vger.kernel.org>; Sat, 31 Oct 2026 20:27:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793443065; x=1794047865; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=51xyznyCe9WelvYeEXo4BU/h4Ecjz+qWRQ0TYPxSgHU=;
-        b=dPQjtw2SACLf3ETR8QxkgR7Te92fDh1hjirWXN2bkWeNt6pLlVwx0jkz2uxXVdSy2y
-         ZfSbPGx7c7cuhDDPh0dOiWeHrgZM3AWu7uztKwIHin9UcHol3WqUuw8qalRqiUf0EfYQ
-         JblG3WKndZMaKJElZJLujp/KUnXKp/NS8oJyNyIllfNP7rYT7BqqErkZmKOKNSQC21Tg
-         xXI/FuWmlDZuLDMkCxI97IUgfbybSoAHJBW+Fiww9FJ2sQY6+Qkv5WP+KVqf0UISDGkg
-         n4qBEg5fhJXOtqpk7wVABCK1hGu7SutDoHp2DKvKHROUlsRhM3d1G3zrAL+7AgLmoxqx
-         pPQw==
+        d=gmail.com; s=20260707; t=1793503622; x=1794108422; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Z+poO6efwcGNj69j/DfV8JX7ZC/OFlxZpiE6eh71TzA=;
+        b=EP0qY+sw7BT9C40L2DjSQr1CG4y31Fg9l/l0swU3caaz+JKEmVDp1NgRJmAT30C2Pi
+         /v5HnIXDgXhIAlvaQwGaJWYE+gYaGpHZekD6iy/3GAZL1/98ksvYA3t8K+pfEVvAe0P5
+         amlTeHnb1YXgnXgs3ys9OPWeUXDEe7Dy9AeOwH4pv5mkUI4TirWjwph+ne3CvVhZPG36
+         inSXD2soCbRG24X2RbCWvTnJ0QTpQ/qXqIkYOr/EXvmHg4X8cUtt095oTNOgGOQS00w/
+         QAXcmZkktq4JsboxwR1xwRiWVbA9cRAn4Ca9ZSf0TNnc/j2HAPlk3kMPGEWaaNvOgJr9
+         EVsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793443065; x=1794047865;
-        h=content-transfer-encoding:mime-version:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=51xyznyCe9WelvYeEXo4BU/h4Ecjz+qWRQ0TYPxSgHU=;
-        b=L0ohoWNOvYis2LKQ7kQZnLRuQdW+WrvL7mMW/FSf7HFIQZS6poImFfud37JgEFz1s2
-         KB3GVreY3yTyW1GK4wlTKluFlbZ54DkVWaxNrnFKsgZUDRntJf32kxUfb5foTEYpMDeM
-         d9oJwN5E9U7Pdmx5B+u7+TtZFggBsKXsBwql8C27j6Vi5OJsgy8pPBYsjADDwIoeGgW5
-         RfEichjFVVNk3ol0D/n9WulJwEPhy8/GwIf10zvBUmP3f5OVrH7xN8T5J9ZpwGPlC+Mn
-         LzWlv/5dPJkNUU9lomm8uDnRtd7/3xicjOn+9BQLrSh2Z/8lmtG2lxlv4Lr/SaQjM6U2
-         mdNw==
-X-Forwarded-Encrypted: i=1; AKwUvBwH9GnTi4Jl1ksUETWzl8b9KFEDFFwHGIZ6YDY5Jxsy7HlY8iCHQTJZ5BTCY+UIYdg9q/epxmXyHAU=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJMt+GIt7P8mE8C1pQXdxQG77PjRrklq6odZcGGfugT7EAVnPQk
-	NG0s76Fo/awoSNF9LcDLDOt+yhFze3vUGesGHaAZsgRFlW42kfl4Ps4=
-X-Gm-Gg: AYBFou0fyOswIXTJBDH9UDX/lg4FGEN1fXsr/zQhIqn8M5BEe6sxg+lsxp3MzFeb3QA
-	BhW1ULmPCCHJTFYY9PnzWiwtatNmXn8qfOfxEnavsndNN0pQJSmNWuit0v/MdxqPKVtREOMcC/X
-	Zu8JaLmIunRkPaMSEg0WblEUxi35nxlzI5l+thPR6e7qd7RD99bOY/+9yViRIQ8qnIfgP4varIz
-	xeh0nuyALXJAZQKE1rYQatf42kOOpAm2L43UsvTiaXlvtB9q2AoiPZhZcCdZxgy980EkRXNb9Xh
-	By2m9fna0gnENagjXZErYzd2b2J+2Jo8ZEGHKzZlOnYNsbViEG2zroauhtMJA/O4uboWNiSYtnG
-	FWmUS0Dipm8MuXX4i+ITGsLXhL164gtiWhcAcIODrx5usKJCzpQQi3u+OQkhHBl9hOk/lEW4Ja2
-	NB5/hrKejPdksPkF6WOjdtfRRBEMYqfaB8MnA8PmyrmRgmKrwFbYdDiT+kXA6Xoog2zmBhnAYV7
-	c7oRTKIeEKZ31s7tvOPZ/hBG4ZgTtFaGQ9KQk2xL9CpWqVWwa6Xc+b9ttrmo4buq2kcAkgQ5018
-	SnTpeKVArc5QIGetBpVBpH+P3+Mrhfvm3IWLZwvMcDdJjkf47n07qserdBufyQ==
-X-Received: by 2002:a05:7300:ce08:b0:343:ff9f:26f3 with SMTP id 5a478bee46e88-36a42401de6mr6495441eec.9.1793443064825;
-        Sat, 31 Oct 2026 03:37:44 -0700 (PDT)
-Received: from WIN-2DEDQG69EF6.localdomain ([2a13:a5c6:1ff1:280f:be24:11ff:feb0:8690])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a42669128sm17019810eec.3.2026.10.31.03.37.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2026 03:37:44 -0700 (PDT)
-From: chenhan <chenhan0017.work@gmail.com>
-To: FUJITA Tomonori <tomo@flapping.org>
-Cc: fustini@kernel.org,
-	guoren@kernel.org,
-	ojeda@kernel.org,
-	ukleinek@kernel.org,
-	wefu@redhat.com,
-	a.hindborg@kernel.org,
-	acourbot@nvidia.com,
-	aliceryhl@google.com,
-	bjorn3_gh@protonmail.com,
-	boqun@kernel.org,
-	dakr@kernel.org,
-	daniel.almeida@collabora.com,
-	gary@garyguo.net,
-	linux-riscv@lists.infradead.org,
-	lossin@kernel.org,
-	m.wilczynski@samsung.com,
-	tamird@kernel.org,
-	tmgross@umich.edu,
-	work@onurozkan.dev,
+        d=1e100.net; s=20260707; t=1793503622; x=1794108422;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Z+poO6efwcGNj69j/DfV8JX7ZC/OFlxZpiE6eh71TzA=;
+        b=fo6lsKT6HWBvMSJ79xonbSb+UaXJh1YVY7MFGynGf4LLZU2MxPzmHMd914I3SzHKJ2
+         +F9ZjemD8VkMAcM6/lXLf++/V3iIuF/wxIW1HNcf5vgkbqvdcxAklWLbGsoDnsvscqFg
+         LMLALdy+bnH+QDOtJ3L9GZOofNb5Q8oIFy1Lw1wW3kiObprYoJQNHnnbsM99/ILQMbOn
+         YbeAcryK6CZ+xUkj5wYQwhYdXUmAa/HBK2ZaSYTq01iD8OtVVCGPBhpWfiLAH3gTn5AP
+         dTaz33Vw1UgI1ZLQLxrtyZWN/m0vjj2ByyviE/BEFohoIDZzAt+s4RT+Ou2xXDyqQ7UU
+         FHXA==
+X-Forwarded-Encrypted: i=1; AKwUvBz8kcpIupy2maN2QaGrA+7OQDNXwByfKx+mHppAvWMqdOZVgiljlqSL++63gLW5bgr0P2rfjCZrJ7Q=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/k+oPlpmq71x91DfhjNjFziJZSbsS9vHF889sKByikX352/UrV
+	OG+Npunz2qMVxBsQpAjwXlzPhfpP2mSSCNE/LK2rYzGBHX/Vtd+CjBGJ
+X-Gm-Gg: AYBFou121k3631iRA2hc+RQAGcy7K9pCMoHa8lzqCCvARsSJR/lxOafaTfndhGwUKha
+	lv9YQ930K4tAUEjpZiLF3L7bjb2TyCIzuO2lp5ibSR/ARd2CWjhF+248q57z071YeznnGBV5yHt
+	GRqvNJA1JmdCog8wBjYTBWZ7IsAoVnB7rUIsOtkGoX/rDLEGx+jXKCdHwmTq9LpkY48f58rUHm2
+	1CjE5h/yuEjFFOiJYvXM5Gq2++k/yzQXPLpdUCxt9KLY8GYV5f9XCk25hi0bjT4c+G9Jc50+dqN
+	ActybAya/VYysWF8ctZYuAdOelBOPtU1nmeZom7HX/s6UXMnWHqvKQrGBDGBpWFy2Ha+o7u9a8T
+	gVIxR2ERjAivWjS6ukxuMWLJgC7MhTU+y58FkEZLqbLfOX6fCP3wERsZPj43QkB7LN5CFkEj7I6
+	viAcUbKNM/1GRtfRqV3CmX+G0f1fRmoPqBzrO5eedB6BBJeQftvuCL31KQPdKvJl8IpNsv6wiJx
+	VDJAxzmHjwU7CtnY4zd/4zp4nbv21OJxjMcx3J+G7Ca/JKDmjM5078pssNoV7jyUt7YFCDhPbN0
+	7MXoiUEHcRSmB/ppvI12+zUQpms9v5wRvg7i7TcZ3NH0hXg19ZhDLeNimaRV2Vm4XxRKHahIi0K
+	BngJIdkJDeH1/YhpgzCtncd7ONH1LRkd0Hd4F17ibidxb/tpZkxM+1N3eMfJy7bSmE8+dVaRxUV
+	F/35Y=
+X-Received: by 2002:a17:903:11cf:b0:2e4:4eed:5cc5 with SMTP id d9443c01a7336-2eb364c02f9mr64614275ad.38.1793503621559;
+        Sat, 31 Oct 2026 20:27:01 -0700 (PDT)
+Received: from EAIT-H54D9Q2FJQ.eait.uq.edu.au ([130.102.10.191])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2eb392a5f48sm17193685ad.64.2026.10.31.20.26.55
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sat, 31 Oct 2026 20:27:00 -0700 (PDT)
+From: Yu Zhang <yuz08559@gmail.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Stefan Wahren <wahrenst@gmx.net>,
+	Linus Walleij <linus.walleij@linaro.org>,
 	linux-pwm@vger.kernel.org,
-	rust-for-linux@vger.kernel.org,
-	FUJITA Tomonori <fujita.tomonori@gmail.com>
-Subject: Re: [PATCH v3 0/2] pwm: th1520: Fix 32-bit build with COMPILE_TEST
-Date: Sat, 31 Oct 2026 18:37:34 +0800
-Message-Id: <20261031103734.24734-1-chenhan0017.work@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261030020209.3833766-1-tomo@flapping.org>
-References: <20261030020209.3833766-1-tomo@flapping.org>
-Content-Type: text/plain; charset="utf-8"
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH] pwm: gpio: unregister the chip on driver unbind
+Date: Sun,  1 Nov 2026 13:26:46 +1000
+Message-ID: <20261101032646.11397-1-yuz08559@gmail.com>
+X-Mailer: git-send-email 2.55.0
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -121,23 +101,43 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Tomonori,
+pwm_gpio_probe() registers the chip with pwmchip_add(), but the driver
+has neither a remove callback nor a devm action calling
+pwmchip_remove(). On unbind the devres callbacks release the GPIO
+descriptor, cancel the hrtimer and drop the reference taken by
+devm_pwmchip_alloc(), while the chip stays registered: it is still in
+the pwm_chips idr, its sysfs attributes and character device are still
+there and chip->operational is still true.
 
-Thanks for CC'ing me.
+The chip can therefore still be reached through sysfs export, the
+character device, debugfs and pwm_get() from a consumer. Those paths
+call into chip->ops, which point into unloaded module text once the
+module is gone, and pwm_gpio_apply() re-arms the cancelled hrtimer and
+drives a GPIO descriptor the driver no longer owns.
 
-> Both series use the same module header, so whichever
-> is applied later needs only a small rebase.
+Use devm_pwmchip_add() so that the chip is removed before the hrtimer
+is cancelled and the GPIO is released.
 
-Agreed. My div64_s64() and div_s64_rem() can share math.rs with your
-div64_u64() and div64_u64_round_up(). If your series lands first, I will
-rebase patch 3 onto that module, preserving your unsigned helpers and
-the common module header.
+Fixes: 7f61257cd6e1 ("pwm: Add GPIO PWM driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Yu Zhang <yuz08559@gmail.com>
+---
+ drivers/pwm/pwm-gpio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I have now posted v5 [1], which only changes the SAFETY comments relative
-to v4. The first two patches still fix Delta independently of the math
-module, so the behavior fix can be taken separately from the extraction.
+diff --git a/drivers/pwm/pwm-gpio.c b/drivers/pwm/pwm-gpio.c
+index 5644d78..cffdbcd 100644
+--- a/drivers/pwm/pwm-gpio.c
++++ b/drivers/pwm/pwm-gpio.c
+@@ -212,7 +212,7 @@ static int pwm_gpio_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = pwmchip_add(chip);
++	ret = devm_pwmchip_add(dev, chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "could not add pwmchip\n");
+ 
+-- 
+2.43.0
 
-[1] https://lore.kernel.org/rust-for-linux/20261031103206.24051-1-chenhan0017.work@gmail.com/
-
-Best regards,
-chenhan
