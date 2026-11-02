@@ -1,60 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.151
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793613434;
-	b=4FqJ4QlLzMoe6YCiEWOmIiWqWa/06DWy3nOF6vRpADWR4WqagEWySM2UFvNXYygm9vg+
-	 gHX2kfEkQXycIzX/4MwDTH+20BqtdOele+9ltKtK3xHqMkRMXXoUfQERvmUmADrHGqpGT
-	 26rdJOuYeZj2hSNdVpfNUL2ksLrYSPgnCGZTcb5OR2dY+tWEp89xGeDo1mRyomgVysE8f
-	 dH90u/EzA2zUGMyZ30kCAYdOd/5G+y8T96DnPAVh8Z3wpw6i/+TmfUdZCsYConAqPkIsd
-	 WzY5Fs/MMCgQ5JOkFG9wA9q9B4iVW7FdYow7vzCRdO6+0IMHSrW1+toC39XBkQ1OBGA==
+	t=1793616637;
+	b=OWKBNxnOU+zXxeGsa/Jw5baR9BUK7+gkADNHX+KHx/rJEbIlNxYLJeu6sJ3yN/4SyNMf
+	 9SvHz2KO7zRX5afHZ6yUoeYsrsVQm0Hb+GOozDqcgslc+u2mOIi0Rjq21zEIX+x+OSYvH
+	 BETjw5LrFZ+3fe/4nD6L5RgrmdCdHZEzPtowLAVMhg/VKv+OLhLl78xafRPLDmEljvn04
+	 svQuJUaODHoiiwKVmrQBVkcIC9Z/uudLqJup6oeLSQKdw5v+ym8b1s8miX9QdHkndR0DF
+	 DlqncVK3t7DaOPQft0XCzhx1bDDJg/YKMdvr5vanJpFLYR8bu8J5tIPxBUXPSUlf4TA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793613434;
-	h=Received:DKIM-Signature:Date:From:To:List-Id:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=2cQyf8sKC1F7loKuPDRIdjy/GzV9dwagAXHv9zwCcFs=;
-	b=iHXNYl+20oYMPEh2+P6DuAOYjXizZUi1lr5bQ0KaDUTOEQ559ouKgsJ6k+45SeltipZ9
-	 Bi6W+xl5X23k3Or9smlM3rEPmNtbE0SodOJKfC7WkUEms0wRqjhPPRmyzivvTi4Sixf/8
-	 S89PNcGIsRpbCawNlxHwZGdBOuppqglCDcQAPZJTTsWjlXw01LmKdK9CXmGXlOYFfUKNY
-	 50MqYpXWtaQHgzRxZRYFcUN8Xav4+eiERcJR/cQEzzCI09NMnOCUzVwaVHUrV6e3I4BSp
-	 cK0iflO+6J9txw+6NITA196l4P2pYbSATCb4ZoAHxu4v6LoNPKXtKb32ZT0ktS6SU+Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793616637;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=wLI3n7dT9jhrlDm7AKISWebGqJni218wwz7fppboSog=;
+	b=afMR6V8sJmKTljne4B44SFIPp1pdV1ALMxOc/8QMU53mD5fh8gGxch109CBw5lfGrJrS
+	 Wp7PblYT/C9Yzv39COmMWXT9EeLpL4Ie2rV/j3/nmeJ3zNsTCmhg6w+VeC+CuWXZIiS0Q
+	 4OHSFPtJpKXcMqNS04cdJ0bye84PnRxDHgupc2fLXoNUZGDQsQqbimMvyj646S0H8ZA1C
+	 HXOs+Iu/enEu1ehUyKXksAJ4ati7OvsMZlq6GnJDHh5o4Gd8kbpBrPKU61eogX/sscY8P
+	 dfuM955G7PudiswjNOuC5bjbnpTcp19Sww2R3Heby4DuYG5LOfjQiGtTDHKrQcJm93A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Kiff0D1h;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 122BB606A326;
-	Mon,  2 Nov 2026 09:57:13 +0000 (UTC)
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=ENH9FpOe;
+	arc=none smtp.remote-ip=111.22.67.151
+Received: from cmccmta8.chinamobile.com (cmccmta8.chinamobile.com [111.22.67.151])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 204A8606A324;
+	Mon,  2 Nov 2026 10:50:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 204A8606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Kiff0D1h
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id EC15A1F00919;
-	Mon,  2 Nov 2026 09:57:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793613433;
-	bh=2cQyf8sKC1F7loKuPDRIdjy/GzV9dwagAXHv9zwCcFs=;
-	h=Date:From:To:List-Id:Cc:Subject:References:In-Reply-To;
-	b=Kiff0D1hzOFg0lPBzARDrDswtvyheTKFPGRY6Dhk1IRrG+fJRs6MIhAgBNie8TxNo
-	 qv8Z2dIwsyL8p5KE3l85iESoMFUAhJlhQlQWLtQiv++Un14uePj29XUH/YqwG5y3nw
-	 yq4MClM8NBo8OSpPr30z4+ifmZpvWgMR67iDRhk3NWrLlAs2/kh9eups5HmEK02ces
-	 TIDTvzqBeBrNGYkz41UlqS/iD6OwK9WcP4KupAZHLmfVLEUDgYpGbtgw6c0O7yCqB+
-	 kbxRhViJ7R1uvMokm8gHO5p2SSeaCAoq97d2tuDdOjy/A+Xt18Xl3Ks6QOF2ytMGw+
-	 FPEND+fBTxj9w==
-Date: Mon, 2 Nov 2026 10:57:10 +0100
-From: "ukleinek@kernel.org" <ukleinek@kernel.org>
-To: Hal Feng <hal.feng@starfivetech.com>
-Cc: "patchwork-bot+linux-riscv@kernel.org" <patchwork-bot+linux-riscv@kernel.org>, 
-	"conor@kernel.org" <conor@kernel.org>, 
-	"linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>, "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>, 
-	"robh@kernel.org" <robh@kernel.org>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>, 
-	"emil.renner.berthing@canonical.com" <emil.renner.berthing@canonical.com>, "palmer@dabbelt.com" <palmer@dabbelt.com>, 
-	"pjw@kernel.org" <pjw@kernel.org>, "aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>, 
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND v22 0/3] Add OpenCores PTC PWM support
-Message-ID: <auheO4sRs4P36jgw@monoceros>
-References: <20260810030714.48100-1-hal.feng@starfivetech.com>
- <179357141185.2624073.8394896290201314670.git-patchwork-notify@kernel.org>
- <NT0PR01MB11026FD52BC4266EFFEACBD5E66A2@NT0PR01MB1102.CHNPR01.prod.partner.outlook.cn>
+	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=ENH9FpOe
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=ENH9FpOeuA591fFTlmdspBjtLKzeqHj4ycCM3nlnNCkNsFkCaGVR4YyEJa3+fsEe1j+hcPKx8iJ9g
+	 Dyhz/F0TvuMO3qv1kxPzdoEH/qPZglTVksS/us34/SpP34qxhNjnWSnBMyqrIWjAUKe05luTK5tNdS
+	 r60fAQ5vfSFgA5DM=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app06-12006 (RichMail) with SMTP id 2ee66ae86ae013b-567f8;
+	Mon, 02 Nov 2026 18:50:09 +0800 (CST)
+X-RM-TRANSID:2ee66ae86ae013b-567f8
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from DESKTOP-3K8GUTQ (unknown[223.108.79.98])
+	by rmsmtp-syy-appsvr01-12001 (RichMail) with SMTP id 2ee16ae86adfc73-cfa2a;
+	Mon, 02 Nov 2026 18:50:08 +0800 (CST)
+X-RM-TRANSID:2ee16ae86adfc73-cfa2a
+From: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	linux-pwm@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+Subject: [PATCH] pwm: mxs: Disable clock on invalid period error path
+Date: Mon,  2 Nov 2026 18:50:05 +0800
+Message-ID: <20261102105005.1007-1-laixiangwu@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.50.1.windows.1
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -64,83 +74,44 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="g7uwo5ayfmhz32zt"
-Content-Disposition: inline
-In-Reply-To: <NT0PR01MB11026FD52BC4266EFFEACBD5E66A2@NT0PR01MB1102.CHNPR01.prod.partner.outlook.cn>
+Content-Transfer-Encoding: 8bit
+
+mxs_pwm_apply() enables the clock when the PWM channel is currently
+disabled, but when the requested period is too long to be represented
+by the period divider it returns -EINVAL without disabling it again.
+
+The PWM core does not roll back the hardware state when ->apply()
+fails and pwm->state is only updated on success, so pwm_is_enabled()
+still reports the old (disabled) state after the failed apply.  The
+clock is shared by all channels of the chip and stays prepared and
+enabled forever, and every further failed apply bumps the enable
+count again.
+
+Disable the clock on the error path, mirroring the condition used
+when it was enabled.
+
+Fixes: bf29c2ff82fd ("pwm: mxs: Implement ->apply()")
+Signed-off-by: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+---
+ drivers/pwm/pwm-mxs.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+index e1a3df654..ece42da8e 100644
+--- a/drivers/pwm/pwm-mxs.c
++++ b/drivers/pwm/pwm-mxs.c
+@@ -78,8 +78,11 @@ static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		if (c < PERIOD_PERIOD_MAX)
+ 			break;
+ 		div++;
+-		if (div >= PERIOD_CDIV_MAX)
++		if (div >= PERIOD_CDIV_MAX) {
++			if (!pwm_is_enabled(pwm))
++				clk_disable_unprepare(mxs->clk);
+ 			return -EINVAL;
++		}
+ 	}
+ 
+ 	period_cycles = c;
 
 
---g7uwo5ayfmhz32zt
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [RESEND v22 0/3] Add OpenCores PTC PWM support
-MIME-Version: 1.0
-
-Hello,
-
-On Mon, Nov 02, 2026 at 02:11:46AM +0000, Hal Feng wrote:
-> > On 26.11.2 06:17, patchwork-bot+linux-riscv wrote:
-> > This series was applied to riscv/linux.git (fixes) by Conor Dooley
-> > <conor.dooley@microchip.com>:
-> >=20
-> > On Mon, 10 Aug 2026 11:07:11 +0800 you wrote:
-> > > Add OpenCores PTC PWM driver which is used in StarFive
-> > > JH7100/JH7110/JHB100 SoC.
-> > >
-> > > I will maintain this pwm module in place of William.
-> > >
-> > > Changes since v21:
-> > > - Allow non-zero duty cycles shorter than one clock tick to round dow=
-n to
-> > >   zero.
-> > > - Drop the .free() callback to preserve the PWM hardware state after
-> > >   pwm_put().
-> > > - Update the comment.
-> > >
-> > > [...]
-> >=20
-> > Here is the summary with links:
-> >   - [RESEND,v22,1/3] dt-bindings: pwm: opencores: Update compatibles,
-> > examples and maintainers
-> >     (no matching commit)
-> >   - [RESEND,v22,2/3] riscv: dts: starfive: Correct pwm nodes
-> >     https://git.kernel.org/riscv/c/2186ec5f59c2
-> >   - [RESEND,v22,3/3] pwm: Add OpenCores PTC PWM driver
-> >     (no matching commit)
-> >=20
-> > You are awesome, thank you!
-> > --
-> > Deet-doot-dot, I am a bot.
-> > https://korg.docs.kernel.org/patchwork/pwbot.html
->=20
-> Has this patch series been applied? I've sent out the updated v23 patch s=
-eries, but
-> Krzysztof pointed out the Tested-by tag should not be added in the dt-bin=
-dings patch.
-> Should I send a v24 to drop the Tested-by tag tag, or should I make the c=
-hanges on top
-> of v22 if it has already been applied?
-
-The way I read it, only patch 2/3 "riscv: dts: starfive: Correct pwm
-nodes" was applied.
-
-Best regards
-Uwe
-
---g7uwo5ayfmhz32zt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmroXnQACgkQj4D7WH0S
-/k5t+ggAj8/tZvnqb0XSSo59bIxsRnNZ0QQf80PHn3F4h0SvL1vMUD08nW3IUOmf
-n9mHe2fe0MQpH9Ay0uqyPUuMi/f1hyVyB0KtPruGqifQ/x2xknefeArHlRAZvGkR
-r0SztUC5fIfUioGJfnynVl9rrIFi2HCfOMCRAnyP1YBvEALhHw/MpCQRbdZd7XKE
-5LCVDb3aJBee7nktDXrsMYvbbLYHzAd43pU61W79zMhBQg/0SoiRZAJtmFRq90M6
-QOQ43RbQj7cZLZ3xlIjhoXG18tvoJFZhFYqEf7bsAtSagCOe13mH/TKfiKxs3NZv
-vj+/Csw3/gObvGnq1adib1xuZMwu6A==
-=cSrd
------END PGP SIGNATURE-----
-
---g7uwo5ayfmhz32zt--
