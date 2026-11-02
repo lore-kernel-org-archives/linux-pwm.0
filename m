@@ -1,76 +1,65 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.180
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793638758;
-	b=GMZnG6vOSJ9otKPWY4WQatDgSdFQW8WXqds/IVUZtAEe/usvu5TJBZtzhXTMHfRrV/fb
-	 5W+wCpC0M6nL5VPxFACLpzwMUu/PJ0vVq970FKLN7tuVRWGTnWOGJeLK7ABPaVb8ewqAk
-	 cP3cBedMK3y/JLGA0rZkusnqPqImhPaDuO4Np01VBGcyrOyflVgSZ7TfDK1jVH8zXBq22
-	 3wni2EhWkQTl3w2WYFwxPvZU2wIAGThuH5Obqqa3iwkO1Tz2NCia+qrkNy5trYooDmv4V
-	 jm77qf99uRsJca1m5TPr3ipF+T29UiiVIpLqWTGnEnx7gnOrn3utrzjbJ3JmGQXo/ag==
+	t=1793647385;
+	b=AVqXWjUA0wR43KJvPM6w/diUejalytBsFo58CCNPQdJZ2VVg2ZDiJPNyl7hmE6DO7Ffu
+	 zzKzbVraX1in4hc8xGh+4/UlQCC7nQSEm8B2rMAzS9cmv7Sok3CFUlJx0B6sIkPd7vYyx
+	 VWEvUZzOi4uH2dIGhePhJ05WxZz/S8DKzhVpkytX1dr0rXqkveR8Lbxr7Yx9CJDJMJgQj
+	 mgAbxVx1FXO8p3Zcbw2Jc5XrjBw4lYcFd/AQb5EmjwuBaYRW7xT0dXeIWJ0niOzW1gUCg
+	 B73j5eRrTzA938wkm+qBvBgOwKUtzjs24j2xtffvMpZsQTngGl4Ya08KZMY8hSuGeoQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793638758;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
-	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type;
-	bh=NV5oVtbgjb8nXycAfDcCSiAwFoiTrZdp33YVQFzB20w=;
-	b=ycIXlGMx1KCgboVKF8gaDwMZN/XOdWlEAMTiQZ2MZSpwOLJf0fMb2yOfl/Y/sQMgH355
-	 zbos0hpOGcttjmhwLS+LL1zZYNRGZ38dR/dkS+xe3rchifvWe513eFeSbE2tQNx9E0y5H
-	 ehxZxotUr6JuIi8N5zsJoil0XqPGPZ8YywWHQXw9kywkjZzyrQ9GzVBMCTEf79h9fpobb
-	 59KQ7YIgmEUn3TQnjPQ17FX+JimEUFwCI+g1fgvZuq3D0v3J9GkZbpGL9BPmagaUSALbB
-	 TWwAR98uHvhRwmerzlSxuDvSD3XOXbSWvTd9KLT2ZuM5cWQAq4QPgptDlE4i2AbwwAw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793647385;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=AEn5kOuJI8KKdvD9XcEieAYlhY01m/lTY2e281fbPUk=;
+	b=P9+CEa4NriP+XsO8wkfH/1UIlFHp2uPec91zWL8V/7o5oBXUgseeFilEJDvbMJZendJY
+	 Cae8jPFrMMLKjtSaWNN0KdDD4+MPo0BRfNxU8MVYJ7NHr0c3Vu90aR9rPmUzr3WS7AEr9
+	 TTNoXrgZBCBhSNGepiCsom9WCXTt6zG4FR4GJz0lQX7b+d4Irv9ygxZSzxa+xRUyGHbXn
+	 lby1+YQwIQYuf3X03geeBTB0qXx9LF5xbTS3HezZCcTRw0KL1/WWSZ9XXLnhyU7qTqSss
+	 hCazceTFCuXaR/Q4/a1AA0D9INt6UDLheh8Wa/Lc9rD0Ef3mPlx83TvKDg4C9hdG39g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=linux-m68k.org;
-	spf=pass smtp.mailfrom=gmail.com;
-	arc=none smtp.remote-ip=209.85.221.180
-Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ltyQGKjL;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF7D8607505B
-	for <linux-pwm@vger.kernel.org>; Mon,  2 Nov 2026 16:59:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BF7D8607505B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f180.google.com with SMTP id 71dfb90a1353d-5ec20398b05so2372771e0c.1
-        for <linux-pwm@vger.kernel.org>; Mon, 02 Nov 2026 08:59:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793638757; x=1794243557;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=NV5oVtbgjb8nXycAfDcCSiAwFoiTrZdp33YVQFzB20w=;
-        b=duk6O3wLS6pnx7X2oaIkslYqQ6cDVSx1YCASK2f6DgqzC+6YI6pMVL95SkRxFn683E
-         iP/bEaCAC0PakoSaSnI9/zd9wwKoSSYrYnjGfRjMlmW4ElCUOZ731Zj2RiV9MzSUzGtN
-         M3WWYH8AE3IC5/R2XVafpZDnvCPCi6ewlHorrC87TvyoEDoZNQqPkYU+LKT1fLp0hILl
-         Iitvfuvik65AcQurEQ1VMbgG+Tk5p8BsHOpMCauvewJiIMyAKhqSREXEKhAxyVl0nvfG
-         FIJVsbIO94NhypQChDOapyUgt16UTCzpfwN98iBeylFisF8/FgYX/Jp+7m3RkA/KaDtR
-         T/Jw==
-X-Forwarded-Encrypted: i=1; AKwUvBx3B5geCZ8Rm/xozLxvVLR5KzObWgHpMiYKHo22kR7YlOAzaf5j+a/Yb99bZdXzVmXUule3hh3jyH4=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+9p1goeX/oZLDt9/cWK6XH5yabXeuehl7dKm6b2m4d6QkMzMXs
-	86CGjaTtizS8SmM5+yxAWOYgksBcTXxI+Bp9jYNyizNdVBXJFJyYJ0Xka3Bkqz/kkiM=
-X-Gm-Gg: AYBFou1B1gpmTXnn5UkisyqBmA9BoulB+I24gwP+p70nlqq44siCj8bok3RZSz82tBQ
-	Rg8dtfzRoQJqQlUpvii859UcETudVlEo/kr/07hxiY9ezHcDFibCErgpazgHHD49b435jiH8TIo
-	/Y2DEOZfSYzMIvBDIHlw8F4py1EuBGnl0u06ZYb1ZtpZtQVZBeps7+x++QC9AH5M3soFnpUVN1A
-	yGZ2OUcyNdHpRqILiB0iZS/gY+5DUE1zKuJ+AhX2IwqZCxSuoHSuLianv48uvTVh0n+jgm97Cbe
-	vlA1yfbTp4HHkzSW/Mx0Kb8ffZtuzzGX/A3jwyflPwkitkPWbOb+nGIWBU/XDaq020S8KXyiliB
-	e1nPnLmUe0uMw0nqsNTBoqR8cdG6grjKgEm9KPLl2IBSdIZwVzoX6ap1Esf6fSp4BC6Bl7JqUpr
-	sv9oJYu2BMrlyvLcg6s3XZeIaoJrm8xArvHMhTmdTKkwn4A9iZf94lM5g3L7eFueGivtt3EBXmq
-	J+JqpN7VXOheOvG9q/4mOvB3EtaIMNDXhV07kOqMWDoV7KByvItvH+0VcDApWAodQdx89/AKxSt
-	qpLYRo099E5NANZMkr7gecWvDLDWAOS4ZmvroK0jbZs1PI7JZUkBCO+lIdrIomHSCQ==
-X-Received: by 2002:a05:6102:fa0:b0:7c1:62d2:e18a with SMTP id ada2fe7eead31-7d072c32882mr4660284137.16.1793638756443;
-        Mon, 02 Nov 2026 08:59:16 -0800 (PST)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7d07768d366sm10254622137.10.2026.11.02.08.59.15
-        for <linux-pwm@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Nov 2026 08:59:15 -0800 (PST)
-Received: by mail-ua1-f44.google.com with SMTP id a1e0cc1a2514c-9912c61b8b8so1664433241.2
-        for <linux-pwm@vger.kernel.org>; Mon, 02 Nov 2026 08:59:15 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AKwUvBzQq2XBQiyooHrPsdGAWnlj84XK+Hzb2dfgTTz1b9Phulv9Ppxm/OXaOlSBoZiGjfj3ploDSyG3MWc=@vger.kernel.org
-X-Received: by 2002:a67:e70e:0:b0:7b2:f3ff:6b34 with SMTP id
- ada2fe7eead31-7d07277c9e4mr4640224137.1.1793638754741; Mon, 02 Nov 2026
- 08:59:14 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19565606A326;
+	Mon,  2 Nov 2026 19:23:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ltyQGKjL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D13D1F00A16;
+	Mon,  2 Nov 2026 19:23:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793647384;
+	bh=AEn5kOuJI8KKdvD9XcEieAYlhY01m/lTY2e281fbPUk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ltyQGKjLitBfM0+NBf4Fy9LRsKlMC5f5A5WFTb2Yyc518zMy50CfuMZQfkXKFxB5v
+	 t06dQg4OalfMa4ioajDnUQ/hqc6oTZ4wBegCYmN5dVJh5j77a7eJEfSiY4MYROgURp
+	 318V/ce2T1OptEpwUSjfaXByL4jgsKDZ5MQn7IDiB5h3Q0EjFXd8AmSxs04pDmSc6L
+	 jbrDSzE1rAnrOUXMkdhRRmoY7XIam2OheJ6MYHML9Gd9dabrjTW8cr0o6QjNbaYuaN
+	 0SQAvaPFmSxR7d48L1M0hjIJ5dHYue9uSATh/Ocskhm1s5AwkJvEcvqxkbFP6K4mfJ
+	 WsPp289gzkQdA==
+Date: Mon, 2 Nov 2026 13:23:02 -0600
+From: Rob Herring <robh@kernel.org>
+To: Andrea della Porta <andrea.porta@suse.com>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	linux-pwm@vger.kernel.org, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Naushir Patuck <naush@raspberrypi.com>,
+	Stanimir Varbanov <svarbanov@suse.de>, mbrugger@suse.com,
+	Sean Young <sean@mess.org>, Julian Braha <julianbraha@gmail.com>,
+	Gary Guo <gary@garyguo.net>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: Re: [PATCH v12 1/2] dt-bindings: pwm: Add Raspberry Pi RP1 PWM
+ controller
+Message-ID: <20261102192302.GA882027-robh@kernel.org>
+References: <cover.1790686331.git.andrea.porta@suse.com>
+ <ee0aa89faa14e0073f1271693bae28678652998b.1790686331.git.andrea.porta@suse.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -80,318 +69,26 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <cover.1793026273.git.geert+renesas@glider.be> <e723696e02cfb34fb808e2ae3ccb6faf68528c00.1793026273.git.geert+renesas@glider.be>
- <20261028132937.GL15441@killaraus.ideasonboard.com> <CAMuHMdXycpJ6COtiAA-2oRRfHSfLK40n2cacStW15QJRN3EfLQ@mail.gmail.com>
- <20261028163940.GA2673734@killaraus.ideasonboard.com> <CAMuHMdVOT+DTZum525kmYfP+jzzPrxMnEeRAkapxOMGz4XMHBA@mail.gmail.com>
- <20261030112314.GD2587681@killaraus.ideasonboard.com> <CAMuHMdXR=dcooQoKwrycDpTaZjFk2CCueL08dYYFJLE9bP90cg@mail.gmail.com>
- <20261102160945.GH3368923@killaraus.ideasonboard.com>
-In-Reply-To: <20261102160945.GH3368923@killaraus.ideasonboard.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 2 Nov 2026 17:59:02 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVHFquHz+OzpHirWENEEQeZbiXx=8eeRDKssvw++jGOUw@mail.gmail.com>
-X-Gm-Features: AclHuK8XzCALNwMWvYgXEhUxPQ8US5Vy_FCXa42SavWW1jb9WQFLW8n1gcSHAYs
-Message-ID: <CAMuHMdVHFquHz+OzpHirWENEEQeZbiXx=8eeRDKssvw++jGOUw@mail.gmail.com>
-Subject: Re: [PATCH 07/11] dt-bindings: clock: renesas,r8a78000-cpg: Add PWM clocks
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
-	Jerome Brunet <jbrunet+clk@baylibre.com>, Ulf Hansson <ulfh@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-pwm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
-	linux-pm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ee0aa89faa14e0073f1271693bae28678652998b.1790686331.git.andrea.porta@suse.com>
 
-Hi Laurent,
+On Tue, Sep 29, 2026 at 03:02:11PM +0200, Andrea della Porta wrote:
+> From: Naushir Patuck <naush@raspberrypi.com>
+> 
+> Add the devicetree binding documentation for the PWM
+> controller found in the Raspberry Pi RP1 chipset.
+> 
+> Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+> Co-developed-by: Stanimir Varbanov <svarbanov@suse.de>
+> Signed-off-by: Stanimir Varbanov <svarbanov@suse.de>
+> Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> ---
+>  .../bindings/pwm/raspberrypi,rp1-pwm.yaml     | 66 +++++++++++++++++++
+>  1 file changed, 66 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/raspberrypi,rp1-pwm.yaml
 
-On Mon, 2 Nov 2026 at 17:09, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> On Fri, Oct 30, 2026 at 02:51:54PM +0100, Geert Uytterhoeven wrote:
-> > On Fri, 30 Oct 2026 at 12:23, Laurent Pinchart wrote:
-> > > On Thu, Oct 29, 2026 at 10:08:28AM +0100, Geert Uytterhoeven wrote:
-> > > > On Wed, 28 Oct 2026 at 17:39, Laurent Pinchart wrote:
-> > > > > On Wed, Oct 28, 2026 at 03:43:42PM +0100, Geert Uytterhoeven wrote:
-> > > > > > On Wed, 28 Oct 2026 at 14:29, Laurent Pinchart wrote:
-> > > > > > > On Mon, Oct 26, 2026 at 03:55:23PM +0100, Geert Uytterhoeven wrote:
-> > > > > > > > Add definitions for the clocks used by the PWM modules on R-Car X5H:
-> > > > > > > >  - R8A78000_CPG_SGASYNCD16_PERW_MAIN,
-> > > > > > > >  - R8A78000_CPG_S0ASYNCD8_PERW_MAIN.
-> > > > > > > > Include R8A78000_CPG_SGASYNCD8_PERW_MAIN for ordering consistency.
-> > > > > > > >
-> > > > > > > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > > > >
-> > > > > > > > --- a/include/dt-bindings/clock/renesas,r8a78000-cpg.h
-> > > > > > > > +++ b/include/dt-bindings/clock/renesas,r8a78000-cpg.h
-> > > > > > > > @@ -28,5 +28,8 @@
-> > > > > > > >  #define R8A78000_CPG_SGD8_PERW_BUS           18
-> > > > > > > >  #define R8A78000_CPG_SGD32_PERW_BUS          19
-> > > > > > > >  #define R8A78000_CPG_S0D24_HSCN_OTHER                20
-> > > > > > > > +#define R8A78000_CPG_SGASYNCD8_PERW_MAIN     21
-> > > > > > > > +#define R8A78000_CPG_SGASYNCD16_PERW_MAIN    22
-> > > > > > >
-> > > > > > > Could you also add R8A78000_CPG_SGASYNCD4_PERW_MAIN and
-> > > > > > > R8A78000_CPG_SGASYNCD32_PERW_MAIN for ordering consistency ? The
-> > > > > > > dependency patch should then also include R8A78000_CPG_SGD4_PERW_BUS and
-> > > > > > > R8A78000_CPG_SGD16_PERW_BUS, as well as
-> > > > > > > R8A78000_CPG_S0D{1,2,4,8,12,16}_HSCN_OTHER.
-> > > > > >
-> > > > > > I could add them, but do you have any need to refer to them from DT?
-> > > > > > So far I only added clocks that are listed as clock supplies of on-SoC
-> > > > > > modules, e.g. R8A78000_CPG_SGASYNCD8_PERW_MAIN is supplied to the
-> > > > > > Timer Unit (TMU)).
-> > > > >
-> > > > > So we have two conflicting goals here. One of them is to only add clocks
-> > > > > that we have validated to exist (and ideally work as documented). The
-> > > > > other is to keep renesas,r8a78000-cpg.h readable. We won't be able to
-> > > > > satisfy them both fully.
-> > > > >
-> > > > > I think we previously discussed adding whole groups of dividers in one
-> > > > > go, as some sort of middle-ground approach. Those are clocks that are
-> > > >
-> > > > That is what did in this and the previous patch: we need
-> > > >   - R8A78000_CPG_SGASYNCDn_PERW_MAIN for n=16, and added the one for
-> > > >     n=8, too.
-> > >
-> > > That's missing n=4 and n=32. While SGASYNCD32 isn't referenced in the
-> > > datasheet, SGASYNCD4 is (in SCIF and HSCIF). Maybe that's just an
-> > > oversight ?
-> >
-> > We already have the clocks for (H)SCIF (_BUS, not _MAIN!):
-> >
-> >     #define R8A78000_CPG_SGASYNCD4_PERW_BUS         0
-> >     #define R8A78000_CPG_SGASYNCD8_PERW_BUS         1
->
-> Wait... Aren't R8A78000_CPG_SGASYNCD8_PERW_MAIN and
-> R8A78000_CPG_SGASYNCD8_PERW_BUS the same clock, just with a different
-> name ? The user manual says _BUS, the clock diagram in the spreadsheet
-> says _MAIN. The SCP firmware defines both, with the same parent (PLL5)
-> and the same frequency. I have a feeling it may "just" be discrepancy
-> between the user manual and the spreadsheets.
->
-> *sigh*
+Applied for v7.4 as the .dts user is already applied.
 
-After my previous comment about "87 SGD4_* clocks" (quoted at the end),
-I started wondering if they are really identical and ungateable.
-The documentation calls each clock list a "clock hierarchy"
-(e.g. the PERW hierarchy), and each sublist another "clock hiearchy"
-(e.g. PERW_BUS vs. PERW_MAIN) which sounds like they are different.
-I also wouldn't be surprised if each (sub)hierarchy is gateable, too.
-So unless we can get clear confirmation, I'd rather be safe than sorry.
-
-> > > >   - R8A78000_CPG_SCPBUSDn_SCP_MAIN for n=16, and added the ones for
-> > > >     n=1,2,4,6,8,32, too.
-> > > >   - R8A78000_CPG_S0Dn_PERE_MAIN for n=24, and added the ones for
-> > > >     n=1,2,3,4,8, too.
-> > > >   - R8A78000_CPG_SGDn_PERW_BUS for n=32, and added the ones for n=8,
-> > > >     too.
-> > > >
-> > > > I did not includes clocks with values for n that exist according to
-> > > > the documentation, but are not used as suppliers for modules.
-> > > > Of course the documentation may be incorrect or incomplete, and we may
-> > > > need to add them later. As IDs are ABI and the list is append-only,
-> > > > they must be added at the end, which could indeed lead to not all
-> > > > clocks of the same group being located together.  From an ABI point
-> > > > of view that is OK, but from a human-readability point of view it is
-> > > > indeed suboptimal.
-> > > >
-> > > > Before, we tended to add all clocks from the clock tables listed the
-> > > > documentation upfront, ignoring clocks that are clearly internal-only.
-> > > > Some of them turned out not to exist later.
-> > > > Some new clocks had to be added when the documentation was updated.
-> > > > Nothing new here, except that the list of clocks on R-Car X5H is an
-> > > > order of magnitude longer.
-> > > >
-> > > > Note that we don't use a linear array of clocks indexed by clock ID
-> > > > in the R-Car X5H CPG driver (yet), so large holes of unused clocks do
-> > > > not hurt (they do hurt in the SCMI driver ;-)
-> > > >
-> > > > > not directly controllable. There's a risk of adding clocks that don't
-> > > >
-> > > > FTR, the xDn clocks are not directly controllable; clocks like
-> > > > R8A78000_CPG_MSO_SCP_MAIN are.  We know the latter exist, as they
-> > > > are used.
-> > >
-> > > Yes, I was talking about the clocks documented in the various
-> > > non-PLL "hierarchy" sections.
-> > >
-> > > > > exist, or clocks that we won't need to reference from DT (because
-> > > > > they're only used as parents of the MDLC-controlled module clock). Do
-> > > >
-> > > > The direct parent of an MDLC-controlled module clock should be in DT.
-> > >
-> > > An additional difficulty is that we don't actually know what clocks the
-> > > MDLC gates :-/
-> >
-> > This hasn't changed much: on other R-Car generations we also didn't
-> > know which clock(s) are gated by a single MSTP (Module SToP) bit.
-> > Historically (old SH parts), there was only a single clock supplying
-> > each module. Modules on later SoCs gained more clock supplies.
-> > Hence we always assumed (at least) the functional clock is gated by
-> > the MSTP bit, and modelled the gateable SMTP clocks as a child of the
->
-> Sometimes I want to gate everybody's SMTP clocks :D
->
-> > functional clock parent.  But it's quite possible other clock inputs
-> > to the module are gated, too, depending on the actual module (some
-> > modules e.g. need a PHY clock running to be able to process wake-up
-> > events).
->
-> Yes, it's not new.
->
-> /me wants to get a copy of the RTL alongside the user manual
->
-> > Comparing older R-Car with R-Car Gen5, I actually like how the new
-> > MDLC block combines the power domain functionality of the old SYSC
-> > block and the clock domain functionality of the old MSSR (Module Standby
-> > and Software Reset) block. It improves upon the now imprecise modelling
-> > of MSTP clocks, and maps nicely on the Linux PM Domain abstraction:
-> >   - power domain: generic_pm_domain.power_{on,off}(domain),
-> >   - clock domain: generic_pm_domain.dev_ops.{start,stop}(device).
->
-> I *think* I like the resulting DT better. As the module standby feature
-> is now listed in the power-domains property, even if we model it
-> internally as a clock, it doesn't appear as a clock any more in DT.
-> Clocks the drivers need have to be listed independently, which decouples
-> them from the module standby.
-
-Agreed.
-
-> > > > Higher-up parents should not be needed iff the SCMI firmware exposed
-> > > > and/or implements the proper clock hierarchy (which it does not at
-> > > > the moment).
-> > >
-> > > A big *iff* :-)
-> > >
-> > > Even in that case, we'll have (at least) two issues:
-> > >
-> > > - Some modules may need to know the rate of the functional clock gated
-> > >   by the MDLC. As those clocks are controlled through power domains,
-> > >   they are only specified as the last cell of the power-domains
-> > >   property, and are not listed in the clocks property. How do you
-> > >   envision this to work ?
-> >
-> > The functional clock (or its parent) is still listed in the clocks
-> > property.  Compare e.g. the hscif0 nodes on R-Car V4H:
-> >
-> >     clocks = <&cpg CPG_MOD 514>,
-> >              <&cpg CPG_CORE R8A779G0_CLK_SASYNCPERD1>,
-> >              <&scif_clk>;
-> >     clock-names = "fck", "brg_int", "scif_clk";
-> >     power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
-> >     resets = <&cpg 514>;
-> >
-> > and R-Car X5H:
-> >
-> >     clocks = <&cpg R8A78000_CPG_SGASYNCD4_PERW_BUS>,
-> >              <&cpg R8A78000_CPG_SGASYNCD4_PERW_BUS>,
-> >              <&scif_clk>;
-> >     clock-names = "fck", "brg_int", "scif_clk";
-> >     power-domains = <&mdlc_perw R8A78000_MDLC_PD_APL 0x54>;
-> >     resets = <&mdlc_perw 0x54>;
-> >
-> > On R-Car V4H, MSTP514 aka "hscif0" is modelled as a gateable MSTP
-> > clock with parent R8A779G0_CLK_SASYNCPERD1, and used as "fck".
-> > On R-Car X5H, R8A78000_CPG_SGASYNCD4_PERW_BUS is used as "fck" directly.
-> > Calling clk_get_rate() on MSTP514 and R8A78000_CPG_SGASYNCD4_PERW_BUS
-> > gives similar results.
->
-> On Gen5 we will then end up enabling the clock twice, once through the
-> power domain, and once through the explicit clk_enable(fck) in the
-> driver. I suppose that's fine in theory (there's an extra runtime cost
-
-It depends, and can only be true for drivers that still do explicit
-clock management.  Many drivers that don't need to know anything
-(e.g. the rate) about the clock have been modified to delegate this
-fully to Runtime PM.
-
-On R-Car Gen5, the (now purely internal) module clock used for module
-standby is different from the "fck" clock in DT.  So perw 0x54 is
-controlled through Runtime PM, and SGASYNCD4_PERW_BUS is
-controlled by the SCIF driver directly (but it is a no-op as the bus clock is
-always-on).
-
-On previous R-Car generations, "fck" is the module clock, and is
-enabled twice.
-
-> though) as clocks are reference-counted. However, the current SCP
-> firmware reference-counts the clocks based on their SCMI ID, and the
-> MDLC clock (perw 0x54) and its parent (R8A78000_CPG_SGASYNCD4_PERW_BUS)
-> have different IDs. This can cause the clock to be disabled at an
-> unexpected point. In this specific case, however, given that
-> R8A78000_CPG_SGASYNCD4_PERW_BUS isn't controllable, it won't cause an
-> issue, but in the generic case it can fail badly.
-
-Current SCP firmware indeed doesn't handle parent-child relations:
-e.g. perw 0x54 has a clock rate of zero, and is not a child of
-SGASYNCD4_PERW_BUS.  So the MDLC remapping driver ended up becoming
-responsible for controlling the parent clock if it is gateable, which
-is the case for e.g. MSIOF (see mod_map_in.fw_fck_parent).
-
-> > > - When multiple clocks derive from the same PLL, it's common for the PLL
-> > >   rate to be specified through assigned-clock-rates. If we want to
-> > >   continue doing that, we need to to make the whole clock hierarchy
-> > >   available to DT.
-> >
-> > Yes, you need a public ID to refer to a clock from DT.
-> > Do you have an example where we would assigned-clock-rates it for a PLL?
->
-> Not on Renesas platforms so far. I can imagine this being used to
-> control for instance the whole VIO hierarchy. Depending on the bandwidth
-> used by image sensors, system integrators may want to tweak the PLL
-> frequency.
-
-A definition can be added when needed. Note that SCMI does not expose
-the PLLs to any agent anyway...
-
-> > So far all users of assigned-clock-rates on Renesas SoCs use it
-> > on clocks that are already public as they are also needed as clock
-> > supplies in clocks properties (e.g. CAN-FD and SPI reference clocks).
-> >
-> > > > Still, they can be internal enum, starting after the last
-> > > > DT clock, like we did in other R-Car clock drivers.
-> > > >
-> > > > > you think that's an issue, could it cause ABI problems in the future ?
-> > > >
-> > > > An ABI problem appears only when you refer in DT to a clock that does
-> > > > not exist in hardware.  This should be caught by testing before the
-> > > > DT user is added.
-> > >
-> > > So we could add e.g. SGASYNCD32 already, as long as we don't reference
-> > > it in DT without testing.
-> >
-> > We could, but which one: "_PERW_BUS" or "_PERW_MAIN"? Or both?
->
-> See above :-)
->
-> > And what's the point if there are no users?
->
-> Future-proofing, to avoid adding the SGASYNCD32 clock later with a
-> non-consecutive ID.
-
-Then perhaps we should add all clocks from the spreadsheet upfront?
-
-> > BTW, there are 87 SGD4_* clocks listed in the documentation.  They are
-> > all sourced from the same PLL, and have all the same clock rate.
-> > I don't think any of these can be gated.  Hence if I would write a
-> > bare metal clock driver, I would just expose and instantiate a single
-> > SGD4 clock.  But the current SCMI implementation exposes 87 different
-> > clocks (and didn't make them usable by Linux until recently)...
-> >
-> > Perhaps we should drop the domain suffixes from the definitions? Even
-> > e.g. MSOCK_PERW_BUS and MSOCK_PERW_MAIN seem to be the same clock...
->
-> I think we should also ask for names to be double-checked and fixed in
-> the next version of the documentation.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Rob
