@@ -1,53 +1,52 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.39.247.168
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793807402;
-	b=5jT4zAQHQshcZfoTXVswWu54wXO/ExLLsbTt9dzHAMzcP8o/xdNf5DvcHCagZAzCe5+e
-	 h3pkL22PLCAcftnnab7oTuL3223u7juCIf0F1KtTws1rSRtRSiDE2VerFYHnPDJvd6Xa6
-	 Lhp3Salh6p0IvGq0ypcw71P2/xYPIvfw9VkPFcSdLhP8sx1NXvNcUCnqTtR8tqf05YtMz
-	 bbkrUMQ80dGaDegv9jOBpWvwQBVRMEN6WDvSkQQAayB03Rk3KyQ5nNOwK4jOieWiIho6X
-	 r4pTmHIwr+WxJd/MhxNseAxb9HnUnJNSUb9MfXK+nl9iP7PDNZ+Sse8MMMTg38HJm7Q==
+	t=1793813066;
+	b=lyMR/eFSQ6GWmibkPzbwAUd0jZd6DZ8bcKbnl4CdnaGvQoU53rgpGED/HQcMWLPZwO8X
+	 Tavt75T0PWPPgUIjr8nSEcmpMrgkQA7biqEhfeARsx52uTPt4sEDmrRQS3DcQ0CoGla7w
+	 3CFjG4h73coclDf7wNQEakjArRwVTdkhYcKId+kf7efXvdUEkrvGJGeeBtPn/ZuXdESq3
+	 R/QdXVEtyDItud/675yck6QVldLpQwx+JKLegEIWwsf+gh7piYu8raDOsLvS62+HpaoFQ
+	 RWRe9NxUO704r38dV6WrgG6sd186aeAhR/AR9hNiTup9z609+1lEvmWSgOVwhQSvFxQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793807402;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=0YCtVpjTTqGtYuJwt7+RiOCWhr4VkX1QLjCNxJ8HNmk=;
-	b=XZv97tMdd6OaMhTFHA6FcpwusA3ArBDwARNnFlJAufEldqacluha34SI6u9fX4waKuvz
-	 MqwMqykIMwMY8anzgZe2LYMzFZ1WJwFTD93nkjlIxLGBvxyXaliVUhOSmMtvquiSsFPhj
-	 j9jg6iA3Ufgb+oYSMY1b0XipEyoai0poDdkf8xABc/EDLTmPlIV7+BRFi2mlbVTPZ3Hfr
-	 xTOQa/dblRMWSg/UOARefumK9goQ7OcgcVAc5xyOnOr9Dyl+Ot/Yeeki/YF2M4hH4YGBs
-	 vxElwOmreXRt/alXNnWFDxWevTRpkjzPQxpt2bbsmrqgT7nb8GUodJwSL3yfjn7rXvQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793813066;
+	h=DMARC-Filter:From:DKIM-Signature:Date:Subject:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
+	 In-Reply-To:To:Cc;
+	bh=UMIk77T6D8aeVXKipe7tHa21wj0Z4+vE4becj0xztjY=;
+	b=H2Jzzdun1N+ylH0gV5VWlTecMt3QN/ZMaQvsTq75F0/EmwDtzjh2kYwpM85Hd8C5zQwL
+	 0FVG4mxurHzkw5DjeGo1RDpmUHHKBqYxZhfan9n4KVkUIxazNNr5nlWuB0/CwN9D8GjV+
+	 zmnPqg8K7l9cIg76cmYzHVB3kx3qbdskK3wc86G/2RE4kd6dkY2mAtcvkFT/wAgftMwES
+	 QY6OgQhFWPmnnmpDKZ5VNF4AJbNQDEUX2blN9X5bJjlNk0TfFF1BaSgm6elxpTJroElFb
+	 tGZWVi/XbBO2GkTWloEyP3a+8YUzLOEss+T462cLUYIZwpGKu0Vl/JKZmFlg3PJ7YaQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=h+r1kzSN;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=cyberchaos.dev;
+	spf=pass smtp.mailfrom=cyberchaos.dev;
+	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=HRp+ZlwG;
+	arc=none smtp.remote-ip=195.39.247.168
+Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 95BF4606A31B;
-	Wed,  4 Nov 2026 15:50:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE893606A329;
+	Wed,  4 Nov 2026 17:24:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DE893606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=h+r1kzSN
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A934E1F000C1;
-	Wed,  4 Nov 2026 15:50:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793807402;
-	bh=0YCtVpjTTqGtYuJwt7+RiOCWhr4VkX1QLjCNxJ8HNmk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=h+r1kzSNMIlPZ6OsPBPbk4UV9jh/t90TYcPNqUvaCUzuE7Eih2mHkdvEaXp1JmZHQ
-	 ch0j8PmaMk5cQMACUWukghEzl0nchyYkj/zXC0TbNtvpbbjOuPvjmb/ZC+Ylm9le2R
-	 s+mX7282FoJuKyvX/xBr9lNE74JmF7u4FyS7tayaGBiahdkATRthd4ctr1Y6EXl3/t
-	 DbbG492l4X+kj9wq05t9l9pwCTY3Yf08EV+FuSf4lR0G6kqVx3C7OJsJxOMt83wFP9
-	 l62aTPJJf9G3AtnWLuTQZbRwShEzIASb8WfDWCHDpcP4xaFOiMbD+wr6CxLSBKLDfH
-	 dZwGGEooNNiRA==
-Date: Wed, 4 Nov 2026 16:49:59 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: Remove orphan HiSilicon hibvt driver
-Message-ID: <autT6wRKAtZCBmc0@monoceros>
-References: <20261104145104.950566-1-robh@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=HRp+ZlwG
+From: Yureka Lilian <yureka@cyberchaos.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
+	s=mail; t=1793813063;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=UMIk77T6D8aeVXKipe7tHa21wj0Z4+vE4becj0xztjY=;
+	b=HRp+ZlwGQgcU/TK3pqNiy7UmA/bo/5u5EYzmzqrCDozGusGfeeOQA9X4Bxi2DdQZURXrYS
+	NIYSF+rO39MHQm8OjwFzvWZ+JqpL/HsaU1xTIs1wGc9wgjuaG/RoNTnjqBZ3B3lnWffyfs
+	U13uI3tVlhEODic2XtpmVEaRmCF+agE=
+Date: Wed, 04 Nov 2026 18:24:14 +0100
+Subject: [PATCH v2 1/9] dt-bindings: interrupt-controller: apple,aic2: Add
+ t8142 compatible
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -57,48 +56,48 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="zj44cpe2csx5d6vl"
-Content-Disposition: inline
-In-Reply-To: <20261104145104.950566-1-robh@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261104-apple-m5-initial-devicetrees-v2-1-fd727a82d380@cyberchaos.dev>
+References: <20261104-apple-m5-initial-devicetrees-v2-0-fd727a82d380@cyberchaos.dev>
+In-Reply-To: <20261104-apple-m5-initial-devicetrees-v2-0-fd727a82d380@cyberchaos.dev>
+To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
+ Neal Gompa <neal@gompa.dev>, Thomas Gleixner <tglx@kernel.org>, 
+ Radu Rendec <radu@rendec.net>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hector Martin <marcan@marcan.st>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Sasha Finkelstein <k@chaosmail.tech>, Linus Walleij <linusw@kernel.org>, 
+ Mark Kettenis <kettenis@openbsd.org>, Andi Shyti <andi.shyti@kernel.org>
+Cc: Yureka Lilian <yureka@cyberchaos.dev>, asahi@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
+The Apple t8142 (M5) SoC uses an AIC3 as interrupt controller, same as
+the M3-M4 SoCs.
 
---zj44cpe2csx5d6vl
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] pwm: Remove orphan HiSilicon hibvt driver
-MIME-Version: 1.0
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
+---
+ Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Wed, Nov 04, 2026 at 08:51:02AM -0600, Rob Herring (Arm) wrote:
-> Remove the HiSilicon hibvt PWM driver as none of the SoCs exist
-> upstream. The hi3516cv300 only has pwm, clock and ethernet drivers.
->=20
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml b/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
+index 3c2b24be530e..b6ad9d9192a2 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
+@@ -49,6 +49,7 @@ properties:
+               - apple,t6041-aic3
+               - apple,t8132-aic3
+               - apple,t8140-aic3
++              - apple,t8142-aic3
+           - const: apple,t8122-aic3
+       - const: apple,t8122-aic3
+ 
 
-Applied with Krzysztof's R-b tag to
+-- 
+2.56.0
 
-https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-=
-next
-
-=2E
-
-Thanks
-Uwe
-
---zj44cpe2csx5d6vl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrrVCUACgkQj4D7WH0S
-/k5gnAgAplBj28bWib1rtCPumDIweoJ1GwEAwcOAq/0V5a2HASMMtXPBgK/TpPCh
-PwlHNiBfNJ+NvaAKY6BnyjMOxW+4WiMDEiqEAgODmZx/IqGRjNl8pWsvTE4wgb7q
-ukm1Ur3zi/7zgC2Vq2B2tqMxVQWSy8Rkc8nCEzNeSnpu4oJ6vIRvnk4g8VnSdNQx
-MiFHidpN5lWSopjHUjfeDPvSq+UNfiRDNzX+PbatbXMb8xxlfaxZzsMC1u0hb7l+
-T7yrpCFw9jfgpTjnfQlXnk8r+Yqo+t30KKvhdCaJWLxuSywGyskTNIJEB4XixvRM
-S63WnNmZr/ogI/Jd+e0XaDi5a1qkEQ==
-=/trr
------END PGP SIGNATURE-----
-
---zj44cpe2csx5d6vl--
