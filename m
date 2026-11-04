@@ -1,89 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.89.44.37
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793823735;
-	b=snw1MxC+Y9Phu+FEmEEpyBNqRZpJci/oT6m/cFZjLRaht0Br+w78u+GVqq6K1BEymOZX
-	 Pr1It1c28m/FsXxwh2mTlQHCT5Cp+HYp3afjQPX9Q6V2Ti4+KmCc2zT0lo2q4kPLQdZct
-	 Vm/FIDbpvNsCxS66OeuzdonjM+aLsNMjkDwkVAScy+I5bqEOiJPTMJANmE4/SENJVrrYN
-	 yCzDT+VNlOLmi9y3cJOtp6/CskR1V0alsjLCl6YgSZskdJhcP0Nm/P2z8YzsI0Ph75Bzv
-	 L+Lzpq/CkQFT6kN6+tAaxJS4BHsyWAKfNd5+2udjARYEJoOjisnkDcLItiBC/tX+rZg==
+	t=1793832990;
+	b=49dJX4bPU7fGOJ9osvA6Gzt9ULnYcOmWYqOGYgp35JMbO5tkA57nYi4/LYCv92pse68Q
+	 EyOpCXfmN8GnrJaaE1/uQGFOGQnQJDOMGr04IFIuG6IEAkfo4kcl8uNQjYfv3HbsAQ4gU
+	 K6I+8JalRbeSDS7606n4hcrSuYAiAIbUS8y890QC0qBhCZo/61oDM0W8wFRtlh260n1TC
+	 Zwrc1i+61yg4/SY4u2yzdX3IfjAnBJe4inS6rYRSEkZuF8d4qIA5x8RcsEWdNIAQm0QzK
+	 FbpA9CWfTqyE2xfbwowFVGEJURwRsL16sJ8ThT7S681mTsn8RIL5hS7oH3p07qSEZQg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793823735;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=1q6t4nFYUEkBz7z+xoP8zNbSPnKXpREiK7TaFNztaTo=;
-	b=Eez26wAjAga7wURtg2c77IChf7yNGZK3vnyN/3qXbTqBZ3gZKfpE4P3RfdWEUVS60eIb
-	 3jzegSF/adJ+PaR5TFzxEBv166N3zm323u7DSw0H+MgoZpZO5E6GwRku+zz9dXPA65h6X
-	 nJZuIBweI2d77BE4hGoSpkL7Gb8+fjXG6AWpyOBwx95+/X3T8Oe9e3uueSIzLzbeRPk9B
-	 Xy/NVLPw/5VMKfeMCwwFk8VnRv/blskkmNLs1nZWbr6AX3Rnqondi/32ehIyudg70Ke+r
-	 oD1fJVsRQATC4nHYC8QAjGctQyUfG7dShOp/Ioh2x530pmk0ajpFWpmZWVaMjTLh5rA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793832990;
+	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
+	 X-AntiAbuse:X-AntiAbuse:X-BWhitelist:X-Source-IP:X-Source-L:X-Exim-ID:
+	 X-Source:X-Source-Args:X-Source-Dir:X-Source-Sender:X-Source-Auth:
+	 X-Email-Count:X-Org:X-Source-Cap:X-Local-Domain:X-CMAE-Envelope;
+	bh=BVSlivO0NT5LNZI1ueIGCNvTYScZ1EWmEWcTYGB4ijY=;
+	b=F/OTYsX6GDn5UfVxAP7QEEV8perjHsRfUcMjtH/F4e0kklrHsuXax/6dF/n+bVM3sWX5
+	 0Rh3bzYghkA4NpS7iTxRhMoTQ03lhBonUkXlTPiv2epbBULk7G3i0ev6kQknZAr6mYJzq
+	 Kj2786GTtRY+1wvRKltiyzM5scGEkUbiOKAsauOhSGXI51YCFZyJU5ntSDuvvF8Ndo87i
+	 /MiRg0tFx96Q21tHMHGe/KDZOCx4OIF+jPit7QAWqXlF4mNmumk1E1+u9fq8rfg+EbeFI
+	 E2Bsc1lkAxQiB5Fc5SmOTUaTEm1MxsHgZQ5zllZ7ESFZoZ11TFe0Bur/2wz8dZ+YXBQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YsG8D40s;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	dmarc=none header.from=roeck-us.net;
+	spf=fail smtp.mailfrom=roeck-us.net;
+	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=k3wfvMt4;
+	arc=none smtp.remote-ip=35.89.44.37
+Received: from omta38.uswest2.a.cloudfilter.net (omta38.uswest2.a.cloudfilter.net [35.89.44.37])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32B39606EEB6;
-	Wed,  4 Nov 2026 20:22:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 32B39606EEB6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF73E606A32D
+	for <linux-pwm@vger.kernel.org>; Wed,  4 Nov 2026 22:56:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CF73E606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YsG8D40s
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793823735; x=1825359735;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FMIi+WxOIJkYfJDxyuNJSMRa8IbgzEpLC7IDMUiiy1k=;
-  b=YsG8D40s2/oX+b3QxvcyuL5/ukIX1pF80hex6Qe11aBxcPQd9kGxCiN0
-   dw143qIQxx4m7hDZK9q6VJz+9YNlBoi9/1q06aCfbeypH/rVLcZ5zk8Bx
-   6Q0rcGxSPjuLLY1F805m7D1nipq5OULCI8cUDigh8c3Lc+zHVX1TeYS8+
-   lV8E4YDCU6X3Zy3yJjAgcnUwRD8gbX9R16Sj2TvUeqAHAvhaLSXKVTgtw
-   LaSTL1HzbR4B4yWKpjAlxB/U3z7mV5GBuJgCtB2irb0u0AxHX0ASirCuN
-   u8wQq/vO0aIGZPsZGc3pNy0xCz6dz9FpJwh0yljXvuupRBQGUBtT0GDke
-   w==;
-X-CSE-ConnectionGUID: CteQ1Q+LTK6b8DWdvTrC0Q==
-X-CSE-MsgGUID: SrSIdXVLSbG07R0HQbZzAQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2478703"
-X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="2478703"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 12:22:14 -0800
-X-CSE-ConnectionGUID: HM934INXTnu1L+MDYncFlw==
-X-CSE-MsgGUID: 0wCh21S1QnKZTYVCTCWxzg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="7170684"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 12:22:10 -0800
-Date: Wed, 4 Nov 2026 22:22:07 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Trevor Gamblin <tgamblin@baylibre.com>,
-	Joshua Crofts <crofts@kernel.org>,
-	Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iio: adc: ad7625: add LTC2387 and ADAQ2387x
- support
-Message-ID: <auuT754d-bwSeL1Z@ashevche-desk.local>
-References: <20261104132143.215581-1-Nicolae-daniel.Deaconescu@analog.com>
- <20261104132143.215581-6-Nicolae-daniel.Deaconescu@analog.com>
+	dkim=pass (2048-bit key, unprotected) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=k3wfvMt4
+Received: from eig-obgw-5007b.ext.cloudfilter.net ([10.0.29.167])
+	by cmsmtp with ESMTPS
+	id OZeuxXFGOVK9UOju9xJFyg; Wed, 04 Nov 2026 22:56:29 +0000
+Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
+	by cmsmtp with ESMTPS
+	id Oju8xsr2GxqjjOju9xflGC; Wed, 04 Nov 2026 22:56:29 +0000
+X-Authority-Analysis: v=2.4 cv=bZxrUPPB c=1 sm=1 tr=0 ts=6aebb81d
+ a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M0FbrtG7MMAA:10 a=VwQbUJbxAAAA:8
+ a=iox4zFpeAAAA:8 a=A5ctjimnlw7kqC9GiE4A:9 a=QEXdDO2ut3YA:10 a=LP3-5Lh9zdkA:10
+ a=WzC6qhA0u3u7Ye7llzcV:22 a=KPbNTLLc3YvdawN95zVk:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
+	List-Archive; bh=BVSlivO0NT5LNZI1ueIGCNvTYScZ1EWmEWcTYGB4ijY=; b=k3wfvMt43HLH
+	o5IG+l01Z2G80GAZzp/PNoN/sIzKUSjCy4c4j0ca8xEsdSXfoydWJVjhMvt9ib1gkXxGnRuKR/xZY
+	f/h5zhJuv8K4RfJRImTi68GLumWVPTGbK1gzcQx4UbxOlYHOqHngO09zT5G9Er9S54vxr1PH2v4z1
+	v0a8EeYu9jTvOgvOjKZmNddYvfwICDLgMo+cEbFY+jobEvAT1F8SWk7XqSeIMe5KsifMege2KGx8f
+	eU9xwGE8gA0ITVUtdDBbpQzbSI+tH9WGsiIks6bNznPpxnDsA/ZbkEtEmXLcT9gKUphc3VV5Dbw/u
+	wx3owxMD58aIMaf7ay8wrQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54826)
+	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.100.1)
+	(envelope-from <linux@roeck-us.net>)
+	id 1xOju5-00000001O41-43MB;
+	Thu, 05 Nov 2026 04:26:26 +0530
+Message-ID: <ae9a4df9-b1f2-4f00-ab86-d9cf8d9bc387@roeck-us.net>
+Date: Wed, 4 Nov 2026 14:56:22 -0800
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -93,311 +76,191 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261104132143.215581-6-Nicolae-daniel.Deaconescu@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 0/4] hwmon: Add fan tachometer support for Raspberry
+ Pi RP1
+To: Andrea della Porta <andrea.porta@suse.com>
+Cc: Gary Guo <gary@garyguo.net>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
+ <rdunlap@infradead.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Gregor Herburger <gregor.herburger@linutronix.de>,
+ Stanimir Varbanov <svarbanov@suse.de>, linux-hwmon@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
+ Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+References: <cover.1792748690.git.andrea.porta@suse.com>
+ <7df58d42-517c-4936-88b0-9d044d30882c@roeck-us.net>
+ <auBzvB8TsvIK8Hik@apocalypse>
+ <53a4b4bb-271c-4d2d-a9e4-cec4e0ce214b@roeck-us.net>
+ <DMFPE71J8205.3FZKD5BKW3U7C@garyguo.net>
+ <b02b4f0b-ad2c-453a-b69c-a0865a333d62@roeck-us.net>
+ <auIotAwnOWKNApjp@apocalypse> <aus2Ra_sLySMZU1i@apocalypse>
+Content-Language: en-US
+From: Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
+In-Reply-To: <aus2Ra_sLySMZU1i@apocalypse>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1xOju5-00000001O41-43MB
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54826
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 18
+X-Org: HG=direseller_whb_net_legacy;ORG=directi;
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfFiUS7xm4SCXTtbCe9bqjg/Z6fAbSzwxeMyhHKtMtkpsI8llVlJTB4E5Wnb39GRyjDjUNktCfNInaXtmV5lG0qgJJZ5J4kVFFIl/DjdJQbn45n1JTa8s
+ okdCoEH6JHZfhgEWizksjLLOySaJlxEUpAv0JXn96Yfw55d9Z6Zg5eqvgSNm2Fm292RFFmM1j/SsqQOptr+xiT58x41WE913hVv/+XvqTY5vKwp+bTMXG+vG
 
-On Wed, Nov 04, 2026 at 03:21:43PM +0200, Nicolae-Daniel Deaconescu wrote:
+On 11/4/26 05:42, Andrea della Porta wrote:
+> Hi,
 > 
-> Add the LTC2387-16, LTC2387-18, ADAQ23875, ADAQ23876 and ADAQ23878 as
-> chip data of this driver. They are read through the same two PWMs and
-> IIO backend. They differ in a few ways that the chip data and a few
-> quirks cover, see the binding patch for the list:
+> On 17:54 Wed 28 Oct     , Andrea della Porta wrote:
+>> On 09:13 Tue 27 Oct     , Guenter Roeck wrote:
+>>> On Tue, Oct 27, 2026 at 10:51:15PM +0800, Gary Guo wrote:
+>>>> On Tue Oct 27, 2026 at 9:48 PM CST, Guenter Roeck wrote:
+>>>>> On Tue, Oct 27, 2026 at 10:49:48AM +0100, Andrea della Porta wrote:
+>>>>>> Hi Guenter,
+>>>>>>
+>>>>>> Yes, I also proposed that in the cover letter because auxbus seems also a viable
+>>>>>> solution.
+>>>>>>
+>>>>>> The current implementation is a consequence to the discussion about the companion
+>>>>>> PWM driver, from here (and the revisions that followed):
+>>>>>>
+>>>>>> https://lore.kernel.org/all/cover.1775223441.git.andrea.porta@suse.com/
+>>>>>>
+>>>>>> To give a short and hopefully coherent view of the decisions, here's a breakdown:
+>>>>>>
+>>>>>> - first proposal: PWM driver + fan hwmon (to read the RPM), all in the same driver
+>>>>>>
+>>>>>> - V2: Uwe preferred to split the PWM driver from the hwmon one, so the hwmon was
+>>>>>>    dropped from teh PWM driver in favor of a future (fan) driver. To accomplish this,
+>>>>>>    I moved from readl/writel to regmap + syscon.
+>>>>>>
+>>>>>> - V8: Gary proposed to export a function to read the fan RPM as a viable
+>>>>>>    solution. As a result, the regmap/syscon was dropped as it was no longer needed
+>>>>>>    and the function has been exported from the PWM driver
+>>>>>>
+>>>>>> - new patchset for fan driver: the now independent hwmon moodle just call the
+>>>>>>    exported function from thw PWM driver.
+>>>>>>
+>>>>>> If the auxiliary bus is indeed the preferred approach, I'd like to ensure we are
+>>>>>> all aligned, as this would also require refactoring the PWM driver.
+>>>>>>
+>>>>>
+>>>>> Let's say it that way: If you don't want to implement the auxiliary driver,
+>>>>> and you insist using the exported function, I would prefer for you to go back
+>>>>> to the first solution. The one thing I really dislike is conceptually broken
+>>>>> code, and I consider the current approach broken. Your call, but the one thing
+>>>>> I won't accept is the code with the exported function.
+>>>>
+>>>> I agree on the auxiliary driver part. However, I don't think EXPORT_SYMBOL_NS is
+>>>> an issue, and regmap is not the right fit here:
+>>>>
+>>>> - Previous version of the PWM1 patch series publish regmap using
+>>>>    of_syscon_register_regmap, but this cannot be undone -- which needs to happen
+>>>>    on PWM device unbind (the RP1 PWM device is itself platform device, but RP1
+>>>>    chip itself is PCIe device which must be removable).
+>>>>
+>>>> - The tachometer register is not its own separate register, but rather (re)using
+>>>>    the phase control register. The phase control is not implemented in the RP1
+>>>>    PWM driver on the list yet, so this is currently a simple register read -- I
+>>>>    can see that RP1 PWM driver need to take special care to about the tachometer
+>>>>    reading if the phase control is implemented.
+>>>>
+>>>>    For the two reasons above, I think the way that tachometer is read should
+>>>>    really be an implementation detail of the PWM driver and not for the hwmon
+>>>>    driver to worry about, so I suggested using EXPORT_SYMBOL_NS.
+>>>>
+>>>> - EXPORT_SYMBOL_NS is the documented way for exposing functionality from parent
+>>>>    device to auxiliary drivers: https://docs.kernel.org/driver-api/auxiliary_bus.html
+>>>>
+>>>
+>>> Let's agree to disagree, and keep the code in the pwm subsystem.
+>>
+>> And auxiliary bus it will be. I propose the following:
+>>
+>> - drivers/pwm/pwm-rp1.c: create an auxiliary device for the fan. The function to read
+>>    the RPM will not be exported, but a function pointer will be passed through the
+>>    private data to the fan driver. No need for regmap. To be taken by Uwe.
+>>
+>> - drivers/hwmon/rp1-hwmon.c: The auxiliary driver is probed against the device registered
+>>    by the pwm driver. No imported function. To be taken by Guenter.
+>>
+>> In this way, we decouple the two drivers and we leverage the auxiliary bus paradigm.
+>> Also, no DT node needed for the fan.
+>>
+>> Do we all agree on this approach?
 > 
-> - Data is output at double data rate on one or two lanes, so the CLK
->   burst is the number of bits divided by 2 or by 4 pulses long.
-> - The burst of one conversion starts at least t_FIRSTCLK after its CNV
->   and has to end at most t_LASTCLK after the next CNV, so at the maximum
->   rate it runs into the next conversion period.
-> - They have no EN pins.
-> - The ADAQ parts divide the scale by the gain of their front end.
+> A gentle reminder about this inquiry. Before refactoring both the PWM and the fan
+> driver I'd like to be sure that the proposed approach is at least acceptable.
 > 
-> The changes are:
-> 
-> - Add chip info for the five parts, with a maximum sampling frequency of
->   15 MSPS, and the OF and platform device ID entries for them.
-> - Add struct ad7625_ddr_timing with t_CNVH, t_FIRSTCLK and t_LASTCLK, and
->   point the chip info of the new parts to it. A non-NULL pointer marks a
->   part with DDR output.
-> - Add ad7625_set_sampling_freq_ddr(). Unlike for the AD762x and AD796x,
->   the sampling period is raised until the CLK burst fits t_LASTCLK, so the
->   maximum rate isn't limited to 10 MSPS by the period clamp.
-> - Build the waveforms in whole steps of the PWMs, which are read with
->   pwm_get_waveform_step_might_sleep() when probing and each time the
->   sampling frequency changes.
-> - Get the second PWM as "clk" for the new parts and "clk_gate" for the
->   existing ones, and don't get a reference clock for the new parts, as the
->   step already tells the clock rate of the PWM.
-> - Add ad7625_parse_ddr() to read adi,use-two-lanes and adi,gain-milli. The
->   gain defaults to the fixed gain of the ADAQ23875 and to 1 for the
->   LTC2387, and is required for the ADAQ23876 and ADAQ23878, whose gain is
->   pin strapped and has to be one of the supported values.
-> - Divide the scale by the gain of the front end for the new parts.
-> - Enable the supplies of the new parts, and read their optional
->   ref-supply, using the internal reference when it is absent.
-> - Set the number of lanes of the backend for the new parts. This can only
->   be skipped if the backend can't set it and one lane is used.
-> - Limit the default sampling frequency of the new parts to the clock rate
->   of the PWMs.
-> - Move the setup of the EN pin mode into ad7625_set_initial_mode(), which
->   does nothing for the parts without EN pins. The code that sets the pins
->   of the existing parts is unchanged.
-> - Include math64.h and minmax.h for the helpers that the new code uses.
-> - Add the new parts to the Kconfig help and Documentation/iio/ad7625.rst,
->   and new maintainer entries.
 
-...
+This is just as bad as the exported symbol, as it creates a cross-module dependency
+which I would strongly prefer to avoid. Given that this is actually suggested
+in the guidance for auxiliary drivers (shiver), lets just keep the EXPORT_SYMBOL_NS
+approach after all.
 
->  config AD7625
-> -	tristate "Analog Devices AD7625/AD7626 High Speed ADC driver"
-> +	tristate "Analog Devices AD762x, AD796x, LTC2387 and ADAQ2387x ADC driver"
-
-This does not scale. Please, make it more generic and make sure the text in the
-top comment of the driver along with MODULE_DESCRIPTION() is quite similar to
-this (maybe without "driver" word).
-
-...
-
->  	  * AD7626 16-Bit, 10 MSPS PulSAR Analog-to-Digital Converter
->  	  * AD7960 18-Bit, 5 MSPS PulSAR Analog-to-Digital Converter
->  	  * AD7961 16-Bit, 5 MSPS PulSAR Analog-to-Digital Converter
-> +	  * LTC2387-16 16-Bit, 15 MSPS SAR Analog-to-Digital Converter
-> +	  * LTC2387-18 18-Bit, 15 MSPS SAR Analog-to-Digital Converter
-> +	  * ADAQ23875 and ADAQ23876 16-Bit, 15 MSPS uModule Data Acquisition
-> +	    Systems
-> +	  * ADAQ23878 18-Bit, 15 MSPS uModule Data Acquisition System
-
-Why not keep this list sorted by a part number?
-
-...
-
->  struct ad7625_chip_info {
->  	const char *name;
->  	const unsigned int max_sample_freq_hz;
-
->  	const bool has_power_down_state;
->  	const bool has_bandwidth_control;
->  	const bool has_internal_vref;
-
-Side note: What the point in const to these (plain booleans, integers)?
-Chip info as a whole should be const, no?
-
-...
-
-> +	/*
-> +	 * The LTC2387 and ADAQ2387x output data on one or two lanes at double
-> +	 * data rate, have no EN pins and learn their timing from the PWMs.
-> +	 * They are the parts with @ddr_timing set.
-> +	 */
-> +	const struct ad7625_ddr_timing *ddr_timing;
-> +	const char * const *supplies;
-
-Again, why the second const here...
-
-> +	int num_supplies;
-> +	/* Gain * 1000 of the ADAQ front end, 0 if the board has to provide it. */
-> +	const u16 default_gain_milli;
-
-...and the const here?
-
-milli is multiplier and not a unit. But if you think it's better this way, I am
-not going to object.
-
->  };
-
-...
-
-> +static const char * const adaq2387x_supplies[] = {
-> +	"vdd", "vio", "vs-p", "vs-n"
-
-When not on a single line, add a trailing comma.
-
-> +};
-
-...
-
-> +static const struct ad7625_chip_info ltc2387_16_chip_info = {
-> +	.name = "ltc2387-16",
-> +	.max_sample_freq_hz = 15 * MEGA,
-
-No, we have HZ_PER_MHZ for this.
-
-> +	.chan_spec = AD7625_CHAN_SPEC(16),
-> +	.has_internal_vref = true,
-> +	.ddr_timing = &ltc2387_ddr_timing,
-> +	.supplies = ltc2387_supplies,
-> +	.num_supplies = ARRAY_SIZE(ltc2387_supplies),
-> +	.default_gain_milli = 1000,
-
-As I mentioned above this multiplier without unit is confusing.
-Simply
-
-	.default_gain = 1 * MILLI,
-
-?
-
-> +};
-
-Same comments to all added chip info:s.
-
-...
-
-> +	/*
-> +	 * The waveforms are whole steps, so nothing should have to grow. If it
-> +	 * did, a minimum time of the part is no longer met.
-> +	 */
-> +	ret = pwm_round_waveform_might_sleep(st->cnv_pwm, &cnv_wf);
-> +	if (ret)
-> +		return ret < 0 ? ret : -EINVAL;
-> +
-> +	ret = pwm_round_waveform_might_sleep(st->clk_gate_pwm, &clk_gate_wf);
-> +	if (ret)
-> +		return ret < 0 ? ret : -EINVAL;
-
-Don't nest branches, you can just move ret == 0 check out of that in both cases.
-
-...
-
-> +static int ad7625_parse_ddr(struct device *dev, struct ad7625_state *st)
-> +{
-> +	int ret, i;
-
-Why is 'i' signed and why can't it be defined inside for-loop?
-
-> +	st->two_lanes = device_property_read_bool(dev, "adi,use-two-lanes");
-> +
-> +	/* A fixed gain part has no adi,gain-milli, the others are pin strapped. */
-> +	st->gain_milli = st->info->default_gain_milli;
-> +	if (st->gain_milli)
-> +		return 0;
-> +
-> +	if (!device_property_present(dev, "adi,gain-milli"))
-> +		return dev_err_probe(dev, -EINVAL, "adi,gain-milli must be set\n");
-> +
-> +	ret = device_property_read_u16(dev, "adi,gain-milli", &st->gain_milli);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to read adi,gain-milli\n");
-
-	const char *propname;
-	...
-	propname = "adi,gain-milli";
-
-	// Why do we even need the presence check?
-	if (!device_property_present(dev, propname))
-		return dev_err_probe(dev, -EINVAL, "%s must be set\n", propname);
-
-	ret = device_property_read_u16(dev, propname, &st->gain_milli);
-	if (ret)
-		return dev_err_probe(dev, ret, "failed to read %s\n", propname);
-
-
-> +	/* The scale shifts the gain by up to 17 bits, so it has to stay small. */
-> +	for (i = 0; i < ARRAY_SIZE(ad7625_gains_milli); i++)
-> +		if (st->gain_milli == ad7625_gains_milli[i])
-> +			return 0;
-> +
-> +	return dev_err_probe(dev, -EINVAL, "unsupported adi,gain-milli %u\n",
-> +			     st->gain_milli);
-> +}
-
-...
-
-> +static int devm_ad7625_ddr_regulator_setup(struct device *dev,
-> +					   struct ad7625_state *st)
-> +{
-> +	int ret;
-> +
-> +	ret = devm_regulator_bulk_get_enable(dev, st->info->num_supplies,
-> +					     st->info->supplies);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to enable supplies\n");
-> +
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "ref");
-> +	if (ret < 0 && ret != -ENODEV)
-
-Too many ENODEV checks, see below how to deduplicate.
-
-> +		return dev_err_probe(dev, ret, "failed to get REF voltage\n");
-> +	if (!ret)
-> +		return dev_err_probe(dev, -EINVAL, "REF voltage must not be 0\n");
-
-	ret = devm_regulator_get_enable_read_voltage(dev, "ref");
-	if (ret == -ENODEV)
-		/* Without ref-supply the internal reference is used. */
-		st->vref_mv = AD7625_INTERNAL_REF_MV;
-	else if (ret < 0)
-		return dev_err_probe(dev, ret, "failed to get REF voltage\n");
-	else if (ret == 0)
-		return dev_err_probe(dev, -EINVAL, "REF voltage must not be 0\n");
-
-	st->vref_mv = ret / (MICRO / MILLI);
-
-> +	/* Without ref-supply the internal reference is used. */
-> +	st->vref_mv = ret == -ENODEV ? AD7625_INTERNAL_REF_MV : ret / (MICRO / MILLI);
-> +
-> +	return 0;
-> +}
-
-...
-
-> -		/*
-> -		 * If neither sampling mode is available, then report an error,
-> -		 * since the other modes are not useful defaults.
-> -		 */
-> -		if (st->can_wide_bandwidth) {
-> -			ret = ad7960_set_mode(st, AD7960_MODE_WIDE_BANDWIDTH,
-> -					      st->have_refin, st->vref_mv);
-> -		} else if (st->can_narrow_bandwidth) {
-> -			ret = ad7960_set_mode(st, AD7960_MODE_NARROW_BANDWIDTH,
-> -					      st->have_refin, st->vref_mv);
-> -		} else {
-> -			return dev_err_probe(dev, -EINVAL,
-> -				"couldn't set device to wide or narrow bandwidth modes\n");
-> -		}
-> -
-> -		if (ret)
-> -			return dev_err_probe(dev, -EINVAL,
-> -					     "failed to set EN pins\n");
-
-AFAICS the above can be moved to a helper in the separate patch and moved as a
-couple of lines only in this patch.
-
-...
-
-> +	if (st->info->ddr_timing) {
-> +		ret = iio_backend_num_lanes_set(st->back, st->two_lanes ? 2 : 1);
-> +		/* Without the op, a backend can only be left on one lane. */
-> +		if (ret && (ret != -EOPNOTSUPP || st->two_lanes))
-> +			return dev_err_probe(dev, ret, "failed to set the number of lanes\n");
-> +	}
-
-Same problem, too many (hidden) branches makes code unreadable.
-
-	if (st->info->ddr_timing) {
-		if (st->two_lanes) {
-			ret = iio_backend_num_lanes_set(st->back, 2);
-		} else {
-			ret = iio_backend_num_lanes_set(st->back, 1);
-			/* Without the op, a backend can only be left on one lane. */
-			if (ret == -EOPNOTSUPP)
-				ret = 0;
-		}
-		if (ret)
-			return dev_err_probe(dev, ret, "failed to set the number of lanes\n");
-	}
-
-...
-
-> +	/* The DDR parts reject rates above the clock of the PWMs. */
-> +	if (st->info->ddr_timing)
-> +		default_sample_freq = min_t(u32, default_sample_freq, st->step.clk_rate_hz);
-
-No min_t().
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Guenter
 
