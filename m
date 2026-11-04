@@ -1,90 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793820312;
-	b=dIymI/caRp0zzhAb6Sz4Ctory0rTWi0IYf62QUYOKFfphkqovnuVR/wMbmBMA6W0AOqz
-	 QsBXTXY7eeI+y+MzL/NR0vBGs+UMjbDGx9Sd4ZBpWSDdsqx8+iy5nlPgew9RCcMOcozIz
-	 yPgf8X0j/RmuusnW86/63cov2AelDhHxMLNPhXP+e0SGVy1QFhLhuUb/7xYJlH7NEq2F/
-	 Ncom9lALJCxqa2GR6kC7UNmuagGASlmT3LhuYydzJCuq3sxvJYJ4Nu2snDjKcTy5R8kna
-	 t9ieM1fothSry8nuKTMRE0H2q7kVFIRb9vaqGZovH8Yi0nuGG0L/xGDanN4rJ0zNAjQ==
+	t=1793821901;
+	b=3PdbV0eq/Q7/uyYzYCK54mMhXb26+PFqPtb8qkS+fAYM2LXtzNzuKLR4zegCmTUn/piw
+	 qMi1O+g5r5bjdFHSSjio2rUZF1wNd/I9AtpMPtVqNn/jcibpIDQdxl7jHt/6oDpFCIPa5
+	 KYUgEI4g5VJ9di+he/PQOpJ2mwnCo1P5u8MMpphTaWao45EM7hzUa1SHB4P0Lw+dLzku3
+	 p05m5LhWaRflVB4/mvqu/klLVW0lU/SmqfY8Pt1hAXrfpSwC5i+tVf52+N8V8eWmEroVN
+	 rAKWa/zeSHtLWUqu9IR3K4uv0074QN2ncKlw4MOr03EyGVn1HW7pSvFDWYmGV/gNRgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793820312;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=JUJOd9ewD2XzFuoXefvfL/kztf8QXUFxcaNj03ZJSj4=;
-	b=qaHFZlT+uYdfXLiKIPmKFIDzIOjjVXZg0IUBNQG3lJCNw1xPKwxTpE6ISdhRaEaUyUBL
-	 X423b5BDs5HWaxWoS8jF4Wc9robafvMX0EjR5pE9W+GPk3kRDtUYpv2J8Rq48Ys9smqm4
-	 DEZKnOErC1d+71CqTtvwvXiKiP/RC1ydlkk3rTBMaa6gany3nwfqoVtpToT+MMW5B5bvk
-	 9Uygwx38fxKPN5IJa+CAvPoqHkFMlzxGNF67vW6sonNVyS84WFZnoHGVlWZdAujGEE7sO
-	 Jj+Sz1uRBDFmc29Qnokhe5uMav4peUJp48Qbt9qiCXKZ9EeV4fYdmWQqIVo6iB0DLZg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793821901;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=Jo6LUuSRpij3XruLJxd10qKw5M+aELp0/drD1Vsxzoo=;
+	b=3rWPqC9stZnlxkOuHXYAqw3wsEHbQw8Ml2ugJ7rhP7b4HUTizTj4icIaZReNpKY2nEmf
+	 LN9+sZUiv2u92A3Rc/rZqYE6sxOq5JPAhcK9+bxjj/3pu8YOnqNCvqyLSBIPCN5RfMxPn
+	 VJoD3bqoAkOyBPUg2j87t8RdDFeacCUOqUXaXmV+obqfpx55BWfMCFVwnHcWUP8Dv+shM
+	 mEdQ2jpGxOph07rdRVFzKlSuqNkTTrg8USZQlnjVnkmJAE3FvdWYeJOb9JxuvGOFx4+GT
+	 PEjZg5ck2LsopY9/TTRdP/1vEopFAPkep7pzV1Wt9ZesYKtdK75uZ+vbEZVAbSEZkcQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=l+q59A3+;
-	arc=none smtp.remote-ip=209.85.167.178
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nPJsetu8;
+	arc=none smtp.remote-ip=198.175.65.13
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB676080788
-	for <linux-pwm@vger.kernel.org>; Wed,  4 Nov 2026 19:25:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7AB676080788
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 103AE6094217;
+	Wed,  4 Nov 2026 19:51:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 103AE6094217
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=l+q59A3+
-Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-53ec2cc397aso580177b6e.1
-        for <linux-pwm@vger.kernel.org>; Wed, 04 Nov 2026 11:25:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793820310; x=1794425110; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=JUJOd9ewD2XzFuoXefvfL/kztf8QXUFxcaNj03ZJSj4=;
-        b=l+q59A3+sOw7fKxiBQJb7McYT//0hRwvDg8Ct786G6Oy50j9vWzWGmZnEV7RHgdMWu
-         98SHuZlY9XUQYHhg0iDB8rrqf6CjaScx0qFGzrVUN0aP6NK7YhnwwT8RGc6I0YOYPmz7
-         /ijtTs/dmM4lZMndW+0EfVVvzaPyJMvxKkrZiE0N3yRt0lC8+mNAMspdIwrbCvG3R3LB
-         un2KOxhfWDqnY13nwSBSSUqN83H1QoAUhTwyPLwvH7CEdDYly3uur2iMlYthKDNftoGF
-         TErHkRGKcn0k6N6C6MwT6/0kSLXFRwfiMjdkjOMZkhK4PV+aHmUuewZwVzCuNNZ7bz8d
-         1Y1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793820310; x=1794425110;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=JUJOd9ewD2XzFuoXefvfL/kztf8QXUFxcaNj03ZJSj4=;
-        b=XukZXDGoBUUGzuUGGvhSRaoy4TIyr4eHUTaJFw6hs2KKuCPv9T83+TYOYbTRY9KkMR
-         rjeLgzPt3GocEXM9SQcYd/F1gjqWqZ08BlWp3nwLn5FyzTxWTT1u93nTZyAjXcpwOYw0
-         Jpg8diCNzMnf3q1XtGcay1PNw6X99gotEsn5v1xDMUkIKaBlfWP9XhOb0hNOFIO32wCP
-         pzZ2RNcWcUQ7z34CJc+3MEr0zXHOGOsRYCnp7v1eJwt0xxtvxfObEvrqSPzopomZnh1J
-         T8m8hbN3i2kUtQk4RcshHpwskdhauOG+2MYKb3FZngE2axAG6ocKwFUgglgJOS3fgygR
-         8AZg==
-X-Forwarded-Encrypted: i=1; AKwUvBwBtdR32JljoEA8rr+wL63vddhgznAVuTMrndKwwjsVdDgzV5+Q4OKEPHxtpFZjOuMtAi8+VuDhRSI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/50DzCBAxZ/BiBet2wqx528+CxLKNpeo5E9jerExS7b28cxApc
-	uQcR2OhPmVEoatmMU1fL4Kg1DIAubGX4B6TpkkdshUcNoiQWhR2USwUk
-X-Gm-Gg: AYBFou05ChoSCqy1KftoUpLK9CEjtoGhS9BlteYsBr3Rwi+pw49EeDwYLJR9JHuS3dv
-	SRT2OKktFbPRTrVF36QXw89PJ8A4YZ6SPEfMrPyfcKRMlQifWFSkCJb6XNIAzm30IPJUQ41K4nK
-	Or7qSywt0p/Q8Suj8+3M6GnDQIcu3MQtNVKWEiwvH0g09xmcPucf4mHcf2+1BNDgTBBZTM+ULr0
-	XcOSQPOUm5Zk61ISsY3RlhzwvevvUJxSjJUIEWACUtWWE+fn7A7Z6YYZRjXgO3rdRkRBE092K6s
-	vzfctjeTC5R2K7bksvpRu1DRxQh0BvZyDI61oqz1fdeRHQpn1D3nOhpSoNCBy8lmN783R2yknl1
-	sGx/tk9d18D1giI/cBtRM2j110i1/7dXa3VvA/CmL/kQ4pSRsjhK+FnUb7dHHYQecLs8bmX6XoS
-	m/iU5YMQdi8cQ6Vkj4y3d6sBEh3RgA8sr2ViK7xZ2lmjQKW9aLHW4+7cbbEp+WOG6gQRI/A/4CK
-	F3VrW5fRPM7qXhcj5lIvGm+MHRmuzaHUq1EjqUTruWuZxpGrSX+fLEymLjo0LhK5K2abWIwUyQW
-	ywtLB0cKZB3Ds7HlZxELKhUrimsK36+2g2+V5W13pV9rBC5RnNa4Ra5ZPQ99T9E1UU1ywAgn+iN
-	PoRLh0VBotugn0cmc4A/CEyTbIxdYZ3RsWLJ7WYMxaFmmL/AoBH9v+fDKHaWESAjmWdpSK1uzBQ
-	IKpiqXHtLQsVlCVdgmNm5uO+0o4SdBG6Kr2DlrROLkAf1rEW1D52w4
-X-Received: by 2002:a05:6808:198e:b0:4d6:9293:9b56 with SMTP id 5614622812f47-5640de2e892mr13003756b6e.62.1793820310505;
-        Wed, 04 Nov 2026 11:25:10 -0800 (PST)
-Received: from [127.0.1.1] (174-29-1-49.hlrn.qwest.net. [174.29.1.49])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-567a9c7bbcesm2328723b6e.1.2026.11.04.11.25.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2026 11:25:10 -0800 (PST)
-From: James Hilliard <james.hilliard1@gmail.com>
-Date: Wed, 04 Nov 2026 12:24:55 -0700
-Subject: [PATCH v12 5/5] MAINTAINERS: Add entry on Allwinner sun8i/H616 PWM
- driver
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nPJsetu8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793821899; x=1825357899;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Vw6wfWuQFg8TuBapyurRLVHhY0f29ONkPajEuId3aA4=;
+  b=nPJsetu8F+fSFMEK7vr/2XTMFnqHhVvTC9LkLucCdg5zTtASUVSDi+cn
+   O+JaoJpLVFmgbkQL5mCIEjONfhjicqSy9p/9mIVW6Cj1Srz4vMfDPh59g
+   dI8beuj5fgiITxjJ4PLkJdLZ3tzhh27VyDNEBBmSdP0qtTdAsImH3Bk9g
+   gvVFsMWx7T8WMMHzjWEAnT59upW2hW497ganBvlTjGRvWjDDTbw8GB9dA
+   z1WKZ9JfDWwA13+luPjCFsWRuccLqb+PemJLzcTFMB124VzAFHPuL370U
+   nXXC4qqSydvI6i0YCu4XV5k4OogxCWNYF409Powc7mrTDjq+2FadPwXwy
+   A==;
+X-CSE-ConnectionGUID: UHKgvokfTsGDzAv3oNuzyw==
+X-CSE-MsgGUID: zpOX2XSqRFy/0/WnBrYeLg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2471383"
+X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
+   d="scan'208";a="2471383"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 11:51:38 -0800
+X-CSE-ConnectionGUID: aeSZwbVjQWuALIH+TorRGw==
+X-CSE-MsgGUID: PH89EB/PSSag23IZdZvlwg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
+   d="scan'208";a="7348819"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 11:51:34 -0800
+Date: Wed, 4 Nov 2026 21:51:31 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Trevor Gamblin <tgamblin@baylibre.com>,
+	Joshua Crofts <crofts@kernel.org>,
+	Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] pwm: core: add pwm_get_waveform_step_might_sleep()
+Message-ID: <auuMw8tKvGynTKsr@ashevche-desk.local>
+References: <20261104132143.215581-1-Nicolae-daniel.Deaconescu@analog.com>
+ <20261104132143.215581-2-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -94,57 +92,130 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261104-h616-pwm-v8-v12-5-8ed39b0dba69@gmail.com>
-References: <20261104-h616-pwm-v8-v12-0-8ed39b0dba69@gmail.com>
-In-Reply-To: <20261104-h616-pwm-v8-v12-0-8ed39b0dba69@gmail.com>
-To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
- Jerome Brunet <jbrunet+clk@baylibre.com>, 
- Richard Genoud <richard.genoud@bootlin.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@kernel.org>, 
- Jernej Skrabec <jernej.skrabec@gmail.com>, 
- Samuel Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Paul Kocialkowski <paulk@sys-base.io>, 
- Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
- John Stultz <jstultz@google.com>, Joao Schim <joao@schimsalabim.eu>, 
- bigunclemax@gmail.com, linux-pwm@vger.kernel.org, linux-clk@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org, 
- James Hilliard <james.hilliard1@gmail.com>
-X-Mailer: b4 0.15.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261104132143.215581-2-Nicolae-daniel.Deaconescu@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Richard Genoud <richard.genoud@bootlin.com>
+On Wed, Nov 04, 2026 at 03:21:39PM +0200, Nicolae-Daniel Deaconescu wrote:
+> A consumer that has to meet minimum times, or place an edge relative to
+> the cycles of a clock that a PWM gates, cannot do that with the waveform
+> API alone. The rounding functions round down, so a minimum has to be
+> requested with some margin, and the size of that margin is the step of
+> the PWM, which only the provider knows.
+> 
+> A provider can report the rate of the clock its timing is derived from
+> and how many cycles of that clock one step lasts. A consumer can then
+> work in whole steps, convert them to nanoseconds rounding up, and get
+> that waveform back from the hardware. Without this, a consumer has to
+> read the rate from a clock it gets on its own, which describes
+> a relationship the hardware doesn't have, and is wrong if
+> PWM divides the clock.
 
-Add myself as maintainer of Allwinner SUN8I PWM driver.
+...
 
-Signed-off-by: Richard Genoud <richard.genoud@bootlin.com>
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
----
- MAINTAINERS | 5 +++++
- 1 file changed, 5 insertions(+)
+> +/**
+> + * pwm_get_waveform_step_might_sleep - Query the granularity of the waveforms
+> + * Cannot be used in atomic context.
+> + * @pwm: PWM device
+> + * @step: output parameter
+> + *
+> + * Stores in @step the clock rate the timing of @pwm is derived from and how
+> + * many cycles of that clock one step lasts. Period, duty length and duty
+> + * offset are multiples of that step, so a waveform asked for in whole steps
+> + * is not changed by rounding. Compute the length in nanoseconds of n steps
+> + * as n * @step->clk_cycles_per_step * NSEC_PER_SEC / @step->clk_rate_hz and
+> + * round it up, because pwm_round_waveform_might_sleep() and
+> + * pwm_set_waveform_might_sleep() round down.
+> + *
+> + * The values can change when a clock changes its rate, so they are only valid
+> + * as long as the provider's input clocks are not reconfigured.
+> + *
+> + * Returns: 0 on success, -EOPNOTSUPP if the provider doesn't report it or a
+> + * negative errno
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 93abbb315065..b80ae0ac5eed 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -947,6 +947,11 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/hwlock/allwinner,sun6i-a31-hwspinlock.yaml
- F:	drivers/hwspinlock/sun6i_hwspinlock.c
- 
-+ALLWINNER SUN8I PWM DRIVER
-+M:	Richard Genoud <richard.genoud@bootlin.com>
-+S:	Maintained
-+F:	drivers/pwm/pwm-sun8i.c
-+
- ALLWINNER THERMAL DRIVER
- M:	Vasily Khoruzhick <anarsoul@gmail.com>
- M:	Yangtao Li <tiny.windzz@gmail.com>
+> + * Context: May sleep.
+
+This is incorrect. The Returns section has to be the last one in the
+kernel-doc. It's documented.
+
+> + */
+
+> +int pwm_get_waveform_step_might_sleep(struct pwm_device *pwm,
+> +				      struct pwm_waveform_step *step)
+> +{
+> +	struct pwm_chip *chip = pwm->chip;
+> +	const struct pwm_ops *ops = chip->ops;
+> +	int ret;
+> +
+> +	if (!pwmchip_supports_waveform(chip) || !ops->get_waveform_step)
+> +		return -EOPNOTSUPP;
+> +
+> +	might_sleep();
+> +
+> +	guard(pwmchip)(chip);
+> +
+> +	if (!chip->operational)
+> +		return -ENODEV;
+> +
+> +	if (IS_ENABLED(CONFIG_PWM_DEBUG) && chip->atomic) {
+> +		/*
+> +		 * Catch any drivers that have been marked as atomic but
+> +		 * that will sleep anyway.
+> +		 */
+> +		non_block_start();
+> +		ret = ops->get_waveform_step(chip, pwm, step);
+> +		non_block_end();
+> +	} else {
+> +		ret = ops->get_waveform_step(chip, pwm, step);
+> +	}
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!step->clk_rate_hz || !step->clk_cycles_per_step ||
+
+The second check is unneeded, the third one covers it.
+
+> +	    step->clk_rate_hz > (u64)step->clk_cycles_per_step * NSEC_PER_SEC)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+
+...
+
+> +/**
+> + * struct pwm_waveform_step - granularity of the waveforms a PWM can generate
+> + * @clk_rate_hz: rate of the clock the PWM's timing is derived from
+> + * @clk_cycles_per_step: number of those clock cycles one step lasts
+> + *
+> + * The period, the duty length and the duty offset of a waveform are multiples
+> + * of one step, which lasts @clk_cycles_per_step / @clk_rate_hz seconds. A PWM
+> + * that divides its input clock in hardware has @clk_cycles_per_step > 1.
+> + *
+> + * The step is the same for every waveform and for the period, the duty length
+> + * and the duty offset, so a provider whose granularity depends on the
+> + * requested period (for example through a prescaler) can't describe itself
+> + * with it. One step also has to last at least 1 ns, otherwise rounding a
+> + * length in nanoseconds up can add a whole step.
+> + *
+> + * A consumer that needs a minimum time, or that has to place an edge relative
+> + * to the cycles of the clock a PWM channel gates, can use this to ask for
+> + * the next possible value instead of one that is rounded down, and to compute
+> + * the frequency a rounded period results in without the error of the
+> + * nanosecond resolution of struct pwm_waveform.
+> + */
+> +struct pwm_waveform_step {
+> +	unsigned long clk_rate_hz;
+
+_Hz ?
+
+> +	unsigned int clk_cycles_per_step;
+> +};
 
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
