@@ -1,113 +1,116 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793798578;
-	b=afV+t9XpqdLhGd34aybAcnLxi0DB82zdPe7Dz+1ykHxK1YVCOu8gOlpJ6qOp9FoVhxJX
-	 AS53mkoUuHf8JxUhqDDvxVM65dH4dDGJE7zf9nNQdByflA2QVnxJbfyOwLKFjMYjcw3cg
-	 G+ZBrcI6pxPJEfqJc4WDDvPKzwKKtp3/S6Wr9dheDSoPQcgh5sZeO2GADN+LrblF2rFrs
-	 ck41yiC150mysVa5lH3nMwZ5vrSBcxEBmdNy+hatrKWv2TJ1ckK6Jnt0JPzXn7zgV/CEz
-	 y2jfq4y1UDSoNeGPcUpt06aR/djN+/X+DBmJi229eWGrkOxj0tZ0ZmDFJtU8OfATCxA==
+	t=1793799519;
+	b=QRhSpPmkJDrPP64rlNeiWMNgINJ0+kjSfQCxagDG9hxNLh1NB4FRhM6hWbGC7m2Xehm8
+	 GXXbagSoK4SFSK8XmqkpndLqamudmd0LKasHC8EF3cXaTUeMOcswF5KOoR80Nb8Z0yNjW
+	 bAGRjYwOITykKEMoms/9j9XTiGFMZJoCNwgpZTzcge41T+P3+jM9kESjexGj3Rhng8tNy
+	 mqDAjlAMe65/attuNNiBYa5CAYrpC+5RJIvGowIcqEKQ020U61ZoC/hChPTcBy8sTC6rs
+	 HtYeQKWpmLhdKVm6TBmclfj2/EGr2WwORHQNpazBL3QCqMcsOrd6HGmBHUjq1lrFX+g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793798578;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
-	 X-Proofpoint-GUID:X-Proofpoint-Spam-Info:X-Authority-Analysis:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=3LvEXk5FHs4avjcyN0cE0WqhxnHG/x+L7FFkra6vnXg=;
-	b=HpSH5tnHCle9PAftGG27357IMSs14KHjcBDX640AIKo4BGalRYSNqJgORt/ql27aqtVp
-	 A65T9WCmsmqGxIgcAq7YaaJ0vLBUJcIq8a8T1sj+1E3kkL0DjbnLRteEcgha1Fug7JPqz
-	 3x5ywZFndvhahN8KJycqxoCfdxsm4K/Pe/Q8y2WjP9PdD5zRB/7C0WuEO+9YS/+S0GXcn
-	 i4Ifm+dlPjtijZ9xuq9hM/CfO/QjkX3TnqnRW221ko9zCzQGOCOyfMjBG96AzdrsrYk/C
-	 QgqzZiAO6QtdCa4I4hpiChlgfGt5k05jDmr1jS9hQNKPqGoAn3BreeJh/bf31/c4XkQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793799519;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=/ACB8f2xH1rEkjmG+UvGKZpwz98xJh2FSOOsD44xzng=;
+	b=SW7ESqMGn521scMomtVjn7JIX7xd6eQxmuj+SoGfa2Zhxa3QSK8+0lpcvzrIvyH4psbs
+	 /XQ04Y0oQWY2taMEweD84061Q7E75kWdsje0F/TUxCUmCExzzyE6Uoq5Op8UQOQtnHs/R
+	 bQp3leGLQCBhoYbrxz+McUnG8CkClHEJio9x0UQH4QS683m3/czJVUIMp/MheE4gVtgAA
+	 1MJVshA3hf/oHPHPsMN6Vnn9wBMJ7d2kd8g9N330vdWFjimHC2t7IZfMiRqovDSx4Dltq
+	 Ce3h8VAvuxGubVzWm2H5ENfsTef/0uaqueLSxq1PFeDzx93StgIlDrhlQpuZelIn6hQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=R74urMFL;
-	dkim=temperror header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=iLC7q4VZ;
-	arc=none smtp.remote-ip=148.163.135.77
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=suse.com;
+	spf=pass smtp.mailfrom=suse.com;
+	dkim=pass header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=fhMbzwx4;
+	arc=none smtp.remote-ip=209.85.221.46
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D61B606A31B;
-	Wed,  4 Nov 2026 13:22:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4D61B606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62961606A333
+	for <linux-pwm@vger.kernel.org>; Wed,  4 Nov 2026 13:38:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 62961606A333
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=R74urMFL;
-	dkim=temperror header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=iLC7q4VZ
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A4BdFE01972390;
-	Wed, 4 Nov 2026 08:22:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=3LvEXk5FHs4avjcyN0cE0WqhxnHG/x+L7FFkra6vnXg=; b=R74urMF
-	L2MYVaHKD/TTfWkP+viDuTplFOxehTFF6KhBAMkOPlEt0y+2oZnXtCakq6F8KWzM
-	J6M8r5wpbgf9aNeDJqIL9ram5nk4EPOUIaAr969SN1iTMyV9q9GEcc4eFJC4SeqT
-	/D+G0b/2Av11n9Vi4bLvAKWG8+DwafH2REewOiBxTGOeCOT1bbBpwKkhYABAeIGJ
-	8xymge0U/ydOpjlhQi+eVM5g2XTwgiS5K4L7igiaTwpUnz0xEdbPBwMySWOcHFHR
-	Fz4tv8etgEdS6NWVro0/VO5y2ZFyNIX4eSi8ra3isBBOMzvlAG4WEFPxrinDUaJt
-	R+Nz70OzbMk+FVg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=3LvEX
-	k5FHs4avjcyN0cE0WqhxnHG/x+L7FFkra6vnXg=; b=iLC7q4VZPUTkWggPBriGp
-	mrJPPJ5lpMDfofARhmCVxasEfwXXcPS7/HvaIkvxyGsL/ZYn4n/xQ4RHjfTUXhHP
-	sU004rhT/o4+Qw2gCPd5HAXzkG42UIP79Y5RHAB7mN39LCHwP+da/nNaniSpTCqm
-	J5dQoqEjVDZwV+Jh+SuHmc3taNFnvMdybUm3Z6Pu+KANsHPzLHqh9xwhAG2QFxgS
-	RA4G5Vo8FFZks/uiFQH1Xf15ETOVeHPJssS0OT1vtIDc+NfLbczOEZPOa4APhDd1
-	GuQSJ/ja2lLsBOlgQfYxKgB5n1pu+SrHLD8ibftcLon2XBtzBpGm+cxBlnvWMI6W
-	g==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hqk2pwy2k-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Nov 2026 08:22:47 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 6A4DMkwO028044
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 4 Nov 2026 08:22:46 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 4 Nov
- 2026 08:22:21 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 4 Nov 2026 08:22:21 -0500
-Received: from HYB-aFjnqsVU6Ag.ad.analog.com ([10.66.6.192])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6A4DLnao008011;
-	Wed, 4 Nov 2026 08:22:12 -0500
-From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring
-	<robh@kernel.org>, David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Trevor
- Gamblin <tgamblin@baylibre.com>,
-        Joshua Crofts <crofts@kernel.org>,
-        Sergiu
- Cuciurean <sergiu.cuciurean@analog.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Nicolae-Daniel
- Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Subject: [PATCH v2 3/5] iio: adc: ad7625: fix sampling frequency handling
-Date: Wed, 4 Nov 2026 15:21:41 +0200
-Message-ID: <20261104132143.215581-4-Nicolae-daniel.Deaconescu@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261104132143.215581-1-Nicolae-daniel.Deaconescu@analog.com>
-References: <20261104132143.215581-1-Nicolae-daniel.Deaconescu@analog.com>
+	dkim=pass (2048-bit key, unprotected) header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=fhMbzwx4
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-48c4d99c32bso629066f8f.1
+        for <linux-pwm@vger.kernel.org>; Wed, 04 Nov 2026 05:38:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1793799517; x=1794404317; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=/ACB8f2xH1rEkjmG+UvGKZpwz98xJh2FSOOsD44xzng=;
+        b=fhMbzwx4Iq3YFHIOVMV2AgcTVSX5bUIm88mP+/GXafUHINhjR0DYO6dU7UajUYaLNv
+         622SV3vWe2gVwtnM/S4TyrixZynQTJd990ccLsFi+iKL5m3KUuTfnetJpBvFVrgDR9//
+         QZ8wE7FXI45OO2kd1I22aQgTNsNCarR3pgZmoYbY7z2ICyVXmK9V4QvTmytgxfNZLusn
+         kjD34hr6y1GrE8O3mCCvKyVzFHNqiCC4FJqjYk4RvqAB/s6K/KgJoYdL7jpZW5+d95Ha
+         iwx2i7fpT/3Twvz7KWPXs3ZVe5oFYcZg6xsyEcgvCz4H4S2N2JkotapGLoTOHmYFUw3x
+         6NYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793799517; x=1794404317;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=/ACB8f2xH1rEkjmG+UvGKZpwz98xJh2FSOOsD44xzng=;
+        b=sY7eN2d8NhXuiCHa5V67EIpR+i89L7/r0KP93XBTJ0PBmmz/CWJFyFSwqwiS2TMM47
+         8ePDIrpFDDE0EkXJtVUi93CLYuzIgUVn9UfHRDSE1TLM01s3XVq+jYP9sZp2pmW20/Ub
+         STsnq8xsCESGuFJwlDZKpo1Kp6EnHwVzo/M/wisa/CpV/9WQ1ZYbznF2JTXcF4a9pSHD
+         BrILalcCjqAP8BiEw/ggBkbKlySXI1f7kRvRl7W9yQeq9bfLMP1uULxN7wg02Tg8tiQ7
+         XQeNybde4g4F8H114SXGttjXXgq/qf27FONUodQ/FygODQwyhHslmVQIBxcIRt3XP7Wa
+         V/BQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxLOokmgBxxBhXxbyTHWvvosgP3f2rQpmHARPZnWkUzhLqCOnyMuTk7caCSDPaZQUcRjZlsXNsWToU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8rzWlnJEPeayavjue3hcKTAKJAGLOHI580M8BwbdD3ni8lJTts
+	H8QPL/dUUoKGnrr03fIIsX6yfLPv5t0dzNMPotXwjiFFLJgEa9PRCghNfy6nZyKQdz8=
+X-Gm-Gg: AYBFou3ZPPwQbuMlxU5ebki8RPVGWKImR0L2bLm1Z6pyhAeF0kgd7CUSI+keNb/d9xk
+	2qUYN0M7+orcgEhZ0eYXHCPj5vetEEWcUI3IO2aZgfsu4plG+bOkt3XS5Oar41GRUykA4DUBS3A
+	zXQzWGhR5c2hEEQeU+r8cZhJY5nLsq5AQcNzUOredbMnQMDVK9U4nhBgzTHdQia1TfTuOE21W04
+	em7nW3WHjipKc/uW2D9xj4qW4GiTqLsF397sc0sLwPcuz9/pTdXfs9/ZrppKkWXEZ/AI7HsVHu1
+	otHBBIFBF1n2Vz3MTl/m9oCmgxzfocp/xKrf3HIwCvoDzegRdZ8JbYbE8/DCF0cUd0Z2uaYrIoK
+	L3Z+g9kfPVWweJPYaltJYrqy2XoR8tCQ53ZYxnH6caQcvoSlIpb8gvNbWStvB60RvunyaPZfUeP
+	wTqkRaPmfq2RZXvfqF5GTQVu5hwv/3dVEl7BnfV6mltxGApsR1ljB0R4hegoVIsP5Q8xSDQcr5E
+	ekss0QDTMhwUYdaMPfDQtmIahRWQyCGn3zWrug/gNBOixOU5Dw1knBcrWDkQBbxm18YPHduXpyt
+	384XjTBRdZdGXDSiLnqkY9uSvIJw8vQFVFBkvBw8ELZr7Wg3
+X-Received: by 2002:a05:6000:4026:b0:48b:4a2:8175 with SMTP id ffacd0b85a97d-48e6e501911mr37072969f8f.43.1793799516428;
+        Wed, 04 Nov 2026 05:38:36 -0800 (PST)
+Received: from localhost ([82.192.120.214])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48fed552afcsm3985293f8f.41.2026.11.04.05.38.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2026 05:38:35 -0800 (PST)
+From: Andrea della Porta <andrea.porta@suse.com>
+X-Google-Original-From: Andrea della Porta <aporta@suse.de>
+Date: Wed, 4 Nov 2026 14:42:29 +0100
+To: Andrea della Porta <andrea.porta@suse.com>
+Cc: Guenter Roeck <linux@roeck-us.net>, Gary Guo <gary@garyguo.net>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Gregor Herburger <gregor.herburger@linutronix.de>,
+	Stanimir Varbanov <svarbanov@suse.de>, linux-hwmon@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH RFC 0/4] hwmon: Add fan tachometer support for Raspberry
+ Pi RP1
+Message-ID: <aus2Ra_sLySMZU1i@apocalypse>
+References: <cover.1792748690.git.andrea.porta@suse.com>
+ <7df58d42-517c-4936-88b0-9d044d30882c@roeck-us.net>
+ <auBzvB8TsvIK8Hik@apocalypse>
+ <53a4b4bb-271c-4d2d-a9e4-cec4e0ce214b@roeck-us.net>
+ <DMFPE71J8205.3FZKD5BKW3U7C@garyguo.net>
+ <b02b4f0b-ad2c-453a-b69c-a0865a333d62@roeck-us.net>
+ <auIotAwnOWKNApjp@apocalypse>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -117,97 +120,101 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: bHbkJuaiVQ1FKcjGJX0H6GMlGNUPw5QA
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTA0MDA1MyBTYWx0ZWRfX6Ma72Htyg4Ls
- 2Osfobr14PK/bB4fn1Fl3HBMP+AzDhHQ457w1WD22oHev7CNIdFZ1+AYDK1xHstDprze/1XKrML
- LFcEDlEnsm/pLygo3qjdbaD76Q4wsPBCnebHG1VeyJlpPae6BHp7
-X-Authority-Analysis: v=2.4 cv=NPlAaE6g c=1 sm=1 tr=0 ts=6aeb31a8 cx=c_pps
- a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=GsnR7v6S-VPzw9YOTZ8A:9
-X-Proofpoint-ORIG-GUID: bHbkJuaiVQ1FKcjGJX0H6GMlGNUPw5QA
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTA0MDA1MyBTYWx0ZWRfX0k+PLEMyJugp
- LFit1OqDspHGRYnhGt9q7X9ERd06XKBPZBrQzp9N67DaBN7jiBuQdGBRsI4XPXpFnADx6jEwdhV
- j3JJnaBo2KX96bxA32It+vshWMKi4G3Kf6GOfoHIKtYI9F7DBMHnbXEOC1dKHMVg50a6qZzyGUQ
- F3oxyM+O1BrGEYXmGOcfx8FvXxevRDep+fk+D4Nmt9yMeqdNXicAIrRy/emKQXtKthxJ/SB4M02
- jXSGRZsoOVWpyi2DREg/JssOU2WSA2UvDeL+2OJ7D2ogAEDdfutJJN9X/eIP4rWy8tMwv9WUTHk
- abbQFoVA8tLGFnOX402DiAKh3tyfXedmzGOjvSbbQpwo5FebmT+9s1ix1QVQozhjFYZZ6/m7fmP
- byoT2fTZsls5tENZYrLVyH0Q1qqF3LUVcKr9ufqradRcu1GQO4BQWIdMB7zcubnpSik3bPZ8AOd
- TRimLvmBXn2x36SesZg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-04_04,2026-11-03_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 phishscore=0 impostorscore=0 suspectscore=0 bulkscore=0
- clxscore=1015 priorityscore=1501 spamscore=0 adultscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610300000 definitions=main-2611040053
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <auIotAwnOWKNApjp@apocalypse>
 
-Fix the following issues in the handling of the sampling frequency:
+Hi,
 
-- Fix the issue where writing 0 to sampling_frequency caused a division
-  by zero. Return -EINVAL instead.
-- Fix the issue where a waveform that the PWM had to round up was not
-  reported as an error. pwm_round_waveform_might_sleep() returns 1 in that
-  case and ad7625_set_sampling_freq() passed it on, so the write to
-  sampling_frequency returned 1 and the new waveforms were dropped. Return
-  -EINVAL instead.
-- Fix the issue where probe() went on after failing to set the initial
-  sampling frequency. The result of dev_err_probe() was not returned, so
-  the PWMs stayed unconfigured. Return the error.
+On 17:54 Wed 28 Oct     , Andrea della Porta wrote:
+> On 09:13 Tue 27 Oct     , Guenter Roeck wrote:
+> > On Tue, Oct 27, 2026 at 10:51:15PM +0800, Gary Guo wrote:
+> > > On Tue Oct 27, 2026 at 9:48 PM CST, Guenter Roeck wrote:
+> > > > On Tue, Oct 27, 2026 at 10:49:48AM +0100, Andrea della Porta wrote:
+> > > >> Hi Guenter,
+> > > >> 
+> > > >> Yes, I also proposed that in the cover letter because auxbus seems also a viable
+> > > >> solution.
+> > > >> 
+> > > >> The current implementation is a consequence to the discussion about the companion
+> > > >> PWM driver, from here (and the revisions that followed):
+> > > >> 
+> > > >> https://lore.kernel.org/all/cover.1775223441.git.andrea.porta@suse.com/
+> > > >> 
+> > > >> To give a short and hopefully coherent view of the decisions, here's a breakdown:
+> > > >> 
+> > > >> - first proposal: PWM driver + fan hwmon (to read the RPM), all in the same driver
+> > > >> 
+> > > >> - V2: Uwe preferred to split the PWM driver from the hwmon one, so the hwmon was
+> > > >>   dropped from teh PWM driver in favor of a future (fan) driver. To accomplish this,
+> > > >>   I moved from readl/writel to regmap + syscon.
+> > > >> 
+> > > >> - V8: Gary proposed to export a function to read the fan RPM as a viable
+> > > >>   solution. As a result, the regmap/syscon was dropped as it was no longer needed
+> > > >>   and the function has been exported from the PWM driver
+> > > >> 
+> > > >> - new patchset for fan driver: the now independent hwmon moodle just call the
+> > > >>   exported function from thw PWM driver.
+> > > >> 
+> > > >> If the auxiliary bus is indeed the preferred approach, I'd like to ensure we are
+> > > >> all aligned, as this would also require refactoring the PWM driver.
+> > > >> 
+> > > >
+> > > > Let's say it that way: If you don't want to implement the auxiliary driver,
+> > > > and you insist using the exported function, I would prefer for you to go back
+> > > > to the first solution. The one thing I really dislike is conceptually broken
+> > > > code, and I consider the current approach broken. Your call, but the one thing
+> > > > I won't accept is the code with the exported function.
+> > > 
+> > > I agree on the auxiliary driver part. However, I don't think EXPORT_SYMBOL_NS is
+> > > an issue, and regmap is not the right fit here:
+> > > 
+> > > - Previous version of the PWM1 patch series publish regmap using
+> > >   of_syscon_register_regmap, but this cannot be undone -- which needs to happen
+> > >   on PWM device unbind (the RP1 PWM device is itself platform device, but RP1
+> > >   chip itself is PCIe device which must be removable).
+> > > 
+> > > - The tachometer register is not its own separate register, but rather (re)using
+> > >   the phase control register. The phase control is not implemented in the RP1
+> > >   PWM driver on the list yet, so this is currently a simple register read -- I
+> > >   can see that RP1 PWM driver need to take special care to about the tachometer
+> > >   reading if the phase control is implemented.
+> > > 
+> > >   For the two reasons above, I think the way that tachometer is read should
+> > >   really be an implementation detail of the PWM driver and not for the hwmon
+> > >   driver to worry about, so I suggested using EXPORT_SYMBOL_NS.
+> > > 
+> > > - EXPORT_SYMBOL_NS is the documented way for exposing functionality from parent
+> > >   device to auxiliary drivers: https://docs.kernel.org/driver-api/auxiliary_bus.html
+> > > 
+> > 
+> > Let's agree to disagree, and keep the code in the pwm subsystem.
+> 
+> And auxiliary bus it will be. I propose the following:
+> 
+> - drivers/pwm/pwm-rp1.c: create an auxiliary device for the fan. The function to read
+>   the RPM will not be exported, but a function pointer will be passed through the
+>   private data to the fan driver. No need for regmap. To be taken by Uwe.
+> 
+> - drivers/hwmon/rp1-hwmon.c: The auxiliary driver is probed against the device registered
+>   by the pwm driver. No imported function. To be taken by Guenter.
+> 
+> In this way, we decouple the two drivers and we leverage the auxiliary bus paradigm.
+> Also, no DT node needed for the fan.
+> 
+> Do we all agree on this approach?
 
-Fixes: b7ffd0fa65e9 ("iio: adc: ad7625: add driver")
-Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
----
- drivers/iio/adc/ad7625.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+A gentle reminder about this inquiry. Before refactoring both the PWM and the fan
+driver I'd like to be sure that the proposed approach is at least acceptable.
 
-diff --git a/drivers/iio/adc/ad7625.c b/drivers/iio/adc/ad7625.c
-index e73a5c9e7f0b..0de7f29797ef 100644
---- a/drivers/iio/adc/ad7625.c
-+++ b/drivers/iio/adc/ad7625.c
-@@ -178,6 +178,9 @@ static int ad7625_set_sampling_freq(struct ad7625_state *st, u32 freq)
- 	unsigned long target;
- 	int ret;
- 
-+	if (!freq)
-+		return -EINVAL;
-+
- 	target = DIV_ROUND_UP(NSEC_PER_SEC, freq);
- 	cnv_wf.period_length_ns = clamp(target, 100UL, 10UL * NSEC_PER_USEC);
- 
-@@ -189,7 +192,7 @@ static int ad7625_set_sampling_freq(struct ad7625_state *st, u32 freq)
- 
- 	ret = pwm_round_waveform_might_sleep(st->cnv_pwm, &cnv_wf);
- 	if (ret)
--		return ret;
-+		return ret < 0 ? ret : -EINVAL;
- 
- 	/*
- 	 * Set up the burst signal for transferring data. period and
-@@ -206,7 +209,7 @@ static int ad7625_set_sampling_freq(struct ad7625_state *st, u32 freq)
- 
- 	ret = pwm_round_waveform_might_sleep(st->clk_gate_pwm, &clk_gate_wf);
- 	if (ret)
--		return ret;
-+		return ret < 0 ? ret : -EINVAL;
- 
- 	st->cnv_wf = cnv_wf;
- 	st->clk_gate_wf = clk_gate_wf;
-@@ -646,8 +649,8 @@ static int ad7625_probe(struct platform_device *pdev)
- 
- 	ret = ad7625_set_sampling_freq(st, default_sample_freq);
- 	if (ret)
--		dev_err_probe(dev, ret,
--			      "failed to set valid sampling frequency\n");
-+		return dev_err_probe(dev, ret,
-+				     "failed to set valid sampling frequency\n");
- 
- 	return devm_iio_device_register(dev, indio_dev);
- }
--- 
-2.34.1
+Many thanks,
+Andrea
 
+
+> 
+> Thanks,
+> Andrea
+> 
+> > 
+> > Thanks,
+> > Guenter
