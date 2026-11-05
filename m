@@ -1,58 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793889564;
-	b=U6hSVMhMMFNrucPjPN3QQUejpTh+7NXTOrBDhu/PPJ5LMAq6U8lYX8ChdiN9uibo66Cd
-	 CndCpqP9ipSCP9iKD3C1SCnMzZeku5/bxe1owd2tVCtuAil8rTq6idTt3rkJlhMHIMZE/
-	 FcLeA681cUZOqPk519TjhoMUPnwb6qSdcF5W+uHY5TsjGTbkdY6ysM1xMt0UFud9Rxr9e
-	 sXyL7WNOWxhQG0Nu2oFrEUGf0Ke+lfpJK+kcIqcwDlRZJXC7NDHMP97YQHZN4RkStVeWQ
-	 u2jM1S1+wYawlTWacvsvVXBTPM1gOoQvhstvcCHWXsV4uGWTQ+y5mimJB270d8exq/A==
+	t=1793889571;
+	b=SgKGO2+Q3WMecuyfFtZW4CgKSlH8VfVGmr8p4xFp4WXmQFVmnP2D243hSXuMh7b79tRu
+	 qBrohpG3QqW1otr9Lwsg3sSsm5c/o3VZgpUfgZBc6cjULjy3f9Gwyx2BVRup5PeD0W7DS
+	 tUGXc7QZGXo09R6urr32gNkXnvV+lmifCBW7i7sy7N/kJj9DBrZ20hQGFDbRP70Ji3jPb
+	 CeTWdJZd8Xs3BF884xIqk8JoomMu6UUqX8lVaBVFgJElvVTz43tnTXDlyQwiODb2juIrh
+	 Ptsjl/n1SfzR1KEtlel9YjtVlj0lGblXKVVcbrw5SLLWlkBageP4JxWkMVvvwg1uQdA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793889564;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793889571;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=QpIDARN/Vr1KReVbx3nRsZF63S3ezskxf8SAIxOLPM0=;
-	b=5pUZ2M4ga1C1XjIBhicvDulzb9bBZVdUaR/l7BVDLFn+9CsAcX5gd6ej7XxmczFEXIxO
-	 LVNA9+SIbAEw3kttY6UKBSdnL498gRI3REh95vGORqbF8NpH/RCCkPt8zkCOMnQ51QyfU
-	 zZmGqSEBAMrXHLokGbLOCNlGz2Rn7tm/mViiqe7b1My5JW3cMUi8dBK8bPn0Ap7c8GYYC
-	 5ENqEEnhepHSbx2uKJXktSao4Hi+bfc45vISBeDiuhZXqnXzRotU6qNyM4VAxEItm3i3h
-	 L0+jNZyqushblnSoRiuH691i34UJMjU9WhJGllPRsu6+t9Eam4vT7vWrMRK6bSuUeMw==
+	bh=PSyN1YHPWqlEh6KBlb3S3Qwl9gNrCashcBnZD9ISPHc=;
+	b=ki/xFpw/oaGF3u7GpyOKEaUZBhvqrkZU+Hf6kltHIOakcQcZMCedP8T/jF05XaKGFfgX
+	 g3tXBK3HlSVKdXq0yU7Es5lheFQRO+aXYz8FSxzW/DU6cewlVornQSilplnwmqx2uyYrJ
+	 EvT5kP3oP1sin0ZD0fF2BbPF/M2fWIWDAufZ+CidObFKW+RXu71wm2WhqRWNMKMiSGuDe
+	 eKy9NzJtkPnOpYx3KslVybyA11BNLRolcCloqUDAp+Ia1mxqH9tUCcw71ElRoA/3ta160
+	 hqGRaxCNPSF05gFqdJ5ckUFO2cG/GbIPFZRTikM5uLPs/WAWCSeHHeE/NCQOjnKDyeg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Rn6KgDF1;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jSmzGqIK;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BF06606A331;
-	Thu,  5 Nov 2026 14:39:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A586B606A33C;
+	Thu,  5 Nov 2026 14:39:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Rn6KgDF1
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38B721F0093A;
-	Thu,  5 Nov 2026 14:39:22 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jSmzGqIK
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF4C61F000C1;
+	Thu,  5 Nov 2026 14:39:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793889563;
-	bh=QpIDARN/Vr1KReVbx3nRsZF63S3ezskxf8SAIxOLPM0=;
+	s=k20260515; t=1793889570;
+	bh=PSyN1YHPWqlEh6KBlb3S3Qwl9gNrCashcBnZD9ISPHc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Rn6KgDF1VNfg2Ip70MHdg7ocm/Ze02NeccCVLIxCRgQ3g807ZvWWLv3XL35SvsAPa
-	 eu/8v8wpEJZCUiMxVzPNcX5dX2TxgPykEStnA+8bpht/29TxrGXTb3IL2SQv4fk2O6
-	 L+gGqGXe5EgcRgP7pLX99xyU/pl1KNOWCq2iEGQeeZEcb7zge6ioxTFdrDfKI1dDg4
-	 rTHFxxwpKqRqSoIN0q/SxFPWKSa8y9N9MArGP6P2EGAIyEJ8TpP/5iIzKalM1H+CF9
-	 PzsOU/MKy/vxEazPjFPjTDu1YFYYA0vW7oBhZoXfIKshw5ZnSPyUB4882ZQPXvgq4A
-	 eCSRCoLJQUXLQ==
+	b=jSmzGqIKPUpLZZpX+iRhptsPPasIPHu0Htw6mu/9YR9pa1keWpXD5iVGK7+QR3xZg
+	 oOrGhKnuBWEkdEKmvc06gyubXv6cx6sUW34F6gDFC0KJ63NTwkbySIyokOeeMutAfe
+	 M/uRfUg7sfqwgWeGc5by5g5Po3ujzORTbphiVRU57ZohbTtjq5ZDtWkydRJt7NXpXs
+	 y2PW0wXCOYLK8m1ltju0sl5aYNvIETsaS3kFjDnA3JAio2Nljg8PdutwN4oeW+8BLG
+	 WDoD65VWWV2jkTwpdXp8GIJXZ05o4untu8tIDxRuad5YDZ6AiX72NUTVniookGTMUW
+	 +Q0lDX8lXpLBw==
 From: Lee Jones <lee@kernel.org>
 To: lee@kernel.org,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Trevor Gamblin <tgamblin@baylibre.com>,
 	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
-	Drew Fustini <dfustini@baylibre.com>,
+	Xiubo Li <Li.Xiubo@freescale.com>,
+	"shenwei.wang@nxp.com" <shenwei.wang@nxp.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
 	linux-pwm@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: stable@vger.kernel.org
-Subject: [PATCH 4/8] pwm: axi-pwmgen: Enable clocks before accessing hardware registers in probe()
-Date: Thu,  5 Nov 2026 14:38:06 +0000
-Message-ID: <20261105143847.2559586-5-lee@kernel.org>
+Subject: [PATCH 5/8] pwm: fsl-ftm: Enable ipg_clk around regcache_sync() during resume
+Date: Thu,  5 Nov 2026 14:38:07 +0000
+Message-ID: <20261105143847.2559586-6-lee@kernel.org>
 X-Mailer: git-send-email 2.56.0.398.g882cbad275-goog
 In-Reply-To: <20261105143847.2559586-1-lee@kernel.org>
 References: <20261105143847.2559586-1-lee@kernel.org>
@@ -67,61 +65,52 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-axi_pwmgen_probe() calls axi_pwmgen_setup(), which reads and writes MMIO
-registers to verify the IP core version and determine the channel count,
-before acquiring and enabling axi_clk.  If the bootloader leaves the AXI
-peripheral clock gated, accessing the registers causes an unclocked bus
-access fault.
+On SoCs with a dedicated IP interface clock (ipg_clk), register accesses
+require ipg_clk to be enabled in addition to the ftm_sys clock managed
+by regmap_mmio.  In fsl_pwm_resume(), ipg_clk is only enabled inside the
+channel loop for channels with PWMF_REQUESTED set, so if no channels are
+currently requested, regcache_sync() writes to the hardware registers
+while ipg_clk is disabled.
 
-Acquire and enable the clocks before calling axi_pwmgen_setup().
+Enable ipg_clk across fsl_pwm_resume() around regcache_sync(), matching
+fsl_pwm_init().
 
-Fixes: 41814fe5c782 ("pwm: Add driver for AXI PWM generator")
-Closes: https://sashiko.dev/#/bug/linux-bc988dbc-7b12-4785-a164-b6dcab29b86a
+Fixes: 82a9c55a2bb0 ("pwm: fsl-ftm: Added a dedicated IP interface clock")
+Closes: https://sashiko.dev/#/bug/linux-858851cf-55a9-4776-883c-69c05f3961f2
 Cc: stable@vger.kernel.org
 Signed-off-by: Lee Jones <lee@kernel.org>
 ---
- drivers/pwm/pwm-axi-pwmgen.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/pwm/pwm-fsl-ftm.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/pwm/pwm-axi-pwmgen.c b/drivers/pwm/pwm-axi-pwmgen.c
-index b40522f01002..7c1b38124787 100644
---- a/drivers/pwm/pwm-axi-pwmgen.c
-+++ b/drivers/pwm/pwm-axi-pwmgen.c
-@@ -270,16 +270,6 @@ static int axi_pwmgen_probe(struct platform_device *pdev)
- 		return dev_err_probe(dev, PTR_ERR(regmap),
- 				     "failed to init register map\n");
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index 35406b2e1925..9e5470e2efe6 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -501,8 +501,13 @@ static int fsl_pwm_resume(struct device *dev)
+ {
+ 	struct pwm_chip *chip = dev_get_drvdata(dev);
+ 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
++	int ret;
+ 	int i;
  
--	ret = axi_pwmgen_setup(regmap, dev);
--	if (ret < 0)
--		return ret;
--
--	chip = devm_pwmchip_alloc(dev, ret, sizeof(*ddata));
--	if (IS_ERR(chip))
--		return PTR_ERR(chip);
--	ddata = pwmchip_get_drvdata(chip);
--	ddata->regmap = regmap;
--
- 	/*
- 	 * Using NULL here instead of "axi" for backwards compatibility. There
- 	 * are some dtbs that don't give clock-names and have the "ext" clock
-@@ -305,6 +295,16 @@ static int axi_pwmgen_probe(struct platform_device *pdev)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "failed to get exclusive rate\n");
- 
-+	ret = axi_pwmgen_setup(regmap, dev);
-+	if (ret < 0)
++	ret = clk_prepare_enable(fpc->ipg_clk);
++	if (ret)
 +		return ret;
 +
-+	chip = devm_pwmchip_alloc(dev, ret, sizeof(*ddata));
-+	if (IS_ERR(chip))
-+		return PTR_ERR(chip);
-+	ddata = pwmchip_get_drvdata(chip);
-+	ddata->regmap = regmap;
+ 	for (i = 0; i < chip->npwm; i++) {
+ 		struct pwm_device *pwm = &chip->pwms[i];
+ 
+@@ -522,6 +527,8 @@ static int fsl_pwm_resume(struct device *dev)
+ 	regcache_cache_only(fpc->regmap, false);
+ 	regcache_sync(fpc->regmap);
+ 
++	clk_disable_unprepare(fpc->ipg_clk);
 +
- 	ddata->clk_rate_hz = clk_get_rate(clk);
- 	if (!ddata->clk_rate_hz || ddata->clk_rate_hz > NSEC_PER_SEC)
- 		return dev_err_probe(dev, -EINVAL,
-Cc: Drew Fustini <dfustini@baylibre.com>
+ 	return 0;
+ }
+ #endif
+Cc: shenwei.wang@nxp.com
 -- 
 2.56.0.398.g882cbad275-goog
 
