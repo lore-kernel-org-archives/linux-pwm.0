@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793893564;
-	b=mKzWdag4HqI3WR+iFaqFWykdYajuDMmlwNbu4nYO44M375dPWmz4Ajn7TmMogO4IIQp3
-	 yAToeOETFlVcshRsAzJb8s3o+4MoT39QeJVrrOYWbiJZTFURqVLptgWAsUVOU9Espq4oP
-	 mffFep++DPxy5H07oBVlUtYwwSD4moaWT5M4yNBwoyHf5Mq/wdCU3tl+iysZSoU8JP2rz
-	 fEUgStQ4lkXiaPA6RoOsXdZuPC0KyfNcL3JH3xBMU2m0dcA6dwL0jMT11/6GUM5lzTgEf
-	 dtR1uJj4KpX/wsF+KHLXDHjAEbUEuD9r/mMWqSQHUJPUcK23rHDP9hUPOLUxRkEvoqw==
+	t=1793893729;
+	b=g4PLX7VUz6VbxEYF06sqLnGBcRlOPiMIja4X11vvsnmILZ5K8cHM4JtHU2+18BSD+D4S
+	 BIYL3cwa94tJPjr2LfUP6K5/LDDq+2YyLPWJgM1XLyGqk+uhPtNf7K7k5hg1QIsJ3lbCO
+	 X214m1Q0c6EqNSwmeRB5U+ncCm1RAosnRCUfLlIS6RetAf+SWtl8Jb0NavHsOb0oF3r7t
+	 g6ENcYCrJCKtNhbsc5f8M2zFmYF68avnGnHbdbJ7yN2mON5q+FwC6tVk6KvF7yE1sZmbL
+	 9DTc+m45GVSagA5Zm2tL3UV0c/EdZNpT9LkbJd+nMu5xdLOvOq2h/Mcs7VhT7USN9Gw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793893564;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793893729;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=TEExI0wyKCh5UrhCecRJ7HynlA0hRxBVTphCMFuZjBM=;
-	b=LgHDdG2OFfxTULNCnC9hKro0Wbaoslb7+0dAZW7UnngSYJKG7PYPC8h1cG3ioqH50e9K
-	 rYfZnH6WU5tiGf15cky3yhJICeXeHtqn0V1w/uVgB9tSTpbNMsdcUbWAMPq4IC6vx20J2
-	 U6dxzauleYlhlOeAYXa9PzRx4a3aL7Zh4ENNOACGbL0ddCDEnmiH0z0UN6bLcwq5sPGBc
-	 dkCqqATs6MZkvKh8yTMfzK89pvqd+gawzijoUrqsMSrHg8/Zqq2pkVAVx5cJCyy5sZwTl
-	 EQ5H2eH8fkwLgyrY8R47cQU4pDu0En0mYLpz5SkWyGgu++xAzaN3zkfZQRgma2KXI1A==
+	bh=EELEd+r5nqtCd2LwfpyXa+2tmfpHe/VRuZywN1WCL9M=;
+	b=l1iNbaY3Lgt+XG5z0UVLmJDbAFZWYTcclrHXNiYq14LzcAjzyTE5wrDQ1Aw1vBKIkQg6
+	 vvvtmi95Eds5vTlloYSlB0F4hQfZYg8qDRHFV/VMbbu1Uast8EMJRtynia5NUuFWfV/rh
+	 e7EYGPS5mGTwMNnbVyDLQJIwbfmcb2cIm5+wTtxXcqn6wvezRJYgMUMDq/nDWodnQIkD1
+	 jW+U8kFFTiWANFtfpIJOZJdZ8PutUjUPZKzIQ/P31Ep5Es8VPHWDkhF/QuOOq2yNcQ8wt
+	 LlnbFQjCU3ayrh57WS+gfKPKu9YSvm1Etzv24/k296HqtlpJoor6KW2NJ7XqN8nyiTg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ifdAfxYL;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dQT7WTtr;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 7977E606D834;
-	Thu,  5 Nov 2026 15:46:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id B0125606D806;
+	Thu,  5 Nov 2026 15:48:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ifdAfxYL
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7876F1F000C1;
-	Thu,  5 Nov 2026 15:46:03 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dQT7WTtr
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0B6A51F000C1;
+	Thu,  5 Nov 2026 15:48:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793893564;
-	bh=TEExI0wyKCh5UrhCecRJ7HynlA0hRxBVTphCMFuZjBM=;
+	s=k20260515; t=1793893728;
+	bh=EELEd+r5nqtCd2LwfpyXa+2tmfpHe/VRuZywN1WCL9M=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ifdAfxYLh+GoaGTXqEC0N5Mc1S6FzqY7oRvV92Sqpk8TeKMYsVG6WafXtr5AjcBJq
-	 DBgFHcvhnnkSM9mwN2MDAkMhLRy+q/MzKfSSu0Hfg1+OPWYGUlEZAIGRpAijE5pwKS
-	 GKtckZy/si3vrf4i4MGr/FUdNXbRBTmJlL/G+M1uo06PWLGLVF8EF48TDzGObepLD/
-	 R+eGMaXX23EqNY06AslovgPYTziSDewOH88X2Vm1bbyjB8PiNpKWf5Mt48ka2y/liA
-	 iG1NAkENvzvygZl9inlAsrRGNXz/GsqmEe2EDGOzl/z4/H5iDBsii7vKgnFIPnhVhH
-	 r3RrWIhUVqMeA==
-Date: Thu, 5 Nov 2026 16:46:01 +0100
+	b=dQT7WTtrJrLScexy1kr+2M1bhjqAOJN+sBZSomZhUiCf4jraWR1NMYfFxv6X5QtCR
+	 FRnwmoWHvxGRasCmY8mv1Y+uTKjoU1o4RVB1HTdsN2rgj/PmGhU8HdMC1f5ZfnNKuv
+	 v9wKZzhmfJPv9V7Q/5T6s46kyYthsAVnvJgfo2693N8UPYz1gOIY6ODpT4P+6UKmga
+	 THhKDi4BVhqtv3NmEkjxe2zWq9jaTRLs7OhDJutl3hcVw2u5u/VI+JOD6DHm4/O8gJ
+	 s0OtMu/Eb/uCcQecP3jF8pAXef83MYFnx6rr4O/3vGVVE8qQVUYz4833S6bAJTUUNI
+	 c+kWGnNt/u5iQ==
+Date: Thu, 5 Nov 2026 16:48:46 +0100
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 To: Lee Jones <lee@kernel.org>
-Cc: Thierry Reding <thierry.reding@kernel.org>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Sandipan Patra <spatra@nvidia.com>, linux-pwm@vger.kernel.org, 
-	linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/8] pwm: tegra: Prevent 32-bit period truncation and
- division by zero
-Message-ID: <auykeNit2S4e7axg@monoceros>
+Cc: Michael Hennerich <michael.hennerich@analog.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Trevor Gamblin <tgamblin@baylibre.com>, 
+	Sergiu Cuciurean <sergiu.cuciurean@analog.com>, Drew Fustini <dfustini@baylibre.com>, linux-pwm@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 4/8] pwm: axi-pwmgen: Enable clocks before accessing
+ hardware registers in probe()
+Message-ID: <auylN53GJra88-E3@monoceros>
 References: <20261105143847.2559586-1-lee@kernel.org>
- <20261105143847.2559586-2-lee@kernel.org>
+ <20261105143847.2559586-5-lee@kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -61,60 +61,44 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="5nxrbirnwnmd4xu2"
+	protocol="application/pgp-signature"; boundary="opke3hvnxpzc6n3t"
 Content-Disposition: inline
-In-Reply-To: <20261105143847.2559586-2-lee@kernel.org>
+In-Reply-To: <20261105143847.2559586-5-lee@kernel.org>
 
 
---5nxrbirnwnmd4xu2
+--opke3hvnxpzc6n3t
 Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 1/8] pwm: tegra: Prevent 32-bit period truncation and
- division by zero
+Subject: Re: [PATCH 4/8] pwm: axi-pwmgen: Enable clocks before accessing
+ hardware registers in probe()
 MIME-Version: 1.0
 
-Hello Lee,
+On Thu, Nov 05, 2026 at 02:38:06PM +0000, Lee Jones wrote:
+> axi_pwmgen_probe() calls axi_pwmgen_setup(), which reads and writes MMIO
+> registers to verify the IP core version and determine the channel count,
+> before acquiring and enabling axi_clk.  If the bootloader leaves the AXI
+> peripheral clock gated, accessing the registers causes an unclocked bus
+> access fault.
 
-On Thu, Nov 05, 2026 at 02:38:03PM +0000, Lee Jones wrote:
-> tegra_pwm_apply() passes the 64-bit state->duty_cycle and state->period
-> values into tegra_pwm_config(), which accepts signed 32-bit int
-> parameters and performs DIV_ROUND_CLOSEST_ULL(c, period_ns) before
-> validating period_ns against pc->min_period_ns.  If a consumer requests
-> a period that is a non-zero multiple of 2^32 nanoseconds, period_ns
-> truncates to zero and triggers a divide-by-zero panic.
->=20
-> Widen duty_ns and period_ns to u64 and validate that period_ns lies
-> within [pc->min_period_ns, U32_MAX] prior to dividing by period_ns.
->=20
-> Fixes: 1d7796bdb63a ("pwm: tegra: Support dynamic clock frequency configu=
-ration")
-> Fixes: fd3ddd4355c0 ("pwm: tegra: Implement .apply() callback")
-> Closes: https://sashiko.dev/#/bug/linux-5c5b97d6-4da6-4d06-9dc7-957419dcd=
-832
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Lee Jones <lee@kernel.org>
-
-This is already addressed in
-9ad5602d4943 ("pwm: tegra: Fix value discarding for duty and period")
-which is next-20261102 and later.
+Do you have the hardware? Or what convinced you that an access fault
+happens?
 
 Best regards
 Uwe
 
---5nxrbirnwnmd4xu2
+--opke3hvnxpzc6n3t
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrspLcACgkQj4D7WH0S
-/k7IZAgAgTxBFVmi5VNODULNSO0AzIE/XByrLnv9QPXpoGtE3u0fxn0SqZ8wdLaO
-zboASSjsv6LW2VhdvVNNouW6XmjvAVtBXq073REQWGEEWjqbkZ805Hc9CRqgKbS8
-RimnYb03FQPAOnXbH3zgXI7WOxw5+4Q42FHW7MKWR/65rq8sPRfklO77fm7oSDn5
-jjSz5NN2ES6hvDHjGAdp4/dOC7X+7ZKFguO0eOYolk7E5mmPJ1MiIKBx3AgcDkh7
-YHw/xMpIWcaQk1mvbkPIcyUIDdW7jA+l9hpwq/6hnhBAuEpkOkxNcNlRQfq9XHOn
-DPYJUkv/NkCqUKrSSQg/yc07PydLug==
-=3cdS
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrspVwACgkQj4D7WH0S
+/k4Xigf8CQ9iPLc/5m8kEVyOQIUmGdwcrO8ZhGOhSeif6+taeBnz8hXKQp/I9T77
+qWAe2OLEmCi2bJNUfQrI5rqrFyWrVRBcRQmEYEqXmyG+qAW3PMLZVuWaOgsLO1Sd
+xF6KEZXDgjapF64LN7k2wczhnyD8+9hUv34EDtU4rbG+FIr2X9gNxSg3zkYBVhCt
+MzYfQ7cyKprFFCiu0BE6+Il3cRCvmsOeab75fq6yjpvk5CqsZlBQc/9fI1lyvKmr
+AocfA3KsCYy3uZCaUp7ipLsrst24WzXNmTvNjWNaG6cCpS8yBc1iMihQ+onK1jVF
+kI7bJ9ybDjjAe9OnHxUHMieTAlQ1cA==
+=rcZu
 -----END PGP SIGNATURE-----
 
---5nxrbirnwnmd4xu2--
+--opke3hvnxpzc6n3t--
