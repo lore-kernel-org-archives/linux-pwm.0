@@ -1,52 +1,51 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.39.247.168
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794000308;
-	b=VCDf1RDgLeu7/D+cN3Uqivb2op96KV4+8/GZGWRsM5Kl0nzbUxTOq1/BNZXFnnn1MFwl
-	 FJ8EDJVkaYGxSwjYV/Nisqbc0oMxrY30ulM10GZd3hn+xKiJ0BtNgQa7DfHNeQikOmqi6
-	 GonlSuwWpU7S5QUNAPdVUt5B1PRi9WJ1ai4KUHqkJaPOMgjn7XeR4qcJ7I6caIw/Eo7SO
-	 xnN+f023BOhCmr0tOfP1k3RzmX6n5kwRkJSfMdhtlol1/gmkf5FDcHGWXOHrcFvpQo4s0
-	 EE3HtOjzxbSIiOvVGL3yuZp7wmkZND1A6ggkKVp4JPuzEI+krcy/eZ4cXZWEH/EnlUQ==
+	t=1794000311;
+	b=ZnH1oYUkYtzNKF3e0r8/AAtZJYUoNEXvGxhSGYILIvTpUl0TeXlvu38Ir99c58HygLBR
+	 66vOt+OIXYcJUN7gvJmJTTkFvxo+B0d2YaLaRGzrrkgZdGYUJHtvs47hIwo+gJNhVIwK8
+	 laxDS9hh7nSOERWxX2OWv+md11MOEbkS+PNM2oLPlITnN7sTDl0HwCmJRWVsHAVeFrea1
+	 j8u5cwHXx+oEOh2LQrDEzZ+IrNaZx9QqQVpEluQy4Zz+bLd4jmlDlEN328mUo2A2CH5hS
+	 q3gtC5cGnxafXjU5/GlHtGMYgRv5pkWpXdftQRGCmD6FeYGdiRHJq6HcuA8Rj/hd5xA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794000308;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794000311;
 	h=DMARC-Filter:From:DKIM-Signature:Date:Subject:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc;
-	bh=2AYHzRX018yeT4DRUy6H3UKeO548rYehdzwG2De2FNc=;
-	b=Uwv5/6CsA4g3SSFMuhSaS3YJSkfvilMyU0p07gBCHym8gWQgwbFKaW7X9Kg9vlKOhroq
-	 FVUvsZa3lWwHpQ0xPjPPy9Sv8f/eojlI99pdAZbCTvhMVJ0sSSJ7a2yAti20GXYastMAT
-	 P4aJXV/nnQINL7EbuKouoyr4tEbTQ+jhoB34+7nOotyMrPNWqDg73ouH1bFRsBvNMiifF
-	 xzOD+YEWUsVASnnV/X6o/uGP1KnIydh5Hr6Wkj8tW4RFfJPhir+60nn5/kLTp3TefP2sc
-	 kKdiG+3+ePDJMvozCXbzWPAxjx/QwlMRgJn1qtmM4QYemdMzrx5pxMbsMkHIIlQOWOA==
+	bh=FmFhmHqchVrqj+0DB2A1OfSUsKoVGkJJrNsEk9xPgCc=;
+	b=pi6xUO5Xg5QNFqgixVO++wj/lZ3nF938lCIHag9w3yAt88xeaaiFZhMkcwVyt7LNTTAf
+	 BJLR8vLxuoGX4xTABfkUY9KH59tVzGfdL9svj+uA43PDI//Hx1tJLEOLHvyUXPaiiN1Y+
+	 Y1u2kZOlkaolbc5KSe3H3hfhravkSRU6I5AYzIrN9sDy8OWtuCBCkR9avwKMelt2/pEz0
+	 rJ1GK5tyI433sve2+TwTN0AMaBpgg2qqMTOg20E+72rorAVEsbZJn8EGqMUEYX6Eg3Om0
+	 DkkOz2hhVwPoyS3EWo7hrW3QOcQ+JZlsWAPKM4eCh5B0oclesNod9cuu9EpbXLvk0/g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=cyberchaos.dev;
 	spf=pass smtp.mailfrom=cyberchaos.dev;
-	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=wVbVL2mg;
+	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=3CQlsABc;
 	arc=none smtp.remote-ip=195.39.247.168
 Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8DDD606D815;
-	Fri,  6 Nov 2026 21:25:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D8DDD606D815
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FA71606D804;
+	Fri,  6 Nov 2026 21:25:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8FA71606D804
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=wVbVL2mg
+	dkim=pass (1024-bit key, unprotected) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=3CQlsABc
 From: Yureka Lilian <yureka@cyberchaos.dev>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1794000306;
+	s=mail; t=1794000308;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2AYHzRX018yeT4DRUy6H3UKeO548rYehdzwG2De2FNc=;
-	b=wVbVL2mgoH4HIUcPprPedUHGYjgprKwHDMWOXKFpW15wJdRXxXdSaoIu182S1TR4XeYZ8E
-	K62B7hB6w3EKQ0XZ7guL3UyNnWq7m8IubVnsIGDsNQcJDGRJs1E5AJEaVvtGGWgfH9ovAR
-	mIIG2zPAox0HcE4tMILdK3gDyE0iolA=
-Date: Fri, 06 Nov 2026 22:24:55 +0100
-Subject: [PATCH v3 6/9] dt-bindings: pinctrl: apple,pinctrl: Add t8142
- compatible
+	bh=FmFhmHqchVrqj+0DB2A1OfSUsKoVGkJJrNsEk9xPgCc=;
+	b=3CQlsABc/M7fJT77nzNv+Yd+dYK9FHTMMZI6rXM3gPpojUfLHV0y1h+yrUtC6Sv1WvFCCZ
+	v4USYsgmHD2fochuTUR3O/ZRDUE1Q1qM8zIqFoxLYXYtOAe+7ySVW46/hb7UDDAFdGfKhK
+	bnxM2iVMamNsv36Xs8ZqGBFrQmjUn3E=
+Date: Fri, 06 Nov 2026 22:24:57 +0100
+Subject: [PATCH v3 8/9] dt-bindings: arm: apple: Add M5 based devices
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -58,7 +57,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261106-apple-m5-initial-devicetrees-v3-6-cee55de54b2f@cyberchaos.dev>
+Message-Id: <20261106-apple-m5-initial-devicetrees-v3-8-cee55de54b2f@cyberchaos.dev>
 References: <20261106-apple-m5-initial-devicetrees-v3-0-cee55de54b2f@cyberchaos.dev>
 In-Reply-To: <20261106-apple-m5-initial-devicetrees-v3-0-cee55de54b2f@cyberchaos.dev>
 To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
@@ -76,29 +75,47 @@ Cc: Yureka Lilian <yureka@cyberchaos.dev>, asahi@lists.linux.dev,
  linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
  Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-The pin controller on the Apple Silicon T8142 (M5) SoCs is compatible
-with t8140. Add "apple,t8142-pinctrl" as SoC specific compatible under
-"apple,t8140-pinctrl".
+Only the MacBook Pro (14-inch) and MacBook Air (13/15-inch) were offered
+with the M5 (t8142) SoC. Add the corresponding compatibles.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
 ---
- Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/arm/apple.yaml | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-index 0984e4e58af3..13ece17eca9c 100644
---- a/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-@@ -27,6 +27,9 @@ properties:
-               - apple,t8122-pinctrl
-               - apple,t8132-pinctrl
-           - const: apple,t8103-pinctrl
-+      - items:
-+          - const: apple,t8142-pinctrl
-+          - const: apple,t8140-pinctrl
-       - items:
-           # Do not add additional SoC to this list.
+diff --git a/Documentation/devicetree/bindings/arm/apple.yaml b/Documentation/devicetree/bindings/arm/apple.yaml
+index da6f043ad07a..f78c89780355 100644
+--- a/Documentation/devicetree/bindings/arm/apple.yaml
++++ b/Documentation/devicetree/bindings/arm/apple.yaml
+@@ -116,6 +116,12 @@ description: |
+   - MacBook Air (15-inch, M4, 2025)
+   - Mac mini (M4, 2024)
+ 
++  Devices based on the "M5" SoC:
++
++  - MacBook Pro (14-inch, M5, 2026)
++  - MacBook Air (13-inch, M5, 2026)
++  - MacBook Air (15-inch, M5, 2026)
++
+   Devices based on the "M1 Pro", "M1 Max" and "M1 Ultra" SoCs:
+ 
+   - MacBook Pro (14-inch, M1 Pro, 2021)
+@@ -364,6 +370,15 @@ properties:
+           - const: apple,t8132
+           - const: apple,arm-platform
+ 
++      - description: Apple M5 SoC based platforms
++        items:
++          - enum:
++              - apple,j704  # MacBook Pro (14-inch, M5, 2025)
++              - apple,j813  # MacBook Air (13-inch, M5, 2026)
++              - apple,j815  # MacBook Air (15-inch, M5, 2026)
++          - const: apple,t8142
++          - const: apple,arm-platform
++
+       - description: Apple M1 Pro SoC based platforms
+         items:
            - enum:
 
 -- 
