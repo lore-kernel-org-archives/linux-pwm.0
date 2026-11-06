@@ -1,55 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.35
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.34
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793981268;
-	b=XGgtodxzgqe7Cq+LxdcTmRT4+7/c3e8yMnjASKl2T+kyJbu6534nv3uqlYX3Jwj/TZxJ
-	 VXK/X8OzQ+xHRsYF/qlG5e/UU/J/RxMRllwnMsFy+hGG2BFA4inICAFcQs/uOmr9+VxyV
-	 tzZVjeLQw3ADqewqKQWF91RiY/FDkeD2V3WfC7Gdubnw31z/2nIG9FWEsHLA/XAj8D6ps
-	 rtqEyZDzoiZFWHSKlUqompe+yhFL8JOEPfjSm9v1E639kl4jm0T1a9zQqX6muKKctGn1t
-	 S1haO7cQ30itxy6IjDfz7mkf7o98FCeFP9PmJkj7N8ZZ3u9wtyfbPHQKKZiiIuykURg==
+	t=1793981269;
+	b=SOHNcRHOHlu83SeUhJejiMGPw0H3nWX8f41YRydVq8sPdAfAPDsmxHPeLj4MJ/fnByTO
+	 YWBONbB7w5jAodaTviH+6CvgVJMpCUEixYN4UY4Kx8aC0gddQz/mRaXANqkJGuVkli9Xo
+	 skOMBpu9pzVfxhnDizZNgAHa8BKyzC9V/3y+QGv9IIXMGXAjoE3LZvAbKOa2U5xd+ZuGe
+	 1QNUakTxHzvifayXv+e3cz9ImIQOXNCHGLdEQ8tCCtqLeR0Bp4otEnR3uebm4zFe1q2jS
+	 mtZd5nugl5w7tjWd6+5PBUytH147yssaQ/RvD9TvI8QOoeaQAf2yC/nlWK0xiPO2+fg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793981268;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793981269;
 	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:X-Mailer:
 	 Message-ID:In-Reply-To:References:Date:Mime-Version:From:To:Cc:
 	 Subject:Content-Type:X-MAIL:X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:
 	 X-CLEAN:X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=INSoL3TMF1qerr/Tqvdxd9HHtvc+puZMRlFp4ue8+g8=;
-	b=GCK42Cr/0wRKYbQkGRdAyy0VpVgZAM7F6SKvZlvJJikfTh78SBaDNkphX4buErZx9F/H
-	 XPxLW52XT/k+b0dhl9t8zFfmK5L4EcQ/nB473FGABwUpaPNpyRdoaMLPkUVbF2xmFGjGc
-	 mnf61fhFkMbjBKj11j4/pytl2JiCZA/jpC2CffeRMLQ6ZR0drNChz7/ngEEHPCrnJjeq0
-	 I4h+lgh3PqPrY1oSg0G0bhnHrjdgmjRyw5LpCqpbvamyj/dOzTH7h4IYHyEGxd/CuC8iu
-	 kfH/8E4syAHcDErOjlP6j3NdHv3wk/FlcZBxAuvDyiGgAV4TvAvlijbxNAe7i//83Lg==
+	bh=+3nGazd3fxtqrZKDRm9/9owaBnfQNvNHAKAoLZ4kLhw=;
+	b=WgYxFqFibVS5ntH2zLT3fSiDyZSx+jPV7uELSaMncmbP6LHjcJ5p5JeJlDkh5/LslRzZ
+	 Q+olOtQwS+Gy+B6qESEXj5KbugG6xfoEPORyLXd6+SN4LVQyT5SQ68yMXl9j+6MOdr1RJ
+	 6FIbalJXMiWJAgRGxZynLMEFLQgVoCR2siFCAmYASOBUcej7PjBEScN11NGlvMUN9AyXg
+	 LhbpP8G4G9n7C1N5sHGHHM0KfSPErKxo5it17ZCfPNemhvhgKaDW8G32azcsH6mUwzvs7
+	 wOIZtFjPVaeVXEmZ1XwqK/LvpJl/s0j/kx/Vez+miGtbTilhMdu1Rbfi2vdWsyZz/3Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=zte.com.cn;
 	spf=pass smtp.mailfrom=zte.com.cn;
-	arc=none smtp.remote-ip=160.30.148.35
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
+	arc=none smtp.remote-ip=160.30.148.34
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBF2D606D808;
-	Fri,  6 Nov 2026 16:07:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CBF2D606D808
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07E51606A333;
+	Fri,  6 Nov 2026 16:07:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 07E51606A333
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zte.com.cn
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jLkbj2kFzz8Xrrc;
-	Sat, 07 Nov 2026 00:07:45 +0800 (CST)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jLkbl3NfVz57DCg;
+	Sat, 07 Nov 2026 00:07:47 +0800 (CST)
 Received: from xaxapp02.zte.com.cn ([10.88.97.241])
-	by mse-fl1.zte.com.cn with SMTP id 6A6G7W5S095561;
+	by mse-fl2.zte.com.cn with SMTP id 6A6G7WP1074980;
 	Sat, 7 Nov 2026 00:07:32 +0800 (+08)
 	(envelope-from shao.mingyin@zte.com.cn)
-Received: from mapi (xaxapp01[null])
+Received: from mapi (xaxapp02[null])
 	by mapi (Zmail) with MAPI id mid32;
-	Sat, 7 Nov 2026 00:07:34 +0800 (CST)
-X-Zmail-TransId: 2af96aedfb46945-a88ca
+	Sat, 7 Nov 2026 00:07:35 +0800 (CST)
+X-Zmail-TransId: 2afa6aedfb47007-b9f7a
 X-Mailer: Zmail v1.0
-Message-ID: <20261107000734514kOTBjwDH_ZQx5Rq7e_WwC@zte.com.cn>
+Message-ID: <202611070007358971CKnkEMJJVl0_NxsRtm--@zte.com.cn>
 In-Reply-To: <20261107000724697MsR-XmE4V-ADPPMr3wGom@zte.com.cn>
 References: 20261107000724697MsR-XmE4V-ADPPMr3wGom@zte.com.cn
-Date: Sat, 7 Nov 2026 00:07:34 +0800 (CST)
+Date: Sat, 7 Nov 2026 00:07:35 +0800 (CST)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -67,56 +67,55 @@ Cc: <laurent.pinchart@ideasonboard.com>, <heiko@sntech.de>,
         <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-rockchip@lists.infradead.org>
-Subject: =?UTF-8?B?W1BBVENIIDQvNV0gcHdtOiBkd2M6IEJhbGFuY2UgdGhlIHJ1bnRpbWUgUE0gcmVmZXJlbmNlIHdoZW4gY29uZmlndXJpbmcgZmFpbHM=?=
+Subject: =?UTF-8?B?W1BBVENIIDUvNV0gcHdtOiByb2NrY2hpcDogRml4IHBjbGsgbGVhayBpbiBnZXRfc3RhdGUgZXJyb3IgcGF0aA==?=
 Content-Type: text/plain;
 	charset="UTF-8"
-X-MAIL:mse-fl1.zte.com.cn 6A6G7W5S095561
+X-MAIL:mse-fl2.zte.com.cn 6A6G7WP1074980
 X-TLS: YES
 X-ENVELOPE-SENDER: shao.mingyin@zte.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Sat, 07 Nov 2026 00:07:45 +0800
+X-SOURCE-IP: 10.5.228.133 unknown Sat, 07 Nov 2026 00:07:47 +0800
 X-CLEAN: YES
 X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AEDFB51.000/4jLkbj2kFzz8Xrrc
+X-Fangmail-MID-QID: 6AEDFB53.000/4jLkbl3NfVz57DCg
 
 From: Shao Mingyin <shao.mingyin@zte.com.cn>
 
-dwc_pwm_apply() takes a runtime PM reference with pm_runtime_get_sync()
-when transitioning a channel from disabled to enabled and returns the
-result of __dwc_pwm_configure_timer() directly.  If that call fails (e.g.
-with -ERANGE for an out-of-range duty cycle or period) the reference is
-never put, so the device never reaches the suspended state again and the
-usage counter keeps growing.
+rockchip_pwm_get_state() enables pc->pclk and then pc->clk.  If
+clk_enable(pc->clk) fails the function returns immediately, leaving
+pc->pclk enabled.  The clock therefore stays on after a failed readback,
+and its enable count grows with every retry; unbinding the driver then
+hits "Unpreparing enabled" in the clock core.
 
-Put the reference when the configuration fails on the enable transition.
+Disable pc->pclk on the error path.
 
-Fixes: 721ee1884883 ("pwm: dwc: split pci out of core driver")
+Fixes: 11be938ae003 ("pwm: rockchip: Enable clock before calling clk_get_rate()")
 Cc: stable@vger.kernel.org
 Signed-off-by: Shao Mingyin <shao.mingyin@zte.com.cn>
 ---
 
-diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
-index 6dabec93a3c6..cfeefae68969 100644
---- a/drivers/pwm/pwm-dwc-core.c
-+++ b/drivers/pwm/pwm-dwc-core.c
-@@ -99,6 +99,7 @@ static int dwc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			 const struct pwm_state *state)
- {
- 	struct dwc_pwm *dwc = to_dwc_pwm(chip);
-+	int ret;
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 050ca8aad0ca..17cf1e28a3c8 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -76,7 +76,7 @@ static int rockchip_pwm_get_state(struct pwm_chip *chip,
  
- 	if (state->polarity != PWM_POLARITY_INVERSED)
- 		return -EINVAL;
-@@ -106,7 +107,10 @@ static int dwc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (state->enabled) {
- 		if (!pwm->state.enabled)
- 			pm_runtime_get_sync(pwmchip_parent(chip));
--		return __dwc_pwm_configure_timer(dwc, pwm, state);
-+		ret = __dwc_pwm_configure_timer(dwc, pwm, state);
-+		if (ret && !pwm->state.enabled)
-+			pm_runtime_put_sync(pwmchip_parent(chip));
-+		return ret;
- 	} else {
- 		if (pwm->state.enabled) {
- 			__dwc_pwm_set_enable(dwc, pwm->hwpwm, false);
+ 	ret = clk_enable(pc->clk);
+ 	if (ret)
+-		return ret;
++		goto err_clk;
+ 
+ 	clk_rate = clk_get_rate(pc->clk);
+ 
+@@ -100,6 +100,10 @@ static int rockchip_pwm_get_state(struct pwm_chip *chip,
+ 	clk_disable(pc->pclk);
+ 
+ 	return 0;
++
++err_clk:
++	clk_disable(pc->pclk);
++	return ret;
+ }
+ 
+ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 -- 
 2.47.0
