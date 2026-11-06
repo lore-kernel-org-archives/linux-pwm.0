@@ -1,55 +1,66 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.35
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793983607;
-	b=1WydiEkTOVkD4gDJblQMe5ycXQBloIaVteG3ymTx/1vabcIeoqAZgjhxm4rTfb/kxxsT
-	 R9ZRvQ+g7iDL6UO2BK87ZRCepZ8RlQAQGn84v2p0Clez4H/sbfO30XqF/Qw9cNIIpvb9e
-	 W/2gWXtHjhBVZM4thDeFTuVzXFIGz9fa/vBB04rc0xEyR0glTg6T8sAfdeMFhINmxBKE0
-	 PjXfVSNkwJPwjpDYLZb+HNu8oXDwb+xyNXyMBwa5SzUJtr4ggvoE1dYayJHP9pi7X2oej
-	 0zTOtG2pl1AsEhpXfDsZ8LxeL8cb4pmD9Y5PvRli9Yaq9jc2sSezVDM9f3Kxv2fr1tw==
+	t=1793984662;
+	b=enWUGqenUrwLK6RmNSzYpcV1zzaq5Ojk4Yuk4ZHK4RnCMHxjPUX3N9LrWOoYw3r+miBu
+	 pFhqHOi09d1k4RZ9tZJ4AUDAitFsWFX+5eesUFWM01GREK1YNeZYcczuz4+lsaMhJOtwG
+	 ZsDmdq9+TJcLJeRPt4ABREwd4FaZFsTNg2eDN62e+uJsUiq+atP/OzgxoRqI+BKtwQRlh
+	 BcgmtgMaDR8DSpL3juLWUnlY/onai9dPESmPhoYIvoDrHLbeXwRawHUAKoAeaGhv8br4v
+	 YrkiUde7HXsaK3eKeuEWLXmvh7hV+9OGRMRi9TqqyOPDKejHTUwHnv7/t7Hxru3kLUA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793983607;
-	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:X-Mailer:
-	 Message-ID:In-Reply-To:References:Date:Mime-Version:From:To:Cc:
-	 Subject:Content-Type:X-MAIL:X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:
-	 X-CLEAN:X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=T44vUQOuyTxQZZgGZctib1dEyy/T5FQuwuvcOuBU0nk=;
-	b=3n4qIEbwkHwyxuyEaNl+Zi2ukHwnF0XmcOerYNC0dQ8rlUwGHPIOfo8bKHWF4wr30eZB
-	 7Oy7tnY4ng6vc5L3pIwReuJJl0lDYeFNtAYqIlH9h82ibCJFZfhp+OCQQv51Ymictzzig
-	 u75G3YPgx/jC/NpUiMTomsMpFzrNjUB756zyBEIymn7S0/GSBEA3OgLP5PtgNKMt7f9Rl
-	 4Dyij5J1Jz5monKRBOr2rw+TZ+ok+dE8TGjeqvEEnCMsG3aWiMx5xwu9C88T9xKzLAAEM
-	 Nh2WkqEza72RGZDyJ/9TirJgtWQX+nE2FnG6lj8dpqapC4ih6utWvTvOO+0ISuOT6yw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793984662;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=/qwHj82ZGjV8oGUVTL0UP+HSV++lEMiXBJ4f5EpTCcs=;
+	b=Fn6rQyOr61qJVQ37Wvbv5WniE4yAUtMmkR6Cwg5gH6dtjyn4B4zr3PEH7xH1+On1SPkE
+	 c4mRj/TwQaSfiZ5bD3DJnAnIAxhXhzGw1nk90twUceVmGPOGu9EmS7TEMMC3qg9V580Hx
+	 W6I3H7Xydy4bzrMdtPjEkiPg0Temfowk0uHEKGMHAd19nQDkyoe/GkxCkHLNbCtg90Eyf
+	 8pNaXzsEwyCifvk7q++wW6GDGrYsFUJIpQ5a16me0vgVJ1vcmQJcfmLj7N4tWz4rvtb3z
+	 gjBX0HhBgeEHy02E6OF3JGbmeu+4oJCd/qcperP6Dp0vg2Wm4bleji8xUvd70U8VhzQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=zte.com.cn;
-	spf=pass smtp.mailfrom=zte.com.cn;
-	arc=none smtp.remote-ip=160.30.148.35
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="FV5RO/mf";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E83BF606A32D;
-	Fri,  6 Nov 2026 16:46:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E83BF606A32D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zte.com.cn
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jLlSj4HC8z8XrrX;
-	Sat, 07 Nov 2026 00:46:45 +0800 (CST)
-Received: from xaxapp05.zte.com.cn ([10.99.98.109])
-	by mse-fl1.zte.com.cn with SMTP id 6A6GkZLq030298;
-	Sat, 7 Nov 2026 00:46:35 +0800 (+08)
-	(envelope-from shao.mingyin@zte.com.cn)
-Received: from mapi (xaxapp04[null])
-	by mapi (Zmail) with MAPI id mid32;
-	Sat, 7 Nov 2026 00:46:39 +0800 (CST)
-X-Zmail-TransId: 2afb6aee046f79e-d16fa
-X-Mailer: Zmail v1.0
-Message-ID: <20261107004639821VrSzjHmPBPphGaXOM2nAs@zte.com.cn>
-In-Reply-To: <sashiko-outbox-201825@kernel.org>
-References: 20261107000724697MsR-XmE4V-ADPPMr3wGom@zte.com.cn,20261107000734514kOTBjwDH_ZQx5Rq7e_WwC@zte.com.cn,sashiko-outbox-201825@kernel.org
-Date: Sat, 7 Nov 2026 00:46:39 +0800 (CST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92913606A326;
+	Fri,  6 Nov 2026 17:04:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FV5RO/mf
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01D31F008A4;
+	Fri,  6 Nov 2026 17:04:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793984662;
+	bh=/qwHj82ZGjV8oGUVTL0UP+HSV++lEMiXBJ4f5EpTCcs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=FV5RO/mfnOhj/UXvGJ03d3YWAJx2H74CbqBHlVVxOJPrwBETRSSC37hgKtBSRXGsu
+	 0DQkoNaMhknpoCPGNv7g8Mz0JaCByZaApKpPgAsDTkePKkw7a1sxJ7Wq4CFVrIPPXM
+	 EEG6O3KzLNy4Xr4OHinQeRfouPSb4rZu9jMMz8fVfA7K4k+cAtts/KVbwKB1vbJ6jP
+	 B03nTF9deu+BdyIRyB/4aHf7DQcWvt6BSUiUXptKNup3D8dTZNE/JA7TZNDKWxraXO
+	 PauP2vYDcaIj4/mSopDwrObQqgA1Yagf3bM9smeZ8OQ0X67aTyGcPBl8LU5ukrZmkG
+	 ejHJemFOnpXag==
+Date: Fri, 6 Nov 2026 17:04:16 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Trevor Gamblin <tgamblin@baylibre.com>,
+	Joshua Crofts <crofts@kernel.org>,
+	Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 6/7] dt-bindings: iio: adc: add adi,ltc2387
+Message-ID: <20261106-usage-sarcastic-ef377a65e293@spud>
+References: <20261106160529.876251-1-Nicolae-daniel.Deaconescu@analog.com>
+ <20261106160529.876251-7-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -58,37 +69,28 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0
-From: <shao.mingyin@zte.com.cn>
-To: <ukleinek@kernel.org>, <linux-pwm@vger.kernel.org>
-Cc: <laurent.pinchart@ideasonboard.com>, <heiko@sntech.de>,
-        <ben.dooks@codethink.co.uk>, <benjamin.larsson@genexis.eu>,
-        <nuno.sa@analog.com>, <xiaoning.wang@nxp.com>,
-        <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-rockchip@lists.infradead.org>, <sashiko-bot@kernel.org>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCA0LzVdIHB3bTogZHdjOiBCYWxhbmNlIHRoZSBydW50aW1lIFBNIHJlZmVyZW5jZSB3aGVuIGNvbmZpZ3VyaW5nIGZhaWxz?=
-Content-Type: text/plain;
-	charset="UTF-8"
-X-MAIL:mse-fl1.zte.com.cn 6A6GkZLq030298
-X-TLS: YES
-X-ENVELOPE-SENDER: shao.mingyin@zte.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Sat, 07 Nov 2026 00:46:45 +0800
-X-CLEAN: YES
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AEE0475.000/4jLlSj4HC8z8XrrX
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="6Zm2+GCoGcbtJ0mH"
+Content-Disposition: inline
+In-Reply-To: <20261106160529.876251-7-Nicolae-daniel.Deaconescu@analog.com>
 
-> Should the Fixes tag reference the commit that originally introduced
-> the unbalanced pm_runtime_get_sync() instead:
->
->   Fixes: 1ed2b3fca645 ("pwm: Add DesignWare PWM Controller Driver")
+--6Zm2+GCoGcbtJ0mH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Agreed.  721ee1884883 only moved dwc_pwm_apply() from pwm-dwc.c to
-pwm-dwc-core.c; 1ed2b3fca645 already has
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-  pm_runtime_get_sync(chip->dev);
-  return __dwc_pwm_configure_timer(dwc, pwm, state);
+--6Zm2+GCoGcbtJ0mH
+Content-Type: application/pgp-signature; name=signature.asc
 
-I'll send a v2 with
+-----BEGIN PGP SIGNATURE-----
 
-  Fixes: 1ed2b3fca645 ("pwm: Add DesignWare PWM Controller Driver")
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCau4IkAAKCRB4tDGHoIJi
+0iueAP9jmAfn1jcU1E0CQxnvOVAmJfHXQT7RW7NOL4BYmj04uQEA9fCtpJwivUlD
+/lvw4diYBrzR55OtM06oGpeAmRguMQo=
+=A6CV
+-----END PGP SIGNATURE-----
+
+--6Zm2+GCoGcbtJ0mH--
