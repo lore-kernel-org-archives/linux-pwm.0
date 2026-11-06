@@ -1,55 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.34
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=183.62.165.209
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1793981262;
-	b=3SyRQhE9cDmMYZMt3+UgET1YfSr+YN8PBfqkYGptm1lnc8E9ybSkDzTI/MgzFSsldl2j
-	 LkTCoHQrQpCp+/BqlJ0mPMp753N9L+Mb18Q+Y6WXcAMHRYH1udV3AXPVpB0mFHyMrlnhG
-	 rhxrBy6EubECSZAMvMhIkSFQVm3JKn1lEWgI8cFRhtMvzd3gGM/lD8DoyJiTw0kPJZZHI
-	 cCfUPWVL4uu0Pww/aKLjOgreGA6iNXGdlyOUbsVusBmbgEWG4M/zmasLmmSjdJFd46M6P
-	 g8d2DH4XhDftqJ9c1SygaQxzQ+cbnMOvlycz6QyUO5fhO/vGKCub+ZuIMCxSYHx3fxA==
+	b=lcevUA6MI9quXo4ZKiCJHdV6I5EZGjVg8RwkFvVvRUJC/Q+tJ6Iy0qP25T8WuJVpGyuH
+	 psEtMQ4byzRVR7zluePCL6fu4M92TlGv41L4szzyi5B5K1+PIAZhrYr72pEIHWYuLVNKm
+	 6pn28PIIKjr+Vz2ehQE8xDK/JdlwVMwWBhL3XP+E/bltFmTZMgpbHa/xlZpwWU8lKEOWh
+	 7Wx/4Jfo3DCWo17kJTvaHsASONnYPdQdmhYDhbfk65ZjDKUuhOoSsMLIGqiB74Ax35awV
+	 TccOAmPnANSZpDArVNpC8tel2zniQuuh4onxazlDsXV6dp5pey/clqUauoQitvDAH0Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793981262;
 	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:X-Mailer:
 	 Message-ID:In-Reply-To:References:Date:Mime-Version:From:To:Cc:
 	 Subject:Content-Type:X-MAIL:X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:
 	 X-CLEAN:X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=I1ykeWhkmtXgB4gAWfQsNOu6wpvtLcTBuy6VsFFxqKc=;
-	b=J4Q5sr3wwsmtNZ2snmHhfSa04y4x9jiI6dKJZSqbXnyr9N3vuMG6lFQBECQ4Vkmsm4vu
-	 S2/8s6jdFp0b/unSk4wryoRZ5fRB4SkcB4NCJKW1gWfMeszk5mXuQubiylDsBw8ZKeruP
-	 QL6y6QG+hkrZ3jrb+9T5R5dSGevIs3MXx6471st35uAD76CRRGs3kfCbtIFHhL4uGF45J
-	 ePAA9M3NHJ9QLPKGO+ZAjt4mj+VNm8EgDUxYZOIZ86O9PGDvJLUvla7FiXOUXjtQluoCL
-	 Eiu965SqEcb4qyVmDXTgVwb6P10z63stJgNpdooh1IeK0anv7qt1yUlI2GSPygPN3RQ==
+	bh=EsIPeYR6Jo96+xonlsklXVRVXg5dvIEZozXnlmPPpU8=;
+	b=UK+OeWqM17rK505CgpalxByLBWtJK4LTETtVMNO3YaZHnZCSMC/bJccGeixNJrKFdSOS
+	 30ggU6q6MCi3pZLMAOzEZUDFGVR+n6rJ8GBsSBCbcMf1oXEtmhj/p2eTcoFn5s/AefYQD
+	 bi2KCrjcSc7lASO1mTAPvdN4mDDmB1M+sPWKudb+HLu8Tay9DmMHB/Y/l+i3aAEb8lozd
+	 4gPhjDtkJLM0jSKvCz+jDD6qroXx9qWmIL8vwU9681cnMtSE/Bzty0o2EthIxCgLyJYm2
+	 ULiT52x5rUlp9fgGFKG0tisJmZKEMUF7ZAI+R5iQaoJb5V+erOSQeBPXT5q2X9JQlwA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=zte.com.cn;
 	spf=pass smtp.mailfrom=zte.com.cn;
-	arc=none smtp.remote-ip=160.30.148.34
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
+	arc=none smtp.remote-ip=183.62.165.209
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB984606A32E;
-	Fri,  6 Nov 2026 16:07:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EB984606A32E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD113606A32D;
+	Fri,  6 Nov 2026 16:07:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CD113606A32D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zte.com.cn
 Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jLkbb2d9wz57DCn;
-	Sat, 07 Nov 2026 00:07:39 +0800 (CST)
+	by mxct.zte.com.cn (FangMail) with ESMTPS id 4jLkbT3RPqz52SFw;
+	Sat, 07 Nov 2026 00:07:33 +0800 (CST)
 Received: from xaxapp04.zte.com.cn ([10.99.98.157])
-	by mse-fl2.zte.com.cn with SMTP id 6A6G7SEV074852;
-	Sat, 7 Nov 2026 00:07:28 +0800 (+08)
+	by mse-fl2.zte.com.cn with SMTP id 6A6G7QAe074802;
+	Sat, 7 Nov 2026 00:07:26 +0800 (+08)
 	(envelope-from shao.mingyin@zte.com.cn)
-Received: from mapi (xaxapp04[null])
+Received: from mapi (xaxapp01[null])
 	by mapi (Zmail) with MAPI id mid32;
-	Sat, 7 Nov 2026 00:07:31 +0800 (CST)
-X-Zmail-TransId: 2afb6aedfb43448-ac3c9
+	Sat, 7 Nov 2026 00:07:30 +0800 (CST)
+X-Zmail-TransId: 2af96aedfb4282e-a87b3
 X-Mailer: Zmail v1.0
-Message-ID: <20261107000731690Wr3rd4QI5xuQo32vYb4OV@zte.com.cn>
+Message-ID: <20261107000730284ca-NSVCXNk7DyJtBYi6sH@zte.com.cn>
 In-Reply-To: <20261107000724697MsR-XmE4V-ADPPMr3wGom@zte.com.cn>
 References: 20261107000724697MsR-XmE4V-ADPPMr3wGom@zte.com.cn
-Date: Sat, 7 Nov 2026 00:07:31 +0800 (CST)
+Date: Sat, 7 Nov 2026 00:07:30 +0800 (CST)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -67,50 +67,51 @@ Cc: <laurent.pinchart@ideasonboard.com>, <heiko@sntech.de>,
         <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-rockchip@lists.infradead.org>
-Subject: =?UTF-8?B?W1BBVENIIDIvNV0gcHdtOiBhaXJvaGE6IEZpeCAzMiBiaXQgb3ZlcmZsb3cgd2hlbiBjb252ZXJ0aW5nIGR1dHkgdGlja3MgdG8gbnM=?=
+Subject: =?UTF-8?B?W1BBVENIIDEvNV0gcHdtOiBkd2M6IEZpeCAzMiBiaXQgb3ZlcmZsb3cgd2hlbiBjb21wdXRpbmcgZHV0eS9wZXJpb2QgaW4gZ2V0X3N0YXRl?=
 Content-Type: text/plain;
 	charset="UTF-8"
-X-MAIL:mse-fl2.zte.com.cn 6A6G7SEV074852
+X-MAIL:mse-fl2.zte.com.cn 6A6G7QAe074802
 X-TLS: YES
 X-ENVELOPE-SENDER: shao.mingyin@zte.com.cn
-X-SOURCE-IP: 10.5.228.133 unknown Sat, 07 Nov 2026 00:07:39 +0800
+X-SOURCE-IP: 10.5.228.133 unknown Sat, 07 Nov 2026 00:07:33 +0800
 X-CLEAN: YES
 X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AEDFB4B.001/4jLkbb2d9wz57DCn
+X-Fangmail-MID-QID: 6AEDFB45.000/4jLkbT3RPqz52SFw
 
 From: Shao Mingyin <shao.mingyin@zte.com.cn>
 
-airoha_pwm_get_duty_ns_from_ticks() computes "duty_tick * period_ns"
-where both operands are u32.  The result is passed to DIV_U64_ROUND_UP()
-as a u64, but the multiplication itself is performed in 32 bit and wraps
-modulo 2^32.  period_ns can be as large as AIROHA_PWM_PERIOD_MAX_NS (1 s)
-and duty_tick up to AIROHA_PWM_DUTY_FULL (255), so the product exceeds
-u32 and the reported duty cycle is wrong.
+dwc_pwm_get_state() computes duty and period with
+"duty = (ld + 1) * dwc->clk_ns".  ld and ld2 are u32 and dwc->clk_ns is
+an unsigned int, so the multiplication is carried out in 32 bit and wraps
+modulo 2^32 before the (already truncated) result is assigned to the u64
+duty/period variables.  For load counts above ~2^32 / clk_ns the reported
+duty cycle and period are wrong.
 
-Cast duty_tick to u64 before multiplying.
+Cast the load counts to u64 before multiplying.
 
-Fixes: b55bbc2872eb ("pwm: airoha: Add support for EN7581 SoC")
+Fixes: 4aff152d14c14 ("pwm: dwc: add PWM bit unset in get_state call")
 Cc: stable@vger.kernel.org
 Signed-off-by: Shao Mingyin <shao.mingyin@zte.com.cn>
 ---
 
-diff --git a/drivers/pwm/pwm-airoha.c b/drivers/pwm/pwm-airoha.c
-index 0cf6b011520a..702c9cfc0e37 100644
---- a/drivers/pwm/pwm-airoha.c
-+++ b/drivers/pwm/pwm-airoha.c
-@@ -152,9 +152,9 @@ static u32 airoha_pwm_get_duty_ns_from_ticks(u32 period_tick, u32 duty_tick)
- 	/*
--	 * Overflow can't occur in multiplication as duty_tick is just 8 bit
--	 * and period_ns is clamped to AIROHA_PWM_PERIOD_MAX_NS and fit in a
--	 * u64.
-+	 * period_ns is at most AIROHA_PWM_PERIOD_MAX_NS (1 s), which fits in
-+	 * a u32, but duty_tick * period_ns can exceed 32 bits, so promote
-+	 * duty_tick to u64 before multiplying.
+diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
+index 6dabec93a3c6..104393c499f0 100644
+--- a/drivers/pwm/pwm-dwc-core.c
++++ b/drivers/pwm/pwm-dwc-core.c
+@@ -137,11 +137,11 @@ static int dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * based on the timer load-count only.
  	 */
--	return DIV_U64_ROUND_UP(duty_tick * period_ns, AIROHA_PWM_DUTY_FULL);
-+	return DIV_U64_ROUND_UP((u64)duty_tick * period_ns, AIROHA_PWM_DUTY_FULL);
- }
+ 	if (ctrl & DWC_TIM_CTRL_PWM) {
+-		duty = (ld + 1) * dwc->clk_ns;
+-		period = (ld2 + 1)  * dwc->clk_ns;
++		duty = ((u64)ld + 1) * dwc->clk_ns;
++		period = ((u64)ld2 + 1)  * dwc->clk_ns;
+ 		period += duty;
+ 	} else {
+-		duty = (ld + 1) * dwc->clk_ns;
++		duty = ((u64)ld + 1) * dwc->clk_ns;
+ 		period = duty * 2;
+ 	}
  
- static int airoha_pwm_get_bucket(struct airoha_pwm *pc, int bucket,
 -- 
 2.47.0
