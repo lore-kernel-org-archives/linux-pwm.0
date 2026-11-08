@@ -1,74 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=183.62.165.209
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794060470;
-	b=C6ieFpxTgwBjbZ2C5jwi1eZzPE/nkCPsAwkOzPi/Wc59wHdfw2xCE45JD14AL1YVisTC
-	 3GOezecn3jQr3H+HqNtV2Yc4ANV0/VsXRIz+RjCNg2hcbsjZG+bmzv4UoqgUWxA77lJBP
-	 TWVpPjiFOpGQR7sffD06rxn8YLzJvpuW8spTKCyMzxJ639s/4a1BqNTOM32nBtQLl4WYj
-	 amMgj9ooHB9AUGaHG7JYToCpRrmL588/nG5cOBjIp6RAc7tEzi6dJrllHJj9DEXBhu6J8
-	 4LfCA23HHAHJAul/WgPoc9zJlWRnY+3LJggi+7v1hk+wX/bWAYd4oAXhVk8mY32nHfQ==
+	t=1794121898;
+	b=ky3gtM7YA97QMtiDmblrKL9Y+Wimrk2oLDY2xu0iwy7ApMPPqgi8d9vPzjxMrb7iXWNC
+	 k0O3kHTGKAfSk4YuT3Y0dhdrBkNiteLuikHxuC9Yi7/uZ+1LyowcCtxcN5wXf8S5QFrFe
+	 G3hR6MBiZGtpAClinO2E6oshyvLsZWILBmQKFQQsHSYtNyQ8hBFXeDv18YDPFZT4blF2t
+	 YANIlr6GCta7fyfWuy6b3qV1T2tWhUglO3tYSkUpC7GCslpXkU8f7KFnHfZs23GyFffur
+	 RKie0WPENHzwhyqL6MV515MHDqF83L2+t8lDAUEhWO3P01Uy4DgqvIzs7SnW2ig9YXA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794060470;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:X-UD-Smtp-Session:Date:
-	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=nKkg05I99+uQhW9KEZpbGaMFfkVpBZ+oFRIsqMlTLGk=;
-	b=zII5teE+YdwRlmCD9DqmYwIy01RuWzwFZOzmDAQGLVnTNP8y6CudYMDlsAiU4U2Cd3gt
-	 rYoA6XT0xmbNR6VdLjofpGAqju7NQQAaqVxKzWfDXgtKW+fpEvYq24d1VG3JmcoBv/BaS
-	 SbMxU3YkVDkWXNHzqQtTjselzgrHBeAhS4jqVNpSZ+yWWfH4OuNkIo4M0Ml0F0hGZhsdv
-	 bYonaiJYB6vhz+BF1IPV/FR5rzs7u6UxfKufJ1DYJZ+B0pjKsjfJjhsBNxc+aO0s7ehDz
-	 LxgFAygrWZH0Up71eWud3lRwquHrESXxYLerhHkBbb2Z6kJBZgAT+BzdRyVZabmXqXg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794121898;
+	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:X-Mailer:
+	 Message-ID:Date:Mime-Version:From:To:Cc:Subject:Content-Type:X-MAIL:
+	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
+	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
+	bh=iDYuxTIfsR3d9CC8XGLLj5Ql2c2FGvDrc0OombeNd1I=;
+	b=NOpIquaLPS/mDZFTs2VBgSN0V4r3Sk/JvFQhYh5hSJqxjRlPzXDW3KeA90oCDBWmdjAY
+	 iYYGgkxJ5dozdwl8iF8AubMnG+xr4u2fkohVRgFchXFumIndvqrDGcNdjekxAH1OV+txb
+	 uYKOmeydoqlJ6aRcixDjtflMmVtPkCihXmDBCKM0yyOr8vYxfxnHfyZ3qhlVuu4RIoQpg
+	 c2/xW/dA97De5LWDFsfUZyVIjzD7kdOn4cF05df4QI7HEvbwd1bgK91ONt/yBEbcdwVSQ
+	 aGMm+hc4/nmjBxb1yI/G5xAaiff2A30ZjihUTkVDiyBUhNKj+2hK5iV/t593sGWo93w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=sang-engineering.com;
-	spf=pass smtp.mailfrom=sang-engineering.com;
-	dkim=pass header.d=sang-engineering.com header.i=@sang-engineering.com header.a=rsa-sha256 header.s=k1 header.b=az57Bq87;
-	arc=none smtp.remote-ip=194.117.254.33
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+	dmarc=pass header.from=zte.com.cn;
+	spf=pass smtp.mailfrom=zte.com.cn;
+	arc=none smtp.remote-ip=183.62.165.209
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 417D1606A32F
-	for <linux-pwm@vger.kernel.org>; Sat,  7 Nov 2026 14:07:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 417D1606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=sang-engineering.com header.i=@sang-engineering.com header.a=rsa-sha256 header.s=k1 header.b=az57Bq87
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=nKkg
-	05I99+uQhW9KEZpbGaMFfkVpBZ+oFRIsqMlTLGk=; b=az57Bq87c2CQgHhK/9n5
-	8/YVmXgISKAdBBrBNKjBpPQGOPT6Dq8P7LYTUZ9IMpuqEStP4aR0ELTWFlvS2ovl
-	9F2mtwlyWKl8t38l8cuz/lz6p+sL4MQAlnSX2A8B8oizEgeDtxerWNXWrW77QH2f
-	5odvcHiCLmLHsrpFlqBj4X2Npf8pvw1wyB5AdzkqRipb6LonO2OM6LjETNeu1Me+
-	J8ZBZlPZAmXo8QQHpKs8wFWEIPfY3fl8XUbheRPbGo+8cgoYeYtINzJIG0xYLf5M
-	XzHmaMa3Z2FsRFWxyefVWO6kfIr7k9M93QYmS1tDHcKaUFLkcMdp30XkDCX7Phm5
-	Xg==
-Received: (qmail 2526305 invoked from network); 7 Nov 2026 15:07:44 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 7 Nov 2026 15:07:44 +0100
-X-UD-Smtp-Session: l3s3148p1@4+FpQLBfktwFFu4j
-Date: Sat, 7 Nov 2026 16:07:39 +0200
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Yureka Lilian <yureka@cyberchaos.dev>
-Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
-	Neal Gompa <neal@gompa.dev>, Thomas Gleixner <tglx@kernel.org>,
-	Radu Rendec <radu@rendec.net>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Hector Martin <marcan@marcan.st>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Sasha Finkelstein <k@chaosmail.tech>,
-	Linus Walleij <linusw@kernel.org>,
-	Mark Kettenis <kettenis@openbsd.org>,
-	Andi Shyti <andi.shyti@kernel.org>, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: Re: [PATCH v3 7/9] dt-bindings: i2c: apple,i2c: Add t8142 compatible
-Message-ID: <au8wq8Bqr4tZ8bj8@shikoro>
-References: <20261106-apple-m5-initial-devicetrees-v3-0-cee55de54b2f@cyberchaos.dev>
- <20261106-apple-m5-initial-devicetrees-v3-7-cee55de54b2f@cyberchaos.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD40E606A321;
+	Sun,  8 Nov 2026 07:11:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DD40E606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zte.com.cn
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mxct.zte.com.cn (FangMail) with ESMTPS id 4jMkc454Gdz52SGh;
+	Sun, 08 Nov 2026 15:11:32 +0800 (CST)
+Received: from xaxapp05.zte.com.cn ([10.99.98.109])
+	by mse-fl2.zte.com.cn with SMTP id 6A87BSIw021096;
+	Sun, 8 Nov 2026 15:11:28 +0800 (+08)
+	(envelope-from shao.mingyin@zte.com.cn)
+Received: from mapi (xaxapp02[null])
+	by mapi (Zmail) with MAPI id mid32;
+	Sun, 8 Nov 2026 15:11:29 +0800 (CST)
+X-Zmail-TransId: 2afa6af020a135d-61a31
+X-Mailer: Zmail v1.0
+Message-ID: <20261108151129320DvZcvmWq81VyEepd79a-f@zte.com.cn>
+Date: Sun, 8 Nov 2026 15:11:29 +0800 (CST)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -77,20 +56,67 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261106-apple-m5-initial-devicetrees-v3-7-cee55de54b2f@cyberchaos.dev>
+Mime-Version: 1.0
+From: <shao.mingyin@zte.com.cn>
+To: <ukleinek@kernel.org>, <linux-pwm@vger.kernel.org>
+Cc: <ben.dooks@codethink.co.uk>, <linux-kernel@vger.kernel.org>
+Subject: =?UTF-8?B?W1BBVENIIHYyXSBwd206IGR3YzogQmFsYW5jZSB0aGUgcnVudGltZSBQTSByZWZlcmVuY2Ugd2hlbiBjb25maWd1cmluZyBmYWlscw==?=
+Content-Type: text/plain;
+	charset="UTF-8"
+X-MAIL:mse-fl2.zte.com.cn 6A87BSIw021096
+X-TLS: YES
+X-ENVELOPE-SENDER: shao.mingyin@zte.com.cn
+X-SOURCE-IP: 10.5.228.133 unknown Sun, 08 Nov 2026 15:11:32 +0800
+X-CLEAN: YES
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6AF020A4.001/4jMkc454Gdz52SGh
 
-On Fri, Nov 06, 2026 at 10:24:56PM +0100, Yureka Lilian wrote:
-> The i2c block on the Apple Silicon T8142 (M5) SoC is compatible with
-> t8103. Add "apple,t8142-i2c" as SoC specific compatible under
-> "apple,t8103-i2c".
-> 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
+From: Shao Mingyin <shao.mingyin@zte.com.cn>
 
-Same comment/question, as for T8140. Better via apple tree, or?
+dwc_pwm_apply() takes a runtime PM reference with pm_runtime_get_sync()
+when transitioning a channel from disabled to enabled and returns the
+result of __dwc_pwm_configure_timer() directly.  If that call fails (e.g.
+with -ERANGE for an out-of-range duty cycle or period) the reference is
+never put, so the device never reaches the suspended state again and the
+usage counter keeps growing.
 
-Acked-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Put the reference when the configuration fails on the enable transition.
 
+Fixes: 1ed2b3fca645 ("pwm: Add DesignWare PWM Controller Driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Shao Mingyin <shao.mingyin@zte.com.cn>
+---
+This supersedes 4/5 of the v1 series; 1/5, 2/5, 3/5 and 5/5 are unchanged.
+
+v2:
+  - point Fixes: at 1ed2b3fca645 ("pwm: Add DesignWare PWM Controller
+    Driver"), which introduced the unbalanced pm_runtime_get_sync();
+    721ee1884883 only moved dwc_pwm_apply() to pwm-dwc-core.c
+v1: https://lore.kernel.org/all/20261107000734514kOTBjwDH_ZQx5Rq7e_WwC@zte.com.cn/
+
+diff --git a/drivers/pwm/pwm-dwc-core.c b/drivers/pwm/pwm-dwc-core.c
+index 6dabec93a3c6..cfeefae68969 100644
+--- a/drivers/pwm/pwm-dwc-core.c
++++ b/drivers/pwm/pwm-dwc-core.c
+@@ -99,6 +99,7 @@ static int dwc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			 const struct pwm_state *state)
+ {
+ 	struct dwc_pwm *dwc = to_dwc_pwm(chip);
++	int ret;
+ 
+ 	if (state->polarity != PWM_POLARITY_INVERSED)
+ 		return -EINVAL;
+@@ -106,7 +107,10 @@ static int dwc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (state->enabled) {
+ 		if (!pwm->state.enabled)
+ 			pm_runtime_get_sync(pwmchip_parent(chip));
+-		return __dwc_pwm_configure_timer(dwc, pwm, state);
++		ret = __dwc_pwm_configure_timer(dwc, pwm, state);
++		if (ret && !pwm->state.enabled)
++			pm_runtime_put_sync(pwmchip_parent(chip));
++		return ret;
+ 	} else {
+ 		if (pwm->state.enabled) {
+ 			__dwc_pwm_set_enable(dwc, pwm->hwpwm, false);
+-- 
+2.47.0
