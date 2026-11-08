@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794127417;
-	b=PgG/2HAmQgtaoTSyT29E2SvVTAfnBLhvc23t6gDk4gzSSMpw8s4LB2tTZEDffrPUd4mV
-	 LZKhLUrQdTOOTt7JBC39O+IijnSY1Cy9WS4ydHofoBX5QGIBrJg5PXYpiIYlRmGKQ3Ge9
-	 Jk/W5KnrQDvaAdBF4lbUhjG6aXsYZ/qdtLDXMqUS/d+u3RhqrgrIhGvUNvaA8fRxLgY1f
-	 2vjCw23eGC+CIRshq2eNc3e3zK4E2e/zBrG/76FI/frLAXCZYznIe6Iy6VfqV0DSfPh29
-	 UOHDCuYDeELCKpS53o7/ZVwadkZsMV3ivaEOBiBbFhFnqaTsUEvPkAZFzexZ6aly7/A==
+	t=1794127684;
+	b=SasfBdP4y6iEpdgGjmNkcbVn00iwA+WKz/cb6r8XY/xxqfBihHmMoe2YTSShDj2M1f+X
+	 iqf5yBbmfOtj/8EU0SaBTRVZ4Yy/vwegsIhrdtXLM3xgVIInLHoiANi2JscofMzFEhxR7
+	 9Gs10230P0ksHjfc+ImnxniGUBMq6Z5+hd7KYgPzu7Ui7aBvsqKFweVNKf3mJlCfVEyk8
+	 CC0kh8g+9STQSLO7oewB7oaZ7hAdg+8neRXgLnZ/ddDGdr54pAYA1XFb7H98JPIMsVhbg
+	 i0WJcIxXGpVBxtE9tOqwuPTxa2q7Fqxbl0w8JCnWfr+n8/ZuxHhQBceMZa4RWiqCKfQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794127417;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794127684;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=aGN87J+fR9ut5Wd+2z7+FR6O85gZ4NXRmC3f+7Jm8Vo=;
-	b=DVbke9rutd8r2EjrI6ZgyibxkxkBPp2jnr3G2cIZgyJ4GdCyF68VPSEBhyt6tErkXhUW
-	 pjyCUo2dxLNPNFOCSx3fMKWmK9nCwue77h+B+pJMbmuKEqdYRGFvUAC+bxIxfAr0gqCSh
-	 LIdlUNYrWFfwFBn2B6309xLlMFHK0qgecXf82AjwlaW7ch2hH4L3AfZoAmGV/uU9Gf/Ka
-	 Lp1IdeaRX1+Li2raimTvYlBz6Oz80WuULr+WL4JZP3bECwmkTedaPOg+NMVlvS8mIjuhI
-	 VpC0q//YbxS+5M9/GuEMlKfyPWNwnkH1Q4S6n9dEdVLywgvbQhavL/avqk+vrgnHInQ==
+	bh=hYQT1iQSwsWlveP/FynCeMcR1777Wf6i9C77SMccBzs=;
+	b=joBf+Hqk0uTeX9C4YJ9S07hTUlHN+OxGKGZDKMOaQGfijV7Mgzr3HViE6N+0DUtE6d9N
+	 na6UaRxWXX+7X5ldMnev/lACy5bJ5dZ6ntlmeO1BHdzb2NJ9DhGZTrMfgZRLIPd6GDrYw
+	 o3gxyPDAK2BlKANotuHOwfSZSd/n3TnqKFo8c4tyLtos7w36hEFZsWY8nXPb4pLiVfwVx
+	 DfGj7zTbKmPytcZZ3+J52Uy3rNaSHGsgukZACzv4woAwn1HQeSiKSfWgsNyLq1q1fBNcl
+	 FEGkmmYa/UeNso3djCJYINf6XFmc91iFgORBlkhUcV6ojlrhBoimKJw4RJmNvDMxipg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=J5lmvdLo;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cdhHIcBU;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 61A72606A31C;
-	Sun,  8 Nov 2026 08:43:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id AF25E606A31C;
+	Sun,  8 Nov 2026 08:48:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=J5lmvdLo
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 573541F008A1;
-	Sun,  8 Nov 2026 08:43:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cdhHIcBU
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 954681F0089F;
+	Sun,  8 Nov 2026 08:48:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794127417;
-	bh=aGN87J+fR9ut5Wd+2z7+FR6O85gZ4NXRmC3f+7Jm8Vo=;
+	s=k20260515; t=1794127683;
+	bh=hYQT1iQSwsWlveP/FynCeMcR1777Wf6i9C77SMccBzs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=J5lmvdLofW+igzDbnj79eHM7FWRKXZPP7h2YGY4j6A0nVGlnEEvIoKs6+jUSpYOE7
-	 uAZ3wdzOvPSyA65If4hPCyEQrjnOhaB/bmH2SXuG0rPkB+mZutvRm9p+bisx7nSyPq
-	 /cH4sZhK0q2mweLfSvJ90gplPxELAI1QAAdA9BgE7FRHSBr3wTm1Y4LclrXC9zGnM6
-	 JxXmqNwHjHzhlaGy7W6SIxTbXexrvC1hYF5EJZ7dxFkk/trMP5DDAhTnIuU9H02fjl
-	 vvgyP80ncYhlIO7f8JYTyZGNei07mvRmUx/nrqJCLlAyCGE5szEqJfmGuWhcR+Y7Fs
-	 MWoMIad2HGDoA==
-Date: Sun, 8 Nov 2026 09:43:33 +0100
+	b=cdhHIcBUGL1DwEzHNq9EeqVORPfy/7Lwlnhw2LDIqiQUv8o3U8IyJtPXB0+duiRwy
+	 xSucdJ2mmZKm0uHL9ddexlHHiUSqzcJXww/f0q3UD5n92prMlCooafMZY34x3gWk/a
+	 sTXFr/6pFSgJv7TLwMJXKzfh8jvGq+cESUX6bIMHlpGbhcsDmQmRSe9vDQXHXcCkPh
+	 5Cg26OuGBG5vlsOpNqPbqHS2758xD5bRXxG7HnOX4qwQdzEWsfqYi/9BQFN/v9gwbQ
+	 8at/mRxwdOZkbBLVwYpJCYBjpIZT5dpBwTY2YTpDzuO2zLPO6513gDlIsEI/Vm4KHW
+	 nPGYipMLqIu0g==
+Date: Sun, 8 Nov 2026 09:48:00 +0100
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 To: Yureka Lilian <yureka@cyberchaos.dev>
 Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
@@ -54,9 +54,10 @@ Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
 	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Subject: Re: [PATCH v3 5/9] dt-bindings: pwm: apple,s5l-fpwm: Add t8142
  compatible
-Message-ID: <avA1rkMvbmTiJDPC@monoceros>
+Message-ID: <avA2hReZKJL8KFUB@monoceros>
 References: <20261106-apple-m5-initial-devicetrees-v3-0-cee55de54b2f@cyberchaos.dev>
  <20261106-apple-m5-initial-devicetrees-v3-5-cee55de54b2f@cyberchaos.dev>
+ <avA1rkMvbmTiJDPC@monoceros>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -67,12 +68,12 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="b3fg2hf65dsjedqn"
+	protocol="application/pgp-signature"; boundary="4zgarb7k2vkd62n2"
 Content-Disposition: inline
-In-Reply-To: <20261106-apple-m5-initial-devicetrees-v3-5-cee55de54b2f@cyberchaos.dev>
+In-Reply-To: <avA1rkMvbmTiJDPC@monoceros>
 
 
---b3fg2hf65dsjedqn
+--4zgarb7k2vkd62n2
 Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
@@ -80,37 +81,46 @@ Subject: Re: [PATCH v3 5/9] dt-bindings: pwm: apple,s5l-fpwm: Add t8142
  compatible
 MIME-Version: 1.0
 
-On Fri, Nov 06, 2026 at 10:24:54PM +0100, Yureka Lilian wrote:
-> The PWM controller on the Apple silicon t8142 (M5) SoC is compatible
-> with t8103. Add "apple,t8142-fpwm" as SoC specific compatible under
-> "apple,s5l-fpwm".
+Hello,
+
+On Sun, Nov 08, 2026 at 09:43:37AM +0100, Uwe Kleine-K=F6nig wrote:
+> On Fri, Nov 06, 2026 at 10:24:54PM +0100, Yureka Lilian wrote:
+> > The PWM controller on the Apple silicon t8142 (M5) SoC is compatible
+> > with t8103. Add "apple,t8142-fpwm" as SoC specific compatible under
+> > "apple,s5l-fpwm".
+> >=20
+> > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> > Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
 >=20
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
+> Fine for me to let this go through apple-soc.
+>=20
+> Acked-by: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
+>=20
+> (I already wrote this in reply to v2 on the same day v3 was sent. So
+> just forwarding the tag for v3.)
 
-Fine for me to let this go through apple-soc.
+Oh, however I already acked the (implicit) v1 on Oct 27[1], please make
+sure to pick up tags when sending out a new revision (or mention why you
+didn't) to save maintainer time.
 
-Acked-by: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
-
-(I already wrote this in reply to v2 on the same day v3 was sent. So
-just forwarding the tag for v3.)
-
-Best regards
+Thanks
 Uwe
 
---b3fg2hf65dsjedqn
+[1] https://lore.kernel.org/all/auBgZhx0qcbAgHnF@monoceros/
+
+--4zgarb7k2vkd62n2
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrwNjIACgkQj4D7WH0S
-/k4g3AgAidRfhY4rKgEUhlf2mTx8vkNnUzoHqzB4dpQ+eTv6dAZ8nwRMnCl/9Rjk
-5U87j+aDvbDDT/u1hMpORGXfuDyHH2MWkSp+cjAHupUipA3gwhJdJVq3EC+UfXQ6
-TGrH7CSYlD1Kdyyjvg33m07H2QSgS1PjBHN2MqWHIMwfRdOQtl3NUYheaAK6mhfP
-E6bDg2PVKXLZ2Gb+ONSmFcZnNY7XMpRVLoCJU+QOwBFV5o32XqXK6jCLS8rG3Jbu
-LeYpsRLdPlZ87JVSQDlwsh/NEYrvmBRFaSgN1Lknzp8mI6O/FXJg5nz+Ivl5D20Q
-0ymfj4uU8+HsKvwrRb8uEE/Yq6Pk1g==
-=HKpk
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrwNz0ACgkQj4D7WH0S
+/k5bbAf/VUi/eOyCBOz+RaTap74L+qL1XDuN4e956ywIcsS1NBkWSQaBWwNlV6H+
+pjPo6dozWYBNJXR2FW4AutssKdTHbXaYzs1gNQ1yuLb+n41RWcuTlAmRmtLShWZs
+Y9I/+os8WcXECFf5TGTVYX7UJUXlKazj9cFnpz0d8rqbszXWFo7vW5NUxmi4b+Cl
+5nXgFGTJ+FZN+FzlfT96Dk9TaGSGCb4BjayHMZakKeC2VdWTi/EgtB9pMDOJ91k7
+yOmmyv+p0ESkl0XEoTncCa3V78XpYZGz6IYS74flWYs9epw9l5qEvU8fEEFbKUIo
+yaZSkXCtDUT1o93z4tLmyPXWu4H6Rw==
+=LzhV
 -----END PGP SIGNATURE-----
 
---b3fg2hf65dsjedqn--
+--4zgarb7k2vkd62n2--
