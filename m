@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.89.44.37
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.89.44.33
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794618198;
-	b=BJbMAXBW5Q8qMecC1tNezB0M4+RTIsLUNRsGnedi7WvO3AAqWw034vEgQnAVsvFOzfSN
-	 8HEne6PtXwyJaxb5loiiqDS1eHIdSmp1P1SydqQ6HpJvJmA7nCY155Oet4J766WKhdK6N
-	 kw1kmgzB5TSEBWuzwXANTIeyno16MRsHhlZ2GAhsN5lkTc2aeUraLHBSxFhVWeHgimWyr
-	 Ya8IcoZpNMBz/cua+jWHtonUYWXiSYsTXJ9mI8I9/y8Uo3Y/WXPqjJynUIN7/QBEnaVsF
-	 DrmDgZJ+V+k1Q0QirNMzlGPQLSzTB15dUcd9OEMlaR+7X4StdlBllEiyw0qOW44HfoQ==
+	t=1794636476;
+	b=JQlAACmE6RtIZHpDlNDXLHNOHIBZKE45TE/4+w2bAeldrqgiC16UEIN9xQDQs/05hhvD
+	 SfaDquinuB6cq5JHtSKRUEUmYS+QZEUzes3K0yBXFYYu5GE/m2en0gfB9mA3XgKejEnP4
+	 qF9TIVEFWmSBzRfr+ho7FyQ77HswugRMZ3hW3W5CI5KyhPLZYKGnzNxodOcqZJ3REl056
+	 9hP06VP3opiebysSZDDDre0WFOjXQHQHinX9MryX11MP5DECmpHgdZhn/O0nqsE7zW5dB
+	 lcxgI1g5RZyoLl4qYoRfinqkljer0gKW2XLvt7K9dj5Cy+Rc6IxIgV8AbYTG1z0ULMA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794618198;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794636476;
 	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
 	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
 	 References:Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
@@ -15,37 +15,37 @@ ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	 X-AntiAbuse:X-AntiAbuse:X-BWhitelist:X-Source-IP:X-Source-L:X-Exim-ID:
 	 X-Source:X-Source-Args:X-Source-Dir:X-Source-Sender:X-Source-Auth:
 	 X-Email-Count:X-Org:X-Source-Cap:X-Local-Domain:X-CMAE-Envelope;
-	bh=QpwB0ZIIopDZ7bOpYzdGymZfwxeUUgl1Dluep8tBvuI=;
-	b=IKmfOsigYlITDnZQZyUyCv5wuHUeuHwb9F5k8ZpRgGvC45gRkiIgMvxJNxpNqxtQ6gyG
-	 KTAHN7KR88q2YQ+krnWPGEiSb6kf/i+PM3a0qtiSIRcALXc79sJJMQ3Joy/ww/gvyCw9F
-	 mHYDcjMOeY8Eau4MUayMOx4pn27Ak+1ChD5X+ERDtBJkoL/Yra7ri1V4cxNbD8wYduAzu
-	 2T7SCTa3oggCkxrDiWmjFrmRC0KRMzDn5wY8qG1ckOeeY0dDB5R/BoMC9/0xmvp+o3WJv
-	 sQA4pa5UZWH/Jj/uaYTJg6jcd00FAQyQFzOFgETK/8bcevLRAF7HHg+kE5N7dE0LZ9Q==
+	bh=k3ZCL0yCo4qHj48CZf0oSTVriUNmB/9T1OWuLfWgT+A=;
+	b=I50G7UNKiZW58bHf3bTfsYt+iPlc5ySjF0t+srM/PfxeVgZrlx0ovAp1JGHy1lY0K/HR
+	 PA8gqz/JZJ91ZocQwQQsA96Qcuwo75x0fWGMk37ZGHvHdONxX8zzZu3zw31lYpo0ucd3G
+	 AFtU73m8YXdIgMBlOzSVHWrR5KK9pjhKdLH+rmXb6F0zpO+HcjUi0XUqTLbsfXXhjmYd8
+	 C6uuMvvNlHHET98jELVC8i++8FYDrlneZWx0OKINXSzr4rgiZBK60N1DLyWr37vqn/Yul
+	 +P7515/Sz5x/9mJro1iC9mp4+HnqVDYgRSLmfNDPgrIlDVa/BmJKIwNow/ON3yhjAfg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=roeck-us.net;
 	spf=fail smtp.mailfrom=roeck-us.net;
-	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=LAvBks23;
-	arc=none smtp.remote-ip=35.89.44.37
-Received: from omta38.uswest2.a.cloudfilter.net (omta38.uswest2.a.cloudfilter.net [35.89.44.37])
+	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=GgKRxHaR;
+	arc=none smtp.remote-ip=35.89.44.33
+Received: from omta34.uswest2.a.cloudfilter.net (omta34.uswest2.a.cloudfilter.net [35.89.44.33])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59459606A330
-	for <linux-pwm@vger.kernel.org>; Sat, 14 Nov 2026 01:03:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59459606A330
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A13606A323
+	for <linux-pwm@vger.kernel.org>; Sat, 14 Nov 2026 06:07:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 58A13606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=LAvBks23
-Received: from eig-obgw-5001b.ext.cloudfilter.net ([10.0.29.181])
+	dkim=pass (2048-bit key, unprotected) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=GgKRxHaR
+Received: from eig-obgw-6002b.ext.cloudfilter.net ([10.0.30.203])
 	by cmsmtp with ESMTPS
-	id Rtj6xGXNHVK9US2Anxirmy; Sat, 14 Nov 2026 01:03:17 +0000
+	id S2ctxp5MoAR1iS6vbxLnot; Sat, 14 Nov 2026 06:07:55 +0000
 Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
 	by cmsmtp with ESMTPS
-	id S2AmxUZLNxmi7S2AnxkjWf; Sat, 14 Nov 2026 01:03:17 +0000
-X-Authority-Analysis: v=2.4 cv=KuFN2XWN c=1 sm=1 tr=0 ts=6af7b355
+	id S6vbx7mjw8cn4S6vbxiN9e; Sat, 14 Nov 2026 06:07:55 +0000
+X-Authority-Analysis: v=2.4 cv=Qrde3Uyd c=1 sm=1 tr=0 ts=6af7fabb
  a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
  a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M0FbrtG7MMAA:10
- a=OXwR1HB4QsiTIq7gI9QA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=es2n6eTOkizK-jv9RXAA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
  a=KPbNTLLc3YvdawN95zVk:22
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
@@ -53,20 +53,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
-	List-Archive; bh=QpwB0ZIIopDZ7bOpYzdGymZfwxeUUgl1Dluep8tBvuI=; b=LAvBks23t1dF
-	bRptP54JuCH6zp0SmBEhFSX6Pnzh6Gsg/ajRJptbjC2Eq9oeXMRq85p7UPnwXg3xHySkGXJ2zE+lp
-	GCMtd6K27ehxBZYY6IYqezxJvL+gZZzpGiadukLFhxdp/TdTOF1WmLwLOda1xmwwOq+YxGUTImuJd
-	txLn+SVX38+sqZk3rxnjBxf02myNP40XovrhK1F1ZYHFcrWqlSY3Qc13w0h3lzanCQJBJ2lTNk70w
-	xm5sArhf/QqfVKfC6RdgzBsXuvjIZrZ+9uLwNkhZYjMZwkT7Cmx0lSWu+Zu83Qxr8ScsauvLA7vsq
-	lEUNLEh0aZys3+S7F/8InA==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:55080)
+	List-Archive; bh=k3ZCL0yCo4qHj48CZf0oSTVriUNmB/9T1OWuLfWgT+A=; b=GgKRxHaRUvpE
+	t/K0+v/IzLzOOUM96+WP3ldu1tItVw2qvgHmNQK3b5o9Gms+UO5B8ZeIl34cTLtqKonzeTCyaNN7Z
+	rO/Q9Dk7jOL1yEl/4j0Rq7II69GZupndSzh+IVTYg8rNO99lUJvSzjS6jMPqajiaZMwiacvqcjf7z
+	yWFoioAeMM1U++vE4TzjVle5zP5JksqTcpRuDQFLEgpzVdSEvxGw8M9hbqBKYFj/6CWClRWbAnc1V
+	+ACwAd8t/UhW5sa838BURlJ5J/cKGGyQFUvPXQ443iUi1ypeYlJ42GuhWWNzcIItW3tL3r7y90ymt
+	2UjWFVsC6ykeNEROFZoR0w==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:37708)
 	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.100.1)
 	(envelope-from <linux@roeck-us.net>)
-	id 1xS2Am-00000001svq-2CaA;
-	Sat, 14 Nov 2026 06:33:16 +0530
-Message-ID: <02d8986f-64ef-42ee-a440-7c66a48f5801@roeck-us.net>
-Date: Fri, 13 Nov 2026 17:03:15 -0800
+	id 1xS6va-000000048T3-2uJj;
+	Sat, 14 Nov 2026 11:37:54 +0530
+Message-ID: <d28f392e-82ea-44d6-83e5-9593b341a722@roeck-us.net>
+Date: Fri, 13 Nov 2026 22:07:53 -0800
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -77,8 +77,8 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/4] hwmon: (adt7475) Add thermal sensor and PWM provider
- support
+Subject: Re: [PATCH 2/4] hwmon: (adt7475) Convert to
+ hwmon_device_register_with_info()
 To: =?UTF-8?Q?Dav=C3=AD=C3=B0_Steinn_Geirsson?= <david@dsg.is>,
  Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
 Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -89,6 +89,7 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  <rdunlap@infradead.org>, linux-doc@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20261114004110.328050-1-david@dsg.is>
+ <20261114004110.328050-3-david@dsg.is>
 Content-Language: en-US
 From: Guenter Roeck <linux@roeck-us.net>
 Autocrypt: addr=linux@roeck-us.net; keydata=
@@ -134,7 +135,7 @@ Autocrypt: addr=linux@roeck-us.net; keydata=
  F0WaMvQMNrk9UAUziVcUkLU52NS9SXqpVg8vgrO0JKx97IXFPcNh0DWsSj/0Y8HO/RDkGXYn
  FDMj7fZSPKyPQPmEHg+W/KzxSSfdgWIHF2QaQ0b2q1wOSec4Rti52ohmNSY+KNIW/zODhugJ
  np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
-In-Reply-To: <20261114004110.328050-1-david@dsg.is>
+In-Reply-To: <20261114004110.328050-3-david@dsg.is>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
@@ -145,33 +146,37 @@ X-AntiAbuse: Sender Address Domain - roeck-us.net
 X-BWhitelist: no
 X-Source-IP: 108.223.40.66
 X-Source-L: No
-X-Exim-ID: 1xS2Am-00000001svq-2CaA
+X-Exim-ID: 1xS6va-000000048T3-2uJj
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:55080
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:37708
 X-Source-Auth: guenter@roeck-us.net
 X-Email-Count: 6
 X-Org: HG=direseller_whb_net_legacy;ORG=directi;
 X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
 X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfFUqd9PHuPNO7H0PsmNZSxjAQB7FHxdrt2Fp4E5Lc4HNZQ/9Qjs25NivIy2taJBaemOsh/bf7YsUBIqTQNPDd+iUBuUD7XMyTxs+1B1pArIqUYxhwNBl
- fuOX9rjZIHiO919ifAeNHFYloPbLXMdVWBA/nvbBhrDgel4h9nUGIJf52W4yL4ac+loehsGIAG7vNn1Dmvn+2RuLTTRuvFxRjVQ+94xurP0ScXOjj+atU1FI
+X-CMAE-Envelope: MS4xfJL+xxNKr5UH9TA8V1sN04ehDCalySkaCFNSvXut8Q+fgz12devkpWSN+ZwJNzXU+3JAOmxKWdtfuMg79neq37SWo+M7pORIBMp5zjlcTybpcuoBg9rM
+ Avzbf3L5iO3IFFwjXrj+jM9s8tObQs8nyEdR7gsgOsgQa/jfAKoeebbmPWenMG+aW3nvXT+tPl3OvujzegN2wHRLq73i67Jkr++pHZc5Rwn+b00W8nshjy4q
 
 On 11/13/26 16:41, Davíð Steinn Geirsson wrote:
+> Convert the driver from hwmon_device_register_with_groups() to
+> hwmon_device_register_with_info(). The standard voltage, temperature,
+> fan and PWM attributes move to hwmon_ops. The chip-specific attributes
+> stay driver-defined and are passed as extra groups: the automatic fan
+> control points, temperature smoothing, PWM stall disable,
+> pwm_use_point2_pwm_at_crit and the VID attributes.
 > 
-> This series lets boards use the temperature channels of the ADT7473,
-> ADT7475, ADT7476 and ADT7490 as thermal zone sensors, and drive their
-> PWM outputs with a PWM consumer such as pwm-fan. The kernel thermal
-> framework can then control the fans. It follows the ADT7470 series [1],
-> merged for v7.3.
+> The driver keeps data->lock, although the hwmon core serialises the
+> hwmon_ops callbacks. The attributes in the extra groups run outside that
+> serialisation, and they share the register cache and its periodic update
+> with the hwmon_ops callbacks. They do not take hwmon_lock() instead, to
+> keep this conversion free of locking changes.
 > 
 
-I am getting flooded with patches, and I have no time to review them all.
-
-Rule change: Functional changes for any hardware monitoring driver which
-does not already implement it will have to include conversion to the
-with_info hardware monitoring API.
+I disagree here. If you don't want to change the locks to use the hwmon
+subsystem lock in this patch, add another patch to change the code to
+use it. The subsystem lock was not introduced to be ignored.
 
 Thanks,
 Guenter
