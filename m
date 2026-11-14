@@ -1,52 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.113
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794613071;
-	b=LjSMz9iKWcqE8ocOegHTv2KdkiaW4NDASgZijOwiTNS4ItWEjKVabOcXx+ayksjwX8ry
-	 2Z3dj0y9wAYYZuoJF05Sp1babRKfHm0c83WiZBX0WZUSSQxId3ku+l8PxeS7VuxG0XF5T
-	 3zoZzaPGmd7XV8JU4bK6MPuZALDBMpnxGyYnbSxxtvpmuHi0zBBKPiJ49PD54nNwpJ2R1
-	 1y57u8UPH1rY2NjN1TDOm94/T1gC2nsOYuQuqGW0OCNOAVYC6GzTkPkU3p7hLISjkeTd6
-	 6kfBwZPZC3J4RUUwHiXhOuQmgfkwBuTRCR9tcctlKaZUanhJBelESLNHcQvMW1Qfopg==
+	t=1794616888;
+	b=4J4O9NRJhW/wnnUYFmAFdzAZE3R5QIMkfA4NpLwe9hrOeox5SfUEvqXZYHgG85WwpXjc
+	 CM0WUXBaDAj6cKnoiqTf/ti039AY53cv1B61RBdclor/uU87zczeznSubsTkIFUqRo2mJ
+	 T/E07fs4rHtVfBN8q94XwJVdLn0rONTDTm+xrvrvypI6eSS6q9TL8USkgMjZk1/8iiooB
+	 JE4tnyDXYn99kQZJ2dYQQuEtl1mQ6M5Ct3oOBrszHe2/NXXp4MJb8ZL+Sm58mmsNC1XIU
+	 Oyyw6TsgcDscjooSXugL66B0em0mxKbgS6rrEtJ9+Ulyw1njFHSq6RCRHl13OwSpdEg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794613071;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=+qFXYocHYdsAX9utQO5shGFW1D2DEM9/Jf9Ir3i6qdk=;
-	b=NmM0w6e6ABRYqVNZ24Ybfv5OqyvD7iIL44/tMnzeDRUfUP6tY4vnhInW0u8RjJ0eTOgB
-	 AEmCp/5TrjK73ZXnvQTksz9qxcLaSjIwBxyPrgI4Azk0bHha6POUHSjpRQwSwDK0s3d0h
-	 ZQBju83tmGBYM0lr9jA98UNT1nYfwcsm4zxmvjCaFIUKPb1dGf+NIhbsbGPUjoaYWTbS0
-	 GkmyZQ4TjYoDEtpbUb6S21Loo6P/WbuJrUp4fPuzij2fN69uxQQKd+pEqp/x9cGAI4yac
-	 W38hcvR2JvmtvCMSxhdeXgr+M4RzFzXPGRa0boAMZLOPmNWo/2riYFCsfQSq/uTM6Mw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794616888;
+	h=DMARC-Filter:DKIM-Signature:X-Pm-Submission-Id:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=ubR51sJIgjaGpPQCtAU7WY1fpXIi71PfU/onh0h78YA=;
+	b=5ZvSeH6MGiTRi/1pJApgpRIQjG/RGnfWIdQTixotugpt/AYbZSlSnry0TLThovngC+Jg
+	 YwCZAlH46iIRorWDBxCQuOXWg/5Ii27BuRZFRuRzbF1Zv0j99WShStSGLBE9lLh9BgKPV
+	 d3OT57bELkUQ0aNgctkFBVkDVVy38oQQ7WNRrMs3Sipam1+QAUJK0t+KQUxGFHzLBJ+J3
+	 uWIHob0+kHN8HZNkApL5Qg3CL1uRvuLMTUcfXrPaLu8UN58DivK5wQnISw3c1d5Buuzrv
+	 UxOsQS7UQMlr5w3gyXLTKYmzYgtAf9HU/Kb4s2PNswREiA0528IrK+jaB02WBPV3fnQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Mz5PzqH2;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=dsg.is;
+	spf=pass smtp.mailfrom=dsg.is;
+	dkim=pass header.d=dsg.is header.i=@dsg.is header.a=rsa-sha256 header.s=protonmail2 header.b=kK3J4nak;
+	arc=none smtp.remote-ip=79.135.106.113
+Received: from mail-106113.protonmail.ch (mail-106113.protonmail.ch [79.135.106.113])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 8020E606A333;
-	Fri, 13 Nov 2026 23:37:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 965C8606A882;
+	Sat, 14 Nov 2026 00:41:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 965C8606A882
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=dsg.is
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dsg.is
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Mz5PzqH2
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 519081F000D1;
-	Fri, 13 Nov 2026 23:37:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794613071;
-	bh=+qFXYocHYdsAX9utQO5shGFW1D2DEM9/Jf9Ir3i6qdk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Mz5PzqH26TN+EaycPvt49AgVW1tWaonOaZ59fDFn7Q2wGdeh8Mr9ZGoAYBci9C0G4
-	 Uz/xx0d2z/yhaBi3TScOtcOPyQ2kzghK1RfpUDE5tJZGdQjWf2hnD5c48+/zDJ1P/C
-	 0SgT/lfrCz7fM0AiFGG7lEGOTLBu1TxOg2LEby3MBm1VyKdtxHomjhA5lRmUXokdwN
-	 CjmPRyy06EaWOXw28f4KMTpi5Id9Cs0jmCyCyO66pkNtJdmDOCu0oQ1UX40xk/+PFB
-	 W2xBkp6oTwEKx+O9eDevB7FKakJvpf0dmXcWSPaY8rckBq6RA1aB+cTXqXJ/FO0foT
-	 x+wyXTH/g701A==
-Date: Sat, 14 Nov 2026 00:37:47 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: linux-pwm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Lee Jones <lee@kernel.org>, 
-	mfd@lists.linux.dev, Manush Prajwal <manushprajwal555@gmail.com>
-Subject: Re: [PATCH] pwm: lp3943: Mark parent device's platform data as const
-Message-ID: <avefIggyxsix6HQU@monoceros>
-References: <20260908165341.1423611-2-u.kleine-koenig@baylibre.com>
+	dkim=pass (2048-bit key, unprotected) header.d=dsg.is header.i=@dsg.is header.a=rsa-sha256 header.s=protonmail2 header.b=kK3J4nak
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dsg.is;
+	s=protonmail2; t=1794616882; x=1794876082;
+	bh=ubR51sJIgjaGpPQCtAU7WY1fpXIi71PfU/onh0h78YA=;
+	h=From:To:Cc:Subject:Date:Message-ID:From:To:Cc:Date:Subject:
+	 Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=kK3J4nakU/xCtmMNwlYioFGI9Grfd+Bu/LX7Wiftjkun7/MbcjLE4on61F5mC3Wlv
+	 fBXZCH2jomktnkjdedFr+6qoX+n4/qBDjn1wfeG9K6uVMXeHuPsKjpWggWSbtkrjD4
+	 HpGj0DhH9dpT1gI0i2E98UuapxSm2xKlTTqp0Tq5fJhz8EbQnlFBTbmxaIaBxXCEAy
+	 9nxUXmIleBLZQRs5ph028fyYmidElLRvxqeer6uIdmk9JCmXx/2BeKlUMIk44rEROK
+	 yD6sAyWLCBzFawy6zcB7fDkfPkMkUSz5mCfoWVc/t/7WNFtPZ18o2xD2UvFCGLucas
+	 tpD/Xaknepurg==
+X-Pm-Submission-Id: 4jRFg30gVpz2ScQ9
+From: =?UTF-8?q?Dav=C3=AD=C3=B0=20Steinn=20Geirsson?= <david@dsg.is>
+To: Guenter Roeck <linux@roeck-us.net>,
+	Jean Delvare <jdelvare@suse.com>,
+	linux-hwmon@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	devicetree@vger.kernel.org,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	linux-pwm@vger.kernel.org,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Dav=C3=AD=C3=B0=20Steinn=20Geirsson?= <david@dsg.is>
+Subject: [PATCH 0/4] hwmon: (adt7475) Add thermal sensor and PWM provider support
+Date: Sat, 14 Nov 2026 00:41:06 +0000
+Message-ID: <20261114004110.328050-1-david@dsg.is>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -56,47 +74,94 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="qvt5gkdy52q27cfb"
-Content-Disposition: inline
-In-Reply-To: <20260908165341.1423611-2-u.kleine-koenig@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 
---qvt5gkdy52q27cfb
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] pwm: lp3943: Mark parent device's platform data as const
-MIME-Version: 1.0
+This series lets boards use the temperature channels of the ADT7473,
+ADT7475, ADT7476 and ADT7490 as thermal zone sensors, and drive their
+PWM outputs with a PWM consumer such as pwm-fan. The kernel thermal
+framework can then control the fans. It follows the ADT7470 series [1],
+merged for v7.3.
 
-On Tue, Sep 08, 2026 at 06:53:41PM +0200, Uwe Kleine-K=F6nig wrote:
-> Platform data should never get modified by a driver. So add a respective
-> `const` which makes it explicit that the pwm-lp3943 driver indeed
-> doesn't modify platform data.
->=20
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
+The board it is for is the Ubiquiti UniFi USW Pro XG 8 PoE, a switch
+with a Realtek RTL9313 (MIPS) SoC. Its ADT7475 drives both fans and
+reads the CPU and SFP area temperatures. The fans must also follow
+eight PHY temperatures that the ADT7475 cannot read, so the chip's
+automatic mode does not fit.
 
-Applied to=20
+Patch 1 adds "#thermal-sensor-cells" to the binding. Patch 2 converts
+the driver to hwmon_device_register_with_info(), through which the
+hwmon core registers thermal sensors. Patch 3 registers them. Patch 4
+registers a PWM chip when the node has "#pwm-cells".
 
-https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-=
-next
+Differences from ADT7470:
+- While a PWM consumer holds a channel, writes to that channel's hwmon
+  PWM attributes fail with -EBUSY. ADT7470 hides its PWM attributes
+  when "#pwm-cells" is present. The ADT7475 binding has documented
+  "#pwm-cells" for fan-N children since v6.12, and device trees that
+  follow it must keep their attributes. If preferred, the attributes
+  could instead be hidden when "#pwm-cells" is present and there are
+  no fan-N children.
+- The period of each supported frequency is 1 s divided by the
+  frequency, rounded down, so the 44444 ns the binding documents
+  selects 22.5 kHz exactly. ADT7470 rounds up.
+- No warning about "#pwm-cells" without CONFIG_PWM, because fan-N
+  children use the property too.
 
-Best regards
-Uwe
+duty_offset_ns is ignored: the chip has no offset, and 0 is the
+round-down result for any requested offset.
 
---qvt5gkdy52q27cfb
-Content-Type: application/pgp-signature; name="signature.asc"
+Testing on hwmon-next, the base of this series:
+- checkpatch.pl --strict and dt_binding_check are clean. W=1 builds of
+  adt7475.o after each patch, with CONFIG_PWM and CONFIG_THERMAL_OF
+  each on and off, give no warnings. sparse reports nothing for
+  adt7475.c, and the hwmon htmldocs build gives no warning for
+  adt7475.rst.
+- x86_64 QEMU guest with i2c-stub, all four chip types, five register
+  images each: the attribute list, every value read and written, and
+  the final register contents are identical before and after patch 2,
+  apart from the two -ERANGE cases its message lists. The same
+  comparison between patches 3 and 4, with and without "#pwm-cells"
+  and with no PWM consumer, is identical too.
+- The same guest with PWM_DEBUG and PROVE_LOCKING runs the PWM sysfs
+  interface and pwm-fan as consumers, including unbinding the chip
+  under them. No PWM core or lockdep warning.
 
------BEGIN PGP SIGNATURE-----
+Testing on hardware, on the switch above running OpenWrt with this
+series backported to 6.18. The backported driver differs from this
+series only where 6.18 and hwmon-next differ:
+- Ten thermal zones (the ADT7475's two remote channels and the eight
+  PHYs) drive both fans through pwm-fan at 22.5 kHz. The fan curve
+  was stepped through with emul_temp on three zones, and the first
+  trip on the other seven; fan state and duty registers matched the
+  expected values.
+- Unloading and reloading pwm-fan and adt7475: the fans stay at full
+  speed while pwm-fan is unloaded, and thermal control resumes after
+  the reload.
+- Writes to the hwmon attributes of the held channels return -EBUSY
+  and leave the registers unchanged; pwm3 stays writable.
+The hwmon-next version itself has not run on hardware.
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmr3n0kACgkQj4D7WH0S
-/k6KYAf/QpgbI2djnvETsWyY0tgHIeWRyM2jNxQpoRzIITWcv46zHYZMxLq9sOxc
-2fsI8Xf2caeg7iUceXIK98dJVYocP5w4/sxi1I16/nnp3uSLnxlZkE+5aVJMJgO0
-5IGxvq94G6d8vuAlKE84sXC4Z3M/7/X4xjJAXp4LEKGDrdDFKS+9V6NLznMj0Tzu
-emYGtJlS3XU7NmsY5jgmTngRu+KGS+wJGGP34M+7xIlGRsL8CVyU1RC+VagW0PBh
-Miwx1UiPjCzFVn1AN4RWTkOp2rfRuQ3Ir7rwRzwT1dJMh520jOT9lBSsnuNs7e4F
-c2uEuGRg66ZVah9OxO8U3+uFo54D5Q==
-=KUh7
------END PGP SIGNATURE-----
+This patch was written with Claude Code, using the models Claude
+Opus 5.5 and Claude Fable 5.2. They wrote the code and the initial
+commit message draft, which I cleaned up. I directed the design,
+reviewed the result, compared against the datasheet as far as I
+could, and ran tests including on actual hardware.
 
---qvt5gkdy52q27cfb--
+Davíð Steinn Geirsson (4):
+  dt-bindings: hwmon: adt7475: Add #thermal-sensor-cells
+  hwmon: (adt7475) Convert to hwmon_device_register_with_info()
+  hwmon: (adt7475) Add thermal zone sensor support
+  hwmon: (adt7475) Expose fan control via PWM framework
+
+ .../devicetree/bindings/hwmon/adt7475.yaml    |   16 +
+ Documentation/hwmon/adt7475.rst               |   18 +
+ drivers/hwmon/adt7475.c                       | 1266 ++++++++++-------
+ 3 files changed, 809 insertions(+), 491 deletions(-)
+
+
+base-commit: f9f5501d60c77c71f60bf5b273375e3777d66080
+-- 
+2.56.0
+
