@@ -1,63 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=109.224.244.119
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794695784;
-	b=lGcSZ+V6a8nilcjts7CJ5ncO3GcJXoDdt7Y3w88NmwHKlR+j7Y7X4ILlRdcFXTUVkJUh
-	 GQv4nJi781E93GKnDPxLKREUICly9ZTdIO5kR0uqfMEjTJRuIOkXUUbT9L9DA4+I5D5NY
-	 hxzb2oY5X7SKy1Uq+7cH61/KcV6dva8Cu2Kxj2Ss0czC67qGumNcyio3IWC8emSSNtTbk
-	 6VbyW75zr+W+5k2Y/GhFjxeaQ1Vsvbi49q74eMBNgwoWa++Z12ODQtwHTyunMJ1QyLB4M
-	 zOTZc66bSo3aFoKZWnuU7TBfPFhqNMfuas50+pN4eTi5wa1E1X6zIXgr3G//C1U+Kaw==
+	t=1794752198;
+	b=3JNQta95yrZ9rDCsw638QtcvWS/LqAW2vNIaX6ENYyMzpkw0mnMRGxvDiU48r5901AdE
+	 HYDYaZgERGR8IXvUvhA/0ExzBaF8DPRwX2v/GBR8RRbA2YTorzbBwnRQ8/8hihTgOS2T+
+	 qROTbTHSz2XWH+Goqm622oKl6MXNzgrwOfEXMl3YnV00zmxA4oS9BfHpmJhjJrYUNX5gR
+	 xC+Ed1teoEwviKF2P9aYWadoiTFrrOoflvBBn7XzlHk9GR5+S84iDDmX2iv6VpO0Wbn4B
+	 uQ88zCZ533T0lA5xDb826eydXj/KQVNYFLIPJyF+3MkzXCLBFwtzE3tsThlG/7UbVeQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794695784;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=3GmTsvjjjRsfQjR1vcZ3unJ9njwZivv6RzYb6ZLaEf0=;
-	b=qMHrIuNYryk3MWhNaxfMIoBhoLm19qJCjgaxiG3LyGlP/UfQSEQ4ReiLdbix5fvQVo1N
-	 JTdzNKCpA4nVvG3I70ekvCfCQ6j2ELo5B07rahe9kSkezOT1I8r6jwiutyd7szavD+q2o
-	 3qRg0oogZmRw4VmstIlN00TL9Bp4ckKmlktlyr6a9oII2/H5upOM1HEtn62b7/Me2qcKe
-	 REhyCu16TvGjVbXGNrstIRPmjn0TGr0RvzVvQRJGk621Dg6ur/jBxNM5zMaBb9tcRvAYD
-	 2Z5OxtZiSGuXR8lA0qQgAI8/RHe4F26ZJ8LdikfMvoZiCH/GCGQm4HGz5bAeuqU6CPg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794752198;
+	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
+	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=GYlTKVMNt6BGcFlMeO/BV1sAsdx0ZWW7cLqsRE9HwwQ=;
+	b=x/PSQG4i+Km957l0ZsG77vI6vekwBvCMlZco5IqVKsKF3Ljcuouw9elBxuXRSXVCjPHL
+	 2067FLnfV3Hu854mBnKaYbnP+lJre7FIflAaswfJCXVRNDxHvBSFrCzC8+P9rM18/3Ihz
+	 +hn7ay5BAWhWHJ3B1ggLSQGlKINn1gvyadfIZlcwLyDpuopXxYyDc7q90Ac4jnSE84Z0X
+	 bh0lv4sW/2Lxk6RRypmGAYxpG8DOgO0fwDQmVj6J6NltnSGoQ9DEj++yQC/pXBxPqB8Fb
+	 zm+DkFg1yIFFy6sm3zsuIDLCkO/0SWsLRlU9kDQp7SpWAzt++NK0wAlxqNlssqXbIBw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=etu7sIX7;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=dsg.is;
+	spf=pass smtp.mailfrom=dsg.is;
+	dkim=pass header.d=dsg.is header.i=@dsg.is header.a=rsa-sha256 header.s=protonmail2 header.b=e13TolbH;
+	arc=none smtp.remote-ip=109.224.244.119
+Received: from mail-244119.protonmail.ch (mail-244119.protonmail.ch [109.224.244.119])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A874E606A32D;
-	Sat, 14 Nov 2026 22:36:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E234606A327;
+	Sun, 15 Nov 2026 14:16:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8E234606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=dsg.is
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dsg.is
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=etu7sIX7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D34E81F000C4;
-	Sat, 14 Nov 2026 22:36:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794695784;
-	bh=3GmTsvjjjRsfQjR1vcZ3unJ9njwZivv6RzYb6ZLaEf0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=etu7sIX78tdNEHeI12jq7NSVQLwtjxc2JaUBQ4xEVov0jaTQEg7SfT0wrVXLqV3ri
-	 jCR84N3aORvehPgyEOgIgsmm85N4hNssjG6EO+c1QtS6bjQK45AcIiAm5ifVYzDFc9
-	 xPw3JYarNc8+Cw+8CqhL9kFLr3euhSaeGEdxoxUucIOTJdWOoVMRrcYRZGAUemhLvt
-	 9IHgYitQfBiASIYi5er76daXtf42hlUyrHiDG+xSYzbezO8byD0fm6fXDhLo8NZQOw
-	 RmcNKnaeSvxj23XvUKkMAwO6I3I7CI2tKvYwo0kc/gQ93g3IZt90eTgsIX3X3EhkWl
-	 33RZSB5lX8tbQ==
-Date: Sat, 14 Nov 2026 22:36:14 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob
- Herring <robh@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Michael Hennerich <michael.hennerich@analog.com>, "Trevor Gamblin"
- <tgamblin@baylibre.com>, Joshua Crofts <crofts@kernel.org>, "Sergiu
- Cuciurean" <sergiu.cuciurean@analog.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
- <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/7] pwm: axi-pwmgen: report the waveform step
-Message-ID: <20261114223614.59e796e6@jic23-hlaptop>
-In-Reply-To: <20261109140607.36418-1-Nicolae-daniel.Deaconescu@analog.com>
-References: <20261107014755.364d4729@jic23-hlaptop>
-	<20261109140607.36418-1-Nicolae-daniel.Deaconescu@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=dsg.is header.i=@dsg.is header.a=rsa-sha256 header.s=protonmail2 header.b=e13TolbH
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dsg.is;
+	s=protonmail2; t=1794752194; x=1795011394;
+	bh=GYlTKVMNt6BGcFlMeO/BV1sAsdx0ZWW7cLqsRE9HwwQ=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=e13TolbHBeyVY5pkcUgy+JHDw65snYt3C7zAEPoYa9uJgZupUsUjnc7D3EJsPdMx9
+	 WY7RvszSS6OssyXjLIl3XrVp+KqpVdvcZhpVfeVZi1s91zQxL+jOxWNKpWlQDKl2cM
+	 cCVY4ly5Q4WEoUHQOJMUgaAbvnicktJ4Qd+HCfSozDthihiVBE+zxbAJx2tCsJsOJ5
+	 awMVecHGB2u/FA95KrvJdiKil99I9qeTaVcr8eXxyWNmZsdsRS1T4DgaLzrj3cnDN/
+	 R2tu7jl0OkyHZ+zzCuVk0ejh+Xi4zbpSzo4rBV9AFcrjAdZtVZSgbl9/LwTzb/Pyl7
+	 RIAp29HHihSxw==
+Date: Sun, 15 Nov 2026 14:16:30 +0000
+To: Guenter Roeck <linux@roeck-us.net>
+From: =?utf-8?Q?Dav=C3=AD=C3=B0_Steinn_Geirsson?= <david@dsg.is>
+Cc: Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, linux-pwm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] hwmon: (adt7475) Convert to hwmon_device_register_with_info()
+Message-ID: <avm-tbgWgTJNFTBj@dsg.is>
+In-Reply-To: <d28f392e-82ea-44d6-83e5-9593b341a722@roeck-us.net>
+References: <20261114004110.328050-1-david@dsg.is> <20261114004110.328050-3-david@dsg.is> <d28f392e-82ea-44d6-83e5-9593b341a722@roeck-us.net>
+Feedback-ID: 186389362:user:proton
+X-Pm-Message-ID: 3bc10b9a433e40daf2a48c55b7baf60def69b5fc
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -67,53 +64,61 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 9 Nov 2026 16:06:07 +0200
-Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com> wrote:
-
-> Hi Jonathan,
-> 
-> On Sat, 7 Nov 2026 01:47:55 +0000, Jonathan Cameron wrote:
-> >  
-> > > index b40522f01002..6b15244efabf 100644
-> > > --- a/drivers/pwm/pwm-axi-pwmgen.c
-> > > +++ b/drivers/pwm/pwm-axi-pwmgen.c
-> > > @@ -136,6 +136,18 @@ static int axi_pwmgen_round_waveform_fromhw(struct pwm_chip *chip, struct pwm_de
-> > >  	return 0;
-> > >  }
-> > > +static int axi_pwmgen_get_waveform_step(struct pwm_chip *chip,
-> > > +					struct pwm_device *pwm,
-> > > +					struct pwm_waveform_step *step)
-> > > +{
-> > > +	struct axi_pwmgen_ddata *ddata = axi_pwmgen_ddata_from_chip(chip);
-> > > +
-> > > +	step->clk_rate_Hz = ddata->clk_rate_hz;
-> > > +	step->clk_cycles_per_step = 1;  
+On Fri, Nov 13, 2026 at 10:07:53PM -0800, Guenter Roeck wrote:
+> On 11/13/26 16:41, Dav=C3=AD=C3=B0 Steinn Geirsson wrote:
+> > Convert the driver from hwmon_device_register_with_groups() to
+> > hwmon_device_register_with_info(). The standard voltage, temperature,
+> > fan and PWM attributes move to hwmon_ops. The chip-specific attributes
+> > stay driver-defined and are passed as extra groups: the automatic fan
+> > control points, temperature smoothing, PWM stall disable,
+> > pwm_use_point2_pwm_at_crit and the VID attributes.
 > >
-> > Given the only known user sets cycles_per_step to 1, what evidence
-> > do we have that part of the interface is actually useful?
+> > The driver keeps data->lock, although the hwmon core serialises the
+> > hwmon_ops callbacks. The attributes in the extra groups run outside tha=
+t
+> > serialisation, and they share the register cache and its periodic updat=
+e
+> > with the hwmon_ops callbacks. They do not take hwmon_lock() instead, to
+> > keep this conversion free of locking changes.
 > >
-> > I can theorise that some device might need a couple of clocks
-> > but can also theorise someone might use both edges of the clock as possible
-> > state transition points for a PWM.
-> >
-> > Note my PWM knowledge is minimal so this may be entirely garbage!  
-> 
-> None yet. axi-pwmgen is the only provider and reports 1. The field is there
-> because Conor's v1 review said the code would fail if someone used a PWM
-> provider with a mandatory divider. It keeps the consumer from assuming
-> one clock cycle per step.
-> 
-> If you prefer to add it when a provider needs it, I can drop it. struct
-> pwm_waveform_step then keeps only clk_rate_Hz.
+>=20
+> I disagree here. If you don't want to change the locks to use the hwmon
+> subsystem lock in this patch, add another patch to change the code to
+> use it. The subsystem lock was not introduced to be ignored.
 
-I'm fine with sticking with this as you have it.  Thanks for the extra info.
+Understood. I did notice one issue while planning that change. Patch 4
+makes the chip a PWM provider, so its callbacks will also need the
+lock. If the consumer is pwm-fan, then when userspace writes pwm-fan's
+pwm attribute, the hwmon core holds pwm-fan's lock. pwm-fan then calls
+into the PWM core, which calls into adt7475, which then needs to take
+its own hwmon lock:
 
-Jonathan
+  hwmon_attr_store()              takes pwm-fan's hwmon lock
+    pwm_fan_write()
+      pwm_apply_might_sleep()
+        adt7475_pwm_write_waveform()
+          hwmon_lock()            takes adt7475's hwmon lock
 
-> 
+As far as I can tell no driver does this today. adt7470 and
+aspeed-g6-pwm-tach are the other PWM providers I found in drivers/hwmon,
+and neither takes the subsystem lock in its PWM callbacks.
+
+I haven't written any code for this yet, so this is based on my read
+of the current code only. If correct, I think this would need a hwmon
+core change to give each hwmon device its own lockdep class.
+
+I'm not quite confident enough in my understanding of the core to
+commit to implementing such a change. But I'd appreciate your thoughts
+on this.
+
+>=20
 > Thanks,
-> Daniel
+> Guenter
+>=20
+
+Thanks again,
+Dav=C3=AD=C3=B0
 
