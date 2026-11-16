@@ -1,54 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794821348;
-	b=I3B7hgI0h8JZ12HgjYW5fJDiN/t07oOvwid/PjJwh6cll+EcSS1XOGLq6l1RAAW/t+Ep
-	 +k56OeXcWHXpgyKjFj420FjgVcMGXh6wlUPE9HFsB4/I7pYRfsk84Abd/dSX0k9oDy5D3
-	 yGTlO27SsYq3WUJdWPYUa64e2DG6fViWvEmVtFOSTo1+9gh/2cLk1oT223/xAa77Uxz7N
-	 Q2womhkyNMddi/A2L3I6MBCi5SJep0Ciiu3831o+r4z8EmZtqRDS1g6YobtK8ZqRotfua
-	 uTa3BMw3anMVWfWEKwpK4B5JJX4G7LhzvlyCF1iIRiDB0oCn5XPrJRxuDcXNR+c68DQ==
+	t=1794823527;
+	b=VkmTXc3h2cQqj8wgLRizSuili3zPh3z9vgAoiMAfjpksagIrVZHLGsfqtN+Ld0h/HsHE
+	 N+d5lYPfZKCHvLl6ltNuNYWj+mFyguhusqSpsOmDDHmq9qc4re6uwXt7Rsb/De5PBYCLU
+	 Qq7OoOqRfiS1TpZGrEZYlfkZ1x6QkuJfpUfUzKKvgEA3Oax0B15n9xDY2wYZoussbMyV2
+	 I/9ybFpSGAQmt0y0brOJXwgZgdZAKN6o55/aJLWWPRUrNjXibYiQEWD7HzCFWzHUqkA01
+	 PkAZh7bn0Aw1RdnFfBI3B1W6eQUGDuXdNB3QR2CWit1zLxL7N13PG23LYALQO7bjv6w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794821348;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794823527;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=9qlmeEjjN/Hi5B1yhZatHZmrPx94agQrfT4eJRLAUHQ=;
-	b=GwLoJoTWh4xZl/kkoeDQ7YLnIAwdYc4O2EGVBTcDofWgy6Hj/1Ol+hKNQUERjTr+LvqE
-	 0ATivv8gl4jFc1l8awac00KxaLR5gpE34qfdrDhZXBL8x16IB6Tjz/uxdL56NNxyfjc0J
-	 mfhLGcBsnjpk+xUlzhOHoGP7j6oNuFzloXvEcrJj5Lg/+xuCRZeSYtNG+Bs6qV0bajihq
-	 sjF7CMi1vLDcQuBjU/vQEgOnpUeLBPcCLRQ15gs1UlkX6c42b/qz2nN9ybFnMzcECaUan
-	 rx+3vRqY8MxrS0eKHGs/wG9u35NUCZqKwOYWd+4VuNkra55lL+CzTnutyT1qQW8ygIg==
+	bh=jZJQub7WVBqa3DlcYaGmxuwOzFvkFwraR0ZB0NxDfgk=;
+	b=Vuhyg4kHFPv8b2WAZmGMHuPmTW7C9odDOolep4r611inh5MxM9SsjM3ZR+rr4uZVQ5zl
+	 moQBgOwNS11pplvDtYgXf7tdRpnjiv+OyQRGkjO8iwuisBqBglDkZuFbclgEtuG40BYo+
+	 GQS9TtbpL9XNSf/98e7bRI2Xxpy2XyJsuf4AvSWAQ0huhG7SnPku/VWXp2N1X7TCZ3XFc
+	 vThffMYSnCQOPTUTyvRkBHlGQKlchBHs0yJ/D/K0vN1eQYvXNYprtGZki5ytdtlVaApXq
+	 i5GlevVMws0M/xB86OOguFKeRWc5IjMBY/U795vRFZaAzFAemio54ALVSpvM7sU64Hw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WryHB1Y5;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XV1xRc9w;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 88187606A330;
-	Mon, 16 Nov 2026 09:29:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F336606A329;
+	Mon, 16 Nov 2026 10:05:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WryHB1Y5
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 91AE21F000C4;
-	Mon, 16 Nov 2026 09:29:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XV1xRc9w
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29F4B1F000C4;
+	Mon, 16 Nov 2026 10:05:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794821348;
-	bh=9qlmeEjjN/Hi5B1yhZatHZmrPx94agQrfT4eJRLAUHQ=;
+	s=k20260515; t=1794823527;
+	bh=jZJQub7WVBqa3DlcYaGmxuwOzFvkFwraR0ZB0NxDfgk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=WryHB1Y5S8dXg39aRX1rQ50qwjg8X6zBrNMJ+ABoR3hHhY+4yElAJwg8iwYY7Kkf1
-	 FfPPVktWVzNRS6EEjk6BK8MBcvzabmWwtTgTAF1aRdBqZBDlCZfUufQpEbcQ0rHuK2
-	 zOyzkWwv5eHoc8mhrIMolgkw21AiIWOPi9nM94kfZZET/4TtTllsTOpSU8huyPDHZS
-	 oGtxKBVY//l4D8cGoQaEUJesYrkV+KnfgWKPI/C19I1W56JBwdWeH08YZkA4Ne/YI2
-	 u8giuvqKE4kCzZGbe3v8E6DJyScj2Ojun43MuWYdgjGPQFdK6THB6PHPGdfa6opebd
-	 OQTvAKnGB8Vjg==
-Date: Mon, 16 Nov 2026 10:29:05 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
-Cc: Frank.Li@nxp.com, s.hauer@pengutronix.de, kernel@pengutronix.de, 
-	festevam@gmail.com, linux-pwm@vger.kernel.org, imx@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH] pwm: mxs: Disable clock on invalid period error path
-Message-ID: <avrMdLAPp2oOtdQA@monoceros>
-References: <20261102105005.1007-1-laixiangwu@cmss.chinamobile.com>
- <20261116031043.508-1-laixiangwu@cmss.chinamobile.com>
+	b=XV1xRc9wRL6M/+N2/7RiJ3+T/xrZAp36SDEvKDQ0TG2oPFvZzzKkb/C0etl1x9zOf
+	 1nPF0fqGhWxMp7vw5GMfmsrMyIS02hvje7wAT2CdCG/q1dN9pQoq4QruhzXa155zfN
+	 8+iZAZuDxo+GNmZ5oVgG9PjFYSOyg5zHaHOhl6qGGPFCG26U0/mcjODIs+9g5RWdu1
+	 /Poj3CICZfP+2pFFwuyK3xMqEzpBTsYC8X6ZuJ9G3f85Xo+m58Ub8GjIxf3yWkmLTa
+	 cXkkArI3F+qkdP/LawmGytMpDwLDYrji7lHqP10KyRy5GIS/Wpq7+Dl5EqVPFicYn5
+	 wea1jY6tyFMsQ==
+Date: Mon, 16 Nov 2026 11:05:23 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Taniya Das <taniya.das@oss.qualcomm.com>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+	Konrad Dybcio <konradybcio@kernel.org>, Abel Vesa <abelvesa@kernel.org>, 
+	Ajit Pandey <ajit.pandey@oss.qualcomm.com>, Imran Shaik <imran.shaik@oss.qualcomm.com>, 
+	Jagadeesh Kona <jagadeesh.kona@oss.qualcomm.com>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: qcom: add Shikra PWM controller
+Message-ID: <20261116-grumpy-pudu-of-reputation-9fb39e@quoll>
+References: <20261116-pwm_qcom_shikra-v1-0-67ee4553adc5@oss.qualcomm.com>
+ <20261116-pwm_qcom_shikra-v1-1-67ee4553adc5@oss.qualcomm.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -58,65 +62,36 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="2qdyaspsc4lt35jv"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261116031043.508-1-laixiangwu@cmss.chinamobile.com>
+In-Reply-To: <20261116-pwm_qcom_shikra-v1-1-67ee4553adc5@oss.qualcomm.com>
 
+On Mon, Nov 16, 2026 at 12:29:48PM +0530, Taniya Das wrote:
+> +patternProperties:
+> +  "^pwm@[0-9a-f]+$":
+> +    type: object
+> +    description: Per-frame PWM channel sub-node.
 
---2qdyaspsc4lt35jv
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] pwm: mxs: Disable clock on invalid period error path
-MIME-Version: 1.0
+I don't get the need for the children. The the parent has pwm-cells, so
+it should be enough.
 
-[Cc: +=3D Lee]
+> +
+> +    properties:
+> +      reg:
+> +        maxItems: 1
+> +        description: This frame's own absolute register range.
+> +
+> +      qcom,frame-index:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description:
+> +          Hardware frame index within the PWM block. It is the PWM index
+> +          used in the first cell of a consumer PWM specifier and selects
+> +          the corresponding enable bit in PWM_TOPCTL0.
 
-Hello,
+And this seems to be duplicating the value passed through phandle/pwm-cells.
 
-On Mon, Nov 16, 2026 at 11:10:43AM +0800, Xiangwu Lai wrote:
-> I've noticed that Lee Jones' series "pwm: Fix various bugs
-> reported by Sashiko" also fixes the clock leak addressed by my
-> patch below, with a broader scope:
->=20
->   [PATCH 2/8] pwm: mxs: Return early when disabling and fix error-path cl=
-ock leak
->   https://lore.kernel.org/all/20261105143847.2559586-3-lee@kernel.org/
->=20
-> Besides balancing clk_prepare_enable() on the same -EINVAL error
-> path, that patch also handles the !state->enabled case upfront,
-> avoiding a division by zero when state->period is zero, and it
-> already carries a Reviewed-by from Frank Li.
->=20
-> My patch for reference:
->=20
->   pwm: mxs: Disable clock on invalid period error path
->   https://lore.kernel.org/all/20261102105005.1007-1-laixiangwu@cmss.china=
-mobile.com/
->=20
-> Please feel free to drop my patch in favour of Lee's more complete
-> fix; there is no need to keep both.
+> +        maximum: 9
 
-Thanks for this follow-up, very appreciated. I marked your patch as
-Superseded in patchwork in favour of Lee's patch.
+Best regards,
+Krzysztof
 
-Best regards
-Uwe
-
---2qdyaspsc4lt35jv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmr6zN8ACgkQj4D7WH0S
-/k7o7Qf/UjQPeXOgoT/+hklwnuPwbNMvmFIoh2yJPPQxNX68YtUWalecVUW/TmP+
-/ZSd6ajIFk0peHc7RIh2WFNEehinYm9NtMF18bmVq1NX4SqsyLwsml249xLW8WoA
-WaKvrw5E2R68hfsgFf0UyL0XosMR83mQr0cYXnaPGOjqMxjR03euzOF0vU5+bLR6
-asiWvLn0dquA7ZbR59dOrWYC+w/2IY9qBpQxZEWYh6IdNzVwMw/9hKoA8SOW7l0C
-6836BOJF8XGxdkZ/ceXALJtxeVgmwxhry3xYika7u+OKSdMhdYxX0idkNfpUGNtv
-S5quDF/FV+xyi93Z+bqj9pyFQmZG5A==
-=KPRv
------END PGP SIGNATURE-----
-
---2qdyaspsc4lt35jv--
