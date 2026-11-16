@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794847202;
-	b=rODlFo6Ko9+DwgQpnXnL2wWC0sa1tGaOGkCIJ0IWResEI48tiri3cINWDgSGwbQJyck3
-	 Q8Ue2TeLmqbX+o89WXRXav9I5zz0PcH0fQ02lORKoir2hJA/aeVTu+WugYQhCVG0HPke9
-	 r36sAzcLfB1ir6ke3TFuiZs3lUXtqLttEpFd0HEGjXMz+PIaxEEDtdGFCoAOH9k0E9zrk
-	 Q0BrLewElz0FNwQXPZ6zxNuyI99O8qCc+cDJV6clTF6v2i85a1YVjtRTsRhz0Ff9tUuGy
-	 mBLmoRWHHWRNbahDi7lJTACN6lofVnPfr2rfSdyqjn7PAmghdmQBiGCn2uR7lrPVNkw==
+	t=1794847204;
+	b=rjL3EgXklJhm70BpN/Q51RfnHmOl+FrO/jK2T9hUYmWJoIhaB1cij3EQzqxlCKEszBiS
+	 4b2LF6PQ8CrBsSJjEp/N8Szd2tWEpcVqSHDeakMQgSrO3NDX8JGCrmfxkx0o9u7eeX1t5
+	 tKiAyK9dvqzamBfrc2Va49WfnSM3FPlIgvxLEgxmkj1IOC/5Xqu4Pan+pblJzV2xMzIM+
+	 ZYar8h89Utrmyi0OlSOZ8Aiq94XL7yTgpfCEqxKGwWPH6V4SjbRv6OH0z5mbqYCapSsHN
+	 rsckhGN3HOiDgjdim/UmIzIWyPPw+FsPWWSt+0l2Z29BsqwT1K6YgLIiMXopXjwN0iA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794847202;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794847204;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=tspvrJnpoKFHb7HbQbrWvZ9PGJAK8DVOcpQAjMGTVTU=;
-	b=AfA12iirSYzFuB8ThP36e1NUI/6MxuddQcrR0QxQ1GOkrpVuJT6PdcxPG2fKwGV9gs/0
-	 n6dBNu7CzgBAxdkL3iG3LgLBhlXhFYc4uK5lU7FJ4cc2gvg71J4VMOXoY5RQjhfXy8/a7
-	 mRFJQGDi/Yo/RmhcjvCGPXkwZ890PZ5Tj6CKLWyaxsC0ZdZjDIhooxqi/6dBAj+r8m65h
-	 VfJZlO+Y5zTzKQUYEdKiZKY4w42MOPwslu9Ehs3s8lewgatMkuOUPVwY0i0s57EWa3G6c
-	 2Elr3t1VkpouqCs3OIya5fSSC+06EV1SaWXGV6fKCveda3VaMzVHI5w3E53xM+/h7Ig==
+	bh=JMuSK9vIkostDBT0cs+TacIUX94JC4n4lqp0jJmQdKc=;
+	b=MD4/NrL3i36DBB+Q38f6REiyi3yox0j7Xm38YdQ4ZQiJrivRxPzD7OyptRMp1sWqSPrx
+	 XxSf9394Wk1fpsn9J3/WFi33sARTicQw4RsnuqepcueuWxO6Wk8TSnu59edm/3R8UtrTH
+	 KsLi4Fe9aM4jrxl5q/ClyeX3I5sNhIiM32iC3x8lA0R173mZt7m4pzQhMX8BIuq/UZc+E
+	 rT+Z7XdHvZCoKbj1IyZZJ0eNg9E/jHuyzsWzO2yyTlyYdAeAd43W0Y8LxI0XnFx7rp/Fx
+	 4V5f0VTpM5dmXEGYc1uf9ebUSu5a/KaGbbJBGzvtGwGE5VmSNpWzT+vjTCCDMGU/kZA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QbZjfmZb;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IQNIFQIP;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C249606A8B8;
-	Mon, 16 Nov 2026 16:40:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E81EC606A888;
+	Mon, 16 Nov 2026 16:40:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QbZjfmZb
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IQNIFQIP
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794847202;
-	b=vosvZ5BepwCtkGU50YmYkrtBgk4DksF97iarJ1ffo20Z0RXS6qWCye4HmYADkpeb4oBS
-	 EpMLTi859e2TZ5QxfEXreNiA1TplIFIRl83y51MuvvlNZWjlw0Frbk3h6ENILJT639/zA
-	 0/Ep2+o4SoO6QOYI1bn+Urfoaw+RRNOq3F7Ww5epfQ/dNFP9jDYzCTkEgqI7ryAOjvu53
-	 3rJieZTzVkvDdTdIWPhxKtX3vjPpO2QlshlbFUd2ncUg7L3HX3y6kOqzRKOQoguL638JN
-	 oSM5d7UunYUBZQ4UrUW4n3jxFo1/ckRNKGpl6gIsOIUKxu+DTaX0nElraOKDV6sBmUQ==
+	t=1794847203;
+	b=P5ym79efaDkNHtDjRA1GrlDwmxOxSh0I0evNOxXtKdAo3xtR3sUIL2gGbT8ws8CBlhy2
+	 ZKo/+4m2wdU21kmAauHBb4prZSygDt3fp/yuBnPXFSdnsFEcFT3xCAq3yfX05HcjLZ4hw
+	 gMGT79xYs3vWjd5iQU6F/RfyrYAAk98N7X4DoOlH2nDpXigv6FjSzNcjV6i0iINodq45P
+	 SohYCOubQUeiADSNjBYvJTNQzF/FuWTW74vMQ8flcvXcmvU4kO8J/Spf1lvYuairPAdS/
+	 HthFPf36dZvI3d3W0JhqAEz+vUi8Hn9TMDval6J1ixfkL9R8eTu8VvC355X6LcFOW6g==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794847202;
+	c=relaxed/relaxed; t=1794847203;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=tspvrJnpoKFHb7HbQbrWvZ9PGJAK8DVOcpQAjMGTVTU=;
-	b=NIlf/pzWMuRI/w+Kcaf9m4/k0efOSLSwMTiezsKzjmb/M39JJzIyIibQH6xwlhxDVV52
-	 JR/PJj7YbUYPIEp74aQzNHvfi7PsQo684fWYE6jgBslyxblkFtaToo0IXq7NpVJVnVeEV
-	 9kK9boUqY8FKHR82LmPJi7Lu7uTPBJ0Eo+vUXni/t+SRvDe3bmxuJp/mDswpb47v/l4b7
-	 RWKwbskwZNiiYPOphAQrjiN5P23l/9AOx7FQEPd2yJCKDprpfcscXl66Zo8qoLxXvlqtn
-	 /8bhq0UOUYhTXOOsDTHC1k7daroZvy5mU3InVJX0PcTSlNHL/hHztYKBJn9w4tokB8Q==
+	bh=JMuSK9vIkostDBT0cs+TacIUX94JC4n4lqp0jJmQdKc=;
+	b=gUnSghi+ko3nIuWvpf1mAHQHd6JgOQhCVQOgXz07yRkB57LCJzpoRP1waVdpVpkv4bfZ
+	 w5DE5QNcR2QlmGGKFXe1RlPJzLJ7kkz2MWK8HBArXyTBfWeh8aaZ4/fVfwsTLz7UETdRI
+	 ER7jqvsOIJILcRtP4wEWigJl2NJjDv21xa3z79N3S+pP2vB2nMybKpqAc6qGLPT0pXDov
+	 cnPpBk605RDvJMOsBMlfS9ORCPx99/LzZMVpSGP2HwJki+nSA7pEUTLa+wGqo42eJ/7/4
+	 ychx0IWQd6yZB0lYfmoaW+AEKdCc2lmLX4DcYXQun/OgTyEJl7IuhIRlCdomiFuTd2g==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 83CFE1F000CD;
-	Mon, 16 Nov 2026 16:40:00 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 0DE8A1F000D3;
+	Mon, 16 Nov 2026 16:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794847202;
-	bh=tspvrJnpoKFHb7HbQbrWvZ9PGJAK8DVOcpQAjMGTVTU=;
+	s=k20260515; t=1794847203;
+	bh=JMuSK9vIkostDBT0cs+TacIUX94JC4n4lqp0jJmQdKc=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=QbZjfmZbBzAuZSDdELlKJf8yS6vz4KWkyqpKsNNAXT6tSs1KO/qbT/AZy84AT23kZ
-	 imTThWJ1vKBmjfInwAz2iRARHy7h736M4vEV92L6FH0iz9S0YzMoQSAZ2Gr+GFiR4t
-	 9Gl0IrBI6muEg5ZFthYlpv5y/TI6QEKuLrawqHqfldYp8/osz0arCOB85rL8h2CIdf
-	 H09jh957NvgjhDQ1zHn8zT1D0LVC7Fpv4kKyvJe9IAXoTplpUkixgv4+2bTHAmHXni
-	 g1oEk8avw7DEQaLigaGhxqRAk5ic53AX+0CzlpbBtBq44urDxie4z+aasYg+vvJvzn
-	 k1kwGOYc9gMcg==
+	b=IQNIFQIPIMYQ5hRsynr4yxPK0Kmy8c20bSdnd/TOsZ6m2fdMoTZ5n3/XnVuOuy8oC
+	 8lBw9dK6Hmh7mBs9/O96Y1vuD1QTByA0pDMOW73VL+6ZGTQuuXjh1cNvn4qdmdfybl
+	 1AThzkJRejISsXyjt+NRlR989QHdiGgtE9w8CyW6+vrr1+ka4E9HNPgA8stHkGyIfI
+	 m3Ji4IZoMefW4STePIQJEHwggtbH6fyTS5ORL2kvXqpktY3BDOSxb8sweS/6LJNcZU
+	 z4n+rUFW5AAiyQXe3Swg4IeXJXEAFAN7kYyfoOd0Ec49AqtFzNDHf8D6JV1JM5Sddi
+	 hqkya7cQIkLcQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 3BE734A52E;
+	by lkml.kernel.org (Postfix) with ESMTP id 52ED74A532;
 	Mon, 16 Nov 2026 16:39:59 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 16 Nov 2026 16:39:58 +0000
-Subject: [PATCH v4 06/12] dt-bindings: iio: frequency: ad9910: add
- io-backends property
+Date: Mon, 16 Nov 2026 16:39:59 +0000
+Subject: [PATCH v4 07/12] iio: frequency: ad9910: move channel indexes into
+ a shared header
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -84,7 +84,7 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261116-ad9910-backend-support-v4-6-fcf1ad364ed5@analog.com>
+Message-Id: <20261116-ad9910-backend-support-v4-7-fcf1ad364ed5@analog.com>
 References: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
 In-Reply-To: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -100,93 +100,161 @@ Cc: Olivier Moysan <olivier.moysan@foss.st.com>,
  =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
  Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
  Randy Dunlap <rdunlap@infradead.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Conor Dooley <conor.dooley@microchip.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794847197; l=2580;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794847197; l=4373;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=j5dklZUTaCzTsmtRwls0MFDoIhZtjambNyK1FFjRxqs=;
- b=tlu2PdHBcsP/jZkRQbqD74n4mvZvwhoZCJ95ooMYlIhKwlmwDSRbX4Tdj3zV+fNDYGoK8vf5q
- qm6ZBMbSdABA/ZBdEgX4ua31FHNmdTmW0vNqKlccbTdnKlwE+EbgOTf
+ bh=KXNvuS4ACswYjgu4ZLwpEWx56ptI1TUB+mqifMwO6XQ=;
+ b=VYsztz8GnEwt+qs4x7tPCwiLkCLUH3OFTDK/TqC/P0K2ptoDhIjENKrzBADV3q8jy7g434CMr
+ E1gWZvcIj+sDRJzXUQmgV9sQhKqAeJSmnwBAGbme2lZME2xGYOft2NB
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
  with auth_id=561
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-The AD9910 parallel data port allows high-speed modulation of the DDS
-core parameters, which requires a data source such as an FPGA IP core
-connected to the F[1:0] and D[15:0] pins. Add the io-backends property,
-so that an IIO backend providing such interface can be referenced.
+The channel indexes are used as channel identifiers in IIO backend
+operations, such as enabling a parallel data port destination or
+selecting a profile. Move them, along with the data destination
+definitions, into a shared header, so that the frontend and backend
+drivers agree on those identifiers.
 
-The property is optional as the parallel port is. The device remains
-functional through the SPI control interface only, as other modes can
-be used to drive the DDS core.
+No functional change.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../bindings/iio/frequency/adi,ad9910.yaml         | 38 ++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ MAINTAINERS                    |  1 +
+ drivers/iio/frequency/ad9910.c | 35 ++-------------------------------
+ drivers/iio/frequency/ad9910.h | 44 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 47 insertions(+), 33 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-index 4eebbd388b27..02fd49db93ff 100644
---- a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-@@ -120,6 +120,13 @@ properties:
-     items:
-       - const: drctl
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1913532d96b3..dd6b512f9687 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1778,6 +1778,7 @@ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+ F:	Documentation/iio/ad9910.rst
+ F:	drivers/iio/frequency/ad9910.c
++F:	drivers/iio/frequency/ad9910.h
  
-+  io-backends:
-+    maxItems: 1
-+    description:
-+      IIO backend that interfaces with the parallel data port, enabling data
-+      streaming into the device. The backend may also drive the PROFILE[2:0]
-+      and DRCTL pins, the latter being exposed as a PWM provider.
+ ANALOG DEVICES INC MAX22007 DRIVER
+ M:	Janani Sunil <janani.sunil@analog.com>
+diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
+index 680415b37b0d..d30ebdc0e0b0 100644
+--- a/drivers/iio/frequency/ad9910.c
++++ b/drivers/iio/frequency/ad9910.c
+@@ -33,6 +33,8 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ 
++#include "ad9910.h"
 +
-   adi,pll-enable:
-     type: boolean
-     description:
-@@ -206,4 +213,35 @@ examples:
-             adi,refclk-out-drive-strength = "disabled";
-         };
-     };
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        dds@0 {
-+            compatible = "adi,ad9910";
-+            reg = <0>;
-+            spi-max-frequency = <1000000>;
+ /* Register addresses */
+ #define AD9910_REG_CFR1			0x00
+ #define AD9910_REG_CFR2			0x01
+@@ -194,11 +196,6 @@
+ #define AD9910_RAM_ENABLED(st)		\
+ 	FIELD_GET(AD9910_CFR1_RAM_ENABLE_MSK, (st)->reg[AD9910_REG_CFR1].val32)
+ 
+-#define AD9910_DEST_FREQUENCY		0
+-#define AD9910_DEST_PHASE		1
+-#define AD9910_DEST_AMPLITUDE		2
+-#define AD9910_DEST_POLAR		3
+-
+ /* PLL constants */
+ #define AD9910_PLL_MIN_N		12
+ #define AD9910_PLL_MAX_N		127
+@@ -302,34 +299,6 @@ struct ad9910_ram_fw {
+ 	__be32 words[] __counted_by_be(wcount);
+ } __packed;
+ 
+-enum {
+-	AD9910_CHAN_IDX_PHY,
+-	AD9910_CHAN_IDX_PROFILE_0,
+-	AD9910_CHAN_IDX_PROFILE_1,
+-	AD9910_CHAN_IDX_PROFILE_2,
+-	AD9910_CHAN_IDX_PROFILE_3,
+-	AD9910_CHAN_IDX_PROFILE_4,
+-	AD9910_CHAN_IDX_PROFILE_5,
+-	AD9910_CHAN_IDX_PROFILE_6,
+-	AD9910_CHAN_IDX_PROFILE_7,
+-	AD9910_CHAN_IDX_PARALLEL_AMP,
+-	AD9910_CHAN_IDX_PARALLEL_PHASE,
+-	AD9910_CHAN_IDX_PARALLEL_FREQ,
+-	AD9910_CHAN_IDX_PARALLEL_POLAR_AMP,
+-	AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE,
+-	AD9910_CHAN_IDX_DRG_FREQ,
+-	AD9910_CHAN_IDX_DRG_PHASE,
+-	AD9910_CHAN_IDX_DRG_AMP,
+-	AD9910_CHAN_IDX_DRG_FREQ_RAMP_UP,
+-	AD9910_CHAN_IDX_DRG_FREQ_RAMP_DOWN,
+-	AD9910_CHAN_IDX_DRG_PHASE_RAMP_UP,
+-	AD9910_CHAN_IDX_DRG_PHASE_RAMP_DOWN,
+-	AD9910_CHAN_IDX_DRG_AMP_RAMP_UP,
+-	AD9910_CHAN_IDX_DRG_AMP_RAMP_DOWN,
+-	AD9910_CHAN_IDX_RAM,
+-	AD9910_CHAN_IDX_OSK,
+-};
+-
+ enum {
+ 	AD9910_POWERDOWN,
+ 	AD9910_DWELL_EN,
+diff --git a/drivers/iio/frequency/ad9910.h b/drivers/iio/frequency/ad9910.h
+new file mode 100644
+index 000000000000..6452a8678ed9
+--- /dev/null
++++ b/drivers/iio/frequency/ad9910.h
+@@ -0,0 +1,44 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * AD9910 SPI DDS (Direct Digital Synthesizer) driver
++ *
++ * Copyright 2026 Analog Devices Inc.
++ */
 +
-+            #clock-cells = <1>;
-+            clock-output-names = "sync_clk", "pdclk", "sync_out";
++#ifndef IIO_FREQUENCY_AD9910_H_
++#define IIO_FREQUENCY_AD9910_H_
 +
-+            clocks = <&ad9910_refclk>;
-+            clock-names = "ref_clk";
++#define AD9910_DEST_FREQUENCY		0
++#define AD9910_DEST_PHASE		1
++#define AD9910_DEST_AMPLITUDE		2
++#define AD9910_DEST_POLAR		3
 +
-+            dvdd-io33-supply = <&vdd_io33>;
-+            avdd33-supply = <&vdd_a33>;
-+            dvdd18-supply = <&vdd_d18>;
-+            avdd18-supply = <&vdd_a18>;
++enum ad9910_channel_idx {
++	AD9910_CHAN_IDX_PHY,
++	AD9910_CHAN_IDX_PROFILE_0,
++	AD9910_CHAN_IDX_PROFILE_1,
++	AD9910_CHAN_IDX_PROFILE_2,
++	AD9910_CHAN_IDX_PROFILE_3,
++	AD9910_CHAN_IDX_PROFILE_4,
++	AD9910_CHAN_IDX_PROFILE_5,
++	AD9910_CHAN_IDX_PROFILE_6,
++	AD9910_CHAN_IDX_PROFILE_7,
++	AD9910_CHAN_IDX_PARALLEL_AMP,
++	AD9910_CHAN_IDX_PARALLEL_PHASE,
++	AD9910_CHAN_IDX_PARALLEL_FREQ,
++	AD9910_CHAN_IDX_PARALLEL_POLAR_AMP,
++	AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE,
++	AD9910_CHAN_IDX_DRG_FREQ,
++	AD9910_CHAN_IDX_DRG_PHASE,
++	AD9910_CHAN_IDX_DRG_AMP,
++	AD9910_CHAN_IDX_DRG_FREQ_RAMP_UP,
++	AD9910_CHAN_IDX_DRG_FREQ_RAMP_DOWN,
++	AD9910_CHAN_IDX_DRG_PHASE_RAMP_UP,
++	AD9910_CHAN_IDX_DRG_PHASE_RAMP_DOWN,
++	AD9910_CHAN_IDX_DRG_AMP_RAMP_UP,
++	AD9910_CHAN_IDX_DRG_AMP_RAMP_DOWN,
++	AD9910_CHAN_IDX_RAM,
++	AD9910_CHAN_IDX_OSK,
++};
 +
-+            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
-+            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
-+            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
-+            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
-+
-+            io-backends = <&ad9910_backend>;
-+            pwms = <&ad9910_backend 0 1000000 0>;
-+            pwm-names = "drctl";
-+        };
-+    };
- ...
++#endif /* IIO_FREQUENCY_AD9910_H_ */
 
 -- 
 2.43.0
