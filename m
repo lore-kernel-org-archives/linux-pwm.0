@@ -1,103 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.53
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794846523;
-	b=f78fYWXA04KOT9tAQ/vORaT/P3yJQgGuwOqWHu8F0bBXsZf35LmI/TARACICk9k+/uPn
-	 be2JiBO0hBjL8Yw6y9Ry5mnq9oR/S2tAPmukTLf5iHDnzCWFEc3Qimr+AuSKhIh6o9hQx
-	 Tsggva4U0h2K4vMLFAY3FYN97iPD12JVZxwW/Jz0inj2nMetB5C06VsNvLsa0t3d926ls
-	 3au5MGZ6F6RjzPD7g6c4lAnULZBVZ5Ii1FIb54iatomqMptb5k10Hqubec3D6xJVkqBRQ
-	 vvIPK3znzYoRRrRUNVdECSgtLZLMP3z/sbLMONfYjgyjH70K3TSMpO6ng6LpMteV5EA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794846523;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=2+nzMcVP/+P9vG+E1zkKZ9XZsaAgRds940lbNhNpcpI=;
-	b=2YSNAwfD/ZlFY/qIBh/VBkAD+Mn59xNs0b2qh74797CalbrfKlGASZAoHrlNnR7atPQ8
-	 QHgoPIh9Z1uFLpCqmQxobtQddOP1hdT63/V9uJprmrPQh8Yt4QFmukwIEAqQ4HmqQNgmj
-	 3k+OQ+lsuIflD0tT0GE2C7Pu3nVdMcocFRjY9IaSIxUrzSPhAw/uT8RpcgmF7Vq+i/6Ug
-	 KtbVZAz3f0TFJAUv8u92xuiUT/kKj2pErWNkLzTAaaDURXMqdw3FmHt10lEfGO2I24UJ+
-	 sml1diH9tMYG6dU27Zkj+AUe/wV0M4zx2kqDCnu+PIIZV0lKNi8umrQjZ73TnBJgw6Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=DgGsa1h5;
-	arc=none smtp.remote-ip=209.85.128.53
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794847200;
+	b=GoLQw99olQ9/DW3g+tXmkbZdlvtvStL74CsLyxs191YKtDdlPIavN8Ut69VJKJGpckFX
+	 kQxOx3t1T6lqLOtDSolKbECAhaUCLRdDUbhu1BbUDJjj89luwM1DPuaIUG38w+4mlOBRx
+	 otaJc/YrwrYHQ3e0DwDAVExCVTOcqgU6QHsdrpSGLiYP3zEabk5a7FGEQb7WD+bfNq7k3
+	 +mkmZtAMJqYL2fctY+o04QTfG8OZ0ozjB2uifvfcjYfjC2LLLEBf5XGtP5I/eeA8T1F4h
+	 HsS0IAeoZ6AwTjTKD0ua14KdRyhDFItUzTkLUPkzDqbgdn9yl0A6Xct+HevJ+C7eWDg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794847200;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=MPTcW4Z9vo4Z7/XoesrWIOcgvVRF9TyWF+1Cfqk7Xng=;
+	b=LDzx9AVZP8s/+ASmAZhhuVe63lT6IpvaG0lmIOP58IE9UMW/qAqZuvgm1g7n0OoCoMAP
+	 6ycsLGx6rwwZA4iABIc1UeDFnII4eNGdWivYVXgjERSysnVPCzAgv/Qp2FwKSrGurXTdb
+	 6OkeG7iPmIk7xfO89hzVvR/1+RjqJpT9r8mNQxVzDA8UL40AO8lj9m9+4+gAGJLcnx92h
+	 2aWokO1J5u5VH7TqrDw5YMj8aHeGUSpkAKXS0SxzAv+uXayHEOMiF1ntWcR076TaVxZnr
+	 N5ReNGc3xf8Dd+QY8M/0XJBw8pbtjkaGdmxsmyZFpVkAzpLYka/Gppr93FgZCrwyusw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gd1WoPMC;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 472BE606A31C;
+	Mon, 16 Nov 2026 16:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gd1WoPMC
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794847199;
+	b=Ko0blIUgbpIDckIuyKWlxrSy4hn1FKadJD0pFFV9KPZMQGZrmpddUyqbLsQ6BIyXyKVx
+	 wusoJsxDo7QG3q3b/z1OuCUcxVoYKbGN6gwiRu9GucftIATZk7SBNRC0FAvEMXxVd/7SB
+	 nJsb/qo7rEtdThyqbBRQhijnv+/yLmkJk47dxI2UKx3AeQWYtUVKjZJmdD8iEHKXw1AXt
+	 WHFnlV8iDq6lzTIvfY8ZxhYuTZt4FFTgZyOaXDPzhh5j351I3PKrjqWKPr4EXG3wuUEPa
+	 AOUvgmGW+sy7rwoRqqIhJBo9msCXJV4JOtCcrioS6WTLs3ZYm6Tcu0IGJNa3gc2EqEQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794847199;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=MPTcW4Z9vo4Z7/XoesrWIOcgvVRF9TyWF+1Cfqk7Xng=;
+	b=kEYIitbjpXUc1iu2VJeYoxpIVoWrqFl+g/fE/cm0y45r28oO/+d0CPtGu/7/jWURhckf
+	 l2hwCbHV514v41IOZ31jD5a00TY6uVBC9PO77leFBQTSfof+YSKundq7Qdz6LH8lOw+RV
+	 XaybEvV0WKqkurDKP+4/7JXg+dHGpkpY3Twv/y00onLhgIoFKW/sb4/OzJBVXoWofjunk
+	 HtPwyAX2hAwn5MwsHXN2XRhKmVgw36Kkg6Ww8ZEGNMVcKhMPyQVxTYfUlthcMngfGDwHJ
+	 9+Fbvr6TF6T7aWJyuZ++/mEiMvJSOPo/VoUAKYtt/P/qPEU/NCiTUHPu2fGzJyAYXsw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CABAB606A322
-	for <linux-pwm@vger.kernel.org>; Mon, 16 Nov 2026 16:28:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CABAB606A322
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=DgGsa1h5
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4b467581b98so31823455e9.0
-        for <linux-pwm@vger.kernel.org>; Mon, 16 Nov 2026 08:28:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794846521; x=1795451321; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=2+nzMcVP/+P9vG+E1zkKZ9XZsaAgRds940lbNhNpcpI=;
-        b=DgGsa1h52Rts8iMQsAM4EJfolE1WumuJFMv+MANoxbtXJXUOJKjkXxqF7F52ddwi4B
-         igJl8Rh2ip7GVy8wPhlLKhruAujaQotXx1zhJlK/t1l3kKd7ciRnftPamiLQwevK64Bt
-         k8APXM+6MHR6p9gPx61Vp76+p/B521PwanYfwN3htVEnEoonaZ23QL33BIDUw3R+yf4d
-         h4IbGGGBRAapLvL8Rlc4TNDPbcyxFICIxnJoPuMIWyJ/Ovt2fCzL+Zl6ikJ+w7CHqluQ
-         Ayy4mBCMc8Z7wwVKi76I1WC/0L03NnAnS2aMKpMAIs0mwzZilY4SpSvU/4y2CBxtQROJ
-         IW7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794846521; x=1795451321;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=2+nzMcVP/+P9vG+E1zkKZ9XZsaAgRds940lbNhNpcpI=;
-        b=Usm7oQWgaVqpnK/hlYNM1fADQGjrCdo7IfCXF6Xvbe6k+Rr1qDmCDk2nJGjbWVFNjQ
-         ib/czqk7GNPWNdMC0mn/XlWbl7A59pz7eMYzBk8KDW0TwTjkityHDWsMbwAGtt1gVVvS
-         EiNLzsG+7C2lAKrjFHpvztysxICYWJ8MxwdhsgCUAeyGVd6HH3Oj3ywfWAT1AmwQ8ZXA
-         xaS/whWFM59ZNWAXEpPspeDQNL98htAck+EL8WR9RhFip6Lj62ggMZnOWJ2UaH+ekwxe
-         EvxgNAFKNg0EE1VMHjz7B00X2uny7XSjhQaUQT3FbbDiLmG0jAlI05PG+pyNpmVB9AjD
-         TI1g==
-X-Forwarded-Encrypted: i=1; AL+hErFs0iqx92r4yNN96xHXY6hmHq1imrmYheANfG+zO0BNhU+uBYTL7q0mgtCR1en4sVaQl+aJSFoOBB8=@vger.kernel.org
-X-Gm-Message-State: APuU4Z//d+2l2qWp67EUM9UEhwKCl+BXSkrFB1ETgWHhqukusX4QPEg9
-	IIWBjhdXMd740WErg20eZEyJpGldjDvNcl/68N1CYDk0ZG1nkv+drLq3
-X-Gm-Gg: AYBFou3+eD/eJ+E6q5/kuxKcsLj5tZOxQSGTmYwJN+xBTDQISN0jW0iHZBFdIuxoJyN
-	lfKInnDHJhrc26IBoNnzEYmMUmbd5CuKpuQoN06dX70IGhdY30WI2KG8NV+gTqtmBSEzmY8CGTy
-	KoG+WOUT3g/d5GS0Yf9voSWR5a4Qei3VScXj5gLHmw+E1TljL1aK8VlMmH2XEdWrL/tIAN64TPh
-	5CUB6m4HBYxTpEgKCfprS6G1asukXFwIqI6PypDQ1N/jyUnW038Oie3OCLPWWa4ulW7sjAf7zxy
-	AP5enUcGGQK78f5BcuTtOaSe5eHWkssTNTF5/U2miFGXxhwgo1akuu1vrpH4SoL3alPKYZxrqDG
-	CglhWLrFNuZodRYcSrlA135CiqJdZ9Du2A3Mt0+EFpSthOHYjM7fQkzfu9ruYn5sRf4uig7SKKj
-	4FG8e9cFGaZMUGA5d7OPjFwLa+yv//wBqb+pLdF58oVSj6LN8l4M2dvPgh366HWJxdMBQrGD1lN
-	YBhMhdOlcsCph3UBxwdk3m+1vzKDVgyn/oiz2sLPvC3R56HIP1AGdROSfJZ+3g1KeaRK8ea8roX
-	SfvAjDwC7dNgfNFoG4BAnq8iB6nDonq6HnV+WcG12O9S8SvGa4xhS3mV7O7oQieIoDylwKDNR2Q
-	J2wd+Rn05d/iE6Z1prpGlwzWeHZxNAa7ax2pCiLvHAvfyQG+0jUw=
-X-Received: by 2002:a05:600c:3e06:b0:4bb:6947:3e1d with SMTP id 5b1f17b1804b1-4bb6947426bmr119351755e9.20.1794846521012;
-        Mon, 16 Nov 2026 08:28:41 -0800 (PST)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e2adf53sm412165885e9.15.2026.11.16.08.28.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 08:28:39 -0800 (PST)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Date: Mon, 16 Nov 2026 16:28:32 +0000
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-doc@vger.kernel.org, Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, 
-	Olivier Moysan <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 08/10] iio: frequency: ad9910: support iio backend
-Message-ID: <ika7dmfhhue7il5xgbgx434vjxdwj57dz6kebaossw32vym7nt@gmpxjkkqirgz>
-References: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
- <20261103-ad9910-backend-support-v3-8-0e9224ddf7b7@analog.com>
- <auoRUS-tsK4X0KoU@ashevche-desk.local>
+	by smtp.kernel.org (Postfix) with ESMTPS id 5A45D1F000CA;
+	Mon, 16 Nov 2026 16:39:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794847199;
+	bh=MPTcW4Z9vo4Z7/XoesrWIOcgvVRF9TyWF+1Cfqk7Xng=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=gd1WoPMCWPLLTy6axzCbTiUrp8gf5uDKwUO7mWfZOy52LMpwwG+o57zdqFfbbGPRa
+	 6sOwZN/huzrWfqJ1FU4ppfLEc+I+mpZuV4oyrColy0KZtckdIeFN7+3h2osVaSG5so
+	 aag0TUBbMUVX2G3FXa0TZ14FC1gl9EjckLQtwtyYxLUjMPI1KjvE0gk+yUnbdVkCuK
+	 weHdfERPkimq6D3wK6mYNsNxuJ8Zu+HghLAmGCvshqATpjB3x3mth+OdS8pZ56Qu/r
+	 2M1c120cMhezOH1QGAka3pjALUxwkPpJkIJTNtXHFYfZmBDiSkX7eCgJVciIQQ3yuH
+	 oVWJngVZjLuCw==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id DB7954A51E;
+	Mon, 16 Nov 2026 16:39:58 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Mon, 16 Nov 2026 16:39:54 +0000
+Subject: [PATCH v4 02/12] iio: frequency: ad9910: round up FM gain scale
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -107,48 +82,77 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <auoRUS-tsK4X0KoU@ashevche-desk.local>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261116-ad9910-backend-support-v4-2-fcf1ad364ed5@analog.com>
+References: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
+In-Reply-To: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ linux-doc@vger.kernel.org, 
+ Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Cc: Olivier Moysan <olivier.moysan@foss.st.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+ Randy Dunlap <rdunlap@infradead.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794847197; l=1744;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=G3vGlTj0BTKaDzZ4Lm3Cx3xNScaDzjERpmIMz76p3fM=;
+ b=GSaqdVOSuAVl7j4TvPugi/LuIchKI1Dl5DPs2/303nhlWA1MJL5JtxmLCAqK8n92XLHkfvbMH
+ VLafIbN1bMaAqsOBepY3wRZ2UV2O3cbLi1KItETCO/wG/Fu//V7CthN
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 7bit
 
-On 03/11/26 18:52, Andy Shevchenko wrote:
-> On Tue, Nov 03, 2026 at 11:53:04AM -0300, Rodrigo Alencar via B4 Relay wrote:
-> > 
-> > The AD9910 parallel data port allows modulation of the DDS core parameters
-> > at up to the PDCLK rate, which requires a high-speed data source. Add
-> > support for an optional IIO backend that provides such interface, with
-> > data streamed into the device through an output buffer.
-> > 
-> > The parallel port channels get scan indexes and scan types according to
-> > the data destination: 14-bit amplitude, 16-bit phase, 16-bit frequency,
-> > or the 8-bit amplitude and phase pair for polar modulation. As only one
-> > destination can be active at a time, this is enforced by the available
-> > scan masks. On buffer enable, the destination is configured in the
-> > backend and the parallel data port is enabled. The sampling_frequency
-> > attribute of the parallel port channels controls the backend data rate.
-> > 
-> > The backend is also notified about profile changes, as it may drive the
-> > PROFILE[2:0] pins, and the debugfs source attributes now consider the
-> > parallel data port when reporting which channel controls each DDS core
-> > parameter.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-...
+The parallel port frequency scale is set through the CFR2 FM gain field,
+which selects a power of two multiplier. The requested scale is converted
+into a ratio against the frequency tuning word LSB and then rounded up to
+a power of two, so that the resulting scale is the smallest one that is
+not below the requested value.
 
-> > +static u32 ad9910_buffer_chan_idx(struct iio_dev *indio_dev)
-> > +{
-> > +	unsigned int scan_idx = find_first_bit(indio_dev->active_scan_mask,
-> > +					       iio_get_masklength(indio_dev));
-> 
-> Split assignment.
-> 
-> > +	return ad9910_scan_chan_idx[scan_idx];
-> 
-> Who guarantees the scan_idx to be in the boundaries?
+However, the ratio itself was computed with closest rounding, so when its
+fractional part is below one half, it gets rounded down before
+roundup_pow_of_two() is applied. For instance, a ratio of 1.3 becomes 1,
+selecting a gain of 0 instead of 1, and the applied scale ends up smaller
+than the requested one.
 
-ad9910_available_scan_masks constraints the possible values here.
-will add a comment.
+Use mul_u64_u64_div_u64_roundup() so that the ratio is rounded up as well.
+
+Fixes: 3647f9fe3488 ("iio: frequency: ad9910: add basic parallel port support")
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ drivers/iio/frequency/ad9910.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
+index 8bc24d0b7442..680415b37b0d 100644
+--- a/drivers/iio/frequency/ad9910.c
++++ b/drivers/iio/frequency/ad9910.c
+@@ -1626,8 +1626,8 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 			if (val < 0 || val2 < 0)
+ 				return -EINVAL;
+ 
+-			tmp64 = ad9910_rational_scale((u64)val * NANO + val2, BIT_ULL(32),
+-						      (u64)st->data.sysclk_freq_hz * NANO);
++			tmp64 = mul_u64_u64_div_u64_roundup((u64)val * NANO + val2, BIT_ULL(32),
++							    (u64)st->data.sysclk_freq_hz * NANO);
+ 			tmp64 = roundup_pow_of_two(clamp(tmp64, 1ULL, BIT_ULL(15)));
+ 			tmp32 = FIELD_PREP(AD9910_CFR2_FM_GAIN_MSK, ilog2(tmp64));
+ 			return ad9910_reg32_update(st, AD9910_REG_CFR2,
 
 -- 
-Kind regards,
+2.43.0
 
-Rodrigo Alencar
+
