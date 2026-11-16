@@ -1,60 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.26
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.89.44.33
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794782519;
-	b=KzKZ3FrBLAmW0I6QMDjqn1tiHPO1YHWNCTbIUkfZmBAjwUK434gqmmvATOeM984fvfxG
-	 hCaOiG6M9BTGzblQXC6Ni1gGrd77XZlgehAKrxejjwK7nJB5IA9il7nmgFDiUlm3LehVH
-	 Tztw8PEgCyRZ3M9AnIoMhvy5YQA2lCSdaxpUFJ6YprIlT6PK0upzNvmkMwjUG419kVEIw
-	 Fd83QTftLwqSKWI99dZY3ZtJ/JQNBJAzT3WKc3rm9YfyqC9191hpZiHf+G3hNnCYDovK5
-	 4MpCMqPVDslQS9Ewk+Mf2Ds1ifMaFMJE+eMAKjH5K3wsV2yaazOAD7SwKe4Krz53qTQ==
+	t=1794789710;
+	b=2TM4VRlexhwlocedaGIIh0zPwlo8+mElJtRzb2h+w3YQR+axK+cePfOFhODY+Pfz/npp
+	 18ACYWuFd7yVPJ6quFLDA2o4zviai4oTiKITj6fNYKympbdJ7mDVkk/b/Stlf6tds84La
+	 mPHbuZoru5CQpCwDZLbgAxqKexXp2ffmn2ZegzmhKXLBg1C3tQHnz2wvGovNmirNGRw2a
+	 0AG8xcyE+rxJg/Joky2ldrW2XEWH4ILZqOF7KvcCANLr1EsmJlS88ct3d3HZ9Fcw+j2+F
+	 bGPLB9tas+8cfo7qIYZQRsFZKbi9lNFFAspVqbEzKWtwdIj72jQX4K9BuP7iuqhBWtA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794782519;
-	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
-	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=pYcqPeDBuVWjWd3KEOJ+x52YkWqtkFvpjaJFAxcK0NM=;
-	b=VYcZwGAPAJ4HzCgn+MjegVRo9dZW9P3t07dffTE2ylnZ4aRLb+4i8yLQXaK5s+aQv5Wf
-	 UfU+lPMiOyRuW4jshm2fBEX85f/oHsnNq4XpcDsANJfpOfnQIwiZ9VplkAWqlee0gJYoY
-	 bubfV8d944UyyMs5pqcrdQoXbzyOy4bR+rjuO3QLLd4bSn7lUJywMvIQcYs2aE6ZG94s7
-	 ZWJEBRvBdJ6KREg4CRmhLXgKDkSynEP86xyPH8kzm1Kv13ZSDME0ILMRLQA99M6AUZN1A
-	 ckntlWYS9JhN5pIPaIE1kpiw5GeI/O5ppmQEhcLEELXVL2B/xkZOc1El7b8b+76zdOg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794789710;
+	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
+	 X-AntiAbuse:X-AntiAbuse:X-BWhitelist:X-Source-IP:X-Source-L:X-Exim-ID:
+	 X-Source:X-Source-Args:X-Source-Dir:X-Source-Sender:X-Source-Auth:
+	 X-Email-Count:X-Org:X-Source-Cap:X-Local-Domain:X-CMAE-Envelope;
+	bh=IsW7atzSQ2E7F85ASunl7GLsIyH64EFl27HfndOmRKU=;
+	b=XjrUnKXCqV4hkh3fuozH3J6Ij3SoK72tBqq2ZmHsunpvZ2Dli8BlDjetww3Tc54St6bF
+	 nodC9JgW7FgJQHgaUlVzeVJ9a93tQJgwHxQfCQJ03y+TTRzoYOEmBQIWEYMyiEDLL5FxN
+	 t/Bnlga7bvt7auY9kF18jfEGJCShgSeLYV/VMtzqCvWgjSzhZK1eW9V6aHPITuYaM1Yua
+	 QDVZtJtnaEjGuonmtkid+mVpHxsvEgNl5OtzY3t59F+H9QQIZkkdDSqbM2nu19GO5T7g+
+	 g2Rwa4RL7L4WZAgFJWV7A49wYjBGV/8UNaxjC9bgrox7+ntaWs0qtdlL3bfcrxNYBOQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=dsg.is;
-	spf=pass smtp.mailfrom=dsg.is;
-	dkim=pass header.d=dsg.is header.i=@dsg.is header.a=rsa-sha256 header.s=protonmail2 header.b="Esx/HXis";
-	arc=none smtp.remote-ip=79.135.106.26
-Received: from mail-10626.protonmail.ch (mail-10626.protonmail.ch [79.135.106.26])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=none header.from=roeck-us.net;
+	spf=fail smtp.mailfrom=roeck-us.net;
+	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=vnPowUs9;
+	arc=none smtp.remote-ip=35.89.44.33
+Received: from omta34.uswest2.a.cloudfilter.net (omta34.uswest2.a.cloudfilter.net [35.89.44.33])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68CA9606A329
-	for <linux-pwm@vger.kernel.org>; Sun, 15 Nov 2026 22:41:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 68CA9606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=dsg.is
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dsg.is
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51421606A323
+	for <linux-pwm@vger.kernel.org>; Mon, 16 Nov 2026 00:41:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 51421606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=dsg.is header.i=@dsg.is header.a=rsa-sha256 header.s=protonmail2 header.b=Esx/HXis
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dsg.is;
-	s=protonmail2; t=1794782514; x=1795041714;
-	bh=pYcqPeDBuVWjWd3KEOJ+x52YkWqtkFvpjaJFAxcK0NM=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=Esx/HXisvfyXSksv1WSOJeokhT4pTYapRTw1hzW//xrdk4KwkxJl0eEOlDIYuO1O5
-	 gzVVjFUjacud+t49kPpcFkFRUtrFKBYgTl1BALKWF95JvTxLyjObiL8V4h70SYJeDg
-	 M197jZM1fEE+1tDQFl06VvnedVMCrPVmMqL9RfRLv6BpfJ78wdtQ2SVHGa1ZdYV2cN
-	 lZeX/vGBMfgdB8VD7qLlsWcmjV+yufm9j5NPRcyU93p/vYwQfSVQLrp2bR9oX+NdQ7
-	 4Aceg//cKIiQERiepARr/+K0E2wvjZ9M9r7AXQQ+eaiaEXD5g19/y6uEqVwjhAFtlW
-	 5udgCzYswohXA==
-Date: Sun, 15 Nov 2026 22:41:46 +0000
-To: Guenter Roeck <linux@roeck-us.net>
-From: =?utf-8?Q?Dav=C3=AD=C3=B0_Steinn_Geirsson?= <david@dsg.is>
-Cc: Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, linux-pwm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] hwmon: (adt7475) Convert to hwmon_device_register_with_info()
-Message-ID: <avo1IWkXBQ2fHgKx@dsg.is>
-In-Reply-To: <62350363-b796-4637-a102-c668037bbbdd@roeck-us.net>
-References: <20261114004110.328050-1-david@dsg.is> <20261114004110.328050-3-david@dsg.is> <d28f392e-82ea-44d6-83e5-9593b341a722@roeck-us.net> <avm-tbgWgTJNFTBj@dsg.is> <62350363-b796-4637-a102-c668037bbbdd@roeck-us.net>
-Feedback-ID: 186389362:user:proton
-X-Pm-Message-ID: f1e8768d8913b3bbffb9bd1119eb855bf7159a69
+	dkim=pass (2048-bit key) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=vnPowUs9
+Received: from eig-obgw-6007b.ext.cloudfilter.net ([10.0.30.166])
+	by cmsmtp with ESMTPS
+	id SgMIxuPDWAR1iSkn8xUgEO; Mon, 16 Nov 2026 00:41:50 +0000
+Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
+	by cmsmtp with ESMTPS
+	id Skn7x9eIl3nNNSkn7xYDL9; Mon, 16 Nov 2026 00:41:49 +0000
+X-Authority-Analysis: v=2.4 cv=TuLmhCXh c=1 sm=1 tr=0 ts=6afa514d
+ a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M0FbrtG7MMAA:10
+ a=ydwNUxKNuv6kypV7TxIA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=KPbNTLLc3YvdawN95zVk:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
+	List-Archive; bh=IsW7atzSQ2E7F85ASunl7GLsIyH64EFl27HfndOmRKU=; b=vnPowUs9wTU8
+	B79yjVoUVUrbx2/ujA8AXHNkPyruHCMpsIN3AKu+e1D871DV5GbIOdnwL/4mFDNJSFMohdL5VqVzY
+	BV4POrSQfqkGW9qJXO2PM/V2GExnZrk90XLOjCPPLT0krp00lslks5TbB88BFFpdmfoD3378vQu7I
+	wEH2GHOuAyxh2kzd4KpAbgOR+mX9uqNA/WGulFftKZTEqHiuotrJ9/IDzGR6tyAQK4TVFAG34P5Cf
+	nyPUm0uBU0RLQD6ATW2DaTvnzk/c4N6jARp0O8R9v/gv4ACutw2pkbWM2t7D5tE6Xo80n/MDwRoU6
+	DtlPAWNe9DX7nIe2I8VpYQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:47236)
+	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.100.1)
+	(envelope-from <linux@roeck-us.net>)
+	id 1xSkn6-00000001htp-3vOy;
+	Mon, 16 Nov 2026 06:11:49 +0530
+Message-ID: <68615d41-eedf-4178-ac0f-8d9599f24e12@roeck-us.net>
+Date: Sun, 15 Nov 2026 16:41:47 -0800
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -64,280 +76,143 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/4] hwmon: (adt7475) Convert to
+ hwmon_device_register_with_info()
+To: =?UTF-8?Q?Dav=C3=AD=C3=B0_Steinn_Geirsson?= <david@dsg.is>
+Cc: Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ linux-pwm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
+ <rdunlap@infradead.org>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20261114004110.328050-1-david@dsg.is>
+ <20261114004110.328050-3-david@dsg.is>
+ <d28f392e-82ea-44d6-83e5-9593b341a722@roeck-us.net> <avm-tbgWgTJNFTBj@dsg.is>
+ <62350363-b796-4637-a102-c668037bbbdd@roeck-us.net> <avo1IWkXBQ2fHgKx@dsg.is>
+Content-Language: en-US
+From: Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
+In-Reply-To: <avo1IWkXBQ2fHgKx@dsg.is>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1xSkn6-00000001htp-3vOy
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:47236
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 6
+X-Org: HG=direseller_whb_net_legacy;ORG=directi;
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfGlZMtDrCRjLZC2C5RM8e5B7mneA9Q2yE9gtD5Wg85hMg4/24LGiaaU4gaXYgaWhfi6Qcsk76RjRqSHDxASottvD+LTOaznyzfPLmSv1dO8U580R8itH
+ uNZq3zyAtjsSqHzMuoVu6h1h2u4mw4k4tBCbjmfip2O0ceh0qwFW2xbRN79JpAcu9LXxUPh1GGHhoePcCHOvZ8BL3l5OpAIIR4JcmloIuW9A5MLoI0RY4fiC
 
-On Sun, Nov 15, 2026 at 01:40:08PM -0800, Guenter Roeck wrote:
-> On 11/15/26 06:16, Dav=C3=AD=C3=B0 Steinn Geirsson wrote:
-> > On Fri, Nov 13, 2026 at 10:07:53PM -0800, Guenter Roeck wrote:
-> >> On 11/13/26 16:41, Dav=C3=AD=C3=B0 Steinn Geirsson wrote:
-> >>> Convert the driver from hwmon_device_register_with_groups() to
-> >>> hwmon_device_register_with_info(). The standard voltage, temperature,
-> >>> fan and PWM attributes move to hwmon_ops. The chip-specific attribute=
-s
-> >>> stay driver-defined and are passed as extra groups: the automatic fan
-> >>> control points, temperature smoothing, PWM stall disable,
-> >>> pwm_use_point2_pwm_at_crit and the VID attributes.
-> >>>
-> >>> The driver keeps data->lock, although the hwmon core serialises the
-> >>> hwmon_ops callbacks. The attributes in the extra groups run outside t=
-hat
-> >>> serialisation, and they share the register cache and its periodic upd=
-ate
-> >>> with the hwmon_ops callbacks. They do not take hwmon_lock() instead, =
-to
-> >>> keep this conversion free of locking changes.
-> >>>
-> >>
-> >> I disagree here. If you don't want to change the locks to use the hwmo=
-n
-> >> subsystem lock in this patch, add another patch to change the code to
-> >> use it. The subsystem lock was not introduced to be ignored.
-> >
-> > Understood. I did notice one issue while planning that change. Patch 4
-> > makes the chip a PWM provider, so its callbacks will also need the
-> > lock. If the consumer is pwm-fan, then when userspace writes pwm-fan's
-> > pwm attribute, the hwmon core holds pwm-fan's lock. pwm-fan then calls
-> > into the PWM core, which calls into adt7475, which then needs to take
-> > its own hwmon lock:
-> >
-> >    hwmon_attr_store()              takes pwm-fan's hwmon lock
-> >      pwm_fan_write()
-> >        pwm_apply_might_sleep()
-> >          adt7475_pwm_write_waveform()
-> >            hwmon_lock()            takes adt7475's hwmon lock
-> >
-> > As far as I can tell no driver does this today. adt7470 and
-> > aspeed-g6-pwm-tach are the other PWM providers I found in drivers/hwmon=
-,
-> > and neither takes the subsystem lock in its PWM callbacks.
-> >
->=20
-> Ah, the usual "someone else does (or does not) do it".
+On 11/15/26 14:41, Davíð Steinn Geirsson wrote:
+...
+> Apologies if that's how it came off, that was not the intent. I
+> understand your earlier guidance that new drivers need to use the hwmon
+> subsystem lock for this kind of thing. The reason I mentioned those
+> other drivers was to try to explain why I believe this is a novel issue
+> other hwmon drivers have not hit before.
+> 
 
-Apologies if that's how it came off, that was not the intent. I
-understand your earlier guidance that new drivers need to use the hwmon
-subsystem lock for this kind of thing. The reason I mentioned those
-other drivers was to try to explain why I believe this is a novel issue
-other hwmon drivers have not hit before.=20
+The pwm maintainer (Wolfgang) insists that all chips with pwm output,
+including fan controllers like this one, register with the pwm subsystem
+as pwm controllers. I resisted that for a long time because I find that
+it adds pointless complexity, but that time is gone. People now find
+reasons, such as claiming that they want to connect LEDs instead of fans,
+to those pwm outputs. This results in recursive calls into the hwmon
+subsystem, for example if such a pwm output is indeed connected to a fan
+and the pwm-fan driver is used to control it. Yes, this is novel. I never
+imagined that this would ever be the case. That happens when new and
+more complex use cases are introduced into a system.
 
->=20
-> > I haven't written any code for this yet, so this is based on my read
-> > of the current code only. If correct, I think this would need a hwmon
-> > core change to give each hwmon device its own lockdep class.
-> >
->=20
-> Hmm, if that is true (I'd like to see a lockddep warning), that will
-> need to be fixed anyway. The situation above will be more common with the
-> pwm subsystem maintainer pushing for that kind of architecture, so it wil=
-l
-> need to be fixed. Introducing / maintaining another layer of locks is not
-> the solution.
+...
 
-I did prepare a minimal test case for this earlier today with qemu and
-i2c-stub:
-```
-[    2.173321] =3D=3D=3D writing 100 to /sys/bus/platform/devices/pwm-fan.0=
-/hwmon/hwmon1/pwm1
-[    2.173516]=20
-[    2.174872] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-[    2.175874] WARNING: possible circular locking dependency detected
-[    2.176802] 7.4.0-rc2-00198-g073ebe4bdeea-dirty #1 Tainted: G           =
-O      =20
-[    2.178136] ------------------------------------------------------
-[    2.179038] init/1 is trying to acquire lock:
-[    2.179707] ffffa10c01f6e2a0 (&ctx->lock){+.+.}-{4:4}, at: pwm_fan_write=
-+0x11e/0x288 [pwm_fan]
-[    2.180942]=20
-[    2.180942] but task is already holding lock:
-[    2.181751] ffffa10c02411538 (&hwdev->lock){+.+.}-{4:4}, at: hwmon_attr_=
-store+0x66/0x1c0
-[    2.182999]=20
-[    2.182999] which lock already depends on the new lock.
-[    2.182999]=20
-[    2.184193]=20
-[    2.184193] the existing dependency chain (in reverse order) is:
-[    2.185191]=20
-[    2.185191] -> #2 (&hwdev->lock){+.+.}-{4:4}:
-[    2.185989]        lock_acquire+0xcf/0x300
-[    2.186532]        __mutex_lock+0xcf/0x1210
-[    2.187149]        adt7475_pwm_write_waveform+0x29/0x90 [adt7475]
-[    2.188046]        __pwm_write_waveform+0x1e/0xf0
-[    2.188928]        __pwm_apply+0x49f/0x940
-[    2.189554]        pwm_apply_might_sleep+0x67/0x100
-[    2.190246]        __set_pwm+0x97/0x1e0 [pwm_fan]
-[    2.191048]        pwm_fan_probe+0x157/0x790 [pwm_fan]
-[    2.191822]        platform_probe+0x68/0xa0
-[    2.192389]        really_probe+0xcd/0x2b0
-[    2.193037]        __driver_probe_device+0x8e/0x180
-[    2.193751]        driver_probe_device+0x1a/0x90
-[    2.194359]        __device_attach_driver+0x7b/0xc0
-[    2.195092]        bus_for_each_drv+0x9e/0x110
-[    2.195741]        __device_attach+0xad/0x1c0
-[    2.196324]        device_initial_probe+0x45/0x70
-[    2.197013]        __bus_probe_device+0x3a/0xc0
-[    2.197712]        device_add+0x6a9/0x8e0
-[    2.198243]        platform_device_add+0x100/0x220
-[    2.198995]        platform_device_register_full+0x191/0x210
-[    2.199790]        0xffffffffc04091c7
-[    2.200454]        do_one_initcall+0x99/0x310
-[    2.201169]        do_init_module+0x65/0x260
-[    2.201759]        init_module_from_file+0xbc/0x130
-[    2.202425]        idempotent_init_module+0x1cb/0x330
-[    2.203151]        __x64_sys_finit_module+0x74/0xe0
-[    2.203851]        do_syscall_64+0x110/0x620
-[    2.204447]        entry_SYSCALL_64_after_hwframe+0x77/0x7f
-[    2.205240]=20
-[    2.205240] -> #1 (&chip->nonatomic_lock){+.+.}-{4:4}:
-[    2.206208]        lock_acquire+0xcf/0x300
-[    2.206794]        __mutex_lock+0xcf/0x1210
-[    2.207382]        pwm_apply_might_sleep+0xad/0x100
-[    2.208143]        __set_pwm+0x97/0x1e0 [pwm_fan]
-[    2.208814]        pwm_fan_probe+0x157/0x790 [pwm_fan]
-[    2.209530]        platform_probe+0x68/0xa0
-[    2.210178]        really_probe+0xcd/0x2b0
-[    2.210724]        __driver_probe_device+0x8e/0x180
-[    2.211368]        driver_probe_device+0x1a/0x90
-[    2.212210]        __device_attach_driver+0x7b/0xc0
-[    2.212896]        bus_for_each_drv+0x9e/0x110
-[    2.213508]        __device_attach+0xad/0x1c0
-[    2.214150]        device_initial_probe+0x45/0x70
-[    2.214844]        __bus_probe_device+0x3a/0xc0
-[    2.215473]        device_add+0x6a9/0x8e0
-[    2.216118]        platform_device_add+0x100/0x220
-[    2.216758]        platform_device_register_full+0x191/0x210
-[    2.217522]        0xffffffffc04091c7
-[    2.218046]        do_one_initcall+0x99/0x310
-[    2.218673]        do_init_module+0x65/0x260
-[    2.219274]        init_module_from_file+0xbc/0x130
-[    2.219988]        idempotent_init_module+0x1cb/0x330
-[    2.220729]        __x64_sys_finit_module+0x74/0xe0
-[    2.221414]        do_syscall_64+0x110/0x620
-[    2.222097]        entry_SYSCALL_64_after_hwframe+0x77/0x7f
-[    2.222870]=20
-[    2.222870] -> #0 (&ctx->lock){+.+.}-{4:4}:
-[    2.223965]        check_prev_add+0xdb/0xee0
-[    2.224558]        __lock_acquire+0xdb9/0x1cf0
-[    2.225218]        lock_acquire+0xcf/0x300
-[    2.225821]        __mutex_lock+0xcf/0x1210
-[    2.226371]        pwm_fan_write+0x11e/0x288 [pwm_fan]
-[    2.227204]        hwmon_attr_store+0x84/0x1c0
-[    2.227870]        kernfs_fop_write_iter+0x185/0x240
-[    2.228551]        vfs_write+0x285/0x6a0
-[    2.229122]        ksys_write+0x7c/0x120
-[    2.229717]        do_syscall_64+0x110/0x620
-[    2.230284]        entry_SYSCALL_64_after_hwframe+0x77/0x7f
-[    2.231138]=20
-[    2.231138] other info that might help us debug this:
-[    2.231138]=20
-[    2.232291] Chain exists of:
-[    2.232291]   &ctx->lock --> &chip->nonatomic_lock --> &hwdev->lock
-[    2.232291]=20
-[    2.233773]  Possible unsafe locking scenario:
-[    2.233773]=20
-[    2.234839]        CPU0                    CPU1
-[    2.235510]        ----                    ----
-[    2.236157]   lock(&hwdev->lock);
-[    2.236717]                                lock(&chip->nonatomic_lock);
-[    2.237633]                                lock(&hwdev->lock);
-[    2.238447]   lock(&ctx->lock);
-[    2.238948]=20
-[    2.238948]  *** DEADLOCK ***
-[    2.238948]=20
-[    2.239970] locks held by init/1: 4, on CPU#0:
-[    2.240582]  #0: ffffa10c01f02450 (sb_writers#3){.+.+}-{0:0}, at: ksys_w=
-rite+0x7c/0x120
-[    2.241746]  #1: ffffa10c01f6fa80 (&of->mutex#2){+.+.}-{4:4}, at: kernfs=
-_fop_write_iter+0x13b/0x240
-[    2.243002]  #2: ffffa10c0246ee78 (kn->active#2){.+.+}-{0:0}, at: kernfs=
-_fop_write_iter+0x150/0x240
-[    2.244300]  #3: ffffa10c02411538 (&hwdev->lock){+.+.}-{4:4}, at: hwmon_=
-attr_store+0x66/0x1c0
-[    2.245444]=20
-[    2.245444] stack backtrace:
-[    2.246031] CPU: 0 UID: 0 PID: 1 Comm: init Tainted: G           O      =
-  7.4.0-rc2-00198-g073ebe4bdeea-dirty #1 PREEMPT(lazy)=20
-[    2.247731] Tainted: [O]=3DOOT_MODULE
-[    2.248194] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS =
-rel-1.17.0-0-gb52ca86e094d-prebuilt.qemu.org 04/01/2014
-[    2.249765] Call Trace:
-[    2.250101]  <TASK>
-[    2.250393]  dump_stack_lvl+0x5d/0x90
-[    2.250890]  print_circular_bug.cold+0x18f/0x1f1
-[    2.251570]  check_noncircular+0x180/0x1b0
-[    2.252206]  check_prev_add+0xdb/0xee0
-[    2.252715]  __lock_acquire+0xdb9/0x1cf0
-[    2.253231]  lock_acquire+0xcf/0x300
-[    2.253792]  ? pwm_fan_write+0x11e/0x288 [pwm_fan]
-[    2.254421]  ? hwmon_attr_store+0x66/0x1c0
-[    2.254969]  ? lock_is_held_type+0xac/0x180
-[    2.255584]  __mutex_lock+0xcf/0x1210
-[    2.256081]  ? pwm_fan_write+0x11e/0x288 [pwm_fan]
-[    2.256782]  ? pwm_fan_write+0x11e/0x288 [pwm_fan]
-[    2.257410]  ? __mutex_lock+0x643/0x1210
-[    2.257990]  ? pwm_fan_write+0x11e/0x288 [pwm_fan]
-[    2.258697]  pwm_fan_write+0x11e/0x288 [pwm_fan]
-[    2.259374]  ? __pfx_pwm_fan_write+0x10/0x10 [pwm_fan]
-[    2.260091]  hwmon_attr_store+0x84/0x1c0
-[    2.260656]  ? sysfs_file_kobj+0x6f/0x160
-[    2.261194]  kernfs_fop_write_iter+0x185/0x240
-[    2.261828]  ? __pfx_kernfs_fop_write_iter+0x10/0x10
-[    2.262479]  vfs_write+0x285/0x6a0
-[    2.262980]  ksys_write+0x7c/0x120
-[    2.263474]  do_syscall_64+0x110/0x620
-[    2.264055]  ? __irq_exit_rcu+0x33/0x140
-[    2.264575]  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-[    2.265281] RIP: 0033:0x4eee8f
-[    2.265736] Code: 31 c0 31 d2 31 c9 31 f6 31 ff 45 31 db c3 55 48 89 f8 =
-4d 89 c2 48 89 f7 4d 89 c8 48 89 d6 48 89 ca 48 89 e5 4c 8b 4d 10 0f 05 <5d=
-> 31 d2 31 c9 31 f6 31 ff 45 31 c0 45 31 c9 45 31 d2 45 31 db c3
-[    2.268303] RSP: 002b:00007ffd0cec3750 EFLAGS: 00000212 ORIG_RAX: 000000=
-0000000001
-[    2.269350] RAX: ffffffffffffffda RBX: 00000000005322ac RCX: 00000000004=
-eee8f
-[    2.270389] RDX: 0000000000000004 RSI: 00007f7d8dd79780 RDI: 00000000000=
-00001
-[    2.271398] RBP: 00007ffd0cec3750 R08: 0000000000000000 R09: 00000000000=
-00000
-[    2.272390] R10: 0000000000000000 R11: 0000000000000212 R12: 00007f7d8dd=
-79780
-[    2.273364] R13: 0000000000000004 R14: 0000000000000000 R15: 00000000000=
-00000
-[    2.274331]  </TASK>
-[    2.275512] =3D=3D=3D write returned 0;  debug_locks:   =20
-```
+> 
+>>
+>> Anyway, you want to add the complexity of getting the pwm subsystem and
+>> the pwm-fan driver involved, even though this could as well be handled
+>> in the adt7475 driver, so you'll have to suffer the consequences.
+> 
+> I have no attachment to this implementation, in truth I just expected an
+> adt7475 driver registering cooling devices itself would be rejected. If
 
+It appears that you had no problems finding examples for drivers not (or rather
+not yet) using the hardware monitoring subsystem lock. Yet, it seems that you
+had trouble finding hardware monitoring drivers which also register cooling
+devices (besides pwm-fan). Here are some for reference.
 
->=20
-> Anyway, you want to add the complexity of getting the pwm subsystem and
-> the pwm-fan driver involved, even though this could as well be handled
-> in the adt7475 driver, so you'll have to suffer the consequences.
+$ git grep devm_thermal_of_child_cooling_device_register
+amc6821.c:              return PTR_ERR_OR_ZERO(devm_thermal_of_child_cooling_device_register(dev,
+aspeed-pwm-tacho.c:     cdev->tcdev = devm_thermal_of_child_cooling_device_register(dev, child,
+emc2305.c:              devm_thermal_of_child_cooling_device_register(dev, fan_node,
+gpio-fan.c:     fan_data->cdev = devm_thermal_of_child_cooling_device_register(dev, np,
+max6650.c:              cooling_dev = devm_thermal_of_child_cooling_device_register(dev, dev->of_node,
+npcm750-pwm-fan.c:      cdev->tcdev = devm_thermal_of_child_cooling_device_register(dev, child,
+pwm-fan.c:              cdev = devm_thermal_of_child_cooling_device_register(dev, dev->of_node,
+qnap-mcu-hwmon.c:               cdev = devm_thermal_of_child_cooling_device_register(dev, to_of_node(hwm->fan_node),
+tc654.c:                cdev = devm_thermal_of_child_cooling_device_register(dev, dev->of_node,
 
-I have no attachment to this implementation, in truth I just expected an
-adt7475 driver registering cooling devices itself would be rejected. If
-that approach is acceptable, I agree it would be simpler and side-step
-this whole issue.
+Of those, amc6821, emc2305 and max6650, are quite similar to adt7475.
 
-Thanks again for your time on this,
-Dav=C3=AD=C3=B0
+Anyway, I instructed my AI agent to look into the problem and fix it,
+so I'll send a patch to fix the problem shortly.
 
-
->=20
-> Thanks,
-> Guenter
->=20
-> > I'm not quite confident enough in my understanding of the core to
-> > commit to implementing such a change. But I'd appreciate your thoughts
-> > on this.
-> >
-> >>
-> >> Thanks,
-> >> Guenter
-> >>
-> >
-> > Thanks again,
-> > Dav=C3=AD=C3=B0
->=20
+Thanks,
+Guenter
 
