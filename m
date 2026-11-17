@@ -1,55 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794910197;
-	b=IIxFKs4Xm5uQAT0DG1mpMtfERqkAsTVpc0uotyjZTV1pLZKKdc38d83ThFv4HQ1jGOBk
-	 OvZ+p/SD7UXzhl3ROlmSimLl0dXqz5jXG/jLGpqSmVH6rKCycP8I6ykJP5UmqTwRGlyTy
-	 RnrmUuijy/4Jdh7MPSaDcvvoyX3zzLPpmD45NzmQbJ/8rA85//JzLx4hMzQUCR/IvMVVs
-	 Dj3KjBIcTZa4IuH6Y0/F4QuUSN4axg3WcYlv7ehPTeAIyzqV9v779STy/NmHvnHDIokfn
-	 Mxc++sNHMVA8oSDHU36MuOEueGcKWEapBmOfie39hr9sFJHqidSECZKixpocl2aLyOQ==
+	t=1794920257;
+	b=wkaOv4BnQSer5I+hWXtiA3lw591ulTxI9m8mQ5IieRlghCg5IhuQH42RzXKF53C4d2rJ
+	 v0K38mJ36aRveXRs1gk396w92ZS/tVucQ3xyac6WXvANvRK7fjH2JXW7J1buSKWxyptqk
+	 31sOKxftWH9evV6+u6XWlki+Oj94VOftkoNNhe1yI2VCD5ax2tvrVpr1+8nsUsyk3YUrZ
+	 fi25Vqe7TNYnEOwXqFaE2X+I/nmXz81vkUMGKOpoeGorZtSQXiCPrs8NcJFo4pMRdJk97
+	 xdABsJLP3S4ncSWeetd9+e2pbXnAbHfwwFnXC7Plh0dbVloo855bC6S0qvua5MAQAgw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794910197;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=Zijtj8oRnUhmq8nJwvW4RuvRSCE2yvzPezhEDKGNnBs=;
-	b=x85LkAYj9UI8OdXdSHR0E2tQEVv/hIRmjts+m9swDYmVoJW9mQ4RwM732eS67aVArE4F
-	 S+Zq5o7oXIX/NA9fCD7vSjwVxHG2KOtLvbGAyMhaORHR5xnU+YC8JKdKQnpwy9NS+Tidi
-	 HXw2ArVV69kzarFiPJX6l0FLzbdWGTKQ6eP/QLIZscE/udkw8/ZEPtZb8MEYj1LOi43kA
-	 dbmB9QPK/0uJHoXWusjmHFVXzns5xx7iZ8W3wNAdbNIFN4C+Y8it18brsVVEX3zkdjJwJ
-	 8i7JOAML63PzsafXuWLT1cof037Ebo3GUiJY34RLL0ZemLO8w1mUKOhtcG3CMNatNTQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794920257;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
+	bh=cwQPpTaL2c/wj1OEDa9qNdi880oheLkZqVlpuujln18=;
+	b=1OQE/GIdbN5ObjpkYQQj0SppqtpMXk5207EGk9iPLvyriBOT8YNLXfT4DK/23+gOv5HH
+	 J59lh+LoZmqJ8m8gNGMJ+dvZYbzYIe+UHCopjpi5euyY5MyGbhH+n6zO9QeS4u2xKF/LT
+	 0R+ob7uCmdGdraGMJqHkrMgLb5ERbMRL9Jau1YIpKEteJLnBz310bBVMs8dJpwB+jiHAY
+	 RcKjEoWdCa6rhG3gCMGqROqF1GPbgfenR/qiIlvAppeB44Z6lEGFLLIBtDOCMBUIlYfM0
+	 gy+0FbgdqRhXKMrQMtF6Eh4dRIQHjrChOaFHlo5NjFNXtxmEn+zNtQqEmrY673IsPvA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZryeUptg;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=baylibre.com;
+	spf=pass smtp.mailfrom=baylibre.com;
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b="he9Xj1/t";
+	arc=none smtp.remote-ip=74.125.82.181
+Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55A74606A323
-	for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 10:09:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 641A0606A32F
+	for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 12:57:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 641A0606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZryeUptg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 335271F000CE
-	for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 10:09:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794910197;
-	bh=Zijtj8oRnUhmq8nJwvW4RuvRSCE2yvzPezhEDKGNnBs=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=ZryeUptgE+CTRECXG6PaFFIo2ynUQLFGJoEd6SIe0bh6T+R/8Ylgar/c7UC7XvKKC
-	 RboUXutefAjs9UYoNbZHAKOaTW5RdZ5zVYtKi0OfrOVqV6O15XplMzPAJsgewCr4HB
-	 jYy1L7eKdJ6jhTQiiqJPM67KFcuQlnIrmZewUg0LJp8wECWmle0XH2HTiWC1acvEg3
-	 MYnT4y7Fn62BBVq1IiXmI2aahHYNKiTgJnPAsemi0K9G8QGaSJp9BMSiJVdz3A2V/W
-	 vjdvoLdHPWv0dWGgHsG+gw8ftu2pno184/1QGkhwvlTsaCs/wqp6SdJ1kK2zoj/VIm
-	 ggZq9GRKBJJsA==
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5c126fa1e3aso3482754e87.2
-        for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 02:09:57 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AL+hErEX4f/UD47zQ9lQqO62Pw9euRAptDMIy/vCoyEgXn5wzxjQg2JAHlladTMD/Yyl6NUnTdSaR8t8oyg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+A2drF6naIixEO63sME8Um3USL906PDRksRX7f0j6cR3qhr2fT
-	z5AdHQXQOhb71O4IbWF/+HcpyCszr1zRP029bplVCguYjTw+rwHqPc0XdppUc0xt6GxmbZepbwB
-	xDv811v4Hz8cKhlDzGxII+WEW4DocusM=
-X-Received: by 2002:a05:6512:3e10:b0:5c0:91e:a95b with SMTP id
- 2adb3069b0e04-5c17077e429mr4781706e87.14.1794910195950; Tue, 17 Nov 2026
- 02:09:55 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=he9Xj1/t
+Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-36dbde64409so6800382eec.0
+        for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 04:57:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1794920255; x=1795525055; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=cwQPpTaL2c/wj1OEDa9qNdi880oheLkZqVlpuujln18=;
+        b=he9Xj1/t6jD+zpDhkV5lhMnEd+n3snktDIJnyh+tRUhWMvREqTYyVLf0gmxsMaXNF+
+         wqyv4RZKSq9w2j+Gwn2lk1ZgYxKM30QcFXzjYZH/09XDe16NW0P+gzhcII9w5cpfFaq5
+         KahHYFUfKpTpUqjQx9i/QXbC17f/gCVr9GGFE1UH1dGVvXV7B41XPoEw+QFfAIUeG5AQ
+         f+m8Waf8SaBB1e+sYlWeHsaun7WqHfs8z/41Nd4FIqZ9A9SNZgMY9fAyKpeRi2ZKUQ//
+         47bz+DVNViFUgn71bXz8mgXEK98KfIDriwAhGY18QAhOBjwoxgC3BzmbPkb6jc530t4B
+         1j2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794920255; x=1795525055;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=cwQPpTaL2c/wj1OEDa9qNdi880oheLkZqVlpuujln18=;
+        b=yMx8jGqh/isJI9f5SHTBNxWRcA90L92U0kcCAc53zI0AHVSRn1ItMVSbWT1EpcIozJ
+         mavJ77SfFG4Fd+6QSkSjxNsHMlG9VHiHQTksT3yY+atDCijYsgd2iP4Pn2DDziw7C2wj
+         wSHbR7hdG0OZIP84ixws6gHNhTj3IdaOcTzocPVjgm/gWD4ho61ATiidyQoigpmCds6q
+         a4lzhVJDyGSx/9cdSkytcDZzfs45URggiX+MhXtX3pgNa/BpQauZpUnqtdS5Qqf4B9Pt
+         NOwPvsg2NJ7Wi5mXiEwGHJFgdZr1iWHIW7JZjAlw+8LMkkILIb8LiQc3v7JzSBYNQbdf
+         +muQ==
+X-Forwarded-Encrypted: i=1; AL+hErENpjdXXOdP7Sg7SCsISRNFrRh7kpbY3DjHYu6s53KwPbOSIyHelw+3MmXkctRRJfgCDhs3XUgJJlo=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/EjPGh8U4CxkK2jQYHECOZmcO1/QUz04rwhXN3RFiFQAYYVfra
+	Ao7hk5sBiykA83OaTltMAWqvF2Hyl9Q4LlwNeH5kPdFo086afVUYUvDelmsRi7uNjQU=
+X-Gm-Gg: AZFdTZdKlXDsnMXy2zHFPIPIay40Rv6AO3vHTw8L2LD7xbrirqhOed4hT1tzXwM/I1n
+	LYIYBBob6lUJK5CWsuFte1XKaIXwu+zDnEutiNbEnGoV762sic8b5LvD/Ssr7dLBMdUwbdmfJvc
+	U06k1mOFwdm03BA51nT3fWEgmKyRIJJKEoCQbs1lS8sdTtq/6C+rQxRz7N95ObPKKaazwp9L0tU
+	e6ZxJr0yVtmMIbZcufk1DCLE1HEp+tRnZ0TINrE+e5uF3doJ0F8d5YT0pvEuIlJeSyf+bRjYq+J
+	AD88OqrhtIY6En3QBJD60wFh63MgQa+pc2VSt0CNblFQJ2UsGipKD3NmkbsYQ3xXLncVhNFC2rW
+	oJtvXp8EHXxYtb3N2Jow9VcIlA9vOtV3lWY21lJ68G7jUrrhSE9/CEXFM0uRuPLXXf18lnwJbKc
+	T9r7IHsvA7aYf2O7Mrvsh8Ic+DgXqBToEvpb0MIXT393rwGNQD9pzaV0VZccQ8GEHj4xghOjsQF
+	HnplC7n2AUlYpK986xH3Sn0Si+9tl5gyJ2IVFPEgtjHsgIn78ysOoUMlgWkoZcpWMvyEqJOwBOk
+	GoxOMM9KIHCav/gAqW7pgzmLKivquglQfTK6XuA6/XuiWcd0pJvN8oqZhlYdwdIcVU7N
+X-Received: by 2002:a05:693c:83cb:20b0:375:388:a6d5 with SMTP id 5a478bee46e88-379675fc8fbmr12249938eec.32.1794920255453;
+        Tue, 17 Nov 2026 04:57:35 -0800 (PST)
+Received: from [127.0.1.1] ([2804:14c:4c5:8bf0::a1aa])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-379559189e8sm44767034eec.11.2026.11.17.04.57.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 04:57:34 -0800 (PST)
+From: Hiago De Franco <hfranco@baylibre.com>
+Subject: [PATCH 0/3] Add PWM support for the Sophgo CV1800B
+Date: Tue, 17 Nov 2026 09:57:12 -0300
+Message-Id: <20261117-milkv-duo-pwm-v1-0-3f1786ea57b7@baylibre.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -59,47 +91,82 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261106-apple-m5-initial-devicetrees-v3-0-cee55de54b2f@cyberchaos.dev>
- <20261106-apple-m5-initial-devicetrees-v3-9-cee55de54b2f@cyberchaos.dev>
-In-Reply-To: <20261106-apple-m5-initial-devicetrees-v3-9-cee55de54b2f@cyberchaos.dev>
-From: Linus Walleij <linusw@kernel.org>
-Date: Tue, 17 Nov 2026 11:09:42 +0100
-X-Gmail-Original-Message-ID: <CAD++jLmvsXAZwb2ak4vumXqZTPgGNqm=fdgWEgw7VqqzvU83WQ@mail.gmail.com>
-X-Gm-Features: Aa3M54oq4YzlnIadSqNmPikBx7uA231ihP8lcXU-Pc_buuhnmKKyHs_C06WfytM
-Message-ID: <CAD++jLmvsXAZwb2ak4vumXqZTPgGNqm=fdgWEgw7VqqzvU83WQ@mail.gmail.com>
-Subject: Re: [PATCH v3 9/9] arm64: dts: apple: Add minimal t8142 (M5) device trees
-To: Yureka Lilian <yureka@cyberchaos.dev>
-Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, Neal Gompa <neal@gompa.dev>, 
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, Hector Martin <marcan@marcan.st>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Sasha Finkelstein <k@chaosmail.tech>, Mark Kettenis <kettenis@openbsd.org>, 
-	Andi Shyti <andi.shyti@kernel.org>, asahi@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzNDQwMT3dzMnOwy3ZTSfN2C8lxdE6O0pGQjiyQDM0tjJaCegqLUtMwKsHn
+ RsRB+cWlSVmpyCcgQpdpaAKwV+flxAAAA
+X-Change-ID: 20261104-milkv-duo-pwm-42fbc28b0693
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Chen Wang <chen.wang@linux.dev>, 
+ Inochi Amaoto <inochiama@gmail.com>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>
+Cc: Chen Wang <unicorn_wang@outlook.com>, linux-pwm@vger.kernel.org, 
+ devicetree@vger.kernel.org, sophgo@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+X-Mailer: b4 0.16.0
 
-On Fri, Nov 6, 2026 at 10:24=E2=80=AFPM Yureka Lilian <yureka@cyberchaos.de=
-v> wrote:
+This series adds support for the PWM controller of the Sophgo CV1800B,
+the SoC used on the Milk-V Duo. The same block is also found on the
+CV181x and SG200x, which share cv180x.dtsi.
 
-> Added device trees for the following devices:
-> - apple,j704 - MacBook Pro (14-inch, M5, 2026)
-> - apple,j813 - MacBook Air (13-inch, M5, 2026)
-> - apple,j815 - MacBook Air (15-inch, M5, 2026)
->
-> The device trees have a minimal set of devices limited to CPU cores,
-> interrupt controller, watchdog, serial, pin controllers, i2c and
-> framebuffer.
->
-> Boot-tested on j704 with macOS 26.6 iBoot/firmware and the latest m1n1.
->
-> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
+The CV1800B has four PWM controller instances at 0x03060000, 0x03061000,
+0x03062000 and 0x03063000, each with four channels, for 16 outputs in
+total. The register layout is derived from the controller already
+supported by drivers/pwm/pwm-sophgo-sg2042.c, so instead of adding a
+separate driver the new SoC is handled by a new chip_data variant in that
+driver, as suggested during the review of the previous submissions [1].
 
-Looks good!
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+Compared to the SG2044, the CV1800B differs in these points:
 
-Yours,
-Linus Walleij
+ - PERIOD and HLPERIOD are 30 bits wide and PERIOD must be strictly
+   greater than HLPERIOD. A 100% duty cycle is therefore not
+   representable, and the period must be at least two input clock cycles.
+ - POLARITY has the opposite meaning: with bit 0, HLPERIOD counts the low
+   part of the period and the pin idles low; with bit 1, HLPERIOD counts
+   the high part and the pin idles high.
+ - A POLARITY change takes effect immediately, even while the channel is
+   running, and does not need PWMUPDATE.
+ - HLPERIOD/PERIOD written while the channel is running are only latched
+   on a 0 -> 1 transition of PWMUPDATE. Toggling PWMSTART must not be used
+   for that, as it restarts the counter.
+ - When the counter is stopped the pin is parked at the level selected by
+   POLARITY; emitting the inactive level would require changing POLARITY, so
+   the driver switches the pin to input mode while the channel is disabled.
+
+Patch 1 extends the DT binding, patch 2 adds the CV1800B variant to the
+driver and updates the Kconfig help text, and patch 3 adds the
+controller nodes to the shared cv180x.dtsi.
+
+The hardware behaviour described above was verified on a Milk-V Duo with
+a logic analyzer (GP4 routed to PWM, i.e. pwm1 channel 1), at 1 kHz/25%
+and at 0.5 Hz: polarity mapping, PWMUPDATE latching with a running
+channel, and the pin state of a disabled channel.
+
+This follows the earlier CV1800B PWM submissions by Jingbao Qiu (v1-v7)
+and Thomas Bonnefille (v8).
+
+[1] https://lore.kernel.org/lkml/20250509-pwm_sophgo-v8-0-cfaebeb8ee17@bootlin.com/
+
+Signed-off-by: Hiago De Franco <hfranco@baylibre.com>
+---
+Hiago De Franco (3):
+      dt-bindings: pwm: sophgo: add PWM controller for CV1800B
+      pwm: sophgo-sg2042: add support for CV1800B
+      riscv: dts: sophgo: cv180x: add PWM controller nodes
+
+ .../devicetree/bindings/pwm/sophgo,sg2042-pwm.yaml |   3 +-
+ arch/riscv/boot/dts/sophgo/cv180x.dtsi             |  40 ++++
+ drivers/pwm/Kconfig                                |   7 +-
+ drivers/pwm/pwm-sophgo-sg2042.c                    | 201 ++++++++++++++++++++-
+ 4 files changed, 241 insertions(+), 10 deletions(-)
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20261104-milkv-duo-pwm-42fbc28b0693
+
+Best regards,
+--  
+Hiago
+
