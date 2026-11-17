@@ -1,78 +1,113 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794847201;
-	b=3Lu+kpmVNO1JSB+nXQAiCHezKNQdmYuodejOR2vsJJ8porUX9YnMeSgogk12E40PSUZT
-	 jeDaRzIfdYjexgh/NUggixSbgxhoyL9sJFdHueD7L8SPezy4EQJivjlEIRmx17Znos+lG
-	 vxgpj7GcS40G1yELA2QPgAZK/DW9X9OHAJfchcOOGkmwcz0q1GuZEOgb9WfEtDUAssTbk
-	 YZ5knVa4/Q1TvOL/RJCsaVC1nMwyj1mvJtEcbE2dbTYLrVmgYQKLAWT52jk/V9oHspT2P
-	 /ryuDUX4RBDDtYbbRHyCRbkFDnpxowO/kSt9auOG2h+cFieZ8dFV5IPgeXlOg6O3p8g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794847201;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Lk2SN1MOyS9BuowyoHNf1WTArRMVQdX4/eeuskoAfHU=;
-	b=CEFHXty1TfN1PpXQyJTz6u5K87MRNp3nZI3gWhZiSCP7D8sJANhaNuszScJPuDKP3DRH
-	 u+VzZOs/7X0aMkLitv1PlYv6YWKdFLnFqSy8LQ74ELsDnRFiR5oihzZaa0SvEQQD68D0R
-	 OYc+bp68C23j26z2RQKCNszcznSyjIKmWA/no9S6Llo9fQ/dt56ohTZBOHfn2joNcZ9JV
-	 WTxVtQY7y7cLks4ejuYrnw40MN+bJSMxQueUkOGJdq9MH3zejvH1GnoP8LNR8aO+lEjXb
-	 yvu+2X279WNMVla6EiCqBP7efaDS01sOXxDocCHmdYt7Fkk6Uz/Q2gDVGh0YHCh/zHA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oNx6e3VD;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F65F606A896;
-	Mon, 16 Nov 2026 16:40:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oNx6e3VD
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794847201;
-	b=FA/mB7upbb2UAXEDUnxBDmpwBjNKhg724S5mri31ObiPAp3Dr8s8HmxfS7d00zQRrWIM
-	 B01/oGIXwEWSbLhZI9MtYAQ/H7giutEOOn5imMUigaTOCNw9SfjyPrZa2prkzqZ/VE5Ci
-	 nf5qM2udxAdaqld3l86nkQImvzVpBPisOC95ah6HiFJaVadcuu24zC9hra2V1KEilwI3o
-	 djZ4ziaPxuBjChJLAGv39Pt1rxmuedzPf1D9y+Ij54OMhvxG+SsKQIS0Cod6sEaoLPe+V
-	 Upg/aBKtRxKYSuPwvsPsSEthOvEweVTDAuw4L5TOgfs3Jf6JolWwEq+HsyaLg5CmvNg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794847201;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Lk2SN1MOyS9BuowyoHNf1WTArRMVQdX4/eeuskoAfHU=;
-	b=IskYsL8RXTbGVL79lwmP24ZBvrmK02sz8L5zgrmAhSp6O1Gk4ags78c3Y+vnOw3tX6kE
-	 s3u3ZWjzCB2MAAKNG0iHi7dSDKTnG7XFQ048UpVYpXDmq+Jdjk67SoEkkL4dzlvXyCzgt
-	 Jw9BOXxQqk2NpxmaMdlOdwSx/mEYHJbAZLSh7C1v801S0xKx2uMRdUWG66Wxpla+RAMy5
-	 GAt+Iyos64WYUVNe4AIeb7PfOMMjXMZQc7TVrK7tvyGYNqNgunmZjWbup8p3jAxhhAsrC
-	 EX5Qi5rVqBTINgbTd2sWuN/GWpgqBSR8bxfx03stkoGiHzpfB5MUQUxkfMn36pg18vA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794907952;
+	b=zIU1K3uRayy7HxTGfcFW0nSeTUX/IrsXoSarTbpc+J3zAG0CVJI/E6danlyt0QVyWovG
+	 qK58eMdB9oA9OhNj0geSyOPFk8XZG2luDGS45lT+bhzhlaBM3Sz4MvaLNV6Rdva2Pyeml
+	 uL17tqxnw9Y0PmRXNUbUmruhbIhF/+nbBdvBn5P+Uy6aolohzmrTRYkObwivUIQg5TTIP
+	 vBXU1lle8V3ldBcv7ukEqS71dh3arR+79luh/+pxQU5DND/0+hJEVWc7xwm7Cznex6KKE
+	 PU+8/mKt/HND6aO/0BzARPIijuVQPVeSgVjxv6T7FYqg++TdOOIrKvz8ni9InZjI9iA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794907952;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:From:
+	 Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Proofpoint-GUID:
+	 X-Authority-Analysis:X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=7C/Oh2qf22t97UvAJSPDBdguvzEAFhAp3zxPE4qLodQ=;
+	b=H4NXgvyQH5yzRZhTRmUrV5WzVwsgFtUIiBcac09sfaF7ykNuUnG/xlyphvsFRzhH0EPm
+	 uwKlUgZQgzKlcXKk0EtG84VJPgpdVy99kBdA+r651ktpluFfRzDs08Lgv0mjxJFbLbSmi
+	 v49wkkCHvieGyvPGDjYVr+Ptx7pARDJcGh6Sx6Y1KBRzI78LwcCgn0K3OTJyAOjkGqaVn
+	 6KunAFHFgiBHqXtkRwX9ZTCsKgwNXo7mfcg/HRsxEf8g5eFemfAWRkoGvKwpcA6KWSQ7R
+	 UbQsW1BgYdAjlhkqRN/V122G2jiteo380cF6BzVeHYScjnRnO6aSL73IeAisIR1129Q==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=nR9yABHM;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=C5y93Mj5;
+	arc=none smtp.remote-ip=205.220.168.131
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 83E531F000CC;
-	Mon, 16 Nov 2026 16:39:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794847201;
-	bh=Lk2SN1MOyS9BuowyoHNf1WTArRMVQdX4/eeuskoAfHU=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=oNx6e3VD7PfJIvakux/7IfKew9NAFMzf1wVEWRF/AC05cS8Fw017hC4MFe/kPgluD
-	 fYGo4Bd8jXRlukrGpAlf6hG9ZciZrznwByGMKPwET2ayNQnRUFzli4hvaO07NOorpF
-	 2AuD5xoxUSx1dJKDluly58X52Tm/FUMEntppxieGbIlIYWv26DGk9Q516gpe7yUpVg
-	 8oZM2cwTzeb+7nR6Ry12uU+Y+xx5QRyr+hRZCfp/NkfPSZMBBeLfUd/u5BXONBQFax
-	 icMfPWbmRWG08Hff70PqTCEEJL2ww5Ju/w1VNfjorI3r198ZbLZsoKtu3IrxSIzO0O
-	 sygBXfEjyF5Og==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 116514A526;
-	Mon, 16 Nov 2026 16:39:59 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 16 Nov 2026 16:39:56 +0000
-Subject: [PATCH v4 04/12] iio: backend: add devm_iio_backend_get_optional()
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B673F606A337
+	for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 09:32:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B673F606A337
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=nR9yABHM;
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=C5y93Mj5
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AH8lRd71801789
+	for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 09:32:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=7C/Oh2qf22t97UvAJSPDBd
+	guvzEAFhAp3zxPE4qLodQ=; b=nR9yABHMfzSmZmqLcJddGH5GQ5dbN1wx5/5WPQ
+	D1ghVT/+9ScGKQtj/A2fHmTfLaiUa4itv8LXFJGZ6Y3o18yOjQgFt8fFBR04cQsY
+	IhT+0LymkO1bltd4jyxUvdKUdRC5QSnokTWcGJmuHww6ub643N52zcYLifMaWdGN
+	dgd/d9UzrsgBRlOvpDFnxlFs2VwPsBo1QZqqM2ApVjBePXqV+mekpA0f0RIy+INp
+	oRwQAWYS+CzLnnUd/0+RKDR7DU8dFviZb9xZIZjOwFoucBpe016PXrjy9/fFr71P
+	3gw60I2vxFkN8iH7kQVVKVtJ+LjSh5v8tcUuttkMML6anwYQ==
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com [209.85.160.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j034y44hh-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 09:32:31 +0000 (GMT)
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-45eb9967696so760223fac.1
+        for <linux-pwm@vger.kernel.org>; Tue, 17 Nov 2026 01:32:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1794907950; x=1795512750; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=7C/Oh2qf22t97UvAJSPDBdguvzEAFhAp3zxPE4qLodQ=;
+        b=C5y93Mj5WRY/BGJUQQWIHLYfC+f/P/GyxOao4/yrdIqSaCvqPI4f/JGec/efXNbVmR
+         goZP6E11uwLn9n+tCJoj+KhaLLw2egztjpDM9TpqMOcZOUWXdl4lBbrwbhHj4NTN04jw
+         7n2Hn/bwYy5F1qdK3Xy88E2F3mg0J7bvLj0N0LEfnEVCp1cI7UkRQxwpUtRJW4nxJw/9
+         0xCm5MYXtuuTbzuSpYo9Ii09Wi0fI1aUziS2KfiwMZoHlDJJnEQozILq+aAV9JW0aYVj
+         wfQeNYxF+J42NH3xtnC8Rv7qochh0kJTJ4ZBLl5VQd6nbGJhrLwlEkOLpGkBeU1vxBVV
+         tpfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794907950; x=1795512750;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=7C/Oh2qf22t97UvAJSPDBdguvzEAFhAp3zxPE4qLodQ=;
+        b=RlpVCVoyAZSYrpIypo2aDeaekww1VD3CZGhtYiFFk+viMA30eC5g+VyUOMf34TjPDe
+         BzbCbXzT9kMWJEswWnTeCEmdNANu6zDMcy1tq+G3ZpDJlFS0dxNdfPrUIqoY54tPQ+id
+         U+xbCLXjXN/y0wusAiUySrOtmJKT8IkH04ae5cXTFl9gyKBFZMIRS4wooLVkkkhVkZUd
+         f753iG0I817eCvDU2OmYzbUOQ2HpoCls2IvRAdFeUyhnRpQmo6myZApAjqelHSALx/aI
+         0BxF7TkWh9ZPimU7M6d9+fZ6dVqqoD/6a/4KOceb5RRUW7EOmFEEupZ757WSTkK3D1y4
+         Ag3g==
+X-Forwarded-Encrypted: i=1; AL+hErFI4/aO5Z0Is11U8a58p9KiChPfh1DsKZVyL5rqhCV9LtAbG2CDPXjEkfkxBfNzEQIfPARUk0GuVKs=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9SuzRtXR7McD7rAXOj1nFqYBYU/XgP8w+khgjfv+B/ABiBJIlU
+	Io+4u04NSUcKiQLRG+tAmQMNfnzOVioeRbK2X1ILbbONflUNBnnvWRRXv1cLpMpIBhazcJgeR7f
+	IdO5uBjKHoN79POw3Sco2l+LpbWajWP/L5ohoeVdEMtQmzR79X3SlDTbszoIkBKUE0BO7iexfOQ
+	==
+X-Gm-Gg: AYBFou2We1xzlFH7Lzp9z/d7brLVV/e8zngKhoO9NjNLttAxt7gd//fFMlIOGmnRdOY
+	ne1FA8kuIMTD06VX27n5hZIWN8hKhqwaZdRG7uLJuhX4Oo6r7mj/xhNIqoD2QvM0PUDyqKb/GC5
+	ZQMbuA3Kxh/gBIPy1EOFk2MHQj7q7yd/YtFkGYhSmIlcEeX3Hw7THwOdtHOln2izbza0HnKmD4K
+	IwwEkUiDgix12uOS3EdE49GoWsW4KpSX1E9gG0XMsMOZka6PFlslVHbONBkfeanuL6siLBAShYw
+	Iq2TXC5PCewLvpJVGCIuxcAg8kgx9ZcZJbNiJfKGfsSQALnCq3etHYxzb6ndN2YwdjuPz4qw/b7
+	nW496QZBvvE7CK+YfYnwMGJJYtRj0Al6Y5EzssdOhBqvYWN8TRFZDOtUgHiigbo/Iry/eQLwYQ+
+	AcH6WujzA1L9GuVDDYMp/9mE+p
+X-Received: by 2002:a05:687c:22cb:20b0:4a6:d645:94a9 with SMTP id 586e51a60fabf-4b40afe2b06mr889005fac.4.1794907950007;
+        Tue, 17 Nov 2026 01:32:30 -0800 (PST)
+X-Received: by 2002:a05:687c:22cb:20b0:4a6:d645:94a9 with SMTP id 586e51a60fabf-4b40afe2b06mr888989fac.4.1794907949550;
+        Tue, 17 Nov 2026 01:32:29 -0800 (PST)
+Received: from hu-fenglinw-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4afe2206dc0sm8678928fac.5.2026.11.17.01.32.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 01:32:29 -0800 (PST)
+From: Fenglin Wu <fenglin.wu@oss.qualcomm.com>
+Subject: [PATCH 0/4] leds: leds-qcom-lpg: Add several fixes and the PWM
+ frequency mode support
+Date: Tue, 17 Nov 2026 01:31:32 -0800
+Message-Id: <20261117-led-qcom-leds-multiple-fixes-and-pwm-fm-support-v1-0-7a862240683f@oss.qualcomm.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -83,141 +118,110 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261116-ad9910-backend-support-v4-4-fcf1ad364ed5@analog.com>
-References: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
-In-Reply-To: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
- linux-doc@vger.kernel.org, 
- Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: Olivier Moysan <olivier.moysan@foss.st.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
- Randy Dunlap <rdunlap@infradead.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794847197; l=4395;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=1RmO+bYGkY9qG/xEVJTt7o0ywOtzaEkx7xtxxPpxxXY=;
- b=6T/BbiBTjiE0kdJUDIl5wNN13mP3TkGCwQPTlZHfAzX2TgmF2gsXJBCTDB9/N//Mc1b7CCi05
- Q7jCJL2SRqcAJ7lTwLli2guo9F7TmulmGns2fvDIPdBGWEFmyuVr+K1
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAPUe/GoC/yWNQQ7CIBBFr9LM2kmg1Ua9inFBYVAMUGRATZreX
+ aq7/5Kf9xZgyo4Yzt0CmV6O3RwbyF0H+q7ijdCZxtCLfpRSDOjJ4FPPYRuMofrikie07kOMKhp
+ M74A2INeU5lxwUGJvjwc9iukEzZoy/b5Nern+mev0IF22DKzrF202NFWTAAAA
+X-Change-ID: 20261103-led-qcom-leds-multiple-fixes-and-pwm-fm-support-3a04f85c60b9
+To: linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
+        Pavel Machek <pavel@kernel.org>,
+        Griffin Kroah-Hartman <griffin@kroah.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Anjelique Melendez <quic_amelende@quicinc.com>,
+        Guru Das Srinagesh <linux@gurudas.dev>,
+        =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: David Collins <david.collins@oss.qualcomm.com>,
+        Subbaraman Narayanamurthy <subbaraman.narayanamurthy@oss.qualcomm.com>,
+        Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
+        Pavel Machek <pavel@ucw.cz>, linux-leds@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Fenglin Wu <fenglin.wu@oss.qualcomm.com>
+X-Mailer: b4 0.16-dev-17187
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794907947; l=2405;
+ i=fenglin.wu@oss.qualcomm.com; s=20260324; h=from:subject:message-id;
+ bh=J0/bhp9E9zVhqWsPDFGrCuBfATDpSj5KVBkOOJecmCI=;
+ b=B8VIMmvdX0xmus9xtTLOjvBL8GpGgCg9KLaGyJl3DYIe2Csl7x+vjlPejRKLGw32UV7AkFFGw
+ x3nbtPfbtYFAl7U6LbY1Jz+ibAdN/uRZRe7fGQnO+NlTKDTXsdhVFTL
+X-Developer-Key: i=fenglin.wu@oss.qualcomm.com; a=ed25519;
+ pk=hJdt3E7o54lql+miD2GaxwF74cDyhgNwMbmFOZ46bRU=
+X-Proofpoint-GUID: eN3vCfIT6L6TD4tu2JS3bmxOwgv9O20x
+X-Authority-Analysis: v=2.4 cv=aNZlOr9m c=1 sm=1 tr=0 ts=6afc1f2f cx=c_pps
+ a=CWtnpBpaoqyeOyNyJ5EW7Q==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=1XWaLZrsAAAA:8 a=UvHhfY28hrIE04vzKvkA:9
+ a=QEXdDO2ut3YA:10 a=vh23qwtRXIYOdz9xvnmn:22
+X-Proofpoint-ORIG-GUID: eN3vCfIT6L6TD4tu2JS3bmxOwgv9O20x
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTE3MDAzNyBTYWx0ZWRfXyo0D1DqLxqLZ
+ NpCRpSpzoFfv1joXNeucqaVQaCZk/qj1DSUEFKXt7uTvfkoQbV0eLbK9dOxsRaWLlsIXF1DSznH
+ VlJDNHQMr+XhnGCPFpIDunAWggnEWec=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTE3MDAzNyBTYWx0ZWRfXxizGqG2b2V+W
+ 4RhfkqCzYtHxLGljp0qN0jlmxaZLmpM8gMs4g3NOvJIyQ2tNmzABDUV6mWzaaxuC3/VtcRYx0Xy
+ DmdHJwXMlpG8c/7Ome2Tg1WqqWs6Mro2+fnJTM4lX6AYev8boiQrKEiEsty8OlOTmoZRzi1JSeu
+ rTPrTfh2lotdzDb7Hk+4Vbm2hgR/E632qQCKK09SFF9735A3XCyBAAqp2boB3xoKJnart6u9TRj
+ nHCNwhgdMt/kTUhgDehVegCkuHjyQoO/Yz0vep5KLZ1KXZVX3fBVPL+PVuBHdP75oB+FaUS7jXl
+ 73LNBVBJ2ZEJpM6zR1l9TaUvKtywPOsjyFVjylY0WfvI+nK/TF4ixRD+Hrpxj5baUo/Y0b1Y+Wp
+ y+BEoKEfWpCYfx7gdye5+wA6J1+dqwOIEVfNrLTYavvtvX171TJz8msgogvfAGSnyuZEC7N23Ej
+ a9jgLreJDL9SEwax+ww==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-17_01,2026-11-16_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 lowpriorityscore=0 phishscore=0 adultscore=0
+ priorityscore=1501 impostorscore=0 malwarescore=0 spamscore=0 clxscore=1011
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
+ definitions=main-2611170037
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+This series of changes combines and rebased these 2 series as they were
+changing the same driver file. It is easier to send them together to handle
+the dependency:
 
-Frontend devices might not need a backend driver to rely on. An IIO device
-that supports backends can behave differently when they are not available
-and that should be acceptable. Such parts may provide basic functionality
-solely using the control interface (SPI for instance), being able to have
-extended features when a backend is present.
+https://lore.kernel.org/linux-leds/20260716-lpg-rgb-color-balance-fix-v6-1-b49d51528f61@oss.qualcomm.com/
+https://lore.kernel.org/linux-leds/20260827-lpg-pwm-fm-support-v3-1-88ae5208c57b@oss.qualcomm.com/
 
-Add devm_iio_backend_get_optional(), which returns NULL when the backend
-is not described in firmware, i.e., when the io-backends property is not
-present or, for a named lookup, when the name is not listed in the
-io-backend-names property. Other errors, such as probe deferral, are
-still returned.
+Also, a new change is added to close the discussion in here:
+https://lore.kernel.org/linux-leds/20260827133753.GM770273@google.com/
 
-To make that possible, a named lookup that does not match any entry of
-io-backend-names now fails with -ENOENT, the same error returned when the
-io-backends reference is missing. Also, the missing reference is no longer
-logged as an error, leaving that to the caller.
+Following are the Changes in this series after the combination:
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+- Added changes to scale the pattern when the brightness and
+  multi_intensity is updated while the pattern is active.
+- Added a new change for explicit LUT ownership tracking to fix single-entry
+  LUT leaks during pattern cleanup.
+- Skipped LUT allocation for zero-intensity multicolor channels to fix
+  comments from Konrad.
+- Renamed Frequency Mode identifiers consistently from `fm_*`/`frequency_mode`
+  to `freq_mode_*', and clean up the code and fix the naming issues to address
+  the review comments from Lee.
+- Added logic to compare the timing accuracy between standard pwm mode and
+  frequency mode and select the better one.
+
+The change series was tested on Maili QRD device with pmh0101 in these scenarios:
+1. Tested the RGB LEDs by randomly adjusting the brightness, hw_pattern, and
+   multi_intensity when it is working in HW pattern mode, and the LED pattern
+   and color were confirmed to update correctly every time.
+2. Exercised the PWM4 channel on pmh0101 by requesting it at different periods
+   with a 50% duty cycle, confirming that the frequency mode could be configured
+   correctly.
+ 
+
+Signed-off-by: Fenglin Wu <fenglin.wu@oss.qualcomm.com>
 ---
- drivers/iio/industrialio-backend.c | 38 ++++++++++++++++++++++++++++++++++++++
- include/linux/iio/backend.h        |  2 ++
- 2 files changed, 40 insertions(+)
+Fenglin Wu (4):
+      leds: rgb: leds-qcom-lpg: Fix single-entry LUT leak
+      leds: rgb: leds-qcom-lpg: Fix LED color balancing in HW pattern mode
+      leds: rgb: leds-qcom-lpg: add mutex lock in lpg_pwm_get_state()
+      leds: rgb: leds-qcom-lpg: Add PWM frequency mode support
 
-diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index 9a1072b39815..1458d5a3eec6 100644
---- a/drivers/iio/industrialio-backend.c
-+++ b/drivers/iio/industrialio-backend.c
-@@ -1006,6 +1006,9 @@ static struct iio_backend *__devm_iio_backend_fwnode_get_by_index(struct device
- 
- 	struct fwnode_handle *fwnode_back __free(fwnode_handle) =
- 		fwnode_find_reference(fwnode, "io-backends", index);
-+	/* not described in firmware, let the caller decide what to do */
-+	if (PTR_ERR(fwnode_back) == -ENOENT)
-+		return ERR_CAST(fwnode_back);
- 	if (IS_ERR(fwnode_back))
- 		return dev_err_cast_probe(dev, fwnode_back,
- 					  "Cannot get Firmware reference\n");
-@@ -1034,7 +1037,17 @@ static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, con
- 	int ret;
- 
- 	if (name) {
-+		if (!fwnode_property_present(fwnode, "io-backend-names"))
-+			return ERR_PTR(-ENOENT);
-+
- 		ret = fwnode_property_match_string(fwnode, "io-backend-names", name);
-+		/*
-+		 * fwnode_property_match_string() also returns -ENODATA when
-+		 * @name is not listed in the property, which means that this
-+		 * backend is not described in firmware.
-+		 */
-+		if (ret == -ENODATA)
-+			return ERR_PTR(-ENOENT);
- 		if (ret < 0)
- 			return ERR_PTR(ret);
- 		index = ret;
-@@ -1061,6 +1074,31 @@ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
- }
- EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get, "IIO_BACKEND");
- 
-+/**
-+ * devm_iio_backend_get_optional - Optional device managed backend device get
-+ * @dev: Consumer device for the backend
-+ * @name: Backend name
-+ *
-+ * Gets the backend associated with @dev. A backend not described in firmware,
-+ * i.e., the io-backends property is not present or @name is not listed in
-+ * the io-backend-names property, is not treated as an error.
-+ *
-+ * RETURNS:
-+ * A backend pointer, NULL if the backend is not described in firmware,
-+ * negative error pointer otherwise.
-+ */
-+struct iio_backend *devm_iio_backend_get_optional(struct device *dev,
-+						  const char *name)
-+{
-+	struct iio_backend *back = devm_iio_backend_get(dev, name);
-+
-+	if (IS_ERR(back) && PTR_ERR(back) == -ENOENT)
-+		return NULL;
-+
-+	return back;
-+}
-+EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get_optional, "IIO_BACKEND");
-+
- /**
-  * devm_iio_backend_get_by_index - Device managed backend device get by index
-  * @dev: Consumer device for the backend
-diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
-index 9c16b695a602..93d5f2073cc3 100644
---- a/include/linux/iio/backend.h
-+++ b/include/linux/iio/backend.h
-@@ -267,6 +267,8 @@ int iio_backend_extend_chan_spec(struct iio_backend *back,
- bool iio_backend_has_caps(struct iio_backend *back, u32 caps);
- void *iio_backend_get_priv(const struct iio_backend *conv);
- struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
-+struct iio_backend *devm_iio_backend_get_optional(struct device *dev,
-+						  const char *name);
- struct iio_backend *devm_iio_backend_get_by_index(struct device *dev, unsigned int index);
- struct iio_backend *devm_iio_backend_fwnode_get(struct device *dev,
- 						const char *name,
+ drivers/leds/rgb/leds-qcom-lpg.c | 643 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 562 insertions(+), 81 deletions(-)
+---
+base-commit: 4e88404a72e5e26720539e5555c383069cefb486
+change-id: 20261103-led-qcom-leds-multiple-fixes-and-pwm-fm-support-3a04f85c60b9
 
--- 
-2.43.0
-
+Best regards,
+--  
+Fenglin Wu <fenglin.wu@oss.qualcomm.com>
 
