@@ -1,142 +1,75 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.154
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795042306;
-	b=QHGRshaLKiJmLNjufgXsMJJcWilDk3kOyKVOr1xgOwy+JxtR1YJJuLe0KzUDzLiKeATi
-	 4oIm/TXVB+I2zQ8rENkRwZ/uLbMtQnZOZHIclsGB40mdJJzZxbrZLbZxAZvjHAhUnB8lo
-	 ejZSbmsRoyUJ8VxyoiUCIJVXXJdk42FvMHPTMA/0hBH+2jobJx4FCeN0RCQJAMXqsQw3R
-	 y2GvVhh1ZTm1y+qR0T2Tshwv65m06zqvutI/qOd5EeofbQ2tPQZUauAzV3ZbQYU4p3gQq
-	 NFpHR+NYXCcF7OvPW8Yg8VmELrNzTotGEhMEoCEjv5syjjntGEOQNINZVY/0/+9bcxg==
+	t=1795042416;
+	b=wV6eClxDOqkq0/WZrNRXpRvuCQkwhFAPUnNHF8qdyHBeT1u/c6BiqiMzfZHP4KbgxO84
+	 QWfGaHjKUfLxj3Knrci1x+bodjjQviS4JBLeVw4URl37MuAe4xD4Dxy8aHBF9x2wIsdOR
+	 gAIDICi5HPpR9ELLxBWM6KjWI99/X6jrilyFV8lEntjbxfK7dO8lWTonoEbBkIa972TT+
+	 SjbMZb7+lbAsptKj98V+DMAW+j0N59+9cFhRdmSFyoi5/iQ5zk3ryEVdPFMYsZC9k/Tmw
+	 RVBLe082ZrTbOVSlC6WCSSr0O0CVFVIJGWiTa2x/+a6Z15KVk9hvVPB39jQZd2iqkEQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795042306;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
-	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
-	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
-	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=5+XtuorylhonqXeUImWVMGAIX8lmQG3o0bBLIzEVaN8=;
-	b=YDdcXCHrP/RAtik7GhGqzMU4OqNFF+Q7bKl2KyEeo+n7dERbVQ93od+dn6DE3csOp8TV
-	 9w18284lqHdAAXS4EW2J4qL54kR0lwFw6P9DGFZVY6d6V4gFZolB8UoMFQ+6cp7ppAtRp
-	 ZS4ZpQ80oBqhWUc92N8INsHlY+17RjzRECxwJ+GNdZOB3vrgBS/+b1NMRYjmYN4L6WTK9
-	 GfHYKq9Qjti1S0XmZWZbEz2SYVV4cYvIgwxaybi16UttkK4Uh7xeA9QYOVL/Eh/vZ7Vas
-	 SWioR4oC+jfUGNTiJG7iTh65DvK/6eUmt3m5d983kVQ79sECyuKftGTxOGBs4r+WvKg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795042416;
+	h=Received:DKIM-Signature:Received:Received:X-ME-Sender:X-ME-Received:
+	 X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=ju41tYcaiYxL4W2/W44iKRoLMlO2PoKIBMEkIkLyQg4=;
+	b=R83anHTF2t90P/YBNOwkXnwmRXjWULowOp2xUckalYFG52Zgg0dt+1udco8W/5rHu2f2
+	 FYm9JViNRlL8VHbseoYd/hrDlAQy8YhsqfzaPQsV+m2OXwJymA5zvUgXTb7djB/Ee0xl0
+	 icuG8Bje1BxzicGMeQqadUpF/5dJVHjXGz9gp5pK3UETUhNtWrluUJeAal9TDsovjp/uP
+	 f5H01tl0+nNH1XgjPN5aR8gzi27k1aw5DnT7P7tTqHK2nbU/egRBVfC9LCth2etZ01ejC
+	 pBIIOC9d+1BGblV+oLtD/dYvmMAhJM9sVcWOEFpzameQuvBcQNbym4NJIEMKSZYELwA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=flapping.org;
-	spf=pass smtp.mailfrom=flapping.org;
-	dkim=pass header.d=flapping.org header.i=@flapping.org header.a=rsa-sha256 header.s=fm2 header.b="t2zp4o//";
-	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b="tk/gCUx3";
-	arc=none smtp.remote-ip=202.12.124.154
-Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FEuWXSGr;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AE33606A32A
-	for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2026 22:51:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7AE33606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=flapping.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flapping.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B58F606A320
+	for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2026 22:53:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=flapping.org header.i=@flapping.org header.a=rsa-sha256 header.s=fm2 header.b=t2zp4o//;
-	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=tk/gCUx3
-Received: from phl-compute-06.internal (phl-compute-06.internal [10.202.2.46])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id A17AD7A0200
-	for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2026 17:51:44 -0500 (EST)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-06.internal (MEProxy); Wed, 18 Nov 2026 17:51:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flapping.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1795042301;
-	 x=1795128701; bh=5+XtuorylhonqXeUImWVMGAIX8lmQG3o0bBLIzEVaN8=; b=
-	t2zp4o//Z6EkDAhYI3tosB3KAxQXYYhzXR7wHXajp6Ymcw8aWuCY9h51DJ9WP22r
-	mm2haldNeLLWCWquQ3jqjdrjV21nx1SS6Mj3z6ZXf+aT8DUrXC0e0b9PPDfW7eLM
-	ioJXgNc4uEbzkmA9HCGLf4E6UGHiTl/gn1L2dPADYo0SFYd1DR+RDqTSh26jFxyl
-	BWHarFe3qtNUjdCWwn6Wu7vqqWp4K7dcjxd6yzo4acjOM0kZZCBNe82JkAoNPUgz
-	Ldori2L1j3X8kRje1JP7SDB9/lQ9/4isbOP72YXFx7UhxEc6Q0Svcr/qeczXLHeB
-	Jlv3AEC3OpZ3bdW6rPlx3g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1795042301; x=
-	1795128701; bh=5+XtuorylhonqXeUImWVMGAIX8lmQG3o0bBLIzEVaN8=; b=t
-	k/gCUx380TGoR0BqFrM8Q9RPUriUvwdEbB1VhBNS6OMTZiaEqrrP6x8BzwW0P08C
-	0Snil+J4c5xd761dvtzO3lCxssWwHCM/y21p3LOkyTxlhFUJK2olNwbsj5B2eRVp
-	BU9NKEq+QqPRXClF7SrHMNECyVxxWABsJhj+Ldu9ZLEhKokzKVVy9pnWut36W6BD
-	CnVtyJQviz5blD7GbhszX+jTBmLL+jWz85MbUNhY5ljoZfRrX/pI8KMGbm5Mnof7
-	1yBYRABFHBcVIJZIA7Lwo5Ht5ALQ3K2D6YVouYxNa2HpT1WyTDRuFTx0a9zcsIFm
-	JLtIhwrFWnJpcAJK6daug==
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=sign d=flapping.org a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1795042301; d=flapping.org;
-	mf=PHRvbW9AZmxhcHBpbmcub3JnPg==;
-	rt=PGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmc+;
-	s=fm2:rsa-sha256:q+UUkI5+d33B5Van6kVwERUGS45bQ15ACboHhZsoogYGNWq
-	Ebv2OjZ5qF4HiZx0BZ1UaEFBuu/B4kDXSFvJk4XZXZS2CLBy/txZx8SRMh+XfTf7
-	NjHN9HTlkcNk8oIBKqY9I8HWLPT/5tTKwahxEm2Vml1MSZxK8SSi3uGYMoOfzL0u
-	a6/Qfc8ROcyO8QRytvR7vv64KAVo0N/Yt0QzHqve7cXe1itzvBQZ3VW9FgFt6na4
-	0wipiepBiuvGIBZxILkET1RhHIrEELUeK7y0MLKAw1LDwKaKJiQMr03KlOE3Km/P
-	ZEx68RCug4cmyg0mPOgW3zm68SIGVDuAPt1dZXg==;
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=mi-m=1; hc=12;
-	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
-	from,in-reply-to,message-id,mime-version,references,subject,to;
-Message-Instance: m=1; h=sha256:gwT+p8kA7L84lFFCIpLSyCi9PmiCPy5KF0kAnTVsOyY=:1FBlag0FukFNRxAPA6u1bOZGR6svMgeErrUIKxOpl2w=;
-X-ME-Sender: <xms:_Sv-aoUZB_vszS2GIIfPYPLHd7NZK5Y_MQhuJMFPUd6lSW7ahRtZ6A>
-    <xme:_Sv-aoQrMiz-WB-d8ji59PcTi_caej1n2yv3EG9Clt0Qp5Siz8iSeJEBqnirfyyJR
-    S00UYLI1DKfk4LF-oYB7fZYPrLJW8dm9tHa9xwHLpA6bEOV-Tdob5pO>
-X-ME-Received: <xmr:_Sv-anF4bRblPsSl1aVOGZRc0tRo-4pSGRUTCF1tKjq_b5BMjls2x15CYZPk3ReAiPmYuGL4Jseroq58ayM>
-X-ME-Proxy-Cause: dmFkZTFhpCaxkrSdjl1bmMJJH+/ejCFr/GqQbJXvXr6UlOIRW2lZZvZP/KmdXAvHUIGyyz
-    85TDz7C0/Xb54ijhMfZSKvt45T37yo/K2raDnJEqf9J5UuZK2dagcIqyohcmW9xWXmOwUe
-    +4gPxStnhvqvL2tBuq2htXg+XD34Oko58lA4EJv2yXj6gHPsdlcW/Cj+pvvSS+gUR/6CEr
-    B8OynZaxZ7qkpVUK570tvkJbqwwnbeKMDuUw2cV/y6j0X6tTg6ntTWYmGXTRxa/YorI8cw
-    rQ1L3NyLdYDcxz4IT6re/HcFeAek69CMRarEGPAxn/+6ZUQT6BYi6217KYFUG2kd/9ZURQ
-    6g9FJbDw4vvXAkfkC6yLrnmgYU+Dzb4EgyNVc6M9RFizLw7kxcUtxjOjis41aL72147tzG
-    JsHUuYZ00K/3PDBEZtNez1CutzNImiNrlrWenYDiE/MoXJIMsGOz2igtxgTuBitbWw3Dex
-    zbvdsr3egpnjXSBFVfPG8tNtHLgI90UzOATzb8IJdyyPBE5MA7FVb7MvGssc3z84zZdSnn
-    mfo+F+5iON5dgC+vVYjGW6nIduITfpy+S3u/SQoFiHU/lmUdWKBe1DXIoRAko98qVwNQmm
-    nAnD0CVlN8CDw+EEviWcmQjhhn7Q2Or86QXKYSfqEaFfVfsKa14nE17qvsJw
-X-ME-Proxy: <xmx:_Sv-aoQVKLsWu56hL7EcYlAaIwVOqRvWFGwy2usdAqGsUWQZ8TlHbw>
-    <xmx:_Sv-ahoB00kGA5ALynm7ceTiTJq-0yWX9tvcN1UXUkB35Gzk3pDWTg>
-    <xmx:_Sv-aurkqAMMjd0xC9J9M0eaTBi54SII-yk6s_phdb2bblRa6fWqHw>
-    <xmx:_Sv-ak0GFA8DqmYFGxKqTF51v4feGnZUf3c9yFfIaCj-8hQsIRG1Ew>
-    <xmx:_Sv-an17hJfeug1QClumL922umJqTmZ9AQlmscuyGtM-2EoZY0iSl87F>
-Feedback-ID: i51fe4b43:Fastmail
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FEuWXSGr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA3A91F000C5;
+	Wed, 18 Nov 2026 22:53:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795042416;
+	bh=ju41tYcaiYxL4W2/W44iKRoLMlO2PoKIBMEkIkLyQg4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=FEuWXSGrYrUQFlhOYDJ8RmqRs+UHxDca+SRQUjzDXuUFDIzfXsVMXV5QW5Nf2O6O2
+	 yMfr+HxTUXuul8S/4nyXH3r2G+T3BUw17R2mKzbzKHGY+Uc9R9TDwQqHP1I07BZL1h
+	 cg0702Dz8taE9mZDR3DpfRWO/zeJGCiWx+2rBpqpU54s60T8l+okiYjuAzmVobBvVi
+	 dd6+0FS6i6GTPI2AAfPqebmA+dM3JxbnmqF0/BCeTJTRMszRnLVvcPbZzh9sXG+JFZ
+	 o1ZEN2SyYFSeAyu5X1TmOKKyuatEEOc8sOmu7NRmXiEDhgDi/YfEZFhXIDZOJ8MUDW
+	 4tZhNsWv93cTQ==
+Received: from ams-compute-01.internal (ams-compute-01.internal [10.64.2.61])
+	by mailfauth.ams.internal (Postfix) with ESMTP id 3BFF5198004A;
+	Wed, 18 Nov 2026 17:53:33 -0500 (EST)
+Received: from ams-frontend-01 ([10.64.2.36])
+  by ams-compute-01.internal (MEProxy); Wed, 18 Nov 2026 17:53:33 -0500
+X-ME-Sender: <xms:bCz-ar165EtE8yP63F8I3TVUVbswPq0W28EX1eVCuvCspJSmMTa8Qw>
+    <xme:bCz-atn1iwnmNoA5-0PrLDlvzW0ZTnKbz2GZQ3leKx2RlYhlnLVsT7tkReavmDM1A
+    jprlM6e1waLYmBAPuXwhj1EENgq8pYksOaNPSQSin3YqtELmQ-f-YmW>
+X-ME-Received: <xmr:bCz-akZKlmfegl2fqaxxh7n91phHwSKnWnj7jZR-kBiy9bXblJLgRgdUKFoWzQiz7xw>
+X-ME-Proxy-Cause: dmFkZTGXIZczXO+q6nTDnnEDvnvxIDawn337UpYr9JBMhqxburbViiiOHKHwmc9THwyxsv
+    mMtxYDhBKJUPw87BPTOS83rVPircW+IuGhNLyHPm29xrQfEd8oB5Y/vOrzLTevOMUpFKll
+    x6IxlXfz5ayiB//GnmAE5vpQukAANDlGGhka8oOoolkp1fJj2KhhfFVrBEpsdxH4aHEJU1
+    OJwIRH+T2juR5qFAkq6C4SQPuquCsk4qcYhWWw49en0FDrCDxplQwmW8234rugaEPwbMb9
+    Vh6m6IDv4fxLik+a76NDGhtqmbm/EIy4mvvwoZjhveJtqosG6m/JLmF964oiBMF+FwXVQg
+    7kxdPhylGkBNQU8VJT7JaepaX3P5UE0pQN6K46BLGwgxuheOetCjapOLVOAncSLUzv8KwQ
+    Eppk1HzLr1HHlN5tseRUNdGBCagPDaIk+9n+oReBnHgypHForZWKDBYOA4YfSvdoEhPVWz
+    jFm2+Il+Uidjg9JeFAfnEtYnL0na1GYilpa68Gj/GbWoXpur4L8d1jlk0+gTg443Oit12n
+    RWtxb8mhnwkKPgWIvnmWHZbrpWTBEZ2aXGtbCO/fLnWrqIPSsnDPIsmOE5h+WH3W+vxpxO
+    I2+wN0UFnaVordnO+YBO8eXixrynfqAIY8xDRpW4eP1pg9upxWW8NNvjnsjg
+X-ME-Proxy: <xmx:bSz-ajogOxzQPsY1lIwvMLSM7QUOTTFOCc8ci-d4zb8D6EfXwkwQ9A>
+    <xmx:bSz-aijI6Seva34_ycm_CItwANcssdiPxnlPJP4hvPVScJgtHVXd2g>
+    <xmx:bSz-atw5apVr4qKkV6OArzTae8CUat8BRMflg8Yo1hrVh84gBP2JZA>
+    <xmx:bSz-ao8aqTnFeyYzoJ7OXE1PVHjQLP9bAjSVEQk5S-E8WJSDn8Dd1Q>
+    <xmx:bSz-aiAi-ZQEQAiZn3Ftu0If-6-NiFKB4AF0UJIc3cqgdSA2nnxOdUnt>
+Feedback-ID: i78584a88:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 18 Nov 2026 17:51:36 -0500 (EST)
-From: FUJITA Tomonori <tomo@flapping.org>
-To: fustini@kernel.org,
-	guoren@kernel.org,
-	ojeda@kernel.org,
-	ukleinek@kernel.org,
-	wefu@redhat.com
-Cc: a.hindborg@kernel.org,
-	acourbot@nvidia.com,
-	aliceryhl@google.com,
-	bjorn3_gh@protonmail.com,
-	boqun@kernel.org,
-	chenhan0017.work@gmail.com,
-	dakr@kernel.org,
-	daniel.almeida@collabora.com,
-	gary@garyguo.net,
-	linux-riscv@lists.infradead.org,
-	lossin@kernel.org,
-	m.wilczynski@samsung.com,
-	tamird@kernel.org,
-	tmgross@umich.edu,
-	work@onurozkan.dev,
-	linux-pwm@vger.kernel.org,
-	rust-for-linux@vger.kernel.org,
-	FUJITA Tomonori <fujita.tomonori@gmail.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-Subject: [PATCH v4 2/2] pwm: th1520: Fix 32-bit build with COMPILE_TEST
-Date: Thu, 19 Nov 2026 07:48:26 +0900
-Message-ID: <20261118224826.2491684-3-tomo@flapping.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261118224826.2491684-1-tomo@flapping.org>
-References: <20261118224826.2491684-1-tomo@flapping.org>
+ 18 Nov 2026 17:53:29 -0500 (EST)
+Message-ID: <a7021c7d-4171-4961-b8b5-dea622fb9e9f@kernel.org>
+Date: Wed, 18 Nov 2026 23:53:28 +0100
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -146,64 +79,44 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/2] rust: math: add div64_u64() and
+ div64_u64_round_up()
+To: FUJITA Tomonori <tomo@flapping.org>
+Cc: fustini@kernel.org, guoren@kernel.org, ojeda@kernel.org,
+ ukleinek@kernel.org, wefu@redhat.com, a.hindborg@kernel.org,
+ acourbot@nvidia.com, aliceryhl@google.com, bjorn3_gh@protonmail.com,
+ boqun@kernel.org, chenhan0017.work@gmail.com, daniel.almeida@collabora.com,
+ gary@garyguo.net, linux-riscv@lists.infradead.org, lossin@kernel.org,
+ m.wilczynski@samsung.com, tamird@kernel.org, tmgross@umich.edu,
+ work@onurozkan.dev, linux-pwm@vger.kernel.org,
+ rust-for-linux@vger.kernel.org, FUJITA Tomonori <fujita.tomonori@gmail.com>
+References: <20261118224826.2491684-1-tomo@flapping.org>
+ <20261118224826.2491684-2-tomo@flapping.org>
+From: Danilo Krummrich <dakr@kernel.org>
+Content-Language: en-US
+In-Reply-To: <20261118224826.2491684-2-tomo@flapping.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-From: FUJITA Tomonori <fujita.tomonori@gmail.com>
-
-Fix the following build error on 32-bit ARM with COMPILE_TEST:
-
-  ERROR: modpost: drivers/pwm/pwm_th1520.ko: symbol '__aeabi_uldivmod' undefined!
-
-The driver divides u64 values when it converts between nanoseconds and
-clock cycles. On 32-bit ARM, these divisions are compiled to calls to
-__aeabi_uldivmod, which the kernel does not provide.
-
-Use div64_u64() and div64_u64_round_up() for these divisions, in the
-same way as C drivers use div64_u64() and DIV64_U64_ROUND_UP(). The
-results do not change.
-
-Fixes: 3c180003dffb ("pwm: th1520: Fix missing Kconfig dependencies")
-Reported-by: Andreas Hindborg <a.hindborg@kernel.org>
-Closes: https://rust-for-linux.zulipchat.com/#narrow/channel/291565-Help/topic/64bit.20division.20in.20.60pwm_th1520.2Ers.60/near/626825599
-Suggested-by: Uwe Kleine-König <ukleinek@kernel.org>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
-Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
----
- drivers/pwm/pwm_th1520.rs | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pwm/pwm_th1520.rs b/drivers/pwm/pwm_th1520.rs
-index 728993998446..bd05fe49650e 100644
---- a/drivers/pwm/pwm_th1520.rs
-+++ b/drivers/pwm/pwm_th1520.rs
-@@ -31,6 +31,10 @@
-         mem::DevresIoMem,
-         Io, //
-     },
-+    math::{
-+        div64_u64,
-+        div64_u64_round_up, //
-+    },
-     of,
-     platform,
-     prelude::*,
-@@ -68,13 +72,13 @@ const fn th1520_pwm_fp(n: u32) -> usize {
- fn ns_to_cycles(ns: u64, rate_hz: u64) -> u64 {
-     const NSEC_PER_SEC_U64: u64 = time::NSEC_PER_SEC as u64;
- 
--    ns.saturating_mul(rate_hz) / NSEC_PER_SEC_U64
-+    div64_u64(ns.saturating_mul(rate_hz), NSEC_PER_SEC_U64)
- }
- 
- fn cycles_to_ns(cycles: u32, rate_hz: u64) -> u64 {
-     const NSEC_PER_SEC_U64: u64 = time::NSEC_PER_SEC as u64;
- 
--    (u64::from(cycles) * NSEC_PER_SEC_U64).div_ceil(rate_hz)
-+    div64_u64_round_up(u64::from(cycles) * NSEC_PER_SEC_U64, rate_hz)
- }
- 
- /// Hardware-specific waveform representation for TH1520.
--- 
-2.43.0
-
+On 11/18/26 11:48 PM, FUJITA Tomonori wrote:
+> From: FUJITA Tomonori <fujita.tomonori@gmail.com>
+> 
+> On 32-bit architectures, dividing a u64 by a u64 with the `/` operator
+> makes the compiler emit a call to a compiler runtime function, such as
+> __aeabi_uldivmod() on arm. The kernel does not provide these functions,
+> so the build fails when Rust code that is also built for 32-bit
+> architectures uses `/` on u64.
+> 
+> C code uses the helpers in include/linux/math64.h instead. Add a math
+> module with Rust versions of two of them:
+> 
+> - div64_u64(), the same as div64_u64() in C.
+> - div64_u64_round_up(), the same as DIV64_U64_ROUND_UP() in C.
+> 
+> On 64-bit architectures, both use `/`. On 32-bit architectures,
+> div64_u64() calls the C function. Both panic if the divisor is zero,
+> as `/` does.
+> 
+> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
+Reviewed-by: Danilo Krummrich <dakr@kernel.org>
