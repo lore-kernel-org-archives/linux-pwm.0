@@ -1,76 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.70
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795044229;
-	b=I+cgQvjaN04IGFS1BBf8zWHMLVw09zqIzxdPw8UE9jiHz2Oaq1wO+zQcqVY6xOgP38AF
-	 oWH030rPcXdfrPm+ZU77HVKyA134+s55Qy/la+p+4PFWHcW42roemwcYW2UG7Q66IbZfI
-	 HwrEyJKmENmeHNlcnWKRDX48uj8whgktxKXQFkbrVZlwf2Bfxp+NKVszYWH8kYb/yZXwP
-	 zuWfoJFzqIkwhrtTzipRv44SJTK98NhWjhLElqed3q4Sw5TdJV4NLFW5ti7jYD5LKz1A9
-	 qExLLpR8Wzr/MdddWMVsgNWqtkjMfYw/VG4vtGuU1GltX8CftBnLPaRL+WSvRm4VB6Q==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795044229;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:X-Mailer:Message-ID:Subject:From:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=BNtN55GYuVsPPt5uRpwb+HzLieno6rlFAiQ19PmBpDM=;
-	b=T7EVfTsuNW6s6vZRTb0/+KPV4p+/66tHUwJtF+6Z7lJ+gCf7Fp5W8KDfnG4T3eozyoh5
-	 ljQEw5Xhsep9Gy9fNnR6jGyN8bMfT2eoOGAo4stVriDUbc+bAZTcD1lcytIyOdVqx4pT8
-	 +VIVS2BRAhRe8OBYPoW/mwSZ8Rwb6455cKlrJgHdfe3pzhTstpHu2+M2KmLKjlyyTKpIZ
-	 9K0BSEpjJ2I6r0FjJsR0fWL89yngYNlfCqwdgsHHD8ISSHgOCcYLB7apXJFPT3/+xrNQq
-	 CWrV4ucmM51ylWrPLVe/zm+usKgB06NqPNTbXegj1eISrw8K0tTQWFiwCGzAI/3I9/Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=TE7GF2Io;
-	arc=none smtp.remote-ip=209.85.221.70
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795085779;
+	b=5E9SFHvn/bYKCaAHgIQLENojoMt3BwRIq+L83P5osQRuzQLpJC288QaOivdqsTfJ3Pjm
+	 psdHrUtBEyQH9eDGTtEhqvxwYaii3AC53/qMW/XIJVIwePip65uehRGU5psoUDw4emG1r
+	 hq872fm6N+yiSlZ3HQeG6v+kEY+g3d/Pc+IbUEnjDLm3+uO64rcGXungClqXWjv2jVn4e
+	 uJJzcZkViIjfBDl5Le/+3r0x9x77xpLrFPJzUpWMdELMzswfXQLdA8hlYaJVkkE5GWLF2
+	 9dvQad1hIYTS8af78DtFHItwLGCFNJb4tINbj0oYZhPgbbzVcSa5CbX29DcJJA88SAQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795085779;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:Message-Id:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=TT5Zv18zzhPxTIO9MQPj2JkdchjggYrubOF+S8W9hw4=;
+	b=c7fyhG7QJD8j7zsrIWvQVzHyuifZUqL9+rD5aXLzNemwkN8dYxU9BfRVyv4nw68LYiiL
+	 GcaFeWtqoS4OCCH2GuYKvBiJQTclhj0ysruEoc1as5Sva8gYyhqjVjRc1/E/1YdHN0M38
+	 fW0yB+0AbqXdUsaO+XW3FAhWDbos85R83iso0JUT8vE3mvEtitXiby5aa1xzWOmZdvI7M
+	 b54Imc2pvNZqVVa3uovUqUd+zc9sOwPNUzeFGwWY+joSlmQQcLo3SaHJmqCrXowvcUj55
+	 YbDpKA0es7M9Tjd4TGLEmWGK+oTwbqm4CdS2Ye0Z/23b/xZrX0+SuAZvxpKlw1Ht6RQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Lm80VAl9;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9398A606A320;
+	Thu, 19 Nov 2026 10:56:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Lm80VAl9
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795085779;
+	b=yrGKqIxFjkqggT3ZlAgWOaGMtLZ+quInI+BOdPCuAXpP9C4/Qb6PRFHfV+u2CT5XLgSw
+	 gGVPFEjmzX7SsZKxQiNzz4gxoWp0bfsvHlpGBvemM5OErQ8j+RlB3B0jporUILdfSA5yv
+	 a4KGDiJWpdG3GBQ6xB5w9cotqohROlxZdnJGCYrKT1gOIZY18cjA9SkmdG0bMQ5sc3aEW
+	 gcULElUezf8s2QXmr2d4aBnaV9x/i64ZSKwOeDrSfs6aaEfwhntLXThBvzwzOK43z6ylE
+	 gw5YWdRaKstDJbCQXvJmaiThId8r28/kvW3qDA+yAG5S43s1AAhfxL4a0xv8hJ/jwDQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795085779;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:
+	 X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=TT5Zv18zzhPxTIO9MQPj2JkdchjggYrubOF+S8W9hw4=;
+	b=ZBpb9ZelptSXaLB1aXUrUmElIIDMm7n9HUI5Em2KmSo4uv1zlVBhdk1t/2+u+f5PlwFw
+	 ax8/17FkQh4I4srcldv/EgdTzSkyV1SK64WI3c8RXl+9BjRujJJkIuIhrgxHri5oqQbqw
+	 yu5PZm2/AqXBG0I+xd6bhq//IwXe1nMdP+6wg+F/4FrLpVezFk18TlgG3sqPknmv8g+sl
+	 rbZxJL+bk5MEHKtJPvUeBaqU8ShE1Bd13GVWbNUA8anX7rfxd/ffEagm5U86wf008Lq3S
+	 Dlhj/iro+hdk9jg495/Wl12jsBf0rB5HzOCZ5sxyI8fl0i9E35s3TqN60+o9f8O7I0w==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9738D606A32A
-	for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2026 23:23:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9738D606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=TE7GF2Io
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-49034831bb3so1053329f8f.1
-        for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2026 15:23:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1795044227; x=1795649027; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=BNtN55GYuVsPPt5uRpwb+HzLieno6rlFAiQ19PmBpDM=;
-        b=TE7GF2Io74oN7GLFOgnUS+9NnHQI+mRCX2/LGNqharVkbEV2rcrIoCEBu0a8PAd1jT
-         0YWftalTkS6Bhgk3JPapQbWIzID75yquOWxybHPrTlr5Yr8n496NznOhFTUXpa0bivPj
-         9wO/rHY+ZJCLxLKc6a0FQp3SB/SEcEmqOuX+AgpJOKnsmyzcDNlamQs5V/g1M/XqT0PX
-         SfMVSnwOqprt2jH9gZJYyz5Turj05ne96HpUsoGt2KjkuPkoGZXzAdFO93K3fE342zbp
-         8L5i87sLBVzZ9xpqBJjSVt8PLmMDqBk1PqNJs2U/8W+0XkuaLlclpO1q8Vj6jtUnrTPN
-         yRjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795044227; x=1795649027;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=BNtN55GYuVsPPt5uRpwb+HzLieno6rlFAiQ19PmBpDM=;
-        b=rZ5GtlxLd1tS3DuG9pYTSlEfra/Z94epbX0PW7P6ZnygW20MepVMBqJzu6HhTm0UJn
-         5xBLr8Vii55gSJfRJjfqquXcP/1zEN9Um2Njjt6Ky4A3PvF73qMH56pZ+vzAF9ynOsJ9
-         +roThDqJ/3sKhh1ZYbPB5nu8WYXy1BbxhmdSei55f02y7HiJ1iOFNct3YCz0cBX4vt5R
-         ETu/7NW/vf2fwuRWddHpRzS8mqiXaaLby4Ji9jo4IE0kJCrFiW2dz38XnqMechmCA/le
-         BmbtjwLQLp9AEfN5UemPbGRskO1zSobSOBcKbM7eiINd7cWKzHETxMJ49ZK83wxCVZvK
-         6Akg==
-X-Forwarded-Encrypted: i=1; AL+hErFae+Dv8aDHMLxFZQbefSFc8unlDkB2umflo8rkP1+YnyeuW5cyVlx6oAB+FKGCIdBliTm12tgQ4S4=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+owh2McO0MIL/MYQKb3IaenBmYPsA3vEVKfIRIxTMujQcRwzf+
-	LV233u63QsjXRCRN/FD7EVatPg58DN950+TP8Vv06ybh63dd+/mIOiP67p5l3mch2JYOrW+G57Y
-	vAlnAY2pzhZxTD/Zr8A==
-X-Received: from wrqk2.prod.google.com ([2002:a5d:4282:0:b0:4a5:9a8b:7c4e])
- (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6000:4029:b0:4a6:d298:832e with SMTP id ffacd0b85a97d-4a6d298857bmr7425526f8f.45.1795044226494;
- Wed, 18 Nov 2026 15:23:46 -0800 (PST)
-Date: Wed, 18 Nov 2026 23:23:45 +0000
-In-Reply-To: <20261118224826.2491684-3-tomo@flapping.org>
+	by smtp.kernel.org (Postfix) with ESMTPS id C08331F000C9;
+	Thu, 19 Nov 2026 10:56:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795085779;
+	bh=TT5Zv18zzhPxTIO9MQPj2JkdchjggYrubOF+S8W9hw4=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=Lm80VAl9gKGW4CcbnU4p26xyeSkSpVnGyaCFbRSItpOqzuQNlFf0gMl57G4v+4PZW
+	 hLWC/lY1C0OkcLULVdufGUp2aIOyY7XhvSHlXuVFrI+5P/m7XOXq92VrqtN6UudURd
+	 jqgfkZ+ccKoZnSHOg00B5wnBJXW1W6AM4J2AG0OQSBpchlHPLPaEkM4MMcvzc2iqaj
+	 gMLNXnoYtWfyTy13d/W2IL7w/W3oonPq3/Q3WfWcAwqC8+7PV1/q+OAef0C8Fb6oUY
+	 frGDtBMfrqzplCee34rpDpGbif2BlWovvIb+8RS1MprBJX6vMBEjp2ZY4C3p20OVZt
+	 SBnUvfLstazsA==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 213AC4B244;
+	Thu, 19 Nov 2026 10:56:18 +0000 (UTC)
+From: Suyuan Wang via B4 Relay <devnull+shyckless.gmail.com@kernel.org>
+Date: Thu, 19 Nov 2026 10:56:17 +0000
+Subject: [PATCH] pwm: Don't dereference the chip after put_device() in
+ __pwm_put()
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -79,49 +82,83 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0
-References: <20261118224826.2491684-1-tomo@flapping.org> <20261118224826.2491684-3-tomo@flapping.org>
-X-Mailer: git-send-email 2.56.1.708.g77570a6a1d-goog
-Message-ID: <20261118232345.1511641-1-aliceryhl@google.com>
-Subject: Re: [PATCH v4 2/2] pwm: th1520: Fix 32-bit build with COMPILE_TEST
-From: Alice Ryhl <aliceryhl@google.com>
-To: FUJITA Tomonori <tomo@flapping.org>
-Cc: Alice Ryhl <aliceryhl@google.com>, fustini@kernel.org, guoren@kernel.org, 
-	ojeda@kernel.org, ukleinek@kernel.org, wefu@redhat.com, a.hindborg@kernel.org, 
-	acourbot@nvidia.com, bjorn3_gh@protonmail.com, boqun@kernel.org, 
-	chenhan0017.work@gmail.com, dakr@kernel.org, daniel.almeida@collabora.com, 
-	gary@garyguo.net, linux-riscv@lists.infradead.org, lossin@kernel.org, 
-	m.wilczynski@samsung.com, tamird@kernel.org, tmgross@umich.edu, 
-	work@onurozkan.dev, linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	FUJITA Tomonori <fujita.tomonori@gmail.com>, 
-	"=?utf-8?q?Uwe_Kleine-K=C3=B6nig?=" <u.kleine-koenig@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261119-pwm-v1-1-adeff0cc366a@gmail.com>
+X-B4-Tracking: v=1; b=H4sIANDV/moC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzNDQ0NL3YLyXN2k1DSLJCMDS0Pj1CQloMqCotS0zAqwKdGxEH5xaVJWanI
+ JSKtSbS0AMCcNyWcAAAA=
+X-Change-ID: 20261119-pwm-bef8b20913eb
+To: ukleinek@kernel.org, m.wilczynski@samsung.com
+Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795085777; l=1758;
+ i=shyckless@gmail.com; s=default; h=from:subject:message-id;
+ bh=aTL9kEFJ/2KUWaQPI32vzjKcn/Y5nqsqx2zxlXKIavY=;
+ b=OdjzFDiKHlRc+nctzng5NG3aU5iRyCpyMb/R77YV+LChxy9Piz3sCrn3a1WCS6uS4Z/rR1F2H
+ lMPWEpVoIHeBXZhGgWucsvqa14Poj4Zef660V/6MJNnnJqEoOYa6nsI
+X-Developer-Key: i=shyckless@gmail.com; a=ed25519;
+ pk=pMtccVGiWES3bV+7YBFuBclkvq2n2HBHQ5azaBrK2lY=
+X-Endpoint-Received: by B4 Relay for shyckless@gmail.com/default with
+ auth_id=1498
+X-Original-From: Suyuan Wang <shyckless@gmail.com>
+Reply-To: shyckless@gmail.com
 
-On Thu, Nov 19, 2026 at 07:48:26AM +0900, FUJITA Tomonori wrote:
-> From: FUJITA Tomonori <fujita.tomonori@gmail.com>
->
-> Fix the following build error on 32-bit ARM with COMPILE_TEST:
->
->   ERROR: modpost: drivers/pwm/pwm_th1520.ko: symbol '__aeabi_uldivmod' un=
-defined!
->
-> The driver divides u64 values when it converts between nanoseconds and
-> clock cycles. On 32-bit ARM, these divisions are compiled to calls to
-> __aeabi_uldivmod, which the kernel does not provide.
->
-> Use div64_u64() and div64_u64_round_up() for these divisions, in the
-> same way as C drivers use div64_u64() and DIV64_U64_ROUND_UP(). The
-> results do not change.
->
-> Fixes: 3c180003dffb ("pwm: th1520: Fix missing Kconfig dependencies")
-> Reported-by: Andreas Hindborg <a.hindborg@kernel.org>
-> Closes: https://rust-for-linux.zulipchat.com/#narrow/channel/291565-Help/=
-topic/64bit.20division.20in.20.60pwm_th1520.2Ers.60/near/626825599
-> Suggested-by: Uwe Kleine-K=C3=B6nig <ukleinek@kernel.org>
-> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
-> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
+From: Suyuan Wang <stevewong@hust.edu.cn>
 
-Reviewed-by: Alice Ryhl <aliceryhl@google.com>
+__pwm_put() drops the chip reference the consumer took and then reads the
+chip to drop the module reference:
 
-Alice
+	put_device(&chip->dev);
+	module_put(chip->owner);
+
+A consumer takes both references in pwm_device_request()
+(try_module_get(chip->owner) and get_device(&chip->dev)). The chip's base
+reference is released by pwmchip_put(), not by pwmchip_remove(), so a
+consumer can still hold a pwm after the provider has removed and put the
+chip. When that consumer finally calls pwm_put(), the put_device() here
+drops the last reference, pwmchip_release() frees the chip, and
+module_put(chip->owner) then reads the freed chip.
+
+Read chip->owner into a local before put_device() and use that.
+
+Found with a static analysis tool and checked by hand.
+
+Fixes: 4c56b1434b81 ("pwm: Add a struct device to struct pwm_chip")
+Cc: stable@vger.kernel.org
+Co-developed-by: Kaixuan Li <kaixuan.li@ntu.edu.sg>
+Signed-off-by: Kaixuan Li <kaixuan.li@ntu.edu.sg>
+Signed-off-by: Suyuan Wang <stevewong@hust.edu.cn>
+---
+Compile tested on x86_64 (W=1 and sparse, no new warnings). I don't have
+the hardware.
+---
+ drivers/pwm/core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 4c6d716e5fde..8988a7dbe5b1 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -2020,6 +2020,7 @@ EXPORT_SYMBOL_GPL(pwm_get);
+ static void __pwm_put(struct pwm_device *pwm)
+ {
+ 	struct pwm_chip *chip = pwm->chip;
++	struct module *owner = chip->owner;
+ 
+ 	/*
+ 	 * Trigger a warning if a consumer called pwm_put() twice.
+@@ -2038,7 +2039,7 @@ static void __pwm_put(struct pwm_device *pwm)
+ 
+ 	put_device(&chip->dev);
+ 
+-	module_put(chip->owner);
++	module_put(owner);
+ }
+ 
+ /**
+
+
+
+
