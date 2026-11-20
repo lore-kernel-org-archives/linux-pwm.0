@@ -1,57 +1,81 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795175844;
-	b=3MNKX5Fc9q8olRo5jg2X8eunpc9EDarydH/4olOJDyn/dzuiwx9sZ0txN1UW/Rj9pAbL
-	 JR2MoBnAMZ2WdIIYggh7W5lMsSvRQlpyHgYw+DeUORbq3No+voAcy1YX5Obm7H2bnGaIh
-	 +9ZJKGaEI+n7GdhPu6pg95WjjlpCBGp18liy/gR7XP3dysTXno9HBdjxh+yw4xQnHsiIP
-	 i+W7l35sQh/Ol60mIpnONHqaBbNdNL80LyEmZ+suHcCSHEjftBdCqNAv1yTIDgVjd8nXs
-	 Iy3oz7C4ycyRJAmlU4DRAqQwVxuwmi6u9O8DhAiwFNiyHSKpzuP5vRDtIcrrsIFTuXw==
+	t=1795176047;
+	b=UWSaCGLFWgx10XO1YrEQGwoOute28j22KFwh7s9bFC0dsbkNQSIKyEn1RH8UpuwWjT0w
+	 NJKxW74LjeMWB1ogfYRhE7x5/aFFTwYu9L4P/oJ8OKmcAG2ROOfhO/J9tmKJ/6Xwa1uaX
+	 c9L18UYBYIs3/RvndB1WlvSP+wQGTWTgKJHei0Qbs+TbRclQWx/90Xg0eiXqFxrw3HA5q
+	 hWkc8BWRkJUG1pAcliSJBOHTojs56RkC9fD7cURqjxc6d868N9rosxhq3ucZS6qC2ZE7c
+	 PAjoa/MZxjGf4MWhtn7GqN2WDQ3fEcXBi1ZHLxGFUljolUaAGZVo86R7Ti+wJ2Jhq+A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795175844;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795176047;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=pdNBt5/QsljbHatJBoM3WFB43io1ZCGsN7cIkFS28SQ=;
-	b=Z72zW8RtHW6oeeSD0oHHdTswVFIjlyKl8zXKSespd3ccx2C3UpnMdG0dy5scNQygYbez
-	 BrNkRhDgJoVzk+l/8OjTkL4mznOKSneEoOshbPzb+oVopaVRnSlB1Ijq2qKUhDijoR8iZ
-	 /TEmIxqKTFXcAZ8aIRV+Gc3+ZhyKTc2vEnnzP3cT0Sh8NqyVOEk+mGLbz5NFe9Ur6CHfn
-	 rdHmYo3DvA6DAf9cWbZHikY+RP7nJ/DBUzKCmOGFKXe1/0XasDzBR+qwC55bNW067b1BD
-	 GVDg9d53Eb18hDoJjdo/9T313PTbhhccO68BbbpF1x0vvVFaAg5Fx3DNhgMUHFslirw==
+	bh=beQWb4LoAtDg8Zy+5AKtlfFZLus+EPwyn9DYxNFG6mU=;
+	b=nY8fMPcLeErqjvAYNJVx1B0AWZNWZG+kJcoPPkkvHYEQ/GwVzjcdE2tagt99qhVwy1h4
+	 OwQcRMOGLUlgnp302kgbrnoocubc2eFTgfPQtLSSoe0TgGM57TDboEzxuRLt3giTd/ryU
+	 MHoVlCj6Fj3nlhDmNSW73W7JTndAV+QdX+pB+45C4X3bSO3pn5sNBtC4jUY2loRQEOCYk
+	 i/9pC6Xx5+MMGvemVVLVzDduWLLD0UfE2IyVRpEsGLaJ3cLCYuUKczTeaD8g5clHfEv+5
+	 Ia8rmu42WHnrUME3R2us90PmLhIuLeisFI2Xqw03GaHa3aYfvH7HXpXUdb1xuu2iyvQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="jDEv/F7E";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EIYxJwKV;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 59D7560A2600;
-	Fri, 20 Nov 2026 11:57:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 111F3606A338;
+	Fri, 20 Nov 2026 12:00:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jDEv/F7E
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id DFCA51F000D4;
-	Fri, 20 Nov 2026 11:57:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EIYxJwKV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5811F000CA;
+	Fri, 20 Nov 2026 12:00:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795175843;
-	bh=pdNBt5/QsljbHatJBoM3WFB43io1ZCGsN7cIkFS28SQ=;
+	s=k20260515; t=1795176046;
+	bh=beQWb4LoAtDg8Zy+5AKtlfFZLus+EPwyn9DYxNFG6mU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=jDEv/F7Erv/9NUIF3nkQHQwvKPaklxbGgg059lQ41YKZOGB7i1a3rDgnHKll39x6q
-	 qh9r/2SHlq5DR6p0TQKK9E+G1Pji+0SrRqIGJF4Gb11J1KRJOJ81HkgZBLg59j8ptA
-	 p8QxCfpCUfZX/ooIbsMN6j8xDu15pOsYAJSE5KDN/xh8kaY8H/g3vpeIN8yE804kS7
-	 3+MjnbuVhCjrVarGiWGocP9ktpo7jS6Q33uvSohgm6hljwYQnfm3nMxxNQkbRQif22
-	 S4V3pzIxbLNwh2Van/ULeMg/3JCBREi8m0L4eFAaowpzuYpHR50AlSuRd1BsVXDZ23
-	 +F+Q0grLtEm3Q==
-Date: Fri, 20 Nov 2026 12:57:20 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Lee Jones <lee@kernel.org>
-Cc: Neil Armstrong <neil.armstrong@linaro.org>, 
-	Joachim Eastwood <manabian@gmail.com>, NeilBrown <neil@brown.name>, 
-	Grant Erickson <marathon96@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, 
-	Lokesh Vutla <lokeshvutla@ti.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org
-Subject: Re: [PATCH 6/8] pwm: omap-dmtimer: Handle negative error codes from
- get_pwm_status()
-Message-ID: <awA06PJuX4-Imck4@monoceros>
-References: <20261105143847.2559586-1-lee@kernel.org>
- <20261105143847.2559586-7-lee@kernel.org>
+	b=EIYxJwKV6pKOzzIEBuRXOlDo0Y+HodiAO2ZB2R6VQEfoBQ/HvGlDsgCsZZD6G5Czz
+	 6Hw2mEq4W7WWL2M0khcowQ1ijdyhpl4Mf5E6jvjTXU3BGCjU3W7JH3HwTFePuk7BsW
+	 Zf0fcxra0plL9c0eF7Yjpx+CYN7bzoUzk/Q+FqleL9bhb1AcVGEf22bj+ScG5xaNBz
+	 T66Fe3ePBa9AIlYOk+9jLYdZIJzmgdv7gXFnPj3yOg7RrM21kpYHHujoSPlrAH4uP9
+	 arxmZfKtYgbrYZDY/oMy1BhaVWUrcfXk5RMw2HX+ZvgFLWMDcsj5WLUngXGiGzaopt
+	 u7hrJu5tbh8fQ==
+Date: Fri, 20 Nov 2026 13:00:27 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: Andreas Hindborg <a.hindborg@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Uladzislau Rezki <urezki@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, 
+	Gary Guo <gary@garyguo.net>, =?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, 
+	Benno Lossin <lossin@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
+	Trevor Gross <tmgross@umich.edu>, Daniel Almeida <daniel.almeida@collabora.com>, 
+	Tamir Duberstein <tamird@kernel.org>, Alexandre Courbot <acourbot@nvidia.com>, 
+	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>, Lyude Paul <lyude@redhat.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Dave Ertman <david.m.ertman@intel.com>, Leon Romanovsky <leon@kernel.org>, 
+	Paul Moore <paul@paul-moore.com>, Serge Hallyn <sergeh@kernel.org>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>, Igor Korotin <igor.korotin@linux.dev>, 
+	Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
+	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>, Michal Wilczynski <m.wilczynski@samsung.com>, 
+	Ira Weiny <iweiny@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, Johan Hovold <johan@kernel.org>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Dave Jiang <dave.jiang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Saeed Mahameed <saeedm@nvidia.com>, Zhi Wang <zhiw@nvidia.com>, Jonathan Cameron <jic23@kernel.org>, 
+	Markus Probst <markus.probst@posteo.de>
+Cc: Philipp Stanner <phasta@kernel.org>, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, driver-core@lists.linux.dev, 
+	linux-block@vger.kernel.org, linux-security-module@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-fsdevel@vger.kernel.org, linux-pm@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, 
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, linux-serial@vger.kernel.org, 
+	Oliver Mangold <oliver.mangold@pm.me>, Viresh Kumar <viresh.kumar@linaro.org>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Subject: Re: [PATCH v22 4/5] rust: rename `AlwaysRefCounted` to `RefCounted`
+Message-ID: <20261120-belichtet-austoben-januar-9fca976c1371@brauner>
+References: <20261116-unique-ref-v22-0-12029383206d@kernel.org>
+ <20261116-unique-ref-v22-4-12029383206d@kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -61,99 +85,12 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="646ge4fg3vjxp6bk"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261105143847.2559586-7-lee@kernel.org>
+In-Reply-To: <20261116-unique-ref-v22-4-12029383206d@kernel.org>
 
+On Mon, Nov 16, 2026 at 03:21:01PM +0100, Andreas Hindborg wrote:
 
---646ge4fg3vjxp6bk
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 6/8] pwm: omap-dmtimer: Handle negative error codes from
- get_pwm_status()
-MIME-Version: 1.0
+For the fs and pid_namespace bits:
 
-On Thu, Nov 05, 2026 at 02:38:08PM +0000, Lee Jones wrote:
-> omap->pdata->get_pwm_status() returns a signed int that can be a
-> negative error code on runtime PM failure or invalid timer cookie.
-> pwm_omap_dmtimer_is_enabled() and pwm_omap_dmtimer_polarity() store the
-> return value in an unsigned u32 and test OMAP_TIMER_CTRL_ST (BIT(0)) and
-> OMAP_TIMER_CTRL_SCPWM (BIT(7)), misinterpreting negative error codes
-> (such as -EINVAL or -EACCES) as an enabled or inverted timer.
->=20
-> Store the return value in a signed int and check for negative error
-> codes before testing register bits.
->=20
-> Fixes: 6b28fb6f3ca3 ("pwm: omap-dmtimer: Implement .apply callback")
-> Closes: https://sashiko.dev/#/bug/linux-f4782faa-466d-43a8-85d8-6d6181ee2=
-243
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Lee Jones <lee@kernel.org>
-> ---
->  drivers/pwm/pwm-omap-dmtimer.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtime=
-r.c
-> index 51830a87275c..1e4d8b9e224f 100644
-> --- a/drivers/pwm/pwm-omap-dmtimer.c
-> +++ b/drivers/pwm/pwm-omap-dmtimer.c
-> @@ -111,9 +111,11 @@ static void pwm_omap_dmtimer_start(struct pwm_omap_d=
-mtimer_chip *omap)
->   */
->  static bool pwm_omap_dmtimer_is_enabled(struct pwm_omap_dmtimer_chip *om=
-ap)
->  {
-> -	u32 status;
-> +	int status;
-> =20
->  	status =3D omap->pdata->get_pwm_status(omap->dm_timer);
-> +	if (status < 0)
-> +		return false;
-> =20
->  	return !!(status & OMAP_TIMER_CTRL_ST);
->  }
-> @@ -126,9 +128,11 @@ static bool pwm_omap_dmtimer_is_enabled(struct pwm_o=
-map_dmtimer_chip *omap)
->   */
->  static int pwm_omap_dmtimer_polarity(struct pwm_omap_dmtimer_chip *omap)
->  {
-> -	u32 status;
-> +	int status;
-> =20
->  	status =3D omap->pdata->get_pwm_status(omap->dm_timer);
-> +	if (status < 0)
-> +		return PWM_POLARITY_NORMAL;
-
-This looks incomplete. The function is used in pwm_omap_dmtimer_apply()
-as follows:
-
-        if (pwm_omap_dmtimer_polarity(omap) !=3D state->polarity)
-                pwm_omap_dmtimer_set_polarity(chip, pwm, state->polarity);
-
-IMHO if there is a problem with reading out the current polarity apply
-should fail. With the current approach the polarity setting might just
-be ignored. The case above is a bit similar, but I think there it's less
-likely that strange things happen.
-
-Best regards
-Uwe
-
---646ge4fg3vjxp6bk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsANZ4ACgkQj4D7WH0S
-/k4fvgf+MIJ3RQlG1TtJ0GRLrZOom3yqWdtSbejqqIJCdEnVPbBuOlP3TmlRDeGb
-I1ReH1oOC6/LFAZJUiN+SCcZnYkmqLZ6Mix6yAHVbmfW60g/UwVGjXKwKpqB8bL9
-O/SbTs9FT/SJGHooRdYXqs0JGn9scvTN46BOiCbcP99/VjGOi3YcLehKCl49lK3j
-mX2eiCSPS2TxBAjCkG6rsGfUiAyOhFF7UVyj2tgwuUUTlZnnKDCpOQQ/mTxs5C2N
-I9bkg1iUVKQ6zZKQFtKGR7Grvl2AbD3OJsNDzfFDf5gIXOJCKgtBgTOBz/UVQrKx
-XppD/Ya9nS/coiK/1sIpP5NNLZDoTQ==
-=gRY8
------END PGP SIGNATURE-----
-
---646ge4fg3vjxp6bk--
+Acked-by: Christian Brauner <brauner@kernel.org>
