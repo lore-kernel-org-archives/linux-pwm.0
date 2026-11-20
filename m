@@ -1,85 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795193322;
-	b=hKC35GNkT4Ikuu4gn2Nte05HbbX1kqUkgkbHNUwOyUjWjXbhaMeoDQMgLYgar2XaAt//
-	 Vg85Np1GGEEnFJ4qThP0a96JPIpO0adBdzBog3VLq1+s5X1nZ9p884ktfroH13wtTH22m
-	 gP7HoZxoH5jNtYuPcg4JUbF0BroGlp/Yj3YCqLpvObFP2usmJiscb0uk/3d6lg++lf1UZ
-	 IL1x63cALR0IdUzanOo4cnFMU2GHsW969KOeHmfxv/LTOetQtHCy/ARbTY8mErS3cqPyk
-	 MF1aPRPbfeiTQ7A5tX41uPLuIoWP2xI/1j6wY2QOfyMsPyRigcVOcG3iiEMyq2KlN9A==
+	t=1795193336;
+	b=YGn1khe4ndCjWrZx5LwrAKiTB97D8R+cFgxkfI3M+XYtmaBVpLwZA25ZHW6X6zfsCS4F
+	 SogGrrC8FPIjDTYRw1q1jEExYJmptMRzqnDReOPXH0bdEj22QQRU0gHw050qtO1x59jKQ
+	 YAmhQAPU00ZiSteMDcWO8QtWbaeJ26UYmDdFZlhVnC+ek7KfMMCmvwDfeBVLQB6zd1skK
+	 tHDfMdW3Fm5aqfgtbDTZ7lhIfZyqoXuIqj9qyU3EVsjNwTpfvgkMYYZcdLihmOrJIqG3v
+	 k3zP6BOGftkPdJAq/HhRydMy7gYkk31qe8AGzbhkBf9A9Zm5F2jYZ2zkRRX29X3yeUw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795193322;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795193336;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Subject:From:To:
 	 Cc:In-Reply-To:References:Date:Message-Id:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key;
-	bh=bfyjauXkdda14TZQkJmia5dShZ8rR0trlEvtPbJzkjU=;
-	b=Fge2TIKuWRRYPDY6Ey17QjKPTupNM15hvmoWB2S1r7/SufoSmNPWEKpxVH7LpnE7rqWk
-	 b3TYd4C1F//4GJ/0zjw0wl0Uf3v4POdOIOAoK1SLKYF3VTU33LnouBcEkBh6f4aZppDyA
-	 Mc3zg9Ozb8rzlVs9ZqiFIYuSTV+Xp80RStxIDyFPp4V+CcjQJ2Jrasbfx58lUZo81SRj1
-	 3fTHTXqHwR+SkiaOrYKZq6bE6/b7iUMlaXlkILhOe06QGify+G375Im5dPIw9nHdH0MCb
-	 RGXM8rQC50KWPcy4DRXqghDnAg6ILOec2k0CLaNeW38oaImBxVkSRMt2oeqWMcsnV1Q==
+	bh=h6ErIQcXg/IQfSzNOukoWYAaLWArDLpy/6tOg0mzvho=;
+	b=iY3C+bbFaA52mUp5a2Xflt7HU7+i9jthsDXBvGM5mlMOJAvVaIBuzKgNhNvNWwMuXxry
+	 7UcbKLXAMNaLZsptCgST/YABa4CrNioSkgOQCIORTLLBIrNRkhuqjOiFX6nFXtDqA5r3s
+	 yyV1Fa8xbpLJuwddGAp/FQvtPFCVoVxarup5PeyxDXimqfP+dI9Fkuzpz7A2j4byo47jf
+	 /RE3mEaPLEMvdJre2mvFeFZzINjvsBVFv23Yzf6G5iMdjFB9t/EaNZNaKGl4xMhk5t+I6
+	 zn3swEIMTT2NkCvXT8vQ1uJwN0ZR+GzEYvSh9fZcsoLrXVssyTrwJesUXddzroq2W+A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=baylibre.com;
 	spf=pass smtp.mailfrom=baylibre.com;
-	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=RNAMJ6sM;
-	arc=none smtp.remote-ip=209.85.221.45
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=ThqzXs9e;
+	arc=none smtp.remote-ip=209.85.221.50
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8915960A2603
-	for <linux-pwm@vger.kernel.org>; Fri, 20 Nov 2026 16:48:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8915960A2603
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7F9C606A335
+	for <linux-pwm@vger.kernel.org>; Fri, 20 Nov 2026 16:48:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B7F9C606A335
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=RNAMJ6sM
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-4a7b8abe209so839647f8f.0
-        for <linux-pwm@vger.kernel.org>; Fri, 20 Nov 2026 08:48:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=ThqzXs9e
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-4ad6219f7d8so453179f8f.0
+        for <linux-pwm@vger.kernel.org>; Fri, 20 Nov 2026 08:48:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1795193320; x=1795798120; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1795193334; x=1795798134; darn=vger.kernel.org;
         h=message-id:date:references:in-reply-to:cc:to:from:subject
          :content-transfer-encoding:content-type:mime-version:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=bfyjauXkdda14TZQkJmia5dShZ8rR0trlEvtPbJzkjU=;
-        b=RNAMJ6sMUpkWN4HrB0XYJTVcOtjWWEYhH6d3S9pj85lhBPRg5KkeaWo1USMBh8nDxJ
-         w/2T2XYDMgVkyVrFeq/jl71c4n93hO/4Nc7iCIfX2OaYcsUU5pWUfNweZrU7lY4qEIxS
-         4eh9dpGdnLaPp6u/BJuIaSUEM9sKLBQrNTbenH1nsZTez+0/KglhUPE3Mx537/pB4xRP
-         8US4Tq4WX3HzsJOKtAtUGRlXjScW3SZXmw2uEC/7LSr2f9aIch+VfB/A7NqU30NL7hee
-         0gL2JYNXK9f/Y2bCnqnXnDCx6SIjdqdoRXZ4BKvTX66tKXa7T7/hV4E9yjYAFoJPIXic
-         WR7Q==
+        bh=h6ErIQcXg/IQfSzNOukoWYAaLWArDLpy/6tOg0mzvho=;
+        b=ThqzXs9ebiZGDM31gPGl6udrq/rds0mEtWQp5ii2kuizKVYwjIt1mRHIaBc6Fzz0d2
+         gZA+3ggV2soL3PWUUsf4dGrZlqtGT3N8dW9S0rzOvNQN+sX7aPjYnnjG8vMoBzwfpOwz
+         tGsIJXI43jmP1C3DUXG6T02SB7eruboytZi8alvfqyxGspyzlXpROvgdj6SReMSKJXLK
+         kDHyIrCBfTy88WmXKjhS4HGD4CbC9N1lhIR5d7S7XuHHH+BaFEQY+gThdDukbyRKw4qQ
+         /zWnhCNKVVlyZbltXIvRV9hF2hZzKltNgnSRMcwh1bP3tRso+GxfXCMD6VYbl97yZMt/
+         Dyiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795193320; x=1795798120;
+        d=1e100.net; s=20260707; t=1795193334; x=1795798134;
         h=message-id:date:references:in-reply-to:cc:to:from:subject
          :content-transfer-encoding:content-type:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=bfyjauXkdda14TZQkJmia5dShZ8rR0trlEvtPbJzkjU=;
-        b=Pb/MJ/dMcdKUd/tDjZyLQddwRjx15FWqfvlLouvgVpPto/bnl2bEqjO9zGi4ZjdC8c
-         wjrJPQs03hMKQBHkEW57g2lzIRj1PzL6h3apCbf2+FiAcJqibMk0jFfCRFsj+oAZClO9
-         56O7lYuMuyaxKQaNWQBeLxsyU5nC7ddhqxYV+hRGusnFsZPmQvdRVJX6qqVoJmBE7E3P
-         7bqDbj8MyintuOA7OrgjRGjId1i3TDuPjIZGJRAmSf4oM0YzTiIkrqWGSRFclwFKJx5d
-         3ezZuxErnNmaq8MOxhMvVd/qJRhzB+FRJRGPIAhDYaEke2Q1NrEVFPbJqfvTRYpG58LO
-         U1ug==
-X-Forwarded-Encrypted: i=1; AL+hErHO2FQyAgclQlGaObFFQonFa+eVEhmedEn5W/gApiKLCvZp9pOIUE6gYFtkJBNZHXOEWQkD++OTaiI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z84jZj0ATKbM+8aeFeh3e2ZLhjV+O6ViDYX0mcdKiKJ13bWQw3H
-	M+lSEUYOtKSBSaINrTA4vOOLcJESovG7QgW6yLpX/0clKPCNyZJ7cZKyE4TUQfqnbkg=
-X-Gm-Gg: AYBFou3pJ7GHzJ5whWfaZopCRGuMyaGi1hs7CxlVFI3dDy1JRKfKRg1KU0H0wEjuNS5
-	Jaw3hay0JbLfHrOBR5rNszq32ZA1n2Uc6FxnAbeMdFLiBuY8ZP0dVc4vc5MzIT8/tF5SvcItIqy
-	0xpHJLW4+OzJJF4cBabHU66FBRRCHaOQKuycnsjT+vnEsOTyt/ull52Zso9vl8O40uHDV2T/PTo
-	oF2rfNQuPbFHrgpQg5J+uU6xM8mr3hAtk7Y6LTOAVlNwc7ql/8QWByR7BTnmpc5SpbFRsbDUDaV
-	+gPSHiMsaOBlMkM+8+kdTHAng3BZezmbRzOygGd7YSn+k69sZlYCg5yN5ZItZqLdbnUkvHECbAt
-	BZ3bx2ut6B33r7SMYTQUQC6qSZhIEVLEFeY/wNxw2v6bFYskMMYtxLy4SrYI2zxcznbbUJ1rsJN
-	6pz1AXT+7hakPR69yHMGJx0nSq/c+6HWn7Al1s0ObIBHYex0Yxge6k2FouKZHqgZfz+nCDGvlMH
-	tHwr7HG3zd5w2NONCFcZ/cZNm1Jbk1MbRraz6b34/kdz2cf3UCHq+Sl17U68FAH5bEunlHehgvQ
-	KCHsJAcsiHg22wdLPRaNpGargh+jnf1FFLrwaX3Lab8SjBva
-X-Received: by 2002:a05:600c:848d:b0:4bb:6b6b:fbaa with SMTP id 5b1f17b1804b1-4bb8880fd0amr81601005e9.16.1795193319985;
-        Fri, 20 Nov 2026 08:48:39 -0800 (PST)
+        bh=h6ErIQcXg/IQfSzNOukoWYAaLWArDLpy/6tOg0mzvho=;
+        b=ySDVwM3HBej7kILPgRjtjL1EU/se8pUGnYbuXAF27az6x0h3OrFaOlRXIyXtcWwpuj
+         1ZENm2jaX/REr7YILhHyVYw9O1+EGhsiGga7BVAkwT0FFx2hDRz9hipNFDOE109Z6B9V
+         xed7YNG+1+0wZ20JAfASPgDTnChtNQXtv+U2LNvclmEsMYVjr1V7RCAYpeNNpK9qB13D
+         ko+m70U7vmWDzw8xQaaWEMCt8DysT+ZWkZYbEGW/BaVAeP/Rxxlrpz7InQuAmQR5wFeQ
+         ctFlgNcyL70Khd43v4zUHMTy1VNdDP1ho3Xts0vZiTgAcNhhhdht05I6BtOO8pAwoprs
+         Vmzg==
+X-Forwarded-Encrypted: i=1; AL+hErHnvLnunT6SvcjH91Wsp+QNdS+u7ziKHhOYb21EDgiRnb4RJzclWIyM0c7tNSd5kNaszuhgvbMZKzU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/izV6hDpF3vVFL1shZgikrPhqzBSqcSjJlg0/GGcOXxgD131W2
+	vs/fCrN0P+EiEm1ENjYkyOhpUw9wS7j0Xl04RbqlyMm6gKcFqkbFFaWLcZkSNIdD5+g=
+X-Gm-Gg: AZFdTZcp2vCXZmSXRavtVP0e+UbBSHJ5pc1f17o1kTyTtAHRGexkls8LGhtJeNLJJxu
+	1lW6l35TYRjG3vyW4SmLdVb2LK2BablDWJGbpMPMF7jNrSPq5NPDzKzn+kEop4M/wMlKOsJXGe7
+	D02z+t6yAJo36zTMRvgI6hwuDpmfXxCS3vPMGe7ITVe6dyVFe8nYQ82fQ+2vANlRYBXcxdBk+J2
+	bNO+gxzCLqXnpcX1U1Z74o/s35HolFYoQ0ZRomejCJxnPecuk/aln28+B/8MViPih8L5gqQmLDz
+	6DUVyDKOC3fHu0X0h+og6w6J7AoTlXJSsVnSX5b9imR6eQQoKF1wbMiE8tEHOWtgLVBynEZQu3h
+	coAwxIgHOCep+z6xQY1EYPrx4TulKz7Db6OsXw1AYFqZxEChsOLlVkGpX5QO8FJ41dW4otcDbUx
+	JPVr7TGV+jFlbzz94NP2s9MuN5+K6NxhfxzwaZYrY5UjzwvfphumVNFKobDQKvEVSC96gNhLRdL
+	L28KlSzkya73nl1CkH3kCgse+zvFNZzs5LPiVQgFIDudmzPEtKNz7Fob+tscN7T+rwEYngsOROM
+	3RjSDduxrbrDMfvD0z/e7VU9aTN6ruZXomIDOId1trdhNia9
+X-Received: by 2002:a05:6000:2c0e:b0:48c:58d5:30fb with SMTP id ffacd0b85a97d-4abad5ac62emr8227901f8f.5.1795193333959;
+        Fri, 20 Nov 2026 08:48:53 -0800 (PST)
 Received: from localhost (82-67-6-57.subs.proxad.net. [82.67.6.57])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb884c3063sm102415595e9.15.2026.11.20.08.48.39
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6b10b5f6sm6034212f8f.34.2026.11.20.08.48.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2026 08:48:39 -0800 (PST)
+        Fri, 20 Nov 2026 08:48:53 -0800 (PST)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -91,7 +91,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v6 0/7] Clk improvements
+Subject: Re: [PATCH v6 3/7] rust: clk: use the type-state pattern
 From: Jerome Brunet <jbrunet@baylibre.com>
 To: Daniel Almeida <daniel.almeida@collabora.com>
 Cc: "Rafael J. Wysocki" <rafael@kernel.org>, 
@@ -108,79 +108,68 @@ Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
  =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
  Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
  Trevor Gross <tmgross@umich.edu>, Tamir Duberstein <tamird@kernel.org>, 
- Alexandre Courbot <acourbot@nvidia.com>, 
- linux-pm <linux-pm@vger.kernel.org>, 
- linux-kernel <linux-kernel@vger.kernel.org>, 
- dri-devel <dri-devel@lists.freedesktop.org>, 
- linux-riscv <linux-riscv@lists.infradead.org>, 
- linux-pwm <linux-pwm@vger.kernel.org>, 
- linux-clk <linux-clk@vger.kernel.org>, 
- rust-for-linux <rust-for-linux@vger.kernel.org>, 
+ Alexandre Courbot <acourbot@nvidia.com>, linux-pm@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, 
+ linux-clk@vger.kernel.org, rust-for-linux@vger.kernel.org, 
  Boris Brezillon <boris.brezillon@collabora.com>, 
  =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>, 
  Maurice Hieronymus <mhi@mailbox.org>, Jerome Brunet <jbrunet@baylibre.com>
-In-Reply-To: <1a1cb87df11.2c57f9fa237371.844135553238709982@collabora.com>
+In-Reply-To: <20261013-clk-type-state-v6-3-a5e9977b3509@collabora.com>
 References: <20261013-clk-type-state-v6-0-a5e9977b3509@collabora.com>
- <1a1cb87df11.2c57f9fa237371.844135553238709982@collabora.com>
-Date: Fri, 20 Nov 2026 17:48:38 +0100
-Message-Id: <179519331840.3795820.8047048832159165355.b4-reply@b4>
+ <20261013-clk-type-state-v6-3-a5e9977b3509@collabora.com>
+Date: Fri, 20 Nov 2026 17:48:51 +0100
+Message-Id: <179519333138.3795820.61438010297111723.b4-review@b4>
 X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2089; i=jbrunet@baylibre.com;
- h=from:subject:message-id; bh=4z3/sdMgR1NP7DfsDZx0tYiu2dW9UOhvaq59u1rg0JU=;
- b=owGbwMvMwCW2VtK+WnvWU3HG02pJDNkMlc+2Ksh+kZXIPh/3rDDW4Kn27hqR6Y15t/Vndc9nY
- JL6uuFhRykLgxgXg6yYIksNd7X4O0mtL7Om69yGmcPKBDKEgYtTACYSOYfhf77/s+M/3jXtP6oy
- 5+cRhk+hnv9r4q4aztv7e7Xt8cINxx8zMkx3PJygYGn8ecrZdJeblhwduyRv7OkO5akz19EKybu
- wlhsA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1734; i=jbrunet@baylibre.com;
+ h=from:subject:message-id; bh=vYLwHzMkZLjjbU0w6/Ec7PCJHgruiB342xDmGbUK7jQ=;
+ b=owGbwMvMwCW2VtK+WnvWU3HG02pJDNkMlV+EGpr8GpuXL66eHBu5Y3mWWeFV4a/G+0oUxUrer
+ RUIcefpKGVhEONikBVTZKnhrhZ/J6n1ZdZ0ndswc1iZQIYwcHEKwETm3mJk+BtiEpjsotk54bty
+ cAsHW8fEZPaiNRy3p1XOeRy6T/PLD0aGzfPKGdIZvNz7xBo2Ljp/6Q+/laCNSwnzT95L3nMcLF+
+ wAwA=
 X-Developer-Key: i=jbrunet@baylibre.com; a=openpgp;
  fpr=F29F26CF27BAE1A9719AE6BDC3C92AAF3E60AED9
 
-On 2026-11-11 13:54:01-03:00, Daniel Almeida wrote:
-> Hi all,
+> The current Clk abstraction can still be improved on the following issues:
 > 
->  > This series contains a few improvements that simplify clock handling for
->  > drivers.
->  > 
->  > Patch 1 converts clk.rs to the kernel-vertical style for imports.
->  > 
->  > Patch 2 replaces OptionalClk with Clk::get_optional(). There is no struct
->  > optional_clk in C, and Clk already allows a NULL pointer.
->  > 
->  > Patch 3 implements the same typestate pattern that has been used
->  > successfully for Regulators. This is needed because otherwise drivers
->  > will be responsible for unpreparing and disabling clocks themselves and
->  > ultimately handling the reference counts on their own. This is
->  > undesirable. The patch automatically encodes this information using the
->  > type system so that no misuse can occur.
->  > 
->  > Patch 4 adds guards that prepare and/or enable a clock for the lifetime
->  > of the guard without consuming the Clk, so that a driver can keep a
->  > long-lived Clk<Prepared> and enable it for scoped sections.
->  > 
->  > Patch 5 makes things more convenient by offering devres-managed APIs. This
->  > lets drivers set clock parameters once and forget about lifetime
->  > management.
->  > 
->  > Patch 6 adds ExclusiveClk<T>, which holds rate exclusivity over a Clk<T>
->  > in any state until it is dropped.
->  > 
->  > Patch 7 uses it in pwm-th1520 to lock the clock rate for the lifetime of
->  > the driver data.
+> a) It only keeps track of a count to clk_get(), which means that users have
+> to manually call disable() and unprepare(), or a variation of those, like
+> disable_unprepare().
+> 
+> b) It allows repeated calls to prepare() or enable(), but it keeps no track
+> of how often these were called, i.e., it's currently legal to write the
+> following:
+> 
+> clk.prepare();
+> clk.prepare();
+> clk.enable();
+> clk.enable();
 
-Hi there,
+This particular sequence is indeed allowed in C. I don't get why it should not
+be ? (in general and/or in rust)
 
-I was wondering how the rust folks expect these changes to be handled since they
-touch the rust/ dir. Should the clock changes go through the clock tree or the
-rust one ? it is fine with me either way.
+If you dis-allow this in rust, the 2 sides drift apart, don't they ?
+I mean they start behaving differently. I suppose this is not something
+desirable ?
 
-I've added small comments on patch 3, with my understanding of what of what you
-are trying to do. Please take them with a grain of salt. While I'm eager to help
-rust grow in the kernel, I'm definetely very new to it. It is very likely I got
-things wrong.
+> 
+> And nothing gets undone on drop().
+> 
+> c) It does not let a user express the state of the clk through the
+> type system. For example, there is currently no way to encode that a Clk is
+> enabled via the type system alone.
+> 
+> Following the Regulator abstraction, switch this abstraction to use the
+> type-state pattern instead. It solves both a) and b) by establishing a
+> number of states and the valid ways to transition between them. It also
+> automatically undoes any call to clk_get(), clk_prepare() and clk_enable()
+> as applicable on drop(), so users do not have to do anything special
+> before Clk goes out of scope.
 
-If there are pain points regarding clocks with Rust, please feel free to
-reach me or Brian. We are happy to help if we can.
-
-Cheers
+So the point the is automatically clean-up (as in disable()) clock when they
+go out of scope ? In C, the equivalent would be calling clk_put() with a non
+NULL enable/prepare count. We do complain loudly when this happen. I don't
+people should encouraged to not actively care for this.
 
 -- 
 Jerome
