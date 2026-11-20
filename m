@@ -1,81 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795176047;
-	b=UWSaCGLFWgx10XO1YrEQGwoOute28j22KFwh7s9bFC0dsbkNQSIKyEn1RH8UpuwWjT0w
-	 NJKxW74LjeMWB1ogfYRhE7x5/aFFTwYu9L4P/oJ8OKmcAG2ROOfhO/J9tmKJ/6Xwa1uaX
-	 c9L18UYBYIs3/RvndB1WlvSP+wQGTWTgKJHei0Qbs+TbRclQWx/90Xg0eiXqFxrw3HA5q
-	 hWkc8BWRkJUG1pAcliSJBOHTojs56RkC9fD7cURqjxc6d868N9rosxhq3ucZS6qC2ZE7c
-	 PAjoa/MZxjGf4MWhtn7GqN2WDQ3fEcXBi1ZHLxGFUljolUaAGZVo86R7Ti+wJ2Jhq+A==
+	t=1795176148;
+	b=jcUfgJHfb4vLNHCf0Ooobt+v8jLR4BCxg9NJ0E8MyQ62fHzAqR1Mnu1G34hARqGr9kDp
+	 i9blVnEkJ5ORWbhfcaVmZN4SP545jMVJpuIraZiMA8u//04Nozc2Z5CTLYakD6gyWHkdg
+	 oFlwq79yP3gXXEjHaAX45MU/pE7Kyffh96gE2u1M4YH/2SdfH6g5T8jE81TIB1o9LvExM
+	 JCVFY8qJjjMNehcXo0cZ6iIuLaWk4daqC/pyHmOAcv9uWSOQ3rjUDDzwlz0ejADDlSuXt
+	 UbB+cpTyrUR30xplHLt3roLPxFcvWm1woHyN5LAsToCbNOvsIKCKQB7hJj7wRQwJ1OA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795176047;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795176148;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=beQWb4LoAtDg8Zy+5AKtlfFZLus+EPwyn9DYxNFG6mU=;
-	b=nY8fMPcLeErqjvAYNJVx1B0AWZNWZG+kJcoPPkkvHYEQ/GwVzjcdE2tagt99qhVwy1h4
-	 OwQcRMOGLUlgnp302kgbrnoocubc2eFTgfPQtLSSoe0TgGM57TDboEzxuRLt3giTd/ryU
-	 MHoVlCj6Fj3nlhDmNSW73W7JTndAV+QdX+pB+45C4X3bSO3pn5sNBtC4jUY2loRQEOCYk
-	 i/9pC6Xx5+MMGvemVVLVzDduWLLD0UfE2IyVRpEsGLaJ3cLCYuUKczTeaD8g5clHfEv+5
-	 Ia8rmu42WHnrUME3R2us90PmLhIuLeisFI2Xqw03GaHa3aYfvH7HXpXUdb1xuu2iyvQ==
+	bh=13zlqOS3b0U2kguoYE8OSQ7Fm1GjIlugayn5h12WyHM=;
+	b=QzUC5o/eO8MQXh7Yc5i8vYlrJagjje8GiN7wzd9ko97VZXfEkBbq5w8CToY5g1kV71lM
+	 OIH8yQanqMrOjg92kUjCsA1uVTvkJeysveGkFbVamdtMPdE/T/yVX1BLFPRSJX0clh1rf
+	 aBXbzOBArZ3YCW7VRg5nomO5cRyiPYpPu689/IYqR+1W7tf8qItnKGVkVEr7nS7YcR1p2
+	 q7UojoXoPMs6w1F+cvkgowCMXoScjljFEYacJPMWz6bA9t9lpnT2So99NO76TLqe5e7Zt
+	 sQLL79mxxEseKQ4a8LEuZnZlPQeRS7IHyRyZmuAA738UGmSoY69fpelfX6KEEx5Y8TQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EIYxJwKV;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZcpMLcME;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 111F3606A338;
-	Fri, 20 Nov 2026 12:00:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id D5823606A325;
+	Fri, 20 Nov 2026 12:02:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EIYxJwKV
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5811F000CA;
-	Fri, 20 Nov 2026 12:00:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZcpMLcME
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5D45A1F000C0;
+	Fri, 20 Nov 2026 12:02:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795176046;
-	bh=beQWb4LoAtDg8Zy+5AKtlfFZLus+EPwyn9DYxNFG6mU=;
+	s=k20260515; t=1795176147;
+	bh=13zlqOS3b0U2kguoYE8OSQ7Fm1GjIlugayn5h12WyHM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=EIYxJwKV6pKOzzIEBuRXOlDo0Y+HodiAO2ZB2R6VQEfoBQ/HvGlDsgCsZZD6G5Czz
-	 6Hw2mEq4W7WWL2M0khcowQ1ijdyhpl4Mf5E6jvjTXU3BGCjU3W7JH3HwTFePuk7BsW
-	 Zf0fcxra0plL9c0eF7Yjpx+CYN7bzoUzk/Q+FqleL9bhb1AcVGEf22bj+ScG5xaNBz
-	 T66Fe3ePBa9AIlYOk+9jLYdZIJzmgdv7gXFnPj3yOg7RrM21kpYHHujoSPlrAH4uP9
-	 arxmZfKtYgbrYZDY/oMy1BhaVWUrcfXk5RMw2HX+ZvgFLWMDcsj5WLUngXGiGzaopt
-	 u7hrJu5tbh8fQ==
-Date: Fri, 20 Nov 2026 13:00:27 +0100
-From: Christian Brauner <brauner@kernel.org>
-To: Andreas Hindborg <a.hindborg@kernel.org>, 
-	Danilo Krummrich <dakr@kernel.org>, Lorenzo Stoakes <ljs@kernel.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
-	Uladzislau Rezki <urezki@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, 
-	Gary Guo <gary@garyguo.net>, =?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <lossin@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
-	Trevor Gross <tmgross@umich.edu>, Daniel Almeida <daniel.almeida@collabora.com>, 
-	Tamir Duberstein <tamird@kernel.org>, Alexandre Courbot <acourbot@nvidia.com>, 
-	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>, Lyude Paul <lyude@redhat.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Dave Ertman <david.m.ertman@intel.com>, Leon Romanovsky <leon@kernel.org>, 
-	Paul Moore <paul@paul-moore.com>, Serge Hallyn <sergeh@kernel.org>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>, Igor Korotin <igor.korotin@linux.dev>, 
-	Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
-	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>, Michal Wilczynski <m.wilczynski@samsung.com>, 
-	Ira Weiny <iweiny@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, Johan Hovold <johan@kernel.org>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	Dave Jiang <dave.jiang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Saeed Mahameed <saeedm@nvidia.com>, Zhi Wang <zhiw@nvidia.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Markus Probst <markus.probst@posteo.de>
-Cc: Philipp Stanner <phasta@kernel.org>, rust-for-linux@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, driver-core@lists.linux.dev, 
-	linux-block@vger.kernel.org, linux-security-module@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-fsdevel@vger.kernel.org, linux-pm@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, 
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, linux-serial@vger.kernel.org, 
-	Oliver Mangold <oliver.mangold@pm.me>, Viresh Kumar <viresh.kumar@linaro.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Subject: Re: [PATCH v22 4/5] rust: rename `AlwaysRefCounted` to `RefCounted`
-Message-ID: <20261120-belichtet-austoben-januar-9fca976c1371@brauner>
-References: <20261116-unique-ref-v22-0-12029383206d@kernel.org>
- <20261116-unique-ref-v22-4-12029383206d@kernel.org>
+	b=ZcpMLcMEbAY+S3wXb99cEd/F7U+V9nu9cy1Zlrznz49Aw4M31a35sL+uGnzl/ODh7
+	 /2NJ0A9XJZX1p6tExNppfCGcBtoZ8A7tvDEJfZydxJK8I8PeHKyyeHbj00ITc9ahC7
+	 izw7Ar4TqtOAWu0GYcE0D7Tf+pQQeqvDRLaKJGdrUjNW8za0yJ4IdaGDqeB3/4V0Sx
+	 e9xonZxCPakI2ivw7l8Llejrd0Po5eRzoSAVUiVbSJIirC/clLmys0Evw8Fcm8ZwZV
+	 CI9PmGAZqAHERtVBTfozqxJkQK7xYp4jtHBM17gA3ftJo+ouBhfNi7s4Zi0TwPHQRK
+	 SVGpbw7t3HKEA==
+Date: Fri, 20 Nov 2026 13:02:25 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Lee Jones <lee@kernel.org>
+Cc: Xiubo Li <Li.Xiubo@freescale.com>, 
+	"shenwei.wang@nxp.com" <shenwei.wang@nxp.com>, Thierry Reding <thierry.reding@gmail.com>, 
+	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 5/8] pwm: fsl-ftm: Enable ipg_clk around regcache_sync()
+ during resume
+Message-ID: <awA2gqJ2c8QlsmRu@monoceros>
+References: <20261105143847.2559586-1-lee@kernel.org>
+ <20261105143847.2559586-6-lee@kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -85,12 +59,88 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="h2wqbny5kqhqb4am"
 Content-Disposition: inline
-In-Reply-To: <20261116-unique-ref-v22-4-12029383206d@kernel.org>
+In-Reply-To: <20261105143847.2559586-6-lee@kernel.org>
 
-On Mon, Nov 16, 2026 at 03:21:01PM +0100, Andreas Hindborg wrote:
 
-For the fs and pid_namespace bits:
+--h2wqbny5kqhqb4am
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 5/8] pwm: fsl-ftm: Enable ipg_clk around regcache_sync()
+ during resume
+MIME-Version: 1.0
 
-Acked-by: Christian Brauner <brauner@kernel.org>
+Hello Lee,
+
+On Thu, Nov 05, 2026 at 02:38:07PM +0000, Lee Jones wrote:
+> On SoCs with a dedicated IP interface clock (ipg_clk), register accesses
+> require ipg_clk to be enabled in addition to the ftm_sys clock managed
+> by regmap_mmio.  In fsl_pwm_resume(), ipg_clk is only enabled inside the
+> channel loop for channels with PWMF_REQUESTED set, so if no channels are
+> currently requested, regcache_sync() writes to the hardware registers
+> while ipg_clk is disabled.
+>=20
+> Enable ipg_clk across fsl_pwm_resume() around regcache_sync(), matching
+> fsl_pwm_init().
+>=20
+> Fixes: 82a9c55a2bb0 ("pwm: fsl-ftm: Added a dedicated IP interface clock")
+> Closes: https://sashiko.dev/#/bug/linux-858851cf-55a9-4776-883c-69c05f396=
+1f2
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lee Jones <lee@kernel.org>
+> ---
+>  drivers/pwm/pwm-fsl-ftm.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>=20
+> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+> index 35406b2e1925..9e5470e2efe6 100644
+> --- a/drivers/pwm/pwm-fsl-ftm.c
+> +++ b/drivers/pwm/pwm-fsl-ftm.c
+> @@ -501,8 +501,13 @@ static int fsl_pwm_resume(struct device *dev)
+>  {
+>  	struct pwm_chip *chip =3D dev_get_drvdata(dev);
+>  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
+> +	int ret;
+>  	int i;
+> =20
+> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
+> +	if (ret)
+> +		return ret;
+> +
+>  	for (i =3D 0; i < chip->npwm; i++) {
+>  		struct pwm_device *pwm =3D &chip->pwms[i];
+> =20
+> @@ -522,6 +527,8 @@ static int fsl_pwm_resume(struct device *dev)
+>  	regcache_cache_only(fpc->regmap, false);
+>  	regcache_sync(fpc->regmap);
+> =20
+> +	clk_disable_unprepare(fpc->ipg_clk);
+> +
+>  	return 0;
+
+Just from looking at the code (i.e. without the commit log available)
+it's not obvious why the clk_enable is needed. Can you add a comment and
+maybe move the enable call to after the loop?
+
+Best regards
+Uwe
+
+--h2wqbny5kqhqb4am
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsANs8ACgkQj4D7WH0S
+/k6iTAf+Ja3v9gvzY8CSfu/joNMKMZnM0i5O9+uXbyzIpQ3FhR+TrCYeGB1RgHB8
+ZXezlHq23Zw3javd12ByZmkRGpYPFwAB8wT7vE+11E3Zp0Xp3dO67PExVDHBNaZF
+kgg3d61cbdcmMwLRNRErYy0eR9sUowm8/+tBtOMvMVKkLBN6QJYCSY0OVOLi9hMM
+gkQlV9JUW1i1p5/YZpgi7oZqv0U/9N9SwcwTCkrxk9jfK5Ts26aimzrGGfyFaNy3
+PQBHhp3BeE+hK+MmRjBqkeS9WwFdWmkICFRxFW9R+GxVJbHHfv0xRLUuw7OCA8et
+x95md7hPWCLZB6WtPkSOB3IiNVp4Iw==
+=Mcy/
+-----END PGP SIGNATURE-----
+
+--h2wqbny5kqhqb4am--
