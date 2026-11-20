@@ -1,55 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795176148;
-	b=jcUfgJHfb4vLNHCf0Ooobt+v8jLR4BCxg9NJ0E8MyQ62fHzAqR1Mnu1G34hARqGr9kDp
-	 i9blVnEkJ5ORWbhfcaVmZN4SP545jMVJpuIraZiMA8u//04Nozc2Z5CTLYakD6gyWHkdg
-	 oFlwq79yP3gXXEjHaAX45MU/pE7Kyffh96gE2u1M4YH/2SdfH6g5T8jE81TIB1o9LvExM
-	 JCVFY8qJjjMNehcXo0cZ6iIuLaWk4daqC/pyHmOAcv9uWSOQ3rjUDDzwlz0ejADDlSuXt
-	 UbB+cpTyrUR30xplHLt3roLPxFcvWm1woHyN5LAsToCbNOvsIKCKQB7hJj7wRQwJ1OA==
+	t=1795176372;
+	b=DXsWkXTD9sl0eDIOnlal4EB32jcmetwyCWAyIZWWTi8tS8HaDZFnzTS8YWRfvAjhnqvO
+	 KxnVv3Coj+78RvXQP532uHllhzQtggZvewUhiUBjuElbhMUQ2jQhToGaInuEKKGkeUaMx
+	 V1odNWUWgDPuz6O/IyVLWZA2O5uswzAdb938zKCI2QbY8EvaOj30blZiO/UCPj2oJ3J3I
+	 9VmCYA5iBZC1qlIFbAGoqrFgaz8hzYRNXhdxhNFDxAHMucIOsFvqRF2MTaQU3LH4QPMei
+	 44N3I0SMzkSQs/KfyevMAdL8+mYOJqEXzjduR2V/fnS7cSWb/Pq44wA+H8jc1oDYwHw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795176148;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795176372;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=13zlqOS3b0U2kguoYE8OSQ7Fm1GjIlugayn5h12WyHM=;
-	b=QzUC5o/eO8MQXh7Yc5i8vYlrJagjje8GiN7wzd9ko97VZXfEkBbq5w8CToY5g1kV71lM
-	 OIH8yQanqMrOjg92kUjCsA1uVTvkJeysveGkFbVamdtMPdE/T/yVX1BLFPRSJX0clh1rf
-	 aBXbzOBArZ3YCW7VRg5nomO5cRyiPYpPu689/IYqR+1W7tf8qItnKGVkVEr7nS7YcR1p2
-	 q7UojoXoPMs6w1F+cvkgowCMXoScjljFEYacJPMWz6bA9t9lpnT2So99NO76TLqe5e7Zt
-	 sQLL79mxxEseKQ4a8LEuZnZlPQeRS7IHyRyZmuAA738UGmSoY69fpelfX6KEEx5Y8TQ==
+	bh=VZcbeVDdlNi18JiKSg+eWjVY4TeiiYK+J+UD2JmK1rw=;
+	b=YP0YvU+fvSVRIgd3Kng0Jb2/o6YAQhMBg2cTRaZNv8xxXFfD4SZXMH/s+EnhIfWhZyeg
+	 YlFScnO82s4ZGLU38//rUeyY+Up3XYGHrznfczCsM1uWKggyeVLafD+SsdJqcW07F4QSs
+	 B8/dayfiOr+ZUqYpBkEji0SsdWvCUJtN8NGV+EQdwzSwbbZDEMhjRE9NCXf7cLXm4tlgF
+	 IWQCzuQhFwPp3CHwwFmmY833rV2OVGJShrbbCB9cEVell7Mq0clb/HbL/6dpQnoRqm1Lf
+	 WMQtTuuOlQgAlW7cIZUdqhLTXJ5cUJ5e8MRMNTg0403/lrQhTyGWLBqEnVc1vj0AHXw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZcpMLcME;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Dj1I9gbO;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id D5823606A325;
-	Fri, 20 Nov 2026 12:02:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id A840A606A320;
+	Fri, 20 Nov 2026 12:06:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZcpMLcME
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5D45A1F000C0;
-	Fri, 20 Nov 2026 12:02:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Dj1I9gbO
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id DCD781F000CF;
+	Fri, 20 Nov 2026 12:06:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795176147;
-	bh=13zlqOS3b0U2kguoYE8OSQ7Fm1GjIlugayn5h12WyHM=;
+	s=k20260515; t=1795176372;
+	bh=VZcbeVDdlNi18JiKSg+eWjVY4TeiiYK+J+UD2JmK1rw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ZcpMLcMEbAY+S3wXb99cEd/F7U+V9nu9cy1Zlrznz49Aw4M31a35sL+uGnzl/ODh7
-	 /2NJ0A9XJZX1p6tExNppfCGcBtoZ8A7tvDEJfZydxJK8I8PeHKyyeHbj00ITc9ahC7
-	 izw7Ar4TqtOAWu0GYcE0D7Tf+pQQeqvDRLaKJGdrUjNW8za0yJ4IdaGDqeB3/4V0Sx
-	 e9xonZxCPakI2ivw7l8Llejrd0Po5eRzoSAVUiVbSJIirC/clLmys0Evw8Fcm8ZwZV
-	 CI9PmGAZqAHERtVBTfozqxJkQK7xYp4jtHBM17gA3ftJo+ouBhfNi7s4Zi0TwPHQRK
-	 SVGpbw7t3HKEA==
-Date: Fri, 20 Nov 2026 13:02:25 +0100
+	b=Dj1I9gbOcUktcP3XTHqIIzS3XhiqpnOQzQ99On8eXfO29UtqD1/i6OhMpILa4lUsz
+	 MocLAdjEfLu3Z1wkHpw7TUSss/tbSfsQ0guF0N5eleAmotZ0sjsqkrVmb/bHq7ypVX
+	 TJXr4AfoYpcPARr9+/8FiwQ34N09IiHj21frDV45NTD5w/ML30+FoOMqdUtY6sCk3j
+	 QWtQKuKeMdQz8BteW0utOV1XjtvKOmti2nr42G+H6EdA1OKQJDCDBFmUxWz5vhEIAa
+	 86bSXqGdAdp6jpamqwSvUO/eN7g/wUvfSK+2ha51T4AUur42lLDQNxz0GLsmNOL5YR
+	 ndKZNASxyDy0Q==
+Date: Fri, 20 Nov 2026 13:06:10 +0100
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 To: Lee Jones <lee@kernel.org>
-Cc: Xiubo Li <Li.Xiubo@freescale.com>, 
-	"shenwei.wang@nxp.com" <shenwei.wang@nxp.com>, Thierry Reding <thierry.reding@gmail.com>, 
+Cc: "Philip, Avinash" <avinashphilip@ti.com>, 
+	Vaibhav Bedia <vaibhav.bedia@ti.com>, Thierry Reding <thierry.reding@avionic-design.de>, 
 	linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 5/8] pwm: fsl-ftm: Enable ipg_clk around regcache_sync()
- during resume
-Message-ID: <awA2gqJ2c8QlsmRu@monoceros>
+Subject: Re: [PATCH 7/8] pwm: tiehrpwm: Enable runtime PM before registering
+ PWM chip
+Message-ID: <awA3Cfrm8lHE2uLH@monoceros>
 References: <20261105143847.2559586-1-lee@kernel.org>
- <20261105143847.2559586-6-lee@kernel.org>
+ <20261105143847.2559586-8-lee@kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -60,87 +60,97 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="h2wqbny5kqhqb4am"
+	protocol="application/pgp-signature"; boundary="52p67fuekkm3a7ph"
 Content-Disposition: inline
-In-Reply-To: <20261105143847.2559586-6-lee@kernel.org>
+In-Reply-To: <20261105143847.2559586-8-lee@kernel.org>
 
 
---h2wqbny5kqhqb4am
+--52p67fuekkm3a7ph
 Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 5/8] pwm: fsl-ftm: Enable ipg_clk around regcache_sync()
- during resume
+Subject: Re: [PATCH 7/8] pwm: tiehrpwm: Enable runtime PM before registering
+ PWM chip
 MIME-Version: 1.0
 
-Hello Lee,
+Hello,
 
-On Thu, Nov 05, 2026 at 02:38:07PM +0000, Lee Jones wrote:
-> On SoCs with a dedicated IP interface clock (ipg_clk), register accesses
-> require ipg_clk to be enabled in addition to the ftm_sys clock managed
-> by regmap_mmio.  In fsl_pwm_resume(), ipg_clk is only enabled inside the
-> channel loop for channels with PWMF_REQUESTED set, so if no channels are
-> currently requested, regcache_sync() writes to the hardware registers
-> while ipg_clk is disabled.
+On Thu, Nov 05, 2026 at 02:38:09PM +0000, Lee Jones wrote:
+> ehrpwm_pwm_probe() calls pwmchip_add() before setting driver data and
+> enabling runtime PM.  Because pwmchip_add() immediately exposes the PWM
+> channels to consumers, a consumer can invoke ehrpwm_pwm_apply() before
+> pm_runtime_enable() runs, causing registers to be accessed while the
+> device remains runtime-suspended.
+
+Is this correct? Until pm_runtime_enable() is called the device doesn't
+go into suspend, does it?
+
+> Set driver data and enable runtime PM before calling pwmchip_add(), and
+> disable runtime PM on the error path.
 >=20
-> Enable ipg_clk across fsl_pwm_resume() around regcache_sync(), matching
-> fsl_pwm_init().
->=20
-> Fixes: 82a9c55a2bb0 ("pwm: fsl-ftm: Added a dedicated IP interface clock")
-> Closes: https://sashiko.dev/#/bug/linux-858851cf-55a9-4776-883c-69c05f396=
-1f2
+> Fixes: 19891b20e7c2 ("pwm: pwm-tiehrpwm: PWM driver support for EHRPWM")
+> Closes: https://sashiko.dev/#/bug/linux-28b36a80-e4a9-4bb6-97bc-7ca028955=
+70a
 > Cc: stable@vger.kernel.org
 > Signed-off-by: Lee Jones <lee@kernel.org>
 > ---
->  drivers/pwm/pwm-fsl-ftm.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+>  drivers/pwm/pwm-tiehrpwm.c | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
 >=20
-> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-> index 35406b2e1925..9e5470e2efe6 100644
-> --- a/drivers/pwm/pwm-fsl-ftm.c
-> +++ b/drivers/pwm/pwm-fsl-ftm.c
-> @@ -501,8 +501,13 @@ static int fsl_pwm_resume(struct device *dev)
->  {
->  	struct pwm_chip *chip =3D dev_get_drvdata(dev);
->  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
-> +	int ret;
->  	int i;
+> diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
+> index e3407d0a1f7f..f9dd3b91c73a 100644
+> --- a/drivers/pwm/pwm-tiehrpwm.c
+> +++ b/drivers/pwm/pwm-tiehrpwm.c
+> @@ -461,18 +461,19 @@ static int ehrpwm_pwm_probe(struct platform_device =
+*pdev)
+>  		return ret;
+>  	}
 > =20
-> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
-> +	if (ret)
-> +		return ret;
+> -	ret =3D pwmchip_add(chip);
+> -	if (ret < 0) {
+> -		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> -		goto err_clk_unprepare;
+> -	}
+> -
+>  	platform_set_drvdata(pdev, chip);
+>  	pm_runtime_enable(&pdev->dev);
+> =20
+> +	ret =3D pwmchip_add(chip);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> +		goto err_pm_disable;
+> +	}
 > +
->  	for (i =3D 0; i < chip->npwm; i++) {
->  		struct pwm_device *pwm =3D &chip->pwms[i];
-> =20
-> @@ -522,6 +527,8 @@ static int fsl_pwm_resume(struct device *dev)
->  	regcache_cache_only(fpc->regmap, false);
->  	regcache_sync(fpc->regmap);
-> =20
-> +	clk_disable_unprepare(fpc->ipg_clk);
-> +
+
+If you switch the order here, it would be awesome to also switch in the
+=2Eremove() callback to have the order match.
+
 >  	return 0;
+> =20
+> -err_clk_unprepare:
+> +err_pm_disable:
+> +	pm_runtime_disable(&pdev->dev);
+>  	clk_unprepare(pc->tbclk);
+> =20
+>  	return ret;
+> Cc: "Philip, Avinash" <avinashphilip@ti.com>
+> --=20
+> 2.56.0.398.g882cbad275-goog
+>=20
 
-Just from looking at the code (i.e. without the commit log available)
-it's not obvious why the clk_enable is needed. Can you add a comment and
-maybe move the enable call to after the loop?
-
-Best regards
-Uwe
-
---h2wqbny5kqhqb4am
+--52p67fuekkm3a7ph
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsANs8ACgkQj4D7WH0S
-/k6iTAf+Ja3v9gvzY8CSfu/joNMKMZnM0i5O9+uXbyzIpQ3FhR+TrCYeGB1RgHB8
-ZXezlHq23Zw3javd12ByZmkRGpYPFwAB8wT7vE+11E3Zp0Xp3dO67PExVDHBNaZF
-kgg3d61cbdcmMwLRNRErYy0eR9sUowm8/+tBtOMvMVKkLBN6QJYCSY0OVOLi9hMM
-gkQlV9JUW1i1p5/YZpgi7oZqv0U/9N9SwcwTCkrxk9jfK5Ts26aimzrGGfyFaNy3
-PQBHhp3BeE+hK+MmRjBqkeS9WwFdWmkICFRxFW9R+GxVJbHHfv0xRLUuw7OCA8et
-x95md7hPWCLZB6WtPkSOB3IiNVp4Iw==
-=Mcy/
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsAN7AACgkQj4D7WH0S
+/k6ZMAf/Sfja5kwJbbnFMEzKlPXRu5nvLwz6Cl5huAWiTMh8OUPEmcGsJjd88Ul5
+0uJQwE4mFuzjJFtKScfdJWc+gwYlzZwhN4vel1E5Vu4FbjaFSrHqrhAEhvsfzJSj
+upQzhfNcNa4u9Uz1Y+6p1QfHYHog533WUK/DCGypFDQ93LqHGu+hheXPJKmSQClf
+0AuWmEUZuAG2pxaeaCw7a2JsTbuJ2gDcosrezGQjMWFNMLJuCNNOWtumR9EGXLHR
+NDqbnhSZ/4X4z6MN0Yrr1XGkTNGRdkbQ4nry2ILMDRi6gFMgVyTcYtAzC3Jwh6w9
+nhUwFMtmTLCvBWbD6kGiqLwj3swg8g==
+=U410
 -----END PGP SIGNATURE-----
 
---h2wqbny5kqhqb4am--
+--52p67fuekkm3a7ph--
