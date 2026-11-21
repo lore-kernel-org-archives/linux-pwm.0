@@ -1,102 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.177
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795210300;
-	b=oHw9GU8wflabslX4Y6MXDrl6hlPoOuweXL16jMwSgn8gOJZmKavaabT+f3/t6zVk3mXk
-	 mID25Y/c+xzJ9ySuAuTxWf7wj0hHtbIrUF5CVHogt3ERKlXOO5Szc8mHRrqwQxNHGvII+
-	 GH8zdM5n8PKGOJ3ZriPmF6xndo/k+4hUVMbcu7fmzHvOSjqWf/q6Wx3F2oT33VMnpcDRB
-	 cvIGUEzzusWBbvXxPFFSsiP99i0N1h1hTOD2FqjJZeGm+3tca1B5ddv6DjT12qwkwhTrD
-	 eBQm4K5vCCVZYrwgJ+n68tosYlcVxiTeDBUIaeAws58nrSP01AQPyF41FLOxgG0ap2g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795210300;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=26y+of0VW/d3qa/IzkivZULa62OBHde+4TVDHu/Ebbs=;
-	b=zSmkXlqvLlX55r/jddSBcFuJyJiFfMZ9W+ImRjBuvsjRTvrAqcWodFezyOgiiM2s4+ih
-	 Uf5ZWhu3DiaG25gMQX/v84JbECVfw44uT+YOqdX9diJ8dsWBBISiF8CnLzIZtw66FyzHA
-	 Mi2ZfVsoGaVXi681eHURexw4uItXzzCoZml4C6+JzHnE6Op/MlrQ2qTL5aalhvWGqH5Nv
-	 DlyNJcKJ8JK1a0oezIxMULAZgbkUZ86rjxI478Yi4mIkQx7bYBMIp2UOWr2S8j0mMQehQ
-	 dBs6NEPb5gLHc3oo5VBJY5DhdX8jSaNEYP5v2JQtCBPHo4Pt6MSyCB2glS2yLXLqdSg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=owhm7wLl;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.177
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=203.205.221.155
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795244385;
+	b=aHPxW41mT3NMuNjpvyaJec7iARXRxeFHW0EPJsdV5dN3qfWd62N8JFisGk0lrqQpcASc
+	 6h6RXPw0qTVYMk1JJJ+Krmpxpy4qc0qEm0RtPE5wxALTf//G6LrW8kns0Og1f2vMJ7aAc
+	 fuEdtmnyJwYIwLt4YmiUdxhIa3bUdtW6KeKPsF//tRPxm0tKLA1D/QUAz0j94t9IzBca3
+	 KjvZ5llukIG8EhczXyWru+CEhrJx3puMj2krdQjpzcjS3iQbcUGTzgYZjzZeOJ5LAr/oP
+	 RIiplokbJwEMOvkf2WPX4+g3v06fXIki08LwU+/fFxeRCGYV5yRgd8Op7WApOCZTpxg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795244385;
+	h=DMARC-Filter:DKIM-Signature:Received:X-QQ-mid:Message-ID:
+	 X-QQ-XMAILINFO:X-QQ-XMRINFO:From:To:Cc:Subject:Date:X-OQ-MSGID:
+	 X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=jK2zYQmh64qPZi1PcNYWIZ+ueibLnSi2h0M89dZtMcg=;
+	b=IcSdFTk5+JmAgQ/q+YZdv3k3DrNf3wwv97xMWz+NaxxHb3xCFGLYOJXptw9KHVgkZ5mX
+	 c0AtQSxp7884jzVdiB7tRUq1oaNq6SAhTDPHxB7/Tv+Gs8AjHwCN7NDWv/YCZzQBge5m+
+	 LcnxStfitEESLrMzGBQ08R72D7MaewcOynbOokFTYdeFjYrwkAu3nrrs4PgPfnzhlW+CS
+	 dpimn+vPyIj63OsaCMRNhb6HZVUh3rm2kWW2TSAryCDe+OPCu8G1okuLMd7f6hL4CXiqi
+	 NoytHkPiqAyPI+fpF8Yv6QDvKjxgN6dDSsxdV4TR2VWKFXknt9XO70+3NgvfWpknP5g==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=qq.com;
+	spf=pass smtp.mailfrom=qq.com;
+	dkim=pass header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b="pElU/YCg";
+	arc=none smtp.remote-ip=203.205.221.155
+Received: from out203-205-221-155.mail.qq.com (out203-205-221-155.mail.qq.com [203.205.221.155])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C052B606A6BF
-	for <linux-pwm@vger.kernel.org>; Fri, 20 Nov 2026 21:31:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C052B606A6BF
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F3E0606A330;
+	Sat, 21 Nov 2026 06:59:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1F3E0606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=owhm7wLl
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-3adfe7a31dfso1047841fa.3
-        for <linux-pwm@vger.kernel.org>; Fri, 20 Nov 2026 13:31:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795210297; cv=none;
-        d=google.com; s=arc-20260327;
-        b=OvTw5awe81u9/RnL2mFqVOAI7JUxZteUqX39V22t5OnA0VcBY2vhOTfUX+mdii6nhK
-         B+0oCb5tJGRGWnFNl61uwWphggcj2G15eDFWkg976oVzM3EDB6aqnQB1S2YJCtYpRTQL
-         GbRBynBA4UTwjdZXEcf9avouGlEVdtIRfplFDACvxWMl1MzUsbC96NOWpjPW1tCHsAoi
-         /W4WkVATiCQ7tlU9Ur28F0DwL9qPEtmk6FemY4ojyPCkGGwFIZfmi1tNDnhZxmB4OILx
-         Y6CHjbVdfaK4nJxQFjXJ/NtJrTg06CooJFq3JRKWQ9E0DttUZ2itHsZDdsE7tb0w24qG
-         NiBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=26y+of0VW/d3qa/IzkivZULa62OBHde+4TVDHu/Ebbs=;
-        fh=xw62P8Ekt22vWNoJVXdUk80DWbiYsq4x4TP2VF5Iw6A=;
-        b=agQykksK/yZbQuBfO7RxWZAZSiJrMn2L0cxm7O69zP6Y4KZchSijkF3RrTMaU9S03L
-         3A0kPTut+/96kEiYjw8Umg/7rHXs1NAdsj68F3ci4hXtOuN2FA2j28od1A2TcuH4TUmv
-         NDtCz2ri726vGp+vtkSWWmN5pM78KEoN9C58JGOiA5qspkMNmbSOkvcScFW+nO54rTPV
-         GEZqcZw4wnIruqGuJvShD45oyejo7KkO3eqaw0NBvPWstg8aS2TsdYsQEQaDjEwY2i56
-         pqVkBlWFmjfp3CUeHDZQCUQ47XFL6FTo2Gz74+v90pSuNTyytChkEAyq+FGAqzZzzfq5
-         amaQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795210297; x=1795815097; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=26y+of0VW/d3qa/IzkivZULa62OBHde+4TVDHu/Ebbs=;
-        b=owhm7wLllg3l9s3Ng9CV1HrjwLj04k4mew4+Il/Z8w5k0GXizWUecYujWL4XpHDtMa
-         eS9MRCtEBZwwC8OdUWFwKPDTIlDgdFLHLZUfue/yq/USkW8/TiW1ko9/CoxPtSxP1A9D
-         D8MSFcWmlq6iHfxe/N4v0YRGxj23N85NQtLSVROCDnIzR4Uv318mpVWcVMo7jrrlABYt
-         YjadBn6OUuNuIFRnWiaLZ5X/eKMo7W3sxO+bCCWoKuFkljemHmv/yxy6hv/IR4N1kz5O
-         L3UPxcjApzNrfzj6wR8qTA9djgxz/M4AodemmINAcWB3TwhsliP53LE71qSquskMkxGi
-         21ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795210297; x=1795815097;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=26y+of0VW/d3qa/IzkivZULa62OBHde+4TVDHu/Ebbs=;
-        b=1AQHPRq/aGX9cx1vK8zlf0iPuKNV5hofx06Kwgl0z1961orCfwGUE3dn3hQdVPITcY
-         6MM8U9OfHfiUfaNc0czjIyLVoDEF//J8rSdt0mYZ2zMp34CM7cDS6G7a+TGqHJLz2W0L
-         f1YOH0LtCs05F3Zoq7FJyj7DykJgUzRNzwg5aWkTjiFKZyXwzUbi7CWAr63lkkcRq+b0
-         IjQi1IkbFcumxHGRuwv0zcbo8/pEh4YcMcX1adwIGJ6q7ZJgOCGWk1dc9jNKJ2FtNGdW
-         gOYwEY+ymk77c3Vb4CKV0YTg9eL8FVDYA4x9QXcmRypwyomPXEoPY5Pd7cs8sB5IUYH2
-         DRjg==
-X-Forwarded-Encrypted: i=1; AL+hErEfwT904c7VNYhH930wwkrdTxCUY6ITRp37xXmWGoZvyXfGgEhmjXINd6JNTCvwLjvp8R/WFojGQyc=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9kMKghSBd9/iqRnbtuBmFcKYpcZiLwgHMvw0VbRhnQ1h7JKGLF
-	aoroBijOQI5ZiWY9+y98A7dRlC3/7wX1pjDDlBwVsX7F1kdf+krCKTCQoLkjGlVsVkhwrxMnaid
-	/80FWWT4mTsjlY0knejvvYQ4DLgSpV4Q=
-X-Gm-Gg: AZFdTZdcp0qc5sMqlGuv0uSRVsxcJPL6HRBZQ4bFDYkXQiLHrnmBoAU3qrkkTkd2u97
-	uYS676aRTNSo8Q/qCTKMy/ELLEvVdjmEFptgnwoTKUzbl3F3d9/nhpG+6e60tYAcYDX6MbrODWP
-	i460l5uFEBW+OhOLot7XkVqLzpTImFWWQM/eDeRAUe4ZzBOxPJ5AAn1lmuKQQl0NpsUELN1Hgjy
-	+3Lsf/G0ajoebSdprAdge5ozWGXi9bo4Yoc6LQSFwT5nEDvmAS0R5U4Ux4oHB5BDP639HpXcQ6e
-	NKuS9zoaywmNdqu3pKYLsNRGr/Ly/9Be3cIT/WwAQzNCR9gzweKxtaSTPqO4MCmi64UPAV+bE2d
-	Xyv1IlY5niR2H711ZOKiSomlVWkag9+LQgVaYulpDLq//GNz1SFFGXzoM9I0Wx2wD6rdgu01XfR
-	lwJTFMqy57jf9HLRrNa01BYxKZa08dO9QDAaWQwlBKYIC9D9ZurVow48S/YdOSWNTPd9rvcaaUq
-	MTC/tRFlgyRh/88BvdrVecWSCBp8gu0IGdsRxd+JCPpSddm/YOHf3Ae0vy9SVR8V4RgVqG7
-X-Received: by 2002:a05:6512:1320:b0:5bf:cf6d:ef1 with SMTP id
- 2adb3069b0e04-5c1bc5767fdmr1687437e87.0.1795210296624; Fri, 20 Nov 2026
- 13:31:36 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=pElU/YCg
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1795244382; bh=jK2zYQmh64qPZi1PcNYWIZ+ueibLnSi2h0M89dZtMcg=;
+	h=From:To:Cc:Subject:Date;
+	b=pElU/YCguCeDHzYXiYZAXUWSu5OfRdfp7/zbiybcDOhKx5azB2T2jpb+9bNDBA4za
+	 VnUdqYjCWEiVCuU0MJ9cRH2F/36K/fzlq5u5YEtx9nkPZ37wC4Q70bE8/dlEtpHBUt
+	 HQT874azzwFBb5MmZy7AGV/OiYG9HVnWsVXZUTRE=
+Received: from jerry-PC.lan ([2408:8249:5f:7101:71a:8713:56b4:5043])
+	by newxmesmtplogicsvrszc56-0.qq.com (NewEsmtp) with SMTP
+	id EE72042D; Sat, 21 Nov 2026 14:59:39 +0800
+X-QQ-mid: xmsmtpt1795244379t6zcn6lw1
+Message-ID: <tencent_27C5A1EA3CF33BA5221F7F01A066E92BCC07@qq.com>
+X-QQ-XMAILINFO: Mpt5V4XGwnFy4a/nabu402ZCgr4HCjbav7E+2nIRO5S+M9bW9j16AgO0eYZNxO
+	 Z/QSlGGFAV96WP9hht/6bqcxhLGoaztLNOYmXxy/3oIqdNhSwMoL0N1Ay1ELmbXRBQB0XM0Gix8k
+	 mYFlVQIRKhdEe4hRWIF8JqVcmuj7xapfA/4+QJsSm+sUFi59otfV2fHOjSYlN4PJBoMgoJcuJoWb
+	 MgnjNVsIuIQ3XUaWbe6YP+L2+bf7wN0F27uxwmrxnM+WVNdaFdRco3IyTplKdplG317qZH8NX0SS
+	 fQll/9vJGL9uB1sxzfDRZTgD3I0bVuc5IcdSD9C7ZVW2cWNovWUHKlTocpuBAglOB6cbAPtMmTKR
+	 xqHGMKZc1nE5DtCnAzRyejjiQNQ6FVhIMEKjmOYCtUH6GRR0CAig/F+7aKDfDdKRe7oht/UiTrAU
+	 WP/Rb6vHcoClZL3Aw4Umaqiwl1wNaZiYcrKMU+bjXE8XLm2Zoclzh7aJ/ZUpHcSNJ+B+3CYM1P51
+	 Hd8TRKzz2ixnJqXD2CY/sYrcpD62cPLyTHDoBajmBgJBlutHGYXURVuvB1An6jAZJrUyAjOi0y2k
+	 hCYY3rbXwJDbk320sclhaLTK2aHDWlHfhR436O96XHRRqwruVVEo++iNvUJhA57qlUHdC29cBU/Q
+	 YBbPVi828deqwxn4CbmVAsIFyn8G3yThlhF5nzHmt4gIOyWJc9DUfLjWKX+LYqhDfDNLTW6tu8zM
+	 /MdCVpvtjYnDl4EUOZiIW0Mjckp1ASLOe/0uGvMpRuD+QUNtZRK7DzbKD4E9BClSMaQk5eqq7QmN
+	 NGB3C6VeuWiHE5tHLuIda/9k/XhOVG+bLomj1Uj/MUNBAlXNg3O45aTH0wrIM/hgesw0WxzL73Hd
+	 490qOg6sbyb39XeFCm7U9FKmLkBwzvQAnTwF3W1sTkiHFI8DXGCi6/ZWhZdL726oRk8xACoGo2c8
+	 jmqahsEIWIZ62rvzD9ugzWGn95WB8pPX8/XnOHmnfZLvXrcquQm3LvirycHSy/Uwp6BmQu0qwLAE
+	 YCmGaDvNCLuVxs2bqEH8didhEX23RFne4vGPymTz9S5RLy/5WBrlHL83MISIyPGeyFThp8fKPfAU
+	 osIy+e+vo/BXm0oDttX02Dq6h4dG0Q52/rGx2DUUVOGYxqj1k=
+X-QQ-XMRINFO: MPJ6Tf5t3I/ylTmHUqvI8+Wpn+Gzalws3A==
+From: ZhuXiangyu <1194781887@qq.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>
+Cc: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	linux-pwm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	ZhuXiangyu <1194781887@qq.com>
+Subject: [PATCH 1/2] pwm: rockchip: add PWM v4 support
+Date: Sat, 21 Nov 2026 14:59:35 +0800
+X-OQ-MSGID: <20261121065936.1125919-1-1194781887@qq.com>
+X-Mailer: git-send-email 2.47.3
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -106,55 +85,252 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261013-clk-type-state-v6-0-a5e9977b3509@collabora.com>
- <1a1cb87df11.2c57f9fa237371.844135553238709982@collabora.com> <179519331840.3795820.8047048832159165355.b4-reply@b4>
-In-Reply-To: <179519331840.3795820.8047048832159165355.b4-reply@b4>
-From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date: Fri, 20 Nov 2026 22:31:25 +0100
-X-Gm-Features: Aa3M54o4i_zALBjbkgtOxZes0dCWZ4jiHPCTwn8GOTMZ7mrp5N06gIycRXOv0PA
-Message-ID: <CANiq72nOKrAtct_eb7tjc9JFFpOQrN0=5bOyOZo1p4C+4U5bsw@mail.gmail.com>
-Subject: Re: [PATCH v6 0/7] Clk improvements
-To: Jerome Brunet <jbrunet@baylibre.com>
-Cc: Daniel Almeida <daniel.almeida@collabora.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Viresh Kumar <viresh.kumar@linaro.org>, Danilo Krummrich <dakr@kernel.org>, 
-	Alice Ryhl <aliceryhl@google.com>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Michal Wilczynski <m.wilczynski@samsung.com>, 
-	Drew Fustini <fustini@kernel.org>, Guo Ren <guoren@kernel.org>, Fu Wei <wefu@redhat.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
-	Jerome Brunet <jbrunet+clk@baylibre.com>, Miguel Ojeda <ojeda@kernel.org>, 
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, 
-	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
-	Trevor Gross <tmgross@umich.edu>, Tamir Duberstein <tamird@kernel.org>, 
-	Alexandre Courbot <acourbot@nvidia.com>, linux-pm <linux-pm@vger.kernel.org>, 
-	linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, 
-	linux-riscv <linux-riscv@lists.infradead.org>, linux-pwm <linux-pwm@vger.kernel.org>, 
-	linux-clk <linux-clk@vger.kernel.org>, rust-for-linux <rust-for-linux@vger.kernel.org>, 
-	Boris Brezillon <boris.brezillon@collabora.com>, =?UTF-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>, 
-	Maurice Hieronymus <mhi@mailbox.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, Nov 20, 2026 at 5:49=E2=80=AFPM Jerome Brunet <jbrunet@baylibre.com=
-> wrote:
->
-> I was wondering how the rust folks expect these changes to be handled sin=
-ce they
-> touch the rust/ dir. Should the clock changes go through the clock tree o=
-r the
-> rust one ? it is fine with me either way.
+Add basic support for the Rockchip PWM v4 controller found on the
+RK3506 and RK3576 SoCs. Compared to the earlier versions, v4 moves the
+enable bits into a separate register, uses hiword write masks for the
+control fields and latches a new configuration with a control-update
+bit.
 
-The clock tree would be ideal, i.e. a lot of subfolders of `rust/`
-belong to different subsystems (the file is already under "COMMON CLK
-FRAMEWORK" in `MAINTAINERS`). The "treewide" Rust tree can act as a
-fallback tree for files tracked elsewhere if needed, but it is meant
-to be exceptional.
+Only continuous output mode is supported for now.
 
-(The files will be able to move to e.g. `drivers/clk/` eventually,
-when we lift the limitations of the build system regarding that.)
+Tested on an RK3506 board with a 100 kHz output at 40% duty cycle,
+including enable/disable, verified on an oscilloscope.
 
-I hope that clarifies!
+Tested-by: ZhuXiangyu <1194781887@qq.com>
+Signed-off-by: ZhuXiangyu <1194781887@qq.com>
+---
+ drivers/pwm/pwm-rockchip.c | 146 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 130 insertions(+), 16 deletions(-)
 
-Cheers,
-Miguel
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 050ca8aa..aa89f23d 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <linux/clk.h>
++#include <linux/delay.h>
+ #include <linux/io.h>
+ #include <linux/limits.h>
+ #include <linux/math64.h>
+@@ -31,6 +32,27 @@
+ #define PWM_LOCK_EN		(1 << 6)
+ #define PWM_LP_DISABLE		(0 << 8)
+ 
++/*
++ * Register layout for PWM v4
++ */
++#define PWM_V4_HIWORD_UPDATE(v, l, h) \
++	((((v) << (l)) & GENMASK((h), (l))) | (GENMASK((h), (l)) << 16))
++
++#define PWM_V4_ENABLE_MASK		GENMASK(1, 0)
++#define PWM_V4_CLK_EN(v)		PWM_V4_HIWORD_UPDATE(v, 0, 0)
++#define PWM_V4_EN(v)			PWM_V4_HIWORD_UPDATE(v, 1, 1)
++#define PWM_V4_CTRL_UPDATE_EN(v)	PWM_V4_HIWORD_UPDATE(v, 2, 2)
++
++#define PWM_V4_MODE(v)			PWM_V4_HIWORD_UPDATE(v, 0, 1)
++#define PWM_V4_CONTINUOUS		1
++#define PWM_V4_POLARITY(v)		PWM_V4_HIWORD_UPDATE(v, 2, 3)
++#define PWM_V4_DUTY_NEGATIVE		(0 << 0)
++#define PWM_V4_DUTY_POSITIVE		BIT(0)
++#define PWM_V4_INACTIVE_NEGATIVE	(0 << 1)
++#define PWM_V4_INACTIVE_POSITIVE	BIT(1)
++#define PWM_V4_CTRL_DUTY_POSITIVE	BIT(2)
++#define PWM_V4_ALIGNED_INVALID(v)	PWM_V4_HIWORD_UPDATE(v, 5, 5)
++
+ struct rockchip_pwm_chip {
+ 	struct clk *clk;
+ 	struct clk *pclk;
+@@ -43,6 +65,7 @@ struct rockchip_pwm_regs {
+ 	unsigned long period;
+ 	unsigned long cntr;
+ 	unsigned long ctrl;
++	unsigned long enable;
+ };
+ 
+ struct rockchip_pwm_data {
+@@ -88,13 +111,25 @@ static int rockchip_pwm_get_state(struct pwm_chip *chip,
+ 	tmp *= prescaled_ns;
+ 	state->duty_cycle =  DIV_U64_ROUND_UP(tmp, clk_rate);
+ 
+-	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
+-	state->enabled = (val & enable_conf) == enable_conf;
++	if (pc->data->regs.enable) {
++		val = readl_relaxed(pc->base + pc->data->regs.enable);
++		state->enabled = (val & enable_conf) == enable_conf;
+ 
+-	if (pc->data->supports_polarity && !(val & PWM_DUTY_POSITIVE))
+-		state->polarity = PWM_POLARITY_INVERSED;
+-	else
+-		state->polarity = PWM_POLARITY_NORMAL;
++		val = readl_relaxed(pc->base + pc->data->regs.ctrl);
++		if (pc->data->supports_polarity &&
++		    !(val & PWM_V4_CTRL_DUTY_POSITIVE))
++			state->polarity = PWM_POLARITY_INVERSED;
++		else
++			state->polarity = PWM_POLARITY_NORMAL;
++	} else {
++		val = readl_relaxed(pc->base + pc->data->regs.ctrl);
++		state->enabled = (val & enable_conf) == enable_conf;
++
++		if (pc->data->supports_polarity && !(val & PWM_DUTY_POSITIVE))
++			state->polarity = PWM_POLARITY_INVERSED;
++		else
++			state->polarity = PWM_POLARITY_NORMAL;
++	}
+ 
+ 	clk_disable(pc->clk);
+ 	clk_disable(pc->pclk);
+@@ -102,6 +137,47 @@ static int rockchip_pwm_get_state(struct pwm_chip *chip,
+ 	return 0;
+ }
+ 
++static void rockchip_pwm_config_v4(struct pwm_chip *chip, struct pwm_device *pwm,
++				   const struct pwm_state *state)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	u64 prescaled_ns = (u64)pc->data->prescaler * NSEC_PER_SEC;
++	u64 clk_rate, tmp;
++	u32 period_ticks, duty_ticks;
++
++	clk_rate = clk_get_rate(pc->clk);
++
++	tmp = mul_u64_u64_div_u64(clk_rate, state->period, prescaled_ns);
++	if (tmp > U32_MAX)
++		tmp = U32_MAX;
++	period_ticks = tmp;
++
++	tmp = mul_u64_u64_div_u64(clk_rate, state->duty_cycle, prescaled_ns);
++	if (tmp > U32_MAX)
++		tmp = U32_MAX;
++	duty_ticks = tmp;
++
++	writel_relaxed(period_ticks, pc->base + pc->data->regs.period);
++	writel_relaxed(duty_ticks, pc->base + pc->data->regs.duty);
++
++	if (pc->data->supports_polarity) {
++		if (state->polarity == PWM_POLARITY_INVERSED)
++			writel_relaxed(PWM_V4_POLARITY(PWM_V4_DUTY_NEGATIVE |
++						       PWM_V4_INACTIVE_POSITIVE),
++				       pc->base + pc->data->regs.ctrl);
++		else
++			writel_relaxed(PWM_V4_POLARITY(PWM_V4_DUTY_POSITIVE |
++						       PWM_V4_INACTIVE_NEGATIVE),
++				       pc->base + pc->data->regs.ctrl);
++	}
++
++	writel_relaxed(PWM_V4_MODE(PWM_V4_CONTINUOUS) |
++		       PWM_V4_ALIGNED_INVALID(false),
++		       pc->base + pc->data->regs.ctrl);
++	writel_relaxed(PWM_V4_CTRL_UPDATE_EN(true),
++		       pc->base + pc->data->regs.enable);
++}
++
+ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			       const struct pwm_state *state)
+ {
+@@ -175,14 +251,31 @@ static int rockchip_pwm_enable(struct pwm_chip *chip,
+ 			return ret;
+ 	}
+ 
+-	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
+-
+-	if (enable)
+-		val |= enable_conf;
+-	else
+-		val &= ~enable_conf;
++	if (pc->data->regs.enable) {
++		writel_relaxed(PWM_V4_EN(enable) | PWM_V4_CLK_EN(enable),
++			       pc->base + pc->data->regs.enable);
++
++		if (!enable) {
++			struct pwm_state curstate;
++
++			/*
++			 * In continuous mode the disable takes effect at the end
++			 * of the current period, so keep the clock running for
++			 * one more period.
++			 */
++			pwm_get_state(pwm, &curstate);
++			fsleep(DIV_ROUND_UP_ULL(curstate.period, NSEC_PER_USEC));
++		}
++	} else {
++		val = readl_relaxed(pc->base + pc->data->regs.ctrl);
++
++		if (enable)
++			val |= enable_conf;
++		else
++			val &= ~enable_conf;
+ 
+-	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
++		writel_relaxed(val, pc->base + pc->data->regs.ctrl);
++	}
+ 
+ 	if (!enable)
+ 		clk_disable(pc->clk);
+@@ -217,7 +310,10 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		enabled = false;
+ 	}
+ 
+-	rockchip_pwm_config(chip, pwm, state);
++	if (pc->data->regs.enable)
++		rockchip_pwm_config_v4(chip, pwm, state);
++	else
++		rockchip_pwm_config(chip, pwm, state);
+ 	if (state->enabled != enabled) {
+ 		ret = rockchip_pwm_enable(chip, pwm, state->enabled);
+ 		if (ret)
+@@ -291,11 +387,26 @@ static const struct rockchip_pwm_data pwm_data_v3 = {
+ 		       PWM_CONTINUOUS,
+ };
+ 
++static const struct rockchip_pwm_data pwm_data_v4 = {
++	.regs = {
++		.duty = 0x14,
++		.period = 0x10,
++		.ctrl = 0xc,
++		.enable = 0x4,
++	},
++	.prescaler = 1,
++	.supports_polarity = true,
++	.supports_lock = true,
++	.enable_conf = PWM_V4_ENABLE_MASK,
++};
++
+ static const struct of_device_id rockchip_pwm_dt_ids[] = {
+ 	{ .compatible = "rockchip,rk2928-pwm", .data = &pwm_data_v1 },
+ 	{ .compatible = "rockchip,rk3288-pwm", .data = &pwm_data_v2 },
+ 	{ .compatible = "rockchip,vop-pwm", .data = &pwm_data_vop },
+ 	{ .compatible = "rockchip,rk3328-pwm", .data = &pwm_data_v3 },
++	{ .compatible = "rockchip,rk3506-pwm", .data = &pwm_data_v4 },
++	{ .compatible = "rockchip,rk3576-pwm", .data = &pwm_data_v4 },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+@@ -327,7 +438,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 
+ 	count = of_count_phandle_with_args(pdev->dev.of_node,
+ 					   "clocks", "#clock-cells");
+-	if (count == 2)
++	if (count >= 2)
+ 		pc->pclk = devm_clk_get(&pdev->dev, "pclk");
+ 	else
+ 		pc->pclk = pc->clk;
+@@ -351,7 +462,10 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	chip->ops = &rockchip_pwm_ops;
+ 
+ 	enable_conf = pc->data->enable_conf;
+-	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
++	if (pc->data->regs.enable)
++		ctrl = readl_relaxed(pc->base + pc->data->regs.enable);
++	else
++		ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
+ 	enabled = (ctrl & enable_conf) == enable_conf;
+ 
+ 	ret = pwmchip_add(chip);
+-- 
+2.47.3
+
