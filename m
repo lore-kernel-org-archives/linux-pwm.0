@@ -1,63 +1,65 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795304919;
-	b=pZ60lk4/OA1TqliZioMdy38t6RTlehRUVqTpVBU8o6mKZ4UtUL+pwmtL1Kotq2GvmbV+
-	 9mbZbMp0olGYFRToejk+8lPaYsvFC8KE3+P/0fq9rHYe0PICB/pvdzlFKFYOoBqH+u3KR
-	 t0ulx4YjawHnFaVL1QkgXSdwY/luS6dyE95FiaNV3ovqGWbpVwk+FOvjw/x3qfxyQSD3W
-	 +Ue1cfWgORaJHAUdkLapOtQ29U3yzfehykLU5HDkRlrBrCQ0pd+N6ctbgG2h0D9vNE5Ha
-	 g23IPz4ewDeGAethxH6xuzgIZ8l0nqbWfXdVUD9CXjNBKLyoBMR7egkvtVkhOX9eUnw==
+	t=1795371165;
+	b=mALsEEeePDyU0B2a9LkL8xCVHO9RiVfiOYe7SR8tD0VjfxrTmwyNn/J6J98fGw5mW6np
+	 ltronAKBdI530PrupprdhkSa/s4s3SAd7e1LRoUMV/bX5vSmRYVlGcu+CvZO5kM5dU9YF
+	 m6epc/TdaQcvGCGkH45ORMctv7z+0VGWjKcxtZkV6vY9SsqHK17YiEBtAQlpqswHFjZge
+	 Hb7yyWznLp2HBtm/KT3gxAVu7SxPyb/cIaoKS8733q6nNIqX1+6sLVukAGD1kvt1+TLJa
+	 UraaJyAnvGT8gRK3H4TcqgUoitBbizm6gryNQ1wPMfVHjAOPL1hCiimUWpXnbXjQGcg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795304919;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795371165;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=P2+gMfqO0KssqpNjQGC0vCpucpH4dNEAtZrSlgFvnt4=;
-	b=ZZH4uyYdcD+mNAY7GnsZjjwR8puZ2gDHU6KegLcE4OQfYxyPWonZUzFeufQ8xOfHtJqb
-	 XlbwwjR8ZbaCNTqJ4lPHau43Onloj96OTK1ysqyQfVy7CjA70/EKOz/L5srsNEN2DPCcy
-	 y37Pg+T1W+X+aVSpTLK7dUaAx3iWDsclK+h5v4u9kFq0w1vIjR+rwQhTnwS8y609xFFtK
-	 Rcrkb0HZoTqaVBRcUFMScXuOeq8kiW00mdTwkZFuADj9xW8agAzp6dDOtuol2YIoH0VDV
-	 MUdmPC4e2C3usa1z5I9yVW4SnQ2KUBbe8KZ0t7NxYMREYNRkWoyBS1pkGw2fOmW/E1w==
+	bh=YJaCgLHs/Q7Pp0/P8Wb8esuj5mGDsQYN+PhwL3+DWEs=;
+	b=Uf/AALJ/5un46hQTZMNWgqoI7+vhu/5vtIsWeqZOH0Im1Nr6y20QxRgTenKuzRlWDx1h
+	 8BmeNHw0DSxIY0sVAJ+tHMWJqIr5VM41ZPO3E913lS7XnIfROrMMH9ZFWF3vBW5GzdeTO
+	 skC2hE7bolz7kO0mPzxoc64n+hDZscCJ+cf0Se8hdf9Ay2UQXTVkh5+QZHpvBKTPaDiEj
+	 NFVL91ZZOnmLuAhTA1z/d/7MSeaTNNsOia/+ENZIOH+yyku8DLVaTv/TxP3DOUtZ1dyCC
+	 yLy+XU4K1lY+c0Z1B6IgOtoP/woe6VgQqSbGf5UxtjYiJsPLN3uCxW9f1qL4cKmHsgQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=knMw2ljz;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UbryogAd;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4834D606A320;
-	Sat, 21 Nov 2026 23:48:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42687606A32C;
+	Sun, 22 Nov 2026 18:12:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=knMw2ljz
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09FDC1F000C0;
-	Sat, 21 Nov 2026 23:48:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UbryogAd
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 928C41F000CA;
+	Sun, 22 Nov 2026 18:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795304918;
-	bh=P2+gMfqO0KssqpNjQGC0vCpucpH4dNEAtZrSlgFvnt4=;
+	s=k20260515; t=1795371164;
+	bh=YJaCgLHs/Q7Pp0/P8Wb8esuj5mGDsQYN+PhwL3+DWEs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=knMw2ljzEPoxTgT12+zM4j0dFwPHs5T8TFwVaUzsOGDnoHxviHVRURu/K2Lfvbmqr
-	 q5GYnkB7bux2e2WFC3rJxZSyz3qhW6ai75yHknHbO2xrRiE1+jNf0I7Rau5kcNrEXm
-	 fLGERKL1XQnssG5ogoygccZRG82QuAeT4K7FpLoHXD7UaPiWBq2LCMyzW8jbpuKInp
-	 jeCSfe+h834bCjDXWlTskiiCDmbQOMTBKykajNkhrGbzHDfCq0BE4lGOOauZD4Hnix
-	 MwXuoMRij/lwA9m+l3tWWDoN2yngTziqoJheWjWSXhtsNoZe7AXGkdwjxmPlJzkuSI
-	 Jhp0T2boszZrQ==
-Date: Sat, 21 Nov 2026 23:48:34 +0000
+	b=UbryogAd37+gNK4Q2RTHnzlk9aiVpVpcch2fJA9vO7FjFGJViq1t69wW3q2Qv1bOo
+	 GPgdEIEv+rL9AL2k8y6dPvUNHA0bt/UmTHCd+stDrrkYj/2+Rx5m0N0QLF39tgtpb3
+	 PqG4xx21k9oGg2/ovYz/OhpCaurT1I32a1IiryJNhHZ6mGxgc6IWUzENRtojvDqWKx
+	 u9+9EjKDBpb4PLSpJbtUvKGldLZy+a0BpFHBTsnWATCY9I8IzBlI8JBjlFRDmZ9W2H
+	 /OyT1F1u9BDSv0Kq4MuVleBDCyUtSdHvwQLDPHu/CO4mKL+7jXR0xF4Mt2Q/PjWdlQ
+	 YiG5n7GnoSTVw==
+Date: Sun, 22 Nov 2026 18:12:32 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob
- Herring <robh@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Michael Hennerich <michael.hennerich@analog.com>, "Trevor Gamblin"
- <tgamblin@baylibre.com>, Joshua Crofts <crofts@kernel.org>, "Sergiu
- Cuciurean" <sergiu.cuciurean@analog.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
- <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 6/6] iio: adc: ad7625: add LTC2387 and ADAQ2387x
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, Olivier Moysan
+ <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Conor
+ Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v4 00/12] iio: frequency: ad9910: add IIO backend
  support
-Message-ID: <20261121234834.2f6cc9bf@jic23-hlaptop>
-In-Reply-To: <20261119112437.197306-7-Nicolae-daniel.Deaconescu@analog.com>
-References: <20261119112437.197306-1-Nicolae-daniel.Deaconescu@analog.com>
-	<20261119112437.197306-7-Nicolae-daniel.Deaconescu@analog.com>
+Message-ID: <20261122181232.5208e160@jic23-hlaptop>
+In-Reply-To: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
+References: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
@@ -71,78 +73,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 19 Nov 2026 13:24:20 +0200
-Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com> wrote:
+On Mon, 16 Nov 2026 16:39:52 +0000
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-> From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+> This series extends the AD9910 DDS driver with support for an IIO backend,
+> enabling data streaming through the parallel data port, and with control of
+> the DRCTL pin, which defines the slope direction of the digital ramp
+> generator (DRG).
 > 
-> Add the LTC2387-16, LTC2387-18, ADAQ23875, ADAQ23876 and ADAQ23878 as chip
-> data of this driver. The same two PWMs and IIO backend are used to read
-> from them. See the binding patch for how they differ from the existing
-> parts.
+> The parallel data port allows modulation of the DDS core parameters
+> (amplitude, phase, frequency or polar) at up to the PDCLK rate, which is
+> SYSCLK / 4. Such data rates require an FPGA IP core as the data source, so
+> an AXI backend driver is added for the AD9910 HDL reference design. Besides
+> streaming data from memory via DMA, the IP core also drives the PROFILE[2:0]
+> and DRCTL pins. The latter is exposed as a PWM output, so that the frontend
+> driver can consume it through the PWM framework without depending on the
+> backend being present.
 > 
-> The CLK burst of a conversion starts at least t_FIRSTCLK after its CNV and
-> ends at most t_LASTCLK after the next CNV, so the sampling period is raised
-> until the burst fits, instead of being clamped to 10 MSPS. Waveforms are
-> built in whole PWM steps, read with pwm_get_waveform_step_might_sleep().
+> The backend is optional: the AD9910 remains functional through the SPI
+> control interface alone, hence the new devm_iio_backend_get_optional()
+> helper.
 > 
-> The scale is divided by the gain of the ADAQ front end.
-> 
-> Add new maintainer entries.
-> 
-> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> Co-developed-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-> Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Applied to the testing branch of iio.git.  Still time for any last minute
+feedback as I won't be pushing that out as togreg for a few days at least.
 
-
-> diff --git a/drivers/iio/adc/ad7625.c b/drivers/iio/adc/ad7625.c
-> index 127441050687..8ddd18e45c8a 100644
-> --- a/drivers/iio/adc/ad7625.c
-> +++ b/drivers/iio/adc/ad7625.c
-One minor thing inline. Looks to be a good shape. Thanks
+Thanks,
 
 Jonathan
-
-
-> @@ -498,8 +822,40 @@ static int devm_ad7625_pwm_get(struct device *dev,
->  	return 0;
->  }
->  
-> +static int devm_ad7625_listed_regulator_setup(struct device *dev,
-> +					      struct ad7625_state *st)
-> +{
-> +	int ret;
-> +
-> +	ret = devm_regulator_bulk_get_enable(dev, st->info->num_supplies,
-> +					     st->info->supplies);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to enable supplies\n");
-> +
-> +	/* VS- of the ADAQ modules is left out if it is tied to ground. */
-> +	ret = devm_regulator_get_enable_optional(dev, "vs-n");
-Does it hurt to just a non optional call here?
-You'll get a stub regulator that will do nothing. That seems to make
-little difference vs carefully handling the not present case.
-
-The optional stuff only really comes into its own when we want
-to do something else instead. It doesn't matter if we are ignoring
-the lack of presence.
-
-> +	if (ret && ret != -ENODEV)
-> +		return dev_err_probe(dev, ret, "failed to enable VS-\n");
-> +
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "ref");
-> +	if (ret == -ENODEV) {
-> +		/* Without ref-supply the internal reference is used. */
-> +		st->vref_mv = AD7625_INTERNAL_REF_MV;
-> +		return 0;
-> +	}
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "failed to get REF voltage\n");
-> +
-> +	st->vref_mv = ret / (MICRO / MILLI);
-> +
-> +	return 0;
-> +}
-
-
