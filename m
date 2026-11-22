@@ -1,66 +1,85 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795371165;
-	b=mALsEEeePDyU0B2a9LkL8xCVHO9RiVfiOYe7SR8tD0VjfxrTmwyNn/J6J98fGw5mW6np
-	 ltronAKBdI530PrupprdhkSa/s4s3SAd7e1LRoUMV/bX5vSmRYVlGcu+CvZO5kM5dU9YF
-	 m6epc/TdaQcvGCGkH45ORMctv7z+0VGWjKcxtZkV6vY9SsqHK17YiEBtAQlpqswHFjZge
-	 Hb7yyWznLp2HBtm/KT3gxAVu7SxPyb/cIaoKS8733q6nNIqX1+6sLVukAGD1kvt1+TLJa
-	 UraaJyAnvGT8gRK3H4TcqgUoitBbizm6gryNQ1wPMfVHjAOPL1hCiimUWpXnbXjQGcg==
+	t=1795383904;
+	b=AtsSJv5wialPD0WWPoR1mHpKq48rTmbzLNRj7Z0ep7s26IkRzwHYyhXHiEeU5aHJ8YjF
+	 CeIjjbHbQe4uXTWguC13zRFuKD1Kb4KrMFaYgtqaiqd6Thlt8FPa+SSJDZHZrCBIHxIJ5
+	 cfrGmK/ZDHPNCUUbbY7ME5z3fi/5iGV9jNhpAc6SjusvnUzxKtf8awj1gmgK3j8dDxO5j
+	 WyqLbJ573UQm5QHRt7iyP49dSPMLgalhDF4NqM/21+UxM+o/dNyWrUsMDGznO0+O/kReU
+	 THztE1ScjDgct5WEboMrjQp0gKYY3G2db7PsPcYWD2XVf38XbV2i6kk3yjHCgHhSC4g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795371165;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795383904;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=YJaCgLHs/Q7Pp0/P8Wb8esuj5mGDsQYN+PhwL3+DWEs=;
-	b=Uf/AALJ/5un46hQTZMNWgqoI7+vhu/5vtIsWeqZOH0Im1Nr6y20QxRgTenKuzRlWDx1h
-	 8BmeNHw0DSxIY0sVAJ+tHMWJqIr5VM41ZPO3E913lS7XnIfROrMMH9ZFWF3vBW5GzdeTO
-	 skC2hE7bolz7kO0mPzxoc64n+hDZscCJ+cf0Se8hdf9Ay2UQXTVkh5+QZHpvBKTPaDiEj
-	 NFVL91ZZOnmLuAhTA1z/d/7MSeaTNNsOia/+ENZIOH+yyku8DLVaTv/TxP3DOUtZ1dyCC
-	 yLy+XU4K1lY+c0Z1B6IgOtoP/woe6VgQqSbGf5UxtjYiJsPLN3uCxW9f1qL4cKmHsgQ==
+	 References:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To;
+	bh=b50zLsvvGRcvgvDriMx8gDLrh8tprTr6wGiggUvHjMs=;
+	b=vnwN+M8AXNa4GE/9HcQiis5Qr+5ZEvzJQdXbegU39mpXSIYuXF4Q2LPrwupoYWBTOVBR
+	 FpI0m35T6uEbOrJxM3k3PwQfhCoZWCbrINwVukj/Lowc0fjx4OScNxYEAaPVSIYZy6Huy
+	 4igLPv1kaJtgjnr/KngX/nZEXTfXLaDGDXv0mwQe7AahNKen63UXPnkCeXT+MdXnkn268
+	 YTwvrLtcNW9jKUX1h9onB/iAn+ThfVO0+1Jb6D3w/zViTuBbMASoYhEif2k2+5ROegERL
+	 87npdUuB8k35q878B/RYkX+b3YazE12MXS2Gt0UIPnSdFrd0S6JIndMONnFn9kaXIww==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UbryogAd;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CWwKleOb;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42687606A32C;
-	Sun, 22 Nov 2026 18:12:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3512A606A31A;
+	Sun, 22 Nov 2026 21:45:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UbryogAd
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 928C41F000CA;
-	Sun, 22 Nov 2026 18:12:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CWwKleOb
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65CF1F000C0;
+	Sun, 22 Nov 2026 21:44:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795371164;
-	bh=YJaCgLHs/Q7Pp0/P8Wb8esuj5mGDsQYN+PhwL3+DWEs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=UbryogAd37+gNK4Q2RTHnzlk9aiVpVpcch2fJA9vO7FjFGJViq1t69wW3q2Qv1bOo
-	 GPgdEIEv+rL9AL2k8y6dPvUNHA0bt/UmTHCd+stDrrkYj/2+Rx5m0N0QLF39tgtpb3
-	 PqG4xx21k9oGg2/ovYz/OhpCaurT1I32a1IiryJNhHZ6mGxgc6IWUzENRtojvDqWKx
-	 u9+9EjKDBpb4PLSpJbtUvKGldLZy+a0BpFHBTsnWATCY9I8IzBlI8JBjlFRDmZ9W2H
-	 /OyT1F1u9BDSv0Kq4MuVleBDCyUtSdHvwQLDPHu/CO4mKL+7jXR0xF4Mt2Q/PjWdlQ
-	 YiG5n7GnoSTVw==
-Date: Sun, 22 Nov 2026 18:12:32 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, Olivier Moysan
- <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- <ukleinek@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Conor
- Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v4 00/12] iio: frequency: ad9910: add IIO backend
- support
-Message-ID: <20261122181232.5208e160@jic23-hlaptop>
-In-Reply-To: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
-References: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1795383903;
+	bh=b50zLsvvGRcvgvDriMx8gDLrh8tprTr6wGiggUvHjMs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=CWwKleObXQWz2vPfgUCmrj9fEWZy+oV4RnyXyKIEv4G8dYb3DKdAbPqRIgWIZ+jQZ
+	 ZWjUbYWnPoA5XLsCcBlwscCCWQYz6AKWhzfvOEwO1fl1wYepe9cAP7R2WKBWMciuTm
+	 3ueObXfw4I/Vj899wB1YlBZ37+6ouHyWasbO9Mf5oSnKvbE9CBEpozMZcN4k5ERJYD
+	 rwa6FlHJv5QzZ/7xHppRI5mDQ+Ilt3cssTp8yT9R49sIwXdAMVckfV+8y6iF4xvPd9
+	 fz3YF2nr2LtFk+EQEJPG5zDpeyD0mnlbX/1+elOO7nvrMj3zwn7nZ62Xal3Smkgkfu
+	 Vu/XDlDzhmMsA==
+Date: Sun, 22 Nov 2026 21:44:55 +0000
+From: Lee Jones <lee@kernel.org>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Andrew Bresticker <abrestic@chromium.org>,
+	Binbin Zhou <zhoubinbin@loongson.cn>,
+	David Lechner <dlechner@baylibre.com>,
+	Drew Fustini <dfustini@baylibre.com>,
+	Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@nxp.com>,
+	Grant Erickson <marathon96@gmail.com>,
+	Huacai Chen <chenhuacai@kernel.org>, imx@lists.linux.dev,
+	Joachim Eastwood <manabian@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Juxin Gao <gaojuxin@loongson.cn>,
+	linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
+	linux-tegra@vger.kernel.org, Lokesh Vutla <lokeshvutla@ti.com>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Naidu Tellapati <naidu.tellapati@gmail.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	NeilBrown <neil@brown.name>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	"Philip, Avinash" <avinashphilip@ti.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Sai Masarapu <Sai.Masarapu@imgtec.com>,
+	Sandipan Patra <spatra@nvidia.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Shenwei Wang <shenwei.wang@nxp.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Trevor Gamblin <tgamblin@baylibre.com>,
+	Vaibhav Bedia <vaibhav.bedia@ti.com>,
+	Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>,
+	Xiubo Li <Li.Xiubo@freescale.com>
+Subject: Re: [PATCH 0/8] pwm: Fix various bugs reported by Sashiko
+Message-ID: <20261122214455.GF70182@joneslee-macbookpro.roam.internal>
+References: <20261105143847.2559586-1-lee@kernel.org>
+ <awA6F830Ve_-vXBg@monoceros>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -70,34 +89,39 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <awA6F830Ve_-vXBg@monoceros>
 
-On Mon, 16 Nov 2026 16:39:52 +0000
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+On Fri, 20 Nov 2026, Uwe Kleine-König wrote:
 
-> This series extends the AD9910 DDS driver with support for an IIO backend,
-> enabling data streaming through the parallel data port, and with control of
-> the DRCTL pin, which defines the slope direction of the digital ramp
-> generator (DRG).
+> Hello Lee,
 > 
-> The parallel data port allows modulation of the DDS core parameters
-> (amplitude, phase, frequency or polar) at up to the PDCLK rate, which is
-> SYSCLK / 4. Such data rates require an FPGA IP core as the data source, so
-> an AXI backend driver is added for the AD9910 HDL reference design. Besides
-> streaming data from memory via DMA, the IP core also drives the PROFILE[2:0]
-> and DRCTL pins. The latter is exposed as a PWM output, so that the frontend
-> driver can consume it through the PWM framework without depending on the
-> backend being present.
+> On Thu, Nov 05, 2026 at 02:38:02PM +0000, Lee Jones wrote:
+> > These issues were reported by Sashiko.
+> > 
+> > Lee Jones (8):
+> >   pwm: tegra: Prevent 32-bit period truncation and division by zero
+> >   pwm: mxs: Return early when disabling and fix error-path clock leak
+> >   pwm: loongson: Fix 32-bit control register truncation in
+> >     pwm_loongson_set_polarity()
+> >   pwm: axi-pwmgen: Enable clocks before accessing hardware registers in
+> >     probe()
+> >   pwm: fsl-ftm: Enable ipg_clk around regcache_sync() during resume
+> >   pwm: omap-dmtimer: Handle negative error codes from get_pwm_status()
+> >   pwm: tiehrpwm: Enable runtime PM before registering PWM chip
+> >   pwm: img: Unregister PWM chip before disabling runtime PM and clocks
 > 
-> The backend is optional: the AD9910 remains functional through the SPI
-> control interface alone, hence the new devm_iio_backend_get_optional()
-> helper.
+> I applied patches #3 and #4 to
 > 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Applied to the testing branch of iio.git.  Still time for any last minute
-feedback as I won't be pushing that out as togreg for a few days at least.
+> https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for-next
+> 
+> , for the others there is feedback to address on your side.
+> 
+> Thanks for your patches, very appreciated!
 
-Thanks,
+No problem.  I'll turn these around shortly.
 
-Jonathan
+-- 
+Lee Jones
