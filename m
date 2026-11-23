@@ -1,59 +1,115 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795424937;
-	b=nOkXSBaKpnlpLGGL5pCWEajBLPDNtkP7SUnAQ9rrMplJACSWpzMg2kxWrfivtWJGffFe
-	 /SaWUjdngMKT4cvvaUAywJ0O49ar88SnrDS4kCQA2ocQyxv2l6UYhdLKnCohhZLMgui5U
-	 aQOjMeXemHR4qnsFuk3oaMOmo+dmn73t/wFdeakcLO4wYhtldS92A9uFC5U7exKZEUw1g
-	 glGYIF8tImRzKi3L51PhVp35vOfABk0Q2X73hTQEw/sUZ0mCCnGySJ0NLdOu5pIRkmP+S
-	 Kh9PVWPUhZXhyPuyi9gIbXZp0YJNG1V7uuctzayrQ48S6o9VEazRpoYZSJAOGYxaplg==
+	t=1795434849;
+	b=rCl+VkjOm2cDgvO8+ZSb7qnQH5E7kQl0Bv31cw0g4KK9rU4LT8prbDlVkOAkgRv11y1s
+	 4hnyt7XatlEf7UR+iZIrveRsAf8slX7L0TSIorY36aMneS8RpHRCo9XROkQy/Hv/gJeN7
+	 XypyqGoxw6i4XDV019k4JrJz7g8aHEFL7xvCXUbJU6L4zqnhlfTP7qg65W29kX9L9oIWi
+	 4GsFlaLeU97VTaVoie5a9CV6AkKihuL+phIutY7p9DU2hru69Eu1oK4PdctKxX30SEhDQ
+	 B8/NxGGiBs+BmhrPRBeqilDFh0/nZujG+qa5o3zhCWuLmrAJfRd5my/M9GeUnUFl5Gw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795424937;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To;
-	bh=HCIl0ZnJ2Bwec3GAhVJ2XAZj1hRoXxBmMeJmz7Rzc5M=;
-	b=MDrrKXyDD3Bbjc7b5P4J2uW1Hf1vaqrXovcDJinNYOLi6KxMOJgAidRIaXwofjug5Iu4
-	 mIzox5KQECXz/044w6XlR4nXWrN6FdSkdHsOw24qGYAf1KFmwZ63/tIpNFHOoel5NDtKl
-	 hCgPPv/3ArlMMhgYFQs1npztAcJvcRgggt5ohUal1iiU1HH8yT3zshgPOayt04RZHrNkA
-	 j3EE2hDDJn50+n6tfb87GaOt7KOswo1AU5gTsZztGn+NrjSJMVDQYl7ewyt9wcM1KI3NP
-	 UqLowfDZQ4/wajh8PxDUv9oviXIRpojM13Rfe4SVGWar23G/cyYWHUSX8IKiNFpvwHA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795434849;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Spam-Info:
+	 X-Authority-Analysis:X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=cedkFQJ2zx9OoH69W4XimXIkNVKsnwy5H9O/ZQ2+5cI=;
+	b=3O6mvRS1VwCh1EtgwLtxVb02YRK1NHBnE8yr62xBfqS70TfyomrmKdzQuMEdQSrMBD3U
+	 6txZqiCW96M49Ntbze1XtFgC8MGkbVX7sRHHqR+NPMEvyEhum8v0yc3vBzkyl5xnU0mbE
+	 TEjDq/hqJOFy4tNJF3/HkF/OfQ/0pWSo76lOZ5YC0Hy0/kX+JA3tR4G4QmvcTz/HlcQ3r
+	 MOlJ0n/E09hAJl/eXBo5rh00yIA3p82Sg/iAco3h4/j9sgzB+q63DzHCUwFfSmqRNssUR
+	 q3TaM/qa9iK+vFcXgYLyFKmS8ydvjunW9tpHz5usm6oQQlHIJwEyt4iBwxiwpJR7wzA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nwvZSsHg;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=ZZhurIpY;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b="u79/PYwC";
+	arc=none smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF0EB606A31A;
-	Mon, 23 Nov 2026 09:08:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93BA4606A31E;
+	Mon, 23 Nov 2026 11:54:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 93BA4606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nwvZSsHg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 256721F000C0;
-	Mon, 23 Nov 2026 09:08:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795424937;
-	bh=HCIl0ZnJ2Bwec3GAhVJ2XAZj1hRoXxBmMeJmz7Rzc5M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=nwvZSsHgYx1vv8X6s6NsF6Oyvu9b9ARL0/7lhP0t5iTFD/TzZbAmihNBDWryR5I+c
-	 wMRUbGejIrGo/ROTPB1lbA33y6gKlv1hgIEPJtJBFnpTQMZz5zFVpP6z3c3H4Ishck
-	 FrGs9OFc9oss3DAlpMzOp/6DVojFb3JxgafkzK0oxy606G9flJlvDuaYOOWGEpyWPP
-	 0FgUuUkW2Od01O3IK3PPZ70X7suDmQCHVeZ2jjQeZz+zBBKaSAurIEs/+HDXlKklbL
-	 nYc8zSEx3gVMJoCs5BxKCSuN9jQ5LCXz3Q8FfeYo9o72oJA7VF36PXIcbzPuKbsZKn
-	 xcQsNqzVKSWKA==
-Date: Mon, 23 Nov 2026 10:08:53 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: =?utf-8?B?RGF2w63DsA==?= Steinn Geirsson <david@dsg.is>
-Cc: Guenter Roeck <linux@roeck-us.net>, Jean Delvare <jdelvare@suse.com>, 
-	linux-hwmon@vger.kernel.org, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, linux-pwm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: hwmon: adt7475: Add
- #thermal-sensor-cells
-Message-ID: <20261123-analytic-papaya-jackdaw-aeb5db@quoll>
-References: <20261114004110.328050-1-david@dsg.is>
- <20261114004110.328050-2-david@dsg.is>
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=ZZhurIpY;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=u79/PYwC
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AN9HbrK260835;
+	Mon, 23 Nov 2026 06:53:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=cedkFQJ2zx9OoH69W4XimXIkNVKsnwy5H9O/ZQ2+5cI=; b=ZZhurIp
+	YEJ0hocKZzh99kjeVNauUgONrn2fvH04JZooep70a1KZsDBMQITBsUITUcX2uKbk
+	w/iBHQORAZzGw2Eu1i4cVNbJs74WErwVn1oYiu2jyOgNypCLrf9GayHpcJJlgBvN
+	MI40we2PhspEv40Wyour1feYNnK9fdDHccNlPpHcUdMXv1pk5x82M6lvSuL+VBsb
+	AcSkA3VlCHEwu6MpnaornhGjEVNKkTQOrZOgQtYPmpEzF8buNOuGFM6XdFxpPG8V
+	0z37lDCoALGu1Zz1l7Qru3Je8vcAaC58fESkxbSVY7xxhQfNNpfHwrh2IIgySang
+	MI4E87VxmwalR7g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=cedkF
+	QJ2zx9OoH69W4XimXIkNVKsnwy5H9O/ZQ2+5cI=; b=u79/PYwCa3RZiHZgNkPmc
+	3GgBCmFwTTzCEfX1RMoQAO0rw6tXURz4tYEJWdwk4icDLUpo0S8GCWytbBmrEksY
+	6owgiFIOmxItUUMSrXCXlqoPg1mkbD1I/11TXGpjfFH6gVPEHXo0MKypapOwn6Na
+	ouesYkLwpoX5ZaJwIquYhv9QYbcxOc1y9gUcs/eY4SyTWzt1XgbRqD2OSUqidmVr
+	Vvs7wIveWHo0AYCZbx1aDW/vTx6y6w+/30PzKEGeaGwboIAudCM+pvxg6av/rokc
+	4JEU/tYYXSCSs4RztphRTI+41U81SbunefGukIrQ8gw3D8bJtzuZYnMuYUIU8nyR
+	A==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4j3wgm5w5e-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 23 Nov 2026 06:53:59 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 6ANBrwec026112
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 23 Nov 2026 06:53:58 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Mon, 23 Nov 2026 06:53:57 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Mon, 23 Nov 2026 06:53:57 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.2562.56 via Frontend
+ Transport; Mon, 23 Nov 2026 06:53:57 -0500
+Received: from arch.ad.analog.com ([10.135.2.95])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6ANBrkb1014981;
+	Mon, 23 Nov 2026 06:53:48 -0500
+From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring
+	<robh@kernel.org>, David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        "Trevor
+ Gamblin" <tgamblin@baylibre.com>,
+        Joshua Crofts <crofts@kernel.org>,
+        "Sergiu
+ Cuciurean" <sergiu.cuciurean@analog.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 6/6] iio: adc: ad7625: add LTC2387 and ADAQ2387x support
+Date: Mon, 23 Nov 2026 13:53:46 +0200
+Message-ID: <20261123115346.33745-1-Nicolae-daniel.Deaconescu@analog.com>
+X-Mailer: git-send-email 2.56.1
+In-Reply-To: <20261121234834.2f6cc9bf@jic23-hlaptop>
+References: <20261121234834.2f6cc9bf@jic23-hlaptop>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -63,31 +119,43 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20261114004110.328050-2-david@dsg.is>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTIzMDA0NyBTYWx0ZWRfX5Xg0dEbalrxQ
+ /wCLt/2gtXBQ5i58LFEE+oVF2CTrWe0sxrhv5ynvVRgZcwVNM6BhyIKnL2uDEgpgRuwyTCHRMZK
+ hMWwiunZ3Gyiu2Txad+8DqDNXIapwFgv/DQg0ecf6LG4qstpFo+75xJAUWXWsoNr4g5YiKUsKin
+ J3T8HgRWdl5SRy9wbLjucXV8fhDaT+M1dLpIQ+qX0zYb55DgD+CMABHYnlXjgX7xw32+GMGGSDo
+ PNopvv3fk9XB0gi9TsjI0AnDxBSGbCo6wqa88ZMnos0dv+WyY1wtRbPQ/XaQTngnFmzhE/f//QK
+ i6PRDDmCTxvY/Nhag7CSfg3it/defPp5eKZci2AgLNYiQSnNQM8BUjSVo3kSTyli2jY7mU94Ocw
+ VwRGW4M7mZi5lhkILlYpvDGdrklDmGT6oy3bELJoPCDNp/LiCzo3ERCRfhGnoEI+hV+CqlTVSsa
+ Vrs239wgjijzwznmdRw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTIzMDA0NyBTYWx0ZWRfX+NuFvQ+4L64e
+ cjPZNCVpwQMV4dsYxgn/rrUbNCvbGTJTm5u9DeSc7bgl7dr2lrox3XNMQb+cED16ZiezEzGK47z
+ XdtU/K6kWZ5hxceclwoOnogGtCq/UuPYerQf9IODpXjTt1IYE8Ad
+X-Authority-Analysis: v=2.4 cv=FeGiV5+6 c=1 sm=1 tr=0 ts=6b042957 cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
+ a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=kzxX2B-xVtcOn5nVaEcA:9
+X-Proofpoint-ORIG-GUID: 1zjBW-m5To-4VQ0lxCQTyiqiXPQsbSG8
+X-Proofpoint-GUID: 1zjBW-m5To-4VQ0lxCQTyiqiXPQsbSG8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-23_02,2026-11-22_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 impostorscore=0 bulkscore=0 clxscore=1015 suspectscore=0
+ spamscore=0 malwarescore=0 adultscore=0 lowpriorityscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611230047
 
-On Sat, Nov 14, 2026 at 12:41:07AM +0000, Dav=C3=AD=C3=B0 Steinn Geirsson w=
-rote:
-> The ADT7473, ADT7475, ADT7476 and ADT7490 measure two remote
-> temperatures and their own. Add the "#thermal-sensor-cells" property so
-> that thermal zones can use these as sensors. Its single cell selects the
-> temperature channel: 0 for Remote 1, 1 for Local and 2 for Remote 2.
->=20
-> Signed-off-by: Dav=C3=AD=C3=B0 Steinn Geirsson <david@dsg.is>
-> ---
-> This patch was written with Claude Code, using the models Claude
-> Opus 5.5 and Claude Fable 5.2. They wrote the code and the initial
-> commit message draft, which I cleaned up. I directed the design,
-> reviewed the result, compared against the datasheet as far as I
-> could, and ran tests including on actual hardware.
->=20
->  .../devicetree/bindings/hwmon/adt7475.yaml       | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+> > +	/* VS- of the ADAQ modules is left out if it is tied to ground. */
+> > +	ret = devm_regulator_get_enable_optional(dev, "vs-n");
+> Does it hurt to just a non optional call here?
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+regulator_get() prints "supply vs-n not found, using dummy regulator" at
+dev_warn() level. That would show on every probe if VS- is tied to ground.
+I'd keep the optional call so that case stays quiet, unless you prefer the
+warning.
 
-Best regards,
-Krzysztof
-
+Thanks,
+Daniel
