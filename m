@@ -1,129 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.150.75
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795456242;
-	b=hHxVaCkbeqBa9tJOUPAobyMBItTWsq2u0n51+nBnOO18tMldpYWGPiIh3gokNXdNbQQf
-	 QpEKbpyIUb7zA1aohB6N6fkXUG9JiOQRIaWmo8xOUGtp9GDR1SNYwJ9lNmnN9sSMbbVX3
-	 /i0RKtLAIhTlhewZD+Q+12NOjWP8+a3uGXdkcHuH4dpk8wQsLpa2LHrNI3gPb8446L75x
-	 8JpU6FzzMMt4USwsq/srlDF7qETnMODi5Yqbtjms6z38xft6X2ZcUUlnRzN2AmM5cx4GE
-	 pZ34HVetanRnZ/coj14g25SoDYPyrDvBPBDiBHr/DeXAPDkVxIwHQFlBJrRXDBzrSgA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795456242;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:DKIM-Signature:
-	 Received:Received:X-MS-Exchange-Authentication-Results:Received-SPF:
-	 Received:Received:Received:Received:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:CC:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-Exchange-RoutingPolicyChecked:
-	 X-OriginatorOrg:X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:
-	 X-Proofpoint-Spam-Details-Enc:X-Authority-Analysis:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=/tN+sKAKQM+OhoHvmlBayP6ZsWDErWK9W1MJPSOPoEU=;
-	b=qWNOwE1LqCibJ7PxnuIgJoVXTn2bmuaUpAEnwCcYeky0BE76lkyonR50CqAqHP6t3m/u
-	 /ITgsDbeBRlcnwOSsyzG9F2cK/+dgkiFdwhKImNzeW/CaTnnnYsNKy1WkyNRxuQi28E8i
-	 VWMDEHrz5/m/a3XVEyjtD+cuDm6rKMOhm1I8yrObFTT6gZzMhbkmplGLedkOESSLQbStt
-	 ADkBf9PIdaSm1kISZQuOWAoyWIUMEoTpCxzijntmq/V4fEDXQu0B9e1T0XDkkfNxwFm88
-	 vlIcYzk3WJYwQbU4Joh5/76cLfP/9iQDZjblYTh0yCDJh4tMIjNxCM/2mFKaHOt82uQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=ti.com;
-	spf=pass smtp.mailfrom=ti.com;
-	dkim=pass header.d=ti.com header.i=@ti.com header.a=rsa-sha256 header.s=proofpoint-05-2026 header.b=QMvNM3GR;
-	dkim=pass header.d=ticloud.onmicrosoft.com header.i=@ticloud.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-ticloud-onmicrosoft-com header.b=IgV424vn;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.150.75
-Received: from mx0a-0002e601.pphosted.com (mx0a-0002e601.pphosted.com [148.163.150.75])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=212.227.15.15
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795458317;
+	b=OKJK9NucvlbUDyAxAhmEC6YyiuuN+Uz/Bpl/LkA14cxajq9OYx2PxM0g26DZODPrRz2g
+	 qabbbr3vDWgXLm69V54F225XPwBbdkKUhhwFOVNIxDMzHodqmulfldD51lEIdugV7qxNZ
+	 NVKq6RK7Nq4N+vYCCJ8I0tQV/BZl7ScP5vwiqWUV8FmvpRidNlDczWgR6hq45qGgcEWM1
+	 sfF6VVXXr3i76BLynzuznOhcD99F1WwdQGXTQeRukS3gc63PvI9t59klBgZ4rhXWa4CfD
+	 c7GhexdCSt5kNe+ZJ2XVB3VS3pCwBAIZ4t1QmdJEAt35NAw+0vlVa9Nu+cqossX4tlg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795458317;
+	h=DMARC-Filter:DKIM2-Signature:Message-Instance:DKIM-Signature:
+	 X-UI-Sender-Class:Received:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:From:To:Cc:References:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-Provags-ID:X-Spam-Flag:
+	 UI-OutboundReport;
+	bh=Q9M1f4MOumbTQ0WzVzvoqs4QXcgTsmE14YZcpKo2y4o=;
+	b=MvbewNjxHdOpACfMq/wKJstVEmF/ldRJbqFpMNmP6tFMqrleFtmtAdinjsfecEIsIsMZ
+	 RSnUSt0Kr8arRhT4UfIphcQCapURceGWHVal8DpbBx0g8CtJpVV6NuDHRmhHpWNp0DzKj
+	 sPfB7aVBQ/giknOJWup9b7+1yu2legj5NZpr1NFmsjZzKl32kWJ5fhHUlKLjmKCDArOL4
+	 tzSmbKp3d1BmspO8Hy7kReX/ixpgeFI6muK7bBeObPcxvn7bLWo1KfOIy1UY2ePFhfV/R
+	 gMQFdk+kHA1zIRd4EB/oJHrrkcgcPxYRYog6ae7iupppIsQlcFxo+HORsLpEzPxrJlA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmx.net;
+	spf=pass smtp.mailfrom=gmx.net;
+	dkim=pass header.d=gmx.net header.i=wahrenst@gmx.net header.a=rsa-sha256 header.s=s31663417 header.b="Zjr/9fsU";
+	arc=none smtp.remote-ip=212.227.15.15
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50B8A606A334;
-	Mon, 23 Nov 2026 17:50:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 50B8A606A334
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1019A606A337
+	for <linux-pwm@vger.kernel.org>; Mon, 23 Nov 2026 18:25:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1019A606A337
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ti.com header.i=@ti.com header.a=rsa-sha256 header.s=proofpoint-05-2026 header.b=QMvNM3GR;
-	dkim=pass (1024-bit key, unprotected) header.d=ticloud.onmicrosoft.com header.i=@ticloud.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-ticloud-onmicrosoft-com header.b=IgV424vn
-Received: from pps.filterd (m0380145.ppops.net [127.0.0.1])
-	by m0380145.ppops.net (8.18.1.11/8.18.1.11) with ESMTP id 6ANGHn6Y4078761;
-	Mon, 23 Nov 2026 11:50:25 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	proofpoint-05-2026; bh=/tN+sKAKQM+OhoHvmlBayP6ZsWDErWK9W1MJPSOPo
-	EU=; b=QMvNM3GR1kV3iRL/m4FsNuxvxI/qIQjTfMm4VgSjGk7e91aqHzaGf+7as
-	gLQXgL0Vy4q2rK/fed1ZUvUMFNY4mNHL+IbO3Jiv4CSWz+PeM4UhOKJbSrwi5Vuq
-	PwFYc8mGUKW7o5BAFUBaSnKP6EMO+2Xm7OHcum/Xv22C429qsUHUGeMBU/4hSdy4
-	4MUMYLEfkcPtFU/G01VtLtiFkOwTCgRDCAnaBnFVkU78nahxFNkA7EtX03Scrzvt
-	zCKSi17F2dkI6wJvRLbmoLnVAlCpnUo4OI7DtwvnubYHIO6hXkHs/JgHgF+z+Fmv
-	9U1uPJo4BqngZ+7trhMEaCHlfUn4Q==
-Received: from sa9pr02cu001.outbound.protection.outlook.com (mail-southcentralusazon11013065.outbound.protection.outlook.com [40.93.196.65])
-	by m0380145.ppops.net (PPS) with ESMTPS id 4j3w6t7sve-1
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Mon, 23 Nov 2026 11:50:25 -0600 (CST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TjEkka0nKbGpD4qx4tjO8JyV8NQgePH9Uc8UzaNNaYHzvOoooWvK5d67+N/CjaU9ZcKuahB5ozLpODXA9A88YxlGirObFm+uCINvjpUU7ZDgWSHunAXznrHOs7TeDpC6aASO4E8sAZv4a+jdRBRpr1aHETFQU63jnRbCRj8y72+xEXrfYg2mUqulz2XVVnRfhBqyIzEyH3+iDSOTQQwJn+z2miHUnZDleckTsUbQoPbOnajvzCRfmy0uLMVul9Pd8/a40OnLJdnWUYKsoE0W5DKEkefhr4d8s2sKkdDO6iFfxFKZ2mMZYJwUfkCRyQULSBnzqFh8+MgwMyRzOb2SbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/tN+sKAKQM+OhoHvmlBayP6ZsWDErWK9W1MJPSOPoEU=;
- b=cZ9suJ8W+5hAfZn6trA0x+puZHubngR4IWNx94Y9KQIEXl+V4g4/qCE5rN81EfUFlvPaeQEl7O4cJJ5cuZ5hFPRvs8Cl+WOv+LyraQgOuCu3WCYFfoU4EcWsQmhzHtXfjp2kIVmw+18hgI4DifzKlwYo/ky8FQA5kyandLpgT++s+7d8ZNyyxM0aGi9M61RSrZ9nee20QweoPO9Pbpijig2foqmtgNUNUai8+8x2gH07wjiAzAzO9HXjiIDDoOZdfzdfWrWoJbVC0hYEX8jTduIi0Ef7sUSZiTK5+V1uiHLTfjnvgp4RFN8Z3UmzIgfARNk0Eh/Ng1cy2jbO2HiLcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 198.47.21.195) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=ti.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=ti.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=ticloud.onmicrosoft.com; s=selector1-ticloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/tN+sKAKQM+OhoHvmlBayP6ZsWDErWK9W1MJPSOPoEU=;
- b=IgV424vn6ncOFyJNhXqVQmN727yIwyugVryT02h+sdfCis5WUBe0noARYMYbJ74OuLQnW+8rGCfLpPvmPYKryoHdF9bVh5VBzitWq+aGv8TwL5KJ6xsJjeuHQHbInXFeZZwIZTNSBish7VQ7Utvg+TKqsRKatdV3OlqhWgatS4I=
-Received: from CH2PR18CA0050.namprd18.prod.outlook.com (2603:10b6:610:55::30)
- by LV3PR10MB8059.namprd10.prod.outlook.com (2603:10b6:408:290::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.13; Mon, 23 Nov
- 2026 17:50:21 +0000
-Received: from BN7PEPF000000A7.namprd05.prod.outlook.com
- (2603:10b6:610:55:cafe::b) by CH2PR18CA0050.outlook.office365.com
- (2603:10b6:610:55::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.639.14 via Frontend Transport; Mon,
- 23 Nov 2026 17:50:20 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 198.47.21.195) smtp.mailfrom=ti.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=ti.com;
-Received-SPF: Pass (protection.outlook.com: domain of ti.com designates
- 198.47.21.195 as permitted sender) receiver=protection.outlook.com;
- client-ip=198.47.21.195; helo=flwvzet201.ext.ti.com; pr=C
-Received: from flwvzet201.ext.ti.com (198.47.21.195) by
- BN7PEPF000000A7.mail.protection.outlook.com (10.167.245.231) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.639.5 via Frontend Transport; Mon, 23 Nov 2026 17:50:19 +0000
-Received: from DFLE206.ent.ti.com (10.64.6.64) by flwvzet201.ext.ti.com
- (10.248.192.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Mon, 23 Nov
- 2026 11:49:28 -0600
-Received: from DFLE201.ent.ti.com (10.64.6.59) by DFLE206.ent.ti.com
- (10.64.6.64) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Mon, 23 Nov
- 2026 11:49:28 -0600
-Received: from lelvem-mr06.itg.ti.com (10.180.75.8) by DFLE201.ent.ti.com
- (10.64.6.59) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45 via Frontend
- Transport; Mon, 23 Nov 2026 11:49:28 -0600
-Received: from [10.249.33.32] ([10.249.33.32])
-	by lelvem-mr06.itg.ti.com (8.18.1/8.18.1) with ESMTP id 6ANHnSKe3149786;
-	Mon, 23 Nov 2026 11:49:28 -0600
-Message-ID: <f9218622-c265-4302-997c-e60985201de6@ti.com>
-Date: Mon, 23 Nov 2026 11:49:27 -0600
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.a=rsa-sha256 header.s=s31663417 header.b=Zjr/9fsU
+DKIM2-Signature:  i=1; m=1; t=1795458315;
+ mf=PHdhaHJlbnN0QGdteC5uZXQ+;
+ rt=PGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmc+;
+ d=gmx.net;
+ s=s31663417:rsa-sha256:Y+9P/vvsfPj99GFOFKe1nhL6SJ2n
+   BgVxO8CwGM1YgT2YfyFY+q+5+y7Vb4QPUZgRTunPrwg/NXFG4YhhniJDkM6FNqhhi1RZDWkdfVy
+   YZRny9DgOEMrXsdAgvKqfQJT80WWjcx1u+qfjDpcGHrKnUut6qwGB7SBBs9hBrDiiCk9InMWn4A
+   IE0AMvmN+LZEDpd9744jc2ufEqBGFi4Hhuoy6h6WJXbDmjH7XAOenfU+QOhcuqLfz7sogxamb7s
+   HNgyNKCxMM2pYmLcjvg6w4mPlnDctAlbKPhCAb4HWqi4s5HZ2Pwl8j4H9pSbJffHecO7OLXIKh+
+   fKTAdl/ULlELCA==;
+Message-Instance:  m=1;
+ h=sha256:
+   I4Oyd0z7TzBrDr72TIxrhMTOd/IJD4lr0f9i0LzAh4M=:
+   Q9M1f4MOumbTQ0WzVzvoqs4QXcgTsmE14YZcpKo2y4o=,
+  sha512:
+   W6ffUuY4raHM97QPhrJ8eUPnb5uGCkwg725g+3bhEvVJzb026x3b3+DJCe/XVZyZcoFvs5SS6N/GjEeuAJRT+g==:
+   7ilgF1oE7QchF1bYeNW4e7/ZZ4RMOhLURgrJ4+COnxAHyFjXIihVAo1XjKRCG1mXL0vq03xtuRneON1lFDIZZg==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1795458311; x=1796063111; i=wahrenst@gmx.net;
+	bh=Q9M1f4MOumbTQ0WzVzvoqs4QXcgTsmE14YZcpKo2y4o=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:From:To:
+	 Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=Zjr/9fsU1t7mxVdTw7w0s3ws6Id/J43wbquSyFz1Vw27HKTVytt1unMwWvBF6g8q
+	 u3UCf+w4mgeQlUMDB7ga7OnPF5L5+VvFR7lDG1XoKP1vc7TtlQAwa1mnZtt38ZLOC
+	 Inhs/Iid0rhDkqCgQLrrWXQEQ5cOqk+xuecLiwj4jNkV0N7LTqiAp0J1WeIgjDWxC
+	 isz7nt68h8/bc0BCkNkdG0/sLUiu8uSIduM+down2iyeALk90oj+sM+OkglfLz5nd
+	 X3z7b6EBrU6vEDM7Z8X9SUPlaIl6MfbN7vj/mXYPpDrPdlqEvDtU7GeMrYACU5DD7
+	 zl+paC1dL+VjT4aX6Q==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from client.hidden.invalid by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MbRfv-1y76P02p7R-00fAyi; Mon, 23
+ Nov 2026 19:25:11 +0100
+Message-ID: <10f02aec-cb1c-48d4-ac1d-3644a9d1e54a@gmx.net>
+Date: Mon, 23 Nov 2026 19:25:10 +0100
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -134,164 +81,162 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/5] pwm: tiehrpwm: Enable runtime PM before
- registering PWM chip
-To: Lee Jones <lee@kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
-	<ukleinek@kernel.org>,
-        Gokul Praveen <g-praveen@ti.com>,
-        "Philip, Avinash"
-	<avinashphilip@ti.com>,
-        Thierry Reding <thierry.reding@avionic-design.de>,
-        Vaibhav Bedia <vaibhav.bedia@ti.com>, <linux-pwm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: <stable@vger.kernel.org>
-References: <20261123075320.379664-1-lee@kernel.org>
- <20261123075320.379664-5-lee@kernel.org>
+Subject: Re: [PATCH] pwm: gpio: unregister the chip on driver unbind
+From: Stefan Wahren <wahrenst@gmx.net>
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Yu Zhang <yuz08559@gmail.com>,
+ stable@vger.kernel.org
+References: <20261101032646.11397-1-yuz08559@gmail.com>
+ <1d732b5f-7966-4abb-b2f5-54e26cbf14dc@gmx.net>
 Content-Language: en-US
-From: Andrew Davis <afd@ti.com>
-In-Reply-To: <20261123075320.379664-5-lee@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Autocrypt: addr=wahrenst@gmx.net; keydata=
+ xjMEZ1dOJBYJKwYBBAHaRw8BAQdA7H2MMG3q8FV7kAPko5vOAeaa4UA1I0hMgga1j5iYTTvN
+ IFN0ZWZhbiBXYWhyZW4gPHdhaHJlbnN0QGdteC5uZXQ+wo8EExYIADcWIQT3FXg+ApsOhPDN
+ NNFuwvLLwiAwigUCZ1dOJAUJB4TOAAIbAwQLCQgHBRUICQoLBRYCAwEAAAoJEG7C8svCIDCK
+ JQ4BAP4Y9uuHAxbAhHSQf6UZ+hl5BDznsZVBJvH8cZe2dSZ6AQCNgoc1Lxw1tvPscuC1Jd1C
+ TZomrGfQI47OiiJ3vGktBc44BGdXTiQSCisGAQQBl1UBBQEBB0B5M0B2E2XxySUQhU6emMYx
+ f5QR/BrEK0hs3bLT6Hb9WgMBCAfCfgQYFggAJhYhBPcVeD4Cmw6E8M000W7C8svCIDCKBQJn
+ V04kBQkHhM4AAhsMAAoJEG7C8svCIDCKJxoA/i+kqD5bphZEucrJHw77ujnOQbiKY2rLb0pE
+ aHMQoiECAQDVbj827W1Yai/0XEABIr8Ci6a+/qZ8Vz6MZzL5GJosAA==
+In-Reply-To: <1d732b5f-7966-4abb-b2f5-54e26cbf14dc@gmx.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN7PEPF000000A7:EE_|LV3PR10MB8059:EE_
-X-MS-Office365-Filtering-Correlation-Id: c732f84c-84cb-49c6-f35d-08df498a3d8f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|23010399003|82310400026|1800799024|376014|261026140227099003|261028144727099003|261022105027099003|261021123027099003|261021121427099003|261102123227099003|5023799004|4143699003|56012099006|10067099003|22082099003|18002099003|261009223027099003|261009223327099003|261009221227099003|261009221727099003|6133799003|261009220027099003|7136999003;
-X-Microsoft-Antispam-Message-Info:
-	0nG/uXTSvlwdG7rW6PqOvRK3Ltdm44ypRDEpvAGF48pMu1xd2gI1f+Q+dzSas0DIWKQM8JhD/wsHs/IRn5QJeNWe/JHUVu/ghjJZ2lMuZysSf3FMX88BIjc7CAc9j4W/6tIyBX2IkiwkXqjjCEXOZSPXEl/JjIJZjKxzHyMuyRUThN7ud9Buu178+d1L8J7eEoc4CUL932PMmoQoTAbo1lS0CQZxlxzIx/7gkNRCPYQbdFRWA7jdRR58yneREDWUAyFN9hQD7RZirL4l79XNlzgL0ZQ1zBUWEELb85BDv4ybt6SR3stTFF1c1isNmB6bgaqHxHirfGCy9mLesoSV+QDjDIWhw1aXxjsVcRC6d14USxY3GBvmCkpijigsuApqXp0S5+umn+bseAtP03bR6HvmkuUWvn96Z8J2oT4LnDSRVbEJ2ZOiGqfSS2BxRGxMZDsCGbjSwQb4Fj89xdFs8ltTkhnQKT3a2PwoptMv6iwFIW7BGfvQYQuunHYiP6fMylKY2/vjTJY4sIuLxbkTT5uxlLfovvYCxc7/v7j41gMftMPjrZp9Vqc/Mo0v+PvcNVBehUFSs6fcP2cE7IZe8aJ6dLdvSDkmEdygjEMJ0G9eZpa74KKPknA2kmfoj/fFLjnDObC7CtvxaCMZDQH1xQ==
-X-Forefront-Antispam-Report:
-	CIP:198.47.21.195;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:flwvzet201.ext.ti.com;PTR:ErrorRetry;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(82310400026)(1800799024)(376014)(261026140227099003)(261028144727099003)(261022105027099003)(261021123027099003)(261021121427099003)(261102123227099003)(5023799004)(4143699003)(56012099006)(10067099003)(22082099003)(18002099003)(261009223027099003)(261009223327099003)(261009221227099003)(261009221727099003)(6133799003)(261009220027099003)(7136999003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	bD95trsHFNhp1EwIY0SmtTmqQVisem+Q2mYYtR3Rpcqy/K45pUNnGYYlrCn+whRSU3D9iLzeg0muxR9wi/AwbdlVUo2BTt2WR0TxYLXo9uU2fjWqt/tAN2Z9iGB6Asd/f8ZOOU2W3Z4zLweRYJo96K2yeYY5HiVlLyeYpQ5Dr+z6lcmveFOIaFhYibi1C0PTlLfarTk4vY/PNg72MmJIvel4FQmC+eFKfye9rIQztM64H7cwfmCL/3FwwRRm6zII5GJ8tX/VqDjVkk3tssGljkNjF3bSvM8McSERAAaVEiRT+TVhw+W7faPb3HDe28JhyHoKXZBDhk7CvF7M0/30tbBzAuOfvnZsV2pbfo0sdEbbb4WRRAQ3b3cIY9oCq4McAPJW3gW6QuLwcGhRhzkwPPrcYYz+YG0SlJdoiyt7EF3HOokmhk2k8QKrgPxKC40T
-X-Exchange-RoutingPolicyChecked:
-	dDQ9NywjZWGvZpVAANJuWEOK5GG8evPzuoDqCrpgsUkNdcrTIFhi6k0iF8thT4xW4SZBZ+MMxB2bUpWJrR4JVCm7erYYpI0ZTgfhdxy829EwAtuQryG35pXcHGfJ2QCuOulJd1M24siWxMuAZfmsXLAlkWOC7IjZCHnofMC59mGf1N31tXjIUepU3Re2ZniTF/mLfYgi6ky5hf/D+9oUZnIH5rdNzb2jNgEUq1pTUf2gehX2DIfkERjSBwmD1y7zXMi0bzD4+Yj5Ta0Kjj0IBj2JQe2OKf0L5lu7EZ3oM72OxmHb8894Xz5eB5DOjOdoXa9JPdosg/PPK9CY+NG82Q==
-X-OriginatorOrg: ti.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2026 17:50:19.5815
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c732f84c-84cb-49c6-f35d-08df498a3d8f
-X-MS-Exchange-CrossTenant-Id: e5b49634-450b-4709-8abb-1e2b19b982b7
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e5b49634-450b-4709-8abb-1e2b19b982b7;Ip=[198.47.21.195];Helo=[flwvzet201.ext.ti.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN7PEPF000000A7.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR10MB8059
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTIzMDA3MSBTYWx0ZWRfX5EI9GXu5jwLZ
- p9e7gkShkxAfccwEYQCruxMOPhh7Xo5AU1lThx1ueaQxqTzQFmW/G3TtY6f9hIoTB4LzL7YFeqB
- QAjmBRe/yMAjQaoEhhSLWJe/VJI6plQ+QMc4MDOHdKmsJ8syIK6B3dbNtD0zvEwqvKxmbemGTXS
- DlGdt+Z50V36Er16jx/SMuwhWGX44IMrwnGBUgyzqsDdYcmk3MwdsuMiMnmLuinWD6oHAsMQCoH
- iHDucIbjxnmmnQSMcwLTp6GURzPyTSgbKa3r7Y9jaksYHq/GnPjXcgR+4MbbBlI/AvhPZc6UpOI
- aXht3ucGfEiE+Jex0txkuOI72TfFmF3+eBI1gKFHRHl5xUAyf1t+cejd/dfcvGyoiEv2kKtiMQI
- Pnt6zBZGikKh/fOQDURZW8AQrKLq3RYf95XZ6hoFTBZoaFTfQ+Qlm04UVMPocbOd5vHfYlHEvIY
- TK8n9GgCiN4lcmeRtUA==
-X-Authority-Analysis: v=2.4 cv=N5K8hG9B c=1 sm=1 tr=0 ts=6b047ce1 cx=c_pps
- a=fgNoY2FrYBgJmLE9YDNrYg==:117 a=tJyPKKxUohctrY4NYmUjkA==:17
- a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10
- a=AlMIdn_sM9wA:10 a=VkNPw1HP01LnGYTKEx00:22 a=Z8NIEmU8O1QQgoT56wFK:22
- a=gO1vWkAQAl3rybz1DQOp:22 a=c92rfblmAAAA:8 a=VwQbUJbxAAAA:8
- a=wEVF7ITnQ8Y20ABcVNIA:9 a=QEXdDO2ut3YA:10 a=GvGzcOZaWPEFPQC_NcjD:22
-X-Proofpoint-ORIG-GUID: T-wlDGGr08Q4uBt8iu0nEz4lOcWdViBS
-X-Proofpoint-GUID: T-wlDGGr08Q4uBt8iu0nEz4lOcWdViBS
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTIzMDA3MSBTYWx0ZWRfXyujQYN9MIwEq
- 9nWhDOlXe16LNIu1xf3otQSdFWq07ltMEltohP9Y79Yt7hj+AuNhgDIvksDKxeLSPjJaBKvcNfa
- pRFRSgB4FnP9uHQkFgPURWqAUjAS2uo=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-23_04,2026-11-23_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 bulkscore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
- spamscore=0 adultscore=0 impostorscore=0 malwarescore=0 clxscore=1011
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611230071
+X-Provags-ID: V03:K1:U6VLW6GPgENX+VnqzhERrNHh45YDmmvp2ReWfwNLlJkvrytMiiF
+ aNFHG5vqhj6pj4jGCnL5AF77OiTJU4AW6EOcu5cGEzvIof63lzJRpW36soQY9ZKER7+XLka
+ cNixgbuC9tdyo3L/pq1Iq6T/EuzowDGFI3Ld6PP/99jcDVMldBFLUzO3T4s1OsJoceqCBEK
+ l+YQiO7D3jk7OG4U4mHuQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:sQVKpTEmeG8=;rp1IAEQfqIpfWT2jn8FAUxsNlKC
+ 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
 
-On 11/23/26 1:52 AM, Lee Jones wrote:
-> ehrpwm_pwm_probe() calls pwmchip_add() before setting driver data and
-> enabling runtime PM.  Because pwmchip_add() immediately exposes the PWM
-> channels to consumers while runtime PM is still disabled on the
-> initially RPM_SUSPENDED device, a consumer invoking ehrpwm_pwm_apply()
-> before pm_runtime_enable() runs causes guard(pm_runtime_active) to fail
-> with -EACCES without resuming the device and accesses unclocked MMIO
-> registers.
-> 
-> Set driver data and enable runtime PM before calling pwmchip_add(),
-> disable runtime PM on the error path, and disable runtime PM before
-> unpreparing tbclk in ehrpwm_pwm_remove() to match.
-> 
+Hi Uwe,
 
-To match what? The core of this change is moving pwmchip_add() after
-pm_runtime_enable(), but in remove you switch clk and PM unwinding,
-not pwm and PM unwinding. Both changes here are correct, but the
-second is not explained in the commit message.
-
-Would be better to have a patch before this one that switches clk_prepare(),
-pm_runtime_enable(), and pwmchip_add() over to their DEVM equivalents. That
-fixes the remove order issue, and removes the remove() function too.
-Then this patch can simply move the pwmchip_add to after PM enable without
-any other actions.
-
-Andrew
-
-> Fixes: 19891b20e7c2 ("pwm: pwm-tiehrpwm: PWM driver support for EHRPWM")
-> Closes: https://sashiko.dev/#/bug/linux-28b36a80-e4a9-4bb6-97bc-7ca02895570a
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Lee Jones <lee@kernel.org>
-> ---
-> 
-> v1 => v2:
->   - Clarify runtime PM state prior to pm_runtime_enable() in the commit
->     description (Uwe)
->   - Disable runtime PM before unpreparing tbclk in ehrpwm_pwm_remove() to
->     match probe ordering (Uwe)
-> 
->   drivers/pwm/pwm-tiehrpwm.c | 19 ++++++++++---------
->   1 file changed, 10 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
-> index e3407d0a1f7f..73fe2f91243d 100644
-> --- a/drivers/pwm/pwm-tiehrpwm.c
-> +++ b/drivers/pwm/pwm-tiehrpwm.c
-> @@ -461,18 +461,19 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
->   		return ret;
->   	}
->   
-> -	ret = pwmchip_add(chip);
-> -	if (ret < 0) {
-> -		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
-> -		goto err_clk_unprepare;
-> -	}
-> -
->   	platform_set_drvdata(pdev, chip);
->   	pm_runtime_enable(&pdev->dev);
->   
-> +	ret = pwmchip_add(chip);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
-> +		goto err_pm_disable;
-> +	}
-> +
->   	return 0;
->   
-> -err_clk_unprepare:
-> +err_pm_disable:
-> +	pm_runtime_disable(&pdev->dev);
->   	clk_unprepare(pc->tbclk);
->   
->   	return ret;
-> @@ -485,9 +486,9 @@ static void ehrpwm_pwm_remove(struct platform_device *pdev)
->   
->   	pwmchip_remove(chip);
->   
-> -	clk_unprepare(pc->tbclk);
-> -
->   	pm_runtime_disable(&pdev->dev);
-> +
-> +	clk_unprepare(pc->tbclk);
->   }
->   
->   static void ehrpwm_pwm_save_context(struct pwm_chip *chip)
-
+Am 01.11.26 um 13:55 schrieb Stefan Wahren:
+> Am 01.11.26 um 04:26 schrieb Yu Zhang:
+>> pwm_gpio_probe() registers the chip with pwmchip_add(), but the driver
+>> has neither a remove callback nor a devm action calling
+>> pwmchip_remove(). On unbind the devres callbacks release the GPIO
+>> descriptor, cancel the hrtimer and drop the reference taken by
+>> devm_pwmchip_alloc(), while the chip stays registered: it is still in
+>> the pwm_chips idr, its sysfs attributes and character device are still
+>> there and chip->operational is still true.
+>>
+>> The chip can therefore still be reached through sysfs export, the
+>> character device, debugfs and pwm_get() from a consumer. Those paths
+>> call into chip->ops, which point into unloaded module text once the
+>> module is gone, and pwm_gpio_apply() re-arms the cancelled hrtimer and
+>> drives a GPIO descriptor the driver no longer owns.
+>>
+>> Use devm_pwmchip_add() so that the chip is removed before the hrtimer
+>> is cancelled and the GPIO is released.
+>>
+>> Fixes: 7f61257cd6e1 ("pwm: Add GPIO PWM driver")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Yu Zhang <yuz08559@gmail.com>
+> Reviewed-by: Stefan Wahren <wahrenst@gmx.net>
+any concerns with this patch?
