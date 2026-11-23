@@ -1,75 +1,68 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795420407;
-	b=c424XNOf4MYX64zV5hm/rw9MZ/CE+2fPvuoiZOVufi/4FMlE45wEBDPW3q714f8twp6l
-	 HUObaEtsOtHRYpgxO100fqq4gPXTtRJvRGpaFma9j3YnalYUL3FDizFatcS/NRtED1vAl
-	 oiXOO+Bq6wCeakyKzE9k9F3Ami2D0rQgG+8VPTUMa5U3ydaUms6wgWK/w5FNJuW6L2urV
-	 ck/XA/hfduHEKckuwbh+ve0r9M11/sA0PtP3SoJ9CT4aAVJbjOpODm6GxbHTYGxRRmoQ1
-	 rCMoT+3f8R70kQBEjW2Z/eH8ry4pkQeT+CHtXfhA2R9vPpVaHxmFP7BR8YNi1VIFCag==
+	t=1795420416;
+	b=mLBrzJfqOdLMtTtglyo36QxIBtpTTt+POeqlkVybXsmgMWLnqATJ44wswElDb0k4kBsG
+	 gNflIidVqbvLNUyYxcWO6iF1VvnqjGse40eK0VjveoHMs4i9crUKRyBCCAyd0tbRGes1W
+	 jz1A3auhuKwPkn3aFG+4/WKxlxqksr/JlfyMHe8ORZsZMH0SvknhvQLF3Fq++j0qTWymJ
+	 A7L3MyhvussdOzkwLRr366djnfln4FOdVPTzxUU1e5Kp3AqNopB4RJmLvHHSkNTOQ8CaB
+	 ahDuQxBIkQSlqFSmTA2HMuhnwXJwptxqKT8qTRL74UXqnWd9aH6lvPgcUr+96zdxPsA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795420407;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795420416;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=RAv3jMi9jT0oBAikeI5ITIU2nYz68w41tRGXr1NGYec=;
-	b=ekzCxkFDRvZd/UbUBAT7bJoYYIY0llcZc4Oquj8Ekt5DOroXxovG/63d8v43kfJJeWkJ
-	 /sUMw4qA8YUQldtGDnq83ZUnpdB4ZBn65zq7P1+5cgd/Zn2L6EavOj1p8OCVkr6bsXKii
-	 oRsDZCcFRTfFCJpLxLptO7seBUvCGsgUQ3eg8Gg6o0X7AS+Q3ZJArwBpgw3qFf1grX4Pg
-	 YAY3aVog9DZEjFVZzF9nDhSmg1rmwe0GbT5mIR9qkcKdGEOGzuSqnBout3moCPqWJ0lEk
-	 ra8kYViI4IZW+pnJzr8E1WCybcXVenvv4JlJi/DNapeCX7NyZ4dkzeooRkGWNiaA+hg==
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=1kgjCZJ8nKKX16FqAvd18yEVyO1lfwN7tM9UW2vB/JI=;
+	b=t4fDDyzXRahlRSeo5bcdlKsK5myfMNGCc7bxEBzZGxREV98nnCKIjK/gQ+vsOdQoGIfR
+	 o1Z97Cx8kYVa5ewFkea00g7H1DfhRO/knj6rZFjIkCwiKsWLSN93ikpLaSPeryK2zVhvD
+	 lTRysbGleczeYh3YBEZUTUwFHCme7izAoPCafutFTo08jW2qKW8DtIAI0GiPkNGViGeIR
+	 /dHtNl70Ic0JFcZzdyNT3dfX69ci2k2L10pEcHIpGaFsKB/2KItZLYPruWBKERrQNV0qp
+	 1XOddJah+P74QmvTw0FDBDNY5/hGjec86KQlyJiN/eGyDJiL1mPFAgHIv9PSVL8dnOA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BApg77rj;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cOYfqiaH;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A9F1606A32C;
-	Mon, 23 Nov 2026 07:53:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FDA4606A31A;
+	Mon, 23 Nov 2026 07:53:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BApg77rj
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BB9D1F000D2;
-	Mon, 23 Nov 2026 07:53:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cOYfqiaH
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D04BE1F000EB;
+	Mon, 23 Nov 2026 07:53:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795420406;
-	bh=RAv3jMi9jT0oBAikeI5ITIU2nYz68w41tRGXr1NGYec=;
-	h=From:To:Cc:Subject:Date;
-	b=BApg77rjizqtZBFefEroVa86MCmngRCuVmJZ9a1RIhjk4tw87FnxhegKaB9bg4PRi
-	 y5pC2o0zJCrk7JHOD7k2lCHQAcIeIABa7vzKx8c0qqBIi/TzRMVfdqQOWwuU0hiCxp
-	 gOLzGRjHEgE2WLqYv8LbkDokeQzSq36fmL17QKaZtVQ/QZofxDP2DyFiWgYO9ZJEZW
-	 2POq2kOgtdh3g5gdfjQzbYMUKnrkngxCTh3C7PWcAEis9Ur47GXK9cZPcyBMz2JO7y
-	 CwU73mjYHzQxeb5tmHk0o7pfW8yWz+9JbCFPKuiAOteWrlX5hKT/Je1/WAr4kNKQ4K
-	 +icRjXbxKu3qw==
+	s=k20260515; t=1795420415;
+	bh=1kgjCZJ8nKKX16FqAvd18yEVyO1lfwN7tM9UW2vB/JI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=cOYfqiaHCqKz5KHb6ipksV+yDpdHw/eu3V3jjSWiWX/g+UlIlVu72IEHo9UqiD2Sm
+	 9W6FIvamutDPvxfM/68kZo+125IP9JX7Pc5aMwNtw1CVFg+yHKlTVPyNprCZqHiSHG
+	 iTCQ2f5UZeKCTY9KzMnwi1AlwCIwD55yRRZlBtEOnw3ZW2qZO83oZrjTyuiiHUQDeS
+	 lwVNnuTcZfJ5hf4ES9HEMdWRuOzCtzZgPFCBFK5Jj0976i7FS3YBBqfLbCAp8grlBv
+	 qspDCks6NNr1/JrXPgzPdANK9F0U0dgZFlCsF7AdqnEGZf1+M0w0rnmHb0haMbS86r
+	 KiyIm1RRIgR+g==
 From: Lee Jones <lee@kernel.org>
 To: lee@kernel.org,
 	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	linux-pwm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Andrew Bresticker <abrestic@chromium.org>,
-	Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
-	Fabio Estevam <festevam@gmail.com>,
 	Frank Li <Frank.Li@nxp.com>,
-	Grant Erickson <marathon96@gmail.com>,
-	imx@lists.linux.dev,
-	Joachim Eastwood <manabian@gmail.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Lokesh Vutla <lokeshvutla@ti.com>,
-	Naidu Tellapati <naidu.tellapati@gmail.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	NeilBrown <neil@brown.name>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	"Philip, Avinash" <avinashphilip@ti.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Sai Masarapu <Sai.Masarapu@imgtec.com>,
 	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Chen Wang <chen.wang@linux.dev>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
 	Shawn Guo <shawn.guo@linaro.org>,
-	shenwei.wang@nxp.com,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
 	Thierry Reding <thierry.reding@gmail.com>,
-	Vaibhav Bedia <vaibhav.bedia@ti.com>,
-	Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCH v2 0/5] pwm: Fix various bugs reported by Sashiko
-Date: Mon, 23 Nov 2026 07:52:50 +0000
-Message-ID: <20261123075320.379664-1-lee@kernel.org>
+	linux-pwm@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Cc: stable@vger.kernel.org
+Subject: [PATCH v2 1/5] pwm: mxs: Return early when disabling and fix error-path clock leak
+Date: Mon, 23 Nov 2026 07:52:51 +0000
+Message-ID: <20261123075320.379664-2-lee@kernel.org>
 X-Mailer: git-send-email 2.56.1.750.gf70dc682cf-goog
+In-Reply-To: <20261123075320.379664-1-lee@kernel.org>
+References: <20261123075320.379664-1-lee@kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -79,70 +72,106 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-These issues were reported by Sashiko.
+When disabling a PWM channel (!state->enabled), the PWM core permits
+state->period to be zero.  mxs_pwm_apply() currently falls through into
+the period and duty-cycle calculations even when !state->enabled,
+causing do_div(c, state->period) to divide by zero when state->period is
+zero.  In addition, if the requested period exceeds the maximum divider
+(div >= PERIOD_CDIV_MAX) while the PWM channel is currently disabled,
+mxs_pwm_apply() returns -EINVAL without disabling and unpreparing
+mxs->clk.
 
-None of these changes have been tested on physical hardware.
+Handle the !state->enabled path upfront and return early, balance
+clk_prepare_enable() on the -EINVAL error path, and check
+pwm->state.enabled directly rather than calling the consumer helper
+pwm_is_enabled().
+
+Fixes: bf29c2ff82fd ("pwm: mxs: Implement ->apply()")
+Closes: https://sashiko.dev/#/bug/linux-710f863f-6964-4e4f-990a-e5043dbc1a87
+Cc: stable@vger.kernel.org
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
 
 v1 => v2:
- - Drop tegra (superseded by 9ad5602d4943) and loongson / axi-pwmgen
-   (already applied)
- - mxs: Check pwm->state.enabled directly instead of calling the
-   consumer helper pwm_is_enabled() (Uwe)
- - fsl-ftm: Move ipg_clk enablement after the channel loop and document
-   why it is needed around regcache_sync() (Uwe)
- - omap-dmtimer: Propagate negative get_pwm_status() error codes out of
-   pwm_omap_dmtimer_apply() (Uwe)
- - tiehrpwm: Clarify runtime PM state before pm_runtime_enable() in the
-   commit description and match teardown ordering in ehrpwm_pwm_remove()
-   (Uwe)
- - img: Clear autosuspend in img_pwm_remove() and document why driver
-   data remains valid for runtime PM callbacks after pwmchip_remove()
-   (Uwe)
+ - Check pwm->state.enabled directly instead of calling the consumer
+   helper pwm_is_enabled() (Uwe)
+ - Drop Frank Li's Reviewed-by due to code changes
 
-v1: https://lore.kernel.org/all/20261105143847.2559586-1-lee@kernel.org/
+ drivers/pwm/pwm-mxs.c | 34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
 
-Cc: Andrew Bresticker <abrestic@chromium.org>
-Cc: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: Frank Li <Frank.Li@nxp.com>
-Cc: Grant Erickson <marathon96@gmail.com>
-Cc: imx@lists.linux.dev
-Cc: Joachim Eastwood <manabian@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-pwm@vger.kernel.org
-Cc: Lokesh Vutla <lokeshvutla@ti.com>
-Cc: Naidu Tellapati <naidu.tellapati@gmail.com>
-Cc: Neil Armstrong <neil.armstrong@linaro.org>
-Cc: NeilBrown <neil@brown.name>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: "Philip, Avinash" <avinashphilip@ti.com>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: Sai Masarapu <Sai.Masarapu@imgtec.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Shawn Guo <shawn.guo@linaro.org>
-Cc: shenwei.wang@nxp.com
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Uwe Kleine-König <ukleinek@kernel.org>
-Cc: Vaibhav Bedia <vaibhav.bedia@ti.com>
-Cc: Xiubo Li <Li.Xiubo@freescale.com>
-
-Lee Jones (5):
-  pwm: mxs: Return early when disabling and fix error-path clock leak
-  pwm: fsl-ftm: Enable ipg_clk around regcache_sync() during resume
-  pwm: omap-dmtimer: Propagate get_pwm_status() errors in apply()
-  pwm: tiehrpwm: Enable runtime PM before registering PWM chip
-  pwm: img: Unregister PWM chip before disabling runtime PM and clocks
-
- drivers/pwm/pwm-fsl-ftm.c      | 12 ++++++++
- drivers/pwm/pwm-img.c          |  9 +++---
- drivers/pwm/pwm-mxs.c          | 34 +++++++++++----------
- drivers/pwm/pwm-omap-dmtimer.c | 54 +++++++++++++++++++++++++---------
- drivers/pwm/pwm-tiehrpwm.c     | 19 ++++++------
- 5 files changed, 86 insertions(+), 42 deletions(-)
-
+diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+index e1a3df6549fc..768401b23dbb 100644
+--- a/drivers/pwm/pwm-mxs.c
++++ b/drivers/pwm/pwm-mxs.c
+@@ -56,20 +56,25 @@ static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	unsigned long long c;
+ 	unsigned int pol_bits;
+ 
++	if (!state->enabled) {
++		if (pwm->state.enabled) {
++			writel(1 << pwm->hwpwm, mxs->base + PWM_CTRL + CLR);
++			clk_disable_unprepare(mxs->clk);
++		}
++		return 0;
++	}
++
+ 	/*
+ 	 * If the PWM channel is disabled, make sure to turn on the
+ 	 * clock before calling clk_get_rate() and writing to the
+ 	 * registers. Otherwise, just keep it enabled.
+ 	 */
+-	if (!pwm_is_enabled(pwm)) {
++	if (!pwm->state.enabled) {
+ 		ret = clk_prepare_enable(mxs->clk);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
+-	if (!state->enabled && pwm_is_enabled(pwm))
+-		writel(1 << pwm->hwpwm, mxs->base + PWM_CTRL + CLR);
+-
+ 	rate = clk_get_rate(mxs->clk);
+ 	while (1) {
+ 		c = rate >> cdiv_shift[div];
+@@ -78,8 +83,11 @@ static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		if (c < PERIOD_PERIOD_MAX)
+ 			break;
+ 		div++;
+-		if (div >= PERIOD_CDIV_MAX)
++		if (div >= PERIOD_CDIV_MAX) {
++			if (!pwm->state.enabled)
++				clk_disable_unprepare(mxs->clk);
+ 			return -EINVAL;
++		}
+ 	}
+ 
+ 	period_cycles = c;
+@@ -101,16 +109,12 @@ static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	writel(PERIOD_PERIOD(period_cycles) | pol_bits | PERIOD_CDIV(div),
+ 	       mxs->base + PWM_PERIOD0 + pwm->hwpwm * 0x20);
+ 
+-	if (state->enabled) {
+-		if (!pwm_is_enabled(pwm)) {
+-			/*
+-			 * The clock was enabled above. Just enable
+-			 * the channel in the control register.
+-			 */
+-			writel(1 << pwm->hwpwm, mxs->base + PWM_CTRL + SET);
+-		}
+-	} else {
+-		clk_disable_unprepare(mxs->clk);
++	if (!pwm->state.enabled) {
++		/*
++		 * The clock was enabled above. Just enable
++		 * the channel in the control register.
++		 */
++		writel(1 << pwm->hwpwm, mxs->base + PWM_CTRL + SET);
+ 	}
+ 	return 0;
+ }
 -- 
 2.56.1.750.gf70dc682cf-goog
 
