@@ -1,88 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.179
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.178
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795505226;
-	b=GXuLTD+XcJ15nDexh6I26xr8YOZCGQaFoK1/VArQybZ6ZkQLFkrWGNEYKdMm6Tj42t/+
-	 8UahoqyZxw5flG52MZ8LaiQS3YPCwGDRAk4Lq2aiGGUZJ+sR+SWQ3GgAZ81jc/qgY2FLE
-	 ZJsL+bJmR78qdiC65rVXMZ173vsTKgpiGa28BY2VVpoz3MVtUlZD21VxpPoQgSS8Q51Cn
-	 Kdt3c8qIGosiEvhHzIlTLXylOGDxalDjIGhSC1LXFIH+BT4rOo6YavHVAl9dGX1T9/rsG
-	 5CknZq5blXcFQ0fO+byIZtz5ZE1WrnTuRUxd0VJwO/sSnDcmdiHsCWGW4Pu3vHzGHVg==
+	t=1795505223;
+	b=mEnlPUGY7uhS3xvecBWsqtM2qSbk3m+xd4ScFH//R6MNVr9mRJfJ3VF+eKhAGMWGTSu+
+	 OslFlh3WQQc0GzCvd93heSRJCTO+0Wz/mCkGGHHkJyVi9rkwsLU02mXzUsLq2ENtloHfe
+	 EP35H6+TwsAz/f46x3ByFxY349ypPKr2CjFxMYelExKsGSebkQQiik22ywRgv7HkZN+uh
+	 cGWjQhVWiH6XdNuenrJ2Tuy5p4Rsx2Er/Awlrzka+lw9EFQG3fMO482L0sj0B94ze/b5X
+	 5ZU5sYDUAKTUEipD3ibbfpy7xMsv7umcDWCDJ7eFOwNdJY7sVUUjTS29pmcdPsPvwwA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795505226;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795505223;
 	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
 	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:Content-Type;
-	bh=SYzNkPbYvQQo7yNPwmd0sAr6WiPJx3HhprPOKza6D0E=;
-	b=0nm2pl/1aZgS8Y8/4ch3toeaDBMq/08i4/DMA4NaIFTc1Blz/34Rh6ANgWM+orPHwBJn
-	 pkQAlvSDJoEVb+ENsLUUCsZUXIVLsEJZKcQ8dCoOljCtWY5z47LJ2pwNLi772RpR+uNyG
-	 iSnBzM5wSXdcm+mj12Stkd/J38xXwb3A4DaeMN+slLggjrvRqmnF3fD4JgI/0JvFYyibi
-	 AvDV32qILd9sv5vey9tsBA+B3ib/uVynwUUVVw37q7VR1o1AyhdonhkUh6Oj+Vt97uP01
-	 gj56A5SWLUxzC4sbYjPCakxGv9lD4etf1hIwOYsyuvFXf1+m2W3BsdbFVNDR0IhSX1g==
+	bh=kFVKZWJnvTpv0CaRCWkf/scaJhz42VxpUYUALwApW74=;
+	b=sMP+YB13SeQoaaO8BzQ916ZUWN5TH1ltZuyNj1A0iGfwllwSVIfHfDCNaMRQi8i3JCnF
+	 gIx4/tt6ldt5r7QXWihbp/eNvhd+ADUiueVM85/3thQFkekYOjhKebVo8XzJJPkNfwQCp
+	 qArfJ46ER4tuwdkejUqtFOgaawk89oYNTX0xEj7ASaWmEETBWfTKSZxZlSk8PZ2dOriZe
+	 HJ8I0T52D/f0rBUL9cn4sIIEQ630xe3IFNSso8K0YeX6SJaN168Cj1vz/rhrcTn7z1pUU
+	 bcFXp3yoa0JlfrtPKLfUOvS/JttGOxf6n+SOOdcYWL41J1jCjOnr1uDMWCTiBeKb1kQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=goldelico.com;
 	spf=pass smtp.mailfrom=goldelico.com;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=DooFdn+J;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=MdT95aIP;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.179
-Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [81.169.146.179])
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=EiH3gmjF;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=mQl7hvDm;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.178
+Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [81.169.146.178])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0350360A2616;
-	Tue, 24 Nov 2026 07:27:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0350360A2616
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3116606A682;
+	Tue, 24 Nov 2026 07:27:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B3116606A682
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=DooFdn+J;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=MdT95aIP
-ARC-Seal: i=1; a=rsa-sha256; t=1795505175; cv=none;
+	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=EiH3gmjF;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=mQl7hvDm
+ARC-Seal: i=1; a=rsa-sha256; t=1795505183; cv=none;
     d=strato.com; s=strato-dkim-0002;
-    b=r0KnS64e12yAb+xUpv+VE1bMSfFh7RCI5+8eLK7Ve9lRovPaJAS/f7zj7uytKAQyOX
-    vzRC5YOcB8jFm0pNL2BbccotYIlb/7pCWNuiEm/V3qmAfe2epG+0MVPIq97wxkXTxqsB
-    sRUHvblqeQV13PLg1qK2T/uCs/3sh87CRoIC/8/wqfcaXPWR4OcStrZul01JqD4Erfek
-    Q6Vf+pmtHjuv0IFi/BqIpXLmYjeWPNoChpFkOD1ZrmyQV64SV6FpW2yU6kj6AIwVahlu
-    YUgdLAOXkWvnw2TBB4paLtZgNQcZ23TjzGJ1I/If/F/3CBOAeE5sdk+h0QSL1XpyW5Dg
-    Z5UA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1795505175;
+    b=Z7xiYhSoH/3M3dxzPNQd829mpciJtOxysyasKAgIeGN/0NoMZayD4xO8Px7ueuwXpK
+    id4fvevS/hx6O+u8jz3mxUKGLmqp9wmMivQfPdr4ZINlrd3rU+nijIQHZmB0fJ1qd7vv
+    627DklFjMNkXSmvShdeDwDHg/naU4sevFcxlFgz7IQ6pjYWv7KHuWXjdkQ+Npv2a1OJP
+    lCn5vuyZ84Y7Q2JEnOYxikBgjgMlON2/1ooZRBdJmmkekxoVfdHVNzNRxP6R31eD8QeS
+    joLnofLRk4JAVhY1r+7UzV0dOvbb983RBMDOimDER9JySvkoZd4h8p/RxBWZIj4RSXju
+    5BkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1795505183;
     s=strato-dkim-0002; d=strato.com;
     h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=SYzNkPbYvQQo7yNPwmd0sAr6WiPJx3HhprPOKza6D0E=;
-    b=h5GS00KwcU+BciHtVw8Jl00OvbV0yN6RfwfJoaihtQBerZkmag2OWJwsQgjdJorUuF
-    AljB512gCHD4NJZ0uV0NW3O2/F2Wzqs4IEobLAitFaGp1WZGrfmH0A+qShfIax6TNYOb
-    Plz8gPJZ7cdBzKlEdI5tQbk0smsL+1E+Y2sWylDE3kqK8w61RFrhA9Au77eT6oY924MU
-    OCHf+TYs6a6kxtNWQjY1F/DkmPbh6nazErTKLrrqOmUOCovZJmv2HDx3yFN7wjhPT5DV
-    5xq8JAajr3fJ1FrWfQbNUTax2u6+af6wtU0UX5ifuDucfQaVDVepWeW8NCNlhAvupd+F
-    PMGA==
+    bh=kFVKZWJnvTpv0CaRCWkf/scaJhz42VxpUYUALwApW74=;
+    b=Meqqz7QDgIGR03VTCBRmFfkc/OTi2JI15h2Jsk68jL0kbTQgB8V0Bh6vPGIAJoxQ8Q
+    efcIBWpN9hBY8B4YFLeEWM1VnL4zMZjFiZC5asgSxvYB6JiXefVr0RNSVSvnF2Oqu19c
+    BlUYBmRNR8nDiZyk9CenuuCRpJp209UAoJD1ugrlBWaQ95zgt1B8wVNlLfj6ObbXKX+e
+    nmN7PZhTdlB0b50VZ34/m/o8cnbmtaE2E0dzek3EVbQVouHyYDMUPOfZ5CH2JJwkP/y5
+    /DplD8MVhKjPC9mzl5uo2tA43O51VSg5x+ENcKHp9LUWiSwZ+0IQvjbUwHo2Awi8fBMh
+    JNoA==
 ARC-Authentication-Results: i=1; strato.com;
     arc=none;
     dkim=none
 X-RZG-CLASS-ID: mo04
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1795505175;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1795505183;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=SYzNkPbYvQQo7yNPwmd0sAr6WiPJx3HhprPOKza6D0E=;
-    b=DooFdn+J7KPbRBYljAmwRxtO1M4emcMxxFR1+IbA+RWkDOQJhuCSoOf51sXjMer+So
-    wVY8YYFIp3v6O39pvL6k2pWRBAdAfxdJLBwQFEnezmLo6CAUHwDk/G/wFgCE88vJZGRT
-    0Tu9tDk5x5knsRXevVPCUYRto2GSjt0xeeS/ohR7jFjNouUsLSP7BJIsiAULQ+bsaIUp
-    qCi9Sp/kXpsISyb8+eJ4Gwr2ZMlg5qbmCnfF0BKpTL96vNBpwIzIFFehi4UOyalStqxP
-    HFrvlo2xHwRBL+C8HK5+qVxGkxBmchj1MA5XCPklEWEOL4iuFO2PRM4ne0LdqNgSHOik
-    rPKA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1795505175;
+    bh=kFVKZWJnvTpv0CaRCWkf/scaJhz42VxpUYUALwApW74=;
+    b=EiH3gmjFx9O9zE7ceCRcHfLIrQo4joTC1DAbmIRwKZcJQ1hSrF4zlRlhnxBIlqgFr2
+    o8b9eTW43QKFNb59rA5r3feLIrSXEzhKlpruNsvXka1Qx/M8UQN+NHEW/odAkXNKb6ql
+    qNFyHouiXXt4bUhpMqlhn9LU/NSwnWCIlblJFCqL2yQfYAGn8kTNyzRPbPa8DsuB4JC+
+    GCA0VsqewoIdwfgM8eza8xwKzEz+0zD47dL1azWBjV+8+jVH3ibF4fcqpJuJTTqLutgx
+    6V7J36/S2OpddBcdpFLH6rEZ8po+DBCFafKBMHmf2ut5iAQmioDam/y5rcgh3ZsB1cKZ
+    2v3g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1795505183;
     s=strato-dkim-0003; d=goldelico.com;
     h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=SYzNkPbYvQQo7yNPwmd0sAr6WiPJx3HhprPOKza6D0E=;
-    b=MdT95aIPcuSsAoSwcMsQ+0GOQUJyL2EwGrEVn/GrwZXBnkvhrKdakAsq+UYMUCyUMF
-    KeDj6oktc3cd87BX8bAA==
+    bh=kFVKZWJnvTpv0CaRCWkf/scaJhz42VxpUYUALwApW74=;
+    b=mQl7hvDmB5McIZME11BEoDVNqoi0wfRn8QnKlUYBJexRm39G5BkDGqbfVnM2ZUNunR
+    /dThEVIVeGg5rkSXSUAw==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV3poLlciNVTQoM6kVxzKyrKzkpjcAwdDfiN49"
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 55.6.3 AUTH)
-    with ESMTPSA id Qb56a22AO7QE1HL
+    with ESMTPSA id Qb56a22AO7QM1HV
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
 	(Client did not present a certificate);
-    Tue, 24 Nov 2026 08:26:14 +0100 (CET)
+    Tue, 24 Nov 2026 08:26:22 +0100 (CET)
 From: "H. Nikolaus Schaller" <hns@goldelico.com>
 To: Linus Walleij <linus.walleij@linaro.org>,
 	Bartosz Golaszewski <brgl@kernel.org>,
@@ -126,10 +126,11 @@ Cc: Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
 	linux-fbdev@vger.kernel.org,
 	letux-kernel@openphoenux.org,
 	kernel@pyra-handheld.com,
+	Stefan Leichter <sle85276@gmx.de>,
 	"H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v2 09/20] pwm: twl: Support 64-cycle PWM frame
-Date: Tue, 24 Nov 2026 08:25:49 +0100
-Message-ID: <59fa3a5ee1a0d0bf13c85c08160c5acdaa95b7a4.1795505160.git.hns@goldelico.com>
+Subject: [PATCH v2 17/20] ARM: dts: omap3pandora: Describe sound card
+Date: Tue, 24 Nov 2026 08:25:57 +0100
+Message-ID: <0269f30c3f766431c0c20a36fd6e2b2dce1b3f2f.1795505160.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <cover.1795505160.git.hns@goldelico.com>
 References: <cover.1795505160.git.hns@goldelico.com>
@@ -145,117 +146,85 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="us-ascii"
 
-Implement the ti,twl4030-pwm-frame-64 device tree option in
-the TWL4030 PWM driver. When enabled, program bit 7 of PWMx_ON to
-select a 64-clock-cycle frame and clamp the OFF counter to 63.
+From: Stefan Leichter <sle85276@gmx.de>
 
-The shorter frame doubles the output frequency at the expense of
-duty-cycle resolution. With ON = 1 and OFF = 63, a full-duty request
-is approximated rather than producing a constant HIGH level; the
-remaining LOW interval is short enough for the intended LED driver
-startup mode detection.
+Describe the OpenPandora sound card and its connections to the external
+PCM1773 playback DAC and TWL4030 capture codec in the device tree.
 
-Keep the existing 128-cycle behaviour when the property is absent.
-As before, the driver does not implement arbitrary consumer-requested
-PWM periods.
+Provide the amplifier GPIO and power supply, the DAPM widgets and
+routing, and the McBSP audio links needed by the DT-based sound card
+driver.
 
+Signed-off-by: Stefan Leichter <sle85276@gmx.de>
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
 
 Notes:
     Changes against V1:
-    - Add optional selection of the TWL4030 64-cycle PWM frame through
-      ti,twl4030-pwm-frame-64; retain the default 128-cycle mode.
-    - Set the frame-selection bit in PWMx_ON and limit the OFF counter
-      to 63 in 64-cycle mode, including for full-duty requests.
-    - Retain the duty-cycle calculation and register encoding of the
-      hardware-tested working series rather than the later review
-      proposal using ON = OFF = 1 for full duty.
-    - Document that ON = 1, OFF = 63 does not produce constant HIGH;
-      the resulting short LOW intervals are relevant for TPS61160/61.
-    - Revised commit message to distinguish driver implementation
-      from the preceding binding documentation.
-    - PWM encoding and commit-message review assisted by ChatGPT.
+    - Historical origin: 570cb6f3073f (Stefan Leichter, 2020-06-29).
+    - The original history also contains a Signed-off-by from Grond; this has not been carried forward without renewed confirmation.
+    - The sound-card routing, codec phandles and amplifier supply have been reviewed in the V2 series.
+    - Code and commit-message review assisted by ChatGPT.
 
- drivers/pwm/pwm-twl.c | 37 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+ .../dts/ti/omap/omap3-pandora-common.dtsi     | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/drivers/pwm/pwm-twl.c b/drivers/pwm/pwm-twl.c
-index 99c1caf4f19c8..70567d5805f43 100644
---- a/drivers/pwm/pwm-twl.c
-+++ b/drivers/pwm/pwm-twl.c
-@@ -25,6 +25,9 @@
- #define TWL4030_GPBR1_REG	0x0c
- #define TWL4030_PMBR1_REG	0x0d
- 
-+/* Bit 7 of the PWMx_ON register selects the short (64 cycles) frame */
-+#define TWL4030_PWM_ON_FRAME_64	BIT(7)
+diff --git a/arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi b/arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi
+index 6e349f7ae6936..a5633d93547a3 100644
+--- a/arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi
++++ b/arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi
+@@ -69,6 +69,41 @@ dac: pcm1773-codec {
+ 		vcc-supply = <&vsim>;
+ 		enable-gpios = <&gpio4 22 GPIO_ACTIVE_HIGH>; /* GPIO 118 */
+ 		status = "okay";
++		#sound-dai-cells = <0>;
++	};
 +
- /* GPBR1 register bits */
- #define TWL4030_PWMXCLK_ENABLE	(1 << 0)
- #define TWL4030_PWMX_ENABLE	(1 << 2)
-@@ -49,6 +52,7 @@ struct twl_pwm_chip {
- 	struct mutex mutex;
- 	u8 twl6030_toggle3;
- 	u8 twl4030_pwm_mux;
-+	bool twl4030_frame_64;
++	sound: sound {
++		compatible = "openpandora,omap3pandora-sound";
++		status = "okay";
++
++		label = "OpenPandora";
++
++		amp-gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
++		amp-supply = <&aux_5v>;
++
++		widgets =
++			"Line", "Line Out",
++			"Line", "Line In",
++			"Headphone", "Headphone Jack",
++			"Microphone", "Mic (internal)",
++			"Microphone", "Mic (external)";
++
++		routing =
++			"DAC1", "APLL Enable",
++			"DAC2", "APLL Enable",
++			"Headphone Amplifier", "VOUTL",
++			"Headphone Amplifier", "VOUTR",
++			"Line Out", "VOUTL",
++			"Line Out", "VOUTR",
++			"Headphone Jack", "Headphone Amplifier",
++			"AUXL", "Line In",
++			"AUXR", "Line In",
++			"MAINMIC", "Mic (internal)",
++			"Mic (internal)", "Mic Bias 1",
++			"SUBMIC", "Mic (external)",
++			"Mic (external)", "Mic Bias 2";
++
++		sound-dai = <&mcbsp2>, <&dac>;
+ 	};
+ 
+ 	gpio-leds {
+@@ -736,6 +771,9 @@ &mcbsp1 {
+ /* audio DAC */
+ &mcbsp2 {
+ 	status = "okay";
++	#sound-dai-cells = <0>;
++	clocks = <&mcbsp2_fck>, <&mcbsp2_ick>;
++	clock-names = "fck", "ick";
  };
  
- static inline struct twl_pwm_chip *to_twl(struct pwm_chip *chip)
-@@ -56,13 +60,35 @@ static inline struct twl_pwm_chip *to_twl(struct pwm_chip *chip)
- 	return pwmchip_get_drvdata(chip);
- }
- 
-+/*
-+ * Note: this hardware (and driver) does not honor arbitrary periods.
-+ * Only the duty ratio is implemented; the frame length is either
-+ * 128 clock cycles (default) or - if selected through device tree -
-+ * 64 clock cycles. Consumers requiring an accurate period must verify
-+ * the actually provided period.
-+ */
- static int twl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			  u64 duty_ns, u64 period_ns)
- {
-+	struct twl_pwm_chip *twl = to_twl(chip);
- 	int duty_cycle = DIV64_U64_ROUND_UP(duty_ns * TWL_PWM_MAX, period_ns) + 1;
-+	bool frame_64 = twl_class_is_4030() && twl->twl4030_frame_64;
- 	u8 pwm_config[2] = { 1, 0 };
- 	int base, ret;
- 
-+	if (frame_64)
-+		pwm_config[0] |= TWL4030_PWM_ON_FRAME_64;
-+
-+	/*
-+	 * In the 64-cycle frame the OFF counter wraps at 64. A requested
-+	 * duty_cycle of 64 (full duty) would therefore wrap to a constant
-+	 * high output. Saturate to the largest value that still produces
-+	 * a low pulse (OFF = 63, approximately 62/64 high) instead.
-+	 * This also applies to full-duty requests from PWM consumers.
-+	 */
-+	if (frame_64 && duty_cycle > TWL_PWM_MAX)
-+		duty_cycle = TWL_PWM_MAX;
-+
- 	/*
- 	 * To configure the duty period:
- 	 * On-cycle is set to 1 (the minimum allowed value)
-@@ -353,6 +379,17 @@ static int twl_pwm_probe(struct platform_device *pdev)
- 	else
- 		chip->ops = &twl6030_pwm_ops;
- 
-+	/*
-+	 * Optional short PWM frame (64 instead of 128 clock cycles).
-+	 * Doubles the output frequency; useful for LED dimming
-+	 * inputs requiring short low intervals during startup
-+	 * mode detection (e.g. TI TPS61160/61).
-+	 */
-+	twl->twl4030_frame_64 =
-+		twl_class_is_4030() &&
-+		device_property_read_bool(&pdev->dev,
-+					  "ti,twl4030-pwm-frame-64");
-+
- 	mutex_init(&twl->mutex);
- 
- 	return devm_pwmchip_add(&pdev->dev, chip);
+ /* bluetooth */
 -- 
 2.56.0
 
