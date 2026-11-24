@@ -1,88 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.178
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.223
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795505227;
-	b=Lhdp3UrXxtmoHTdHYid+sC+Xuq4fwoiF8tXTiz1HIMAjvsv7PKtySiSa4qiJHaHHZ3nc
-	 5wv3TfEpPGGlQ4u/yiYPLGhY8qrSvmFjkPLYVBcj8PROo12n1ib6Vy8UMZ6mnFbXqV4OZ
-	 WH0IBZfnqlDNl2shBK2UKvLPaJDhsLGNnKFsSpOWKpcZEVfY/NpWBaeTBekwLgr8Ju8bb
-	 pFw6OgxmyWdSES8Z9MOdbD+nf204wI/X8TF6VKWxPLljvv7BpbasyhRiILnMl35bIPGx+
-	 SMSrneeAHPG1UOnE8laMN1xhCODqKqNjNgi6d3QhtERELiIWjqTqDCG+I9KGzlwBDlQ==
+	t=1795505228;
+	b=Hs6MM4qopHO/kOvzfZ0w7jjrUIg8mw68HoH3tDAZoIp+L74MHDRMJGvy/3+5u/ZjD+g1
+	 k0cAsXPhNnm+OeOTVJJp0/guRvqaWNInANAj7S9qPX1Ve5H/ZxyWEd5kFj1uLcmVzu4Ix
+	 /LDXO34R4cP9nZBV0i9wX9ONSJhDJA0Bi8t1bVSuIgUMnJM8dH9ivzWugW28wBLpmzwkK
+	 +b/zLQVzPKuHSysH429UYol3H2X79gb3QEf8eNvrV0xD+Ph6ixu6mUuH3oFhcSwMh6otJ
+	 t8nZ1CTlMNjiZjJP9TmzRxWCqAae3XKjGQu5NOdHVnqFoGPAuex+7yWZghoIV+lAWOw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795505227;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795505228;
 	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
 	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:Content-Type;
-	bh=mCTL5EvoBNQXTJTXdmgYEKENHLcWSBGgDwEoOT4R3Mk=;
-	b=1P6JYEYHgnwCUdx3+hlkfQcQZ2AvidhSLHXERQumGoSQ0iXIyqj1WpHF36U5VEgcOghT
-	 D8Y2J4pl9zhsRjSEQ5j3S7O/5rvKoVstEL6QONWpmdsZ+MwlDh+oxJBwZHGEEKpYpwxKg
-	 x4HZn/+grzT2BNQmAREAHaSnkNHdvOwiHev43Dlvxju1xd4P6jdjruZZUze2TRrw6YxNr
-	 Z75kaKA+a+YshLDw323BHW66PFEopbQMDugajArN3twQT5mGanVYQYso5v2kgcyHrhAcp
-	 cSlIw9ANItaJh9oS8K8GNkE2VZ5B9b7FU5/UClZuo80Kbtkp2rJe9PEhPMvh/8LGe6g==
+	bh=fsG/cb1SFdTpwbZba5DZbm5tdFhUsr4K7XbXBN0VQ1M=;
+	b=XVUPm1KNz3BCkLgTXs+VhoRNOHILjxjWsASXQSEQok2a2q73mKlvStTXdL5kDLz7vlch
+	 VBEKA+NUoDMoFJiV1bXxdvWx8RmQcwR777+fmqvESBcl8B25jcMP0Xiycp3Dn25GLQJAr
+	 EeJXKp01T+qISiucsjaj+YBPSw+AiXkL1SXwvHx/sQVkzm17e1akvh0fftdK97pDXNXVx
+	 unKjAxbklnpMANlIs5OzWYIMl1590k1d9WR80e3ySFkL9wV1oO7oO9kfTjeKOEC75hcuG
+	 AcvtwuuTxs4KJhpBNb6YeOqKk/5ksfU7eRmxQSLE45tqHYGBGYhyEC/xaZxfIrR3vCw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=goldelico.com;
 	spf=pass smtp.mailfrom=goldelico.com;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b="Fxnvak0/";
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=7Wn2AS8k;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.178
-Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [81.169.146.178])
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=FPCCTua1;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=+jAyDf5q;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.223
+Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [81.169.146.223])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9183D606A6BD;
-	Tue, 24 Nov 2026 07:27:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9183D606A6BD
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A824F60A2617;
+	Tue, 24 Nov 2026 07:27:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A824F60A2617
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=Fxnvak0/;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=7Wn2AS8k
-ARC-Seal: i=1; a=rsa-sha256; t=1795505181; cv=none;
+	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=FPCCTua1;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=+jAyDf5q
+ARC-Seal: i=1; a=rsa-sha256; t=1795505174; cv=none;
     d=strato.com; s=strato-dkim-0002;
-    b=A3XF1ilXUm20dh0OxsSuCe3Of7WWYq5ZPtt2AYfQLeflUb4+Cl1AYyzcaqgyDoLGDU
-    2jrsAoVzqOG/WEMuozZPsGkA4gcddUB0xRq5LnsA6yF41J2H+7Z/5VnO3hQA4IL3G9FW
-    V+lKNTmoTdIQJcVxJOELZM2r4eNUfjadAYmoyAfwLfja8gszawx6bTAUI4mVz4cz0ABP
-    sxG/KX3zadCk5wP4tiW0BblkhQjniNFzFj0ubnQD04XibJTEXi77vp9lPQIA+5/Y8huG
-    J/V7KJpqncoP29i3/dUfuDzjaneMgAbUje5CKg6g0HVzmxrEQoECV0Ab/oKOGbJhZlu8
-    NNxQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1795505181;
+    b=aVMZq2aA4paRGrZre+BQk8rtHFWnjoo4xmk/6fYITawlv0xsl6JZQi75t8Jpgg2qr/
+    RSgVv22lumOuXEF40OB70aivTjdZfyV2KeHSXsSIg1g+cwf4iin5vlU98XY7uzsfl5A8
+    5sok5uQjHQeqdNt5uMok5/a5znFV4W8EbUhcGf6bxgTVgr4LCiJjsvhIP6xLqO9VwRAl
+    LQoK+NrC3d8s+nzA3MFdeRA1klEyA3bOSaxTvS382peFQDXYE7jp1I6QnTNddHsioZPg
+    /t+KpdZirzoTjhw1zGRfjKD6QZShXTwsQAC++nU2JjjJfpSy7nem5+hE1vK0B/RiImv4
+    a7lg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1795505174;
     s=strato-dkim-0002; d=strato.com;
     h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=mCTL5EvoBNQXTJTXdmgYEKENHLcWSBGgDwEoOT4R3Mk=;
-    b=dQd8m9zSw4xOEHf7fb+yKlbVKpQZptCr/I02KCLYQ5+88jUwqDu1n0uk6rJ9juxxGg
-    M8pGZ6oGu1RSOr4Rn3RE2fTagJDQJu8BLFQDJft81vb0jaT9xWeDM3vYVVmIZPV+PDmb
-    TGb9t9zYghC2dcRra2AP1hAvdnDF6/UNQQwkkrRQ62FQnm9ni+B4iwa9JfJrth3PsEsG
-    6vRzVU0hZbvXt6s63tb1nMlHMxNNeEVtnwZcRfFk/lO7G179MouDvZWUDolsKq3xZr3Q
-    dnOsnS7ENL3MArrAPNarHzn/XpI/5SGyMsETwqStkwF1nctyuGHG4HKo1tapb0OiuTkq
-    flNQ==
+    bh=fsG/cb1SFdTpwbZba5DZbm5tdFhUsr4K7XbXBN0VQ1M=;
+    b=OtneZ4Kh3qegj5LZQX0tayQiuJbGJM5fQQ7igI0k9doE++Yld/Ya3EBzjsRdJ8iFRo
+    1ZN+L+CdugYLdoz2OAsaP966f/k52X1//9kPZLgwCG/dMmW3mMfYRudQboI1OCb4C1R+
+    aanyyc9aEFTMGIHba8RVTOiILU3ia2RVqlEYDecH9TP0NUnhav8ikoRQN0NfhJ62FR3M
+    mmy9MeTvUEWaVurDqt+ecIaXvb7ripkdUGa4e05H2wu6gJK1i6Pn/hflISf/kxGMj/Jw
+    JpCMR7tNLNmq3m5U6iC6yLGxY1pZkZ71ENlLopR9ixdb/H6HsPDeXYTLYv05KpGLOiqr
+    /9oQ==
 ARC-Authentication-Results: i=1; strato.com;
     arc=none;
     dkim=none
 X-RZG-CLASS-ID: mo04
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1795505181;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1795505174;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=mCTL5EvoBNQXTJTXdmgYEKENHLcWSBGgDwEoOT4R3Mk=;
-    b=Fxnvak0/8rqxa3Afav7WD/Vb4Xmp/7ha3h2kETtQauUoh03jLEn8mYcbsLwBMwL6kw
-    IH0tgaWVQPeQ7FFdoO2/+qscKr5HHGYc69YBWXiKhde3uMhwqI6xSoHkZbTcTgwVc3Lf
-    X0uRs11os2b2zMNj6a6YyMcHbP3q9Dqd16VGxWURKvHlXNftnt3w0kTEQn57tx1Lp1YN
-    rCmeBSy1VHki5+Q/JzLbgY4VYxhVXaYWXvEV6UqYTCJAd7ICnv6yCHkN/J5sVmihEsl+
-    Lpz6ClZoOuDz4a6ukJ8TdCWHd1TlRMyfhosdP3kusZCR98KbrlcvujFQrY4TJKSbcdrU
-    yDgg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1795505181;
+    bh=fsG/cb1SFdTpwbZba5DZbm5tdFhUsr4K7XbXBN0VQ1M=;
+    b=FPCCTua1pAXZDyqEk/kKrOuUKTpay15WdzNHD/NNA024Sg7+XLJj6JDbzo7nBDljco
+    WAMu3NSaIusKwP+JgSX11ssYgy+CDoy/fpKE77mxCLWybSRzZjHHVjd/OKEXOF0Ew/2S
+    9l0bODVNwPGGHvljs/NxVVKAsceEAaBpEGOqWCa9ifqJHzStVLanAfMxEmjIArHnEDCJ
+    jnjnPataADNPp7HZJsLDaP03ZwJM/eOvdtkGxe9qzHG2YZiG+2Ko1LDkRe5axxJx9Eh7
+    Op+etpep+A63cZPcZbT5TKwswpY1/ch9NlXtJLowA5xUFkebL+j4r7aTGbX5pswDztqQ
+    u1FA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1795505174;
     s=strato-dkim-0003; d=goldelico.com;
     h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=mCTL5EvoBNQXTJTXdmgYEKENHLcWSBGgDwEoOT4R3Mk=;
-    b=7Wn2AS8kMWAXG2COmnHxpUcRqKgBo+1TebY6U9yNLv3eHDO0gCdjGuFU8kcfcaFDs3
-    yUe4lsGOSnZBVr4ap/Cg==
+    bh=fsG/cb1SFdTpwbZba5DZbm5tdFhUsr4K7XbXBN0VQ1M=;
+    b=+jAyDf5qshztbVQMVLZQymw6VyPta0x1nuBSoiAg4Gq+Ha5Wyhml76un2wv/8PU/d/
+    Lk57Kl+Y5y2nbYYrM+DQ==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV3poLlciNVTQoM6kVxzKyrKzkpjcAwdDfiN49"
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 55.6.3 AUTH)
-    with ESMTPSA id Qb56a22AO7QK1HT
+    with ESMTPSA id Qb56a22AO7QD1HK
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
 	(Client did not present a certificate);
-    Tue, 24 Nov 2026 08:26:20 +0100 (CET)
+    Tue, 24 Nov 2026 08:26:13 +0100 (CET)
 From: "H. Nikolaus Schaller" <hns@goldelico.com>
 To: Linus Walleij <linus.walleij@linaro.org>,
 	Bartosz Golaszewski <brgl@kernel.org>,
@@ -126,11 +126,10 @@ Cc: Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
 	linux-fbdev@vger.kernel.org,
 	letux-kernel@openphoenux.org,
 	kernel@pyra-handheld.com,
-	Stefan Leichter <sle85276@gmx.de>,
 	"H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v2 15/20] ARM: dts: omap3pandora: Enable audio interfaces
-Date: Tue, 24 Nov 2026 08:25:55 +0100
-Message-ID: <99b22d8d689922af59f48e3a703bfee517e50b3e.1795505160.git.hns@goldelico.com>
+Subject: [PATCH v2 08/20] dt-bindings: mfd: twl4030: Document 64-cycle PWM
+Date: Tue, 24 Nov 2026 08:25:48 +0100
+Message-ID: <8e0c47487add0fa1bc0dad9b1bceef5ebf8071d4.1795505160.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <cover.1795505160.git.hns@goldelico.com>
 References: <cover.1795505160.git.hns@goldelico.com>
@@ -146,43 +145,49 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="us-ascii"
 
-From: Stefan Leichter <sle85276@gmx.de>
+Document the optional ti,twl4030-pwm-frame-64 property for the
+TWL4030 PWM controller. It selects the 64-clock-cycle frame instead
+of the default 128-cycle frame, doubling the output frequency and
+reducing duty-cycle resolution.
 
-Enable McBSP2 for the external playback DAC and McBSP4 for the
-TWL4030 capture path on OpenPandora.
+The selection is explicit because the driver does not know the PWM
+input clock rate and cannot derive the hardware frame length from a
+consumer-requested period. The shorter frame can reduce PWM LOW
+intervals during startup mode detection of LED drivers such as the
+TI TPS61160/61.
 
-Signed-off-by: Stefan Leichter <sle85276@gmx.de>
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
 
 Notes:
     Changes against V1:
-    - Historical origin: d0494afbcf2e (Stefan Leichter, 2020-06-29).
-      Commit-message review assisted by ChatGPT; code unchanged.
+    - Revised commit message to focus on the binding and the reason
+      for explicit 64-cycle frame selection.
+    - Commit-message review assisted by ChatGPT.
 
- arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/mfd/ti,twl.yaml | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi b/arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi
-index f25fc4f8ad042..2a5e8ba5714da 100644
---- a/arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi
-+++ b/arch/arm/boot/dts/ti/omap/omap3-pandora-common.dtsi
-@@ -728,6 +728,7 @@ &mcbsp1 {
+diff --git a/Documentation/devicetree/bindings/mfd/ti,twl.yaml b/Documentation/devicetree/bindings/mfd/ti,twl.yaml
+index 9cc3e4721612e..f458f0d80f2cd 100644
+--- a/Documentation/devicetree/bindings/mfd/ti,twl.yaml
++++ b/Documentation/devicetree/bindings/mfd/ti,twl.yaml
+@@ -396,6 +396,15 @@ properties:
+       '#pwm-cells':
+         const: 2
  
- /* audio DAC */
- &mcbsp2 {
-+	status = "okay";
- };
- 
- /* bluetooth */
-@@ -740,6 +741,7 @@ &mcbsp3 {
- 
- /* to twl4030*/
- &mcbsp4 {
-+	status = "okay";
- };
- 
- &venc {
++      ti,twl4030-pwm-frame-64:
++        type: boolean
++        description:
++          TWL4030 only; not supported by TWL6030 PWM.
++          Select the short 64-clock-cycle PWM frame instead of the
++          default 128-cycle frame, doubling the PWM frequency. Required
++          for dimming inputs requiring short PWM low intervals during
++          startup mode detection (e.g. TI TPS61160/61).
++
+     required:
+       - compatible
+       - '#pwm-cells'
 -- 
 2.56.0
 
