@@ -1,112 +1,107 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795539174;
-	b=We6pFD6KO0NVsnUQm1bGlUupDoZNhsjigR1OVfDdivRg8WH6dYwY4uL3O3256HwAm8IX
-	 uCp/UJD2KQU4+iMxXmzgh1eHIhLcqr8J6BEW9JtdS1L0a4wNShVIYxSzZgoHg5IFe+Sz0
-	 B297tHC0ceu0+219QsRxFVDLPoEg3TGfI74vAwbFrP4jpr0TWTAKxzilz1vQOdvoyjk4f
-	 inNfeYn13EXDKzSxE6g2tP6RV+BZDRufhJfgpKWzyr7fXqWg9ZpuB9vpMC1K/cntFqxOq
-	 rT8HfZN7bG0XjHI+qvAX1/WCky+HpHGKClgNPHmCq+hMufPijWwaIdgEkuVcTAwa1rA==
+	t=1795541583;
+	b=aywwZCo8MNpeQzTLfxEalUWkqcH0+4zV6FVSprsoZjUwr9RiLtrr6kyxCV9hbEj8Rkfv
+	 9TTVFnGfoIubEw399V+4lhqAdy10yI+kkNDS6eWDWVhJTDjul67USBJ/795OX8shLZWhs
+	 fZB+xIqIUVJIXBqwLgy0MWxvZDpfzIQHVYPjBBw8zQATX0UU63UvOX7t0xaENpNnOX2Py
+	 GMK7aC/41SICcFGSwVy39tC+mv6HiAUsjP+nDf1n4H6OehKnw5YUOMTNHhq0W0mFqHLrY
+	 MVeg7J0z5Ub+8TtpfPU3o8OmuBYDDHF1EWsoFkwj5ZVte30L9e5bz3d01jwyftJkUJQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795539174;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 Mail-Followup-To:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:X-Cookie;
-	bh=jzSg+OoRedY79JWCBKXLvmzN+Y99cAtJiasdC/afqxQ=;
-	b=J6aIyRHXAS86UjTy7tFuVV1Ck26AU/9kPjAiNXbW2XzXESV3dS/DHGnkGkRvGeG7HYF/
-	 BY4pgVC5KNMKupr8OkHbj9HV1YYSyF3XFQJ29BGxHA5BRXYLPtwtHTfHBSmQ7xjVaa/Zt
-	 0EGuv1ats6vU7WbQfkj1IsIYrRcYWh3T9hsL4QUrIvSBwqZVuSprZYwedhZx4rH/csmlu
-	 BXx6bKv98WkIWXmkDu39OcHx58sI4b8gAL1NEJI5kcPnL/A2VhGbBwxHthf2A2zcVahDE
-	 zTdBYSdupofvgiy0+AjzC4UuV+xzf8gYmzeuGEwEqicNOvxYwKJTj+2xntT4YWZvR+g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795541583;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=SGN0CE6hboOJyWQIpluS979Wc6QFsvjzK1IJ9fJlXFk=;
+	b=RJQ9e4w12FjTta84GIWVNgKlHgD1bVTFrPTBglRNhN9gGenAJvu7oJK2kGM2zSA1oF32
+	 JQGtPvNeoCET09Qgy9GpaKwcFv5Zb2VN8ipgxk+3f9hejuq6sTVJx4zLsdEk83UEWKHmM
+	 LFEKGc7XyZKCp7QIyQjoYGYiQx68KcMmGWhfEbQV8cFobJlbrQSSD4dokZqqwAAYJQlHv
+	 0/EIkfeBsaHa7oUq8lE1Jcytwx4u3sk6eaef7/rh0FB9D1pncYbgjE2R9PxLilK6dcPcQ
+	 mIqKR358S33URJwiSGIuTh81AHs/AGBSGZZWS/alVJPM2TNEtVMbLUuOJEaLsb7oFkA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hMTnc3+r;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=suse.com;
+	spf=pass smtp.mailfrom=suse.com;
+	dkim=pass header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=RXwJn5AG;
+	arc=none smtp.remote-ip=209.85.221.47
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A8B606A338;
-	Tue, 24 Nov 2026 16:52:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C889560A2605
+	for <linux-pwm@vger.kernel.org>; Tue, 24 Nov 2026 17:33:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C889560A2605
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hMTnc3+r
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5BF1F000C0;
-	Tue, 24 Nov 2026 16:52:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795539173;
-	bh=jzSg+OoRedY79JWCBKXLvmzN+Y99cAtJiasdC/afqxQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=hMTnc3+rZ+l2kEtF8tVKs04jAuXdhO5+bCJ1GrJ+uNW1naPu0E6MCnQHAas3yy3AB
-	 KI5McAlyQUiZHjezgFWKJe0FLfRVX3p8ch/gGZGyd6pbot7vCn8iCneifyKFCO/XkX
-	 ctIc2quPW8iHoeefQAOryS+Roo2CSn1Csf1m0qLst7WTInldhZAlGIYmgOhpaIbs1R
-	 XRSIkak7u9NtXXNGUSaD11rt5sL25OBl4NWUE9G5OdStlCIS72Xtb7k5MIw4Z+sw0U
-	 lZfBCOKOBrD80xQEnZNfPrsryie+DTQVh5g9EGlmjjA5rZdkRmwT9Ag6hUjcpEB2AB
-	 F5kpx9WbY6zvg==
-Date: Tue, 24 Nov 2026 16:52:43 +0000
-From: Mark Brown <broonie@kernel.org>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Rob Herring <robh@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Andreas Kemnade <andreas@kemnade.info>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Helge Deller <deller@gmx.de>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-	Jarkko Nikula <jarkko.nikula@bitmer.com>,
-	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH v2 00/20] ARM: omap3: pandora: Modernize audio and
- backlight to use Device Tree to finally remove pdata-quirks
-Message-ID: <9ac986b9-3e16-4f40-b528-ac2d09051c8e@sirena.org.uk>
-Mail-Followup-To: "H. Nikolaus Schaller" <hns@goldelico.com>,
-	Rob Herring <robh@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Andreas Kemnade <andreas@kemnade.info>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Helge Deller <deller@gmx.de>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-	Jarkko Nikula <jarkko.nikula@bitmer.com>,
-	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-References: <cover.1795505160.git.hns@goldelico.com>
- <20261124151318.GA536798-robh@kernel.org>
- <1DCFB59E-E5EA-4470-997E-EAA4ED35D906@goldelico.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=RXwJn5AG
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-4a9be758734so3024264f8f.1
+        for <linux-pwm@vger.kernel.org>; Tue, 24 Nov 2026 09:33:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1795541581; x=1796146381; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=SGN0CE6hboOJyWQIpluS979Wc6QFsvjzK1IJ9fJlXFk=;
+        b=RXwJn5AGyO6dganRr8aighjFMZJNJh4XjfhOO2zFgOYt7YFmihqlkoSNP/Sd2qk7mR
+         FfbpIqRpuaBVKaT+fMr4hUegmk8cVx6CP0R2/cm5K41diZ5crRoq0LTYsfsSc0xlGEis
+         4wTTWUI8MViemNC3LrHUXWWpCCIvfPI8YHfyVz7VNAJKkQIJeYbgJKBnhRpzIckcSeSl
+         /l/kI7mn0mx36m4fmMzXi9hpGqVByRsyhWGpUAtHxlchwVQGBJ73cKW/3E0pMSVOeJO+
+         6oSjyXnQidug3UWD3+bGNMTRkr5z1+35e6FlZZ9XnGhhqoRHAfbz48Q6kOUeMZGbDIzP
+         ARIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795541581; x=1796146381;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=SGN0CE6hboOJyWQIpluS979Wc6QFsvjzK1IJ9fJlXFk=;
+        b=KrQHD3r7pYZQaAGqehFMya8LioEQsPvB3gPlpvOBATNWzilFDA4yaXdyp5RIuK5GrG
+         SQhjkIOcfzSCSAnJ1dvuTopyoHn0coc/babAeLrhspx+QwuItmuwXGvdjCvkGsG62B1t
+         hkUBENZ0j/HWPANs6Dw+WZrnyKpHJxh44wRvfsCv2Nx75S0Qd9nx3u3TDMwUCsKIYTad
+         kg6HPKWvqkOQERAm7IKaiT08Oby+Bmw32k2FOfTChn83H9h34/7ASaUZOMcVYAlkwsGf
+         MBO6cdBIFyVJGzkUNK4+O7Qcx8WOVnZFMu3Yw9MbU1hSCqO6ERPA7qJWfq+KfyJ7qUNK
+         Mc9w==
+X-Forwarded-Encrypted: i=1; AL+hErFXXFN0nNCxbZH/KazN58/kQzPWrV9wFDFMZ++R7DAEOwwjv0bqp/ZukuVW7tMopqE5z4S7YhGqGz4=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+BSsok9rUhugS9InGRoyG5c8BtplapRYOUp1kjRcmV2rnArZI/
+	P4Y9RNjpm4rmSK4sNKVRvJ6OYsUDdrKVs4ImwbYZJfGO/Uy+WwsZuSwq0L7SxqrOLPI=
+X-Gm-Gg: AZFdTZeSDjmNOUrNp2EpyfhD0s86sd6wxKY7Dkg5IpfOSfOXESVR0YOxuHzMycKXDzl
+	2IEnQtVNSsz7XD9ZCPIVu/MQVBOl1oJDfMGzKVFo9gRRWukQCbjAIkPgFPZifb+bVtf+DA4yRRo
+	IXUdaFegYP4w8J1/ZAEqb899mKN/u1q0YHWVcf6vNGimxxRMEJqJmj4v632JEJH/220pOIA2+6U
+	qVWjF/upkRZq6mdg8eT621lz0bjcKSZX2btwi3IupMADpM7vcW/kB9lQy6kxwblDFXIbITO2bpr
+	JoRlfBlir2g7cEczQhyD5UD6tQhO5WNeQMQ9M5fZAmqTK/e5XwxhB00ZwYFM+ha43EgBbk/gbha
+	8MCST9MI2P56k55RX1nkXXJiYNlHWDg8PwXUfX8SEkXFfYD+/zQrGsKBhmntQGhR8eIJdgVjs5b
+	FJ5OE7bI+Vffb9odbFWICtVJZ+nt4HiOoCOnbyme5nVGwS8GFvWus4hebJAagj6/82Qwvx/XYjw
+	7lUw4VS0XYZT7cFb3wDbgpXdYRfbvqQ7bTadMonhUVt8NT3Rm1xQ7NUTQVKEDsq8B5rSkn0tiAa
+	DLxpseBni1ORBV8ieOSQI1qwbB8=
+X-Received: by 2002:a5d:5d87:0:b0:499:9f62:d64c with SMTP id ffacd0b85a97d-4abaf64be07mr33775504f8f.10.1795541581121;
+        Tue, 24 Nov 2026 09:33:01 -0800 (PST)
+Received: from localhost ([82.192.120.76])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6bb989e3sm29248480f8f.52.2026.11.24.09.33.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2026 09:33:00 -0800 (PST)
+From: Andrea della Porta <andrea.porta@suse.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	linux-pwm@vger.kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	florian.fainelli@broadcom.com,
+	rjui@broadcom.com,
+	sbranden@broadcom.com,
+	bcm-kernel-feedback-list@broadcom.com,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Cc: naush@raspberrypi.com,
+	svarbanov@suse.de,
+	gary@garyguo.net,
+	linux@roeck-us.net,
+	linux-hwmon@vger.kernel.org,
+	krzysztof.kozlowski@oss.qualcomm.com,
+	Andrea della Porta <andrea.porta@suse.com>
+Subject: [PATCH v13 0/3] Add RP1 PWM controller support
+Date: Tue, 24 Nov 2026 18:36:54 +0100
+Message-ID: <20261124173658.31030-1-andrea.porta@suse.com>
+X-Mailer: git-send-email 2.51.0
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -116,64 +111,76 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="NC8MlJRbbzgMG+mt"
-Content-Disposition: inline
-In-Reply-To: <1DCFB59E-E5EA-4470-997E-EAA4ED35D906@goldelico.com>
-X-Cookie: Real Users never use the Help key.
+Content-Transfer-Encoding: 8bit
+
+Hi,
+
+This patchset adds support for the PWM controller found in the
+Raspberry Pi RP1 southbridge, used on the Raspberry Pi 5 to drive the
+cooling fan.
+
+Compared to v12, the driver now also registers a "fan" auxiliary device
+(pwm_rp1.fan.<id>). On the Raspberry Pi 5 the RP1 firmware measures the
+fan tachometer pulses and writes the RPM value in the phase register of
+PWM channel 2; the companion hwmon driver, sent as a separate series to
+the hwmon list, binds to that auxiliary device and reads the value
+through rp1_pwm_read_tachometer(), exported in the 'RP1_PWM' symbol
+namespace. This is the approach agreed in [1], and it removes the need
+for any dedicated DT node or binding for the fan.
+
+The DTS node for the controller is already in v7.4-rc1 [2]. The DT binding
+has been applied by Rob [3] for consistency to v7.4 and is part of v7.4-rc2: as
+a consequence, patch 1 is included only to make this series apply 'logically'
+on top of v7.4-rc1 and can be dropped when rebasing.
+
+Changes in v13:
+- dropped the DTS patch, already merged.
+- add patch 3, registering the auxiliary device for the fan tachometer
+  and exporting the accessor used by the hwmon auxiliary driver. The
+  exported function was originally part of the fan patchset. Since it
+  is really part of the pwm driver to be be taken by Uwe, I moved it in
+  this patchset.
+- Kconfig: pwm module now depends on AUXILIARY_BUS.
+- added a macro to define the phase channel number from which to read
+  the fan speed.
+- removed the 'Tested-by' tag from Gary (see V12) since the patchset
+  has been significally changed and need to be tested again.
+- the controller private data is passed to the auxiliary device as
+  platform data, so the exported accessor no longer depends on how the
+  parent platform device stores its driver data.
+- dropped the unused 'pwm' argument from rp1_pwm_apply_config().
+- added a MAINTAINERS entry for the driver, its DT binding and header.
+
+[1] - https://lore.kernel.org/all/ae9a4df9-b1f2-4f00-ab86-d9cf8d9bc387@roeck-us.net/
+[2] - https://lore.kernel.org/all/7c437a10-985b-402c-b3ac-cfa97c53d014@broadcom.com/
+[3] - https://lore.kernel.org/all/20261102192302.GA882027-robh@kernel.org/
+
+Thanks,
+Andrea
+
+This version has been prepared with the help of an AI coding assistant
+(Claude Opus 5.5).
+
+Andrea della Porta (1):
+  pwm: rp1: Register auxiliary device for the fan tachometer
+
+Naushir Patuck (2):
+  dt-bindings: pwm: Add Raspberry Pi RP1 PWM controller
+  pwm: rp1: Add RP1 PWM controller driver
+
+ .../bindings/pwm/raspberrypi,rp1-pwm.yaml     |  66 +++
+ MAINTAINERS                                   |   8 +
+ drivers/pwm/Kconfig                           |  12 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-rp1.c                         | 477 ++++++++++++++++++
+ include/soc/bcm2835/raspberrypi-pwm-rp1.h     |  12 +
+ 6 files changed, 576 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/raspberrypi,rp1-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-rp1.c
+ create mode 100644 include/soc/bcm2835/raspberrypi-pwm-rp1.h
 
 
---NC8MlJRbbzgMG+mt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+-- 
+2.51.0
 
-On Tue, Nov 24, 2026 at 04:27:16PM +0100, H. Nikolaus Schaller wrote:
-
-> > Which of the 7 maintainers do you expect to take this series?
-
-> Well, as a contributor for a specific device one is not regularily thinki=
-ng
-> in maintainers work split but about a series to get a device fixed. Which=
- is
-> obviously orthogonal.
-
-> I didn't even recognize that this involves 7 maintainers.
-
-> Maybe an extension of checkpatch (which already looks into the MAINTAINER
-> list) could help here?
-
-The very large CC list you've got here really ought to have been a
-warning sign here, and all the bits in submitting-patches.rst about
-splitting patches apply to serieses as much as to individual patches.
-Note that sometimes extensive cross subsystem interactions are the right=20
-thing to do since there are actually overlaps in what's being done, a
-blanket rule will never cover everything.
-
-> > Surely=20
-> > this can be broken up into smaller series?
-
-> Yes it (we?) can. It is just a question how to do it and properly describe
-> the dependencies to avoid bisectability problems and avoid that the final
-> goal is lost.
-
-If your multiple serieses can't be applied without each other then hold
-off on the dependencies until the earlier things have been applied.  It
-is not managable to track a large stack of interdependencies.
-
---NC8MlJRbbzgMG+mt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmsFwNoACgkQJNaLcl1U
-h9CuDQf7BqGPuSppsd0kIdO6roCbvvnIt8FJPXqT6iunVWr1caWiAciqqwXpVOK9
-qLWHb4F/3O6N62eHJFGLNrx0XuolhWQl6CXFnS7y7n+ciuXZq4m7NvMPbbcwvqp0
-P1bHhyEKmQnEVdmbHLO6RNW8j5ALFuU8FOE4ZM/BwqjHgjxjmxJMi7zncNArxaZE
-gaqO2PG4Fs016MxBfMwdsOXvwpZXyAXMkIuXZx2otPF0jl/PX0OIm6tbKUnauPWk
-tS8osgVdQFxe73tHon7Xr9rgckK2ZdjGwAhT2jeHNxtJKNIcoo/yPTPH2sD6TlgQ
-ffEg/5BFXW+kwMEiVEnAOBL0CqtcJg==
-=YERm
------END PGP SIGNATURE-----
-
---NC8MlJRbbzgMG+mt--
