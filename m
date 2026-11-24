@@ -1,113 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795527502;
-	b=TgHV/IPKgeWqZIzA3z9UnJi7Fafh5kCkWImENc4/iyoUBpYVW4jm3LRDjzP0mcFbyc63
-	 DJSa3b9XYkuvcX+G0VvStnNO8ULoCWTWeOzve7cHcqiVmA/2U8rzFW8VEykFSWTUfx8U8
-	 0OyY8h5kdo3jvpEZdc7v8kQ4IJImyqSykd1kv2VduR9Zre1XaiujlxMGbQ31wbowijlUZ
-	 dkyvVbdX7K/OdWwYpfn4DEcqse6d6jTLVO3qihhy/UXGx7FSyqWK5CEeFVKvET96JyIKu
-	 zuzxoGdiDOXTY6Oo/4dEUq5Ozv+oadE8Q6f6l6gb7tyVt25qEp+zpTYzXykCVzuleyQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795527502;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 Mail-Followup-To:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:X-Cookie;
-	bh=hBb7CziwmaEve0HjYdLhPP8A5dGN2yZ/4+i68vOpPLA=;
-	b=vJuqxpx/TtiGo1GNlwXIoKnW47ZGRw8Sqd2uXwbCVuJbBERu+3bOJxqeJr/J1uocHSuw
-	 Da6yHVEGPOjcCdtyBUhYJenLG2t4RN/ANWGiVK4NtMT5+3M8hPM+5G74o9e1rvC9tUd6w
-	 f3vqd1mv/lq0h7By4s2Ez6AATF3szGhqeDeRNAQ0hHrspD5G1h6A3+18ZjEKoQ5LdVk3s
-	 oX/uY6mZk1nXXVUwnbnmRduWRa+EVOdkWscfywwgNXz5gDvWQZNpn8sAia1sj7g+9oKYQ
-	 NlRZLF9+H3b9yHDl1h36ENYDE/gN0YZ1lbOkU+B7KhXwqPZ/vjYCLuAGCNK0cdqhkCQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oEvA9JlK;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.168
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795530924;
+	b=mKTvs/fwjc6FTAQVZhYl5hYwojj5jTvfpd947M/mxG89pN082+VMPgUk2kriLtM3pQYF
+	 S8wh+V5BlMrjTanLleJvTLArkhTSFQcnoH3CkhaG+t84Gy3EOVRL/jhTNqptXKJw/YzUT
+	 xBy9iyMO/xE8ESw4cND/XaLNgs0IuXZ5y1Sz2qwlVFTxAGoTkFbwY/M0xemZa3Vn9MQyN
+	 kxJ+2REMV64ZV4Mlpwlq1OdhKLhXE+2onhJrtfwkTXbNeFdtE9YRHjW8nhgrrlLYLaWSp
+	 HG4rzrdpTDhsJuES1B/0T5oJw7CHDsOSmerqFrMoQZKXikafwHc/6vqjmdpfCBpTntw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795530924;
+	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
+	 Received:Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Content-Transfer-Encoding:Message-Id:References:To:X-Mailer;
+	bh=pPC4o0FashGrZ7q1ba6XFZ2dyTINKWWF8cNcwGutazw=;
+	b=Tp217BjOo29vQEj1/vRzVOooYuysvg9UdU1MOUWTXtvpcbYNkGU0UKfg+91Ff+GAfCRw
+	 yXa2TrkYAf22AI9XVOBElEUWDkrrLqhzNQ/Z4oV5eXfZTg1mAfQoBfAaCEm3RF3lKX2IF
+	 BjYHrze14I3j7kQe0duisrIeVfzbzPdBa++/jz4llwyPbEBdmTL1ewF389X+ZKqb6UC2j
+	 rB6Z/0LBugX690EqTdDLBUWJnvsDj16hLwQ24CtpPgOLP6tENCKOcg0GhsBs8n+LqrQe8
+	 qzW6zuilf3oV5PZIaCUGPE4JV2WQvCp9pR0Pk3bXTpCdJvaMg20Ww98SGJUFOZXb9wQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=goldelico.com;
+	spf=pass smtp.mailfrom=goldelico.com;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=TBq3Zp9F;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=9K1WvYtz;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.168
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.168])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 100E1606A321;
-	Tue, 24 Nov 2026 13:38:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4F23606A31E;
+	Tue, 24 Nov 2026 14:35:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D4F23606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oEvA9JlK
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48451F000C0;
-	Tue, 24 Nov 2026 13:38:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795527501;
-	bh=hBb7CziwmaEve0HjYdLhPP8A5dGN2yZ/4+i68vOpPLA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=oEvA9JlKinpj4CLa0YM6Nnu6QLmPew7urXHJpo4ZY1RapqnGsMeZoiTJ7ejlAh1wB
-	 z/4fG12dJSX006iBcFfaePI0M82vQ/1lbBDsYhXFPYLKOy6787YEbjgE2NTsh2LOnd
-	 YYS8P8FaEZ84WtS/L5EnxkSVgHxjjzXXJgJzz7UaNIBflVYxmWx/jPSoJ67DFMin7B
-	 48FH10YLDBmkTcl4sT4odtP5IxcWGp7FR81EE+8XK88PyG8uKCTLcwZHYiH8ilxH3V
-	 D8dFdk3x8iZiHSxDB1qrRh2eAI+U+TXTP3MiPubiQm0VUBtbo99xI2tQapnHz6R5jC
-	 CTkpyiMWVUWdg==
-Date: Tue, 24 Nov 2026 13:38:09 +0000
-From: Mark Brown <broonie@kernel.org>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Andreas Kemnade <andreas@kemnade.info>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Helge Deller <deller@gmx.de>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-	Jarkko Nikula <jarkko.nikula@bitmer.com>,
-	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH v2 00/20] ARM: omap3: pandora: Modernize audio and
- backlight to use Device Tree to finally remove pdata-quirks
-Message-ID: <f31b5adb-f6e8-4cab-8d92-17645bf1b69a@sirena.org.uk>
-Mail-Followup-To: "H. Nikolaus Schaller" <hns@goldelico.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Andreas Kemnade <andreas@kemnade.info>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Helge Deller <deller@gmx.de>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-	Jarkko Nikula <jarkko.nikula@bitmer.com>,
-	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-References: <cover.1795505160.git.hns@goldelico.com>
+	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=TBq3Zp9F;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=9K1WvYtz
+ARC-Seal: i=1; a=rsa-sha256; t=1795530855; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=VQiaI5Hy157VlrRqaOCj1N9vjjVa8Ra0JmiNp7xaIASjJ9jINXJ0n3OKdnYSQRp4JZ
+    +EShQjRUhHzrJZJ7sL5P8n0r04fvc5f1n+yoXkQddn7xVATA1/TZ9th/4PZ+vlVxqbIl
+    jpmPK15kaGe7+/0/dlIzlo2RhAcQfaFGmdEojwWa9EcecaXzd8JzT45K+ugKPNxYCY2I
+    rnOPo4AX4UK8cKxWYfqEhoTC2FIWfD1ka/Ateg8XoQTc7pADiw/BrgJD9c3LYwJSkNjX
+    3JocLaQ7E0IzmGCQsTZqvzi1MU/Oy7HoHzw5ysEoEsjpY5pMiLsP9n43mrM2dq7EfYiQ
+    PoMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1795530855;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=pPC4o0FashGrZ7q1ba6XFZ2dyTINKWWF8cNcwGutazw=;
+    b=H1naZhooZrS8f4XAxSxLXUg4qjedYo56i3dz4xniKf7PkDMMjT/O1xgSSh9pfgr4pS
+    RFaYBeA2pNvx6TjrzltkUhOW7nU34meCf3mdle70hKq/e+sMBfvnJL5nfk+s5JF0bOna
+    F5tgYYVwgBLjH8a/kqlIKwsIqVii7+hqZwRjgzP11d1zIiOv/wtvdZez3yuLiTf3YWAg
+    7uXrxSe9FyH9wM6WMDcMENrz8D1ktfCFFP4qkCT+/lgv+mO27fL3zIMZxH+PgOZcHrWy
+    TV+UI924lerakwwjDWZ5PhvjFulKtvt3MAylYXdCPVn9WjoDEy7M99Y5Vll7+TYdrztB
+    ElIQ==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo02
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1795530855;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=pPC4o0FashGrZ7q1ba6XFZ2dyTINKWWF8cNcwGutazw=;
+    b=TBq3Zp9FVBdC07XCYxWQJdKxG6KJ26CqiOTO1TaNSfuZPKB7l6tlkfjJCkcYX/bzxN
+    NzC6pX1L6sq8PzgPHNP+VfBSLIv+4n8QXwCH5OmFQY7o6YOKs6xKFKPkDhMka5utJ6Tg
+    lrAAIHPZmZmnqAMFPo19GWniCdao68N1O6rerqOFE6VjphVxTNb+MiMGp8ZZK0J6BvUB
+    nUYNTZrX7gzhEqMlVtFWrjqRQR2iqJWiQr29ymQeF4e2rXp+rZD0vaRApCBvz3aso0gh
+    Rhf3vkl868bsKQJ9S6UY5Tr7hLY9BJp5YU9ukW02eQnC6EiisrjxWy8CIIXFRWY0OxAh
+    B9hg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1795530855;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=pPC4o0FashGrZ7q1ba6XFZ2dyTINKWWF8cNcwGutazw=;
+    b=9K1WvYtzJzNNHClBs+8Vddpi1CzZaNt4JUc5jRlbRw8+zB//G65L//AA5d5KzafPpj
+    z8iD9e13OeegkV32RYAQ==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV3poLlciNVWUgMvoVkTTR2P7jtjQyY2AeEP/F"
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 55.6.3 AUTH)
+    with ESMTPSA id Qb56a22AOEYD3aL
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Tue, 24 Nov 2026 15:34:13 +0100 (CET)
+Content-Type: text/plain;
+	charset=us-ascii
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -116,53 +93,81 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="nSbMoxGlmoiutN4J"
-Content-Disposition: inline
-In-Reply-To: <cover.1795505160.git.hns@goldelico.com>
-X-Cookie: Real Users never use the Help key.
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81.1.11\))
+Subject: Re: [Letux-kernel] [PATCH v2 04/20] dt-bindings: sound: pcm1754:
+ Describe PCM1773
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <608d13a4-6634-406e-aba8-b48114895cc0@sirena.org.uk>
+Date: Tue, 24 Nov 2026 15:33:42 +0100
+Cc: linux-fbdev@vger.kernel.org,
+ Lee Jones <lee@kernel.org>,
+ linux-pwm@vger.kernel.org,
+ Tony Lindgren <tony@atomide.com>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ dri-devel@lists.freedesktop.org,
+ Jaroslav Kysela <perex@perex.cz>,
+ =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ David Airlie <airlied@gmail.com>,
+ linux-leds@vger.kernel.org,
+ Simona Vetter <simona@ffwll.ch>,
+ Rob Herring <robh@kernel.org>,
+ Aaro Koskinen <aaro.koskinen@iki.fi>,
+ Kevin Hilman <khilman@baylibre.com>,
+ Helge Deller <deller@gmx.de>,
+ Bartosz Golaszewski <brgl@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+ Daniel Thompson <danielt@kernel.org>,
+ devicetree@vger.kernel.org,
+ Conor Dooley <conor+dt@kernel.org>,
+ Pavel Machek <pavel@kernel.org>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>,
+ Roger Quadros <rogerq@kernel.org>,
+ linux-gpio@vger.kernel.org,
+ linux-sound@vger.kernel.org,
+ Takashi Iwai <tiwai@suse.com>,
+ linux-omap@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Jingoo Han <jingoohan1@gmail.com>,
+ Liam Girdwood <lgirdwood@gmail.com>,
+ linux-kernel@vger.kernel.org,
+ Thomas Zimmermann <tzimmermann@suse.de>,
+ kernel@pyra-handheld.com,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Jarkko Nikula <jarkko.nikula@bitmer.com>,
+ Jessica Zhang <jessica.zhang@oss.qualcomm.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <5A40DA10-E001-49C5-9432-F1494F6CDD49@goldelico.com>
+References: <cover.1795505160.git.hns@goldelico.com>
+ <a92d44c4ba920358003d475d4cac7541af037f41.1795505160.git.hns@goldelico.com>
+ <608d13a4-6634-406e-aba8-b48114895cc0@sirena.org.uk>
+To: Mark Brown <broonie@kernel.org>
+X-Mailer: Apple Mail (2.3826.700.81.1.11)
 
+Hi Mark,
 
---nSbMoxGlmoiutN4J
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> Am 24.11.2026 um 13:05 schrieb Mark Brown <broonie@kernel.org>:
+> 
+> On Tue, Nov 24, 2026 at 08:25:44AM +0100, H. Nikolaus Schaller wrote:
+>> Extend the PCM1754 device tree binding to describe the related
+>> PCM1773 stereo DAC.
+> 
+> Please submit patches using subject lines reflecting the style for the
+> subsystem, this makes it easier for people to identify relevant patches.
+> Look at what existing commits in the area you're changing are doing and
+> make sure your subject lines visually resemble what they're doing.
+> There's no need to resubmit to fix this alone.
 
-On Tue, Nov 24, 2026 at 08:25:40AM +0100, H. Nikolaus Schaller wrote:
-> PATCH V2 2026-11-24 08:26:00:
-> Changes in V2:
-> The series has been reworked and expanded from 16 to 20 patches,
-> addressing review feedback and issues identified during hardware testing.
+Agreed. Should become
 
-> Audio and power management:
-> ===========================
+	ASoC: dt-bindings: ti,pcm1754: 
 
-> PWM and backlight:
-> ==================
+Unfortunately there is no tool to find this (neither checkpatch, Sashiko-Bot,
+nor ChatGPT did report it before submission and I didn't think of checking
+again).
 
-> Device Tree and general cleanup:
-> ================================
+BR and thanks,
+Nikolaus
 
-This is dealing with several tangentially related topics over multiple
-subsystems in a single series, this makes it a lot less digestable and
-results in a huge series with an extremely large CC list and murky merge
-strategy.  Please split things out into separate serieses, even within
-the various subsystems there are batches of independent work which
-really do not need to be in the same series.
-
---nSbMoxGlmoiutN4J
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmsFk0AACgkQJNaLcl1U
-h9C5/gf8Cm0A5yFYJVQeo/T7StRW0pHrKh1EmIz06r7u8NK09DP+BhXT8qRk1I41
-F7QT+nveX8OD+3Wz+Zyw7iAN7DdNLpIpci7jqzm/9hHAIeCU9h5mbXgGLRZXlLLy
-MJ/MIEGdSDswMSbHdd1qbOAph080P7loJJrXcVFvWHRwH6+Gc6umpSBfu7uLM+D0
-W+mM6fRvvz0Ou0YBcV+gvdp/18n0MiQ11v7dn3UsQaFHkJfTZzKZh6WOuUZ3JdKr
-H1DtRqRYCJooQcaZpUWdRGDHEAMHXgW1+o7r3gEfGTklbsyY+xeOhXEBbU7jQLjd
-SS7bE1b2Y0pMX5XKGAjMXMyqtG/2dg==
-=LtHo
------END PGP SIGNATURE-----
-
---nSbMoxGlmoiutN4J--
