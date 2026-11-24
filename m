@@ -1,113 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795521957;
-	b=VbHzNeZxpHuDCFxrNNyEf/ClNtfG2r7S8eZoMi3f4c5f2ACAGJV/ETxjZPOHT4IhGkOm
-	 nhfVPgKjHLdU96zdlRCaRYtMD7SM+x2pXiWrPlRzYfo7EhFfE5KIcLcOIgqKeNtPZMnPG
-	 K/ILMgwQzd4zLNWJulurk0TkqrfAc2Le/rYKDNRLxMQQ8AAblEjLturqmLmh+q9x6+5Cs
-	 uXmHByBfQwIBtzpzqH2GPAvI+MhZwF13RlIr42TRhtL+gG3dLfHRB15mh8gxY3yPGDPoc
-	 wAd0YuQoRp7hSEk5hXAf9ATOn/GMA+hBZMzngtm0btVpOEvc5YXua9Ra8s7sIbBXhfQ==
+	t=1795526416;
+	b=F42y19ijDOE+5GCREgyuPyfg2a5XNRn1wtrNzfKka0urAxIFv3I20AXJgkGzW/HPMmI5
+	 3LlnikJaWV+AMODZBF+q+gc/EBe9WyGMfk+VH9R/Z25GovBxoVb7KRhm6hh08A2W2w7m8
+	 XR9v8bYqKkRWUP91iFrmYGhgkq0fo4My6tUQIKSONqZw4RPFO93mKVzxuf8Oe1+yC2+Co
+	 e2+MxnUdDd9PThA1vo6AZd4XArRizYUS+sa21EDfMgYB7zUhTu0vGaNmtRhDB7axMY9Zd
+	 veNWR9Cf2k6hgZrrJrbaNOWL8XKaQaR2VZAQBGW337jEcvtUuZL3PQkLOA+SewbPb6w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795521957;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795526416;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 Mail-Followup-To:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:X-Cookie;
-	bh=0ARS0v6hibJb4Knj3M+C/3JdOmgCFDQR3VObQHYAdrs=;
-	b=VhpmiSqwyEKgXejoUrX73tUdfNgoD47zTMG8J5PfVoKqOKdFoZcDgZ2wX8jsyiaLLtma
-	 XVy7GCJIsWaU/IPI4i6VDFi70J5LPnO+0eUbh+u1O2IizwbYbq0pk9PKvOoai64zWHPxS
-	 mK5AqRkAQ2yEmoZ85PCVbHjh3mEa0nrapsLn1bNPec4DhO10BkggMnThKvGE3UoZzHhEi
-	 ZjG7lsj1W5/M34/G+3WNKoWoiv3n0K064ZbiO/eBc4O1F2fh7JsUe5RDHI5mQTRANA3kF
-	 7ZRTjYh3b90wm58BwXyxNl64ydgTy9TCO6IjuKsTfjrsmxvW/wc1TNqkCoThQzV1PFA==
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=cZJ8DL1d7qjgUTKMH6thK/4qY2ynwBsw0u6il0VZqYc=;
+	b=TvKWAcNwDAv4I19rrwYXMGIliyztt0pN1QgEqp/1MQt2zGMic59g0Qz6V/egjOcSFazi
+	 tBEL3LaG4NkgDCFb5Q+3ivzKfap0uEOYO+VIOU0iyLGcIVFUH/4SCUHDWKaZQRHspKnFk
+	 Lv7z/2FczpEar7P9Oiv0ysTGdMbWdrr/12S0cEguEx8Vf5XBQjv8l/zRGpTkH4HI1AQrq
+	 XaxzqOxP1/bE3E5do+sRLcLwwR1VztydS6qGQLYzWGdxU9YgnGetrrAqQmyqRotJtpUTk
+	 7umSi1fhNi1y/Ee0zzKNjYyWigrPUIHvIt2Z2W7RzbJHV7cpWzW+btoF+IzTPqePyOA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JtVddkaI;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MjN36CHb;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65F1E606A321;
-	Tue, 24 Nov 2026 12:05:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id C4CBB606A330;
+	Tue, 24 Nov 2026 13:20:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JtVddkaI
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 580E41F000C4;
-	Tue, 24 Nov 2026 12:05:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MjN36CHb
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0907C1F000EB;
+	Tue, 24 Nov 2026 13:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795521956;
-	bh=0ARS0v6hibJb4Knj3M+C/3JdOmgCFDQR3VObQHYAdrs=;
+	s=k20260515; t=1795526416;
+	bh=cZJ8DL1d7qjgUTKMH6thK/4qY2ynwBsw0u6il0VZqYc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=JtVddkaIAO32sQA+hsx1h4/JcGjCV7sOarJQrXEhjbyVDCLNYagX4d216uvTWUv3U
-	 rD4Df9LCD4DyeLmzK+GOoVu4mtQZOjT5nI8gl0EytgWkEAPmIx2QBydDw3KW/BXW8d
-	 fbAGUobxtTpELM6KCQyiW7y4ig0oYZQ5TbqxgqJ4OwQltVUEAhTlVGnEn9BeZ+NqOU
-	 UPZz4x0WHwaPMNzMh23H3IiaBEYukjqhd7fSeN0AtlUi8PFXilT9je5n1l0u8CtbIj
-	 SFlbzs7DeHznmpCEzjp6SGr0YNSkmU9+S7JkWVKSUqEmONXVDRpUEsj4x6VumlYx80
-	 uY66Y0gtK2aSw==
-Date: Tue, 24 Nov 2026 12:05:46 +0000
-From: Mark Brown <broonie@kernel.org>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Andreas Kemnade <andreas@kemnade.info>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Helge Deller <deller@gmx.de>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-	Jarkko Nikula <jarkko.nikula@bitmer.com>,
-	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH v2 04/20] dt-bindings: sound: pcm1754: Describe PCM1773
-Message-ID: <608d13a4-6634-406e-aba8-b48114895cc0@sirena.org.uk>
-Mail-Followup-To: "H. Nikolaus Schaller" <hns@goldelico.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Andreas Kemnade <andreas@kemnade.info>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Helge Deller <deller@gmx.de>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-	Jarkko Nikula <jarkko.nikula@bitmer.com>,
-	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-References: <cover.1795505160.git.hns@goldelico.com>
- <a92d44c4ba920358003d475d4cac7541af037f41.1795505160.git.hns@goldelico.com>
+	b=MjN36CHb5CPashNExo/4MfOyLwR4/aGKPRCPFPAuS9sIdJ9iwrQlx4u41QhpTql4i
+	 n4Di4J2M1dxOuXq7cjWVTPxl26QEmBwqsTsGkKwRU5VJrkXaGQ1ieVWnqS64zG4/+S
+	 70bsDrOU6/8VdkdTfcx942sw09bodxLlUC2UNAgJZ0ZN5a+qMwb77Psq7nw3QhIqI4
+	 dydLaP+wNo8sakib17sqWZU/v4No17z22soA8zUrElhHsNB4DZ1WjO9C9aV/ouYISd
+	 v6HjTNEWEoEg2u+076HtCYy2F+3SJ/2chvi4KdUGT22Goml5qAoDZEpfCwSlonMfw0
+	 4Sj27iiiVBDXg==
+Date: Tue, 24 Nov 2026 14:20:14 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+Cc: Conor Dooley <conor@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich <michael.hennerich@analog.com>, 
+	Trevor Gamblin <tgamblin@baylibre.com>, David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
+Message-ID: <awWOlgD86XQ_1Vgs@monoceros>
+References: <awVki6lC3SxGfqSl@monoceros>
+ <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -118,39 +60,50 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Lm8vroyyHW3AIhzz"
+	protocol="application/pgp-signature"; boundary="nh52dyjfpekntz2n"
 Content-Disposition: inline
-In-Reply-To: <a92d44c4ba920358003d475d4cac7541af037f41.1795505160.git.hns@goldelico.com>
-X-Cookie: Real Users never use the Help key.
+In-Reply-To: <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
 
 
---Lm8vroyyHW3AIhzz
-Content-Type: text/plain; charset=us-ascii
+--nh52dyjfpekntz2n
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
+MIME-Version: 1.0
 
-On Tue, Nov 24, 2026 at 08:25:44AM +0100, H. Nikolaus Schaller wrote:
-> Extend the PCM1754 device tree binding to describe the related
-> PCM1773 stereo DAC.
+Hello Daniel,
 
-Please submit patches using subject lines reflecting the style for the
-subsystem, this makes it easier for people to identify relevant patches.
-Look at what existing commits in the area you're changing are doing and
-make sure your subject lines visually resemble what they're doing.
-There's no need to resubmit to fix this alone.
+On Tue, Nov 24, 2026 at 01:47:13PM +0200, Nicolae-Daniel Deaconescu wrote:
+> Yes, that works. It is how the gate duty was set before, in ad7625.c, with
+> DIV_ROUND_UP(NSEC_PER_SEC * pulses, rate), which gives 34 ns for 4 pulses
+> at 120 MHz. I'd drop the step API (patches 1 and 2) and do the same for t=
+he
+> new parts, but i don't have the clock rate, and without a clocks property
+> I don't know how I should get it. The PWM core has no way to report it.
+>=20
+> Conor, Uwe: is a clocks property on adi,ltc2387 acceptable,?
+> If not, how should the driver get the rate?
 
---Lm8vroyyHW3AIhzz
+I'd say yes, the clock is a relevant information in the hardware
+description.
+
+Best regards
+Uwe
+
+--nh52dyjfpekntz2n
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmsFfZoACgkQJNaLcl1U
-h9DhAQf+ILG2LleXAdzUJxA3hqS5WnJ0Cy1v4TXb/eWcYXraujstqUqC/WkBrPJF
-1jm5ac0s0BM2yOF8OeMd+NZTic2OwQM665medO5X0orp1gH6FtoWYSd6KUScXDYj
-BLMOMa81R9qZ0Iy/7vV9aV7pyhxZvOz2qJzmDdPnFn9RMyjcz1a3rg2aMUHPA5zy
-TwsfM2Aq4Gi0Z4DgJZSBxwDKqBATI8zqVX2i1F2JXbk/ajufHZtQJC4bm+WBAvx9
-rzQg69Yt5QJb9kCku5+t4+97Ei5FaQm0qD3gWz8Djb+GpK+7jNTEuK9o0nac12u5
-/8CFTKpyGVx0NdLYRUDx42dLwrklRA==
-=oiP8
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsFjwoACgkQj4D7WH0S
+/k652gf/REvKgLBulTTz5q2QpmszqJRFowxppKIG+DzxbxLrHf559toya10tLlEZ
+Ft34T1j0U8WfOKXm0Z71P80VXXXc9Zt11KJDnbezai36FA6LJplQqjAUmhPGR6E8
+/RKeoOaeyFcE+VkHnjWlHNq8e4MGC2LKUq44vS6tXFOvdrpxhkA+sT0VlLJjABI2
+bxP7grkBZoGN96s3ILGMdeZVFuWos465Asy8batD1o0c9P8v0ImlPMMeGsoDqcuK
+mAns9q4wI5fW70UuZGV27Pfg296bn29JvBfY9IpCFVOQu5vD+EYZr8Wwnt0bRY1J
+3b+PHqVEPUNc7NAZhXbTghjaSZQu+A==
+=BKMi
 -----END PGP SIGNATURE-----
 
---Lm8vroyyHW3AIhzz--
+--nh52dyjfpekntz2n--
