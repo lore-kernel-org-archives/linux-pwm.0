@@ -1,58 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=178.238.236.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795545257;
-	b=xqW1yH8PTtrPr2qbYGvKpvJuKKm5sEUhzYOz3pimzGKRiS1eujTcHNM9ZILR6w0KTqIl
-	 7ScUAb79rl5rJKry4F50OFb7PTw3elCFPMcklDIbuNjO+GslFT/b40b7yfQel9QBICszd
-	 5qcngS6i8/beAC4k7+DF6ZsBey4DoLauRXPfXu4M1mex052CIKsAW/erndsIKNMz0Ntfy
-	 ik7WgLaw9+DcYaqdqxsTXXV9AZTmelIDA1RwUSGgkksX7+E9GoxTmLSg2Kh4sx6v+M8xP
-	 5sPiVNFCuKDyhKSa1pfwtPW/PsU8+awbnd0WJh6E5pIwMorQb2VLYGJ+jpuAIeUMbsg==
+	t=1795555080;
+	b=mdPcLON9cIcrBwRQ+FErV+tdUrdWXbnPtiA3LWTWqyMIf5YoLkQ5LPARsbcjT7ezP/u1
+	 JKEUuhsm4T0VMj8gzNzf7e8ekG0RVGkMFihKJfi4gLtHPOg0MgYZ+v/VQJve2Nj/zUuYy
+	 ph8NpORDgEyeyixdpsR4nAMREKkvMLk9exeaJ1D2GFe2M3F9rKaTvwtdQvmOh6LPlLXnA
+	 fRrhxQhgZClzSiPFSJRocUmrfTO158WzkoXT+ytfIJGHnvPNL8WCIJ+WNczdIdnwrojhH
+	 jdnC2saXNitZjumjQ75vhQw337Tb1aViu5avVPvVb1UgouFGm4iJHR4V4umLim5xidw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795545257;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=acZycD1lQv56qwrusDLB08XyZ4Og2aZ5TDtWj5mWP+c=;
-	b=421K5Bu3CWor9ZUQMZ19T2BsMllQVDMjsch+ygojwby6gny2gTXyFfrE+OnaEhXG5x9K
-	 NAUGs/BGIu0oBOuBPEVk8MeYBnFhMZIyam49vmAa7u3r3bIigcnCn9BwBuf5heZ944IYh
-	 Gvsz6b2XlGN21QvqTpPq7bg6r1SGncGEHjdAkqE0aZ5qMTGqgbQF+B4lQzegFt08ukh/7
-	 WuAYcOBogS0+ZEadj1F1h3W7dbY0v1KjuyZeYqzOIyeTXZUvvxYMxwCi2Kdsfb6QjLLKH
-	 NHz2Km14YDWRII/V1cxw5FziK4HNZ1WWB+ULwYqwlwGhHVucZwO8+mFfIO0mR0BFStg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795555080;
+	h=DMARC-Filter:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=gnvsu0TDZ5slNtZXuUskfju+pk2M78SPgeweXv/OO6g=;
+	b=WoP4wekixMLj5ZE2soEHC4kPZPbpl68HPbLR53MT+7saeYZnEG+AVD6v6UjC6k4fGPFK
+	 tzMRL9E+ZyaSxy6DPluU0glasIPxDHTQvLkixwh0VWMwVP1MkzYr4FyR5Bw8Xi98Nx0Dh
+	 AbbJCnFIMDV1t8z9468pP45HvAHOZBrUl6cE+oEqoz7ExCH/q/lswHZSs1sFppBXe7YNq
+	 aJL5zHUfv/wEk1jxzTXiQ0zHxcmBLlPGaWkGX0tvWp12lav8GMTqxQuYT7QG0y66dNURu
+	 6Q50943RumGypBNE1NFRd91Q4SD05FIvHWqOa9c3yUNAul4KVMlyhiTlrRqC0ljZsQQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nHC7JFsx;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=kemnade.info;
+	spf=pass smtp.mailfrom=kemnade.info;
+	dkim=pass header.d=kemnade.info header.i=@kemnade.info header.a=rsa-sha256 header.s=20220719 header.b=8OcmMhbM;
+	arc=none smtp.remote-ip=178.238.236.174
+Received: from mail.andi.de1.cc (mail.andi.de1.cc [178.238.236.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D089606A31E;
-	Tue, 24 Nov 2026 18:34:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1D5F606A32E;
+	Tue, 24 Nov 2026 21:17:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B1D5F606A32E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kemnade.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nHC7JFsx
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 539DD1F000C4;
-	Tue, 24 Nov 2026 18:34:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795545257;
-	bh=acZycD1lQv56qwrusDLB08XyZ4Og2aZ5TDtWj5mWP+c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=nHC7JFsxX39tcr2Q1+y5Fda1d1WTW8BOf44q37v8vE7f+HCnUQtNd4gxwu8YaC0q8
-	 tO4fapH5cAFwU5Rzs+bpi2DNuhZuM+MhaFfKE9wjXv948TuRYuh2lwYuPxReqE1561
-	 ugMpXahAcMtaUuzBbPkVimq4sydICIsSLj9cLN7EozGW+RXtaeCDzaKVUIG8gx7Cup
-	 qA/L4io7E6ii4Twy1aoNrlmi9zcwv9PnUUzG/Fh91xUEe4aDYJfSazLI1a5cyOox38
-	 NPFHnMaV5w9BE3ZuUK5iyBlQLtZCds0mFqz1vxn1qVQC8stIavDSx4zzp4gJCOekTJ
-	 EI/dDvLKPNwqQ==
-Date: Tue, 24 Nov 2026 18:34:13 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Trevor Gamblin <tgamblin@baylibre.com>,
-	David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
-Message-ID: <20261124-bath-runaround-dccb788f14e3@spud>
-References: <awVki6lC3SxGfqSl@monoceros>
- <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
+	dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.a=rsa-sha256 header.s=20220719 header.b=8OcmMhbM
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=kemnade.info; s=20220719; h=References:In-Reply-To:Subject:Cc:To:From:
+	Reply-To:Content-ID:Content-Description;
+	bh=gnvsu0TDZ5slNtZXuUskfju+pk2M78SPgeweXv/OO6g=; t=1795555070; x=1796764670; 
+	b=8OcmMhbMFvDN43DdqUAbNeJOgoYCaWiHKUPe5/1ABjKq+HbI+phrPqB+TEStgxKTPPW3A2O0LnO
+	UUbBO+S8aRQ/u6AiOhen4rCGw5WVdayB7PnQdVKArg3H27tZ45KdyBIkebU+4oMPZ+5TGImXtxQv+
+	OnQXEfQkuPZzFtanS7eQu+hvFZqIymb9oXSJBIP0Sn0PhVzjuh15/hPJpbOZ6YJm15BdX6PiQ59H0
+	92VITcOfNTjrU8aqiaihQUo1VIECQnWJu4kkzb5qwv51k98fIvDLiCWaWCkcoh6RbD9tWxb+NqM+C
+	NXbSvZCeGaqxFsWPM4CQlVWtzNc9bwP+3UaA==;
+Date: Tue, 24 Nov 2026 22:16:10 +0100
+From: Andreas Kemnade <andreas@kemnade.info>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski
+ <brgl@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Lee Jones
+ <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, Jingoo Han
+ <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Aaro Koskinen
+ <aaro.koskinen@iki.fi>, Kevin Hilman <khilman@baylibre.com>, Roger Quadros
+ <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>, Russell King
+ <linux@armlinux.org.uk>, Neil Armstrong <neil.armstrong@linaro.org>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+ <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
+ <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Uwe =?UTF-8?B?S2xl?=
+ =?UTF-8?B?aW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Helge Deller
+ <deller@gmx.de>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai
+ <tiwai@suse.com>, Peter Ujfalusi <peter.ujfalusi@gmail.com>, Jarkko Nikula
+ <jarkko.nikula@bitmer.com>, Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
+ linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-leds@vger.kernel.org, linux-sound@vger.kernel.org,
+ linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
+ letux-kernel@openphoenux.org, kernel@pyra-handheld.com
+Subject: Re: [PATCH v2 20/20] ARM: OMAP2+: Remove Pandora platform-data
+ quirks
+Message-ID: <20261124221610.2938d62f@kemnade.info>
+In-Reply-To: <1cb5bd7216b334e8c4eff21ff3463deeb6109595.1795505160.git.hns@goldelico.com>
+References: <cover.1795505160.git.hns@goldelico.com>
+	<1cb5bd7216b334e8c4eff21ff3463deeb6109595.1795505160.git.hns@goldelico.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; aarch64-unknown-linux-gnu)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -62,47 +83,84 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="c6BBEsVoccdwpXSY"
-Content-Disposition: inline
-In-Reply-To: <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
---c6BBEsVoccdwpXSY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, 24 Nov 2026 08:26:00 +0100
+"H. Nikolaus Schaller" <hns@goldelico.com> wrote:
 
-On Tue, Nov 24, 2026 at 01:47:13PM +0200, Nicolae-Daniel Deaconescu wrote:
-> Hi Uwe,
->=20
-> Yes, that works. It is how the gate duty was set before, in ad7625.c, with
-> DIV_ROUND_UP(NSEC_PER_SEC * pulses, rate), which gives 34 ns for 4 pulses
-> at 120 MHz. I'd drop the step API (patches 1 and 2) and do the same for t=
-he
-> new parts, but i don't have the clock rate, and without a clocks property
-> I don't know how I should get it. The PWM core has no way to report it.
->=20
-> Conor, Uwe: is a clocks property on adi,ltc2387 acceptable,?
-> If not, how should the driver get the rate?
+> The Pandora backlight is now described in the device tree and driven by
+> pwm-backlight. The sound card also uses device-tree descriptions for its
+> codec and amplifier GPIOs instead of legacy GPIO lookup tables.
+> 
+> Remove omap3_pandora_legacy_init(), its backlight platform device and
+> audio GPIO lookup table, and the associated board compatibility entries.
+> These platform-data quirks are no longer needed.
+> 
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+> 
+> Notes:
+>     Changes against V1:
+>     - Andreas Kemnade raised bisectability and intermediate driver
+>       availability concerns for the V1 pdata-quirks removal.
+>     - Correct the legacy backlight name and explain removal of both backlight platform data and audio GPIO lookup tables.
+>     - Commit-message review assisted by ChatGPT.
+> 
+>  arch/arm/mach-omap2/pdata-quirks.c | 23 -----------------------
+>  1 file changed, 23 deletions(-)
+> 
+> diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
+> index b947bacf23a37..aca7097a692ed 100644
+> --- a/arch/arm/mach-omap2/pdata-quirks.c
+> +++ b/arch/arm/mach-omap2/pdata-quirks.c
+> @@ -268,27 +268,6 @@ static void __init omap3_logicpd_torpedo_init(void)
+>  	omap3_gpio126_127_129();
+>  }
+>  
+> -/* omap3pandora legacy devices */
+> -
+> -static struct platform_device pandora_backlight = {
+> -	.name	= "pandora-backlight",
+> -	.id	= -1,
+> -};
+> -
+> -static struct gpiod_lookup_table pandora_soc_audio_gpios = {
+> -	.dev_id = "soc-audio",
+> -	.table = {
+> -		GPIO_LOOKUP("gpio-112-127", 6, "dac", GPIO_ACTIVE_HIGH),
+> -		GPIO_LOOKUP("gpio-0-15", 14, "amp", GPIO_ACTIVE_HIGH),
+> -		{ }
+> -	},
+> -};
+> -
+> -static void __init omap3_pandora_legacy_init(void)
+> -{
 
-My opinion here has not changed. The clock is an input to the pwm
-generator, not the iio device.
+maybe ask here for pwm-backlight node? Then this all can be untangled a bit.
+so something like if (of_find_compatible_node(NULL, NULL,"pwm-backlight"))
 
-Using the pwm generator input clock in this way is also inherently tied
-to one implementation, since assumes a particular relationship between
-input clock and output waveforms. Were a different pwm generator to be
-used that had a /2 divider between input and output to be used, the
-logic here would break?
+if that node is available do not register that device.
+Such a change can go in as soon as we have consensous that pwm-backlight
+is the way to go.
 
---c6BBEsVoccdwpXSY
-Content-Type: application/pgp-signature; name=signature.asc
+After all is in, in a final cleanup step, remove the pandora_bl and
+the quirk.
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCawXYpQAKCRB4tDGHoIJi
-0lRRAQCIoKJv2Wmk0cmmDwKqfXrHgKUa5XKzWALicDBX8KoUKQD/UkM7ygos5j1K
-Ot/QmgjKEsFwU2NJFvwcSxcUJtZ5xA0=
-=wr0Q
------END PGP SIGNATURE-----
-
---c6BBEsVoccdwpXSY--
+> -	platform_device_register(&pandora_backlight);
+> -	gpiod_add_lookup_table(&pandora_soc_audio_gpios);
+> -}
+>  #endif /* CONFIG_ARCH_OMAP3 */
+>  
+>  #ifdef CONFIG_SOC_DRA7XX
+> @@ -514,8 +493,6 @@ static struct pdata_init pdata_quirks[] __initdata = {
+>  	{ "ti,omap3-evm-37xx", omap3_evm_legacy_init, },
+>  	{ "ti,am3517-evm", am3517_evm_legacy_init, },
+>  	{ "technexion,omap3-tao3530", omap3_tao3530_legacy_init, },
+> -	{ "openpandora,omap3-pandora-600mhz", omap3_pandora_legacy_init, },
+> -	{ "openpandora,omap3-pandora-1ghz", omap3_pandora_legacy_init, },
+>  #endif
+>  	{ /* sentinel */ },
+>  };
+Regards,
+Andreas
