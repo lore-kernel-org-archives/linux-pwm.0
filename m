@@ -1,90 +1,106 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.169
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795589076;
-	b=K62wSfAX4dydOq9mLA2VkL6aDXhcRw2pDybt7byCKZd7+92SYRa2VZTl8OJYQbTEffOb
-	 n8TF7tHgmj2uaWU5UEeYPLss7USUIdADE4r1nXwVyVTYWkzOJ6xbQ6dgsrq5wTU0X6LXu
-	 9Q6SoTfVK+u6w3oNc8kAJbtI4SmdZpFdKs8O4osFRaMEEX5wM31Z3hmsHTcM/FPz1EMsW
-	 jGUJthIT4rXU6714yufui64ms6RZg9NMlhXqoZeyfxQ51d6nF3lnuZ0mk+mn4GKeCuPf8
-	 eN5AAZ9K5QXLHzZOXeyquwt7+JvK+dCyT8wUPgLyAxlJ7s8Novn7axuNbsJ2Jt9k/qA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795589076;
-	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
-	 Received:Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Content-Transfer-Encoding:Message-Id:References:To:X-Mailer;
-	bh=1gk2zDY+qHFoLpfFOUqPZn9pkTFPLdiycG87z3EJLfY=;
-	b=IW6+Hy3IFnWgTxKZp1jW5jPQAliT+b3VK2CLi8N8dwbZnIx+w0t8rRrMbJtCNGB55g/H
-	 Qh1lfCOApGkaHgivXwV7t4NHRziXYJiy6RzAul44ql4qvkvTOerF3S6mSusPyg06EwZCG
-	 lCQGSo4RwMx2xkBeKhjFpdhj96klB51qq7uwTBmbalQsgjhHwwO5xW7Pb2MNzD8ToM0It
-	 B6OwRj6c/v0U37ivXam932sUG51hbDD69bQTDWriuUAU6mvjsIIqP3YHf1V/ANXJhrcGL
-	 zc2q4whNr8iz1hBc846FZQOzckxKAYvAUc+85v12h1iQtz4t1VT8pC1orL/OabqIBKw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=goldelico.com;
-	spf=pass smtp.mailfrom=goldelico.com;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b="k/jEVpVv";
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b="I+Y/BRNS";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.169
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.169])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795617755;
+	b=fg7B+Wj6Xfu89cT4UwaP6v8vOBOziXlAd0BYjTthRYxw/vDrK6D/hxss+oF0p6JOp7mJ
+	 EXt2Sd9SaAwPeV5FhpzX7Y7CHCMI1tvGuolwCo9C9cFybwhekZ6uGOWeAQ80WKgaEg4lB
+	 RqRYdHwO0cnNlhFjdDI8gmvLkbUsWkp/mSmFEN58Xx7Ni0OUOsb03JTVamoVMU1HI0dvJ
+	 VidWMvcQcckUb0cTjHeKWcmZ5tbl1eVfPMJwsnxkqTSMY5sac5CI5y7zjPoGNWXGVAWvH
+	 JMMtQPUIs73slDyj0z9LRQrSqCDJCFS0rEvdkAO0q+03mGCRWBKOjFNIo2AEkKTQYSg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795617755;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Spam-Info:
+	 X-Authority-Analysis:X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=M8apm6+/Anpcv1K/Z8JQmpNWT75T1KYBT9tWUntqgNM=;
+	b=rC1qkKDQxkCZSOolIENHsMFw7n+aDHZ1D8DsyStR01u89q5EWeOjruFhjxGi59VTyjNI
+	 7YsPMFkAESRz2NX5APsZ5Vv/ik2lrGDhuWj3ocQeG8Z3LNlB4ZJx6+XF3G30D1h7DfUH8
+	 leenP4SaM/adretqJCMVDec3La6NEAwWyLIu2kg93UdzDF092SSuxtiPNiHUH2310+X0x
+	 IWUWI7zSl7M0V4n4uU+N7GJfdlpHkgF3NCJD2G/I/9FEXAs0LyLM2egsw6cyTdEK3Srnx
+	 12wN96Ubi1xY6wPpQVE83t7hpABSkYhojWcufJueYW+jFNkvOc/DBoVp+h5BH0gpSIQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=GXq3d4LR;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b="I0b/4nGk";
+	arc=none smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6BE9606A31E;
-	Wed, 25 Nov 2026 06:44:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B6BE9606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11267606A31E;
+	Wed, 25 Nov 2026 14:42:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 11267606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=k/jEVpVv;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=I+Y/BRNS
-ARC-Seal: i=1; a=rsa-sha256; t=1795588973; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=cTnbBPeGovHeLT6q6u9ZQyfIcEbHxmGIT0GrghPBSMc0a8wnvXLtuQfkzrUkZuOig+
-    mjlrb2X9BAMV6Niob3O8lWaPpn0e2SdWNdjNmOniwDiCZzqNRfWlUcROWNXaHY5Ve/NY
-    0VtyS2euhWucTcYnwTYon1YrmlfKfZqLYxa+qOPkv3sBr3ecSeQhrjCD2A5z9j+paM+0
-    rVWwnW9u+e0WtxWUhTDMffhkDAndZfl9WrnAH8ZAPV4eKb9fiwp9k208ODbrRSGsbdsg
-    j3/FNSbgbwldCxxsf4/oW8ZuSQ7/5LhlEuJLh16CY1sXuLGDgGTwZ6sZYN9iz1IICxLH
-    BmLg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1795588973;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=1gk2zDY+qHFoLpfFOUqPZn9pkTFPLdiycG87z3EJLfY=;
-    b=VnsemKLEMl+3O0YMCi8sFARtWux1a17AXnxlzhRywNWKFcfap3DH7difiJlRoGytYh
-    0lOcJWFo7zxhNwp1yt3/yyQ6N4YsfMUGObwXOKvs4A5PTFMk0fIug+tCVkPz4A//bvId
-    jxdtI+t8tUjP1cM0OjQcUc+7LTkHs2scm9F9oIOZetWaErP1jEVAIELCzO4t4KbALYLi
-    Jw1E1xmzK3Oiz6FwxQ41LBe7+tDd3B01/ZH1FJL1A+y8qC+R7qsqDEMYTgrNAZPhKyf8
-    RLLci93fYIazcGHZ3aHRYdTRVHq/Ax90aMZHWEnskYt5wjVw9tE+H9/kWGZsWXKRGccY
-    5LLg==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo02
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1795588973;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=1gk2zDY+qHFoLpfFOUqPZn9pkTFPLdiycG87z3EJLfY=;
-    b=k/jEVpVvLQkIML9nalg1JpMqB9CTqv/wAXr1zhqxzs/o7JG9ou3ERFGcSh+GlbUNZn
-    3tq85SddEbKil5B7cchZLZTrAwFexsBaMs9qsmh1iCRlQ1k6fHzxw0ptVxAI3mTDKdQL
-    4FxIaWJCkEHW4UASXFZnhxLqQn7CtpEwLzx6WyFXmsohzLa/KHGYS/rke0TQqo4/JxkA
-    jdfdPQTfKFoLe7ntolGx8485ObKLaY/+bpykLMy52JLbu3wYhBttQ1/RFXnt/tLR18T6
-    beJ+5cYvFYqR4grNQ3iFfE1hMjcMvNNuRfSugQ0WE2Fjb766Bf/tfXpjfxJEV5n02c70
-    dlsg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1795588973;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=1gk2zDY+qHFoLpfFOUqPZn9pkTFPLdiycG87z3EJLfY=;
-    b=I+Y/BRNSdG/pLdf5zxxzQco0G17o3kqUXrsy6r9rvniFtpueTu2DVpyc8o6OxvGsQI
-    iHXykzGIK8KtXwVBJmDw==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrS25oMlMiNMn5e/Npe6SVDIvzG+5uG4p/zkDZq"
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 55.6.3 AUTH)
-    with ESMTPSA id Qb56a22AP6go5ny
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Wed, 25 Nov 2026 07:42:50 +0100 (CET)
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=GXq3d4LR;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=I0b/4nGk
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6APEKKNW473283;
+	Wed, 25 Nov 2026 09:42:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=M8apm6+/Anpcv1K/Z8JQmpNWT75T1KYBT9tWUntqgNM=; b=GXq3d4L
+	RU2ls2DNi8OUlefODnfdNzjWmfV3BjR7BOk/yuufxqFOQ95FXUd1bw89f48qTLSa
+	yEScg3M06vEav9N0A5pZbrj7pcqBUABYgyi7dO1EkHUomRRgHk3OqphBark/8C6c
+	6NjZyZ0DVuxKPet1qy3yuJi/A3h9jTJqNIjwJcxh9FWcs+yQ+/dB+S+ZO66ESI8N
+	MeKP2uJVIzcg4ZpLUfnE1JY0Jy/GfYgr8kqadPIeXmjWRYS7Y5ke+z5rjvwBaiH2
+	IacVgeUL0Q57Ej0lBpebkeoe3Bbssrk79Jl/LrKGhVD7LigLtuC9Jw/+z206ecvx
+	NS7bNb/HtlNgGjw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=M8apm
+	6+/Anpcv1K/Z8JQmpNWT75T1KYBT9tWUntqgNM=; b=I0b/4nGkAYaq8qxZVhkTl
+	zG2bsKafZnTBkTBToHPbM655AdwJj9t8VW8vF7X1X5ccDJEN+vNRaSPQoC7OgPHo
+	cWgUSm2CwXYegnINWmZ9ap64bYy0IeUxG8/T9yJnNZO+LZXgNSqzC5Kt34UsuWgu
+	13An0zJ7p5sfa+HTYJ8q6arpPBO57DfhaXJnHkJ2/fOokpgug43H0B1NLdTFrkwM
+	KBotKhlBAPLDG6evCejyYY4Ho9K0QgWUbdtv9KMWnARcw7t20rZ6VgPb8Tt1mN27
+	Za9vGFVIgSHLC8db0PI72Cw34Tl3UNv8wCXOMlSwiErAd+wLSdekLIhLErhTbX4x
+	A==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4j56d6rrg6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 25 Nov 2026 09:42:23 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6APEgMew055415
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 25 Nov 2026 09:42:22 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Wed, 25 Nov 2026 09:42:22 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Wed, 25 Nov 2026 09:42:22 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.2562.56 via Frontend
+ Transport; Wed, 25 Nov 2026 09:42:22 -0500
+Received: from arch.ad.analog.com ([10.135.2.95])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6APEgBDa006155;
+	Wed, 25 Nov 2026 09:42:14 -0500
+From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+To: Conor Dooley <conor@kernel.org>
+CC: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+        "Jonathan
+ Cameron" <jic23@kernel.org>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Trevor Gamblin
+	<tgamblin@baylibre.com>,
+        David Lechner <dlechner@baylibre.com>, <linux-pwm@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
+Date: Wed, 25 Nov 2026 16:42:11 +0200
+Message-ID: <20261125144211.78018-1-Nicolae-daniel.Deaconescu@analog.com>
+X-Mailer: git-send-email 2.56.1
+In-Reply-To: <20261124-bath-runaround-dccb788f14e3@spud>
+References:
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -93,120 +109,49 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81.1.11\))
-Subject: Re: [Letux-kernel] [PATCH v2 00/20] ARM: omap3: pandora: Modernize
- audio and backlight to use Device Tree to finally remove pdata-quirks
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20261124234143.4f099646@kemnade.info>
-Date: Wed, 25 Nov 2026 07:42:19 +0100
-Cc: linux-fbdev@vger.kernel.org,
- Lee Jones <lee@kernel.org>,
- linux-pwm@vger.kernel.org,
- Tony Lindgren <tony@atomide.com>,
- Linus Walleij <linus.walleij@linaro.org>,
- dri-devel@lists.freedesktop.org,
- Jaroslav Kysela <perex@perex.cz>,
- =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- David Airlie <airlied@gmail.com>,
- linux-leds@vger.kernel.org,
- Simona Vetter <simona@ffwll.ch>,
- Rob Herring <robh@kernel.org>,
- Aaro Koskinen <aaro.koskinen@iki.fi>,
- Kevin Hilman <khilman@baylibre.com>,
- Helge Deller <deller@gmx.de>,
- Bartosz Golaszewski <brgl@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Peter Ujfalusi <peter.ujfalusi@gmail.com>,
- Daniel Thompson <danielt@kernel.org>,
- devicetree@vger.kernel.org,
- Conor Dooley <conor+dt@kernel.org>,
- Pavel Machek <pavel@kernel.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>,
- Roger Quadros <rogerq@kernel.org>,
- linux-gpio@vger.kernel.org,
- Mark Brown <broonie@kernel.org>,
- linux-sound@vger.kernel.org,
- Takashi Iwai <tiwai@suse.com>,
- linux-omap@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Neil Armstrong <neil.armstrong@linaro.org>,
- Jingoo Han <jingoohan1@gmail.com>,
- Liam Girdwood <lgirdwood@gmail.com>,
- linux-kernel@vger.kernel.org,
- Thomas Zimmermann <tzimmermann@suse.de>,
- kernel@pyra-handheld.com,
- Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Jarkko Nikula <jarkko.nikula@bitmer.com>,
- Discussions about the Letux Kernel <letux-kernel@openphoenux.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <D4A9EE97-468E-4720-8D26-D3B008F8E762@goldelico.com>
-References: <cover.1795505160.git.hns@goldelico.com>
- <20261124151318.GA536798-robh@kernel.org>
- <1DCFB59E-E5EA-4470-997E-EAA4ED35D906@goldelico.com>
- <20261124234143.4f099646@kemnade.info>
-To: Andreas Kemnade <andreas@kemnade.info>
-X-Mailer: Apple Mail (2.3826.700.81.1.11)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI1MDA1OCBTYWx0ZWRfX3i1Z3bVKtcU5
+ CnU7Nclodif1utEt10Mn9JYE4hp9LTLZS2sLqK/bkw3oxEfQpnuxTqySyKrAynmSdd7YkGVnATA
+ RC3dy3S5GFWlAoG1KNKu7NtZlCzdgJYUAupTkQZnWRSeba79hZYEIQKfAZxkQwEbuAdM+o26StX
+ RPuXraiYKMzdldq+lewqAMcpm2L0s8lthrZuAvR7gN9rDPBYf+oktqrHi2loA5LGr8QwIam81gD
+ f0HwJRE7VRxSKyaRXI4fHOjGNCrqcSg+kId4VEMZ9GlFcqCOe5Bj0xeH6XIbtyKBGgmK3Tm9fy0
+ hWl/TvMjVTyqtppW6gj00I4GPlG5HTlgFka4Tcod/akcnTN2DCxd7r/KybvAW4zhXOofFVfUhW7
+ nPl09lezEDn5zEaV2evJUnhyMbozmK0MwxtTuB5MuHz8EuV6mCWSQR6BI/hqyEzZhABUmCl720X
+ ttfzE9+23eBo1UtPEwg==
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI1MDA1OCBTYWx0ZWRfXwxV7eO3pH5BV
+ XGG66esWolKB7dXINt5CfVrGlEiVOCH71Pd8cCrKpgpZjJlSn1j6UQc6aT1JudWvKcSYlQ2hOjj
+ jElDyl8+oxGITWzn9D7fxGAvfbR5ZaaLapxieDx3gghJia3DmXWF
+X-Authority-Analysis: v=2.4 cv=bv3Zl0ai c=1 sm=1 tr=0 ts=6b06f3d0 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=Z0pTeXoby7EwIRygza74:22 a=VqRfdDP1wFJwDKpUaI8A:9
+X-Proofpoint-ORIG-GUID: Rok7vR_z2ZMCIFsgvFZGwmLQkCpl7igC
+X-Proofpoint-GUID: Rok7vR_z2ZMCIFsgvFZGwmLQkCpl7igC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-25_04,2026-11-23_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 adultscore=0 clxscore=1015 priorityscore=1501 suspectscore=0
+ bulkscore=0 malwarescore=0 impostorscore=0 spamscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611250058
 
-Hi Andreas,
+Hi Conor,
 
-> Am 24.11.2026 um 23:41 schrieb Andreas Kemnade <andreas@kemnade.info>:
->=20
-> On Tue, 24 Nov 2026 16:27:16 +0100
-> "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
->=20
->>> Surely=20
->>> this can be broken up into smaller series? =20
->>=20
->> Yes it (we?) can. It is just a question how to do it and properly =
-describe
->> the dependencies to avoid bisectability problems and avoid that the =
-final
->> goal is lost.
->>=20
-> I think it is indeed tricky, and probably induces delays.
-> You can point to the pandora_bl driver  resp the pandora sound card to =
-show the
-> final goal.=20
->=20
-> If I understand it correctly,  you have
->=20
-> 1. preparations/extensions for using the standard pwm backlight.
-> 2. REGEN stuff to wire up the power supply.=20
-> 3. dts changes to wire up backlight and its power supply.=20
-> 4. sound: quirks in twl4030 codec
-> 5. sound: dt conversion of the sound card.
-> 6. dts changes to wire up sound card and its power supply
-> 7. machine quirk cleanup
+On Tue, Nov 24, 2026 at 06:34:13PM +0000, Conor Dooley wrote:
+> Using the pwm generator input clock in this way is also inherently tied
+> to one implementation, since assumes a particular relationship between
+> input clock and output waveforms. Were a different pwm generator to be
+> used that had a /2 divider between input and output to be used, the
+> logic here would break?
 
-Basically yes.
+Yes it would, I'll look into whether that burst can be generated
+in the FPGA from the CNV signal instead. If it can, Linux would only
+program CNV, the ADC node would not need a clock or a second PWM, so we
+can drop the step API while avoiding the clocks property.
 
->=20
-> So what brings it all together: the power supply requirments,
-> so both backlight and sound depend on 2.
->=20
-> Maybe it is an idea to split this into a set of
->=20
-> One patchset for
-> 7a. machine quirk conditionally depending on available compatible
-> 2.
-> 1.
-> 3.
-> Each can go into their individual trees.
-> 3. might to in the next release cycle after 7a, 2. 1.
->=20
-> A second patchset sent after 3 is in -next, containg
-> 4.
-> 5.
-> 6.
-
->=20
-> A third:
-> 7b: remove quirk + pandora_bl
-
-Yes, this is a good approach. I am currently checking if the =
-series-scheme
-can be simplified even more to help everybody.
-
-BR and thanks,
-Nikolaus=
+Thanks,
+Daniel
