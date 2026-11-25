@@ -1,107 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795623658;
-	b=HVMyX2C+20P1TfAtbLMG2oeIlv9+YbpwLXNhBzLBZL98Cl3d1D1wMs8nnE9+otyVrlcx
-	 yn1yYRW4X2ZmuHagheoesMu7IXJjB3vJ62UQn5iQ/67Cuxnwrdb0SIBQxegbA1O2sAN5z
-	 Zu4/8ju6ljgbEY3vzFZ0XfWJff2GceP17mXM35895t3RH4MjaXfha2PbqG9w3Yxps2bVW
-	 Q0tAubd90sElsGE9BBciNzez9fUUOzOnvyOgvAN3BPAj16DpVITmwKLURCipI1J2Wxqz1
-	 Rw5KEEd3AT+emay+I8IrwC2qQDKIfvtjV+Yw9FlOH86DQ6KfujZ4uytXZzCgrohdCKA==
+	t=1795627950;
+	b=CJvJvdnvIQkEAv6KX1g8X6U0s7OIvfkMs5lKrncmoSGRC0MCkgv3a0f11/sHFGADe6Wz
+	 eAxIQYi+s5vQmYFIK1IEjoPv2ocWo6lbpKkZV6RLITAO7hCMX/MYbkiz94+yLNqYuUdpR
+	 MUQh2B7n+95IvP//it2fChKysW3dJGVLAfkzQaL6lKgB72I4QUIuwRbDuN/CugNaf1UMJ
+	 AA1Eu9b48qjFCUhJcIqLu7q2ySElwLcao/18yITOotCYEDItLKLh+0a1375opcAllP2YE
+	 bGEgEWewIogu3u7BC9mkEjdiMvgMkMmS1U/FHIDaH/fwzCEYxYlCpOZHHzqMJNF8fRQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795623658;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=w6xtuLM9HrxHujYVMQV7MBMbD4qoIrs9MPoeBowe9/w=;
-	b=3xC2V7cor5Pnr7isMHl4cbWzUVyyOAV66Gvl9rkdurTWCbGB1BKhuBUeWt+Z+HWs3i8M
-	 jBLUWt14+1jaOVhUhkDaqnVTDHUVuTaKihcySp3y0P2m2dyfPO+U/Ktarvt5bJAGYIKGc
-	 1EGwBfi8mwa9VGUUWQvfr+TIFtsfQ8ikL2n7jXY87kHJLhlQwjBje5XSMjqHeujVgFQC2
-	 jXxxrlAARNYuEz3wSYGsjuA2bt88o1eFh7+IL9TIdM+K/+LF+FrHpNqXD/OSELdHHACbe
-	 KZk6QjFSMVMA4Pr1FFPVM2AZ5k3ju9oM9gklQ6IZfaN00c6MWfStGJ5eh0yaW16XGWA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795627950;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=0ptdBS8fx26cGjDnm/cY+e7vQYsGvyxsvMQT5ddnw3s=;
+	b=yN0ugM0PqCxOvPgxjZKtatI3T0gdWnu9LrAbx8wr+mVSOkcjNMB5QRoXwIaoFIGM4Gwt
+	 jC7F1+hGRCsEzczL2IlItuw1jyJWFisICl+3O9vhXEJx4QEzKsE1Q65E/4ApG/MB8kudT
+	 vDU89LzpInWT+gdq5LL0h+65qeAVixBxFrXQomrE1gG74G2rJK9NN/XkvV0e9QpFYwHMK
+	 yNDLh3KLNt+9wRUTfgvsXjBt+fLAtaU77DM3JbTcwMwXD2PKRM1GB6SqwVvOV1sMNVYOw
+	 y054nStAYyOmMyCft+rUS2N8qVeJOumOGARgZVTZA8YoBpdS5jWM8cLuWS10myGEuNg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=suse.com;
-	spf=pass smtp.mailfrom=suse.com;
-	dkim=pass header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=VnT24unC;
-	arc=none smtp.remote-ip=209.85.128.46
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B9t5uBP7;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CDF8606A69F
-	for <linux-pwm@vger.kernel.org>; Wed, 25 Nov 2026 16:20:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1CDF8606A69F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id BBFF5606A31E;
+	Wed, 25 Nov 2026 17:32:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.a=rsa-sha256 header.s=google header.b=VnT24unC
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4a9a8d6cea8so77247455e9.1
-        for <linux-pwm@vger.kernel.org>; Wed, 25 Nov 2026 08:20:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1795623655; x=1796228455; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=w6xtuLM9HrxHujYVMQV7MBMbD4qoIrs9MPoeBowe9/w=;
-        b=VnT24unCRzAxVBIvnn9r46a8R9A6BXNaRo+yX5cvnyLgwCp0henfgCBHBui2C0pAVA
-         w2dpQaozcs8NFQaVxun/y3Z1KNoi31zDMQVghtQr1ZDmKDq8i25SqDpnW3b6PVKaatPp
-         2H7v0esKzmSaUttqCYFwrKU5gmxOg7dUIz+NJ1BIX51gCGeBgaONqw1kGuq1n4aSZFna
-         5+YmiNNlNk405nhM2LUPu/d029lix5yrZodVetHRVDVgG42weOXDSXQCmbUn40Y/+CCW
-         mT2DLi1Pa/m+/H+6dt2njdaHvhINECXUK3U8AEUfLEaTCc4LYZSfydEqfJRWI4AK77IL
-         S+TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795623655; x=1796228455;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=w6xtuLM9HrxHujYVMQV7MBMbD4qoIrs9MPoeBowe9/w=;
-        b=RnAOmEIFSvhD//rqnXnu1RTsprr1lvf9lvIwWN5cxZF3eQDUVOhX2WBTKq0tMmqOQA
-         DOdiRkxiqjZr3Iuy9f/mlDjeA/yf6ICECvL8KPSg1rpIwQT672Q3K8uJKleti47fh4JK
-         xuAz8a6OS+r1rQP04XMn60DEodC3RHDnbwVvm1iHzV1L6VgBBNH3EVxEKVfXRVtuYY03
-         92Mw5EGYliRbay1iyEfXFJiO3UVBUZMhE+JmDFvlIKq/Ths0VD7brs4b2XBPbE6r11lE
-         HpE0L0MltrTTlSdh3REWOFLkKd+SE4RypQutSUkP2DfIoGY+NeSsbkg6N/V/59QS8KlC
-         L8Vw==
-X-Forwarded-Encrypted: i=1; AL+hErFDrxqwAM7qeaEhpuMVXT/xN5KSuzUb31r5Byc8CM0TcYRju9vsR+qpbXkgHJtCRUFki2ip981GUkY=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+2ovBqMJ6P4fcXTyYSwzFeGWjs+R5kQJkgM0pdYgfEtZDNIkw5
-	hCVBtUAAwmncSIgNQJqVpkSauuuAQ19xBf9/BdtlVltuy3MOE3wJ/IHxDWozKwpUWwc=
-X-Gm-Gg: AZFdTZdQEJ2epRiWfN/WXRpDhK08ptGVBoEZL2xSaOA7X1IrsPZ9KtVD7XOJChZfs8w
-	WCd8yhhFocShCogfx5Dw7xbYCzPWU6trvfgGAFcaP13VngiqS8amVn1lUgF8pxBF9qDj2ybiNCv
-	VTn1VTo7j+DXncbTOE3OoumrndkdWDJO1h6ttSKwPpNhOowz9lgHMF9rljaBslgcIh7jMXFagz3
-	q4lAsy2cCFEjUrKl5Q+0+Pbkh1KZBcVBwLM6fgtxS7sxUvJTMhlhkhqpn6vSwTQ3oZY0WUMODhz
-	DISJJc1jHGIOH+sXhYCjHBQW/PgTck6LgjPXeiG3yNjHJuNVRXR44/ct1jhLM/wHL2f2Glq9wJ1
-	k3nBldKNbjvgbokzm1c3ffhRY+Nl34tfT1lFOnXlE9+lc8yyaE390r2M7zEesJ4UGPZ+JEiWtrs
-	1DW0KtSc1znPKRoHRm1vaIhmRHBhdn8KWtfqd2wEHOsN7WgWfi8DLe10mUth+/t5VxK5prtSgd4
-	uoYuIMKPLdFCTG+69tRkie0aopjbB8VqNZVi+0+oTED3FzkiMmIfTGj3OsCsBKJxV6JWJuIurxr
-	E3IUrgLJskd2ha2vDM6VIOwcR7si6w==
-X-Received: by 2002:a05:600c:4f81:b0:4bb:5e8c:13bc with SMTP id 5b1f17b1804b1-4bb88805902mr356474775e9.7.1795623655370;
-        Wed, 25 Nov 2026 08:20:55 -0800 (PST)
-Received: from localhost ([195.94.148.180])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb906640a2sm288622535e9.0.2026.11.25.08.20.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 08:20:55 -0800 (PST)
-From: Andrea della Porta <andrea.porta@suse.com>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	linux-pwm@vger.kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	devicetree@vger.kernel.org,
-	florian.fainelli@broadcom.com,
-	rjui@broadcom.com,
-	sbranden@broadcom.com,
-	bcm-kernel-feedback-list@broadcom.com,
-	linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Cc: naush@raspberrypi.com,
-	svarbanov@suse.de,
-	gary@garyguo.net,
-	linux@roeck-us.net,
-	linux-hwmon@vger.kernel.org,
-	krzysztof.kozlowski@oss.qualcomm.com,
-	Andrea della Porta <andrea.porta@suse.com>
-Subject: [PATCH v14 0/3] Add RP1 PWM controller support
-Date: Wed, 25 Nov 2026 17:24:49 +0100
-Message-ID: <20261125162453.23573-1-andrea.porta@suse.com>
-X-Mailer: git-send-email 2.51.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B9t5uBP7
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C95031F000C6;
+	Wed, 25 Nov 2026 17:32:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795627950;
+	bh=0ptdBS8fx26cGjDnm/cY+e7vQYsGvyxsvMQT5ddnw3s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=B9t5uBP7grmQ5u0Zy+DwOyfD3TTyHn2kPUPizAGgcv3NN2wT4I9ydv/CYKPrZHwbd
+	 5W8QOtZ72je4q/j6qh1YbmHb9ypXzMwlS3pnT9WpokPYVhdedLwGZ1T9TwEnnuHfHm
+	 +8wpcLjmGC38TJl2oGILd+OBu69DX4AKJPfG2gZUWMRpCSAvQlsHUip2ccvtWjaJfY
+	 9zSTJff+qlNVQfK/kNX/DPnQ2b8VBrk4Mgs7lrYUdB/z5RnpXsmFAzwWI2uMEdo1fE
+	 SP1dSnAFhrcS2WMDn3m/H/24i0RhiKwzq1QCaTZ5Co2x5fG0eFFhBdGnnwVWFb33Xx
+	 lAi/H2MiqCc9w==
+Date: Wed, 25 Nov 2026 18:32:27 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Gary Guo <gary@garyguo.net>
+Cc: Priya Bala Govindasamy <pgovind2@uci.edu>, m.wilczynski@samsung.com, 
+	ojeda@kernel.org, boqun@kernel.org, bjorn3_gh@protonmail.com, lossin@kernel.org, 
+	a.hindborg@kernel.org, aliceryhl@google.com, tmgross@umich.edu, dakr@kernel.org, 
+	daniel.almeida@collabora.com, tamird@kernel.org, acourbot@nvidia.com, work@onurozkan.dev, 
+	elle@weathered-steel.dev, linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+	ardalan@uci.edu, zhiyunq@cs.ucr.edu, dzueck@uci.edu
+Subject: Re: [PATCH 1/1] rust: pwm: reject over-aligned driver data in
+ `Chip::new()`
+Message-ID: <awcbICD_lN4uJrKo@monoceros>
+References: <cover.1794600927.git.pgovind2@uci.edu>
+ <caddec5478a0d39a73152247a60bc21b3c609cc7.1794600927.git.pgovind2@uci.edu>
+ <DN4FFKMFI488.187QX5RI55L8S@garyguo.net>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -111,84 +63,83 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-
-Hi,
-
-This patchset adds support for the PWM controller found in the
-Raspberry Pi RP1 southbridge, used on the Raspberry Pi 5 to drive the
-cooling fan.
-
-Since v13, the driver also registers a "fan" auxiliary device
-(pwm_rp1.fan.<id>). On the Raspberry Pi 5 the RP1 firmware measures the
-fan tachometer pulses and writes the RPM value in the phase register of
-PWM channel 2; the companion hwmon driver, sent as a separate series to
-the hwmon list, binds to that auxiliary device and reads the value
-through rp1_pwm_read_tachometer(), exported in the 'RP1_PWM' symbol
-namespace. This is the approach agreed in [1], and it removes the need
-for any dedicated DT node or binding for the fan.
-
-The DTS node for the controller is already in v7.4-rc1 [2]. The DT binding
-has been applied by Rob [3] for consistency to v7.4 and is part of v7.4-rc2: as
-a consequence, patch 1 is included only to make this series apply 'logically'
-on top of v7.4-rc1 and can be dropped when rebasing.
-
-Changes in v14:
-- rp1_pwm_round_waveform_fromhw(): fixed a u32 overflow in the duty_offset
-  computation when the period register holds U32_MAX, and return a zeroed
-  duty_length/duty_offset when the inverted output is constantly low,
-  instead of a duty_offset equal to the period, which is rejected by
-  pwm_wf_valid() (reported by Sashiko AI review [4]).
-
-Changes in v13:
-- dropped the DTS patch, already merged.
-- add patch 3, registering the auxiliary device for the fan tachometer
-  and exporting the accessor used by the hwmon auxiliary driver. The
-  exported function was originally part of the fan patchset. Since it
-  is really part of the pwm driver to be taken by Uwe, I moved it in
-  this patchset.
-- Kconfig: pwm module now depends on AUXILIARY_BUS.
-- added a macro to define the phase channel number from which to read
-  the fan speed.
-- removed the 'Tested-by' tag from Gary (see V12) since the patchset
-  has been significally changed and need to be tested again.
-- the controller private data is passed to the auxiliary device as
-  platform data, so the exported accessor no longer depends on how the
-  parent platform device stores its driver data.
-- dropped the unused 'pwm' argument from rp1_pwm_apply_config().
-- added a MAINTAINERS entry for the driver, its DT binding and header.
-
-[1] - https://lore.kernel.org/all/ae9a4df9-b1f2-4f00-ab86-d9cf8d9bc387@roeck-us.net/
-[2] - https://lore.kernel.org/all/7c437a10-985b-402c-b3ac-cfa97c53d014@broadcom.com/
-[3] - https://lore.kernel.org/all/20261102192302.GA882027-robh@kernel.org/
-[4] - https://lore.kernel.org/all/sashiko-outbox-231741@kernel.org/
-
-Thanks,
-Andrea
-
-This version has been prepared with the help of an AI coding assistant
-(Claude Opus 5.5).
-
-Andrea della Porta (1):
-  pwm: rp1: Register auxiliary device for the fan tachometer
-
-Naushir Patuck (2):
-  dt-bindings: pwm: Add Raspberry Pi RP1 PWM controller
-  pwm: rp1: Add RP1 PWM controller driver
-
- .../bindings/pwm/raspberrypi,rp1-pwm.yaml     |  66 +++
- MAINTAINERS                                   |   8 +
- drivers/pwm/Kconfig                           |  12 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-rp1.c                         | 477 ++++++++++++++++++
- include/soc/bcm2835/raspberrypi-pwm-rp1.h     |  12 +
- 6 files changed, 576 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/raspberrypi,rp1-pwm.yaml
- create mode 100644 drivers/pwm/pwm-rp1.c
- create mode 100644 include/soc/bcm2835/raspberrypi-pwm-rp1.h
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="553axux3auq2ermk"
+Content-Disposition: inline
+In-Reply-To: <DN4FFKMFI488.187QX5RI55L8S@garyguo.net>
 
 
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
--- 
-2.51.0
+--553axux3auq2ermk
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/1] rust: pwm: reject over-aligned driver data in
+ `Chip::new()`
+MIME-Version: 1.0
 
+On Wed, Nov 25, 2026 at 04:19:30PM +0000, Gary Guo wrote:
+> On Fri Nov 13, 2026 at 8:25 PM GMT, Priya Bala Govindasamy wrote:
+> > `Chip::new()` does not check the alignment of the driver data type `T`.
+> > This allows a Rust kernel module to choose an arbitrary alignment for `=
+T`.
+> >
+> > `pwmchip_alloc()` reserves `size_of::<T>()` bytes for the driver's
+> > private data. `pwmchip_priv()` aligns this storage to `PWMCHIP_ALIGN`,
+> > which is defined as `ARCH_DMA_MINALIGN`. But, `PwmOps` does not restrict
+> > the alignment of `T`, so a caller may provide a `T` whose required
+> > alignment is greater than `ARCH_DMA_MINALIGN`.
+>=20
+> The commit message is overly verbose slop, please simplify it. Just state=
+ the
+> issue (`pwmchip_alloc` aligns to `PWMCHIP_ALIGN` only) and the fix (reject
+> drvdata with higher alignment with const_assert).
+>=20
+> >
+> > This can result in `drvdata_ptr` pointing to misaligned storage for `T`
+> > in the underlying C allocation.
+> > If `drvdata_ptr` is misaligned for `T`, that breaks the safety
+> > requirements of `pin_init::raw_try_init()` which requires a valid,
+> > aligned pointer as an argument. This is undefined behavior.
+> >
+> > Additionally, `Chip::drvdata()` can be called using the `Chip` produced=
+ by
+> > `Chip::new()`. It creates a reference to `T` from the misaligned storage
+> > which is also undefined behavior.
+>=20
+> These all follows from underalignments and there's no need to do this
+> explicitly.
+>=20
+> >
+> > Reject over-aligned types at compile time by asserting that T's alignme=
+nt
+> > does not exceed ARCH_DMA_MINALIGN.
+> >
+> > This issue was detected by FerroLens, an LLM-assisted analysis tool, and
+> > was then manually analyzed and reproduced.
+>=20
+> This should be a note and not commit message. Move it below the ---.
+
+FTR: While I agree that the commit log is very verbose (and being only
+half Rust-literate I still don't understand it completely :-), but I
+like the info that this was found using a tool (in contrast to being a
+real problem triggering with mainline) in the commit log.
+
+Best regards
+Uwe
+
+--553axux3auq2ermk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsHG6kACgkQj4D7WH0S
+/k584AgAoROiNHvgZ3driRGTU555fNIPYcbMGAUU+my3lqfWESMq7v9Oq5Loawl2
+NhExXyrs7rZK0lvwVpZN2Hhxf8g1OMaPph2PnwQwUDFIiPGgZR6LhcIzd0w4xE/5
+khsLUWxX2/bBlyOUF7aMygLOikUyJnSlTDzTI+6EF1d+kX4Vstbto0OOE69SstcR
+6tQjQJLPSEJoKD6xi+IIhRdGQUZpHCv2q3Y34I1zQajddq6sR9EQf7iIa8Jp0E/z
+1SYyyi9lZJTwpUfZapt6cKaMnmX8fqUsvC7szNobPeFJjQlY1gq1cb0ZfR0oZncT
+QlohAQU17SAh/TRQkvTFYR0fp+O12A==
+=mNhO
+-----END PGP SIGNATURE-----
+
+--553axux3auq2ermk--
