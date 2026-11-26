@@ -1,63 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795703478;
-	b=UkxqqCUSm57gn0obk+ErR9TpYl7oU4sn+ckt+CuyRPjJr3Us5KeWVEW+ZL9BCx/JAwQF
-	 gEBXndgkSYfIWv243lNlHXcFha+//BZPcNB3yEQyW0MmoVH9Kz1/AyKL4HT+CIMgbx1RY
-	 9V5K61NtbJyzVX9MhWCvbdsxocOALASqUgoFYYmGLtEGLVSLNc+zI3LSd+7pMNm11grSB
-	 x4BW+C+F2H6sFKq+bX+agFhvwgU1zVm8nForJIETYmWDWt0dWQoUoOADKlbvGtYMFB4HZ
-	 KYUn6bmHCrIev+9k1m+f2OjAQxsbuRxL6e/TsbkiUyhPUHUAnLAvdVBb1cQABIdmvRg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795703478;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=dqOp3x2OhTFdbiY5eg3d1jl/evxMxcw9ptScest3hww=;
-	b=OwRwDpKffeAGq93cEZ0/B+RA/hRR0AeCXZ8yPtAvRmbBzrQLDDQY8S+qDiChIJo3w95+
-	 Wj2havMni5TrAhE9aIFQDij9BkBsjGiu5x114sebnQsouYkN9lOvZPVnYbdsLIt7TIMCm
-	 FcPMRPUS01YKivkEQijVZt/mHEW6inrUGBwfqTRfO/P3SIgAG8oAq4qjhnzytX0wLefn7
-	 5Ha3xKthYkGG1MBMXzfhTHxmbYZXA+nmpfdlsQPRT16yQtPck428PRKztRRshu+fjjJHL
-	 ODxz4oWqQWAXfqZuMIkfcnPlqZG8Jlq7i9UGgjC9m979U575TD0Auf4Gh6K0g2TK22w==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="G/2c6oyT";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.42
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795714756;
+	b=G8dNpFj8g0L1ThiFZdlSSQCQflNqsJUoSh26QVXl04aKjfj2ilwq+8txg6mCEHGyxCpU
+	 xdfU66jLdkgcmCX38tvAg83hSAmrPsYdjn5ApkU5rpACVHJURjJ47Wmo3qHT7zlMH9fQm
+	 5rgWDtnjm9WCHe4OiqE1E3SyNHNDtMaYJcqIvvu/YiIdbS4ziDUKzYps5TGcOjJDUaTMm
+	 DopzDMHqE84KZJDda0h5nJxQYwnWYUk2QEwfptFYayEBXv+/yVZpKYFu0i4GAGa3Wabrc
+	 iDk3+Ag+Igyi4AF/COTgIgeOQnYWYRt2jrH5BCH1y/ZnQIltL2oLf812mekym4BiMpw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795714756;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=i6Byx0vgKHEW7YL0wzB4/fobaPVqWn2TsKZAJnLVE6U=;
+	b=Nx/XO2Ry+Hk5OBkl3l/lWRKzfG9XAPaQCWGrApYSr+5vr4Y4C0Af6lwRJBsq2xxOklE/
+	 cF/L+IRGjAHZE6qCIoT980slw/u2j+GigXsMxTPlE7SYYtvpVo0RtovRKEW22zwXcW6iL
+	 YdPnUwOqg+SFZoUap/qfll74Bn9RoIO0qzbgqEHehxHJ7HYAAu/LD695vXGrHmNgwutNJ
+	 VnxE51CJ+lS/mRAKBtcAicc8BfpprTUkD6Mj8ycaia2XgU1DU009Ew77Eevqrj8/bUERG
+	 cD7d1qB37m01VlhrOmZQ64WGaY1ThbSo7StJCRjhrQguxSbA7pXr/8lwcIhA1OdIxSQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=uci.edu;
+	spf=pass smtp.mailfrom=uci.edu;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.42
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96370606A6A5;
-	Thu, 26 Nov 2026 14:31:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G/2c6oyT
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E19C81F008B2;
-	Thu, 26 Nov 2026 14:31:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795703478;
-	bh=dqOp3x2OhTFdbiY5eg3d1jl/evxMxcw9ptScest3hww=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=G/2c6oyT4mkGQ1GvFwW0RWDn6uK67t55gc7COa1Avts+AEEAdFczdaxOZlP3aPIt+
-	 CEMoS68X7bGtI107btrvioBgRYuyexRJeV4AhdMWBt94wwsl+SQ3fnMrbt4hnPYHOo
-	 oSNhfl1D8WekRCcpk+3Rsnkx9BXUl84fWWd3MDraUm/CX+Grs9/fiGAIvk1jQvm9iU
-	 aC3hTYYdOCiQ29uF79ZOI+m1sico6LAEKuPlzfl79Kq55RFxoqziZkGAjkZqheNSUu
-	 sLRBB6tNDkOfm6f1n7hZwDE9U2PusAleO6lhOTYT10aDwcJxinJJxlhpuVdf0sX4lq
-	 ESbkJ6bmKKG6A==
-From: Geert Uytterhoeven <geert@kernel.org>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-pwm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 6/6] pwm: rcar: Add support for R-Car Gen5
-Date: Thu, 26 Nov 2026 15:30:41 +0100
-Message-ID: <b85cb5b3a2b580c3ee7dd4c5feeef552783e2321.1795702568.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1795702568.git.geert+renesas@glider.be>
-References: <cover.1795702568.git.geert+renesas@glider.be>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE83606A31C
+	for <linux-pwm@vger.kernel.org>; Thu, 26 Nov 2026 17:39:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1AE83606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uci.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uci.edu
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-92157f2e8c1so55801576d6.1
+        for <linux-pwm@vger.kernel.org>; Thu, 26 Nov 2026 09:39:10 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795714750; cv=none;
+        d=google.com; s=arc-20260327;
+        b=FHG5xJXOjv53/k80ZyQ7ohUBnrcNnm/M/zGz9cLWBAJ5U4VZ5zBQJD8G6K6dhshdUP
+         sQfGb48ATB19xT2b2wG0PfFNUQMG5moOba4nCg/cB5LDzXzcgcNXR9UDR8p+IXrkeEpK
+         Kk9iyy4XFS8NDvIiuMsUZAIUNFkxJzOBUGxrajLceCcmGhAB3LSt3MPTo9ShzQCto0CO
+         T4qy4cn/N4G0G3aX3C4hI+LUimTAjjGEM8/EaJpGa9E6Z3YWBkeMNd6VwrTO/EfW9FT2
+         vrh9fYlojEmdjmEfLsxLXvmNSbiHfD+G7dB4cv5LTrI5HGmqfWy6UnMWvgzAeCvkPSjZ
+         4MGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=i6Byx0vgKHEW7YL0wzB4/fobaPVqWn2TsKZAJnLVE6U=;
+        fh=lhRtCZDHxxAVIkvBpn0B26dQtjQNKZP9No16GRB7epE=;
+        b=mOSYfMc9XBViO1GoosYjKsKS2JErPpLVdSYc5ZQV/sfSdz6RipNyw6Yn4LO9FG73Kt
+         aXGgkFeUhL65Xx7j6akA2aHhaCXHGd8qgVrBQWkT/KohtUuxLW8HJIb/PmDZ/DM88Tjv
+         MCPRsLdfMkKusc9YyB8IL+PmPxBtG8kIfpATn1rvpqjeJn/Wg1p7TEnuDYH3lTDblOHD
+         T/EKQ3FHwIPKX5YCWDQDDKyV8AwvEhvrER5cdm/WZK8rVUXjHpYw6emSKxN+LWAWtkM6
+         8MvyncXPW/im/FMWdhKtz+EkCdtFqx5bpgrxx0Yb+sGHGcOulvFuwgVWf51ba1iQoKC3
+         T77A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=uci.edu; s=google; t=1795714750; x=1796319550; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=i6Byx0vgKHEW7YL0wzB4/fobaPVqWn2TsKZAJnLVE6U=;
+        b=WAGRHCmHlEAu0arQWfqXzN06Ck0+vGe4GirOTzGET2xld0xirUELoptRM0pH8b3BUq
+         CuaEwO9oxSfWw5uIf33fw5sIi7ZSZ+/Nzz3zsJt2PA9HUmXkE1DQBOFrOEuocx0ya9ZV
+         W2nisvRHVsgjoYMp42NqYA4GDEVm99qMIqPlm4ssgpQYc3fWN9nom8mBm6cBTGYEdKxa
+         bCs4x91XpmKDHQ5V2zxvW2vqYazIBpPVOQxrY4I2fV8YUneSXwurZ7rs5qTPxsPXf5E+
+         +QmZEBop57q0QpB50Eg6ptV0qC2TjjxuKDNM5jZbEbnBM1ScCc8gFw65jA5bbHg8GnNg
+         v5Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795714750; x=1796319550;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=i6Byx0vgKHEW7YL0wzB4/fobaPVqWn2TsKZAJnLVE6U=;
+        b=yPTK8vYAUBCBW36dNfNmc3AUwFVaXYu6dRSJDkySsoZ4G/EHJS5b+hkHamZeFF5PCl
+         BwaCPxg7AmZzHkwz1D2Y7JqkpfDXhMx4TmtWXFptTiqj0wIDXN6d6K8OvTYPTq5eGi3g
+         UEgsTu/oIBdxRRXYklxuHEsaIrjhnszkykQiNNGKrF0R7mpHrYZ/NlOg8DQdbNaUjTlE
+         mNTD6PZNr/ZsGHWB6/geQihFII2tkJgG8yT0ZuqDiwW4OEqYcdevxQE5gUGCuVD4jnlA
+         FDRp521gY0yXbSLCF93ylAAgtLKsjCqk8Zf7qvOH1L18O30CpB+y/cMrDmKPVvCiL+UH
+         HcOA==
+X-Forwarded-Encrypted: i=1; AL+hErGIKXZ6Ucykv+3AKupxIzBoQ9R2vjreAkmCYRiXRIZjH0UpMYUynKdsvCneHR257MpLHijEyFC1ZFk=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8T2Vf6/5icQxfDJURZ2xgqCqWU9hTAaihlYGdSjjXZ+124LICD
+	srhCcSDF2ju30M5RRajF4SOJen+0uS+qnMtet3J7Em2pZGA99AGK3XNQn33oed4iSMDxO06MaTu
+	cFw76NF6AUOZPNY4BTGLWLuOeX5ea+f1MR6BXXTuvpw==
+X-Gm-Gg: AZFdTZewtWnXBISCqR2HirnyIpFt5XlDGHPXEIqAl4d5CVGCdLMrOFt5If3X0eHNtYI
+	CVt4INzoMVSXsWSEvKFZ55hvHoGJEWMnMcF6OfM+IzyAn2ko/RPUuq+i3LCC/xmFAwvDSnGxqsq
+	msOHD1kUENLfwrjG7ckTopBGDFPWyXTdhfDpllNZs4NSqOBkf98qS9FOLSu5v39qoKeIomuoE2s
+	p90XP9JiyGVa1Z2mCBvJLSowOjdxT8Z6JBvD7Y9DecyI8RMD5wqF9Ck3Nvj1aiXhnwojlcElqPr
+	f6Q8mFcqT/TdkGgHO70fPTwN/olJVUqYmJhhfSpoa6pv7Z6Ew86ceiAcNpIlm8obY984zC+q9L3
+	VwlrxSAU07F3nvp8t3sbEWMhQc2/LVLRMAEyuii963RalO1cpN/M1aLGbSVpZ7tNPg4lw2Q==
+X-Received: by 2002:a05:6214:248d:b0:920:ee20:af2f with SMTP id
+ 6a1803df08f44-921349db00cmr432813936d6.6.1795714749912; Thu, 26 Nov 2026
+ 09:39:09 -0800 (PST)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -67,85 +101,35 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1794600927.git.pgovind2@uci.edu> <CGME20261113202542eucas1p27ba92593376041c476afa9c5286205cf@eucas1p2.samsung.com>
+ <caddec5478a0d39a73152247a60bc21b3c609cc7.1794600927.git.pgovind2@uci.edu> <9ee41556-4a24-47b2-9db3-9665048658eb@samsung.com>
+In-Reply-To: <9ee41556-4a24-47b2-9db3-9665048658eb@samsung.com>
+From: Priya Bala Govindasamy <pgovind2@uci.edu>
+Date: Thu, 26 Nov 2026 09:38:59 -0800
+X-Gm-Features: Aa3M54pu9Qa4ZZ6_EIlNbo-KxPT-Rg77lhi2tuQOtAvg_t6FJtZeW7oVBArQtVU
+Message-ID: <CAPPBnEbnBPsYxE5ZXPkhGfueMoYD6DAH7dDrR=wRcq_mD686fg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] rust: pwm: reject over-aligned driver data in `Chip::new()`
+To: Michal Wilczynski <m.wilczynski@samsung.com>
+Cc: ojeda@kernel.org, ukleinek@kernel.org, boqun@kernel.org, gary@garyguo.net, 
+	bjorn3_gh@protonmail.com, lossin@kernel.org, a.hindborg@kernel.org, 
+	aliceryhl@google.com, tmgross@umich.edu, dakr@kernel.org, 
+	daniel.almeida@collabora.com, tamird@kernel.org, acourbot@nvidia.com, 
+	work@onurozkan.dev, elle@weathered-steel.dev, linux-pwm@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, ardalan@uci.edu, zhiyunq@cs.ucr.edu, 
+	dzueck@uci.edu
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+On Wed, Nov 25, 2026 at 7:42=E2=80=AFAM Michal Wilczynski
+<m.wilczynski@samsung.com> wrote:
+> The C layout uses PWMCHIP_ALIGN, which is private to core.c. If Uwe
+> agrees it might be a good idea to move it to include/linux/pwm.h and
+> assert against that, so the two can't drift apart.
 
-R-Car Gen5 enlarged the PWM output cycle and high-level period fields
-from 10 to 24 bits.  As the existing register bitfields can accommodate
-only 16 bits, the high parts of each field are stored in a new register.
+Thanks for your comments. As per Gary and Uwe's feedback, I will
+shorten the commit message in the v2 patch. Just to confirm, for v2
+should I only update the commit message, or also move PWMCHIP_ALIGN
+into include/linux/pwm.h?
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-v2:
-  - Improve patch description.
----
- drivers/pwm/pwm-rcar.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 3813094c601efc8c..5e91509de7a7c162 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -31,7 +31,8 @@
- #define  RCAR_PWMCR_SS0		BIT(4)
- #define  RCAR_PWMCR_EN0		BIT(0)
- 
--#define RCAR_PWMCNT		0x04
-+#define RCAR_PWMCNTA		0x04		/* Low part */
-+#define RCAR_PWMCNTB		0x08		/* High part (R-Car Gen5) */
- #define  RCAR_PWMCNT_CYC0_MASK	GENMASK(31, 16)
- #define  RCAR_PWMCNT_PH0_MASK	GENMASK(15, 0)
- 
-@@ -124,9 +125,15 @@ static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, u64 duty_ns,
- 		return -EINVAL;
- 
- 	rcar_pwm_write(rp,
--		       FIELD_PREP(RCAR_PWMCNT_CYC0_MASK, cyc) |
--		       FIELD_PREP(RCAR_PWMCNT_PH0_MASK, ph),
--		       RCAR_PWMCNT);
-+		       FIELD_PREP(RCAR_PWMCNT_CYC0_MASK, lower_16_bits(cyc)) |
-+		       FIELD_PREP(RCAR_PWMCNT_PH0_MASK, lower_16_bits(ph)),
-+		       RCAR_PWMCNTA);
-+
-+	if (rp->cycle_bits >= 16)
-+		rcar_pwm_write(rp,
-+		       FIELD_PREP(RCAR_PWMCNT_CYC0_MASK, upper_16_bits(cyc)) |
-+		       FIELD_PREP(RCAR_PWMCNT_PH0_MASK, upper_16_bits(ph)),
-+		       RCAR_PWMCNTB);
- 
- 	return 0;
- }
-@@ -146,9 +153,14 @@ static int rcar_pwm_enable(struct rcar_pwm_chip *rp)
- 	u32 value, cyc, ph;
- 
- 	/* Don't enable the PWM device if CYC0 or PH0 is 0 */
--	value = rcar_pwm_read(rp, RCAR_PWMCNT);
-+	value = rcar_pwm_read(rp, RCAR_PWMCNTA);
- 	cyc = FIELD_GET(RCAR_PWMCNT_CYC0_MASK, value);
- 	ph = FIELD_GET(RCAR_PWMCNT_PH0_MASK, value);
-+	if (rp->cycle_bits >= 16) {
-+		value = rcar_pwm_read(rp, RCAR_PWMCNTB);
-+		cyc |= FIELD_GET(RCAR_PWMCNT_CYC0_MASK, value) << 16;
-+		ph |= FIELD_GET(RCAR_PWMCNT_PH0_MASK, value) << 16;
-+	}
- 
- 	if ((cyc & RCAR_PWM_MAX_CYCLE(rp)) == 0 ||
- 	    (ph & RCAR_PWM_MAX_CYCLE(rp)) == 0)
-@@ -262,8 +274,13 @@ static const struct rcar_pwm_info rcar_pwm_info = {
- 	.cycle_bits = 10,
- };
- 
-+static const struct rcar_pwm_info rcar_gen5_pwm_info = {
-+	.cycle_bits = 24,
-+};
-+
- static const struct of_device_id rcar_pwm_of_table[] = {
- 	{ .compatible = "renesas,pwm-rcar", .data = &rcar_pwm_info },
-+	{ .compatible = "renesas,rcar-gen5-pwm", .data = &rcar_gen5_pwm_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, rcar_pwm_of_table);
--- 
-2.43.0
-
+Best regards,
+Priya
