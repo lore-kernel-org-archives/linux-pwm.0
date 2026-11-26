@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795694430;
-	b=Fn7IKccdlIeZF02LXzd8Ix9987tZeu0ouu52UBpArIh/S+vMcF7zaomeUY3j7FL0z6/y
-	 r5DDfdUWyysFOj8V8PxWqI72bUXIcXAJMqfY5jpnNjpUa9L35hhH2YieS2I4sl06blGOQ
-	 ec0Zt5NysrXxEWHwyEhDLpCfkzYFE94qAkT6tCeADKZDJKGs3JVJFydRRsdzW0ACq01Bq
-	 BdLEEC2vwQsFYxlIXG+y5z+Dui3PJw/iBzSjad3s6wTGYE09XbmjnBqFKgXLSoM4iETJF
-	 EiCx9ZFmyLgelMUc1Zf5IjhzzqW6G7VTlrZqSOirqrCtcBRv3BTTi0CLCTrOi20SxlA==
+	t=1795694436;
+	b=IUKI0LxQMnh6VZAqX9tZjadfGwc2rvsHEX2O7YGkil0MwaxJTMAeiQ+BrscxfjmrCspS
+	 rdQP3ArZQK+178xhHw1B1eWB23o5ZevlpJFpqi9reBQe3GtZuFuFhSW2nFx3aYlc6zrrL
+	 f2x68giZnsSzmL2W1WCiZG+O9Zm0AvQtYIzil+snW1xMvqHBdbvIPbEPldpe9tn39vYcv
+	 Dw+l28ZlxpKZm3u5Ki5PuHIzOZh3aCdxSi2EHMPWnF7jt3iIX6GspQ7XM8N45RVCbX7kG
+	 gcbSibtrXjYuw+5kWXwqo3l3eOTvtX5CSvbdDRpq5vjif+DLIyfPNbkh3cFSFOOeQew==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795694430;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795694436;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:References:
-	 Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=/ONWCrPy0RVOfGMWQBZS7df1LPK5ZtI/y925do3hgoU=;
-	b=dm42MVIGxhfBMgbFtCuIAaLY3qdeqWmLfltV4KXciyxToDwV4kl3I7XENUlSAVYb4jnQ
-	 CDJ9uyzGjKw7GKdW4btSluGKYa+MhjOOHGGowxi8sdzqVt4o1cs5L153cro1t4tGQYTdK
-	 FJm2Wm0vJhdcfpN2EGqzJZRaRj61Q0GbSPveg9utXDLPloSchiebCVngaqJGymDYugz+k
-	 Vslzuo1wLgOeFPG9/7nUsovKkAlmLFF9mOgXTLBgfNY7fk5NH1Qwn86iD1FXtMTjNhe/l
-	 heNHGo+e+vowgrwF8vxUuE9djuA3qAJQZWDIHyTgMHTkrjwMocrVN1vVQ7p8WNe15Ow==
+	 Date:Message-ID:MIME-Version:Content-Type;
+	bh=NeVecizEzCgloQzgLcrNc914RsWbWV3K83+bGSP1TQo=;
+	b=QhVH2k12TaR89zftRylnC32ZTFa9w+RZQjg0S5IxjksD1NlNhbzgLHARwJl7ZSXTRq95
+	 KOpSjeJ6JYZtuYfnIdwq+aq8K26rIIC1DX+fAoOLU5iXez/m/Rh637dBKXD+JsICrNPWI
+	 v55Y6LYRzK41JkWA6TlBZr3bRoQgnWvShChf81s9sZdPwxzrQO6pkRCRrEVra+zDxDPnJ
+	 QF2HUCHbfFbljTLwrvhcc6khtoNJa9opilM3SqCphO4AZOEnpA1N6eAP0Wgm9wyNHe6va
+	 LSyfSM8pN/cdg7KBedhWy71Ea1o4BZfy8EIaVH3STAngb59UaAvqrQJ+H2m/Y+CNIDQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R1QTUOxC;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mhzb80Ow;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0CA6606A31C;
-	Thu, 26 Nov 2026 12:00:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED2F5606A31C;
+	Thu, 26 Nov 2026 12:00:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R1QTUOxC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D68481F000CA;
-	Thu, 26 Nov 2026 12:00:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mhzb80Ow
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B3661F000C0;
+	Thu, 26 Nov 2026 12:00:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795694430;
-	bh=/ONWCrPy0RVOfGMWQBZS7df1LPK5ZtI/y925do3hgoU=;
+	s=k20260515; t=1795694435;
+	bh=NeVecizEzCgloQzgLcrNc914RsWbWV3K83+bGSP1TQo=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=R1QTUOxCmZ8uOQuqv3c3CjIhrB4japHBCOwZwCdQr/x54ft6K0ism6knpz8M/zXWc
-	 v8PYU0KCFUmIkRFVTM1IxNhVKHl1Rnbq1xJbKTfLNE30PLlfHaOfo0NxHlXW+XlqM6
-	 A5rAtepGXCL6LR1z+7L66EYLk4pDuU94we59R17AzVBd6oO/c3+FA6cf/9ejqil72K
-	 +z+28qGgPoiVXDRoE0K4ZuKrKD6aTtzChXeVBDJvC9E9+o0hnZtQ7NcE5/c8q9iK9s
-	 5WNckbShpku2UW2kIsdAuSaRHh8t0Yw8LQOTE7XN3eQOnglg0ClnFyVC5Cd6VIowB6
-	 M5ZxTNcsODgHw==
+	b=mhzb80Ow8ANuEJkPFj8CzgJRVsIWYnVzXqd8oLrrsF8pvo8myS301oBZOA21us39/
+	 RTyya+8j73ldZgTXDL0mYjlsPqyMgEJs74f0OaucbmNqKPci/aDTFtAcr1M1qbCR14
+	 MOPvXqs2XjR0WwZqLrcFFLUU4bhgctc3al5iQwx48T676s0dL84mTltDZ5N2rXzYlt
+	 8c4WXDXfeBldPJSs4GFUaSF9EeT12FgH5TB00VhLyoIs3g5kQ05xlxkFfFdsPxvisX
+	 5rQMFoRcaRnUIlfWZ5HnVGyIkJOZIft00roBs9MjjIK4/0DyYfyDUwJGA04voSXclc
+	 vD80/3hjou/rQ==
 From: Andreas Hindborg <a.hindborg@kernel.org>
 To: FUJITA Tomonori <tomo@flapping.org>, fustini@kernel.org,
  guoren@kernel.org, ojeda@kernel.org, ukleinek@kernel.org, wefu@redhat.com
@@ -49,14 +49,13 @@ Cc: acourbot@nvidia.com, aliceryhl@google.com, bjorn3_gh@protonmail.com,
  m.wilczynski@samsung.com, tamird@kernel.org, tmgross@umich.edu,
  work@onurozkan.dev, linux-pwm@vger.kernel.org,
  rust-for-linux@vger.kernel.org, FUJITA Tomonori
- <fujita.tomonori@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
- <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v4 2/2] pwm: th1520: Fix 32-bit build with COMPILE_TEST
-In-Reply-To: <20261118224826.2491684-3-tomo@flapping.org>
+ <fujita.tomonori@gmail.com>
+Subject: Re: [PATCH v4 0/2] rust: add u64 division helpers and fix the
+ pwm_th1520 32-bit build
+In-Reply-To: <20261118224826.2491684-1-tomo@flapping.org>
 References: <20261118224826.2491684-1-tomo@flapping.org>
- <20261118224826.2491684-3-tomo@flapping.org>
-Date: Thu, 26 Nov 2026 13:00:18 +0100
-Message-ID: <87qzg7u7jh.fsf@t14s.mail-host-address-is-not-set>
+Date: Thu, 26 Nov 2026 12:59:02 +0100
+Message-ID: <87tsl3u7ll.fsf@t14s.mail-host-address-is-not-set>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -66,37 +65,35 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
 FUJITA Tomonori <tomo@flapping.org> writes:
 
 > From: FUJITA Tomonori <fujita.tomonori@gmail.com>
 >
-> Fix the following build error on 32-bit ARM with COMPILE_TEST:
+> This series fixes the 32-bit build of the TH1520 PWM driver with
+> COMPILE_TEST.
 >
->   ERROR: modpost: drivers/pwm/pwm_th1520.ko: symbol '__aeabi_uldivmod' un=
-defined!
+> Patch 1 adds a math module to the kernel crate with Rust versions of
+> div64_u64() and DIV64_U64_ROUND_UP(). Patch 2 uses them in the driver.
 >
-> The driver divides u64 values when it converts between nanoseconds and
-> clock cycles. On 32-bit ARM, these divisions are compiled to calls to
-> __aeabi_uldivmod, which the kernel does not provide.
+> The driver only needs u64 by u64 division. It does not need a 128-bit
+> intermediate value like mul_u64_u64_div_u64().
 >
-> Use div64_u64() and div64_u64_round_up() for these divisions, in the
-> same way as C drivers use div64_u64() and DIV64_U64_ROUND_UP(). The
-> results do not change.
+> Miguel, Uwe acked patch 2 and is fine with this series going through
+> the Rust tree.
 >
-> Fixes: 3c180003dffb ("pwm: th1520: Fix missing Kconfig dependencies")
-> Reported-by: Andreas Hindborg <a.hindborg@kernel.org>
-> Closes: https://rust-for-linux.zulipchat.com/#narrow/channel/291565-Help/=
-topic/64bit.20division.20in.20.60pwm_th1520.2Ers.60/near/626825599
-> Suggested-by: Uwe Kleine-K=C3=B6nig <ukleinek@kernel.org>
-> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
-> Signed-off-by: FUJITA Tomonori <fujita.tomonori@gmail.com>
+> chenhan's patch [1] also adds rust/kernel/math.rs, with signed
+> division helpers. Both use the same module header, so whichever
+> is applied later needs only a small rebase.
+>
+> Tested with the doctests on x86_64 and 32-bit ARM QEMU.
+>
 
 Reviewed-by: Andreas Hindborg <a.hindborg@kernel.org>
 
 Best regards,
 Andreas Hindborg
+
 
 
