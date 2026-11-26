@@ -1,61 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795648545;
-	b=ofTMUoPxKx0Pf7z1zgwQvx/UlPU23/agiqlmI+uOi9bSNOGMQUAgC4iSRUDq8KZrruqq
-	 Uosce5JNVjY+KTCGcG29TxRGUSm6nePQ77xR8uaDfJoosJPFbR0NN4mLOSHrJvvqlc7M6
-	 5D/PajIROQbziDTg3uuXd0hwqZUneewUwsrtN5DKRwuLe2AHMA9D/9RhI/4qkcYs1DILQ
-	 n7uHHD89uHqTgS9ZNOyaqPoZzwpmJpbtePWcwtGiCcPssWOzZZuA+CLUHtG+/FMXKqfQ/
-	 S4qHpXHpf1v5Z6MQU3oL96Wug8a+Po2+ziPYJ41onUSA1XQgfOF55kSlD+NeOAy+EZQ==
+	t=1795687905;
+	b=IM6lHmn/0jeohdyr3hH0RYBkAqKXaUyWmHKGxGHm482VE6gnX3Dh0MJK6pEXw/gQE5Px
+	 HeXZacqDppjGFCc41VqCo5lmr92GV7xvHL/F7GFbM0lyTUS58G5RUHsF/zvl+Eq9kUI+l
+	 L4K2QLUnvpWWXbHQBrlYyRGohBHgBCdZe7TYeOygEEm6rhg0kw8/nPqW1BTlMAP+80rxP
+	 cqtK6oegB6oqx3Kh1BUb3ciyBzrhkQpyIOcCgm/uFzEIWb4idgcoxN+LN8FFN5HwDUZ31
+	 hg/gTpqUb/osWi7yUtMoSdIszB2uDqkZmY7fwzMEjFNGHOWG1trUb6+qlTcJ4bDrocw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795648545;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795687905;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=RKU43PV6v6Z6Y7r13RaAE1fMnAuQ4/xp8oTM5GP3ccM=;
-	b=L1DuCUYu/+hE/PFKbd01ePA90oGKsdMYpMWub+VkIZTvW+xeO2/z0EalMQy6FBQoD0TD
-	 ZVBH4FId/sqomavGonj0VPtbSDtYengsoSWg1Dof/rJ8Lff0FWGpvqrTEcmPJ2ILaVViU
-	 2K7ZzOxRNb9UhoLUQRB9JwKqG8lP8G65C7o6hMQntfn8vaYYU9p9yhUALVOQaR7VjxpmW
-	 Hy953PUjjiiM1wOq/dfSgTekEs+EQBbZ5aPueInNvAObhI+IhomK9w9zi5l1KjM2oTwbj
-	 RpxGf8XthgklrMhle1eIjOIGwKyArfn2dlJGaGxTthPDOCBKC1bAgQUYiZYHk++DgxA==
+	bh=HAJAo8CN+a2ad2/AuSuWENM8KqTIk5dcUroaCZsRSVU=;
+	b=k9brD/klaWDqsoHDO/un2wDe01KHRlxsjkfRHzSOWSYqfq3c1eYPPuWuC5YFUHZAV3Tz
+	 U3N5BsJ0Nimop0Up8aRPAjZaFc8meXRLEVr0eu8fHr5TV4lit5O+fk9NQd6t0XWQoVIsB
+	 01FGv/rLBqx2qiWuhFvwaewGbDlFFCDmoTGLTl8F6dT81l8pzIvqMpMkDbPQTl8WnYI9S
+	 Az9NLei/0VjncOlpTIUtlQ7gIQZvdmqZvwye4JsgXZfAWzaToKI72fYSF2/AJVgedYttN
+	 hEKEM+AT0hFM4LaLDRBKRV6sWy3B0u+3AGi8oZ9MHjLZfO9W2IxjoRGY/ieA1gBZ/7Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L3+i0JDP;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EbL8Txbg;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id CDE7F606A321;
-	Wed, 25 Nov 2026 23:15:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 2B044606A321;
+	Thu, 26 Nov 2026 10:11:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L3+i0JDP
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 94C061F000CA;
-	Wed, 25 Nov 2026 23:15:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EbL8Txbg
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E34CD1F000CF;
+	Thu, 26 Nov 2026 10:11:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795648545;
-	bh=RKU43PV6v6Z6Y7r13RaAE1fMnAuQ4/xp8oTM5GP3ccM=;
+	s=k20260515; t=1795687904;
+	bh=HAJAo8CN+a2ad2/AuSuWENM8KqTIk5dcUroaCZsRSVU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=L3+i0JDP93bNhCHqYr2zL5RMHo7EsNjmuIcuHxD9rzEqTybdE9RFReipmqhYiXgyJ
-	 CVXOMO85sv/BMx2/o9De/1fJaD1gprQl90y/+dxdY9QUCx1i7Uzt+hH6AJitbwwWpW
-	 FK3hs3k8CwxTVf9s+C/iqc5+9nIK9U0oCDHdIeMVnrNcipLhFgQ5AuMN82Etir07nL
-	 dJPD7PVD4Apw/+1ISfmn5/Qtm+zoOvWgnjZ6k39JniWKMwdqvmCZpG/llADy6qaB0i
-	 9IFlBlaThMj7AP8lDyyVFkkusQjMX5KUUUQueazUEVdPj4gORKMY2TfhCeFH5UHeDd
-	 5acViyZQct/VQ==
-Date: Thu, 26 Nov 2026 00:15:42 +0100
+	b=EbL8Txbg44fuRJcGf0rVEAKpWer0aO3WEnilkpTjoEm0VZK7cj22NKzGZaUFasWwp
+	 EiOCBAml/DFFOZkkZErv+4fpq5YaMrFXm0ifeuYT2ja3y+3rHmws/pBNoJnEzuh5Dx
+	 mKzMKcVq3FMuhvZUoRbRAohP628pgb8+0rTNZEjI0xlE8norc1aCkyiYRxIDOEkBzW
+	 BekoyPtxkUaqd7foOfPWclykoJ2mZnMWK9a2Xg2rFFUZmdbcNem1IF3mDWxwXFwabb
+	 5U5VQ+wHRpYTGDGTvms3PV7Uvw/R4E5uWSCzwUERMJddHRK0vlrWR7Lbq4xzgiWvAz
+	 hyBcl7MlnHbvQ==
+Date: Thu, 26 Nov 2026 11:11:41 +0100
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Gary Guo <gary@garyguo.net>
-Cc: Priya Bala Govindasamy <pgovind2@uci.edu>, m.wilczynski@samsung.com, 
-	ojeda@kernel.org, boqun@kernel.org, bjorn3_gh@protonmail.com, lossin@kernel.org, 
-	a.hindborg@kernel.org, aliceryhl@google.com, tmgross@umich.edu, dakr@kernel.org, 
-	daniel.almeida@collabora.com, tamird@kernel.org, acourbot@nvidia.com, work@onurozkan.dev, 
-	elle@weathered-steel.dev, linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	ardalan@uci.edu, zhiyunq@cs.ucr.edu, dzueck@uci.edu
-Subject: Re: [PATCH 1/1] rust: pwm: reject over-aligned driver data in
- `Chip::new()`
-Message-ID: <awdrlmrOn0_lKlUX@monoceros>
-References: <cover.1794600927.git.pgovind2@uci.edu>
- <caddec5478a0d39a73152247a60bc21b3c609cc7.1794600927.git.pgovind2@uci.edu>
- <DN4FFKMFI488.187QX5RI55L8S@garyguo.net>
- <awcbICD_lN4uJrKo@monoceros>
- <DN4H92P6CGXR.UWHS0SN6H62D@garyguo.net>
+To: Conor Dooley <conor@kernel.org>
+Cc: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Michael Hennerich <michael.hennerich@analog.com>, Trevor Gamblin <tgamblin@baylibre.com>, 
+	David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
+Message-ID: <awgEH1y_JnsiactY@monoceros>
+References: <awVki6lC3SxGfqSl@monoceros>
+ <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
+ <20261124-bath-runaround-dccb788f14e3@spud>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -66,68 +62,75 @@ List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="rxczz6rflblfv7tr"
+	protocol="application/pgp-signature"; boundary="2cgg4o7s4rucd725"
 Content-Disposition: inline
-In-Reply-To: <DN4H92P6CGXR.UWHS0SN6H62D@garyguo.net>
+In-Reply-To: <20261124-bath-runaround-dccb788f14e3@spud>
 
 
---rxczz6rflblfv7tr
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+--2cgg4o7s4rucd725
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 1/1] rust: pwm: reject over-aligned driver data in
- `Chip::new()`
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
 MIME-Version: 1.0
 
-On Wed, Nov 25, 2026 at 05:45:03PM +0000, Gary Guo wrote:
-> On Wed Nov 25, 2026 at 5:32 PM GMT, Uwe Kleine-K=F6nig wrote:
-> > On Wed, Nov 25, 2026 at 04:19:30PM +0000, Gary Guo wrote:
-> >> On Fri Nov 13, 2026 at 8:25 PM GMT, Priya Bala Govindasamy wrote:
-> >> > This issue was detected by FerroLens, an LLM-assisted analysis tool,=
- and
-> >> > was then manually analyzed and reproduced.
-> >>=20
-> >> This should be a note and not commit message. Move it below the ---.
-> >
-> > FTR: While I agree that the commit log is very verbose (and being only
-> > half Rust-literate I still don't understand it completely :-), but I
-> > like the info that this was found using a tool (in contrast to being a
-> > real problem triggering with mainline) in the commit log.
+On Tue, Nov 24, 2026 at 06:34:13PM +0000, Conor Dooley wrote:
+> On Tue, Nov 24, 2026 at 01:47:13PM +0200, Nicolae-Daniel Deaconescu wrote:
+> > Hi Uwe,
+> >=20
+> > Yes, that works. It is how the gate duty was set before, in ad7625.c, w=
+ith
+> > DIV_ROUND_UP(NSEC_PER_SEC * pulses, rate), which gives 34 ns for 4 puls=
+es
+> > at 120 MHz. I'd drop the step API (patches 1 and 2) and do the same for=
+ the
+> > new parts, but i don't have the clock rate, and without a clocks proper=
+ty
+> > I don't know how I should get it. The PWM core has no way to report it.
+> >=20
+> > Conor, Uwe: is a clocks property on adi,ltc2387 acceptable,?
+> > If not, how should the driver get the rate?
 >=20
-> Perhaps better to just state "This is a soundness issue and not triggered=
- on
-> any of the in-tree users"? I think that's what's important for commit log=
-s.
-> Whether a tool is used to find it doesn't have direct correlation to whet=
-her any
-> in-tree users are affected.
->=20
-> Given the removal of "Assisted-by" requirement recently I thought the ide=
-a is
-> that exact tool / model used doesn't belong to commit message anymore.
+> My opinion here has not changed. The clock is an input to the pwm
+> generator, not the iio device.
 
-I'm ok with making the statement "Found by static analysis" or similar.
-The thing that's relevant is that it wasn't hit in real life. (Assuming
-that the reproduction that the patch author wrote about involved
-modifying a driver to use a struct with stricter alignment requirements
-than currently present.)
+The setup as I understand it (
+
+              ,-----.                   ,---.
+  clk ---+----> PWM >--- pwm signal ---->   |         ,-----.
+         |    `-----'                   | & >---------| iio |
+         `------------------------------>   |         `-----'
+                                        `---'
+)
+works as the clk feeds into both, the PWM and (masked by the PWM) also
+into the iio device. So the clk is in the same way relevant for the iio
+device as the PWM signal?!
+
+> Using the pwm generator input clock in this way is also inherently tied
+> to one implementation, since assumes a particular relationship between
+> input clock and output waveforms. Were a different pwm generator to be
+> used that had a /2 divider between input and output to be used, the
+> logic here would break?
+
+Yes an additional divider only on the clk->PWM path would break that (or
+need adaptions to the algorithm at least).
 
 Best regards
 Uwe
 
---rxczz6rflblfv7tr
+--2cgg4o7s4rucd725
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsHbBsACgkQj4D7WH0S
-/k5JLAf/UJzK0sCwcg1hpwNCWXxGpVGKiUYgTp22ZVXBAKfT9JcO81eRRNAYTtLl
-jR/kf14S94se2B8dAxdfCnASGuWlVavBcGp34+cm8x5dA7c8ssAc/77sfOa49oJO
-OAcM6xd/bX6NzxeKfUl7XF3N+9J9MmYgMLWoR51LrkhMWh/TvFlna8U7COAJwECu
-1UNzQXqT4fguvNuue28HpTc3LAQ5IkEbWhptJjKxgM1XOU+IcJfHGUWy3cafDBqJ
-JJ9tdyjKCtvQ4MW/lDvR8MxZ+ZYnwWyFCfpNHmu5YfDKZYmFATf17oVii1SCdGF0
-MjSsKKenCHkwTnDOsKqoLB65u6NWMQ==
-=sMvJ
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsIBdsACgkQj4D7WH0S
+/k4mKQf/RO6OHP/Eo6JdjL4f5G2MIQWChDzq9XoctpM2ec7U6Gkr54MFg1Yl8tF2
+74J6Amq1GKVf0zca3FGhmpLWp+rkAf9ryoiUmj+NMC9S6TNIO7YmYAR9EJVKrLXg
+kvEBQIj5vqCF5f7fggrQhPqnF0ESlxZQPHkATnOn03O1V81ut1ORqQDzh4daZurQ
+jEs7iPtfOfWXYRcbGCuBiOfF6VXk2h1IpMzbyVgVM/Kd9wz88crjektyp8b4Gt7t
+B1PaJfx0xgw611RKHlslJIdukWJb0eUXBr+a7hbuWp+xGOCRaUKvi1gQjIUl5gub
+poambkD6A8/tncOim01feVRP+yfU+w==
+=HhS5
 -----END PGP SIGNATURE-----
 
---rxczz6rflblfv7tr--
+--2cgg4o7s4rucd725--
