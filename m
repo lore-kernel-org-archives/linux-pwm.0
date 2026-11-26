@@ -1,60 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=178.238.236.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795716386;
-	b=NK5sWcEsr5s3D7toGA7axeHPpl5vwqGG314g46gQ/FVp22+81cz91ZWLpZtgKxsA6RYa
-	 2aI7FC1Dhpx0r2ogQ37GeYJGuBgi8Aep3Q0Zy7DqYdNkt3ocj9XUgmLz0rFhAs9UlE0wn
-	 3xnSIC89tyqKG2hQwPY2lrv4Zl1kdjSDD9ktb91FRahO6lL2IzboEdLfZIpTPAf1/PXiI
-	 gcgSq11E6XPSEnvLTQ3xYU41GK4Yjalp80MC7kEaYRloZtNZmrwpEBQfoSLgF6Ha/nwc5
-	 t4rqts6GfcLkq2lp/UcmRVZD7ySOA8bWrOUjdYbSPoQQAIcxYgXLwQ9xgXDKUZBPUZg==
+	t=1795717269;
+	b=Q0bGlh0aOvOdVv+5K/i5Ngevn9Vh/847kxvmmQBjl1C0+Y5ksMuTECyDMiWHI8l1osxm
+	 55lSL/tH0vOoOUdIjwdG+uCd5rHlBW229rbsoVOYQ3idHdjVnge4l2vTALuZE3Gr08GBU
+	 81lLZe3oUvVTqcn6y5T6s3xi0va8P/9wsQ7vNANy/hGQ+LJ1hLEWq/3RGOLtql93q+Omb
+	 59GwXX3LM7Fz1jX+44LD/bqF+X186brN0mIOF5TslstOMlYNse89aUylFF6mUT0ojjNxC
+	 RYWOov3NghIzEaWjVdDGZ3M/f9dKo5LJ2Yxa0UQlQrelLj3yhBiOIk/y3FqBHs2bKqA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795716386;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=vFiqpi2vO+v0iYRizrcF8ISAo4VFPi9115L8KP0Vp1Y=;
-	b=QKTeZMDWOc9YCkXllwoxv3V6j9NDWAI4SiJOnHE6gVGP1S5Gxu14r35ma8Sgsq8Wpe/X
-	 vKbkdZXgoO2PEKn1NHX1k4boQqeuC3LhwQtdWbSfPDIPy/7XM2HC+kQulD6w95/q+zccg
-	 PmQODEzIv3y93d3pwBxVqRYyXvQFF729QkbSv+ej186YcmcS+CJ2rV4hrLLA/IcWyu+2+
-	 SGJZvKM4uo3H3a7vn/kv4y8KwC+10+DcxXvTbWyhaiIgzkbeE0s66VHYLSnjqD00BPuuJ
-	 spP+UYwfnEI23w8w72U4LioXSuywa4sxr3R9r2V0q6HOrWDqrsbb6abszj4PnjCUefA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795717269;
+	h=DMARC-Filter:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=ycuAt8nWPqLFoRiGaSafeLgsWrIGk1PBMq6nncFMtF4=;
+	b=fAW19Pq/+vUwon/+yWfWqDTYg+FSBTwExfq3RGeX2GfGIWNEyzoNSCnl0BnUr52Nt1LW
+	 UIqu1t6KGUeWWOrh0qBB/WGRe0XBxNbevyQ2opVXibXfYFKyl+rACjGUFnq96fyDhEhiS
+	 l0R/rJo7x7Cx+Y8ZeX2iQmM0ryF5kkUVHzaGkJ4BsIIHkkyuIjZ8ClY4pT7z4a7m2Qq2P
+	 V2HVk1DzC1jttXV28FrsqGVaeriCP97BScoOOCrLtRluufcMAeQAVMmMbqsIsKvVQq3Oj
+	 XXfK14X+PtJKOc93JZVu51LPVX/32SRiAx1mApKdMR/tzPhL6IqE57WAKJLQEOzRnwA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iGEPqpXs;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=kemnade.info;
+	spf=pass smtp.mailfrom=kemnade.info;
+	dkim=pass header.d=kemnade.info header.i=@kemnade.info header.a=rsa-sha256 header.s=20220719 header.b="jc/wHpEz";
+	arc=none smtp.remote-ip=178.238.236.174
+Received: from mail.andi.de1.cc (mail.andi.de1.cc [178.238.236.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E80E9606A338;
-	Thu, 26 Nov 2026 18:06:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B35DC606A690;
+	Thu, 26 Nov 2026 18:21:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B35DC606A690
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kemnade.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iGEPqpXs
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99DEA1F000C4;
-	Thu, 26 Nov 2026 18:06:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795716385;
-	bh=vFiqpi2vO+v0iYRizrcF8ISAo4VFPi9115L8KP0Vp1Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=iGEPqpXsxnwA5DSC97ccHwh/El3+n29R0uasWcFskHEnWdMOXlZj+9ggfIz+ebwyu
-	 y51mIH+hhj4maq+0Lou9NrCbR3+vQlMkdE+Mc8lH25M+Ijxi43z7hX3iIJHpvvZQHg
-	 vrEwHCCPNqH5cUb+Zzlh0AHqlFL/XthorSt/HVVqqoe8kr4/Tkzo2fzioiPdo3D8T4
-	 8XZ2uoXK9bGMPcqEcyDeWor3T24ohFTq7FL2UPmtgq04BeEDX8R57T6KSl/P2VQB/M
-	 If77AWE4LmSABZeEYRclwurSU8ry9J40JB+qtwWpPoSo9rb7/kyr1SL0QI/7Jma1FK
-	 rAtcF8HNleJ5Q==
-Date: Thu, 26 Nov 2026 18:06:21 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
-Cc: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Trevor Gamblin <tgamblin@baylibre.com>,
-	David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
-Message-ID: <20261126-delouse-provoke-270d68386526@spud>
-References: <awVki6lC3SxGfqSl@monoceros>
- <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
- <20261124-bath-runaround-dccb788f14e3@spud>
- <awgEH1y_JnsiactY@monoceros>
+	dkim=pass (2048-bit key, unprotected) header.d=kemnade.info header.i=@kemnade.info header.a=rsa-sha256 header.s=20220719 header.b=jc/wHpEz
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=kemnade.info; s=20220719; h=References:In-Reply-To:Subject:Cc:To:From:
+	Reply-To:Content-ID:Content-Description;
+	bh=ycuAt8nWPqLFoRiGaSafeLgsWrIGk1PBMq6nncFMtF4=; t=1795717268; x=1796926868; 
+	b=jc/wHpEzWkwqq8W5hkHS7rNhDBb4bA7NL1BpGUqIYVVKrDGF6aXDAkn+ItU49bcA4C1LNw75Ue5
+	1V951TTRjHHdpmapGlIjlFQ4jFS0SeDSKW7dqCZZjk6pUozwMQ2PvtTVXuoksLn1QU1wFGxYzTq2i
+	DSVg3JZuGxLfQxmYCJ0/K/Ix/mqUHZ4BuzwKhD7VRYrwXfn6tXMnrJdg9gi3GeUeP4DCUXZL03LRQ
+	0xaHKmyGRa2QBh3IGed8oGnM4VWJDQ6gADj/aeraPzmfVISH+vGp/mimLn+tpqPcUytrbOrAc+LOH
+	u6eosaDZu3y3b5feLh57MfybL6cv4cW29Vrw==;
+Date: Thu, 26 Nov 2026 19:20:36 +0100
+From: Andreas Kemnade <andreas@kemnade.info>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski
+ <brgl@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Lee Jones
+ <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, Jingoo Han
+ <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Aaro Koskinen
+ <aaro.koskinen@iki.fi>, Kevin Hilman <khilman@baylibre.com>, Roger Quadros
+ <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>, Russell King
+ <linux@armlinux.org.uk>, Neil Armstrong <neil.armstrong@linaro.org>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+ <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
+ <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Uwe =?UTF-8?B?S2xl?=
+ =?UTF-8?B?aW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Helge Deller
+ <deller@gmx.de>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai
+ <tiwai@suse.com>, Peter Ujfalusi <peter.ujfalusi@gmail.com>, Jarkko Nikula
+ <jarkko.nikula@bitmer.com>, Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
+ linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-leds@vger.kernel.org, linux-sound@vger.kernel.org,
+ linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
+ letux-kernel@openphoenux.org, kernel@pyra-handheld.com
+Subject: Re: [PATCH v2 06/20] dt-bindings: sound: Document OpenPandora sound
+ card
+Message-ID: <20261126192036.6646c688@kemnade.info>
+In-Reply-To: <20261124224300.519d8686@kemnade.info>
+References: <cover.1795505160.git.hns@goldelico.com>
+	<5c6f7deca16f70f1f19cb40c57d70e30068d6000.1795505160.git.hns@goldelico.com>
+	<20261124224300.519d8686@kemnade.info>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; aarch64-unknown-linux-gnu)
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -64,65 +84,30 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Tm5avPfYM60WAnIB"
-Content-Disposition: inline
-In-Reply-To: <awgEH1y_JnsiactY@monoceros>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
---Tm5avPfYM60WAnIB
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, 24 Nov 2026 22:43:00 +0100
+Andreas Kemnade <andreas@kemnade.info> wrote:
 
-On Thu, Nov 26, 2026 at 11:11:41AM +0100, Uwe Kleine-K=F6nig wrote:
-> On Tue, Nov 24, 2026 at 06:34:13PM +0000, Conor Dooley wrote:
-> > On Tue, Nov 24, 2026 at 01:47:13PM +0200, Nicolae-Daniel Deaconescu wro=
-te:
-> > > Hi Uwe,
-> > >=20
-> > > Yes, that works. It is how the gate duty was set before, in ad7625.c,=
- with
-> > > DIV_ROUND_UP(NSEC_PER_SEC * pulses, rate), which gives 34 ns for 4 pu=
-lses
-> > > at 120 MHz. I'd drop the step API (patches 1 and 2) and do the same f=
-or the
-> > > new parts, but i don't have the clock rate, and without a clocks prop=
-erty
-> > > I don't know how I should get it. The PWM core has no way to report i=
-t.
-> > >=20
-> > > Conor, Uwe: is a clocks property on adi,ltc2387 acceptable,?
-> > > If not, how should the driver get the rate?
-> >=20
-> > My opinion here has not changed. The clock is an input to the pwm
-> > generator, not the iio device.
->=20
-> The setup as I understand it (
->=20
->               ,-----.                   ,---.
->   clk ---+----> PWM >--- pwm signal ---->   |         ,-----.
->          |    `-----'                   | & >---------| iio |
+> On Tue, 24 Nov 2026 08:25:46 +0100
+> "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
+> 
+> > The OpenPandora audio subsystem describes the routing links between the
+> > OMAP3 McBSP interface, the external PCM1773 DAC, and the TWL4030 audio
+> > codec, alongside amplifiers and power supplies.
+> >   
+> I think at least in some commit message should be commented why such
+> an interface is needed and the generic sound cards are not sufficient,
+> also as a starting point to recheck that later if these reasons are still
+> valid.
+> 
+To clarify a bit what I am talking about:
+there is e.g.
 
->          `------------------------------>   |         `-----'
+https://lore.kernel.org/linux-omap/20261123-omap-mcbsp-tdm-slot-v2-0-3e3aae215952@telaak.dev/
 
-As far as I gathered from the v1 submission and looking at the datasheet
-at that time, this lower path that skips the pwm does not exist.
+which might be one piece of the puzzle.
 
->                                         `---'
-> )
-> works as the clk feeds into both, the PWM and (masked by the PWM) also
-> into the iio device. So the clk is in the same way relevant for the iio
-> device as the PWM signal?!
-
---Tm5avPfYM60WAnIB
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCawh1HQAKCRB4tDGHoIJi
-0ttHAQDaOg0PUxK9eQ7ac0ZhYoDIGFmUAGUiOkVf4glt7EiFSAD9F11XrNMmSXeQ
-RTOLcZYJO9f921XrGcNUmns4Mnbmjg0=
-=aTV5
------END PGP SIGNATURE-----
-
---Tm5avPfYM60WAnIB--
+Regards,
+Andreas
