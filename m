@@ -1,97 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.42
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795714756;
-	b=G8dNpFj8g0L1ThiFZdlSSQCQflNqsJUoSh26QVXl04aKjfj2ilwq+8txg6mCEHGyxCpU
-	 xdfU66jLdkgcmCX38tvAg83hSAmrPsYdjn5ApkU5rpACVHJURjJ47Wmo3qHT7zlMH9fQm
-	 5rgWDtnjm9WCHe4OiqE1E3SyNHNDtMaYJcqIvvu/YiIdbS4ziDUKzYps5TGcOjJDUaTMm
-	 DopzDMHqE84KZJDda0h5nJxQYwnWYUk2QEwfptFYayEBXv+/yVZpKYFu0i4GAGa3Wabrc
-	 iDk3+Ag+Igyi4AF/COTgIgeOQnYWYRt2jrH5BCH1y/ZnQIltL2oLf812mekym4BiMpw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795714756;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=i6Byx0vgKHEW7YL0wzB4/fobaPVqWn2TsKZAJnLVE6U=;
-	b=Nx/XO2Ry+Hk5OBkl3l/lWRKzfG9XAPaQCWGrApYSr+5vr4Y4C0Af6lwRJBsq2xxOklE/
-	 cF/L+IRGjAHZE6qCIoT980slw/u2j+GigXsMxTPlE7SYYtvpVo0RtovRKEW22zwXcW6iL
-	 YdPnUwOqg+SFZoUap/qfll74Bn9RoIO0qzbgqEHehxHJ7HYAAu/LD695vXGrHmNgwutNJ
-	 VnxE51CJ+lS/mRAKBtcAicc8BfpprTUkD6Mj8ycaia2XgU1DU009Ew77Eevqrj8/bUERG
-	 cD7d1qB37m01VlhrOmZQ64WGaY1ThbSo7StJCRjhrQguxSbA7pXr/8lwcIhA1OdIxSQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=uci.edu;
-	spf=pass smtp.mailfrom=uci.edu;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.42
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795716386;
+	b=NK5sWcEsr5s3D7toGA7axeHPpl5vwqGG314g46gQ/FVp22+81cz91ZWLpZtgKxsA6RYa
+	 2aI7FC1Dhpx0r2ogQ37GeYJGuBgi8Aep3Q0Zy7DqYdNkt3ocj9XUgmLz0rFhAs9UlE0wn
+	 3xnSIC89tyqKG2hQwPY2lrv4Zl1kdjSDD9ktb91FRahO6lL2IzboEdLfZIpTPAf1/PXiI
+	 gcgSq11E6XPSEnvLTQ3xYU41GK4Yjalp80MC7kEaYRloZtNZmrwpEBQfoSLgF6Ha/nwc5
+	 t4rqts6GfcLkq2lp/UcmRVZD7ySOA8bWrOUjdYbSPoQQAIcxYgXLwQ9xgXDKUZBPUZg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795716386;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=vFiqpi2vO+v0iYRizrcF8ISAo4VFPi9115L8KP0Vp1Y=;
+	b=QKTeZMDWOc9YCkXllwoxv3V6j9NDWAI4SiJOnHE6gVGP1S5Gxu14r35ma8Sgsq8Wpe/X
+	 vKbkdZXgoO2PEKn1NHX1k4boQqeuC3LhwQtdWbSfPDIPy/7XM2HC+kQulD6w95/q+zccg
+	 PmQODEzIv3y93d3pwBxVqRYyXvQFF729QkbSv+ej186YcmcS+CJ2rV4hrLLA/IcWyu+2+
+	 SGJZvKM4uo3H3a7vn/kv4y8KwC+10+DcxXvTbWyhaiIgzkbeE0s66VHYLSnjqD00BPuuJ
+	 spP+UYwfnEI23w8w72U4LioXSuywa4sxr3R9r2V0q6HOrWDqrsbb6abszj4PnjCUefA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iGEPqpXs;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE83606A31C
-	for <linux-pwm@vger.kernel.org>; Thu, 26 Nov 2026 17:39:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1AE83606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uci.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uci.edu
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-92157f2e8c1so55801576d6.1
-        for <linux-pwm@vger.kernel.org>; Thu, 26 Nov 2026 09:39:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795714750; cv=none;
-        d=google.com; s=arc-20260327;
-        b=FHG5xJXOjv53/k80ZyQ7ohUBnrcNnm/M/zGz9cLWBAJ5U4VZ5zBQJD8G6K6dhshdUP
-         sQfGb48ATB19xT2b2wG0PfFNUQMG5moOba4nCg/cB5LDzXzcgcNXR9UDR8p+IXrkeEpK
-         Kk9iyy4XFS8NDvIiuMsUZAIUNFkxJzOBUGxrajLceCcmGhAB3LSt3MPTo9ShzQCto0CO
-         T4qy4cn/N4G0G3aX3C4hI+LUimTAjjGEM8/EaJpGa9E6Z3YWBkeMNd6VwrTO/EfW9FT2
-         vrh9fYlojEmdjmEfLsxLXvmNSbiHfD+G7dB4cv5LTrI5HGmqfWy6UnMWvgzAeCvkPSjZ
-         4MGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=i6Byx0vgKHEW7YL0wzB4/fobaPVqWn2TsKZAJnLVE6U=;
-        fh=lhRtCZDHxxAVIkvBpn0B26dQtjQNKZP9No16GRB7epE=;
-        b=mOSYfMc9XBViO1GoosYjKsKS2JErPpLVdSYc5ZQV/sfSdz6RipNyw6Yn4LO9FG73Kt
-         aXGgkFeUhL65Xx7j6akA2aHhaCXHGd8qgVrBQWkT/KohtUuxLW8HJIb/PmDZ/DM88Tjv
-         MCPRsLdfMkKusc9YyB8IL+PmPxBtG8kIfpATn1rvpqjeJn/Wg1p7TEnuDYH3lTDblOHD
-         T/EKQ3FHwIPKX5YCWDQDDKyV8AwvEhvrER5cdm/WZK8rVUXjHpYw6emSKxN+LWAWtkM6
-         8MvyncXPW/im/FMWdhKtz+EkCdtFqx5bpgrxx0Yb+sGHGcOulvFuwgVWf51ba1iQoKC3
-         T77A==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=uci.edu; s=google; t=1795714750; x=1796319550; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=i6Byx0vgKHEW7YL0wzB4/fobaPVqWn2TsKZAJnLVE6U=;
-        b=WAGRHCmHlEAu0arQWfqXzN06Ck0+vGe4GirOTzGET2xld0xirUELoptRM0pH8b3BUq
-         CuaEwO9oxSfWw5uIf33fw5sIi7ZSZ+/Nzz3zsJt2PA9HUmXkE1DQBOFrOEuocx0ya9ZV
-         W2nisvRHVsgjoYMp42NqYA4GDEVm99qMIqPlm4ssgpQYc3fWN9nom8mBm6cBTGYEdKxa
-         bCs4x91XpmKDHQ5V2zxvW2vqYazIBpPVOQxrY4I2fV8YUneSXwurZ7rs5qTPxsPXf5E+
-         +QmZEBop57q0QpB50Eg6ptV0qC2TjjxuKDNM5jZbEbnBM1ScCc8gFw65jA5bbHg8GnNg
-         v5Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795714750; x=1796319550;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=i6Byx0vgKHEW7YL0wzB4/fobaPVqWn2TsKZAJnLVE6U=;
-        b=yPTK8vYAUBCBW36dNfNmc3AUwFVaXYu6dRSJDkySsoZ4G/EHJS5b+hkHamZeFF5PCl
-         BwaCPxg7AmZzHkwz1D2Y7JqkpfDXhMx4TmtWXFptTiqj0wIDXN6d6K8OvTYPTq5eGi3g
-         UEgsTu/oIBdxRRXYklxuHEsaIrjhnszkykQiNNGKrF0R7mpHrYZ/NlOg8DQdbNaUjTlE
-         mNTD6PZNr/ZsGHWB6/geQihFII2tkJgG8yT0ZuqDiwW4OEqYcdevxQE5gUGCuVD4jnlA
-         FDRp521gY0yXbSLCF93ylAAgtLKsjCqk8Zf7qvOH1L18O30CpB+y/cMrDmKPVvCiL+UH
-         HcOA==
-X-Forwarded-Encrypted: i=1; AL+hErGIKXZ6Ucykv+3AKupxIzBoQ9R2vjreAkmCYRiXRIZjH0UpMYUynKdsvCneHR257MpLHijEyFC1ZFk=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8T2Vf6/5icQxfDJURZ2xgqCqWU9hTAaihlYGdSjjXZ+124LICD
-	srhCcSDF2ju30M5RRajF4SOJen+0uS+qnMtet3J7Em2pZGA99AGK3XNQn33oed4iSMDxO06MaTu
-	cFw76NF6AUOZPNY4BTGLWLuOeX5ea+f1MR6BXXTuvpw==
-X-Gm-Gg: AZFdTZewtWnXBISCqR2HirnyIpFt5XlDGHPXEIqAl4d5CVGCdLMrOFt5If3X0eHNtYI
-	CVt4INzoMVSXsWSEvKFZ55hvHoGJEWMnMcF6OfM+IzyAn2ko/RPUuq+i3LCC/xmFAwvDSnGxqsq
-	msOHD1kUENLfwrjG7ckTopBGDFPWyXTdhfDpllNZs4NSqOBkf98qS9FOLSu5v39qoKeIomuoE2s
-	p90XP9JiyGVa1Z2mCBvJLSowOjdxT8Z6JBvD7Y9DecyI8RMD5wqF9Ck3Nvj1aiXhnwojlcElqPr
-	f6Q8mFcqT/TdkGgHO70fPTwN/olJVUqYmJhhfSpoa6pv7Z6Ew86ceiAcNpIlm8obY984zC+q9L3
-	VwlrxSAU07F3nvp8t3sbEWMhQc2/LVLRMAEyuii963RalO1cpN/M1aLGbSVpZ7tNPg4lw2Q==
-X-Received: by 2002:a05:6214:248d:b0:920:ee20:af2f with SMTP id
- 6a1803df08f44-921349db00cmr432813936d6.6.1795714749912; Thu, 26 Nov 2026
- 09:39:09 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E80E9606A338;
+	Thu, 26 Nov 2026 18:06:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iGEPqpXs
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99DEA1F000C4;
+	Thu, 26 Nov 2026 18:06:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795716385;
+	bh=vFiqpi2vO+v0iYRizrcF8ISAo4VFPi9115L8KP0Vp1Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=iGEPqpXsxnwA5DSC97ccHwh/El3+n29R0uasWcFskHEnWdMOXlZj+9ggfIz+ebwyu
+	 y51mIH+hhj4maq+0Lou9NrCbR3+vQlMkdE+Mc8lH25M+Ijxi43z7hX3iIJHpvvZQHg
+	 vrEwHCCPNqH5cUb+Zzlh0AHqlFL/XthorSt/HVVqqoe8kr4/Tkzo2fzioiPdo3D8T4
+	 8XZ2uoXK9bGMPcqEcyDeWor3T24ohFTq7FL2UPmtgq04BeEDX8R57T6KSl/P2VQB/M
+	 If77AWE4LmSABZeEYRclwurSU8ry9J40JB+qtwWpPoSo9rb7/kyr1SL0QI/7Jma1FK
+	 rAtcF8HNleJ5Q==
+Date: Thu, 26 Nov 2026 18:06:21 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
+Cc: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Trevor Gamblin <tgamblin@baylibre.com>,
+	David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
+Message-ID: <20261126-delouse-provoke-270d68386526@spud>
+References: <awVki6lC3SxGfqSl@monoceros>
+ <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
+ <20261124-bath-runaround-dccb788f14e3@spud>
+ <awgEH1y_JnsiactY@monoceros>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -101,35 +64,65 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <cover.1794600927.git.pgovind2@uci.edu> <CGME20261113202542eucas1p27ba92593376041c476afa9c5286205cf@eucas1p2.samsung.com>
- <caddec5478a0d39a73152247a60bc21b3c609cc7.1794600927.git.pgovind2@uci.edu> <9ee41556-4a24-47b2-9db3-9665048658eb@samsung.com>
-In-Reply-To: <9ee41556-4a24-47b2-9db3-9665048658eb@samsung.com>
-From: Priya Bala Govindasamy <pgovind2@uci.edu>
-Date: Thu, 26 Nov 2026 09:38:59 -0800
-X-Gm-Features: Aa3M54pu9Qa4ZZ6_EIlNbo-KxPT-Rg77lhi2tuQOtAvg_t6FJtZeW7oVBArQtVU
-Message-ID: <CAPPBnEbnBPsYxE5ZXPkhGfueMoYD6DAH7dDrR=wRcq_mD686fg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] rust: pwm: reject over-aligned driver data in `Chip::new()`
-To: Michal Wilczynski <m.wilczynski@samsung.com>
-Cc: ojeda@kernel.org, ukleinek@kernel.org, boqun@kernel.org, gary@garyguo.net, 
-	bjorn3_gh@protonmail.com, lossin@kernel.org, a.hindborg@kernel.org, 
-	aliceryhl@google.com, tmgross@umich.edu, dakr@kernel.org, 
-	daniel.almeida@collabora.com, tamird@kernel.org, acourbot@nvidia.com, 
-	work@onurozkan.dev, elle@weathered-steel.dev, linux-pwm@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, ardalan@uci.edu, zhiyunq@cs.ucr.edu, 
-	dzueck@uci.edu
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="Tm5avPfYM60WAnIB"
+Content-Disposition: inline
+In-Reply-To: <awgEH1y_JnsiactY@monoceros>
+
+--Tm5avPfYM60WAnIB
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 25, 2026 at 7:42=E2=80=AFAM Michal Wilczynski
-<m.wilczynski@samsung.com> wrote:
-> The C layout uses PWMCHIP_ALIGN, which is private to core.c. If Uwe
-> agrees it might be a good idea to move it to include/linux/pwm.h and
-> assert against that, so the two can't drift apart.
+On Thu, Nov 26, 2026 at 11:11:41AM +0100, Uwe Kleine-K=F6nig wrote:
+> On Tue, Nov 24, 2026 at 06:34:13PM +0000, Conor Dooley wrote:
+> > On Tue, Nov 24, 2026 at 01:47:13PM +0200, Nicolae-Daniel Deaconescu wro=
+te:
+> > > Hi Uwe,
+> > >=20
+> > > Yes, that works. It is how the gate duty was set before, in ad7625.c,=
+ with
+> > > DIV_ROUND_UP(NSEC_PER_SEC * pulses, rate), which gives 34 ns for 4 pu=
+lses
+> > > at 120 MHz. I'd drop the step API (patches 1 and 2) and do the same f=
+or the
+> > > new parts, but i don't have the clock rate, and without a clocks prop=
+erty
+> > > I don't know how I should get it. The PWM core has no way to report i=
+t.
+> > >=20
+> > > Conor, Uwe: is a clocks property on adi,ltc2387 acceptable,?
+> > > If not, how should the driver get the rate?
+> >=20
+> > My opinion here has not changed. The clock is an input to the pwm
+> > generator, not the iio device.
+>=20
+> The setup as I understand it (
+>=20
+>               ,-----.                   ,---.
+>   clk ---+----> PWM >--- pwm signal ---->   |         ,-----.
+>          |    `-----'                   | & >---------| iio |
 
-Thanks for your comments. As per Gary and Uwe's feedback, I will
-shorten the commit message in the v2 patch. Just to confirm, for v2
-should I only update the commit message, or also move PWMCHIP_ALIGN
-into include/linux/pwm.h?
+>          `------------------------------>   |         `-----'
 
-Best regards,
-Priya
+As far as I gathered from the v1 submission and looking at the datasheet
+at that time, this lower path that skips the pwm does not exist.
+
+>                                         `---'
+> )
+> works as the clk feeds into both, the PWM and (masked by the PWM) also
+> into the iio device. So the clk is in the same way relevant for the iio
+> device as the PWM signal?!
+
+--Tm5avPfYM60WAnIB
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCawh1HQAKCRB4tDGHoIJi
+0ttHAQDaOg0PUxK9eQ7ac0ZhYoDIGFmUAGUiOkVf4glt7EiFSAD9F11XrNMmSXeQ
+RTOLcZYJO9f921XrGcNUmns4Mnbmjg0=
+=aTV5
+-----END PGP SIGNATURE-----
+
+--Tm5avPfYM60WAnIB--
