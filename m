@@ -1,92 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795767149;
-	b=WTD+w31OVa/1ueCl882t7ilLhbxOHniRrZBHd64yuSwVYPc1M6ks4LETdOGDceu+62kw
-	 o4xmIJm5gH2WMc03zb2RCZORXcC/tHjR0CBztAV9+8d1K//QWJ0/nIdFNyHZEYMl7Xl7C
-	 HHxyCDXOgby9wcgaOWXBCiu/mpC8xwF7TWdFKwp/7udtOXtWFrGu6RjuBekMpCx3jjxl/
-	 8oiuMPYWHQT5FCU2A9rMvxeHwPbIjaeeF/QcjbWWU8E51bgPCoTFUFSEB40xP/EsCTW5p
-	 xrMwb3XUWuK7bJFLsgwuw3r6lFaMdZQcE4v+Ws/AwbgAKlimUmFDFX5jot7WZkPmDcw==
+	t=1795771689;
+	b=qn/dqap8kUACKICilEf07oMvLWPAC3556RHRMa48BxsLwGWka5AAIbFZ5fSm3wKuJ8JJ
+	 0Wj8+FjMxTH/qtqVYWF4GtuMYfCXaKwT4PZnG2lgYEhIys4c07B++pmc+3YZps1XTsHRl
+	 wybSledh1l1c60cpaDRF0BOdyOmFa8dl4XaYoc32lzqAF8IgvsLAK/VE+KLkW0iQNFTBH
+	 rtEnnqc9OfHyLD3CHRSEE813d3pRUmO8kisclFSUJtjF15Fb0yXU4gsBM7rh9mtG+WwJ8
+	 HPN7oMSk/qBFN8Eb+kNox5k7x2o3DizkCYK1231n94cptdY5K4x/ogZsBHMT3yiS5rQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795767149;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=biKE31krqx4uiyZbINCmYdssPjN7FXeM4VWJQldNBE4=;
-	b=rCdgCchs1EZrG/cvtOe62TKCbXJeq0wL1lQ1WDWv4TcX0UVg8aeKaYkZ/phAVZkLWEmg
-	 9hWPZTnVjXZ72ISDlqGKOknlDZFF9nSnEBxLaUHqpQv6lrNC3PxokaX8CnmoxbUhyS9Lp
-	 2u8M0kP5I+xd/ynKmH+8N5xfxUyVnw6Z9lHtMZ8w8luQ/NPBicuQ4dng9iu45UDtJEeb6
-	 W/beFmVrhFD2VDKpbuYz5mclyLogkaO9aqkqS0uDnV0QsugR37f+GFI4Z21POGeA4lBQw
-	 6iIHgOpfwCSDfpReyJ4tECWz1vqqNasHFoFgPSoTrqASEABSEdAuH/jbCQyh/ofG+nw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795771689;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=0sl6GQdvl1PXJoCjyLC2MYdFK0R3lhNpJlTKVoZXQR4=;
+	b=GbDc9cY5Kx9y7NA/tbM2a+zKkWUt5cKVA8ehrXzeNLLU2x2TlFxc7g1s9kSfe3uc4oGx
+	 T2dR3U3cBW37LLsKxHH1ppnBApZNav+AT9+Cr0xjmm1kwoOoz9eFLw1j6nLXeKTNBprme
+	 mFscBzma8h1U21YQiGunBPlsaLbKYTI9TmHtnOldy0eFE2PwhNDHMRdQmCmwJbswsyLxD
+	 xmmaQpHDfjhg/aLytEuREDIAxjSQI6GWuI4jWX1bIWu58euznSvr8iSjbJGGE9FNf3HDt
+	 OCR67zYyoB9dSb3VjlW1RYfZKCdCa6AlNLKppKYQrfQl1hyPph9woktSnikQcptF4bQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=N89OvIaB;
-	arc=none smtp.remote-ip=74.125.82.53
-Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Zpf+01Eg;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D4B606A32F
-	for <linux-pwm@vger.kernel.org>; Fri, 27 Nov 2026 08:12:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 81D4B606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id D877E606A31C;
+	Fri, 27 Nov 2026 09:28:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=N89OvIaB
-Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-1a2761c69fbso11055582c88.0
-        for <linux-pwm@vger.kernel.org>; Fri, 27 Nov 2026 00:12:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795767149; x=1796371949; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=biKE31krqx4uiyZbINCmYdssPjN7FXeM4VWJQldNBE4=;
-        b=N89OvIaBZgxgs0mGBtRsN1D6wvlneHG+Ksgqf8QBWV8Et0c1ehC2N6EdeuMO2OygiD
-         GazawBwIBvjOvwQx0T19XiNyPssK9vbrCGCjCpelG4SjFmy++YSnow5jX3dG0NDCjj23
-         4UDs113EzwugS+U12RnTr5+4XA6VfYzdBcScg48dyIIqREon417fNLXMmAmbng4Rku8s
-         lFeZ9dsa20oW95nrB2N2mDuHDsMwbAqBvdcLlWoHYJ04FVO176aw2VH8k+4kUcS6m6FS
-         j20Cc6GMtm7ePkyCMbEl+ZmSdfsvP/vn9sLQs9RCjuL8Uj7l6+rooFBWYlWR6O69+5MR
-         gYzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795767149; x=1796371949;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=biKE31krqx4uiyZbINCmYdssPjN7FXeM4VWJQldNBE4=;
-        b=0261f2EJ/TYT/6ig6BxNlWwWl2uKa/JM6GtqC8dK/q7qL+GK1ekByAJwiD2Ubu11oL
-         QzVz5L+wcvjJbc2q5cfTnw0kwQapTscHhsNZEhPDhakjvQtdHjPNdEP22IZECeW7vxcK
-         QTQbutIAhk+Kc4/Gqnxvkgby46My0J7T51QZAVtSC6uONZfQz7BU1aXjkFsYCG0rEIc/
-         bKRrxgh8FnjhKVZyp8OaWr/hs3JgwEMZqxdYNaap710LZ03h1GQ7GMIbtxZNnTqrqThx
-         UrdQ8gyCvOfA+2LiiWkR6njyoJkXLaXFzNfydsXPxGpkuKb1I01l7AuqSvP0H5/7AhrI
-         pBkg==
-X-Gm-Message-State: APuU4Z927+wih2vd3Nrq0GTRJsq5vj2/tfTrcAHNXqoMGdtJ0CnQum68
-	EP8cEPS1UPFx1qoydYDAeAZrLtWZWQsR3jW4J7llrduVZ4JigCmvb9We
-X-Gm-Gg: AZFdTZc3QPPZv48HLqq6oEN584IWBW2T3n1j8YwjOFZeDN6zXJ5UaS5xMbJKbsJS+Sb
-	XZU0l2l/9A6s9zwd3SbzQ2jM2fU1EBFPScclQv+BjJgFz5Wb0rMKpMqypaP/kyHzJfGdqqrQ//u
-	QI1OTw2J0ADye7ZJzsilXKxiBrmFbOswvoZ6GhtEMj8QCqAgbBOkbWiAw8f4iWSZckORCSZ2yds
-	STZJFrUVfNLvrdb8TzK9eYtRKItI6gxT4xJk7ctEghA/bQPW1J6CLKmKUrR64dln4Vpt4siQY9s
-	GiomdmJZFXQZX+sGOHvlvRHrJE+rXNtL3rFIAe6qJ/Su8AEDV1RhOPpefMQzRL+qM4oiOeApGHX
-	AnehLEj9yZhHI9SjgqlYaloPqWjfmmsZB/ObMCmfKt/a1PnkCW1PZs568q2kMXr/Bx2kqt9oSsL
-	NhbxsC+fgoocywFvih1eLtzPPHcYUtd/roDAZw7A4fCr9bZU8CiaW0QLW3VbQYKnP4e3whtkZsA
-	SxwUyz21eThBy690Q7t4L0KV0pB48oVT8y0+YEgwuwN7Eot5kXx3M8nMnIPU6jSdQkBliDle9xX
-	r12V13DusqhQ5qN4cmHrFA8WR8en6B7gjunDOr+9Sc5pDmQ=
-X-Received: by 2002:a05:7300:2209:b0:386:8d2:929b with SMTP id 5a478bee46e88-38608d2945emr34239903eec.23.1795767148650;
-        Fri, 27 Nov 2026 00:12:28 -0800 (PST)
-Received: from SGN-LDSENG.tasernet.com ([2405:4800:5cc3:11a:1ac0:4dff:fe8b:4a69])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-386aaae4960sm41286650eec.18.2026.11.27.00.12.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2026 00:12:28 -0800 (PST)
-From: Cong Nguyen <congnt264@gmail.com>
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: linux-pwm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] pwm: sti: request the IRQ after the driver data is initialised
-Date: Fri, 27 Nov 2026 15:12:20 +0700
-Message-Id: <20261127081220.302726-2-congnt264@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20261127081220.302726-1-congnt264@gmail.com>
-References: <20261127081220.302726-1-congnt264@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Zpf+01Eg
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 73A6E1F00899;
+	Fri, 27 Nov 2026 09:28:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795771689;
+	bh=0sl6GQdvl1PXJoCjyLC2MYdFK0R3lhNpJlTKVoZXQR4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Zpf+01EgyzkiAUUkfYtFx1WrcyIDjOuKOWlaSDX8gabh8G7vod2PGJwLCZyw1KPrV
+	 yrK7UUuXBpMn27E6UJ1UPEgoCvgVS8jb0wIGzWAG92J8cHnm/YTuAhkAw6EZZclbH3
+	 V2Bcbxabu/LZ9GficdCTvpu+MCqvY3MjAOITVUDIJE5Ui6O7vWxV9jPLNQ8hYP4E4t
+	 UJYVKNhixRHZ00kdlWlP6n4qjKefVXaCDJ7WBoQv/pDbdq0pi0OfyNy9xbBd+dn5pA
+	 zktqAYzwM5Y2+TuX498LPqvVSvdle86XPPJ0m0Gw5nbSwliNjB+AeO407IemxoYZ3j
+	 LPtOHj4K1FckA==
+Date: Fri, 27 Nov 2026 10:28:06 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Priya Bala Govindasamy <pgovind2@uci.edu>
+Cc: Michal Wilczynski <m.wilczynski@samsung.com>, ojeda@kernel.org, 
+	boqun@kernel.org, gary@garyguo.net, bjorn3_gh@protonmail.com, lossin@kernel.org, 
+	a.hindborg@kernel.org, aliceryhl@google.com, tmgross@umich.edu, dakr@kernel.org, 
+	daniel.almeida@collabora.com, tamird@kernel.org, acourbot@nvidia.com, work@onurozkan.dev, 
+	elle@weathered-steel.dev, linux-pwm@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+	ardalan@uci.edu, zhiyunq@cs.ucr.edu, dzueck@uci.edu
+Subject: Re: [PATCH 1/1] rust: pwm: reject over-aligned driver data in
+ `Chip::new()`
+Message-ID: <awlMukHhET0ALF2j@monoceros>
+References: <cover.1794600927.git.pgovind2@uci.edu>
+ <CGME20261113202542eucas1p27ba92593376041c476afa9c5286205cf@eucas1p2.samsung.com>
+ <caddec5478a0d39a73152247a60bc21b3c609cc7.1794600927.git.pgovind2@uci.edu>
+ <9ee41556-4a24-47b2-9db3-9665048658eb@samsung.com>
+ <CAPPBnEbnBPsYxE5ZXPkhGfueMoYD6DAH7dDrR=wRcq_mD686fg@mail.gmail.com>
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -96,51 +65,54 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="tafrygdzirvhmnen"
+Content-Disposition: inline
+In-Reply-To: <CAPPBnEbnBPsYxE5ZXPkhGfueMoYD6DAH7dDrR=wRcq_mD686fg@mail.gmail.com>
 
-sti_pwm_probe() requests the interrupt right after mapping the registers,
-but sti_pwm_interrupt() reads pc->pwm_cpt_int_stat and uses pc->dev and
-pc->ddata. Those are set up later in probe, and the clocks that the
-register access needs are also enabled later. If the interrupt fires once
-it is requested, the handler can run before any of that is ready and
-dereference a NULL pwm_cpt_int_stat.
 
-Request the interrupt after the driver data and the clocks are set up, just
-before the PWM chip is added.
+--tafrygdzirvhmnen
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/1] rust: pwm: reject over-aligned driver data in
+ `Chip::new()`
+MIME-Version: 1.0
 
-Fixes: 25eb53809674 ("pwm: sti: Add support for PWM capture interrupts")
-Signed-off-by: Cong Nguyen <congnt264@gmail.com>
----
- drivers/pwm/pwm-sti.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+Hello,
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index bdbb61e44fe8..73b8690d596c 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -568,11 +568,6 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	if (irq < 0)
- 		return irq;
- 
--	ret = devm_request_irq(&pdev->dev, irq, sti_pwm_interrupt, 0,
--			       pdev->name, pc);
--	if (ret < 0)
--		return dev_err_probe(&pdev->dev, ret, "Failed to request IRQ\n");
--
- 	/*
- 	 * Setup PWM data with default values: some values could be replaced
- 	 * with specific ones provided from Device Tree.
-@@ -614,6 +609,10 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	ret = devm_request_irq(dev, irq, sti_pwm_interrupt, 0, pdev->name, pc);
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "Failed to request IRQ\n");
-+
- 	chip->ops = &sti_pwm_ops;
- 
- 	ret = devm_pwmchip_add(dev, chip);
--- 
-2.25.1
+On Thu, Nov 26, 2026 at 09:38:59AM -0800, Priya Bala Govindasamy wrote:
+> On Wed, Nov 25, 2026 at 7:42=E2=80=AFAM Michal Wilczynski
+> <m.wilczynski@samsung.com> wrote:
+> > The C layout uses PWMCHIP_ALIGN, which is private to core.c. If Uwe
+> > agrees it might be a good idea to move it to include/linux/pwm.h and
+> > assert against that, so the two can't drift apart.
+>=20
+> Thanks for your comments. As per Gary and Uwe's feedback, I will
+> shorten the commit message in the v2 patch. Just to confirm, for v2
+> should I only update the commit message, or also move PWMCHIP_ALIGN
+> into include/linux/pwm.h?
 
+There is precedent on a symbol that is only in include/linux/pwm.h for
+Rust. So if you group PWMCHIP_ALIGN to pwmchip_release() and extend the
+comment accordingly that would be ok for me.
+
+Best regards
+Uwe
+
+--tafrygdzirvhmnen
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsJTSMACgkQj4D7WH0S
+/k4Gkgf+LUVLQfEGSoCQ6is/LBawLAmnEE/0DjLpbHle5x6PUBT56P5BM4wcnfeG
+XH9yo6txd9GpkuthodMqGZQ4HkoCUwIx4GS0bbvCkgY64s4wm2PKSgg5VXYJnZAP
+5HPcTlG7hWLAFAvOsJIIxctn7G+MCUSE5py77AucluAQuh6FnygljiB+07XwqxId
+jGAf7oDUFSWKgZS8wN2Tdq6Ja1MsUUZ36f5WvksdCI2ixKQy6uXGRMdTYq3XZzWw
+sWzouDEmOKte7azFRNQVOw3JKgUQtjcxq3KgkL7o1HLnDvRYEpr6Wn/PHrLSf7fc
+TxXEy3DanwtLCkHURBF83DF95EGJug==
+=U71u
+-----END PGP SIGNATURE-----
+
+--tafrygdzirvhmnen--
