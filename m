@@ -1,57 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795779154;
-	b=Y7EnVGrVvGYPgGwdwMJaDez96+RQJKH5QvP/Y24kLMvmchUxCYbLHl1dt6v7CgWp33ww
-	 rSBBmVwZ18+VHMUNns6R1PHGxWr/PajSqeFdWUflmkP7VHIpGwHq2hBjzCr9FzJSf7aoj
-	 xE+id8CUQB6RdfXJnyM3UW3RRjgQkN7g6gpHX0QGDXheto5XQBL4/hnyAVbQsM5bJhyKI
-	 wErQBwAX+nHvKlZbFJSdVes6++R9IGPnhDP7Sx15BDlcdQYopROlk1y2MuG8+0x/4cEtq
-	 hI8b+xCZ0ZB5ZBewk7MhBWLS58Fq1bxVXrpJ18YZVdWagh/vZQgjTManWj3ZAg0RUyg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795779154;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=wX/FVCUzVIh9tUuN5iJYqAoQF6PWVCKZHLN6FXdcM2w=;
-	b=okzVzppbnDQypmNHO829uYRwCVmEZhxGpivScN4S4QbZZ5llOaDc+Vk63+V3m+mMbsL1
-	 UlfIpv2AHJfDvQy7zFwJ4i7jraGW5w6nUWWJ4nZCrYrbTAjqSBich0/Q7bzi08/+UVe6o
-	 TdIJ373Uwn9f7aDRY7dd8f95ZnpOcn+6CVR2XFUEpw2xq+1jbPzGeB8/ITtTyoIgz5HQ2
-	 6UbeQ1INprk8hqE2L8FwcWcJXSxJTjoPzHJHHVZhOE06ZjQ3etdzOwivgwQzRXlV7k0Ag
-	 NZhG8gPnfkynKGwHnaK18z7KSsJWx0FlPhmhwChPrHVbwjrfcTsMjZozthUwtwv45tQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZRRuUfkx;
-	arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795786357;
+	b=z2oYBnWrbK7hsJRpTFKLCP2XUwaFXO49sExvUES0zlDAR8h6+M4brmnBx/AuUj7n4IrP
+	 HWx9NDz1/Bn1ATHMt5+H5IGdH2gnjvuTHs7Ya2PVVbjw7udGsHS68JYtSnIwbQsoZyyXr
+	 w70HBd3b0JFccEULigX7dTeTBtASGOiBOecA3PtOTmtF3VlXf6bcqJrocdBnzTD9kWH4j
+	 0UqT4FrfKS+IQ6q5zMjtBK+7TPOj6x/Fq5HP+Gu9sPfTwj7u3gDikk9HqCFeNIDXnFPW8
+	 Zs7RqKGluyv0AmO4Sccc4VHL6UO0QBZnjtFE5jnHJjMhKqk5FSN3SN7Z0OyQKfs5cpw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795786357;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=iSWbOSSEBtmBz4BmAl68bnywHwYp2BFmFo07moHtBKk=;
+	b=2ezF83Yra95/bZKSDhLw6pJsLQXYTHkf+UcIHAUFtaiSDZzDr7VsqxjDx8v37nNuZF8m
+	 5o2QXCtzOXRyorw1QvzCtd/AQ3GZQO48eVIB5dct14rqwkKzS7zw1sVUXOJQluHBSYKJu
+	 oU1iac4bBzRqEowhg+D2WdoYXLeNAvbxC+0iJ1bm0gqE8XUXdJUHMwuiiKTtWYUJ0NKtX
+	 Zb/gZF7yMLPlq+N35CniQET0DkBDreGahs0MNV/YP884fSnJOnJoDq19a6txgMUwGSwHi
+	 PQelcYnj2JKOwa1Q7EDh7WQaiA/YGkeEixMZTgOPG0mdwVwHCrjF/+XBbVmYxifN7MQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kb6z2o0X;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 55933606A31F;
-	Fri, 27 Nov 2026 11:32:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40B1C606A323;
+	Fri, 27 Nov 2026 13:32:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZRRuUfkx
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5EB971F0089C;
-	Fri, 27 Nov 2026 11:32:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kb6z2o0X
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795786356;
+	b=GhV1CNUjUf0B7B4evmbIhgoe+d26XZlIQ8k8NEAoUjtvR3RVZzTcbg7SmMfeIgsYGk57
+	 d+oj89FyDyJksTXzswHXNDwOEV8ykyCQDKFuoaGRfKH8KnTcb/5G7DSo+HfaRkWwQMKiG
+	 YbrOafvQmfPL4ZqHvvNksZpaYsSOxeG6s/C7YTw6TCVBr5+hFYp38nlt7ixgoA6Xdv+qQ
+	 gtUEXeq9TyhEQWWnrSAjdkvxyiup0++bElRLA74pheUERaQSDqxkNA+D0mBStRyRLDPQD
+	 FuIYK1H3xtgfZX7hpnHROVRIXmZwinB79RbmrMWeyMRMtX6qDu1YiAjp7CwhDxVUbBQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795786356;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=iSWbOSSEBtmBz4BmAl68bnywHwYp2BFmFo07moHtBKk=;
+	b=PzjDpxkOJBAda5auLx77/9qPZekAzH7lHcHZf/EmeIVmPwWd5KAclPaywxwRZrnu9mOg
+	 CxX0cfkMa4SCQcLUwFtv7UExbriFxmGxZfoCYCEG7lnJC1gT5syTKK3kLBEBXsQklfXd0
+	 tDdgq3YAMejapoVN/FW02Pv/7AsN4bq1Uglm8tX+ZVKlLnNbPENzFBLRrtl17eRVTJDjj
+	 yyGeSSvVy+MefEX68fOgpCJ3g/MYj8tyG2k43ACW0c6RTqN0T1ADmYlYOg6lcPTX8+oMX
+	 X26PKppGsE+cfCDznqRwo3K5nO1PCjGyj2FbdGxkQ5EsaKn6zCNRUK5iAYw1MqSTpzg==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id C44031F008A0;
+	Fri, 27 Nov 2026 13:32:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795779153;
-	bh=wX/FVCUzVIh9tUuN5iJYqAoQF6PWVCKZHLN6FXdcM2w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ZRRuUfkxfTyVqsxa0619jUylpIgFMfJ6lDjCL2nbNS67VXHa0Ni0C8STG8WMMK9IT
-	 wqt6CU1IIZtnDihdrxClId1wOj/rKt0r6pz2oFLFcNT8Usf+nBJOEPUvi1ElFdnF2f
-	 IuoE2S1YRWHElrKmo3EAH4QlHcHn2NN27SlY2R1s5k247F6kp3EyVspJ0moVEMu61n
-	 pxD3i+rzlWAZ24RWov3SGRXuE+1rmLX82xOEbHYkLhpky0rA9iLP+mwTDYTAR8+mgZ
-	 olRu4xDnZzP6TGWx/KuZsG51w2x6qzqnesaRMGyPq9omvDtPMQYpl40Tfhkx9aR6hF
-	 an5mI4H/C50mA==
-Date: Fri, 27 Nov 2026 12:32:31 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Vladislav Leonov <vlad@zlab.su>
-Cc: linux-rockchip@lists.infradead.org, 
-	linux-arm-kernel@lists.infradead.org, Simon Glass <sjg@chromium.org>, linux-clk@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, 
-	Heiko Stuebner <heiko@sntech.de>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Rob Herring <robh@kernel.org>, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 24/25] dt-bindings: pwm: rockchip: Add RV1106 compatible
-Message-ID: <awlpwN73zsCPPpdF@monoceros>
-References: <20260810121121.210040-1-vlad@zlab.su>
- <20260810121121.210040-25-vlad@zlab.su>
- <anq1YM2KzkycOzNm@monoceros>
+	s=k20260515; t=1795786356;
+	bh=iSWbOSSEBtmBz4BmAl68bnywHwYp2BFmFo07moHtBKk=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=kb6z2o0X+UYJESY5gKTbTWhme5+GPbxqCoNhA5NcMItAMTetFULozSVr0cmo5c3MF
+	 AXhK6QBrGj+hajol2txWhLvU5tANPx0TdHok5XtFPDKrtQI21AmMQYre9/5ILIYNAl
+	 77IxspBJjAIjKPIg9ipAyxrtLLr5YANpccfC6Lsttr8plnU05ykFYvuAAmCrNt42Hd
+	 H7lfYVYt+/9lXhlp2jL5RIXr9emrrPmyHFUwIpGr8pXVGG50YdPxjEE3eXbQLlwGdZ
+	 Sl3nyhvms4ZywXNQ2OejK7uCNw53qA898RzzwOAEgbkLm+0Jj5JMeaF2n0exQu9k3t
+	 YOo0Y26oEepmA==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 4E42F4B80C;
+	Fri, 27 Nov 2026 13:32:32 +0000 (UTC)
+From: Keguang Zhang via B4 Relay <devnull+keguang.zhang.gmail.com@kernel.org>
+Date: Fri, 27 Nov 2026 21:32:24 +0800
+Subject: [PATCH RESEND v4 2/3] pwm: loongson: Reset the counters before
+ enabling PWM
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -61,55 +83,65 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="4yohrfi6hcwzkpgi"
-Content-Disposition: inline
-In-Reply-To: <anq1YM2KzkycOzNm@monoceros>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261127-pwm-loongson-fix-v4-2-607f325b74d4@gmail.com>
+References: <20261127-pwm-loongson-fix-v4-0-607f325b74d4@gmail.com>
+In-Reply-To: <20261127-pwm-loongson-fix-v4-0-607f325b74d4@gmail.com>
+To: Binbin Zhou <zhoubinbin@loongson.cn>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ "Imported from f20260920-pwm-loongson-fix-v4-0-41b36b3c6497"@gmail.com, 
+ Keguang Zhang <keguang.zhang@gmail.com>, stable@vger.kernel.org
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795786349; l=1375;
+ i=keguang.zhang@gmail.com; s=20231129; h=from:subject:message-id;
+ bh=nEffXoAuY0LXvNjn27LU1Ds6mcGSPElXiuPjP4r7awA=;
+ b=ZB6/mPRpggxjXqpMw+PQxxBcr7XBNTXFyP0f5LOwzzfn8+/KTNrnXSx27T4SoWr60ydsrGBSd
+ lbdpV78SKvJCROA1kEtfRv87GHevahMN77XE4zJZGexQS+OIhvnZZHq
+X-Developer-Key: i=keguang.zhang@gmail.com; a=ed25519;
+ pk=FMKGj/JgKll/MgClpNZ3frIIogsh5e5r8CeW2mr+WLs=
+X-Endpoint-Received: by B4 Relay for keguang.zhang@gmail.com/20231129 with
+ auth_id=102
+X-Original-From: Keguang Zhang <keguang.zhang@gmail.com>
+Reply-To: keguang.zhang@gmail.com
+Content-Transfer-Encoding: 8bit
+
+From: Keguang Zhang <keguang.zhang@gmail.com>
+
+The PWM controller may retain its initial hardware state when the driver
+binds. Reset the counters before enabling to ensure that the PWM starts
+from a known state.
+
+Fixes: 2b62c89448dd ("pwm: Add Loongson PWM controller support")
+Fixes: 0de9b836a3bc ("pwm: loongson: Reload PWM configuration through counter reset")
+Cc: stable@vger.kernel.org
+Suggested-by: Uwe Kleine-König <ukleinek@kernel.org>
+Signed-off-by: Keguang Zhang <keguang.zhang@gmail.com>
+---
+ drivers/pwm/pwm-loongson.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/pwm/pwm-loongson.c b/drivers/pwm/pwm-loongson.c
+index 0ec773fba813..6f609fd0b90b 100644
+--- a/drivers/pwm/pwm-loongson.c
++++ b/drivers/pwm/pwm-loongson.c
+@@ -110,6 +110,14 @@ static int pwm_loongson_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct pwm_loongson_ddata *ddata = to_pwm_loongson_ddata(chip);
+ 
+ 	val = pwm_loongson_readl(ddata, LOONGSON_PWM_REG_CTRL);
++
++	/*
++	 * Ensure that the values of LOW and PERIOD are sampled into
++	 * the shadow register when the hardware starts running.
++	 */
++	if (!(val & LOONGSON_PWM_CTRL_REG_RST))
++		pwm_loongson_writel(ddata, val | LOONGSON_PWM_CTRL_REG_RST, LOONGSON_PWM_REG_CTRL);
++
+ 	val &= ~LOONGSON_PWM_CTRL_REG_RST;
+ 	val |= LOONGSON_PWM_CTRL_REG_EN;
+ 	pwm_loongson_writel(ddata, val, LOONGSON_PWM_REG_CTRL);
+
+-- 
+2.53.0
 
 
---4yohrfi6hcwzkpgi
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 24/25] dt-bindings: pwm: rockchip: Add RV1106 compatible
-MIME-Version: 1.0
-
-On Tue, Aug 11, 2026 at 07:39:37AM +0200, Uwe Kleine-K=F6nig wrote:
-> Hello,
->=20
-> On Mon, Aug 10, 2026 at 03:11:15PM +0300, Vladislav Leonov wrote:
-> > +  interrupts:
-> > +    minItems: 1
-> > +    maxItems: 2
-> > +    description:
-> > +      Some PWM channels (e.g. on rockchip,rv1106-pwm) additionally
-> > +      support capture mode and use a second interrupt for that.
->=20
-> Is it clear what the first irq is about? Maybe spend a word on that,
-> too?
->=20
-> Otherwise looks fine for me.
-
-I marked this patch as changes-requested in patchwork now and discard it
-=66rom my inbox. Please send an update mentioning the purpose of the first
-irq if/when you care about it.
-
-Best regards
-Uwe
-
---4yohrfi6hcwzkpgi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsJakoACgkQj4D7WH0S
-/k7RyQf9GwSgCvWfCEuntvedN0BuWWwDO37M+L0I+K+oTL94nW/JVSeKxnCG0gTT
-s/M8cJ9Vr2DmJ79LzcaXq6+FQJ6qr+ONq6amEq8jt5M36qBMVmVjIphE/VegAfCv
-pL/GO5t7X30eVr5Dmhe9G3lZ9Ud94PdiC9PCaHDPU8nmQz/PnH42FQTnm6BICnkC
-867tlVXHSIHENDN+P3rjSLsgzVH4uYwJOtrQURHpzaE7PQi5GomAcS46c50/asni
-zYOeeLd2cRO/QF2mQUZ496dfaHg2h5t602Kwx81Wc8dAeUwCx01dAslF53OW0mI6
-ya9O1cZmBYu8gzwG+YB7vaTkboHUcw==
-=p8HE
------END PGP SIGNATURE-----
-
---4yohrfi6hcwzkpgi--
