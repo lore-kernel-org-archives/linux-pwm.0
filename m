@@ -1,52 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795794018;
-	b=W4OMEOSJe9LHxLc/xrb41Po0Rlj3ESv89jKYq+Pto6nB7PWYw+qqgdwSH67p8oYQy1Jp
-	 GC55DqSqtIMCMj7rUN/1gbb+oe5N6N0MMi00jZMTV1+pzbPI0Ey0w3cvjSEjaNmn/gDLY
-	 YJEptbT8ikuTens6lCWvlxcz6lPk9jt4/cQyVkbPzDRxIJhMAKHqq7vh/a7mQCs9fFII/
-	 dFsg42k87n/HiJfQKgbamikbuOVNNUGv+J3tDUUoWGUAdiXlflNPYD6N5MisKRTDkPYVf
-	 GU0GMNOrJsk061bvqNF/VAzZ/tyRlZs43kPBn8MGekzhm0YO8uuKqwQQO4TeO/t6SFg==
+	t=1795801210;
+	b=3gsRC3wOv8et/3AvhUfcC3RbEorPgoG3oL9W0vIfQ6YzIpV2fjP7f9VjJQqlek87WIsd
+	 0E6H56i7xwliWlnP5A6p2qadC48SkOWB/F8wLSm8B9RlKN2goPVjaOJRCKbaaBxYg7Kq1
+	 JgMvJ+eHmh7Vl8U6qzlYFarVR0Duu4+rtL2ml5hdG0HWbBWS6KyAKZrS06EWJXVZ3qD19
+	 yePAsqD1dl1xBRoC5WCCnv3vHxZFdTKg8wHqplqytIxNyQKybli68yo3xH9sdBuzF6yC/
+	 nW2nR9VLfWDbZBbRi3ortH52cq3nLKANqKuee0+8Ii8YHuUaZl7qLdMYdnLePLmcTtQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795794018;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=e5/rGv6kRlTybcojKPwoDm9EwkOD0brZRsjX9dNYirM=;
-	b=E0ijfi6/6C3MiiHMLhhLhXpxc1SOZ6LmOlOZ/AdMArmCvsJJQSyl5Knwhba4r4VOBrqE
-	 ggp+FJOl+Pm3g0/3zfR2c41oQN4YoFCpykf+RcTBHQh9xBacepWHwPNIVY2zHeefuRjUH
-	 yHN2ZN/if5FmqEkLkP4mUmt3lMlvnMRykEsu2piiVrhKXJIYV7zP7B5a4dtptqV7otnrV
-	 FIQeH029GBS15jE7DG6AAjRleao3WQ04PLWs5y3mkMSfUsNIvOXqsIYp5CUeDoJj96I3x
-	 3RdhblRDUXV6xczVORwX+/v/7/75Ztn1WA8VhVJapc2Jp5AYoa4dfUBMWytNqumhmFw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795801210;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
+	 X-Developer-Signature:X-Developer-Key:Content-Transfer-Encoding;
+	bh=GcnQpQEXEsi+nvPttlap4C/vSdbuHSCBd/6D5U5RPLw=;
+	b=YNkqZQRBaL5xzn4OFUkcLgkoByCrozeZ2dvuJL/DkVh/iseUyrzMDcjV/w4XkIa04SE5
+	 +uZDr2dXYStdzQBL6KFPVmG0+Z8RmNoJPcJmYOc2MxC0gqNrDhMWtum10nOHrxmvSffaF
+	 wIsaXVBqxoLDbSzOMkUV9AtxoGGU1xrkzOG0K9cdtW1NRONq0Hp+k3zfPqh27sxuIaSrB
+	 zJZYR33LqTpV6kms8W+B/rDz1PUFnIYz5PyUSYwjVCObkp8jrMYfnYA60ZNPNhY52f2za
+	 ejDcNvhCqVmPELH2b84bASWMT3bOh2bZn4OSfehLHluiut+9oJKNJwQrqSg62baiSsQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KZheMvId;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=baylibre.com;
+	spf=pass smtp.mailfrom=baylibre.com;
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=BOenXBKs;
+	arc=none smtp.remote-ip=209.85.221.47
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 44FD0606A31E;
-	Fri, 27 Nov 2026 15:40:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 149D9606A31E
+	for <linux-pwm@vger.kernel.org>; Fri, 27 Nov 2026 17:40:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 149D9606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KZheMvId
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 02CC71F000C1;
-	Fri, 27 Nov 2026 15:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795794017;
-	bh=e5/rGv6kRlTybcojKPwoDm9EwkOD0brZRsjX9dNYirM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=KZheMvIdeKcFQh1TUVFvP5jn0rlkPW16af+06C+RuvEJXf0q5LddewqgBsQcA0wak
-	 N3OQZK67V/uGYDw0xFPMoo2cPExvAK74jyplyP+82orQH3Pfuz6UJ/Y6gHdJIou2Lk
-	 ND0Bk7xitB7I/UCVgVttxzCmjYkFqv8gymp2/C36OP0a7qGG0V66aMas5BGmt/2e3Y
-	 ol/0lbtIQNSIUnaxBZm1Tim0pem9H1IjhUeNQoK8sMnYK+DamvO7xcTi8ZouFGWNu9
-	 rD7ZLuUXoflvUj86fAQ3pCQp+63Ab91F+MiDNEHQU5wqvVEootqyoioWtj3fes/KdO
-	 hnoLj9dqBlsCQ==
-Date: Fri, 27 Nov 2026 16:40:15 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: =?utf-8?B?TcOgeGlt?= Pedraza Padilla <maximpedraza@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: tiecap: Implement .get_state() and keep a running
- PWM
-Message-ID: <awmjxhnTVT_ZVzPN@monoceros>
-References: <20261116142251.1296742-1-maximpedraza@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=BOenXBKs
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-48e46e449e8so5497150f8f.3
+        for <linux-pwm@vger.kernel.org>; Fri, 27 Nov 2026 09:40:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1795801208; x=1796406008; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=GcnQpQEXEsi+nvPttlap4C/vSdbuHSCBd/6D5U5RPLw=;
+        b=BOenXBKs540CBXJYvgFslWeU2CW9MAm0ao8OraihhQpQS/IC2hasWdF33kI53UbIpT
+         QHmY2Z8NWBeWtnpVakQZYnR0ycqdrPrruk288iuzx+x9b82ukdmSzIcqao9DxSoJiojF
+         L2YwfIvTqr9O/GgBGSojLHXhr5TdxzT48GO6UWBUbqXVZf+ga0086EwgvXlIf4Sinycw
+         R22/BDvEpddDu326sCpNtPIuifkyQAmMktB/Za1s5PkohI/amI+Lvhn6pCqGM/RRJEQL
+         YE+/xqPhgcA+iVTe8fjAyGM6hr3yalLiDCruDKJuYxmxeuZ2Og69p3b8O1cD45mTyq5o
+         0puw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795801208; x=1796406008;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=GcnQpQEXEsi+nvPttlap4C/vSdbuHSCBd/6D5U5RPLw=;
+        b=eLDCXT3cjWdGm63vLDgiboJ7WpJvD4EKNlNsR+yzBbkj9TQ08C5AEk5P/x1Wmv17LS
+         wQgLnERFCSeT0h30B+OSBnKcZdTnQSg89C347lWe2YDrD49y4WfY0xpr6H0Kpk/LgGS9
+         A+Q2kSdQHFuL5XW9cyFP3zKgQNcdqAK6tDSfhdoe2ptFGT4Ok7So2R6nPxX8QqlmAx13
+         26rzFQZ28PlOT7E8VrazbZtiTqqe+DKm8LDz0PNA5jdGlCXBxVR4fvfAGVli6GCznIoW
+         4CGcV6nDm9aUs1U1KS1SLaNQeHQjwfdzWhS5/RF2/M2cEGUVjF4A9eVrVTOsM2P80vuw
+         X0Iw==
+X-Gm-Message-State: APuU4Z/AroMNWLT1hmjOBdtckz0PmqZN1/30zC3evxqVaanXS51iNS40
+	m9KXmuHB7TSn3Wq5OKrhhiZDbSxQFUB2ZB63QQlFWwS7OFm/zIOi2lotGHpB5s5W30fx1+JKLyx
+	SQBrhXk0=
+X-Gm-Gg: AZFdTZe/KINhjuoDqfYihhvT3umGZKBuxU6RHElbkwt0RWDN4A25I+Cc4cVgcAu8ZmO
+	6jkGEVYJ651YmQBlkpyMm2EaSGFPHWps9anHV+o5WiVo1PGrVyeRh2G3Toow2Ux8/dYQ9lQxJ1y
+	80DNthXbM4o3DlrtUiwV2cGTQxmpcV3PhRtgHb/l5L9/DXU7dwpOX9ro5wgARElrof9Uj//XT1m
+	E+MxmMLGl6tZewbrODCaCNNRVEFMbR7vAyKipLlfiHY9NzcjoZ46W/oxAMb+Rq5Sc6T8FdI07x3
+	vhDess2Ki0MpujGM5F21jV+1Ccg1U6VxjUmjY5qLhqbRwicPwzm5A7MNSROYbJ2F3nFhL5mt3m9
+	Dc/VmD+G+kh9ITArw5PnUJtS1pl8L/NHTJ+J6pmfTFQrEoN8pcZUpZiAxhHq8KL/zTzEdN4zTHo
+	ZP3v7akQa2E+XV8M0xj2ryIJ2W94c7Hwgrm488DdyRttqfTWiNYWweeKcWddqhjiXt5/WU7oGkX
+	MQDRFLbUW4kV3mEyaZPzePW+S7hr8ZI2D/OnGRgskZyMa05c3SQaBllmOlCTCvhDpXXEEhxmN5n
+	95QIgv4QfbPW3hbnF3r+oRvtczpIf1qzExgydU6kNivUTkRrPuym8w7G+mTIFWrKAyDgBtWhB/z
+	8V2tCnlK+Q+odvDzf
+X-Received: by 2002:a05:6000:4381:b0:4a7:e4c7:2795 with SMTP id ffacd0b85a97d-4bb965c79f4mr15672379f8f.36.1795801208451;
+        Fri, 27 Nov 2026 09:40:08 -0800 (PST)
+Received: from localhost (p200300f65f044d0890ab5f15b7da13fe.dip0.t-ipconnect.de. [2003:f6:5f04:4d08:90ab:5f15:b7da:13fe])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-4ab658e2e6dsm46652250f8f.6.2026.11.27.09.40.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Nov 2026 09:40:08 -0800 (PST)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: linux-pwm@vger.kernel.org
+Cc: =?utf-8?q?M=C3=A0xim_Pedraza_Padilla?= <maximpedraza@gmail.com>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/5] pwm: tiecap: Assorted fixes and improvements
+Date: Fri, 27 Nov 2026 18:39:39 +0100
+Message-ID: <cover.1795800756.git.u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.3
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -56,62 +96,36 @@ List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="bdvxcrzwalea6q3h"
-Content-Disposition: inline
-In-Reply-To: <20261116142251.1296742-1-maximpedraza@gmail.com>
-
-
---bdvxcrzwalea6q3h
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] pwm: tiecap: Implement .get_state() and keep a running
- PWM
-MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=952; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=lwyyQjPMflqKxy+krxkobamP71JzUQng4Ev8FJqpSxo=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBrCcBbkdh7+Yic6qPU0TvIds2uMs5cGqaF1NkrA NWPlw3v2QmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCawnAWwAKCRCPgPtYfRL+ TuixCACwtmwXDO2XbgeKmsVM294Aq4eyxfizgUsLoRfQF7uvH+/OROd3y7rkflkR6ddZy0MFJog u8q7ymSB9YC6LUizGhKaFi/PX0ht/OAJmeOmF4RfZBPaLZRziC861ghAem49UMsfbJmrfvCthz2 uAn8DDdAlfyfwc7s7GoRglNPASzFBKIaJhjaZnF8dmL5Z3M4H7jpS2X3zxzdAHBngD0+L6A0DZD KClKdqA/GU2/2k9XCLuIuD27e8ecRtXmxP7v3MwN6r0INbdOniGrajdwFrrl4HYHaj5abS6MBm9 b8tM9zxUdRZccQZMGGodnIuQ/gg+noqsfIJRfwZjvQPVQ/vQ
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 
 Hello,
 
-On Mon, Nov 16, 2026 at 03:22:51PM +0100, M=E0xim Pedraza Padilla wrote:
-> The driver has no .get_state(), so a PWM left running by the bootloader,
-> for instance for a backlight, is seen as disabled and the consumer may
-> turn it off before enabling it again, which makes the screen flicker.
->=20
-> Read the state from the hardware. While the PWM runs, .apply() writes
-> the shadow registers, loaded at the end of the period, so read those to
-> stay consistent with it, and copy the active values into them at probe
-> in case the bootloader didn't set them.
->=20
-> A running PWM also holds the runtime PM reference ecap_pwm_enable()
-> takes, so take it at probe. Switch to devm_pm_runtime_enable() so the
-> remove callback can go.
->=20
-> Assisted-by: Claude:claude-opus-5-5
-> Signed-off-by: M=E0xim Pedraza Padilla <maximpedraza@gmail.com>
+while looking into the driver for the review of
+https://lore.kernel.org/linux-pwm/20261116142251.1296742-1-maximpedraza@gmail.com/
+I discovered the patch opportunies taken in this series.
 
-I applied this to
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git pwm/for=
--next
-
-Thanks!
+I didn't mark the 2nd patch as a fix as it might result in power
+regressions during suspend as the clock is kept enabled there. So it
+would be awesome if someone with the hardware could test that.
 
 Best regards
 Uwe
 
---bdvxcrzwalea6q3h
-Content-Type: application/pgp-signature; name="signature.asc"
+Uwe Kleine-König (5):
+  pwm: tiecap: Fix type of variable holding clock rate
+  pwm: tiecap: Ensure the input clock is enabled
+  pwm: tiecap: Use dev_err_probe() for error handling in .probe()
+  pwm: tiecap: Make sure the input clock doesn't change rate
+  pwm: tiecap: Improve period calculation around overflow handling
 
------BEGIN PGP SIGNATURE-----
+ drivers/pwm/pwm-tiecap.c | 94 ++++++++++++++++++++++------------------
+ 1 file changed, 51 insertions(+), 43 deletions(-)
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsJpFsACgkQj4D7WH0S
-/k4lgAf+IUruhqIkdBuXZzieTlnu3xUfA3htvqfePjIzp2t52fpxh78TUqFmriSL
-mNizpkWDwF5a7YYW/vzHQyQfPg3F4TGRHWy25OgFgI/mhkhVcxTAcLuYxSgP8R63
-LHONFotFgdmks5c8JOz2BYmgFV8TW/QWqLwDuherUWKTFPPz3O/UUqtaQ3QwpVhS
-57TMdYCpwErNrEpCezOFDJclqc2u/761i+r0FR5NWCvr4xBC2kjkYl8RIgz/mY6E
-/95kI8uHZbsnKq1/U/KHq2Huq+z0N1Qd+mpM4y6PNhFdaFc52aYNjziAATh+XIvJ
-c2mAVKwFqO+WNeIx5ineesZRgCseug==
-=u+AR
------END PGP SIGNATURE-----
 
---bdvxcrzwalea6q3h--
+base-commit: 8c35f759bca417ab337f3c383be2d0a001a5ab25
+-- 
+2.47.3
+
