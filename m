@@ -1,90 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=85.215.255.83
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795718296;
-	b=SsUo5oIBjFsWRpHLb/JtlqAHahsJBwDoSZIQ0Q9gAahQNbVN1hMyt2aW0JulU7eftWKC
-	 F0bJh4Jg91BSDhzhbWEk2vgpAyDiDWDdEO4H92WxK2VIdPQT0S8xPQXTJ8lklJ77fnIdQ
-	 cSY76FFX1CNhDfNDGf/qcWh0dKDd5BkUIPQ+AsKnP1rBY5uSqTbN/rEo3pCotXHfdeEq7
-	 v7GEme6IdV4mxuI3ldmZ2wnQrJBSiJfJMbd7asfhzqeTcur+URgWkoRa4q/T5DyG5mnfj
-	 mHCH59qUxUETE/uI62gA8fO3zCvPQI9C3UCBsRI+rzy1gVPesEWoa/ZSETT869jWazw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795718296;
-	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
-	 Received:Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Content-Transfer-Encoding:Message-Id:References:To:X-Mailer;
-	bh=NYe3fpJiKO8+IsXNE3ip4kByrEDJ+wWHRmGWym8cbdo=;
-	b=lMLCaOkoTzzBAqRhcNwyM6YNILQVgpOJd09I34fyFptVCAqNdxe34IfuuzDv0I42wU+i
-	 JRt+yYVXRO7OY17gPYshjwH0TGOpcpaXluaycFGvC6X2rUo4CeLVfG6ObR9j09zqwdjss
-	 VWuuw/eHMnRg5tZgP3wiNPAW1jYYeG5RiQEivUVt2lPK6K1BqkckE25RqbbuTakaIbOsY
-	 ZhRpyK8NiSeX4RtoBgz0KI5NSBYsaN0NCoACDnrs731ny9EZar49X4Om4y4IX8Z6T/hKf
-	 5cCNApPo98nrm9EQV1t1liccJpx7npH4CdObJ3BEDDbh+YnVHuTVbPJK0wfak50JLww==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=goldelico.com;
-	spf=pass smtp.mailfrom=goldelico.com;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=M5X5HITu;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=VsiAfvSh;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=85.215.255.83
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.178
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795767147;
+	b=kNqNka/edmcxBwszJ8JCRio5oQAidaiUm80dSHSVR3bYL1Kvc1YgrKtUia9xOhiUJbkb
+	 NqYqF0uKc/OMNUy3Vk70h6ByaGd/4sl8xpa5WIRlgChf5jvKswG2lAw3Xw2/E00y9Lv2y
+	 BbZLmPVujS0drqJzh55vcc7I3Wi80soEzM+Yi1gWOGQwBA/YmPZdxZwn2jZP9C5uU9CVY
+	 //dxE2AmDZBxzfFxvrBydHmPx/2QGBB+mHKPLqt8QiR2pmL7eDVN8IkBWW2cedtX5B4lb
+	 GAFUjnAtcjhVWCcNIpwn6zVNZyILCvrXZjoqDwr5ZBjeCHextyylf/nTpY3ZDZT1UtQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795767147;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-Id:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=2pJydPrYzkvGACVJUI4Nizye21FZq+7Adb+v9+G0Kq4=;
+	b=Fmb4410CzaTArCoqJ6+YBK0NoGtu3X1b8XsGmGr37GnB/J3IR8R0ZGPSxKiP2voP08wn
+	 O50+Uc9i4XFyACT5/Fm+BSpLQqA0zhIBMpiVQQ4cFCbqMMrG0pO6he/kFjPN90hgxPUxz
+	 mmyOehQ7awdi2lpmP6v5vXlL7cLJQRCnER4WvOTh6aJKMrF0TEkEKAS54GUc477Xy3lfV
+	 lcF0ejwVWZIDfam6KTAFNb45XajN4JZ2k/TRcIWGVzair/e4Y1f2o7W0H2I7zG+B6D0rC
+	 wn1yUQIKPFfViBvhYBZ8lORbJpHqxXFXYJkb8fpLlSiP/ahol3pjivgUqS+96kI3Hvw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=psoc+VjX;
+	arc=none smtp.remote-ip=74.125.82.178
+Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA83C606A327;
-	Thu, 26 Nov 2026 18:38:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CA83C606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66E70606A31C
+	for <linux-pwm@vger.kernel.org>; Fri, 27 Nov 2026 08:12:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 66E70606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=M5X5HITu;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=VsiAfvSh
-ARC-Seal: i=1; a=rsa-sha256; t=1795718191; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=J991VfTQxDV9HXTqDDuT+ttE7+L8zYNJmnh2n0bg29QdlQHeh7ymOY3PRDHsj4eMwk
-    2V54jEX5K5A0iGS/d3TLeY/9m5usQ+f6QTIw7JA2V2LKTr6LHhybM84kCHrNq/+bbQzC
-    vr/+6TlCxGEOZUTZqbPZ7N5TT/g+fErVdMg2wtjN1aa01pb2QcICY8M4zoeVStyGpli+
-    mLTMh3kUaY+P8AjwE9Lbr4aG0HLqtk4fQeg0X+hhQ/i8eylRqlm7LIbxg8gG2bBn8NxY
-    80B91p8OMusb2May46qmf/XwiDl0Y0+tJKbGb01AAOkfRxQGbQ7ckvKNZgyzwLxSGjrb
-    e6TA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1795718191;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=NYe3fpJiKO8+IsXNE3ip4kByrEDJ+wWHRmGWym8cbdo=;
-    b=g+IoJTz89+C1jquOfbCbjYnlDDOlOBjCOpL2E2hiZHiLieighaXdcSq5J53Grkq0Qa
-    wmH+MPtZ29jJSK/Pv7DhYKxuoWTheGFVqY+EUh06hU6/LO2fCKMhdw80zR8RJwMRtgHx
-    pMSPwBL7/gQ+MKvrkUEafypzmB0iBK4bFezt0pCROLZSxOx6kBK4rUyf6TPk25hdmuh3
-    xAJX1+Hdx0QKEkpfssen7eNs1GXxdz6921aMzeofB8OmMsRcMMyhxxNr9+X59EWvDnKA
-    h9il8RiIeFS2zd7kfTupI34TwBOC9sQOYdSwKTnUo8PJCDkn2+MOZq4rxlLyvqSayVUx
-    iFvw==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo02
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1795718191;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=NYe3fpJiKO8+IsXNE3ip4kByrEDJ+wWHRmGWym8cbdo=;
-    b=M5X5HITulfuTW6C706dwdeNdHxjT3tUE4Za+jZj/L94gV6qsfBCQ/I+1r7SCTdt1IJ
-    5gxBwbYOxs1izTnJDyDVMwqKj8yP3qC8YTmc0U7fK72fILK8VGehvONy9BDQM5PbkQdx
-    +KvsG1JYWm/hpJdX8EJ7NQPZmdj6j3sFIxXyPabDazYzV1zfq7PIePaX5vtna2+MMwph
-    b3eCH9Tf4C0aW+olQTzEL6ypSXtMpM8MdR/brA1dDlmI+Jcb3HCfTjN+wnkeTyPnXiTX
-    mv/TPdZuCoNDMuiY12JhjyojQ9Pkgcnw08nPzJiZzU5tlk9zcSuxYhqNZs6MaLqxtNsj
-    Yc3g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1795718191;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=NYe3fpJiKO8+IsXNE3ip4kByrEDJ+wWHRmGWym8cbdo=;
-    b=VsiAfvShX038YzxMDGCBnWBKQXU15hM3/nec/5OEW9bdKrQ9KHQd68FEBeQVGf7Ad/
-    cj633Nrf/Dh7UfLW9KAQ==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrSippbmsiNApeHDyjDkvgGuStcrkeTGFmktdrc"
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 55.6.3 AUTH)
-    with ESMTPSA id Qb56a22AQIaTEph
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Thu, 26 Nov 2026 19:36:29 +0100 (CET)
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=psoc+VjX
+Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-386c4d2e2ccso5744659eec.0
+        for <linux-pwm@vger.kernel.org>; Fri, 27 Nov 2026 00:12:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795767146; x=1796371946; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=2pJydPrYzkvGACVJUI4Nizye21FZq+7Adb+v9+G0Kq4=;
+        b=psoc+VjXdpRY5YGsRXLFyelfDX+lPLckHOWsO6pdqZajXjXpjfpXB8+6PMWF6Oj17m
+         s6IU0TasDCVr6qEXxnC9LAkbizksCSVfv7hZMYGpVKZlFNPHrldbtX2Uaq9Yrx/poMTy
+         Xy7OieGUCWuicI+Ho6rugDyWmcv/tZ9M+EzFPqr7tZjY4SaIB2u7Jmo5rdS1Xn3HX8JG
+         gEXTU6Lp8+N7Aqej8XPxnqN4tq95M1/6PTmw0F4BjpTMg14noOz81FvILBH+H3PhQl4F
+         4uW55KHKNpmGkJu33a+Tl4AE2ocB5vEl2MbUTdhxnJ0PqP1MRYKgz1pDqKh3lfJ13Qal
+         Am7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795767146; x=1796371946;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=2pJydPrYzkvGACVJUI4Nizye21FZq+7Adb+v9+G0Kq4=;
+        b=z1/FDGBXap69x5s8CJ8VpM5ts6AB9JdyUbtv8YXi7hfMuhj9BpzSqIZLBv98Hi1rXN
+         /pcBLOcHErdK1vYoxzlTy9x9iUyTVuQKPKim77GvgU42BCK5hdP33vnOCWa2XRdCSM0k
+         aaWL/ZcSoDXSjzOPxaGvvePwzoBSVg4pmk7IqgqDKYzLSXdEC1DC7TFPC3t7jSY0/62Y
+         X1kXr+k+/NaAoGqM6pLw3QSxnkcQ3Rajv5qddUE8YLl3D6nX2lFnL3cwaxZ8opLUs6dp
+         86/YbGb+ouNyBQzOjNfCjMGRCoiR9HMb+RXt8F8Kj3QUjR8UAFV0eelbofJPz8HBVZbY
+         iEzQ==
+X-Gm-Message-State: APuU4Z8fZ9/4uAstqr9FxnF5KGdveg9Vb00MXS6cll5glQk7pCmyfRPQ
+	BvQZAqb61716H3qNh7fm0qsSAf6d/tSOUP+FgddPHr+Zde90Mfic+jaC
+X-Gm-Gg: AZFdTZfTr2Sn/SO59GZefbXeALUavGFb1d5Xn8jCoj1fDwvBOB2m/yMUeSR0UjiEfoq
+	UJW2icRj9n3U4VPHzdoHHJQyCdeExdexLEv1i2xmJm0cLW8BvOJCM6VzT7CT9wA/whGoc6bW9Og
+	lGCKO03vOmHXwdeCiMTWGs7lbKdouuGOj92HNN+pkem7Z35OB1yJ2wne2TRUlHQypg07+SFeD//
+	oMRx3N9vCz4oA1t+gqdl5r7xjsPssbYxMV1JkRk4Ul47lvcPtIK1qUWJ2Ysp4AJEzyI9nDI//C3
+	CqDcU3pKa0NYPtP/3ucI6mMu9hWMS7E4Rvb1k1VtdqdpBBxJME8IBE3ASmLBcVgXXSTMRw8d6+P
+	mlZGsQnFXBXOsTyxo4U+24krKs3bQ2bxmSS1gibxMV0VfnJ6c6uPo6RTGzygrCQW+9j1Qfq8tKO
+	v16YoSVjkGQz2VBsd8gxDOKxlxFu4RGHBf6NOphsue0AU76pdFOeBGHxnRWE2/uPNmDNMdu6rEQ
+	8wPuJgLtNO7bq2khl2lEGg/XEd0bCRVsKNbvwyYfxJjodIsC1pdEFOsl4UUryhAOZ7Fu0HK/NGv
+	9omVxoBM5mGqv6AqWM8NUdosfTm01rzI/jrV2ilxmBKgWI83
+X-Received: by 2002:a05:7300:6da7:b0:384:5885:2f81 with SMTP id 5a478bee46e88-3856c0c7c06mr8085826eec.5.1795767146462;
+        Fri, 27 Nov 2026 00:12:26 -0800 (PST)
+Received: from SGN-LDSENG.tasernet.com ([2405:4800:5cc3:11a:1ac0:4dff:fe8b:4a69])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-386aaae4960sm41286650eec.18.2026.11.27.00.12.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Nov 2026 00:12:26 -0800 (PST)
+From: Cong Nguyen <congnt264@gmail.com>
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: linux-pwm@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] pwm: sti: return the error when requesting the IRQ fails
+Date: Fri, 27 Nov 2026 15:12:19 +0700
+Message-Id: <20261127081220.302726-1-congnt264@gmail.com>
+X-Mailer: git-send-email 2.25.1
 X-Mailing-List: linux-pwm@vger.kernel.org
 List-Id: <linux-pwm.vger.kernel.org>
 List-Post: <mailto:linux-pwm@vger.kernel.org>
@@ -93,107 +91,39 @@ List-Subscribe: <mailto:linux-pwm+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-pwm+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-pwm+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81.1.11\))
-Subject: Re: [PATCH v2 06/20] dt-bindings: sound: Document OpenPandora sound
- card
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20261126192036.6646c688@kemnade.info>
-Date: Thu, 26 Nov 2026 19:35:58 +0100
-Cc: linux-fbdev@vger.kernel.org,
- Lee Jones <lee@kernel.org>,
- linux-pwm@vger.kernel.org,
- Tony Lindgren <tony@atomide.com>,
- Linus Walleij <linus.walleij@linaro.org>,
- dri-devel@lists.freedesktop.org,
- Jaroslav Kysela <perex@perex.cz>,
- =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- David Airlie <airlied@gmail.com>,
- linux-leds@vger.kernel.org,
- Simona Vetter <simona@ffwll.ch>,
- Rob Herring <robh@kernel.org>,
- Aaro Koskinen <aaro.koskinen@iki.fi>,
- Kevin Hilman <khilman@baylibre.com>,
- Helge Deller <deller@gmx.de>,
- Bartosz Golaszewski <brgl@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Peter Ujfalusi <peter.ujfalusi@gmail.com>,
- Daniel Thompson <danielt@kernel.org>,
- devicetree@vger.kernel.org,
- Conor Dooley <conor+dt@kernel.org>,
- Pavel Machek <pavel@kernel.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>,
- Roger Quadros <rogerq@kernel.org>,
- linux-gpio@vger.kernel.org,
- Mark Brown <broonie@kernel.org>,
- linux-sound@vger.kernel.org,
- Takashi Iwai <tiwai@suse.com>,
- linux-omap@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Neil Armstrong <neil.armstrong@linaro.org>,
- Jingoo Han <jingoohan1@gmail.com>,
- Liam Girdwood <lgirdwood@gmail.com>,
- linux-kernel@vger.kernel.org,
- Thomas Zimmermann <tzimmermann@suse.de>,
- kernel@pyra-handheld.com,
- Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Jarkko Nikula <jarkko.nikula@bitmer.com>,
- Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
- Discussions about the Letux Kernel <letux-kernel@openphoenux.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <0CDC9F92-70F4-43CF-BBAD-255D98465F64@goldelico.com>
-References: <cover.1795505160.git.hns@goldelico.com>
- <5c6f7deca16f70f1f19cb40c57d70e30068d6000.1795505160.git.hns@goldelico.com>
- <20261124224300.519d8686@kemnade.info> <20261126192036.6646c688@kemnade.info>
-To: Andreas Kemnade <andreas@kemnade.info>
-X-Mailer: Apple Mail (2.3826.700.81.1.11)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Andreas,
+sti_pwm_probe() calls dev_err_probe() when devm_request_irq() fails but
+does not return its result, so probe continues and registers the PWM chip
+without the capture interrupt handler. An -EPROBE_DEFER from the request
+is also lost.
 
-> Am 26.11.2026 um 19:20 schrieb Andreas Kemnade <andreas@kemnade.info>:
->=20
-> On Tue, 24 Nov 2026 22:43:00 +0100
-> Andreas Kemnade <andreas@kemnade.info> wrote:
->=20
->> On Tue, 24 Nov 2026 08:25:46 +0100
->> "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
->>=20
->>> The OpenPandora audio subsystem describes the routing links between =
-the
->>> OMAP3 McBSP interface, the external PCM1773 DAC, and the TWL4030 =
-audio
->>> codec, alongside amplifiers and power supplies.
->>>=20
->> I think at least in some commit message should be commented why such
->> an interface is needed and the generic sound cards are not =
-sufficient,
+Return the error, as the code did before it was converted to
+dev_err_probe().
 
-I think there was a specific reason as I would be happy to remove the =
-board
-specific driver as well. But I have to check.
+Fixes: 3025c9c669ba ("pwm: sti: Improve error reporting using dev_err_probe()")
+Signed-off-by: Cong Nguyen <congnt264@gmail.com>
+---
+If continuing without the capture interrupt was intended, please
+ignore this patch.
 
->> also as a starting point to recheck that later if these reasons are =
-still
->> valid.
+ drivers/pwm/pwm-sti.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Agreed, that at least a comment would be necessary.
-
->>=20
-> To clarify a bit what I am talking about:
-> there is e.g.
->=20
-> =
-https://lore.kernel.org/linux-omap/20261123-omap-mcbsp-tdm-slot-v2-0-3e3aa=
-e215952@telaak.dev/
->=20
-> which might be one piece of the puzzle.
-
-Yes, it looks like it may be a piece of solution.
-
-This should at least also be mentioned and checked if if it is applied =
-upstream to rely on.
-
-BR and thanks,
-Nikolaus
-
+diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
+index c1beacb26b4d..bdbb61e44fe8 100644
+--- a/drivers/pwm/pwm-sti.c
++++ b/drivers/pwm/pwm-sti.c
+@@ -571,7 +571,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	ret = devm_request_irq(&pdev->dev, irq, sti_pwm_interrupt, 0,
+ 			       pdev->name, pc);
+ 	if (ret < 0)
+-		dev_err_probe(&pdev->dev, ret, "Failed to request IRQ\n");
++		return dev_err_probe(&pdev->dev, ret, "Failed to request IRQ\n");
+ 
+ 	/*
+ 	 * Setup PWM data with default values: some values could be replaced
+-- 
+2.25.1
 
